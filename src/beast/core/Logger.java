@@ -30,6 +30,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.ArrayList;
 
+import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
 @Description("Logs results of calculation processes.")

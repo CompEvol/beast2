@@ -69,6 +69,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+import beast.evolution.nuc.Sequence;
 import beast.util.Randomizer;
 
 import beast.core.Input;
@@ -1122,7 +1123,7 @@ public class ModelBuilder extends JPanel {
 		if (!m_bViewLoggers && plugin instanceof beast.core.Logger) {
 			return false;
 		}
-		if (!m_bViewSequences && plugin instanceof beast.core.Sequence) {
+		if (!m_bViewSequences && plugin instanceof Sequence) {
 			return false;
 		}
 		if (!m_bViewState && plugin instanceof beast.core.State) {

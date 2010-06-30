@@ -34,7 +34,7 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import beast.core.Data;
+import beast.evolution.nuc.Data;
 import beast.core.Input;
 import beast.core.Uncertainty;
 import beast.core.Logger;
@@ -42,9 +42,9 @@ import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.Parameter;
 import beast.core.Plugin;
-import beast.core.Sequence;
+import beast.evolution.nuc.Sequence;
 import beast.core.State;
-import beast.core.Tree;
+import beast.evolution.tree.Tree;
 
 /** converts MCMC plug in into XML, i.e. does the reverse of XMLParser **/
 public class XMLProducer extends XMLParser {

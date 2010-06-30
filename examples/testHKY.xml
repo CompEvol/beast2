@@ -1,4 +1,4 @@
-<beast version='2.0' namespace='beast.nuc:beast.nuc.operators:beast.nuc.sitemodel:beast.nuc.substitutionmodel:beast.nuc.likelihood'>
+<beast version='2.0' namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.nuc.operators:beast.evolution.nuc.sitemodel:beast.evolution.nuc.substitutionmodel:beast.evolution.nuc.likelihood'>
 
 
 	<!-- The sequence alignment (each sequence refers to a taxon above).         -->

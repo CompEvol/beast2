@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Vector;
 
 
-import beast.core.Data;
+import beast.evolution.nuc.Data;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
-import beast.core.Tree;
+import beast.evolution.tree.Tree;
 import beast.core.Node;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +

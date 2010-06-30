@@ -32,12 +32,13 @@ import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import beast.evolution.tree.Tree;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import beast.core.Data;
+import beast.evolution.nuc.Data;
 import beast.core.Input;
 import beast.core.Uncertainty;
 import beast.core.Logger;
@@ -45,9 +46,8 @@ import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.Parameter;
 import beast.core.Plugin;
-import beast.core.Sequence;
+import beast.evolution.nuc.Sequence;
 import beast.core.State;
-import beast.core.Tree;
 
 
 /**

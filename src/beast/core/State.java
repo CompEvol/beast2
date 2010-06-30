@@ -25,6 +25,8 @@
  */
 package beast.core;
 
+import beast.evolution.tree.Tree;
+
 import java.util.List;
 import java.util.ArrayList;
 

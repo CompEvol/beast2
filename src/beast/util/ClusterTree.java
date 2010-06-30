@@ -31,12 +31,12 @@ import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ArrayList;
 
-import beast.core.Data;
+import beast.evolution.nuc.Data;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Node;
 import beast.core.State;
-import beast.core.Tree;
+import beast.evolution.tree.Tree;
 
 /** Adapted from Weka's HierarchicalClustering class **/
 @Description("Create initial beast.tree by hierarchical clustering, either through one of the classic link methods" +
