@@ -51,7 +51,7 @@ public class BeastMCMC {
 	/** random number seed used to initialise Randomizer **/
 	int m_nSeed = 127;
 	/** name of SnAP specification file **/
-	String m_sFileName = "examples/Ourisia60.xml";
+	String m_sFileName = "examples/testHKY.xml";
 	/** MCMC object to execute **/
 	MCMC m_mcmc;
 
