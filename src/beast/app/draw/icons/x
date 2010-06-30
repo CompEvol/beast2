@@ -1,0 +1,15 @@
+mv alignbottom.PNG	alignbottom.png
+mv alignleft.PNG	alignleft.png
+mv alignright.PNG	alignright.png
+mv aligntop.PNG		aligntop.png
+mv centerhorizontal.PNG	centerhorizontal.png
+mv centervertical.PNG	centervertical.png
+mv copy.PNG		copy.png
+mv cut.PNG		cut.png
+mv new.PNG		new.png
+mv open.PNG		open.png
+mv paste.PNG		paste.png
+mv print.PNG		print.png
+mv save.PNG		save.png
+mv spacehorizontal.PNG	spacehorizontal.png
+mv spacevertical.PNG    spacevertical.png    
