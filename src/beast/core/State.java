@@ -46,27 +46,27 @@ public class State extends Plugin {
     @Override
     public void initAndValidate(State state) {
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
-        for (Parameter param : m_parameters) {
-            param.m_nParamNr = getParameterIndex(param.getID());
-        }
+        //for (Parameter param : m_parameters) {
+        //    param.m_nParamNr = getParameterIndex(param.getID());
+        //}
     }
 
 
     /**
      * primitive operations on the list of parameters *
      */
-    public void addParameter(Parameter p) {
-        if (m_parameters == null) {
-            m_parameters = new Parameter[1];
-            m_parameters[0] = p;
+    public void addStateNode(StateNode node) {
+        if (stateNode == null) {
+            stateNode = new StateNode[1];
+            stateNode[0] = node;
             return;
         }
-        Parameter[] h = new Parameter[m_parameters.length + 1];
+        StateNode[] h = new StateNode[stateNode.length + 1];
         for (int i = 0; i < h.length - 1; i++) {
-            h[i] = m_parameters[i];
+            h[i] = stateNode[i];
         }
-        h[h.length - 1] = p;
-        m_parameters = h;
+        h[h.length - 1] = node;
+        stateNode = h;
     }
 
     /**
@@ -197,6 +197,6 @@ public class State extends Plugin {
     public void makeDirty(int nDirt) {
         for (Parameter param : m_parameters) {
             param.makeDirty(nDirt);
-		}
-	}
+        }
+    }
 }
