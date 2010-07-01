@@ -27,21 +27,23 @@ package beast.core;
 import java.util.List;
 
 @Description("Probabilistic representation that can produce " +
-        "a loglikelihood/log probability for running an MCMC chain.")
+        "a log probability for running an MCMC chain.")
 public abstract class ProbabilityDistribution extends Plugin implements Cacheable {
 
     /**
      * current and stored log probability/log likelihood/log uncertainty *
      */
-    protected double m_fLogP = 0;
-    private double m_fStoredLogP = 0;
+    protected double logP = 0;
+    private double storedLogP = 0;
 
     /**
+     * @param state a state
+     * @throws Exception an exception
      * @return the normalized probability (density) for this distribution
      */
     public double calculateLogP(State state) throws Exception {
-        m_fLogP = 0;
-        return m_fLogP;
+        logP = 0;
+        return logP;
     }
 
     /**
@@ -56,9 +58,10 @@ public abstract class ProbabilityDistribution extends Plugin implements Cacheabl
 
     /**
      * get result from last known calculation *
+     * @return log probability
      */
     public double getCurrentLogP() {
-        return m_fLogP;
+        return logP;
     }
 
     @Override
@@ -68,12 +71,12 @@ public abstract class ProbabilityDistribution extends Plugin implements Cacheabl
 
     public void store(int nSample) {
         //super.store(nSample);
-        m_fStoredLogP = m_fLogP;
+        storedLogP = logP;
     }
 
     public void restore(int nSample) {
         //super.restore(nSample);
-        m_fLogP = m_fStoredLogP;
+        logP = storedLogP;
     }
 
 } // class ProbabilityDistribution
