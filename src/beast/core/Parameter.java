@@ -24,6 +24,8 @@
 */
 package beast.core;
 
+import java.util.Arrays;
+
 
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
@@ -47,7 +49,7 @@ public class Parameter extends StateNode {
     /**
      * the actual values of this parameter
      */
-    protected double[] m_values;
+    protected double[] values;
 
     /** number of the id, to find it quickly in the list of parameters of the State **/
     /**
@@ -58,9 +60,9 @@ public class Parameter extends StateNode {
     public void initAndValidate(State state) throws Exception {
         m_fUpper = m_pUpper.get();
         m_fLower = m_pLower.get();
-        m_values = new double[m_nDimension.get()];
-        for (int i = 0; i < m_values.length; i++) {
-            m_values[i] = m_pValues.get();
+        values = new double[m_nDimension.get()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = m_pValues.get();
         }
     }
 
@@ -74,19 +76,19 @@ public class Parameter extends StateNode {
      * various setters & getters *
      */
     public int getDimension() {
-        return m_values.length;
+        return values.length;
     }
 
     public double getValue() {
-        return m_values[0];
+        return values[0];
     }
 
     public int intValue() {
-        return (int) m_values[0];
+        return (int) values[0];
     }
 
     public boolean booleanValue() {
-        return (m_values[0] != 0.0);
+        return (values[0] != 0.0);
     }
 
     public double getLower() {
@@ -106,7 +108,11 @@ public class Parameter extends StateNode {
     }
 
     public double getValue(int iParam) {
-        return m_values[iParam];
+        return values[iParam];
+    }
+
+    public double[] getValues() {
+        return Arrays.copyOf(values, values.length);
     }
 
     public void setBounds(double fLower, double fUpper) {
@@ -116,7 +122,7 @@ public class Parameter extends StateNode {
 
     public void setValue(double fValue) throws Exception {
         if (isStochastic) {
-            m_values[0] = fValue;
+            values[0] = fValue;
             setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
@@ -131,7 +137,7 @@ public class Parameter extends StateNode {
 
     public void setValue(int iParam, double fValue) throws Exception {
         if (isStochastic) {
-            m_values[iParam] = fValue;
+            values[iParam] = fValue;
             setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
@@ -150,8 +156,8 @@ public class Parameter extends StateNode {
     public Parameter copy() {
         Parameter copy = new Parameter();
         copy.m_sID = m_sID;
-        copy.m_values = new double[m_values.length];
-        System.arraycopy(m_values, 0, copy.m_values, 0, m_values.length);
+        copy.values = new double[values.length];
+        System.arraycopy(values, 0, copy.values, 0, values.length);
         copy.m_fLower = m_fLower;
         copy.m_fUpper = m_fUpper;
         return copy;
@@ -164,8 +170,8 @@ public class Parameter extends StateNode {
         StringBuffer buf = new StringBuffer();
         buf.append(m_sID);
         buf.append(": ");
-        for (int i = 0; i < m_values.length; i++) {
-            buf.append(m_values[i] + " ");
+        for (int i = 0; i < values.length; i++) {
+            buf.append(values[i] + " ");
         }
         return buf.toString();
     }

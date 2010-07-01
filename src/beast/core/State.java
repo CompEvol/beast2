@@ -144,17 +144,17 @@ public class State extends Plugin {
      * multiply a value by a given amount *
      */
 //    public void mulValue(double fValue, int m_nParamID) {
-//        ((Parameter) m_parameters[m_nParamID]).m_values[0] *= fValue;
+//        ((Parameter) m_parameters[m_nParamID]).values[0] *= fValue;
 //        m_parameters[m_nParamID].m_bIsDirty = State.IS_DIRTY;
 //    }
 //
 //    public void mulValue(int iParam, double fValue, Parameter param) {
-//        param.m_values[iParam] *= fValue;
+//        param.values[iParam] *= fValue;
 //        param.m_bIsDirty = State.IS_DIRTY;
 //    }
 //
 //    public void mulValues(double fValue, Parameter param) {
-//        double[] values = param.m_values;
+//        double[] values = param.values;
 //        for (int i = 0; i < values.length; i++) {
 //            values[i] *= fValue;
 //        }
