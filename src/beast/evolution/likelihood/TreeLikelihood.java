@@ -131,6 +131,7 @@ import beast.evolution.tree.Tree;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model.")
 public class TreeLikelihood extends ProbabilityDistribution {
@@ -181,6 +182,16 @@ public class TreeLikelihood extends ProbabilityDistribution {
         }
 
     }
+
+    /**
+     * This method samples the sequences based on the tree and site model.
+     *
+     * @param state the state
+     */
+    public void sample(State state, Random random) {
+        throw new UnsupportedOperationException("Can't sample a fixed alignment!");
+    }
+
 
     void setStates(Node node, int patternCount) {
         if (node.isLeaf()) {

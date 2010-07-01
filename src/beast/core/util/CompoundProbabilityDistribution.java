@@ -31,28 +31,37 @@ import beast.core.State;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Description("Takes a collection of uncertainties, typically a number of likelihoods " +
         "and priors and combines them into the compound of these uncertainties " +
         "typically interpreted as the posterior.")
 public class CompoundProbabilityDistribution extends ProbabilityDistribution {
-    public Input<List<ProbabilityDistribution>> m_uncertainties = new Input<List<ProbabilityDistribution>>("probabilityDistribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<ProbabilityDistribution>());
+    public Input<List<ProbabilityDistribution>> pDistributions = new Input<List<ProbabilityDistribution>>("probabilityDistribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<ProbabilityDistribution>());
 
     @Override
     public double calculateLogP(State state) throws Exception {
         logP = 0;
-        for (int i = 0; i < m_uncertainties.get().size(); i++) {
-            double f = m_uncertainties.get().get(i).calculateLogP(state);
+        for (int i = 0; i < pDistributions.get().size(); i++) {
+            double f = pDistributions.get().get(i).calculateLogP(state);
             logP += f;
         }
         return logP;
     }
 
     @Override
+    public void sample(State state, Random random) {
+
+        for (int i = 0; i < pDistributions.get().size(); i++) {
+            pDistributions.get().get(i).sample(state, random);
+        }
+    }
+
+    @Override
     public List<String> getArguments() {
         List<String> arguments = new ArrayList<String>();
-        for (int i = 0; i < m_uncertainties.get().size(); i++) {
-            arguments.addAll(m_uncertainties.get().get(i).getArguments());
+        for (int i = 0; i < pDistributions.get().size(); i++) {
+            arguments.addAll(pDistributions.get().get(i).getArguments());
         }
         return arguments;
     }
@@ -60,22 +69,22 @@ public class CompoundProbabilityDistribution extends ProbabilityDistribution {
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<String>();
-        for (int i = 0; i < m_uncertainties.get().size(); i++) {
-            conditions.addAll(m_uncertainties.get().get(i).getConditions());
+        for (int i = 0; i < pDistributions.get().size(); i++) {
+            conditions.addAll(pDistributions.get().get(i).getConditions());
         }
         return conditions;
     }
 
     @Override
     public void restore(int nSample) {
-        for (ProbabilityDistribution likelihood : m_uncertainties.get()) {
+        for (ProbabilityDistribution likelihood : pDistributions.get()) {
             likelihood.restore(nSample);
         }
     }
 
     @Override
     public void store(int nSample) {
-        for (ProbabilityDistribution likelihood : m_uncertainties.get()) {
+        for (ProbabilityDistribution likelihood : pDistributions.get()) {
             likelihood.store(nSample);
         }
     }

@@ -9,6 +9,7 @@ import beast.math.Binomial;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Alexei Drummond
@@ -35,6 +36,12 @@ public class Coalescent extends ProbabilityDistribution {
         logP = calculateLogLikelihood(intervals, popSize.get());
 
         return logP;
+    }
+
+    @Override
+    public void sample(State state, Random random) {
+        // TODO this should eventually sample a coalescent tree conditional on population size function
+        throw new UnsupportedOperationException("This should eventually sample a coalescent tree conditional on population size function.");
     }
 
     /**

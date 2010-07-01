@@ -25,6 +25,7 @@
 package beast.core;
 
 import java.util.List;
+import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
         "a log probability for running an MCMC chain.")
@@ -38,13 +39,22 @@ public abstract class ProbabilityDistribution extends Plugin implements Cacheabl
 
     /**
      * @param state a state
-     * @throws Exception an exception
      * @return the normalized probability (density) for this distribution
+     * @throws Exception an exception
      */
     public double calculateLogP(State state) throws Exception {
         logP = 0;
         return logP;
     }
+
+    /**
+     * This method modifies the portion of the provided state that corresponds to the
+     * probability distributions arguments, by drawing new values conditional on the
+     * parameters conditioned on
+     *
+     * @param state the state
+     */
+    public abstract void sample(State state, Random random);
 
     /**
      * @return a list of unique ids for the state nodes that form the argument
@@ -58,6 +68,7 @@ public abstract class ProbabilityDistribution extends Plugin implements Cacheabl
 
     /**
      * get result from last known calculation *
+     *
      * @return log probability
      */
     public double getCurrentLogP() {
