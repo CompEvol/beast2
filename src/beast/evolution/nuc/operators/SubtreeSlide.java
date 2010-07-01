@@ -1,28 +1,27 @@
-
 /*
- * File SubtreeSlide.java
- *
- * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
- *
- * This file is part of BEAST2.
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership and licensing.
- *
- * BEAST is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- *  BEAST is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with BEAST; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301  USA
- */
+* File SubtreeSlide.java
+*
+* Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
+*
+* This file is part of BEAST2.
+* See the NOTICE file distributed with this work for additional
+* information regarding copyright ownership and licensing.
+*
+* BEAST is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+*
+*  BEAST is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with BEAST; if not, write to the
+* Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+* Boston, MA  02110-1301  USA
+*/
 /*
  * SubtreeSlideOperator.java
  *
@@ -51,51 +50,49 @@
 package beast.evolution.nuc.operators;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.State;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.State;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implements the subtree slide move.
- *
  */
 @Description("Moves the height of an internal node along the branch. " +
-		"If it moves up, it can exceed the root and become a new root. " +
-		"If it moves down, it may need to make a choise which branch to " +
-		"slide down into.")
+        "If it moves up, it can exceed the root and become a new root. " +
+        "If it moves down, it may need to make a choise which branch to " +
+        "slide down into.")
 public class SubtreeSlide extends TreeOperator {
 
 //    public Input<Tree> m_tree = new Input<Tree>("beast.tree", "beast.tree on which the subtree slide operator is applied");
-    public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0" , new Double(1.0));
+    public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0", new Double(1.0));
     // shadows m_size
     double m_fSize;
-    public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian","Gaussian (=true=default) or uniform delta", new Boolean(true));
+    public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", new Boolean(true));
 //    public Input<Boolean> m_swapInRandomRate= new Input<Boolean>("swapInRandomRate","swapInRandomRate???", new Boolean(true));
 //    public Input<Boolean> m_swapInRandomTrait= new Input<Boolean>("swapInRandomTrait","swapInRandomTrait???", new Boolean(true));
 //    public Input<Boolean> m_scaledDirichletBranches= new Input<Boolean>("scaledDirichletBranches","scaledDirichletBranches???", new Boolean(true));
 
-	@Override
-	public void initAndValidate(State state) {
-		m_fSize = m_size.get();
-	}
+    @Override
+    public void initAndValidate(State state) {
+        m_fSize = m_size.get();
+    }
 
-	/**
+    /**
      * Do a probabilistic subtree slide move.
      *
      * @return the log-transformed hastings ratio
      */
-	@Override
-	public double proposal(State state) throws Exception {
-		Tree tree = state.getTree(m_tree);
+    @Override
+    public double proposal(State state) throws Exception {
+        Tree tree = (Tree) state.getStateNode(m_tree);
 
-		//calculateHeightsFromLengths(beast.tree);
+        //calculateHeightsFromLengths(beast.tree);
 
         double logq;
 
@@ -133,15 +130,15 @@ public class SubtreeSlide extends TreeOperator {
                 // 3.1.1 if creating a new root
                 if (newChild.isRoot()) {
 
-                	replace(iP, CiP, newChild);
-                	replace(PiP, iP, CiP);
+                    replace(iP, CiP, newChild);
+                    replace(PiP, iP, CiP);
 
 //                	beast.tree.removeChild(iP, CiP);
 //                    beast.tree.removeChild(PiP, iP);
 //                    beast.tree.addChild(iP, newChild);
 //                    beast.tree.addChild(PiP, CiP);
 
-                	iP.setParent(null);
+                    iP.setParent(null);
                     tree.setRoot(iP);
                     //System.err.println("Creating new root!");
 
@@ -165,9 +162,9 @@ public class SubtreeSlide extends TreeOperator {
                 }
                 // 3.1.2 no new root
                 else {
-                	replace(iP, CiP, newChild);
-                	replace(PiP, iP, CiP);
-                	replace(newParent, newChild, iP);
+                    replace(iP, CiP, newChild);
+                    replace(PiP, iP, CiP);
+                    replace(newParent, newChild, iP);
 
 //                    beast.tree.removeChild(iP, CiP);
 //                    beast.tree.removeChild(PiP, iP);
@@ -220,14 +217,14 @@ public class SubtreeSlide extends TreeOperator {
                 // 4.1.1 if iP was root
                 if (iP.isRoot()) {
                     // new root is CiP
-                	replace(iP, CiP, newChild);
-                	replace(newParent, newChild, iP);
+                    replace(iP, CiP, newChild);
+                    replace(newParent, newChild, iP);
 
                     //beast.tree.removeChild(iP, CiP);
                     //beast.tree.removeChild(newParent, newChild);
                     //beast.tree.addChild(iP, newChild);
                     //beast.tree.addChild(newParent, iP);
-                	CiP.setParent(null);
+                    CiP.setParent(null);
                     tree.setRoot(CiP);
 
 //                    if (beast.tree.hasNodeTraits()) {
@@ -249,9 +246,9 @@ public class SubtreeSlide extends TreeOperator {
 
                     //System.err.println("DOWN: Creating new root!");
                 } else {
-                	replace(iP, CiP, newChild);
-                	replace(PiP, iP, CiP);
-                	replace(newParent, newChild, iP);
+                    replace(iP, CiP, newChild);
+                    replace(PiP, iP, CiP);
+                    replace(newParent, newChild, iP);
 
                     //beast.tree.removeChild(iP, CiP);
                     //beast.tree.removeChild(PiP, iP);
@@ -266,7 +263,7 @@ public class SubtreeSlide extends TreeOperator {
 
                 logq = Math.log(possibleDestinations);
             } else {
-            	iP.setHeight(newHeight);
+                iP.setHeight(newHeight);
                 logq = 0.0;
             }
         }
@@ -301,8 +298,8 @@ public class SubtreeSlide extends TreeOperator {
 //                throw new Exception("Temporarily disabled."); // TODO calculate Hastings ratio
 //        }
 
-       	//beast.tree.getRoot().setLength(0);
-       	//setLengthsFromHeights(beast.tree.getRoot());
+        //beast.tree.getRoot().setLength(0);
+        //setLengthsFromHeights(beast.tree.getRoot());
         return logq;
     }
 
@@ -326,19 +323,21 @@ public class SubtreeSlide extends TreeOperator {
 
         if (node.isLeaf()) {
             // TODO: verify that this makes sense
-        	return 0;
+            return 0;
         } else {
-        	int count = intersectingEdges(node.m_left, height, directChildren) +
-        	intersectingEdges(node.m_right, height, directChildren);
+            int count = intersectingEdges(node.m_left, height, directChildren) +
+                    intersectingEdges(node.m_right, height, directChildren);
             return count;
         }
     }
 
-	/** automatic parameter tuning **/
-	@Override
-	public void optimize(double logAlpha) {
-		Double fDelta = calcDelta(logAlpha);
-		fDelta += Math.log(m_fSize);
-		m_fSize = Math.exp(fDelta);
+    /**
+     * automatic parameter tuning *
+     */
+    @Override
+    public void optimize(double logAlpha) {
+        Double fDelta = calcDelta(logAlpha);
+        fDelta += Math.log(m_fSize);
+        m_fSize = Math.exp(fDelta);
     }
 }

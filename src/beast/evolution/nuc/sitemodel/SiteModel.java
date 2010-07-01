@@ -39,7 +39,7 @@ import beast.evolution.nuc.substitutionmodel.SubstitutionModel;
 @Description("Defines mutationrate " +
         "and gamma distributed rates across sites (optional) " +
         "and proportion of the sites invariant (also optional).")
-public class SiteModel extends Plugin {
+public class SiteModel extends Plugin implements Cacheable {
     public Input<Parameter> muParameter = new Input<Parameter>("mutationRate", "mutation rate (defaults to 1.0)");
     public Input<Integer> gammaCategoryCount = new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
     public Input<Parameter> shapeParameter = new Input<Parameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
@@ -124,7 +124,7 @@ public class SiteModel extends Plugin {
             }
         }
 
-        final double mu = (muParameter.get() != null) ? state.getValue(muParameter) : 1.0;
+        final double mu = (muParameter.get() != null) ? ((Parameter) state.getStateNode(muParameter)).getValue() : 1.0;
 
         return categoryRates[category] * mu;
     }
@@ -136,7 +136,7 @@ public class SiteModel extends Plugin {
             }
         }
 
-        final double mu = (muParameter.get() != null) ? state.getValue(muParameter) : 1.0;
+        final double mu = (muParameter.get() != null) ? ((Parameter) state.getStateNode(muParameter)).getValue() : 1.0;
 
         final double[] rates = new double[categoryRates.length];
         for (int i = 0; i < rates.length; i++) {
@@ -210,7 +210,7 @@ public class SiteModel extends Plugin {
 
         if (invarParameter.get() != null) {
             categoryRates[0] = 0.0;
-            categoryProportions[0] = state.getValue(invarParameter);
+            categoryProportions[0] = ((Parameter) state.getStateNode(invarParameter)).getValue();
 
             propVariable = 1.0 - categoryProportions[0];
             cat = 1;
@@ -218,7 +218,7 @@ public class SiteModel extends Plugin {
 
         if (shapeParameter.get() != null) {
 
-            final double a = state.getValue(shapeParameter);
+            final double a = ((Parameter) state.getStateNode(shapeParameter)).getValue();
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
@@ -251,12 +251,10 @@ public class SiteModel extends Plugin {
         ratesKnown = true;
     }
 
-    @Override
     public void store(int nSample) {
         m_pSubstModel.get().store(nSample);
     } // no additional state needs storing
 
-    @Override
     public void restore(int nSample) {
         m_pSubstModel.get().restore(nSample);
         ratesKnown = false;

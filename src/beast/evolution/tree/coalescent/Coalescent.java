@@ -1,6 +1,9 @@
 package beast.evolution.tree.coalescent;
 
-import beast.core.*;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.State;
+import beast.core.Uncertainty;
 import beast.evolution.tree.Tree;
 import beast.math.Binomial;
 
@@ -20,7 +23,7 @@ public class Coalescent extends Uncertainty {
      */
     public double calculateLogP(State state) throws Exception {
 
-        Tree stateTree = state.getTree(tree);
+        Tree stateTree = (Tree) state.getStateNode(tree);
 
         popSize.get().setState(state);
 

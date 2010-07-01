@@ -1,49 +1,48 @@
-
 /*
- * File GeneralSubstitutionModel.java
- *
- * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
- *
- * This file is part of BEAST2.
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership and licensing.
- *
- * BEAST is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- *  BEAST is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with BEAST; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301  USA
- */
+* File GeneralSubstitutionModel.java
+*
+* Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
+*
+* This file is part of BEAST2.
+* See the NOTICE file distributed with this work for additional
+* information regarding copyright ownership and licensing.
+*
+* BEAST is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+*
+*  BEAST is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with BEAST; if not, write to the
+* Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+* Boston, MA  02110-1301  USA
+*/
 package beast.evolution.nuc.substitutionmodel;
+
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.Parameter;
+import beast.core.State;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Parameter;
-import beast.core.State;
-import beast.core.Input.Validate;
-
 @Description("Specifies transition probability matrix with no restrictions on the rates other " +
-		"than that one of the is equal to one and the others are specified relative to " +
-		"this unit rate. Works for any number of states.")
+        "than that one of the is equal to one and the others are specified relative to " +
+        "this unit rate. Works for any number of states.")
 public class GeneralSubstitutionModel extends SubstitutionModel {
-	public Input<Parameter> m_pRateParameter = new Input<Parameter>("rates","rate parameter which defines the transition rate matrix", Validate.REQUIRED);
-	public Input<Integer> m_pRelativeTo = new Input<Integer>("relativeto","index of rate which equals 1 while other are rates relative to this one", new Integer(0));
+    public Input<Parameter> m_pRateParameter = new Input<Parameter>("rates", "rate parameter which defines the transition rate matrix", Validate.REQUIRED);
+    public Input<Integer> m_pRelativeTo = new Input<Integer>("relativeto", "index of rate which equals 1 while other are rates relative to this one", new Integer(0));
 
-	@Override
-	public void initAndValidate(State state) throws Exception {
+    @Override
+    public void initAndValidate(State state) throws Exception {
         //setStateCount(m_pData.get().getMaxStateCount());
         setStateCount(m_pFreqs.get().getFreqs().length);
 
@@ -54,10 +53,12 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
         updateMatrix = true;
     } // initAndValidate
 
-	/** machine accuracy constant */
-	public static double EPSILON = 2.220446049250313E-16;
+    /**
+     * machine accuracy constant
+     */
+    public static double EPSILON = 2.220446049250313E-16;
 
-    double [] m_freqs;
+    double[] m_freqs;
 
     protected double[] relativeRates;
     protected double[] storedRelativeRates;
@@ -69,21 +70,20 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
     protected boolean updateMatrix = true;
     protected boolean storedUpdateMatrix = true;
 
-	@Override
-	public boolean isDirty(State state) {
-    	if (m_pFreqs.get().isDirty(state)) {
-    		checkFrequencies();
-    		updateMatrix = true;
-    		return true;
-    	}
-    	if (state.isDirty(m_pRateParameter) != State.IS_CLEAN) {
-    		updateMatrix = true;
-    		return true;
-    	}
-    	return false;
+    @Override
+    public boolean isDirty(State state) {
+        if (m_pFreqs.get().isDirty(state)) {
+            checkFrequencies();
+            updateMatrix = true;
+            return true;
+        }
+        if (state.isDirty(m_pRateParameter) != State.IS_CLEAN) {
+            updateMatrix = true;
+            return true;
+        }
+        return false;
     } // isDirty
 
-    @Override
     public void store(int nSample) {
 
         storedUpdateMatrix = updateMatrix;
@@ -101,7 +101,6 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
     /**
      * Restore the additional stored state
      */
-    @Override
     public void restore(int nSample) {
 
         updateMatrix = storedUpdateMatrix;
@@ -125,21 +124,22 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
 
     }
 
-    /** sets up relative rate matrix **/
+    /**
+     * sets up relative rate matrix *
+     */
     public void setupRelativeRates(State state) {
-    	int nRelativeTo = m_pRelativeTo.get();
-    	Parameter pRates = state.getParameter(m_pRateParameter);
-	    for (int i = 0; i < relativeRates.length; i++) {
-	        if (i == nRelativeTo) {
-	            relativeRates[i] = 1.0;
-	        } else if (i < nRelativeTo) {
-	            relativeRates[i] = pRates.getValue(i);
-	        } else {
-	            relativeRates[i] = pRates.getValue(i - 1);
-	        }
-	    }
-	} // setupRelativeRates
-
+        int nRelativeTo = m_pRelativeTo.get();
+        Parameter pRates = state.getParameter(m_pRateParameter);
+        for (int i = 0; i < relativeRates.length; i++) {
+            if (i == nRelativeTo) {
+                relativeRates[i] = 1.0;
+            } else if (i < nRelativeTo) {
+                relativeRates[i] = pRates.getValue(i);
+            } else {
+                relativeRates[i] = pRates.getValue(i - 1);
+            }
+        }
+    } // setupRelativeRates
 
 
     private void setStateCount(int stateCount) {
@@ -152,7 +152,6 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
         storedRelativeRates = new double[rateCount];
         Arrays.fill(relativeRates, 1.0);
     }
-
 
 
     /**
@@ -275,6 +274,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
     }
 
     // Make it a valid rate matrix (make sum of rows = 0)
+
     void makeValid(double[][] matrix, int dimension) {
         for (int i = 0; i < dimension; i++) {
             double sum = 0.0;
@@ -325,7 +325,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
         m_freqs = m_pFreqs.get().getFreqs();
         for (int i = 0; i < stateCount; i++) {
             double freq = m_freqs[i];
-            if (freq < MINFREQ) m_freqs[i] =  MINFREQ;
+            if (freq < MINFREQ) m_freqs[i] = MINFREQ;
             if (freq > maxfreq) {
                 maxfreq = freq;
                 maxi = i;
@@ -338,8 +338,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
         for (int i = 0; i < stateCount - 1; i++) {
             for (int j = i + 1; j < stateCount; j++) {
                 if (m_freqs[i] == m_freqs[j]) {
-                	m_freqs[i] += MINFDIFF;
-                	m_freqs[j] += MINFDIFF;
+                    m_freqs[i] += MINFDIFF;
+                    m_freqs[j] += MINFDIFF;
                 }
             }
         }

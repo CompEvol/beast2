@@ -32,7 +32,7 @@ import java.util.List;
 public class State extends Plugin {
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_GORED = 2;
 
-    public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("nodes", "a part of the state", new ArrayList<StateNode>());
+    public Input<List<? extends StateNode>> stateNodeInput = new Input<List<? extends StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
 
     //public Input<List<Parameter>> m_pParameters = new Input<List<Parameter>>("parameter", "parameter, part of the state", new ArrayList<Parameter>());
     //public Input<List<Tree>> m_pTrees = new Input<List<Tree>>("tree", "beast.tree, part of the state", new ArrayList<Tree>());
@@ -82,7 +82,7 @@ public class State extends Plugin {
         //throw new Exception("Error 124: No such id (" + sID + ") in parameters");
     }
 
-    public int isDirty(Input<StateNode> p) {
+    public int isDirty(Input<? extends StateNode> p) {
         return stateNode[getStateNodeIndex(p.get().getID())].isDirty();
     }
 
@@ -115,7 +115,7 @@ public class State extends Plugin {
         return stateNode[nID];
     }
 
-    public StateNode getStateNode(Input<StateNode> p) {
+    public StateNode getStateNode(Input<? extends StateNode> p) {
 
         for (int i = 0; i < stateNode.length; i++) {
             if (stateNode[i].getID().equals(p.get().getID())) return stateNode[i];
@@ -125,6 +125,11 @@ public class State extends Plugin {
         //int nID = p.get().getParamNr(this);
         //return (Parameter) m_parameters[nID];
     }
+
+    public Parameter getParameter(Input<Parameter> p) {
+        return (Parameter) getStateNode(p);
+    }
+
 //    public void setValue(int nID, Object fValue) {
 //	        m_parameters[nID].setValue(fValue);
 //	}

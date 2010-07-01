@@ -119,7 +119,10 @@ sys	    0m0.164s  0m1.448s            0m1.328s 0m4.740s
 
 package beast.evolution.nuc.likelihood;
 
-import beast.core.*;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.State;
+import beast.core.Uncertainty;
 import beast.evolution.nuc.Data;
 import beast.evolution.nuc.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
@@ -201,7 +204,7 @@ public class TreeLikelihood extends Uncertainty {
     @Override
     public double calculateLogP(State state) throws Exception {
         checkForDirt(state);
-        Tree tree = state.getTree(m_tree);
+        Tree tree = (Tree) state.getStateNode(m_tree);
         traverse(state, tree.getRoot());
         m_fLogP = 0.0;
         //double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
@@ -321,7 +324,7 @@ public class TreeLikelihood extends Uncertainty {
 //    	Arrays.fill(m_bNodeIsDirty, State.IS_GORED);
         // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);
         //m_likelihoodCore.checkForDirt(state);
-        Tree tree = state.getTree(m_tree.get().getID());
+        Tree tree = (Tree) state.getStateNode(m_tree);
         checkNodesForDirt(tree.getRoot(), hasDirt);
     } // checkForDirt
 

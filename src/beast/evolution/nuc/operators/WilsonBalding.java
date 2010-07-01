@@ -1,28 +1,27 @@
-
 /*
- * File WilsonBalding.java
- *
- * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
- *
- * This file is part of BEAST2.
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership and licensing.
- *
- * BEAST is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- *  BEAST is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with BEAST; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301  USA
- */
+* File WilsonBalding.java
+*
+* Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
+*
+* This file is part of BEAST2.
+* See the NOTICE file distributed with this work for additional
+* information regarding copyright ownership and licensing.
+*
+* BEAST is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+*
+*  BEAST is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with BEAST; if not, write to the
+* Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+* Boston, MA  02110-1301  USA
+*/
 /*
  * WilsonBalding.java
  *
@@ -50,33 +49,33 @@
 
 package beast.evolution.nuc.operators;
 
-import beast.evolution.tree.Node;
-import beast.util.Randomizer;
 import beast.core.Description;
 import beast.core.State;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.util.Randomizer;
 
 /**
-  WILSON, I. J. and D. J. BALDING, 1998  Genealogical inference from microsatellite data.
-  Genetics 150:499-51
-  http://www.genetics.org/cgi/ijlink?linkType=ABST&journalCode=genetics&resid=150/1/499
-*/
-@Description("Implements the unweighted Wilson-Balding branch swapping move. "+
-"This move is similar to one proposed by WILSON and BALDING 1998  "+
-"and involves removing a subtree and re-attaching it on a new parent branch. "+
-"See <a href='http://www.genetics.org/cgi/content/full/161/3/1307/F1'>picture</a>.")
+ * WILSON, I. J. and D. J. BALDING, 1998  Genealogical inference from microsatellite data.
+ * Genetics 150:499-51
+ * http://www.genetics.org/cgi/ijlink?linkType=ABST&journalCode=genetics&resid=150/1/499
+ */
+@Description("Implements the unweighted Wilson-Balding branch swapping move. " +
+        "This move is similar to one proposed by WILSON and BALDING 1998  " +
+        "and involves removing a subtree and re-attaching it on a new parent branch. " +
+        "See <a href='http://www.genetics.org/cgi/content/full/161/3/1307/F1'>picture</a>.")
 public class WilsonBalding extends TreeOperator {
 
-	@Override
-	public void initAndValidate(State state) {
-	}
+    @Override
+    public void initAndValidate(State state) {
+    }
 
-	/**
+    /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
-	@Override
-	public double proposal(State state) throws Exception {
-		Tree tree = state.getTree(m_tree);
+    @Override
+    public double proposal(State state) throws Exception {
+        Tree tree = (Tree) state.getStateNode(m_tree);
 //		calculateHeightsFromLengths(beast.tree);
 
         double oldMinAge, newMinAge, newRange, oldRange, newAge, fHastingsRatio;
@@ -107,13 +106,13 @@ public class WilsonBalding extends TreeOperator {
 
         // disallow moves that change the root.
         if (j.isRoot() || iP.isRoot()) {
-        	return Double.NEGATIVE_INFINITY;
+            return Double.NEGATIVE_INFINITY;
             //throw new Exception("Root changes not allowed!");
         }
 
         if (jP.getNr() == iP.getNr() || j.getNr() == iP.getNr() || jP.getNr() == i.getNr())
-        	return Double.NEGATIVE_INFINITY;
-        	//throw new Exception("move failed");
+            return Double.NEGATIVE_INFINITY;
+        //throw new Exception("move failed");
 
         final Node CiP = getOtherChild(iP, i);
 //        if (CiP.getNr() == j.getNr()) {
@@ -134,8 +133,8 @@ public class WilsonBalding extends TreeOperator {
 
         if (j.isRoot()) {
 
-        	replace(iP, CiP, j);
-        	replace(PiP, iP, CiP);
+            replace(iP, CiP, j);
+            replace(PiP, iP, CiP);
             // 1. remove edges <iP, CiP>
             //beast.tree.removeChild(parent, CiP);
             //beast.tree.removeChild(PiP, parent);
@@ -145,12 +144,12 @@ public class WilsonBalding extends TreeOperator {
             //beast.tree.addChild(PiP, CiP);
 
             // iP is the new root
-        	iP.setParent(null);
+            iP.setParent(null);
             tree.setRoot(iP);
 
         } else if (iP.isRoot()) {
-        	replace(jP, j, iP);
-        	replace(iP, CiP, iP);
+            replace(jP, j, iP);
+            replace(iP, CiP, iP);
             // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
             //beast.tree.removeChild(k, j);
             //beast.tree.removeChild(parent, CiP);
@@ -160,16 +159,16 @@ public class WilsonBalding extends TreeOperator {
             //beast.tree.addChild(k, parent);
 
             //CiP is the new root
-        	CiP.setParent(null);
+            CiP.setParent(null);
             tree.setRoot(CiP);
 
         } else {
-        	// disconnect iP
-        	replace(iP.getParent(), iP, CiP);
-        	// re-attach, first child node to iP
-        	replace(iP, CiP, j);
-        	// then parent node of j to iP
-        	replace(jP, j, iP);
+            // disconnect iP
+            replace(iP.getParent(), iP, CiP);
+            // re-attach, first child node to iP
+            replace(iP, CiP, j);
+            // then parent node of j to iP
+            replace(jP, j, iP);
 
 
             // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>

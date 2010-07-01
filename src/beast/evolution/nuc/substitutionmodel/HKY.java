@@ -1,52 +1,51 @@
-
 /*
- * File HKY.java
- *
- * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
- *
- * This file is part of BEAST2.
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership and licensing.
- *
- * BEAST is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- *  BEAST is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with BEAST; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301  USA
- */
+* File HKY.java
+*
+* Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
+*
+* This file is part of BEAST2.
+* See the NOTICE file distributed with this work for additional
+* information regarding copyright ownership and licensing.
+*
+* BEAST is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+*
+*  BEAST is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with BEAST; if not, write to the
+* Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+* Boston, MA  02110-1301  USA
+*/
 package beast.evolution.nuc.substitutionmodel;
 
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Parameter;
 import beast.core.State;
-import beast.core.Input.Validate;
 
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
 public class HKY extends SubstitutionModel {
-	//public Input<Frequencies> m_freqs = new Input<Frequencies>("frequencies", "frequencies nucleotide letters");
-	public Input<Parameter> m_kappa = new Input<Parameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
+    //public Input<Frequencies> m_freqs = new Input<Frequencies>("frequencies", "frequencies nucleotide letters");
+    public Input<Parameter> m_kappa = new Input<Parameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
-	@Override
-	public void initAndValidate(State state) throws Exception {
-		initialiseEigen();
-	}
+    @Override
+    public void initAndValidate(State state) throws Exception {
+        initialiseEigen();
+    }
 
-	double freqA, freqC, freqG, freqT,
-    // A+G
-    freqR,
-    // C+T
-    freqY;
+    double freqA, freqC, freqG, freqT,
+            // A+G
+            freqR,
+            // C+T
+            freqY;
 
     // Eigenvalues, eigenvectors, and inverse eigenvectors
     protected double[] Eval;
@@ -61,16 +60,16 @@ public class HKY extends SubstitutionModel {
     protected boolean storedUpdateMatrix = true;
 
     protected void calculateFreqRY() {
-		double [] fFreqs = m_pFreqs.get().getFreqs();
-		freqA = fFreqs[0];
-		freqC = fFreqs[1];
-		freqG = fFreqs[2];
-		freqT = fFreqs[3];
-		freqR = freqA + freqG;
-		freqY = freqC + freqT;
-	}
+        double[] fFreqs = m_pFreqs.get().getFreqs();
+        freqA = fFreqs[0];
+        freqC = fFreqs[1];
+        freqG = fFreqs[2];
+        freqT = fFreqs[3];
+        freqR = freqA + freqG;
+        freqY = freqC + freqT;
+    }
 
-	/**
+    /**
      * tsTv
      */
     //private double tsTv;
@@ -213,7 +212,7 @@ public class HKY extends SubstitutionModel {
      * setup substitution matrix
      */
     public void setupMatrix(State state) {
-        final double kappa = state.getValue(m_kappa);//getKappa();
+        final double kappa = state.getParameter(m_kappa).getValue();//getKappa();
         beta = -1.0 / (2.0 * (freqR * freqY + kappa * (freqA * freqG + freqC * freqT)));
 
         A_R = 1.0 + freqR * (kappa - 1);
@@ -272,7 +271,7 @@ public class HKY extends SubstitutionModel {
         if (!eigenInitialised)
             initialiseEigen();
 
-        final double kappa = state.getValue(m_kappa);//getKappa();
+        final double kappa = state.getParameter(m_kappa).getValue();//getKappa();
 
         // left eigenvector #1
         Ievc[0][0] = freqA; // or, evec[0] = pi;
@@ -281,34 +280,34 @@ public class HKY extends SubstitutionModel {
         Ievc[0][3] = freqT;
 
         // left eigenvector #2
-        Ievc[1][0] =  freqA * freqY;
+        Ievc[1][0] = freqA * freqY;
         Ievc[1][1] = -freqC * freqR;
-        Ievc[1][2] =  freqG * freqY;
+        Ievc[1][2] = freqG * freqY;
         Ievc[1][3] = -freqT * freqR;
 
-        Ievc[2][1] =  1; // left eigenvectors 3 = (0,1,0,-1); 4 = (1,0,-1,0)
+        Ievc[2][1] = 1; // left eigenvectors 3 = (0,1,0,-1); 4 = (1,0,-1,0)
         Ievc[2][3] = -1;
 
-        Ievc[3][0] =  1;
+        Ievc[3][0] = 1;
         Ievc[3][2] = -1;
 
-        Evec[0][0] =  1; // right eigenvector 1 = (1,1,1,1)'
-        Evec[1][0] =  1;
-        Evec[2][0] =  1;
-        Evec[3][0] =  1;
+        Evec[0][0] = 1; // right eigenvector 1 = (1,1,1,1)'
+        Evec[1][0] = 1;
+        Evec[2][0] = 1;
+        Evec[3][0] = 1;
 
         // right eigenvector #2
-        Evec[0][1] =  1.0/freqR;
-        Evec[1][1] = -1.0/freqY;
-        Evec[2][1] =  1.0/freqR;
-        Evec[3][1] = -1.0/freqY;
+        Evec[0][1] = 1.0 / freqR;
+        Evec[1][1] = -1.0 / freqY;
+        Evec[2][1] = 1.0 / freqR;
+        Evec[3][1] = -1.0 / freqY;
 
         // right eigenvector #3
-        Evec[1][2] =  freqT / freqY;
+        Evec[1][2] = freqT / freqY;
         Evec[3][2] = -freqC / freqY;
 
         // right eigenvector #4
-        Evec[0][3] =  freqG / freqR;
+        Evec[0][3] = freqG / freqR;
         Evec[2][3] = -freqA / freqR;
 
         // eigenvectors
@@ -318,8 +317,8 @@ public class HKY extends SubstitutionModel {
         A_Y = 1.0 + freqY * (kappa - 1);
 
         Eval[1] = beta;
-        Eval[2] = beta*A_Y;
-        Eval[3] = beta*A_R;
+        Eval[2] = beta * A_Y;
+        Eval[3] = beta * A_R;
 
         updateMatrix = false;
     }
@@ -328,7 +327,7 @@ public class HKY extends SubstitutionModel {
      * allocate memory for the Eigen routines
      */
     protected void initialiseEigen() {
-		int nStateCount = 4;
+        int nStateCount = 4;
         Eval = new double[nStateCount];
         Evec = new double[nStateCount][nStateCount];
         Ievc = new double[nStateCount][nStateCount];
@@ -338,28 +337,29 @@ public class HKY extends SubstitutionModel {
     }
 
     public boolean isDirty(State state) {
-    	if (m_pFreqs.get().isDirty(state)) {
-    		updateIntermediates = true;
-    		updateMatrix = true;
-    		return true;
-    	}
-    	if (state.isDirty(m_kappa) != State.IS_CLEAN) {
-    		updateMatrix = true;
-    		return true;
-    	}
-    	return false;
+        if (m_pFreqs.get().isDirty(state)) {
+            updateIntermediates = true;
+            updateMatrix = true;
+            return true;
+        }
+        if (state.isDirty(m_kappa) != State.IS_CLEAN) {
+            updateMatrix = true;
+            return true;
+        }
+        return false;
     }
-    @Override
+
     public void store(int nSample) {
 
     }
-    @Override
+
     public void restore(int nSample) {
-		updateMatrix = true;
-    	updateIntermediates = true;
+        updateMatrix = true;
+        updateIntermediates = true;
     }
-	@Override
-	public String getCitation() {
-		return "Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. Journal of Molecular Evolution 22:160-174.";
-	}
+
+    @Override
+    public String getCitation() {
+        return "Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. Journal of Molecular Evolution 22:160-174.";
+    }
 }

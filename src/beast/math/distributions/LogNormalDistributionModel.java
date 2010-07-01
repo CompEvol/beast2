@@ -1,9 +1,9 @@
 package beast.math.distributions;
 
-import beast.core.Parameter;
-import beast.core.Input;
-import beast.core.State;
 import beast.core.Description;
+import beast.core.Input;
+import beast.core.Parameter;
+import beast.core.State;
 
 /**
  * @author Alexei Drummond
@@ -28,10 +28,10 @@ public class LogNormalDistributionModel extends ParametricDistribution {
 
     public Distribution getDistribution(State state) {
 
-        logNormal.setM(state.getValue(MParameter));
-        logNormal.setS(state.getValue(SParameter));
+        logNormal.setM(state.getParameter(MParameter).getValue());
+        logNormal.setS(state.getParameter(SParameter).getValue());
         return logNormal;
     }
 
-    LogNormalDistribution logNormal = new LogNormalDistribution(0,1);
+    LogNormalDistribution logNormal = new LogNormalDistribution(0, 1);
 }

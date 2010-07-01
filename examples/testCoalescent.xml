@@ -1,4 +1,5 @@
-<beast version='2.0' namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.nuc.operators:beast.evolution.nuc.sitemodel:beast.evolution.nuc.substitutionmodel:beast.evolution.nuc.likelihood'>
+<beast version='2.0'
+       namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.nuc.operators:beast.evolution.nuc.sitemodel:beast.evolution.nuc.substitutionmodel:beast.evolution.nuc.likelihood'>
 
 
     <!-- The sequence alignment (each sequence refers to a taxon above).         -->
@@ -48,8 +49,9 @@
 
     <mcmc id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
-            <parameter id="hky.kappa" value="1.0" lower="0.0"/>
-            <parameter id="popSize" value="1.0" lower="0" upper="100"/>
+
+            <input spec='beast.core.Parameter' name="stateNode" id="hky.kappa">1.0</input>
+            <input spec='beast.core.Parameter' name="stateNode" id="popSize">1.0</input>
 
             <!--
                         <tree spec='util.TreeParser' id='tree'>
@@ -57,9 +59,12 @@
                            <input name='taxa' idref='alignment'/>
                         </tree>
             -->
-            <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+
+
+            <input spec='beast.util.ClusterTree' name="stateNode" id='tree' clusterType='upgma'>
                 <input name='taxa' idref='alignment'/>
-            </tree>
+            </input>
+
         </state>
 
         <uncertainty spec="CompoundUncertainty" id="posterior">

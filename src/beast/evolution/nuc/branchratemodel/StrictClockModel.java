@@ -1,6 +1,9 @@
 package beast.evolution.nuc.branchratemodel;
 
-import beast.core.*;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Parameter;
+import beast.core.State;
 import beast.evolution.tree.Node;
 
 /**
@@ -22,6 +25,6 @@ public class StrictClockModel extends BranchRateModel {
     }
 
     public double getRateForBranch(State state, Node node) {
-        return (muParameter.get() != null) ? state.getValue(muParameter) : 1.0;
+        return (muParameter.get() != null) ? state.getParameter(muParameter).getValue() : 1.0;
     }
 }
