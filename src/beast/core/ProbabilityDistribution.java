@@ -24,9 +24,11 @@
 */
 package beast.core;
 
+import java.util.List;
+
 @Description("Probabilistic representation that can produce " +
-        "a loglikelihood/log probability/log uncertainty for running an MCMC chain.")
-public class Uncertainty extends Plugin implements Cacheable {
+        "a loglikelihood/log probability for running an MCMC chain.")
+public abstract class ProbabilityDistribution extends Plugin implements Cacheable {
 
     /**
      * current and stored log probability/log likelihood/log uncertainty *
@@ -35,12 +37,22 @@ public class Uncertainty extends Plugin implements Cacheable {
     private double m_fStoredLogP = 0;
 
     /**
-     * do the actual calculation *
+     * @return the normalized probability (density) for this distribution
      */
     public double calculateLogP(State state) throws Exception {
         m_fLogP = 0;
         return m_fLogP;
     }
+
+    /**
+     * @return a list of unique ids for the state nodes that form the argument
+     */
+    public abstract List<String> getArguments();
+
+    /**
+     * @return a list of unique ids for the state nodes that make up the conditions
+     */
+    public abstract List<String> getConditions();
 
     /**
      * get result from last known calculation *
@@ -64,4 +76,4 @@ public class Uncertainty extends Plugin implements Cacheable {
         m_fLogP = m_fStoredLogP;
     }
 
-} // class Uncertainty
+} // class ProbabilityDistribution

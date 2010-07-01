@@ -29,6 +29,8 @@ import beast.core.*;
 import beast.evolution.nuc.Frequencies;
 import beast.evolution.nuc.substitutionmodel.SubstitutionModel;
 
+import java.util.List;
+
 /**
  * Site model with
  * o gamma site model,
@@ -79,6 +81,15 @@ public class SiteModel extends Plugin implements Cacheable {
         categoryProportions = new double[categoryCount];
 
         ratesKnown = false;
+
+        addCondition(muParameter);
+        addCondition(invarParameter);
+        addCondition(shapeParameter);
+    }
+
+
+    public List<String> getConditions() {
+        return conditions;
     }
 
     public boolean isDirty(State state) {

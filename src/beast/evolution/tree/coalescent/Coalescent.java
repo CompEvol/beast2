@@ -2,17 +2,20 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.ProbabilityDistribution;
 import beast.core.State;
-import beast.core.Uncertainty;
 import beast.evolution.tree.Tree;
 import beast.math.Binomial;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Alexei Drummond
  */
 
 @Description("Calculates the probability of a beast.tree conditional on a population size function.")
-public class Coalescent extends Uncertainty {
+public class Coalescent extends ProbabilityDistribution {
 
     public Input<Tree> tree = new Input<Tree>("tree", "phylogenetic beast.tree");
     public Input<PopulationFunction.Abstract> popSize = new Input<PopulationFunction.Abstract>("populationModel", "A population size model");
@@ -32,6 +35,20 @@ public class Coalescent extends Uncertainty {
         m_fLogP = calculateLogLikelihood(intervals, popSize.get());
 
         return m_fLogP;
+    }
+
+    /**
+     * @return a list of unique ids for the state nodes that form the argument
+     */
+    public List<String> getArguments() {
+        return Collections.singletonList(tree.get().getID());
+    }
+
+    /**
+     * @return a list of unique ids for the state nodes that make up the conditions
+     */
+    public List<String> getConditions() {
+        return popSize.get().getConditions();
     }
 
 

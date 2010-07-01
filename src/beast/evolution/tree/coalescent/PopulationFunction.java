@@ -4,11 +4,13 @@ import beast.core.Description;
 import beast.core.Plugin;
 import beast.core.State;
 import beast.math.Binomial;
+import beast.util.Randomizer;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.MaxIterationsExceededException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.analysis.integration.RombergIntegrator;
-import beast.util.Randomizer;
+
+import java.util.List;
 
 
 /**
@@ -19,6 +21,8 @@ import beast.util.Randomizer;
  * @author Korbinian Strimmer
  */
 public interface PopulationFunction extends UnivariateRealFunction {
+
+    List<String> getConditions();
 
     /**
      * @param t time

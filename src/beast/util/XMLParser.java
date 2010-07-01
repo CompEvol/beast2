@@ -104,7 +104,7 @@ public class XMLParser {
     final static String DATA_CLASS = Data.class.getName();
     final static String SEQUENCE_CLASS = Sequence.class.getName();
     final static String STATE_CLASS = State.class.getName();
-    final static String LIKELIHOOD_CLASS = Uncertainty.class.getName();
+    final static String LIKELIHOOD_CLASS = ProbabilityDistribution.class.getName();
     final static String LOG_CLASS = Logger.class.getName();
     final static String MCMC_CLASS = MCMC.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
@@ -594,10 +594,10 @@ public class XMLParser {
                 String sName = atts.item(i).getNodeName();
                 if (sName.equals(sAttributeName)) {
                     return true;
-				}
-    		}
-		}
-		return false;
-	}
+                }
+            }
+        }
+        return false;
+    }
 
 } // Parser

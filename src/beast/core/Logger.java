@@ -40,7 +40,7 @@ public class Logger extends Plugin {
     public Input<List<Logger>> m_pLoggers = new Input<List<Logger>>("log", "column element in log", new ArrayList<Logger>());
     public Input<Parameter> m_pParameter = new Input<Parameter>("parameter", "parameter for logging");
     public Input<Tree> m_pTree = new Input<Tree>("tree", "beast.tree for logging");
-    public Input<Uncertainty> m_pLikelihood = new Input<Uncertainty>("uncertainty", "uncertainty (e.g. likelihood or prior probability) for logging");
+    public Input<ProbabilityDistribution> m_pLikelihood = new Input<ProbabilityDistribution>("uncertainty", "uncertainty (e.g. likelihood or prior probability) for logging");
     public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "number of the samples logged", new Integer(1));
     public Input<String> m_pFileName = new Input<String>("fileName", "name of the file, or stdout if left blank");
 

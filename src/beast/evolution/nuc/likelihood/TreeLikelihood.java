@@ -121,17 +121,19 @@ package beast.evolution.nuc.likelihood;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.ProbabilityDistribution;
 import beast.core.State;
-import beast.core.Uncertainty;
 import beast.evolution.nuc.Data;
 import beast.evolution.nuc.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model.")
-public class TreeLikelihood extends Uncertainty {
+public class TreeLikelihood extends ProbabilityDistribution {
 
     public Input<Data> m_data = new Input<Data>("data", "sequence data for the beast.tree");
     public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs");
@@ -334,6 +336,20 @@ public class TreeLikelihood extends Uncertainty {
             checkNodesForDirt(node.m_left, hasDirt);
             checkNodesForDirt(node.m_right, hasDirt);
         }
+    }
+
+    /**
+     * @return a list of unique ids for the state nodes that form the argument
+     */
+    public List<String> getArguments() {
+        return Collections.singletonList(m_data.get().getID());
+    }
+
+    /**
+     * @return a list of unique ids for the state nodes that make up the conditions
+     */
+    public List<String> getConditions() {
+        return m_pSiteModel.get().getConditions();
     }
 
     @Override

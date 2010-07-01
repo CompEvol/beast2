@@ -3,6 +3,9 @@ package beast.evolution.tree.coalescent;
 import beast.core.Input;
 import beast.core.Parameter;
 import beast.core.State;
+
+import java.util.Collections;
+import java.util.List;
 /*
  * ConstantPopulation.java
  *
@@ -75,6 +78,10 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
 
 
     // Implementation of abstract methods
+
+    public List<String> getConditions() {
+        return Collections.singletonList(popSizeParameter.get().getID());
+    }
 
     public double getPopSize(double t) {
         return getN0();
