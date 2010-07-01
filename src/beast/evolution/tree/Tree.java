@@ -30,13 +30,15 @@ import java.util.Arrays;
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
-public class Tree extends Plugin {
-    int m_nNrOfNodes = -1;
+public class Tree extends StateNode {
+    int nodeCount = -1;
 
     /**
      * node representation of the beast.tree *
      */
-    protected Node m_root;
+    protected Node root;
+
+    private boolean isStochastic = true;
 
     /**
      * getters and setters
@@ -44,20 +46,20 @@ public class Tree extends Plugin {
      * @return the number of nodes in the beast.tree
      */
     public int getNodeCount() {
-        return m_nNrOfNodes;
+        return nodeCount;
     }
 
     public Node getRoot() {
-        return m_root;
+        return root;
     }
 
     public void setRoot(Node root) {
-        m_root = root;
-        m_nNrOfNodes = m_root.getNodeCount();
+        this.root = root;
+        nodeCount = this.root.getNodeCount();
     }
 
     public Node getNode(int iNodeNr) {
-        return getNode(iNodeNr, m_root);
+        return getNode(iNodeNr, root);
     }
 
     public Node getNode(int iNodeNr, Node node) {
@@ -106,8 +108,8 @@ public class Tree extends Plugin {
     public Tree copy() {
         Tree tree = new Tree();
         tree.m_sID = m_sID;
-        tree.m_root = m_root.copy();
-        tree.m_nNrOfNodes = m_nNrOfNodes;
+        tree.root = root.copy();
+        tree.nodeCount = nodeCount;
         return tree;
     }
 
@@ -122,21 +124,21 @@ public class Tree extends Plugin {
         // 1. all nodes have (correct) parents, except root
         // 2. nr of nodes adds up to m_nNodeCount
         // 3. branch lengths positive
-        if (m_root.getParent() != null) {
+        if (root.getParent() != null) {
             throw new Exception("v1: root has a parent!!!");
         }
-        int[] nParents = new int[m_nNrOfNodes];
+        int[] nParents = new int[nodeCount];
         Arrays.fill(nParents, -1);
-        int[] nLeft = new int[m_nNrOfNodes];
+        int[] nLeft = new int[nodeCount];
         Arrays.fill(nLeft, -1);
-        int[] nRight = new int[m_nNrOfNodes];
+        int[] nRight = new int[nodeCount];
         Arrays.fill(nRight, -1);
 
-        int nNodes = validateNode(m_root, nParents, nLeft, nRight);
-        if (nNodes != m_nNrOfNodes) {
-            System.err.println("v2: Lost some nodes " + (m_nNrOfNodes - nNodes) + " out of " + m_nNrOfNodes + " to be exact");
-            System.err.println(m_root.toString());
-            throw new Exception("v2: Lost some nodes " + (m_nNrOfNodes - nNodes) + " out of " + m_nNrOfNodes + " to be exact");
+        int nNodes = validateNode(root, nParents, nLeft, nRight);
+        if (nNodes != nodeCount) {
+            System.err.println("v2: Lost some nodes " + (nodeCount - nNodes) + " out of " + nodeCount + " to be exact");
+            System.err.println(root.toString());
+            throw new Exception("v2: Lost some nodes " + (nodeCount - nNodes) + " out of " + nodeCount + " to be exact");
         }
 
         // check that leaf heights have are the same
@@ -147,7 +149,7 @@ public class Tree extends Plugin {
 //				throw new Exception("leaf heights have changed\n" + Arrays.toString(fHeights));
 //			}
 //		}
-        checkLeafHeights(m_root);
+        checkLeafHeights(root);
     } // validate
 
     void checkLeafHeights(Node node) throws Exception {
@@ -223,10 +225,10 @@ public class Tree extends Plugin {
     } // validateNode
 
     public void makeDirty(int nDirt) {
-        m_root.makeAllDirty(nDirt);
+        root.makeAllDirty(nDirt);
     }
 
     public String toString() {
-        return m_root.toString();
+        return root.toString();
     }
 } // class Tree
