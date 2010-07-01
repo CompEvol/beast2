@@ -11,5 +11,5 @@ package beast.core;
  *         Time: 3:10:14 PM
  */
 public interface Runnable {
-    public void run();
+    public void run() throws Exception;
 }
