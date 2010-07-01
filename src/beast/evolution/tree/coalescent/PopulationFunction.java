@@ -22,7 +22,10 @@ import java.util.List;
  */
 public interface PopulationFunction extends UnivariateRealFunction {
 
-    List<String> getConditions();
+    /**
+     * @return a list of the unique identifiers for the parameters describing this population function
+     */
+    List<String> getParameterIds();
 
     /**
      * @param t time

@@ -48,7 +48,7 @@ public class Coalescent extends ProbabilityDistribution {
      * @return a list of unique ids for the state nodes that make up the conditions
      */
     public List<String> getConditions() {
-        return popSize.get().getConditions();
+        return popSize.get().getParameterIds();
     }
 
 

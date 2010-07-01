@@ -79,7 +79,7 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
 
     // Implementation of abstract methods
 
-    public List<String> getConditions() {
+    public List<String> getParameterIds() {
         return Collections.singletonList(popSizeParameter.get().getID());
     }
 
