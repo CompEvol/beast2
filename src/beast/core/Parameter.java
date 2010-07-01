@@ -90,7 +90,7 @@ public class Parameter extends StateNode {
         return (int) m_values[0];
     }
 
-    public boolean boolValue() {
+    public boolean booleanValue() {
         return (m_values[0] != 0.0);
     }
 
@@ -130,7 +130,7 @@ public class Parameter extends StateNode {
         setValue(nValue);
     }
 
-    public void setBoolValue(boolean bValue) throws Exception {
+    public void setBooleanValue(boolean bValue) throws Exception {
         setValue(bValue ? 1.0 : 0.0);
     }
 
@@ -145,7 +145,7 @@ public class Parameter extends StateNode {
         setValue(iParam, nValue);
     }
 
-    public void setBoolValue(int iParam, boolean bValue) throws Exception {
+    public void setBooleanValue(int iParam, boolean bValue) throws Exception {
         setValue(iParam, bValue ? 1.0 : 0.0);
     }
 

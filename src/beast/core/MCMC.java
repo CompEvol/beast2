@@ -123,17 +123,6 @@ public class MCMC extends Plugin {
 		}
 	} // close
 
-
-	/** calculate log likelihood for posterior **/
-	protected double calc(State state) throws Exception {
-		state.prepare();
-		// recalculates all likelihoods from scratch
-		double fLogP = 0;
-		fLogP = m_uncertainty.get().calculateLogP(state);
-		return fLogP;
-	} // calc
-
-
 	protected void showOperatorRates(PrintStream out) {
 		out.println("Operator                                        #accept\t#reject\t#total\tacceptance rate");
 		for (int i = 0; i < m_operatorset.getNrOperators(); i++) {
@@ -156,7 +145,7 @@ public class MCMC extends Plugin {
 
 		boolean bDebug = true;
 		m_state.makeDirty(State.IS_GORED);
-		double fOldLogLikelihood = calc(m_state);
+		double fOldLogLikelihood = m_uncertainty.get().calculateLogP(m_state);
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
 
@@ -182,7 +171,7 @@ public class MCMC extends Plugin {
 
 
 
-				double fNewLogLikelihood = calc(proposedState);
+				double fNewLogLikelihood = m_uncertainty.get().calculateLogP(proposedState);
 				logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
 	            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
 					// accept
@@ -212,7 +201,7 @@ public class MCMC extends Plugin {
 				m_state.validate();
 				m_state.makeDirty(State.IS_GORED);
 				//System.err.println(m_state.toString());
-				double fLogLikelihood = calc(m_state);
+				double fLogLikelihood = m_uncertainty.get().calculateLogP(m_state);
 				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
 					throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
 				}
@@ -229,13 +218,11 @@ public class MCMC extends Plugin {
 		close();
 	} // run;
 
-	@Override
-	public void restore(int nSample) {
+	public void restoreCachables(int nSample) {
 		m_uncertainty.get().restore(nSample);
 	}
 
-	@Override
-	public void store(int nSample) {
+	public void storeCachables(int nSample) {
 		m_uncertainty.get().store(nSample);
 	}
 } // class MCMC

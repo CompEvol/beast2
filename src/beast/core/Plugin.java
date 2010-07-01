@@ -180,17 +180,6 @@ public class Plugin {
 		throw new Exception("Plugin.initAndValidate(): Every plugin should implement this method to assure the class behaves, even when inputs are not specified");
 	}
 
-	/** Store internal state.
-	 * Used by MCMC algorithm on its main 'Uncertainty' object to make sure all
-	 * objects have their internal state stored so that if a proposal is rejected
-	 * the object can return to its last know good state.
-	 **/
-	public void store(int nSample) {
-	}
-	/** reverse of store **/
-	public void restore(int nSample) {
-	}
-
 	/** check validation rules for all its inputs **/
 	public void validateInputs() throws Exception {
 		for (Input<?> input : listInputs()) {
