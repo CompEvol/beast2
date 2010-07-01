@@ -105,6 +105,13 @@ public class TreeIntervals implements IntervalList {
         return intervals[i];
     }
 
+    public double[] getIntervals() {
+        if (!intervalsKnown) {
+            calculateIntervals();
+        }
+        return intervals;
+    }
+
     /**
      * Returns the number of uncoalesced lineages within this interval.
      * Required for s-coalescents, where new lineages are added as

@@ -26,7 +26,10 @@ package beast.app;
 
 
 import beast.app.draw.ClassDiscovery;
-import beast.core.*;
+import beast.core.Citation;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Plugin;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -47,6 +50,7 @@ import java.util.List;
  * *
  */
 public class DocMaker {
+
     /**
      * output directory *
      */
@@ -73,9 +77,6 @@ public class DocMaker {
         if (args.length > 0) {
             m_sDir = args[0];
         }
-
-        //m_sPluginNames = Collections.singletonList("beast.core.ProbabilityDistribution");
-
     } // c'tor
 
     /**
@@ -257,7 +258,7 @@ public class DocMaker {
         }
         return "";
     }
-    
+
     /**
      * Create page for individual plug-in *
      */
@@ -299,7 +300,7 @@ public class DocMaker {
         if (citation != null) {
             out.println("<h2>Reference:</h2><p>" + citation.value() + "</p>");
             if (citation.DOI().length() > 0) {
-                out.println("<p><a href=\"http://dx.doi.org/"+citation.DOI()+"\">doi:" + citation.DOI() + "</a></p>");
+                out.println("<p><a href=\"http://dx.doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>");
             }
         }
 
