@@ -33,8 +33,6 @@ public class Parameter extends StateNode {
     public Input<Double> m_pLower = new Input<Double>("lower", "lower value allowed for this parameter (default -INFINITY)", new Double(Double.NEGATIVE_INFINITY));
     public Input<Integer> m_nDimension = new Input<Integer>("dimension", "dimension (default 1)", new Integer(1));
 
-    boolean isStochastic = true;
-
     /**
      * constructors *
      */
@@ -50,10 +48,6 @@ public class Parameter extends StateNode {
      * the actual values of this parameter
      */
     protected double[] m_values;
-    /**
-     * flag to indicate value has changed after operation is performed on state *
-     */
-    int m_bIsDirty = State.IS_CLEAN;
 
     /** number of the id, to find it quickly in the list of parameters of the State **/
     /**
@@ -86,10 +80,6 @@ public class Parameter extends StateNode {
      */
     public int getDimension() {
         return m_values.length;
-    }
-
-    public boolean hasID(String sID) {
-        return m_sID.equals(sID);
     }
 
     public double getValue() {
@@ -132,7 +122,7 @@ public class Parameter extends StateNode {
     public void setValue(double fValue) throws Exception {
         if (isStochastic) {
             m_values[0] = fValue;
-            m_bIsDirty = State.IS_DIRTY;
+            makeDirty(State.IS_DIRTY);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
 
@@ -147,7 +137,7 @@ public class Parameter extends StateNode {
     public void setValue(int iParam, double fValue) throws Exception {
         if (isStochastic) {
             m_values[iParam] = fValue;
-            m_bIsDirty = State.IS_DIRTY;
+            makeDirty(State.IS_DIRTY);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
 
@@ -164,15 +154,7 @@ public class Parameter extends StateNode {
      * keeping track of tidyness *
      */
     public void makeClean() {
-        m_bIsDirty = State.IS_CLEAN;
-    }
-
-    public void makeDirty(int nDirt) {
-        m_bIsDirty = nDirt;
-    }
-
-    public int isDirty() {
-        return m_bIsDirty;
+        makeDirty(State.IS_CLEAN);
     }
 
     /**

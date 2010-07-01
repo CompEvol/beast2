@@ -73,8 +73,8 @@ public class State extends Plugin {
      * return a value with identifier sID. This assumes a single dimensional parameter. *
      */
     public int getParameterIndex(String sID) {
-        for (int i = 0; i < m_parameters.length; i++) {
-            if (m_parameters[i].hasID(sID)) {
+        for (int i = 0; i < stateNode.length; i++) {
+            if (stateNode[i].getID().equals(sID)) {
                 return i;
             }
         }
@@ -82,42 +82,48 @@ public class State extends Plugin {
         //throw new Exception("Error 124: No such id (" + sID + ") in parameters");
     }
 
-    public int isDirty(Input<Parameter> p) {
-        return m_parameters[p.get().getParamNr(this)].isDirty();
+    public int isDirty(Input<StateNode> p) {
+        return stateNode[getParameterIndex(p.get().getID())].isDirty();
     }
 
-    public Double getValue(Input<Parameter> p) {
-        return getValue(p.get());
-    }
+//    public Double getValue(Input<Parameter> p) {
+//        return getValue(p.get());
+//    }
 
-    public Double getValue(Parameter p) {
-        return (Double) getValue(p.getParamNr(this));
-    }
+//    public Double getValue(Parameter p) {
+//        return (Double) getValue(p.getParamNr(this));
+//    }
 
-    public Object getValue(int nID) {
-        return m_parameters[nID].getValue();
-    }
+//    public Object getValue(int nID) {
+//        return m_parameters[nID].getValue();
+//    }
 
-    public Object getValue(int nID, int iDim) {
-        return m_parameters[nID].getValue(iDim);
-    }
+//    public Object getValue(int nID, int iDim) {
+//        return m_parameters[nID].getValue(iDim);
+//    }
 
     public int isDirty(int nID) {
-        return m_parameters[nID].isDirty();
+        return stateNode[nID].isDirty();
     }
 
-    public Parameter getParameter(int nID) {
-        return m_parameters[nID];
+    public StateNode getStateNode(int nID) {
+        return stateNode[nID];
     }
 
-    public Parameter getParameter(String sID) {
+    public StateNode getStateNode(String sID) {
         int nID = getParameterIndex(sID);
-        return m_parameters[nID];
+        return stateNode[nID];
     }
 
-    public Parameter getParameter(Input<Parameter> p) {
-        int nID = p.get().getParamNr(this);
-        return (Parameter) m_parameters[nID];
+    public StateNode getStateNode(Input<StateNode> p) {
+
+        for (int i = 0; i < stateNode.length; i++) {
+            if (stateNode[i].getID().equals(p.get().getID())) return stateNode[i];
+        }
+        throw new IllegalArgumentException(p.getName() + " is not found in this state");
+
+        //int nID = p.get().getParamNr(this);
+        //return (Parameter) m_parameters[nID];
     }
 //    public void setValue(int nID, Object fValue) {
 //	        m_parameters[nID].setValue(fValue);
@@ -129,54 +135,53 @@ public class State extends Plugin {
     /**
      * multiply a value by a given amount *
      */
-    public void mulValue(double fValue, int m_nParamID) {
-        ((Parameter) m_parameters[m_nParamID]).m_values[0] *= fValue;
-        m_parameters[m_nParamID].m_bIsDirty = State.IS_DIRTY;
-    }
-
-    public void mulValue(int iParam, double fValue, Parameter param) {
-        param.m_values[iParam] *= fValue;
-        param.m_bIsDirty = State.IS_DIRTY;
-    }
-
-    public void mulValues(double fValue, Parameter param) {
-        double[] values = param.m_values;
-        for (int i = 0; i < values.length; i++) {
-            values[i] *= fValue;
-        }
-        param.m_bIsDirty = State.IS_DIRTY;
-    }
-
+//    public void mulValue(double fValue, int m_nParamID) {
+//        ((Parameter) m_parameters[m_nParamID]).m_values[0] *= fValue;
+//        m_parameters[m_nParamID].m_bIsDirty = State.IS_DIRTY;
+//    }
+//
+//    public void mulValue(int iParam, double fValue, Parameter param) {
+//        param.m_values[iParam] *= fValue;
+//        param.m_bIsDirty = State.IS_DIRTY;
+//    }
+//
+//    public void mulValues(double fValue, Parameter param) {
+//        double[] values = param.m_values;
+//        for (int i = 0; i < values.length; i++) {
+//            values[i] *= fValue;
+//        }
+//        param.m_bIsDirty = State.IS_DIRTY;
+//    }
     public State copy() throws Exception {
         State copy = new State();
-        copy.m_parameters = new Parameter[m_parameters.length];
-        for (int i = 0; i < m_parameters.length; i++) {
-            copy.m_parameters[i] = m_parameters[i].copy();
+        copy.stateNode = new StateNode[stateNode.length];
+        for (int i = 0; i < stateNode.length; i++) {
+            copy.stateNode[i] = stateNode[i].copy();
         }
         return copy;
     }
 
 
-    public void prepare() throws Exception {
-        for (int i = 0; i < m_parameters.length; i++) {
-            m_parameters[i].prepare();
-        }
-    }
+//    public void prepare() throws Exception {
+//        for (int i = 0; i < m_parameters.length; i++) {
+//            m_parameters[i].prepare();
+//        }
+//    }
 
 
-    public String toString(List<String> sTaxaNames) {
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < m_parameters.length; i++) {
-            buf.append(m_parameters[i].toString());
-            buf.append("\n");
-        }
-        return buf.toString();
-    }
+//    public String toString(List<String> sTaxaNames) {
+//        StringBuffer buf = new StringBuffer();
+//        for (int i = 0; i < m_parameters.length; i++) {
+//            buf.append(m_parameters[i].toString());
+//            buf.append("\n");
+//        }
+//        return buf.toString();
+//    }
 
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < m_parameters.length; i++) {
-            buf.append(m_parameters[i].toString());
+        for (int i = 0; i < stateNode.length; i++) {
+            buf.append(stateNode[i].toString());
             buf.append("\n");
         }
         return buf.toString();
@@ -195,8 +200,8 @@ public class State extends Plugin {
      * set dirtiness to all parameters and trees *
      */
     public void makeDirty(int nDirt) {
-        for (Parameter param : m_parameters) {
-            param.makeDirty(nDirt);
+        for (StateNode node : stateNode) {
+            node.makeDirty(nDirt);
         }
     }
 }
