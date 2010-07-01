@@ -377,8 +377,8 @@ public class TreeLikelihood extends ProbabilityDistribution {
     // (often not necessary while node partial recalculation is required)
     int[] m_bNodeIsDirty;
 
-    @Override
-    public String getCitation() {
-        return "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376. ";
-    }
+//    @Override
+//    public String getCitation() {
+//        return "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376. ";
+//    }
 } // class TreeLikelihood

@@ -26,9 +26,7 @@ package beast.app;
 
 
 import beast.app.draw.ClassDiscovery;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.*;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -259,7 +257,7 @@ public class DocMaker {
         }
         return "";
     }
-
+    
     /**
      * Create page for individual plug-in *
      */
@@ -297,9 +295,12 @@ public class DocMaker {
 
 
         // show citation (if any)
-        String sCite = plugin.getCitation();
-        if (sCite.length() > 0) {
-            out.println("<h2>Reference:</h2>" + sCite);
+        Citation citation = plugin.getCitation();
+        if (citation != null) {
+            out.println("<h2>Reference:</h2><p>" + citation.value() + "</p>");
+            if (citation.DOI().length() > 0) {
+                out.println("<p><a href=\"http://dx.doi.org/"+citation.DOI()+"\">doi:" + citation.DOI() + "</a></p>");
+            }
         }
 
         // list its inputs

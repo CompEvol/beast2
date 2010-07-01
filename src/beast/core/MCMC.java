@@ -28,12 +28,12 @@ package beast.core;
 import beast.util.Randomizer;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
+@Citation("A prototype for BEAST 2.0: The computational science of evolutionary software. Bouckaert, Drummond, Rambaut & Suchard. 2010")
 public class MCMC extends Plugin {
 
     public Input<Integer> m_oBurnIn = new Input<Integer>("preBurnin", "Number of burn in samples taken before entering the main loop", new Integer(0));
@@ -46,11 +46,6 @@ public class MCMC extends Plugin {
 
     public Input<List<Logger>> m_loggers = new Input<List<Logger>>("log", "loggers for reporting progress of MCMC chain", new ArrayList<Logger>(), Input.Validate.REQUIRED);
     protected State m_state;
-
-    @Override
-    public String getCitation() {
-        return "A proposal for BEAST 2.0: The computational science of evolutionary software. Bouckaert, Drummond. 2010";
-    }
 
     @Override
     public void initAndValidate(State state) throws Exception {
@@ -71,7 +66,7 @@ public class MCMC extends Plugin {
 
 
     } // init
-
+    
     /**
      * number of samples taken where calculation is checked against full
      * recalculation of the posterior.

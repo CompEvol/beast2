@@ -25,6 +25,7 @@
 package beast.core;
 
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,30 +52,33 @@ public class Plugin {
     public Plugin() {
     }
 
-//	/** produce documentation for the plug in **/
-//	public String getDescription() {return "";}
-
     /**
-     * produce reference for the plug in *
+     * Extract citation from @Citation annotation *
      */
-    public String getCitation() {
-        return "";
+    public final Citation getCitation() {
+        Annotation[] classAnnotations = this.getClass().getAnnotations();
+        for (Annotation annotation : classAnnotations) {
+            if (annotation instanceof Citation) {
+                return (Citation) annotation;
+            }
+        }
+        return null;
     }
 
     /**
      * produce references for this plug in in and all its inputs *
      */
-    public String getCitations() {
+    public final String getCitations() {
         return getCitations(new HashSet<String>());
     }
 
-    private String getCitations(HashSet<String> bDone) {
+    private final String getCitations(HashSet<String> bDone) {
         StringBuffer buf = new StringBuffer();
         if (!bDone.contains(getID())) {
             // only add citation if it is not already processed
-            if (getCitation().length() > 0) {
+            if (getCitation() != null) {
                 // and there is actually a citation to add
-                buf.append(getCitation());
+                buf.append(getCitation().value());
                 buf.append("\n\n");
             }
             bDone.add(getID());
