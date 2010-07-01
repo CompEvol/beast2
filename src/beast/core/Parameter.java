@@ -27,7 +27,7 @@ package beast.core;
 
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
-public class Parameter extends Plugin implements StateNode {
+public class Parameter extends StateNode {
     public Input<Double> m_pValues = new Input<Double>("value", "start value for this parameter");
     public Input<Double> m_pUpper = new Input<Double>("upper", "upper value allowed for this parameter (default +INFINITY)", new Double(Double.POSITIVE_INFINITY));
     public Input<Double> m_pLower = new Input<Double>("lower", "lower value allowed for this parameter (default -INFINITY)", new Double(Double.NEGATIVE_INFINITY));
@@ -187,14 +187,6 @@ public class Parameter extends Plugin implements StateNode {
         copy.m_fUpper = m_fUpper;
         copy.m_nParamNr = m_nParamNr;
         return copy;
-    }
-
-    public boolean isStochastic() {
-        return isStochastic;
-    }
-
-    public void setStochastic(boolean isStochastic) {
-        this.isStochastic = isStochastic;
     }
 
     public void prepare() throws Exception {
