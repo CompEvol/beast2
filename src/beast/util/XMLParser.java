@@ -117,7 +117,7 @@ public class XMLParser {
     final static String BEAST_ELEMENT = "beast";
     final static String MAP_ELEMENT = "map";
     final static String MCMC_ELEMENT = "mcmc";
-    final static String LIKELIHOOD_ELEMENT = "uncertainty";
+    final static String PROBABILITY_ELEMENT = "probabilityDistribution";
     final static String OPERATOR_ELEMENT = "operator";
     final static String INPUT_ELEMENT = "input";
     final static String LOG_ELEMENT = "log";
@@ -151,7 +151,7 @@ public class XMLParser {
     public XMLParser() {
         m_sElement2ClassMap = new HashMap<String, String>();
         m_sElement2ClassMap.put(MCMC_ELEMENT, MCMC_CLASS);
-        m_sElement2ClassMap.put(LIKELIHOOD_ELEMENT, LIKELIHOOD_CLASS);
+        m_sElement2ClassMap.put(PROBABILITY_ELEMENT, LIKELIHOOD_CLASS);
         m_sElement2ClassMap.put(OPERATOR_ELEMENT, OPERATOR_CLASS);
         m_sElement2ClassMap.put(INPUT_ELEMENT, INPUT_CLASS);
         m_sElement2ClassMap.put(LOG_ELEMENT, LOG_CLASS);
@@ -525,7 +525,7 @@ public class XMLParser {
 //							int iID = m_state.getTreeIndex(sIDRef);
 //							newLogger = pLogger.new TreeLogger(iID);
 //							pLogger.addLogger(newLogger);
-//						} else if (sName.equals(LIKELIHOOD_ELEMENT)) {
+//						} else if (sName.equals(PROBABILITY_ELEMENT)) {
 //							String sIDRef = getIDRef(logger);
 //							Likelihood likelihood = null;
 //							if (!m_sIDMap.containsKey(sIDRef)) {

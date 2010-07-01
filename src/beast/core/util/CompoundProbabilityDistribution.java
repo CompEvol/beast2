@@ -36,7 +36,7 @@ import java.util.List;
         "and priors and combines them into the compound of these uncertainties " +
         "typically interpreted as the posterior.")
 public class CompoundProbabilityDistribution extends ProbabilityDistribution {
-    public Input<List<ProbabilityDistribution>> m_uncertainties = new Input<List<ProbabilityDistribution>>("uncertainty", "individual uncertainties, e.g. making up a posterior", new ArrayList<ProbabilityDistribution>());
+    public Input<List<ProbabilityDistribution>> m_uncertainties = new Input<List<ProbabilityDistribution>>("probabilityDistribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<ProbabilityDistribution>());
 
     @Override
     public double calculateLogP(State state) throws Exception {

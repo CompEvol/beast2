@@ -54,7 +54,8 @@
 
     <input spec='beast.core.Parameter' id="hky.kappa">1.0</input>
 
-    <input spec='beast.core.Parameter' id="popSize">1.0</input>
+    <parameter id="popSize">1.0</parameter>
+    <parameter id="growthRate">1.0</parameter>
 
 
     <mcmc id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
@@ -67,14 +68,16 @@
             -->
             <input name='stateNode' idref='hky.kappa'/>
             <input name='stateNode' idref='popSize'/>
+            <input name='stateNode' idref='growthRate'/>
             <input name='stateNode' idref='tree'/>
         </state>
 
         <probabilityDistribution spec="CompoundProbabilityDistribution" id="posterior">
             <probabilityDistribution id="coalescent" spec="Coalescent">
                 <tree idref="tree"/>
-                <populationModel spec="ConstantPopulation">
+                <populationModel spec="ExponentialGrowth">
                     <parameter name="popSize" idref="popSize"/>
+                    <parameter name="growthRate" idref="growthRate"/>
                 </populationModel>
             </probabilityDistribution>
             <probabilityDistribution id='likelihood' idref="treeLikelihood"/>

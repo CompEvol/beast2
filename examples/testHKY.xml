@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.nuc.operators:beast.evolution.nuc.sitemodel:beast.evolution.nuc.substitutionmodel:beast.evolution.likelihood'>
+       namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
 
 
     <!-- The sequence alignment (each sequence refers to a taxon above).         -->
@@ -68,7 +68,7 @@
             -->
 
         </state>
-        <uncertainty id='likelihood' idref="treeLikelihood"/>
+        <probabilityDistribution id='likelihood' idref="treeLikelihood"/>
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <parameter idref="hky.kappa"/>
@@ -94,7 +94,7 @@
 
         <log logEvery="10000">
             <log>
-                <uncertainty idref="likelihood"/>
+                <probabilityDistribution idref="likelihood"/>
             </log>
             <!--parameter idref="treeModel.rootHeight"/-->
             <log>
@@ -103,7 +103,7 @@
         </log>
         <log logEvery="10000" fileName="test.$(seed).log">
             <log>
-                <uncertainty idref="likelihood"/>
+                <probabilityDistribution idref="likelihood"/>
             </log>
             <!--parameter idref="treeModel.rootHeight"/-->
             <log>

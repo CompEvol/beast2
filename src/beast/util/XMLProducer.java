@@ -182,7 +182,7 @@ public class XMLProducer extends XMLParser {
             sElementName = XMLParser.STATE_ELEMENT;
         }
         if (plugin instanceof ProbabilityDistribution) {
-            sElementName = XMLParser.LIKELIHOOD_ELEMENT;
+            sElementName = XMLParser.PROBABILITY_ELEMENT;
         }
         if (plugin instanceof Logger) {
             sElementName = XMLParser.LOG_ELEMENT;
@@ -331,6 +331,6 @@ public class XMLProducer extends XMLParser {
         }
         // should never get here
         throw new Exception("Could not find input " + sInput + " in plugin " + plugin.getID() + " " + plugin.getClass().getName());
-	} // inputToXML
+    } // inputToXML
 
 } // class XMLProducer
