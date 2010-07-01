@@ -23,7 +23,9 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
-package beast.core;
+package beast.evolution.tree;
+
+import beast.core.*;
 
 import java.util.List;
 

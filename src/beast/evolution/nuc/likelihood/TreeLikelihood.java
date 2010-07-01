@@ -122,6 +122,7 @@ package beast.evolution.nuc.likelihood;
 import beast.core.*;
 import beast.evolution.nuc.Data;
 import beast.evolution.nuc.sitemodel.SiteModel;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
 import java.util.Arrays;

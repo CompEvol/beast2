@@ -34,8 +34,8 @@ import beast.evolution.nuc.Data;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.core.Node;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
 		"(includes parsing of any meta data in the Newick string).")

@@ -299,12 +299,12 @@ public class DocMaker {
 			switch (input.getRule()) {
 			case OPTIONAL:
 				out.print("Optional input");
-				if (input.m_default!=null) {
-					if (input.m_default instanceof Integer ||
-						input.m_default instanceof Double ||
-						input.m_default instanceof Boolean ||
-						input.m_default instanceof String) {
-						out.print(". Default: " + input.m_default.toString());
+				if (input.defaultValue !=null) {
+					if (input.defaultValue instanceof Integer ||
+						input.defaultValue instanceof Double ||
+						input.defaultValue instanceof Boolean ||
+						input.defaultValue instanceof String) {
+						out.print(". Default: " + input.defaultValue.toString());
 					}
 				}
 				break;

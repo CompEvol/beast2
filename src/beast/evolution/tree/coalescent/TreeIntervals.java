@@ -1,6 +1,6 @@
 package beast.evolution.tree.coalescent;
 
-import beast.core.Node;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.HeapSort;
 

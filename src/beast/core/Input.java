@@ -38,90 +38,90 @@ import java.util.List;
  **/
 public class Input<T> {
 	/** input name, used for identification when getting/setting values of a plug-in **/
-	String m_sName = "";
+	String name = "";
 
 	/** short description of the function of this particular input **/
-	String m_sTipText = "";
+	String tipText = "";
 
 	/** value represented by this input */
-	T m_value;
+	T value;
 
 	/** Type of T, automatically determined when setting a new value.
 	 * Used for type checking.
 	 */
-	Class<?> m_class;
+	Class<?> theClass;
 
 	/** validation rules **/
 	public enum Validate {OPTIONAL, REQUIRED, XOR};
-	Validate m_rule = Validate.OPTIONAL;
+	Validate rule = Validate.OPTIONAL;
 	/** used only if validation rule is XOR **/
-	Input<?> m_other;
-	public T m_default;
+	Input<?> other;
+	public T defaultValue;
 
 	/** constructors **/
 	public Input() {}
 
 	public Input(String sName, String sTipText) {
-		m_sName = sName;
-		m_sTipText = sTipText;
-		m_value = null;
+		name = sName;
+		tipText = sTipText;
+		value = null;
 	} // c'tor
 
 	public Input(String sName, String sTipText, T startValue) {
-		m_sName = sName;
-		m_sTipText = sTipText;
-		m_value = startValue;
-		m_default = startValue;
+		name = sName;
+		tipText = sTipText;
+		value = startValue;
+		defaultValue = startValue;
 	} // c'tor
 
 	/** constructor for REQUIRED rules for array-inputs **/
 	public Input(String sName, String sTipText, T startValue, Validate rule) {
-		m_sName = sName;
-		m_sTipText = sTipText;
-		m_value = startValue;
-		m_default = startValue;
+		name = sName;
+		tipText = sTipText;
+		value = startValue;
+		defaultValue = startValue;
 		if (rule != Validate.REQUIRED) {
 			System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor");
 		}
-		m_rule = rule;
+		this.rule = rule;
 	} // c'tor
 
 	/** constructor for REQUIRED rules **/
 	public Input(String sName, String sTipText, Validate rule) {
-		m_sName = sName;
-		m_sTipText = sTipText;
-		m_value = null;
+		name = sName;
+		tipText = sTipText;
+		value = null;
 		if (rule != Validate.REQUIRED) {
 			System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor");
 		}
-		m_rule = rule;
+		this.rule = rule;
 	} // c'tor
 
 	/** constructor for XOR rules **/
 	public Input(String sName, String sTipText, Validate rule, Input<?> other) {
-		m_sName = sName;
-		m_sTipText = sTipText;
-		m_value = null;
+		name = sName;
+		tipText = sTipText;
+		value = null;
 		if (rule != Validate.XOR) {
 			System.err.println("Programmer error: input rule should be XOR for this Input constructor");
 		}
-		m_rule = rule;
-		m_other = other;
-		m_other.m_other = this;
-		m_other.m_rule = rule;
+		this.rule = rule;
+		this.other = other;
+		this.other.other = this;
+		this.other.rule = rule;
 	} // c'tor
 
 	/** various setters and getters **/
-	public String getName() {return m_sName;}
+	public String getName() {return name;}
 
-	public String getTipText() {return m_sTipText;}
+	public String getTipText() {return tipText;}
 
-	public T get() {return m_value;}
+	public T get() {return value;}
 
-	public Class<?> type() {return m_class;}
+	public Class<?> type() {return theClass;}
 
-	public Validate getRule() {return m_rule;}
-	public Input<?> getOther() {return m_other;}
+	public Validate getRule() {return rule;}
+	public Input<?> getOther() {return other;}
 
 	/** Sets value to this input.
 	 * If class is not determined yet, first determine class of declaration of
@@ -134,15 +134,15 @@ public class Input<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public void setValue(Object value, Plugin plugin) throws Exception {
-		if (m_class == null) {
+		if (theClass == null) {
 			determineClass(plugin);
 		}
 		if (value instanceof String) {
 			setStringValue((String) value);
-		} else if (m_value != null && m_value instanceof List<?>) {
-			if (m_class.isAssignableFrom(value.getClass())) {
+		} else if (this.value != null && this.value instanceof List<?>) {
+			if (theClass.isAssignableFrom(value.getClass())) {
 				// don't insert duplicates
-				List vector = (List) m_value;
+				List vector = (List) this.value;
 				for(Object o : vector) {
 					if (o.equals(value)) {
 						return;
@@ -154,8 +154,8 @@ public class Input<T> {
 			 }
 
 		} else {
-			if (m_class.isAssignableFrom(value.getClass())) {
-				m_value = (T) value;
+			if (theClass.isAssignableFrom(value.getClass())) {
+				this.value = (T) value;
 			 } else {
 				 throw new Exception("Input 102: type mismatch");
 			 }
@@ -176,12 +176,12 @@ public class Input<T> {
 					if (input == this) {
 						Type t = fields[i].getGenericType();
 						Type [] genericTypes = ((ParameterizedType)t).getActualTypeArguments();
-						if (m_value != null && m_value instanceof ArrayList<?>) {
+						if (value != null && value instanceof ArrayList<?>) {
 							Type [] genericTypes2 = ((ParameterizedType)genericTypes[0]).getActualTypeArguments();
-							m_class = (Class<?>) genericTypes2[0];
+							theClass = (Class<?>) genericTypes2[0];
 						} else {
 							Class<?> genericType = (Class<?>)genericTypes[0];
-							m_class = genericType;
+							theClass = genericType;
 						}
 						i = fields.length;
 					}
@@ -198,24 +198,24 @@ public class Input<T> {
 	@SuppressWarnings("unchecked")
 	private void setStringValue(String sValue) throws Exception {
 		// figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=String
-		if (m_class.equals(Integer.class)) {
-			m_value = (T) new Integer(sValue);
+		if (theClass.equals(Integer.class)) {
+			value = (T) new Integer(sValue);
 			return;
 		}
-		if (m_class.equals(Double.class)) {
-			m_value = (T) new Double(sValue);
+		if (theClass.equals(Double.class)) {
+			value = (T) new Double(sValue);
 			return;
 		}
-		if (m_class.equals(Boolean.class)) {
+		if (theClass.equals(Boolean.class)) {
 			String sValue2 = sValue.toLowerCase();
 			if (sValue2.equals("yes")||sValue2.equals("no")||sValue2.equals("true")||sValue2.equals("false")) {
-				m_value = (T) new Boolean(sValue!=null && sValue.equals("yes") || sValue.equals("true"));
+				value = (T) new Boolean(sValue!=null && sValue.equals("yes") || sValue.equals("true"));
 				return;
 			}
 		}
 		// settle for a string
-		if (m_class.isAssignableFrom(sValue.getClass())) {
-			m_value = (T) sValue;
+		if (theClass.isAssignableFrom(sValue.getClass())) {
+			value = (T) sValue;
 		 } else {
 			 throw new Exception("Input 103: type mismatch");
 		 }
@@ -223,7 +223,7 @@ public class Input<T> {
 
 	/** validate input according to validation rule **/
 	public void validate() throws Exception {
-		switch (m_rule) {
+		switch (rule) {
 		case OPTIONAL:
 			// noting to do
 			break;
@@ -239,12 +239,12 @@ public class Input<T> {
 			break;
 		case XOR:
 			if (get() == null) {
-				if (m_other.get() == null) {
-					throw new Exception("Either input '" + getName() + "' or '" + m_other.getName() + "' needs to be specified");
+				if (other.get() == null) {
+					throw new Exception("Either input '" + getName() + "' or '" + other.getName() + "' needs to be specified");
 				}
 			} else {
-				if (m_other.get() != null) {
-					throw new Exception("Only one of input '" + getName() + "' and '" + m_other.getName() + "' must be specified (not both)");
+				if (other.get() != null) {
+					throw new Exception("Only one of input '" + getName() + "' and '" + other.getName() + "' must be specified (not both)");
 				}
 			}
 			// noting to do

@@ -1,6 +1,7 @@
 package beast.evolution.nuc.branchratemodel;
 
 import beast.core.*;
+import beast.evolution.tree.Node;
 
 /**
  * @author Alexei Drummond

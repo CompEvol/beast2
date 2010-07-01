@@ -1,6 +1,6 @@
 package beast.evolution.nuc.branchratemodel;
 
-import beast.core.Node;
+import beast.evolution.tree.Node;
 import beast.core.Plugin;
 import beast.core.Description;
 import beast.core.State;

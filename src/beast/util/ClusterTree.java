@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import beast.evolution.nuc.Data;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Node;
+import beast.evolution.tree.Node;
 import beast.core.State;
 import beast.evolution.tree.Tree;
 

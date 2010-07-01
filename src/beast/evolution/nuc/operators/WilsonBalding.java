@@ -50,9 +50,9 @@
 
 package beast.evolution.nuc.operators;
 
+import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 import beast.core.Description;
-import beast.core.Node;
 import beast.core.State;
 import beast.evolution.tree.Tree;
 
