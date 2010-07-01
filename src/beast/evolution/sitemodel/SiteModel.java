@@ -22,12 +22,12 @@
 * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA  02110-1301  USA
 */
-package beast.evolution.nuc.sitemodel;
+package beast.evolution.sitemodel;
 
 
 import beast.core.*;
 import beast.evolution.nuc.Frequencies;
-import beast.evolution.nuc.substitutionmodel.SubstitutionModel;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 
 import java.util.List;
 

@@ -47,7 +47,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package beast.evolution.nuc.operators;
+package beast.evolution.operators;
 
 import beast.core.Description;
 import beast.core.State;

@@ -1,4 +1,4 @@
-package beast.evolution.nuc.branchratemodel;
+package beast.evolution.branchratemodel;
 
 import beast.evolution.tree.Node;
 import beast.core.Plugin;

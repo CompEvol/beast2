@@ -22,7 +22,7 @@
 * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
 * Boston, MA  02110-1301  USA
 */
-package beast.evolution.nuc.substitutionmodel;
+package beast.evolution.substitutionmodel;
 
 
 import beast.core.Description;

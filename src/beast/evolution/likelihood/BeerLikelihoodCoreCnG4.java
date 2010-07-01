@@ -40,7 +40,7 @@
 // TODO: CUDA support
 
 
-package beast.evolution.nuc.likelihood;
+package beast.evolution.likelihood;
 
 
 public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {

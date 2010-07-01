@@ -117,14 +117,14 @@ sys	    0m0.164s  0m1.448s            0m1.328s 0m4.740s
 *
 */
 
-package beast.evolution.nuc.likelihood;
+package beast.evolution.likelihood;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.ProbabilityDistribution;
 import beast.core.State;
 import beast.evolution.nuc.Data;
-import beast.evolution.nuc.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 

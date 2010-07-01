@@ -1,6 +1,6 @@
 
 /*
- * File BeerLikelihoodCoreCached.java
+ * File BeerLikelihoodCoreCnG.java
  *
  * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
  *
@@ -26,14 +26,17 @@
 
 /** likelihood beast.core that uses a cache mechanism so that only local
  * patterns for leaves need to be calculated.
+ * Takes GORED trees in account
  */
 
-package beast.evolution.nuc.likelihood;
+
+package beast.evolution.likelihood;
 
 import java.util.Arrays;
 
 
-public class BeerLikelihoodCoreCached extends LikelihoodCore {
+public class BeerLikelihoodCoreCnG extends LikelihoodCore {
+	double SCALE = 10;
 	int u, v, w, v1, v2;
     protected int m_nStates;
     protected int m_nNodes;
@@ -55,11 +58,14 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
     protected int[] m_iCurrentPartials; // # nodes
     protected int[] m_iStoredPartials;  // # nodes
 
-    protected boolean m_bUseScaling = false;
+    // used to store/restore state
+	int [] m_iCurrentStates;
+	int [] m_iStoredStates;
 
-    protected double[][][] m_fScalingFactors; // 2 x #nodes x #patters
 
-    private double m_fScalingThreshold = 1.0E-100;
+//    protected double[][][] m_fScalingFactors; // 2 x #nodes x #patters
+
+//    private double m_fScalingThreshold = 1.0E-100;
 
 
     protected int[][] m_nNrOfID; // 2 x #nodes
@@ -75,8 +81,8 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	int [] m_nNode1;     // #nodes
 	int [] m_nNode2;     // #nodes
 	int [] m_nNode3;     // #nodes
-	int [][] m_nStates1; // #nodes x #patterns
-	int [][] m_nStates2; // #nodes x #patterns
+	int [][][] m_nStates1; // 2 x #nodes x #patterns
+	int [][][] m_nStates2; // 2 x #nodes x #patterns
 
 	// set of temporary pointers
 	int [] m_pStates1;
@@ -87,7 +93,7 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	double[] m_pfPartials2;
 	double[] m_pfPartials3;
 
-	public BeerLikelihoodCoreCached(int nStateCount) {
+	public BeerLikelihoodCoreCnG(int nStateCount) {
 		this.m_nStates = nStateCount;
 	} // c'tor
 
@@ -184,9 +190,6 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
             }
         }
 
-        if (m_bUseScaling) {
-            scalePartials(iNode3);
-        }
     }
 
 //	int [][] initIDMap(int iNode, int nMaxID1, int nMaxID2) {
@@ -199,7 +202,7 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 //	} // initIDMap
 
 	int [] initIDMap(int iNode, int nMaxID1, int nMaxID2) {
-		m_nNrOfID[m_iCurrentPartials[iNode]][iNode] = 0;
+		m_nNrOfID[m_iCurrentStates[iNode]][iNode] = 0;
 		int [] nIDMap = new int[nMaxID1*nMaxID2];
 		Arrays.fill (nIDMap, -1);
 		return nIDMap;
@@ -211,33 +214,35 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	protected void calculateStatesStatesPruning(int iNode1, int iNode2, int iNode3) {
 		int[] iStates1 = m_iStates[iNode1];
 		int[] iStates2 = m_iStates[iNode2];
-		int [] nID3 = m_nID[m_iCurrentPartials[iNode3]][iNode3];
+		int [] nID3 = m_nID[m_iCurrentStates[iNode3]][iNode3];
 
 		// prepare the stack
 		m_nOperation[m_nTopOfStack] = OPERATION_SS;
 		m_nNode1[m_nTopOfStack] = iNode1;
 		m_nNode2[m_nTopOfStack] = iNode2;
 		m_nNode3[m_nTopOfStack] = iNode3;
-		m_pStates1 = m_nStates1[m_nTopOfStack];
-		m_pStates2 = m_nStates2[m_nTopOfStack];
+		m_pStates1 = m_nStates1[m_iCurrentStates[iNode3]][iNode3];
+		m_pStates2 = m_nStates2[m_iCurrentStates[iNode3]][iNode3];
 		m_nTopOfStack++;
 
-		int [] nIDMap = initIDMap(iNode3, m_nStates+1, m_nStates+1);
-		int nBase = m_nStates+1;
-		int nNrOfID = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
-			int state1 = iStates1[k];
-			int state2 = iStates2[k];
-			if (nIDMap[state1 + nBase * state2]<0) {
-				m_pStates1[nNrOfID] = state1;
-				m_pStates2[nNrOfID] = state2;
-				nIDMap[state1 + nBase * state2] = nNrOfID++;
-				//calcAllMatrixSSP(state1, state2);
-				//m_innerLoopCalculator.calcAllMatrixSSP(state1, state2);
+		if (m_nNrOfID[m_iCurrentStates[iNode3]][iNode3] == 0) {
+			int [] nIDMap = initIDMap(iNode3, m_nStates+1, m_nStates+1);
+			int nBase = m_nStates+1;
+			int nNrOfID = 0;
+			for (int k = 0; k < m_nPatterns; k++) {
+				int state1 = iStates1[k];
+				int state2 = iStates2[k];
+				if (nIDMap[state1 + nBase * state2]<0) {
+					m_pStates1[nNrOfID] = state1;
+					m_pStates2[nNrOfID] = state2;
+					nIDMap[state1 + nBase * state2] = nNrOfID++;
+					//calcAllMatrixSSP(state1, state2);
+					//m_innerLoopCalculator.calcAllMatrixSSP(state1, state2);
+				}
+				nID3[k] = nIDMap[state1 + nBase * state2];
 			}
-			nID3[k] = nIDMap[state1 + nBase * state2];
+			m_nNrOfID[m_iCurrentStates[iNode3]][iNode3] = nNrOfID;
 		}
-		m_nNrOfID[m_iCurrentPartials[iNode3]][iNode3] = nNrOfID;
 
 //		v=0;
 //		fMatrices1 = m_fMatrices[m_iCurrentMatrices[iNode1]][iNode1];
@@ -251,8 +256,8 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	 */
 	protected void calculateStatesPartialsPruning(int iNode1, int iNode2, int iNode3) {
 		int [] iStates1 = m_iStates[iNode1];
-		int [] nID2 = m_nID[m_iCurrentPartials[iNode2]][iNode2];
-		int [] nID3 = m_nID[m_iCurrentPartials[iNode3]][iNode3];
+		int [] nID2 = m_nID[m_iCurrentStates[iNode2]][iNode2];
+		int [] nID3 = m_nID[m_iCurrentStates[iNode3]][iNode3];
 
 		//v = 0;
 		// prepare the stack
@@ -260,28 +265,29 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 		m_nNode1[m_nTopOfStack] = iNode1;
 		m_nNode2[m_nTopOfStack] = iNode2;
 		m_nNode3[m_nTopOfStack] = iNode3;
-		m_pStates1 = m_nStates1[m_nTopOfStack];
-		m_pStates2 = m_nStates2[m_nTopOfStack];
+		m_pStates1 = m_nStates1[m_iCurrentStates[iNode3]][iNode3];
+		m_pStates2 = m_nStates2[m_iCurrentStates[iNode3]][iNode3];
 		m_nTopOfStack++;
 
-		int [] nIDMap = initIDMap(iNode3, m_nStates+1, m_nNrOfID[m_iCurrentPartials[iNode2]][iNode2]);
-		int nBase = m_nStates+1;
-		int nNrOfID = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
-			int state1 = iStates1[k];
-			int state2 = nID2[k];
-			if (nIDMap[state1 + nBase * state2]<0) {
-				m_pStates1[nNrOfID] = state1;
-				m_pStates2[nNrOfID] = state2;
-				nIDMap[state1 + nBase * state2] = nNrOfID++;
-				//m_nID[iNode3][k] = nIDMap[state1][state2];
-				//calcAllMatrixSPP(state1, state2);
-				//m_innerLoopCalculator.calcAllMatrixSPP(state1, state2);
+		if (m_nNrOfID[m_iCurrentStates[iNode3]][iNode3] == 0) {
+			int [] nIDMap = initIDMap(iNode3, m_nStates+1, m_nNrOfID[m_iCurrentStates[iNode2]][iNode2]);
+			int nBase = m_nStates+1;
+			int nNrOfID = 0;
+			for (int k = 0; k < m_nPatterns; k++) {
+				int state1 = iStates1[k];
+				int state2 = nID2[k];
+				if (nIDMap[state1 + nBase * state2]<0) {
+					m_pStates1[nNrOfID] = state1;
+					m_pStates2[nNrOfID] = state2;
+					nIDMap[state1 + nBase * state2] = nNrOfID++;
+					//m_nID[iNode3][k] = nIDMap[state1][state2];
+					//calcAllMatrixSPP(state1, state2);
+					//m_innerLoopCalculator.calcAllMatrixSPP(state1, state2);
+				}
+				nID3[k] = nIDMap[state1 + nBase * state2];
 			}
-			nID3[k] = nIDMap[state1 + nBase * state2];
+			m_nNrOfID[m_iCurrentStates[iNode3]][iNode3] = nNrOfID;
 		}
-		m_nNrOfID[m_iCurrentPartials[iNode3]][iNode3] = nNrOfID;
-
 //		u = 0;
 //		fMatrices1 = m_fMatrices[m_iCurrentMatrices[iNode1]][iNode1];
 //		fPartials2 = m_fPartials[m_iCurrentPartials[iNode2]][iNode2];
@@ -293,10 +299,10 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 
 	void initPartialsLeave(int iNode) {
 		System.err.println("RRB: this is really inefficient and code should be replaced!!");
-		m_nNrOfID[m_iCurrentPartials[iNode]][iNode] = 0;
+		m_nNrOfID[m_iCurrentStates[iNode]][iNode] = 0;
 		for (int k = 0; k < m_nPatterns; k++) {
-			m_nID[m_iCurrentPartials[iNode]][iNode][k] = k;
-			m_nNrOfID[m_iCurrentPartials[iNode]][iNode]++;
+			m_nID[m_iCurrentStates[iNode]][iNode][k] = k;
+			m_nNrOfID[m_iCurrentStates[iNode]][iNode]++;
 		}
 	} // initPartialsLeave
 
@@ -304,42 +310,43 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	 * Calculates partial likelihoods at a node when both children have partials.
 	 */
 	protected void calculatePartialsPartialsPruning(int iNode1, int iNode2, int iNode3) {
-		int [] nID1 = m_nID[m_iCurrentPartials[iNode1]][iNode1];
-		int [] nID2 = m_nID[m_iCurrentPartials[iNode2]][iNode2];
-		int [] nID3 = m_nID[m_iCurrentPartials[iNode3]][iNode3];
+		int [] nID1 = m_nID[m_iCurrentStates[iNode1]][iNode1];
+		int [] nID2 = m_nID[m_iCurrentStates[iNode2]][iNode2];
+		int [] nID3 = m_nID[m_iCurrentStates[iNode3]][iNode3];
 
 		// prepare the stack
 		m_nOperation[m_nTopOfStack] = OPERATION_PP;
 		m_nNode1[m_nTopOfStack] = iNode1;
 		m_nNode2[m_nTopOfStack] = iNode2;
 		m_nNode3[m_nTopOfStack] = iNode3;
-		m_pStates1 = m_nStates1[m_nTopOfStack];
-		m_pStates2 = m_nStates2[m_nTopOfStack];
+		m_pStates1 = m_nStates1[m_iCurrentStates[iNode3]][iNode3];
+		m_pStates2 = m_nStates2[m_iCurrentStates[iNode3]][iNode3];
 		m_nTopOfStack++;
 
-		if (m_nNrOfID[m_iCurrentPartials[iNode1]][iNode1] == 0) {
-			initPartialsLeave(iNode1);
-		}
-		if (m_nNrOfID[m_iCurrentPartials[iNode2]][iNode2] == 0) {
-			initPartialsLeave(iNode2);
-		}
-
-		int [] nIDMap = initIDMap(iNode3, m_nNrOfID[m_iCurrentPartials[iNode1]][iNode1], m_nNrOfID[m_iCurrentPartials[iNode2]][iNode2]);
-		int nBase = m_nNrOfID[m_iCurrentPartials[iNode1]][iNode1];
-		int nNrOfID = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
-			int state1 = nID1[k];
-			int state2 = nID2[k];
-			if (nIDMap[state1 + nBase * state2]<0) {
-				m_pStates1[nNrOfID] = state1;
-				m_pStates2[nNrOfID] = state2;
-				nIDMap[state1 + nBase * state2] = nNrOfID++;
-				//calcAllMatrixPPP(state1, state2);
+		if (m_nNrOfID[m_iCurrentStates[iNode3]][iNode3] == 0) {
+			if (m_nNrOfID[m_iCurrentStates[iNode1]][iNode1] == 0) {
+				initPartialsLeave(iNode1);
 			}
-			nID3[k] = nIDMap[state1 + nBase * state2];
-		}
-		m_nNrOfID[m_iCurrentPartials[iNode3]][iNode3] = nNrOfID;
+			if (m_nNrOfID[m_iCurrentStates[iNode2]][iNode2] == 0) {
+				initPartialsLeave(iNode2);
+			}
 
+			int [] nIDMap = initIDMap(iNode3, m_nNrOfID[m_iCurrentStates[iNode1]][iNode1], m_nNrOfID[m_iCurrentStates[iNode2]][iNode2]);
+			int nBase = m_nNrOfID[m_iCurrentStates[iNode1]][iNode1];
+			int nNrOfID = 0;
+			for (int k = 0; k < m_nPatterns; k++) {
+				int state1 = nID1[k];
+				int state2 = nID2[k];
+				if (nIDMap[state1 + nBase * state2]<0) {
+					m_pStates1[nNrOfID] = state1;
+					m_pStates2[nNrOfID] = state2;
+					nIDMap[state1 + nBase * state2] = nNrOfID++;
+					//calcAllMatrixPPP(state1, state2);
+				}
+				nID3[k] = nIDMap[state1 + nBase * state2];
+			}
+			m_nNrOfID[m_iCurrentStates[iNode3]][iNode3] = nNrOfID;
+		}
 //		u = 0;
 //		fPartials1 = m_fPartials[m_iCurrentPartials[iNode1]][iNode1];
 //		fMatrices1 = m_fMatrices[m_iCurrentMatrices[iNode1]][iNode1];
@@ -506,11 +513,11 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	 */
     public void integratePartials(int iNode, double[] fProportions, double[] fOutPartials) {
     	for (int i = 0; i < m_nTopOfStack; i++) {
-    		m_pStates1 = m_nStates1[i];
-    		m_pStates2 = m_nStates2[i];
     		int iNode1 = m_nNode1[i];
     		int iNode2 = m_nNode2[i];
     		int iNode3 = m_nNode3[i];
+    		m_pStates1 = m_nStates1[m_iCurrentStates[iNode3]][iNode3];;
+    		m_pStates2 = m_nStates2[m_iCurrentStates[iNode3]][iNode3];;
 
 			m_pfMatrices1 = m_fMatrices[m_iCurrentMatrices[iNode1]][iNode1];
 			m_pfMatrices2 = m_fMatrices[m_iCurrentMatrices[iNode2]][iNode2];
@@ -519,7 +526,7 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 			switch (m_nOperation[i]) {
     		case OPERATION_SS:
     			v=0;
-    			calcAllMatrixSSP(m_nNrOfID[m_iCurrentPartials[iNode3]][iNode3]);
+    			calcAllMatrixSSP(m_nNrOfID[m_iCurrentStates[iNode3]][iNode3]);
     			break;
     		case OPERATION_SP:
     			u = 0;
@@ -527,7 +534,7 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
     			m_pfPartials2 = m_fPartials[m_iCurrentPartials[iNode2]][iNode2];
     			//m_pfMatrices2 = m_fMatrices[m_iCurrentMatrices[iNode2]][iNode2];
     			//m_pfPartials3 = m_fPartials[m_iCurrentPartials[iNode3]][iNode3];
-    			calcAllMatrixSPP(m_nNrOfID[m_iCurrentPartials[iNode3]][iNode3]);
+    			calcAllMatrixSPP(m_nNrOfID[m_iCurrentStates[iNode3]][iNode3]);
     			break;
     		case OPERATION_PP:
     			u = 0;
@@ -536,20 +543,18 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
     			m_pfPartials2 = m_fPartials[m_iCurrentPartials[iNode2]][iNode2];
     			//m_pfMatrices2 = m_fMatrices[m_iCurrentMatrices[iNode2]][iNode2];
     			//m_pfPartials3 = m_fPartials[m_iCurrentPartials[iNode3]][iNode3];
-    			calcAllMatrixPPP(m_nNrOfID[m_iCurrentPartials[iNode3]][iNode3]);
+    			calcAllMatrixPPP(m_nNrOfID[m_iCurrentStates[iNode3]][iNode3]);
     			break;
     		}
+	        if (m_bUseScaling) {
+	            scalePartials(iNode3);
+	        }
     	}
     	m_nTopOfStack = 0;
 
 
-
-
-
-
-
 		double[] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
-		int [] nID = m_nID[m_iCurrentPartials[iNode]][iNode];
+		int [] nID = m_nID[m_iCurrentStates[iNode]][iNode];
 		int u = 0;
 		int v = 0;
 		for (int k = 0; k < m_nPatterns; k++) {
@@ -627,6 +632,9 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
         m_iCurrentPartials = new int[nNodeCount];
         m_iStoredPartials = new int[nNodeCount];
 
+        m_iCurrentStates = new int[nNodeCount];
+        m_iStoredStates = new int[nNodeCount];
+
         m_iStates = new int[nNodeCount][];
 
         for (int i = 0; i < nNodeCount; i++) {
@@ -651,8 +659,8 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
     	m_nNode1        = new int[nNodeCount];// #nodes
     	m_nNode2        = new int[nNodeCount];// #nodes
     	m_nNode3        = new int[nNodeCount];// #nodes
-    	m_nStates1      = new int[nNodeCount][nPatternCount];// #nodes x #patterns
-    	m_nStates2      = new int[nNodeCount][nPatternCount];// #nodes x #patterns
+    	m_nStates1      = new int[2][nNodeCount][nPatternCount];// #nodes x #patterns
+    	m_nStates2      = new int[2][nNodeCount][nPatternCount];// #nodes x #patterns
 //        if (m_nMatrixCount == 1) {
 //        	m_innerLoopCalculator = new InnerLoopCalculatorSingleMatrix();
 //        } else {
@@ -664,7 +672,6 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
      * cleans up and deallocates arrays.
      */
     public void finalize() throws java.lang.Throwable  {
-
         m_nNodes = 0;
         m_nPatterns = 0;
         m_nMatrixCount = 0;
@@ -677,15 +684,15 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
         m_iCurrentMatrices = null;
         m_iStoredMatrices = null;
 
-        m_fScalingFactors = null;
+//        m_fScalingFactors = null;
     }
 
     public void setUseScaling(boolean bUseScaling) {
         this.m_bUseScaling = bUseScaling;
 
-        if (bUseScaling) {
-            m_fScalingFactors = new double[2][m_nNodes][m_nPatterns];
-        }
+//        if (bUseScaling) {
+//            m_fScalingFactors = new double[2][m_nNodes][m_nPatterns];
+//        }
     }
 
     /**
@@ -700,7 +707,7 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
      * Sets partials for a node
      */
     public void setNodePartials(int iNode, double[] fPartials) {
-    	m_nNrOfID[m_iCurrentPartials[iNode]][iNode] = 0;
+    	m_nNrOfID[m_iCurrentStates[iNode]][iNode] = 0;
 
         if (this.m_fPartials[0][iNode] == null) {
             createNodePartials(iNode);
@@ -792,6 +799,10 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
     }
 
 
+    public void setNodeStatesForUpdate(int iNode) {
+    	m_iCurrentStates[iNode] = 1 - m_iCurrentStates[iNode];
+    	m_nNrOfID[m_iCurrentStates[iNode]][iNode] = 0;
+    }
 
     /**
      * Sets the currently updating node partials for node nodeIndex. This may
@@ -884,41 +895,51 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
      * @param iNode
      */
     protected void scalePartials(int iNode) {
-        int u = 0;
-//      for (int i = 0; i < m_nPatternCount; i++) {
-
-        for (int i = 0; i < m_nNrOfID[m_iCurrentPartials[iNode]][iNode]; i++) {
-            double scaleFactor = 0.0;
-            int v = u;
+        int v = 0;
+    	double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+        for (int i = 0; i < m_nNrOfID[m_iCurrentStates[iNode]][iNode]; i++) {
             for (int k = 0; k < m_nMatrixCount; k++) {
                 for (int j = 0; j < m_nStates; j++) {
-                    if (m_fPartials[m_iCurrentPartials[iNode]][iNode][v] > scaleFactor) {
-                        scaleFactor = m_fPartials[m_iCurrentPartials[iNode]][iNode][v];
-                    }
-                    v++;
+                	fPartials[v] *= SCALE;
+                	v++;
                 }
-                v += (m_nPatterns - 1) * m_nStates;
             }
-
-            if (scaleFactor < m_fScalingThreshold) {
-
-                v = u;
-                for (int k = 0; k < m_nMatrixCount; k++) {
-                    for (int j = 0; j < m_nStates; j++) {
-                        m_fPartials[m_iCurrentPartials[iNode]][iNode][v] /= scaleFactor;
-                        v++;
-                    }
-                    v += (m_nPatterns - 1) * m_nStates;
-                }
-                m_fScalingFactors[m_iCurrentPartials[iNode]][iNode][i] = Math.log(scaleFactor);
-
-            } else {
-                m_fScalingFactors[m_iCurrentPartials[iNode]][iNode][i] = 0.0;
-            }
-            u += m_nStates;
-
-
         }
+//        int u = 0;
+////      for (int i = 0; i < m_nPatternCount; i++) {
+//
+//        for (int i = 0; i < m_nNrOfID[m_iCurrentStates[iNode]][iNode]; i++) {
+//            double scaleFactor = 0.0;
+//            int v = u;
+//            for (int k = 0; k < m_nMatrixCount; k++) {
+//                for (int j = 0; j < m_nStates; j++) {
+//                    if (m_fPartials[m_iCurrentPartials[iNode]][iNode][v] > scaleFactor) {
+//                        scaleFactor = m_fPartials[m_iCurrentPartials[iNode]][iNode][v];
+//                    }
+//                    v++;
+//                }
+//                v += (m_nPatterns - 1) * m_nStates;
+//            }
+//
+//            if (scaleFactor < m_fScalingThreshold) {
+//
+//                v = u;
+//                for (int k = 0; k < m_nMatrixCount; k++) {
+//                    for (int j = 0; j < m_nStates; j++) {
+//                        m_fPartials[m_iCurrentPartials[iNode]][iNode][v] /= scaleFactor;
+//                        v++;
+//                    }
+//                    v += (m_nPatterns - 1) * m_nStates;
+//                }
+//                m_fScalingFactors[m_iCurrentPartials[iNode]][iNode][i] = Math.log(scaleFactor);
+//
+//            } else {
+//                m_fScalingFactors[m_iCurrentPartials[iNode]][iNode][i] = 0.0;
+//            }
+//            u += m_nStates;
+//
+//
+//        }
     }
 
     /**
@@ -929,13 +950,18 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
      * @return the log scaling factor
      */
     public double getLogScalingFactor(int iPattern) {
-        double logScalingFactor = 0.0;
-        if (m_bUseScaling) {
-            for (int i = 0; i < m_nNodes; i++) {
-                logScalingFactor += m_fScalingFactors[m_iCurrentPartials[i]][i][iPattern];
-            }
-        }
-        return logScalingFactor;
+    	if (m_bUseScaling) {
+    		return -(m_nNodes/2) * Math.log(SCALE);
+    	} else {
+    		return 0;
+    	}
+//        double logScalingFactor = 0.0;
+//        if (m_bUseScaling) {
+//            for (int i = 0; i < m_nNodes; i++) {
+//                logScalingFactor += m_fScalingFactors[m_iCurrentPartials[i]][i][iPattern];
+//            }
+//        }
+//        return logScalingFactor;
     }
 
     /**
@@ -957,6 +983,7 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 
         System.arraycopy(m_iCurrentMatrices, 0, m_iStoredMatrices, 0, m_nNodes);
         System.arraycopy(m_iCurrentPartials, 0, m_iStoredPartials, 0, m_nNodes);
+        System.arraycopy(m_iCurrentStates, 0, m_iStoredStates, 0, m_nNodes);
     }
 
     /**
@@ -971,5 +998,9 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
         int[] iTmp2 = m_iCurrentPartials;
         m_iCurrentPartials = m_iStoredPartials;
         m_iStoredPartials = iTmp2;
+
+        int[] iTmp3 = m_iCurrentStates;
+        m_iCurrentStates= m_iStoredStates;
+        m_iStoredStates = iTmp3;
     }
 } // class BeerLikelihoodCore
