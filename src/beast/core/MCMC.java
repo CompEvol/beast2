@@ -159,7 +159,7 @@ public class MCMC extends Plugin {
 			double fLogHastingsRatio = operator.proposal(proposedState);
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 				//System.out.print("store ");
-				store(iSample);
+				storeCachables(iSample);
 //				proposedState.makeDirty(State.IS_GORED);
 				//System.out.print(operator.getName()+ "\n");
 				//System.err.println(proposedState.toString());
@@ -186,7 +186,7 @@ public class MCMC extends Plugin {
 					if (iSample>=0) {
 						operator.reject();
 					}
-					restore(iSample);
+					restoreCachables(iSample);
 					//System.out.println("restore ");
 				}
 			} else {
