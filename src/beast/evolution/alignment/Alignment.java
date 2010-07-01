@@ -23,7 +23,7 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
-package beast.evolution.nuc;
+package beast.evolution.alignment;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -36,7 +36,7 @@ import beast.core.Input.Validate;
 /* Class representing alignment data.
  * **/
 @Description("Class representing alignment data")
-public class Data extends Plugin {
+public class Alignment extends Plugin {
 
 	public Input<List<Sequence>> m_pSequences = new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
 	public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");

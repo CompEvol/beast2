@@ -31,7 +31,7 @@ import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ArrayList;
 
-import beast.evolution.nuc.Data;
+import beast.evolution.alignment.Alignment;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
@@ -51,7 +51,7 @@ import beast.evolution.tree.Tree;
 public class ClusterTree extends Tree {
 
 	public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree");
-	public Input<Data> m_pData = new Input<Data>("taxa", "alignment data used for calculating distances for clustering");
+	public Input<Alignment> m_pData = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
 	public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
 
 	/** Whether the distance represent node height (if false) or branch length (if true). */

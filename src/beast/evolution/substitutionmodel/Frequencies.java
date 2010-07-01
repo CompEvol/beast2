@@ -23,17 +23,18 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
-package beast.evolution.nuc;
+package beast.evolution.substitutionmodel;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.State;
 import beast.core.Input.Validate;
+import beast.evolution.alignment.Alignment;
 
 @Description("Calculates empirical frequencies of characters in sequence data")
 public class Frequencies extends Plugin {
-	public Input<Data> m_data = new Input<Data>("data", "Sequence data for which frequencies are calculated", Validate.REQUIRED);
+	public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated", Validate.REQUIRED);
 
 	@Override
 	public void initAndValidate(State state) throws Exception {
@@ -49,11 +50,11 @@ public class Frequencies extends Plugin {
 	}
 
 	void calcFrequencies() {
-		Data data = m_data.get();
-		m_fFreqs = new double[data.getMaxStateCount()];
-		for (int i = 0; i < data.getPatternCount(); i++) {
-			int [] nPattern = data.getPattern(i);
-			int nWeight = data.getPatternWeight(i);
+		Alignment alignment = m_data.get();
+		m_fFreqs = new double[alignment.getMaxStateCount()];
+		for (int i = 0; i < alignment.getPatternCount(); i++) {
+			int [] nPattern = alignment.getPattern(i);
+			int nWeight = alignment.getPatternWeight(i);
 			for (int iValue : nPattern) {
 				if (iValue != m_fFreqs.length) { // ignore unknowns
 					m_fFreqs[iValue] += nWeight;

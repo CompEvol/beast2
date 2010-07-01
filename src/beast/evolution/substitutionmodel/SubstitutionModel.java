@@ -26,7 +26,6 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.*;
 import beast.core.Input.Validate;
-import beast.evolution.nuc.Frequencies;
 
 
 @Description("Specifies transition probability matrix for a given distance")

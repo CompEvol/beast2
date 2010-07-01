@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Vector;
 
 
-import beast.evolution.nuc.Data;
+import beast.evolution.alignment.Alignment;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -53,7 +53,7 @@ public class TreeParser extends Tree {
 	boolean m_bIsLabelledNewick = false;
 
 
-	public Input<Data> m_oData = new Input<Data>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
+	public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
 	public Input<String> m_oNewick = new Input<String>("newick", "initial beast.tree represented in newick format");
 	public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
 	public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", new Integer(1));

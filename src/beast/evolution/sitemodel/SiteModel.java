@@ -26,7 +26,7 @@ package beast.evolution.sitemodel;
 
 
 import beast.core.*;
-import beast.evolution.nuc.Frequencies;
+import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 
 import java.util.List;

@@ -69,7 +69,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
-import beast.evolution.nuc.Sequence;
+import beast.evolution.alignment.Sequence;
 import beast.util.Randomizer;
 
 import beast.core.Input;

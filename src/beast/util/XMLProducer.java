@@ -25,8 +25,8 @@
 package beast.util;
 
 import beast.core.*;
-import beast.evolution.nuc.Data;
-import beast.evolution.nuc.Sequence;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
 
 import javax.xml.transform.TransformerException;
@@ -172,7 +172,7 @@ public class XMLProducer extends XMLParser {
     void pluginToXML(Plugin plugin, StringBuffer buf, String sName) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
-        if (plugin instanceof Data) {
+        if (plugin instanceof Alignment) {
             sElementName = XMLParser.DATA_ELEMENT;
         }
         if (plugin instanceof Sequence) {

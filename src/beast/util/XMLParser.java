@@ -26,8 +26,8 @@ package beast.util;
 
 
 import beast.core.*;
-import beast.evolution.nuc.Data;
-import beast.evolution.nuc.Sequence;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -101,7 +101,7 @@ import java.util.HashMap;
 
 
 public class XMLParser {
-    final static String DATA_CLASS = Data.class.getName();
+    final static String DATA_CLASS = Alignment.class.getName();
     final static String SEQUENCE_CLASS = Sequence.class.getName();
     final static String STATE_CLASS = State.class.getName();
     final static String LIKELIHOOD_CLASS = ProbabilityDistribution.class.getName();
