@@ -77,6 +77,7 @@ public class CompoundProbabilityDistribution extends ProbabilityDistribution {
 
     @Override
     public void restore(int nSample) {
+        super.restore(nSample);
         for (ProbabilityDistribution likelihood : pDistributions.get()) {
             likelihood.restore(nSample);
         }
@@ -84,6 +85,7 @@ public class CompoundProbabilityDistribution extends ProbabilityDistribution {
 
     @Override
     public void store(int nSample) {
+        super.store(nSample);
         for (ProbabilityDistribution likelihood : pDistributions.get()) {
             likelihood.store(nSample);
         }
