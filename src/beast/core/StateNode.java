@@ -35,10 +35,20 @@ public abstract class StateNode extends Plugin {
         this.isStochastic = isStochastic;
     }
 
-    boolean isStochastic;
+    public final int getIndex(State state) {
+        return index;
+    }
+
+    boolean isStochastic = true;
 
     /**
      * flag to indicate value has changed after operation is performed on state *
      */
     int dirty = State.IS_CLEAN;
+
+    /**
+     * The index of the parameter for logging et cetera
+     */
+    int index = -1;
+
 }

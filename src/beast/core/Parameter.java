@@ -53,7 +53,6 @@ public class Parameter extends StateNode {
     /**
      * initialised by State.initAndValidate *
      */
-    protected int m_nParamNr = -1;
 
     @Override
     public void initAndValidate(State state) throws Exception {
@@ -63,10 +62,6 @@ public class Parameter extends StateNode {
         for (int i = 0; i < m_values.length; i++) {
             m_values[i] = m_pValues.get();
         }
-    }
-
-    public int getParamNr(State state) {
-        return m_nParamNr;
     }
 
     /**
@@ -167,7 +162,6 @@ public class Parameter extends StateNode {
         System.arraycopy(m_values, 0, copy.m_values, 0, m_values.length);
         copy.m_fLower = m_fLower;
         copy.m_fUpper = m_fUpper;
-        copy.m_nParamNr = m_nParamNr;
         return copy;
     }
 

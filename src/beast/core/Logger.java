@@ -68,7 +68,7 @@ public class Logger extends Plugin {
             nInputs++;
         }
         if (m_pParameter.get() != null) {
-            m_nVarId = m_pParameter.get().getParamNr(state);
+            m_nVarId = m_pParameter.get().getIndex(state);
             m_mode = PARAMATER_LOGGER;
             //m_pEvery.setValue(null);
             nInputs++;

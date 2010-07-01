@@ -33,6 +33,7 @@ public class State extends Plugin {
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_GORED = 2;
 
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
+    //public Input<StateNode> stateNodeInput = new Input<StateNode>("stateNode", "a part of the state");
 
     //public Input<List<Parameter>> m_pParameters = new Input<List<Parameter>>("parameter", "parameter, part of the state", new ArrayList<Parameter>());
     //public Input<List<Tree>> m_pTrees = new Input<List<Tree>>("tree", "beast.tree, part of the state", new ArrayList<Tree>());
@@ -45,10 +46,13 @@ public class State extends Plugin {
 
     @Override
     public void initAndValidate(State state) {
+
+        //stateNode = new StateNode[] {stateNodeInput.get()};
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
-        //for (Parameter param : m_parameters) {
-        //    param.m_nParamNr = getStateNodeIndex(param.getID());
-        //}
+
+        for (StateNode node : stateNode) {
+            node.index = getStateNodeIndex(node.getID());
+        }
     }
 
 
@@ -83,7 +87,7 @@ public class State extends Plugin {
     }
 
     public int isDirty(Input<? extends StateNode> p) {
-        return stateNode[getStateNodeIndex(p.get().getID())].isDirty();
+        return stateNode[p.get().index].isDirty();
     }
 
 //    public Double getValue(Input<Parameter> p) {
@@ -117,13 +121,13 @@ public class State extends Plugin {
 
     public StateNode getStateNode(Input<? extends StateNode> p) {
 
-        for (int i = 0; i < stateNode.length; i++) {
-            if (stateNode[i].getID().equals(p.get().getID())) return stateNode[i];
-        }
-        throw new IllegalArgumentException(p.getName() + " is not found in this state");
+        //for (int i = 0; i < stateNode.length; i++) {
+        //    if (stateNode[i].getID().equals(p.get().getID())) return stateNode[i];
+        //}
+        //throw new IllegalArgumentException(p.getName() + " is not found in this state");
 
-        //int nID = p.get().getParamNr(this);
-        //return (Parameter) m_parameters[nID];
+        int nID = p.get().getIndex(this);
+        return stateNode[nID];
     }
 
     public Parameter getParameter(Input<Parameter> p) {
