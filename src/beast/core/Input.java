@@ -24,7 +24,7 @@
 */
 package beast.core;
 
-import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl;
+//import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -223,11 +223,11 @@ public class Input<T> {
                         if (value != null && value instanceof ArrayList<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
 
-                            if (genericTypes2[0] instanceof sun.reflect.generics.reflectiveObjects.WildcardTypeImpl) {
-                                WildcardTypeImpl wcti = (WildcardTypeImpl) genericTypes2[0];
-                                theClass = wcti.getClass();
-                            } else
-                                theClass = (Class<?>) genericTypes2[0];
+//                            if (genericTypes2[0] instanceof sun.reflect.generics.reflectiveObjects.WildcardTypeImpl) {
+//                                WildcardTypeImpl wcti = (WildcardTypeImpl) genericTypes2[0];
+//                                theClass = wcti.getClass();
+//                            } else
+                            theClass = (Class<?>) genericTypes2[0];
                         } else {
                             Class<?> genericType = (Class<?>) genericTypes[0];
                             theClass = genericType;
@@ -297,11 +297,11 @@ public class Input<T> {
                 } else {
                     if (other.get() != null) {
                         throw new Exception("Only one of input '" + getName() + "' and '" + other.getName() + "' must be specified (not both)");
-				}
-			}
-			// noting to do
-			break;
-		}
-	} // validate
+                    }
+                }
+                // noting to do
+                break;
+        }
+    } // validate
 
 } // class Input
