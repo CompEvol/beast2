@@ -32,7 +32,7 @@ import java.util.List;
 public class State extends Plugin {
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_GORED = 2;
 
-    public Input<List<? extends StateNode>> stateNodeInput = new Input<List<? extends StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
+    public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
 
     //public Input<List<Parameter>> m_pParameters = new Input<List<Parameter>>("parameter", "parameter, part of the state", new ArrayList<Parameter>());
     //public Input<List<Tree>> m_pTrees = new Input<List<Tree>>("tree", "beast.tree, part of the state", new ArrayList<Tree>());

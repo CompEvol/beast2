@@ -50,8 +50,8 @@
     <mcmc id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
 
-            <input spec='beast.core.Parameter' name="stateNode" id="hky.kappa">1.0</input>
-            <input spec='beast.core.Parameter' name="stateNode" id="popSize">1.0</input>
+            <input spec='beast.core.Parameter' name="parameter" id="hky.kappa">1.0</input>
+            <input spec='beast.core.Parameter' name="parameter" id="popSize">1.0</input>
 
             <!--
                         <tree spec='util.TreeParser' id='tree'>
@@ -61,7 +61,7 @@
             -->
 
 
-            <input spec='beast.util.ClusterTree' name="stateNode" id='tree' clusterType='upgma'>
+            <input spec='beast.util.ClusterTree' name="tree" id='tree' clusterType='upgma'>
                 <input name='taxa' idref='alignment'/>
             </input>
 

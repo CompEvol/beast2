@@ -104,6 +104,7 @@ public class Logger extends Plugin {
         if (m_loggers.size() > 0) {
             m_out.print("Sample\t");
             for (int i = 0; i < m_loggers.size(); i++) {
+                System.out.println("logger " + i);
                 m_loggers.get(i).init(state, m_out);
             }
             m_out.println();
