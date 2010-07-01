@@ -41,7 +41,7 @@ public class State extends Plugin {
      * the two components of the state: beast.tree & parameters *
      */
     public StateNode[] stateNode;
-    Parameter[] m_parameters = null;
+    //Parameter[] m_parameters = null;
 
     @Override
     public void initAndValidate(State state) {
