@@ -31,7 +31,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.core.Operator;
-import beast.core.State;
 import beast.evolution.tree.Tree;
 import beast.core.Input.Validate;
 
@@ -99,9 +98,9 @@ abstract public class TreeOperator extends Operator {
 			node.m_right = replacement;
 		}
 		//child.setParent(null);
-		node.makeDirty(State.IS_GORED);
+		node.makeDirty(Tree.IS_FILTHY);
 		replacement.setParent(node);
-		replacement.makeDirty(State.IS_GORED);
+		replacement.makeDirty(Tree.IS_FILTHY);
 //		replacement.setLength(m_fHeights[node.getNr()] - m_fHeights[replacement.getNr()]);
 	}
 

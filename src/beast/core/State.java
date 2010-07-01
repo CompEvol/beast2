@@ -30,7 +30,6 @@ import java.util.List;
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of parameters and trees.")
 public class State extends Plugin {
-    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_GORED = 2;
 
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
     //public Input<StateNode> stateNodeInput = new Input<StateNode>("stateNode", "a part of the state");
@@ -86,7 +85,7 @@ public class State extends Plugin {
         //throw new Exception("Error 124: No such id (" + sID + ") in parameters");
     }
 
-    public int isDirty(Input<? extends StateNode> p) {
+    public boolean isDirty(Input<? extends StateNode> p) {
         return stateNode[p.get().index].isDirty();
     }
 
@@ -106,7 +105,7 @@ public class State extends Plugin {
 //        return m_parameters[nID].getValue(iDim);
 //    }
 
-    public int isDirty(int nID) {
+    public boolean isDirty(int nID) {
         return stateNode[nID].isDirty();
     }
 
@@ -208,9 +207,9 @@ public class State extends Plugin {
     /**
      * set dirtiness to all parameters and trees *
      */
-    public void makeDirty(int nDirt) {
+    public void setDirty(boolean isDirty) {
         for (StateNode node : stateNode) {
-            node.makeDirty(nDirt);
+            node.setDirty(isDirty);
         }
     }
 }

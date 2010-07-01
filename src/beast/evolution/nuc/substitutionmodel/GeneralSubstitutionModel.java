@@ -77,7 +77,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
             updateMatrix = true;
             return true;
         }
-        if (state.isDirty(m_pRateParameter) != State.IS_CLEAN) {
+        if (state.isDirty(m_pRateParameter)) {
             updateMatrix = true;
             return true;
         }

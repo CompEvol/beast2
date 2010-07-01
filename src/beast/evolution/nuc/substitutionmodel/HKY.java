@@ -342,7 +342,7 @@ public class HKY extends SubstitutionModel {
             updateMatrix = true;
             return true;
         }
-        if (state.isDirty(m_kappa) != State.IS_CLEAN) {
+        if (state.isDirty(m_kappa)) {
             updateMatrix = true;
             return true;
         }

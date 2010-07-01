@@ -12,12 +12,12 @@ public abstract class StateNode extends Plugin {
      */
     public abstract StateNode copy();
 
-    public void makeDirty(int nDirt) {
-        this.dirty = nDirt;
+    public boolean isDirty() {
+        return dirty;
     }
 
-    int isDirty() {
-        return dirty;
+    public void setDirty(final boolean dirty) {
+        this.dirty = dirty;
     }
 
     /**
@@ -44,7 +44,7 @@ public abstract class StateNode extends Plugin {
     /**
      * flag to indicate value has changed after operation is performed on state *
      */
-    int dirty = State.IS_CLEAN;
+    boolean dirty = false;
 
     /**
      * The index of the parameter for logging et cetera

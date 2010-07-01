@@ -31,6 +31,8 @@ import java.util.Arrays;
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
 public class Tree extends StateNode {
+    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
+
     int nodeCount = -1;
 
     /**

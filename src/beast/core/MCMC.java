@@ -135,7 +135,7 @@ public class MCMC extends Plugin {
 
     public void run() throws Exception {
         long tStart = System.currentTimeMillis();
-        m_state.makeDirty(State.IS_GORED);
+        m_state.setDirty(true);
 
         int nBurnIn = m_oBurnIn.get();
         int nChainLength = m_oChainLength.get();
@@ -147,7 +147,7 @@ public class MCMC extends Plugin {
         double logAlpha = 0;
 
         boolean bDebug = true;
-        m_state.makeDirty(State.IS_GORED);
+        m_state.setDirty(true);
         double fOldLogLikelihood = m_uncertainty.get().calculateLogP(m_state);
         System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
@@ -179,7 +179,7 @@ public class MCMC extends Plugin {
                     // accept
                     fOldLogLikelihood = fNewLogLikelihood;
                     m_state = proposedState;
-                    m_state.makeDirty(State.IS_CLEAN);
+                    m_state.setDirty(false);
                     if (iSample >= 0) {
                         operator.accept();
                     }
@@ -201,7 +201,7 @@ public class MCMC extends Plugin {
 
             if (bDebug) {
                 m_state.validate();
-                m_state.makeDirty(State.IS_GORED);
+                m_state.setDirty(true);
                 //System.err.println(m_state.toString());
                 double fLogLikelihood = m_uncertainty.get().calculateLogP(m_state);
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {

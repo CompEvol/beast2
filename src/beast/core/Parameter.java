@@ -117,7 +117,7 @@ public class Parameter extends StateNode {
     public void setValue(double fValue) throws Exception {
         if (isStochastic) {
             m_values[0] = fValue;
-            makeDirty(State.IS_DIRTY);
+            setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
 
@@ -132,7 +132,7 @@ public class Parameter extends StateNode {
     public void setValue(int iParam, double fValue) throws Exception {
         if (isStochastic) {
             m_values[iParam] = fValue;
-            makeDirty(State.IS_DIRTY);
+            setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
 
@@ -142,14 +142,6 @@ public class Parameter extends StateNode {
 
     public void setBooleanValue(int iParam, boolean bValue) throws Exception {
         setValue(iParam, bValue ? 1.0 : 0.0);
-    }
-
-
-    /**
-     * keeping track of tidyness *
-     */
-    public void makeClean() {
-        makeDirty(State.IS_CLEAN);
     }
 
     /**

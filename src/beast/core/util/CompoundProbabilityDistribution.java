@@ -40,12 +40,12 @@ public class CompoundProbabilityDistribution extends ProbabilityDistribution {
 
     @Override
     public double calculateLogP(State state) throws Exception {
-        m_fLogP = 0;
+        logP = 0;
         for (int i = 0; i < m_uncertainties.get().size(); i++) {
             double f = m_uncertainties.get().get(i).calculateLogP(state);
-            m_fLogP += f;
+            logP += f;
         }
-        return m_fLogP;
+        return logP;
     }
 
     @Override

@@ -32,9 +32,9 @@ public class Coalescent extends ProbabilityDistribution {
 
         TreeIntervals intervals = new TreeIntervals(stateTree);
 
-        m_fLogP = calculateLogLikelihood(intervals, popSize.get());
+        logP = calculateLogLikelihood(intervals, popSize.get());
 
-        return m_fLogP;
+        return logP;
     }
 
     /**

@@ -177,7 +177,7 @@ public class TreeLikelihood extends ProbabilityDistribution {
         m_fProbabilities = new double[nStateCount * nStateCount];
         m_bNodeIsDirty = new int[nodeCount];
         for (int i = 0; i < nodeCount; i++) {
-            m_bNodeIsDirty[i] = State.IS_GORED;
+            m_bNodeIsDirty[i] = Tree.IS_FILTHY;
         }
 
     }
@@ -208,19 +208,19 @@ public class TreeLikelihood extends ProbabilityDistribution {
         checkForDirt(state);
         Tree tree = (Tree) state.getStateNode(m_tree);
         traverse(state, tree.getRoot());
-        m_fLogP = 0.0;
+        logP = 0.0;
         //double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
         for (int i = 0; i < m_data.get().getPatternCount(); i++) {
-            m_fLogP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
+            logP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
         }
         //if (m_fLogP == Double.NEGATIVE_INFINITY) {
-        if (m_fLogP < -1e4 && !m_likelihoodCore.getUseScaling()) {
+        if (logP < -1e4 && !m_likelihoodCore.getUseScaling()) {
             System.err.println("Turning on scaling to prevent numeric instability");
             m_likelihoodCore.setUseScaling(true);
-            Arrays.fill(m_bNodeIsDirty, State.IS_GORED);
+            Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
             return calculateLogP(state);
         }
-        return m_fLogP;
+        return logP;
     }
 
     /**
@@ -231,7 +231,7 @@ public class TreeLikelihood extends ProbabilityDistribution {
      */
     int traverse(State state, Node node) throws Exception {
 
-        int update = State.IS_CLEAN;
+        int update = Tree.IS_CLEAN;
 
         int iNode = node.getNr();
 
@@ -239,7 +239,7 @@ public class TreeLikelihood extends ProbabilityDistribution {
 
         // First update the transition probability matrix(ices) for this branch
 //        /if (pParent != NULL && m_updateNode[nodeNum]) {
-        if (!node.isRoot() && (m_bNodeIsDirty[iNode] != State.IS_CLEAN)) {
+        if (!node.isRoot() && (m_bNodeIsDirty[iNode] != Tree.IS_CLEAN)) {
 
             //final double branchRate = branchRateModel.getBranchRate(beast.tree, node);
 
@@ -275,14 +275,14 @@ public class TreeLikelihood extends ProbabilityDistribution {
             int update2 = traverse(state, child2);
 
             // If either child node was updated then update this node too
-            if (update1 != State.IS_CLEAN || update2 != State.IS_CLEAN) {
+            if (update1 != Tree.IS_CLEAN || update2 != Tree.IS_CLEAN) {
 
                 int childNum1 = child1.getNr();
                 int childNum2 = child2.getNr();
 
                 m_likelihoodCore.setNodePartialsForUpdate(iNode);
                 // TODO: CHECK THAT IS_DIRTY IS ALREADY SUFFICIENT FOR UPDATE
-                if (m_bNodeIsDirty[iNode] >= State.IS_GORED || update1 >= State.IS_GORED || update2 >= State.IS_GORED) {
+                if (m_bNodeIsDirty[iNode] >= Tree.IS_FILTHY || update1 >= Tree.IS_FILTHY || update2 >= Tree.IS_FILTHY) {
                     m_likelihoodCore.setNodeStatesForUpdate(iNode);
                 }
 
@@ -319,9 +319,9 @@ public class TreeLikelihood extends ProbabilityDistribution {
      * check state for changed variables and update temp results if necessary *
      */
     public void checkForDirt(State state) {
-        int hasDirt = State.IS_CLEAN;
+        int hasDirt = Tree.IS_CLEAN;
         if (m_pSiteModel.get().isDirty(state)) {
-            hasDirt = State.IS_DIRTY;
+            hasDirt = Tree.IS_DIRTY;
         }
 //    	Arrays.fill(m_bNodeIsDirty, State.IS_GORED);
         // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);

@@ -41,7 +41,7 @@ public class Node extends Plugin {
 	/** parent node in the beast.tree, null if root **/
 	Node m_Parent = null;
 	/** status of this node after an operation is performed on the state **/
-	int m_bIsDirty = State.IS_CLEAN;
+	int m_bIsDirty = Tree.IS_CLEAN;
 	/** meta-data contained in square brackets in Newick **/
 	public String m_sMetaData;
 
@@ -51,10 +51,10 @@ public class Node extends Plugin {
 	public double getHeight() {return m_fHeight;}
 	public void setHeight(double fHeight) {
 		m_fHeight = fHeight;
-		m_bIsDirty |= State.IS_DIRTY;
+		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
-			m_left.m_bIsDirty |= State.IS_DIRTY;
-			m_right.m_bIsDirty |= State.IS_DIRTY;
+			m_left.m_bIsDirty |= Tree.IS_DIRTY;
+			m_right.m_bIsDirty |= Tree.IS_DIRTY;
 		}
 	}
 
@@ -248,7 +248,7 @@ public class Node extends Plugin {
 	/** scale height of this node and all its descendants **/
 	public void scale(double fScale) {
 		m_fHeight *= fScale;
-		m_bIsDirty |= State.IS_DIRTY;
+		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
 			m_left.scale(fScale);
 			m_right.scale(fScale);

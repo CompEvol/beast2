@@ -94,17 +94,17 @@ public class SiteModel extends Plugin implements Cacheable {
 
     public boolean isDirty(State state) {
         if (muParameter.get() != null) {
-            if (state.isDirty(muParameter) != State.IS_CLEAN) {
+            if (state.isDirty(muParameter)) {
                 ratesKnown = false;
             }
         }
         if (shapeParameter.get() != null) {
-            if (state.isDirty(shapeParameter) != State.IS_CLEAN) {
+            if (state.isDirty(shapeParameter)) {
                 ratesKnown = false;
             }
         }
         if (invarParameter.get() != null) {
-            if (state.isDirty(invarParameter) != State.IS_CLEAN) {
+            if (state.isDirty(invarParameter)) {
                 ratesKnown = false;
             }
         }

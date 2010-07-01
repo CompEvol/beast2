@@ -110,7 +110,6 @@ public class Data extends Plugin {
 
 
 	class SiteComparator implements Comparator<int[]> {
-		@Override
 		public int compare(int[] o1, int[] o2) {
 			for (int i = 0; i < o1.length; i++) {
 				if (o1[i] > o2[i]) {
