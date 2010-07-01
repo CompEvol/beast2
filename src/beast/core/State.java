@@ -47,7 +47,7 @@ public class State extends Plugin {
     public void initAndValidate(State state) {
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
         //for (Parameter param : m_parameters) {
-        //    param.m_nParamNr = getParameterIndex(param.getID());
+        //    param.m_nParamNr = getStateNodeIndex(param.getID());
         //}
     }
 
@@ -72,7 +72,7 @@ public class State extends Plugin {
     /**
      * return a value with identifier sID. This assumes a single dimensional parameter. *
      */
-    public int getParameterIndex(String sID) {
+    public int getStateNodeIndex(String sID) {
         for (int i = 0; i < stateNode.length; i++) {
             if (stateNode[i].getID().equals(sID)) {
                 return i;
@@ -83,7 +83,7 @@ public class State extends Plugin {
     }
 
     public int isDirty(Input<StateNode> p) {
-        return stateNode[getParameterIndex(p.get().getID())].isDirty();
+        return stateNode[getStateNodeIndex(p.get().getID())].isDirty();
     }
 
 //    public Double getValue(Input<Parameter> p) {
@@ -111,7 +111,7 @@ public class State extends Plugin {
     }
 
     public StateNode getStateNode(String sID) {
-        int nID = getParameterIndex(sID);
+        int nID = getStateNodeIndex(sID);
         return stateNode[nID];
     }
 
