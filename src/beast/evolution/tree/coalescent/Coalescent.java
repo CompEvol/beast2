@@ -19,7 +19,7 @@ import java.util.Random;
 public class Coalescent extends ProbabilityDistribution {
 
     public Input<Tree> tree = new Input<Tree>("tree", "phylogenetic beast.tree");
-    public Input<PopulationFunction.Abstract> popSize = new Input<PopulationFunction.Abstract>("populationModel", "A population size model");
+    public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model");
 
 
     /**

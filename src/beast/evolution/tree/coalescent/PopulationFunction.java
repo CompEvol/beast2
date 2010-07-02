@@ -107,6 +107,8 @@ public interface PopulationFunction extends UnivariateRealFunction {
      */
     double getThreshold();
 
+    void setState(State state);
+
     @Description("An abstract implementation of a population size function plugin.")
     public abstract class Abstract extends Plugin implements PopulationFunction {
 
