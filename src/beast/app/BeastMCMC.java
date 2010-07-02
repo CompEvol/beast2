@@ -27,15 +27,17 @@ package beast.app;
 
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import beast.app.pluginloader.PluginLoader;
 import beast.core.MCMC;
 
+import beast.core.Plugin;
 import beast.util.XMLParser;
 import beast.util.Randomizer;
 import beast.util.XMLParserException;
@@ -140,8 +142,16 @@ public class BeastMCMC {
 
 	public static void main(String [] args) {
 		try {
+//            for (String packageName : PluginLoader.getAvailablePackages()) {
+//                List<Plugin> plugins = PluginLoader.loadPlugins(packageName);
+//                for (Plugin plugin : plugins) {
+//                    System.out.println("Plugin loaded: " + plugin.getDescription());
+//                }
+//            }
+
 			BeastMCMC app = new BeastMCMC();
 			app.parseArgs(args);
+
 			app.run();
 		} catch (XMLParserException e) {
 			System.err.println(e.getMessage());

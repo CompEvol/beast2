@@ -228,20 +228,6 @@ public class DocMaker {
     }
 
     /**
-     * Extract description from @Description annotation *
-     */
-    String getDescription(Plugin plugin) {
-        Annotation[] classAnnotations = plugin.getClass().getAnnotations();
-        for (Annotation annotation : classAnnotations) {
-            if (annotation instanceof Description) {
-                Description description = (Description) annotation;
-                return description.value();
-            }
-        }
-        return "Not documented!!!";
-    }
-
-    /**
      * Extract description from @Description annotation
      * but only if the description is inheritable *
      */
@@ -292,7 +278,7 @@ public class DocMaker {
             }
         }
         // ... plus its own description
-        out.println("<p>" + getDescription(plugin) + "</p>");
+        out.println("<p>" + plugin.getDescription() + "</p>");
 
 
         // show citation (if any)

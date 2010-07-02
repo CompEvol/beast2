@@ -53,6 +53,20 @@ public class Plugin {
     }
 
     /**
+     * Extract description from @Description annotation *
+     */
+    public String getDescription() {
+        Annotation[] classAnnotations = this.getClass().getAnnotations();
+        for (Annotation annotation : classAnnotations) {
+            if (annotation instanceof Description) {
+                Description description = (Description) annotation;
+                return description.value();
+            }
+        }
+        return "Not documented!!!";
+    }
+    
+    /**
      * Extract citation from @Citation annotation *
      */
     public final Citation getCitation() {
