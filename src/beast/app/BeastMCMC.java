@@ -27,7 +27,7 @@ package beast.app;
 
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -35,12 +35,12 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import beast.app.pluginloader.PluginLoader;
-import beast.core.MCMC;
+import beast.core.*;
 
-import beast.core.Plugin;
 import beast.util.XMLParser;
 import beast.util.Randomizer;
 import beast.util.XMLParserException;
+import beast.util.XMLParserAnalyze;
 
 /** Main application for performing MCMC runs.
  * See getUsage() for command line options.
@@ -53,9 +53,9 @@ public class BeastMCMC {
 	/** random number seed used to initialise Randomizer **/
 	int m_nSeed = 127;
 	/** name of SnAP specification file **/
-	String m_sFileName = "examples/testHKY.xml";
+	String m_sFileName = "examples/testCoalescent.xml";
 	/** MCMC object to execute **/
-	MCMC m_mcmc;
+	RunnablePlugin m_runnable;
 
 
 	/** parse command line arguments, and load file if specified
@@ -91,7 +91,7 @@ public class BeastMCMC {
 		}
 		System.err.println("File: " + m_sFileName + " seed: " + m_nSeed + " threads: " + m_nThreads);
 		Randomizer.setSeed(m_nSeed);
-		m_mcmc = new XMLParser().parseFile(m_sFileName);
+		m_runnable = new XMLParserAnalyze().parseFile(m_sFileName);
 	} // parseArgs
 
 	public static String getUsage() {
@@ -134,7 +134,7 @@ public class BeastMCMC {
 
 	public void run() throws Exception {
 		g_exec = Executors.newFixedThreadPool(m_nThreads);
-		m_mcmc.run();
+		m_runnable.run();
 		g_exec.shutdown();
 		g_exec.shutdownNow();
 		System.exit(0);

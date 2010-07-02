@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+       namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.inference.mle'>
 
 
     <!-- The sequence alignment (each sequence refers to a taxon above).         -->
@@ -47,47 +47,31 @@
         <input name='siteModel' idref="siteModel"/>
     </input>
 
+    <parameter id="hky.kappa" value="1.0" lower="0.0"/>
 
-    <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+    <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
         <input name='taxa' idref='alignment'/>
-    </input>
-
-    <input spec='beast.core.Parameter' id="hky.kappa">1.0</input>
-
-    <parameter id="popSize">1.0</parameter>
-    <parameter id="growthRate">1.0</parameter>
+    </tree>
 
 
-    <analyze spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
+    <mcmc id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
+
+            <input name='stateNode' idref="hky.kappa"/>
+            <input name='stateNode' idref="tree"/>
+
             <!--
                         <tree spec='util.TreeParser' id='tree'>
                             <input name='newick'>((5:0.04847887618847128,(3:0.03189934232093919,((2:0.011076861832266626,1:0.011076861832266626):0.009810542752873795,4:0.02088740458514042):0.011011937735798769):0.01657953386753209):0.017232517763959114,6:0.06571139395243039);</input>
                            <input name='taxa' idref='alignment'/>
                         </tree>
             -->
-            <input name='stateNode' idref='hky.kappa'/>
-            <input name='stateNode' idref='popSize'/>
-            <input name='stateNode' idref='growthRate'/>
-            <input name='stateNode' idref='tree'/>
-        </state>
 
-        <probabilityDistribution spec="CompoundProbabilityDistribution" id="posterior">
-            <probabilityDistribution id="coalescent" spec="Coalescent">
-                <tree idref="tree"/>
-                <populationModel spec="ExponentialGrowth">
-                    <parameter name="popSize" idref="popSize"/>
-                    <parameter name="growthRate" idref="growthRate"/>
-                </populationModel>
-            </probabilityDistribution>
-            <probabilityDistribution id='likelihood' idref="treeLikelihood"/>
-        </probabilityDistribution>
+        </state>
+        <probabilityDistribution id='likelihood' idref="treeLikelihood"/>
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <parameter idref="hky.kappa"/>
-        </operator>
-        <operator id='popSizeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
-            <parameter idref="popSize"/>
         </operator>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <tree idref="tree"/>
@@ -110,43 +94,29 @@
 
         <log logEvery="10000">
             <log>
-                <probabilityDistribution idref="coalescent"/>
-            </log>
-            <log>
                 <probabilityDistribution idref="likelihood"/>
             </log>
             <!--parameter idref="treeModel.rootHeight"/-->
             <log>
-                <parameter idref="popSize"/>
-            </log>
-            <log>
                 <parameter idref="hky.kappa"/>
-            </log>
-            <log>
-                <probabilityDistribution idref="posterior"/>
             </log>
         </log>
         <log logEvery="10000" fileName="test.$(seed).log">
             <log>
-                <probabilityDistribution idref="coalescent"/>
-            </log>
-            <log>
                 <probabilityDistribution idref="likelihood"/>
             </log>
             <!--parameter idref="treeModel.rootHeight"/-->
             <log>
-                <parameter idref="popSize"/>
-            </log>
-            <log>
                 <parameter idref="hky.kappa"/>
-            </log>
-            <log>
-                <probabilityDistribution idref="posterior"/>
             </log>
         </log>
         <log logEvery="10000" fileName="test.$(seed).trees">
             <tree idref="tree"/>
         </log>
+    </mcmc>
+
+    <analyze spec="PathSamplingMLE" id="pSampler">
+        <input name="originalMCMC" idref="mcmc"/>
     </analyze>
 
 </beast>

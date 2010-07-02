@@ -54,7 +54,7 @@
     </tree>
 
 
-    <mcmc id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
+    <analyze spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
 
             <input name='stateNode' idref="hky.kappa"/>
@@ -113,6 +113,6 @@
         <log logEvery="10000" fileName="test.$(seed).trees">
             <tree idref="tree"/>
         </log>
-    </mcmc>
+    </analyze>
 
 </beast>

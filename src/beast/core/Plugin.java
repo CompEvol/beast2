@@ -202,7 +202,7 @@ public class Plugin {
                 }
             }
         }
-        throw new Exception("This plugin has no input with name " + sName);
+        throw new Exception("This plugin ("+ this.getID() +") has no input with name " + sName);
     } // getInput
 
     /**

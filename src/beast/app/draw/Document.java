@@ -28,7 +28,8 @@ package beast.app.draw;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
-import beast.util.XMLParser;
+import beast.core.RunnablePlugin;
+import beast.util.XMLParserAnalyze;
 import beast.util.XMLProducer;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,7 +44,7 @@ import java.util.List;
 
 public class Document {
     String m_sName = "not named";
-    MCMC m_mcmc = null;
+    RunnablePlugin m_mcmc = null;
     public ArrayList<Shape> m_objects = new ArrayList<Shape>();
     List<UndoAction> m_undoStack = new ArrayList<UndoAction>();
     int m_nCurrentEditAction = -1;
@@ -220,7 +221,7 @@ public class Document {
         }
         m_objects.add(shape);
         if (shape instanceof PluginShape && ((PluginShape) shape).m_function instanceof MCMC) {
-            m_mcmc = (MCMC) ((PluginShape) shape).m_function;
+            m_mcmc = (RunnablePlugin) ((PluginShape) shape).m_function;
         }
         addUndoAction(new AddAction());
     } // addNewShape
@@ -1179,7 +1180,7 @@ public class Document {
 
 
     public void loadFile(String sFileName) {
-        XMLParser parser = new XMLParser();
+        XMLParserAnalyze parser = new XMLParserAnalyze();
         try {
             m_mcmc = parser.parseFile(sFileName);
             PluginShape shape = new PluginShape(m_mcmc, this);

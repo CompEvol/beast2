@@ -57,7 +57,7 @@
     <input spec='beast.core.Parameter' id="popSize">1.0</input>
 
 
-    <mcmc id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
+    <analyze spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
             <!--
                         <tree spec='util.TreeParser' id='tree'>
@@ -144,6 +144,6 @@
         <log logEvery="10000" fileName="test.$(seed).trees">
             <tree idref="tree"/>
         </log>
-    </mcmc>
+    </analyze>
 
 </beast>
