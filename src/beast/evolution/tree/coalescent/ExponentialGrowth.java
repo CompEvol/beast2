@@ -52,17 +52,12 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
     //
 
     public void initAndValidate(State state) throws Exception {
-        Parameter popParameter = state.getParameter(popSizeParameter);
-        N0 = popParameter.getValue();
-
-        Parameter growthParameter = state.getParameter(growthRateParameter);
-        r = growthParameter.getValue();
-    }
-
-    public void setState(State state) {
-        super.setState(state);
-        N0 = state.getParameter(popSizeParameter).getValue();
-        r = state.getParameter(growthRateParameter).getValue();
+        if (popSizeParameter.get() != null) {
+            popSizeParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+        }
+        if (growthRateParameter.get() != null) {
+            growthRateParameter.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        }
     }
 
     /**
@@ -193,6 +188,15 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
         return eg;
     }
 
+    public void prepare(State state) {
+        if (popSizeParameter.get() != null) {
+            N0 = state.getParameter(popSizeParameter).getValue();
+        }
+        if (growthRateParameter.get() != null) {
+            r = state.getParameter(growthRateParameter).getValue();
+        }
+    }
+
     //
     // private stuff
     //
@@ -200,10 +204,10 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
     /**
      * The current day population size
      */
-    private double N0;
+    private double N0 = 1.0;
 
     /**
      * The exponential growth rate
      */
-    private double r;
+    private double r = 0.01;
 }

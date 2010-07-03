@@ -65,7 +65,7 @@ public class Plugin {
         }
         return "Not documented!!!";
     }
-    
+
     /**
      * Extract citation from @Citation annotation *
      */
@@ -210,6 +210,7 @@ public class Plugin {
      * @throws Exception
      */
     public void initAndValidate(State state) throws Exception {
+        // todo: AR - Why is this not an abstract method? Does Plugin need to be concrete?
         throw new Exception("Plugin.initAndValidate(): Every plugin should implement this method to assure the class behaves, even when inputs are not specified");
     }
 

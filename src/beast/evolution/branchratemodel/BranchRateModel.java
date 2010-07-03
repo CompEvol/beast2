@@ -1,15 +1,23 @@
 package beast.evolution.branchratemodel;
 
+import beast.core.*;
 import beast.evolution.tree.Node;
-import beast.core.Plugin;
-import beast.core.Description;
-import beast.core.State;
 
 /**
  * @author Alexei Drummond
  */
 @Description("Defines a mean rate for each branch in the beast.tree.")
-public abstract class BranchRateModel extends Plugin {
+public interface BranchRateModel {
 
-    abstract double getRateForBranch(State state, Node node);
+    double getRateForBranch(State state, Node node);
+
+    public abstract class Base extends Plugin implements Cacheable {
+        public void store(final int sample) {
+        }
+
+        public void restore(final int sample) {
+        }
+
+        
+    }
 }

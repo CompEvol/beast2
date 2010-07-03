@@ -1,9 +1,14 @@
 package beast.core;
 
+import java.util.List;
+
 /**
  * @author Andrew Rambaut
  * @version $Id$
  */
 public interface Loggable {
-    void log(int sample, State state);
+    
+    List<String> getLabels();
+
+    List<Object> log(int sample, State state);
 }

@@ -1,8 +1,6 @@
 package beast.evolution.tree.coalescent;
 
-import beast.core.Description;
-import beast.core.Plugin;
-import beast.core.State;
+import beast.core.*;
 import beast.math.Binomial;
 import beast.util.Randomizer;
 import org.apache.commons.math.FunctionEvaluationException;
@@ -107,13 +105,10 @@ public interface PopulationFunction extends UnivariateRealFunction {
      */
     double getThreshold();
 
-    void setState(State state);
-
     @Description("An abstract implementation of a population size function plugin.")
-    public abstract class Abstract extends Plugin implements PopulationFunction {
+    public abstract class Abstract extends Plugin implements PopulationFunction, Cacheable {
 
         RombergIntegrator numericalIntegrator = new RombergIntegrator();
-        State state;
 
         /**
          * Construct demographic model with default settings
@@ -122,6 +117,10 @@ public interface PopulationFunction extends UnivariateRealFunction {
         }
 
         // general functions
+        public void initAndValidate(State state) throws Exception {
+            prepare(state);
+        }
+
 
         /**
          * Default implementation
@@ -135,10 +134,6 @@ public interface PopulationFunction extends UnivariateRealFunction {
 
         public double getThreshold() {
             return 0;
-        }
-
-        public void setState(State state) {
-            this.state = state;
         }
 
         /**
@@ -174,6 +169,23 @@ public interface PopulationFunction extends UnivariateRealFunction {
                 throw new RuntimeException(e);
             }
         }
+
+        // **************************************************************
+        // Cacheable IMPLEMENTATION
+        // **************************************************************
+
+        public void store(final int sample) {
+            // empty - may be overridden
+        }
+
+        public void restore(final int sample) {
+            // empty - may be overridden
+        }
+
+        public void prepare(final State state) {
+            // empty - may be overridden
+        }
+
 
         // **************************************************************
         // UnivariateRealFunction IMPLEMENTATION
