@@ -262,15 +262,20 @@ public class SiteModel extends Plugin implements Cacheable {
         ratesKnown = true;
     }
 
+    
+    @Override
     public void store(int nSample) {
         m_pSubstModel.get().store(nSample);
     } // no additional state needs storing
 
+    @Override
     public void restore(int nSample) {
         m_pSubstModel.get().restore(nSample);
         ratesKnown = false;
     }
 
+    @Override
+    public void prepare(State state) {}
 
     private boolean ratesKnown;
 

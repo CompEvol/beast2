@@ -1,6 +1,6 @@
 
 /*
- * File BeerLikelihoodCoreCnG4.java
+ * File BeerLikelihoodCore4.java
  *
  * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
  *
@@ -31,7 +31,7 @@
 // TODO: remove all loops on matrices if matrixcount==1
 
 // TODO: why do partials not sum to 1???
-// TODO: ensure matrices are normalised so that the last item can be calculated as (1 - rest)
+// TODO: ensure matrices are normalised so that the last item can be calculated as (1 - rest) 
 
 // TODO: efficient gamma distribution handling
 
@@ -44,163 +44,241 @@ package beast.evolution.likelihood;
 
 
 public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
-
+	
 	public BeerLikelihoodCoreCnG4() {
 		super(4);
 	} // c'tor
 
-	void calcSSP(int state1, int state2) {
-			m_pfPartials3[v] = m_pfMatrices1[w + state1] * m_pfMatrices2[w + state2];
+	void calcSSP(int state1, int state2, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials3, int w, int v) {
+			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
 			v++;
 			w += m_nStates+1;
 
-			m_pfPartials3[v] = m_pfMatrices1[w + state1] * m_pfMatrices2[w + state2];
+			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
 			v++;
 			w += m_nStates+1;
 
-			m_pfPartials3[v] = m_pfMatrices1[w + state1] * m_pfMatrices2[w + state2];
+			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
 			v++;
 			w += m_nStates+1;
 
-			m_pfPartials3[v] = m_pfMatrices1[w + state1] * m_pfMatrices2[w + state2];
-			v++;
+			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+			//v++;
 			w += m_nStates+1;
+			//return v;
 	}
-
-	void calcSPP(int state1) {
+	
+	void calcSPP(int state1, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v, int u) {
 		double tmp, sum;
-			tmp = m_pfMatrices1[w + state1];
+			tmp = pfMatrices1[w + state1];
 			sum = 0.0;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 0];
+				sum += pfMatrices2[w] * pfPartials2[v + 0];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 1];
+				sum += pfMatrices2[w] * pfPartials2[v + 1];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 2];
+				sum += pfMatrices2[w] * pfPartials2[v + 2];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 3];
+				sum += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
 			w++;
-			m_pfPartials3[u] = tmp * sum;
+			pfPartials3[u] = tmp * sum;
 			u++;
 
-			tmp = m_pfMatrices1[w + state1];
+			tmp = pfMatrices1[w + state1];
 			sum = 0.0;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 0];
+				sum += pfMatrices2[w] * pfPartials2[v + 0];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 1];
+				sum += pfMatrices2[w] * pfPartials2[v + 1];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 2];
+				sum += pfMatrices2[w] * pfPartials2[v + 2];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 3];
+				sum += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
 			w++;
-			m_pfPartials3[u] = tmp * sum;
+			pfPartials3[u] = tmp * sum;
 			u++;
 
-			tmp = m_pfMatrices1[w + state1];
+			tmp = pfMatrices1[w + state1];
 			sum = 0.0;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 0];
+				sum += pfMatrices2[w] * pfPartials2[v + 0];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 1];
+				sum += pfMatrices2[w] * pfPartials2[v + 1];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 2];
+				sum += pfMatrices2[w] * pfPartials2[v + 2];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 3];
+				sum += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
 			w++;
-			m_pfPartials3[u] = tmp * sum;
+			pfPartials3[u] = tmp * sum;
 			u++;
 
-			tmp = m_pfMatrices1[w + state1];
+			tmp = pfMatrices1[w + state1];
 			sum = 0.0;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 0];
+				sum += pfMatrices2[w] * pfPartials2[v + 0];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 1];
+				sum += pfMatrices2[w] * pfPartials2[v + 1];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 2];
+				sum += pfMatrices2[w] * pfPartials2[v + 2];
 				w++;
-				sum += m_pfMatrices2[w] * m_pfPartials2[v + 3];
+				sum += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
 			w++;
-			m_pfPartials3[u] = tmp * sum;
-			u++;
-
-		v += m_nStates;
+			pfPartials3[u] = tmp * sum;
+			//u++;
+			
+		//v += m_nStates;
+		//return u;
 	}
 
-	void calcPPP() {
+	void calcPPP(double [] pfMatrices1, double [] pfPartials1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v1, int v2, int u) {
 		double sum1, sum2;
 			sum1=0;
 			sum2=0;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 0];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 0];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 1];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 1];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 2];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 2];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 3];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 3];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
 				w++;
 			w++;
-			m_pfPartials3[u] = sum1 * sum2;
+			pfPartials3[u] = sum1 * sum2;
 			u++;
 
 			sum1=0;
 			sum2=0;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 0];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 0];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 1];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 1];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 2];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 2];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 3];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 3];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
 				w++;
 			w++;
-			m_pfPartials3[u] = sum1 * sum2;
+			pfPartials3[u] = sum1 * sum2;
+			u++;
+			
+			sum1=0;
+			sum2=0;
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
+				w++;
+			w++;
+			pfPartials3[u] = sum1 * sum2;
 			u++;
 
 			sum1=0;
 			sum2=0;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 0];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 0];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 1];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 1];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 2];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 2];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
 				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 3];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 3];
-				w++;
-			w++;
-			m_pfPartials3[u] = sum1 * sum2;
-			u++;
-
-			sum1=0;
-			sum2=0;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 0];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 0];
-				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 1];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 1];
-				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 2];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 2];
-				w++;
-				sum1 += m_pfMatrices1[w] * m_pfPartials1[v1 + 3];
-				sum2 += m_pfMatrices2[w] * m_pfPartials2[v2 + 3];
+				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
 				w++;
 			w++;
-			m_pfPartials3[u] = sum1 * sum2;
-			u++;
+			pfPartials3[u] = sum1 * sum2;
+			//u++;
+			//return u;
 	}
+	
+	void calcPPP2(double [] pfMatrices1, double [] pfPartials1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v, int u) {
+		double sum1, sum2;
+			sum1=0;
+			sum2=0;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 0];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 1];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 2];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
+				w++;
+			w++;
+			pfPartials3[u] = sum1 * sum2;
+			u++;
 
+			sum1=0;
+			sum2=0;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 0];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 1];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 2];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
+				w++;
+			w++;
+			pfPartials3[u] = sum1 * sum2;
+			u++;
+			
+			sum1=0;
+			sum2=0;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 0];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 1];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 2];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
+				w++;
+			w++;
+			pfPartials3[u] = sum1 * sum2;
+			u++;
+
+			sum1=0;
+			sum2=0;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 0];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 0];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 1];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 1];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 2];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 2];
+				w++;
+				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
+				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
+				w++;
+			w++;
+			pfPartials3[u] = sum1 * sum2;
+			//u++;
+			//return u;
+	}
 } // class BeerLikelihoodCore

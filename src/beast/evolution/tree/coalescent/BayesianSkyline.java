@@ -23,11 +23,11 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     TreeIntervals intervals;
 
     public void initAndValidate(State state) throws Exception {
-        setState(state);
+    	prepare(state);
     }
 
-    public void setState(State state) {
-        super.setState(state);
+    public void prepare(State state) {
+        super.prepare(state);
         popSizes = state.getParameter(popSizeParamInput);
         groupSizes = state.getParameter(groupSizeParamInput);
         tree = (Tree) state.getStateNode(treeInput);

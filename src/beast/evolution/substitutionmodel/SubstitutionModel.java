@@ -51,4 +51,6 @@ public abstract class SubstitutionModel extends Plugin implements Cacheable {
         return false;
     }
 
+    @Override
+    public void prepare(State state) {}
 }

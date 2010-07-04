@@ -80,14 +80,21 @@ public abstract class ProbabilityDistribution extends Plugin implements Cacheabl
         // nothing to do
     }
 
+    @Override
     public void store(int nSample) {
         //super.store(nSample);
         storedLogP = logP;
     }
 
+    @Override
     public void restore(int nSample) {
         //super.restore(nSample);
         logP = storedLogP;
     }
 
+    @Override
+	public
+    void prepare(State state) {}
+
+    
 } // class ProbabilityDistribution

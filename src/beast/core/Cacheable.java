@@ -21,7 +21,7 @@ public interface Cacheable {
     void restore(int sample);
 
     /**
-     * Tell an instance to prepare for the evaulation of the state by extracting required
+     * Tell an instance to prepare for the evaluation of the state by extracting required
      * information from the state. Some of the nodes in state may have been changed by the
      * operators or by the restoration of the previous state by the rejection of a proposal.
      *

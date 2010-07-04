@@ -154,7 +154,7 @@ public class TreeLikelihood extends ProbabilityDistribution {
             //m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
             m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
         }
-        //m_likelihoodCore = new BeerLikelihoodCoreJava(nStateCount);
+        System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
         //probabilities = new double[stateCount * stateCount];
         int nodeCount = m_tree.get().getNodeCount();
