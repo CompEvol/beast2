@@ -1,0 +1,91 @@
+<!-- Build BEAST 2. It is also used by Hudson BEAST_2 project. JUnit test is available for this build. -->
+<project basedir="." default="build_all_BEAST" name="BUILD_BEAST_2">
+	<description>
+	    Build BEAST 2. 
+            Also used by Hudson BEAST_2 project. 
+	    JUnit test is available for this build.
+	    $Id: build_BEAST_2.xml $
+	</description>
+
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="lib" location="lib" />
+	<property name="dist" location="${build}/dist" />
+
+	<property name="main_class_BEAST" value="beast.app.BeastMCMC" />
+	<property name="report"  value="${build}/junitreport"/>
+
+	<path id="classpath">
+		<fileset dir="${lib}" includes="**/*.jar"/>
+	</path>
+
+	<!-- start -->
+	<target name="init">
+		<echo message="${ant.project.name}: ${ant.file}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+
+	<!-- clean previous build, and then compile Java source code, and Juint test -->
+	<!--target name="build_all_BEAST" depends="clean,compile-all,junit"-->
+	<target name="build_all_BEAST" depends="clean,compile-all"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
+	<!--target name="build_jar_all_BEAST" depends="clean,compile-all,junit,dist_all_BEAST"-->
+	<target name="build_jar_all_BEAST" depends="clean,compile-all,dist_all_BEAST"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- No JUnit Test, clean previous build, compile Java source code, and make the beast.jar and beauti.jar -->
+	<target name="build_jar_all_BEAST_NoJUnitTest" depends="clean,compile-all,dist_all_BEAST"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- compile Java source code -->
+	<target name="compile-all" depends="init">
+		<mkdir dir="${build}" />
+
+		<!-- Compile the java code from ${src} into ${build} /bin -->
+		<javac srcdir="${src}" destdir="${build}" classpathref="classpath" 
+		       fork="true"
+		       memoryinitialsize="256m"
+		       memorymaximumsize="256m">
+			<include name="beast/**/**" />
+			<!-- compile JUnit test classes -->
+			<include name="test/beast/**" />
+		</javac>
+		<echo message="Successfully complied." />
+	</target>
+
+	<!-- make the beast.jar and beauti.jar -->
+	<target name="dist_all_BEAST" depends="compile-all" description="create BEAST jar">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}" />
+
+		<!-- Put everything in ${build} into the beast.jar file -->
+		<jar jarfile="${dist}/beast.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="${main_class_BEAST}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="beast/**/*.class" />
+			</fileset>
+			<zipgroupfileset dir="${lib}" includes="commons-math-2.0.jar" />
+		</jar>
+
+	</target>
+
+	<!-- run beast.jar -->
+	<target name="run_BEAST">
+		<java jar="${dist}/beast.jar" fork="true" />
+	</target>
+
+	
+
+</project>
