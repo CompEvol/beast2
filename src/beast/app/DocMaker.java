@@ -255,77 +255,81 @@ public class DocMaker {
                 "</head>\n");
         out.println("<body>\n");
         out.println("<h1>BEAST 2.0 Documentation: " + sPlugin + "</h1>\n");
-        Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
-
-        // show all implementation of this plug-in
-        String[] sImplementations = m_isa.get(sPlugin);
-        if (sImplementations.length > 0) {
-            out.println("<table>");
-            out.println("<thead><tr><td>implemented by the following</td></tr></thead>");
-            for (String sImp : sImplementations) {
-                out.println("<tr><td><a href='" + sImp + ".html'>" + sImp + "</a></td></tr>");
-            }
-            out.println("</table>");
-        }
-
-        // show descriptions of all plug-ins implemented by this plug in...
-        List<String> sAncestors = m_ancestors.get(sPlugin);
-        for (String sAncestor : sAncestors) {
-            String sDescription = m_descriptions.get(sAncestor);
-            if (sDescription.length() > 0) {
-                //out.println("<p>"+ sAncestor + ":"+sDescription + "</p>");
-                out.println("<p>" + sDescription + "</p>");
-            }
-        }
-        // ... plus its own description
-        out.println("<p>" + plugin.getDescription() + "</p>");
-
-
-        // show citation (if any)
-        Citation citation = plugin.getCitation();
-        if (citation != null) {
-            out.println("<h2>Reference:</h2><p>" + citation.value() + "</p>");
-            if (citation.DOI().length() > 0) {
-                out.println("<p><a href=\"http://dx.doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>");
-            }
-        }
-
-        // list its inputs
-        out.println("<h2>Inputs:</h2>");
-        Input<?>[] inputs = plugin.listInputs();
-        if (inputs.length == 0) {
-            out.println("&lt;none&gt;");
-        }
-        for (Input<?> input : inputs) {
-            out.println("<table>");
-            out.println("<caption>" + input.getName() + "</caption>");
-            out.println("<thead><tr><td>type: " + getType(plugin, input.getName()) + "</td></tr></thead>");
-            out.println("<tr><td>" + input.getTipText() + "</td></tr>");
-            out.print("<tr><td>");
-            switch (input.getRule()) {
-                case OPTIONAL:
-                    out.print("Optional input");
-                    if (input.defaultValue != null) {
-                        if (input.defaultValue instanceof Integer ||
-                                input.defaultValue instanceof Double ||
-                                input.defaultValue instanceof Boolean ||
-                                input.defaultValue instanceof String) {
-                            out.print(". Default: " + input.defaultValue.toString());
-                        }
-                    }
-                    break;
-                case REQUIRED:
-                    out.print("Required input");
-                    break;
-                case XOR:
-                    out.print("Either this, or " + input.getOther().getName() + " needs to be specified");
-                    break;
-            }
-            out.println("</td></tr>");
-            out.println("</table>");
-        }
-        out.println("</body>\n");
-        out.println("</html>\n");
+        try {
+	        Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+	
+	        // show all implementation of this plug-in
+	        String[] sImplementations = m_isa.get(sPlugin);
+	        if (sImplementations.length > 0) {
+	            out.println("<table>");
+	            out.println("<thead><tr><td>implemented by the following</td></tr></thead>");
+	            for (String sImp : sImplementations) {
+	                out.println("<tr><td><a href='" + sImp + ".html'>" + sImp + "</a></td></tr>");
+	            }
+	            out.println("</table>");
+	        }
+	
+	        // show descriptions of all plug-ins implemented by this plug in...
+	        List<String> sAncestors = m_ancestors.get(sPlugin);
+	        for (String sAncestor : sAncestors) {
+	            String sDescription = m_descriptions.get(sAncestor);
+	            if (sDescription.length() > 0) {
+	                //out.println("<p>"+ sAncestor + ":"+sDescription + "</p>");
+	                out.println("<p>" + sDescription + "</p>");
+	            }
+	        }
+	        // ... plus its own description
+	        out.println("<p>" + plugin.getDescription() + "</p>");
+	
+	
+	        // show citation (if any)
+	        Citation citation = plugin.getCitation();
+	        if (citation != null) {
+	            out.println("<h2>Reference:</h2><p>" + citation.value() + "</p>");
+	            if (citation.DOI().length() > 0) {
+	                out.println("<p><a href=\"http://dx.doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>");
+	            }
+	        }
+	
+	        // list its inputs
+	        out.println("<h2>Inputs:</h2>");
+	        Input<?>[] inputs = plugin.listInputs();
+	        if (inputs.length == 0) {
+	            out.println("&lt;none&gt;");
+	        }
+	        for (Input<?> input : inputs) {
+	            out.println("<table>");
+	            out.println("<caption>" + input.getName() + "</caption>");
+	            out.println("<thead><tr><td>type: " + getType(plugin, input.getName()) + "</td></tr></thead>");
+	            out.println("<tr><td>" + input.getTipText() + "</td></tr>");
+	            out.print("<tr><td>");
+	            switch (input.getRule()) {
+	                case OPTIONAL:
+	                    out.print("Optional input");
+	                    if (input.defaultValue != null) {
+	                        if (input.defaultValue instanceof Integer ||
+	                                input.defaultValue instanceof Double ||
+	                                input.defaultValue instanceof Boolean ||
+	                                input.defaultValue instanceof String) {
+	                            out.print(". Default: " + input.defaultValue.toString());
+	                        }
+	                    }
+	                    break;
+	                case REQUIRED:
+	                    out.print("Required input");
+	                    break;
+	                case XOR:
+	                    out.print("Either this, or " + input.getOther().getName() + " needs to be specified");
+	                    break;
+	            }
+	            out.println("</td></tr>");
+	            out.println("</table>");
+	        }
+	        out.println("</body>\n");
+	        out.println("</html>\n");
+        } catch (Exception e) {
+			System.err.println("Page creation failed for " +sPlugin + ": " + e.getMessage());
+		}
     } // createPluginPage
 
     /**
@@ -394,14 +398,17 @@ public class DocMaker {
             m_ancestors.put(sPlugin, new ArrayList<String>());
         }
         for (String sPlugin : m_sPluginNames) {
-            Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
-            m_descriptions.put(sPlugin, getInheritableDescription(plugin));
-            String[] sImplementations = getImplementations(plugin);
-            m_isa.put(sPlugin, sImplementations);
-            for (String sImp : sImplementations) {
-                m_ancestors.get(sImp).add(sPlugin);
-                //System.err.println(sImp + " <= " + sPlugin);
-            }
+        	try {
+	            Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+	            m_descriptions.put(sPlugin, getInheritableDescription(plugin));
+	            String[] sImplementations = getImplementations(plugin);
+	            m_isa.put(sPlugin, sImplementations);
+	            for (String sImp : sImplementations) {
+	                m_ancestors.get(sImp).add(sPlugin);
+	            }
+        	} catch (Exception e) {
+        		System.err.println(sPlugin + " not documented :" + e.getMessage());
+        	}
         }
 
         // first, produce CSS & index page
