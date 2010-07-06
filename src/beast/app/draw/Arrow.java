@@ -117,7 +117,7 @@ public class Arrow extends Line {
 			i++;
 		}
 		head = (Shape)objects.get(i);
-		if (head instanceof Ellipse && ((Ellipse)head).getFunction()!=null) {
+		if (head instanceof InputShape && ((InputShape)head).getFunction()!=null) {
 			Shape tail = null;
 			int j = 0;
 			while (j < objects.size() && !((Shape)objects.get(j)).m_id.equals(m_sTailID)) {
@@ -125,7 +125,7 @@ public class Arrow extends Line {
 			}
 			tail = (Shape)objects.get(j);
 			//try {
-				return ((Ellipse)head).getFunction().connect(tail, m_sHeadID, doc);
+				return ((InputShape)head).getFunction().connect(tail, m_sHeadID, doc);
 			//} catch (Exception e) {
 				//return false;
 			//}
@@ -275,7 +275,7 @@ public class Arrow extends Line {
 		 (m_head.getY() + m_head.getY2()) / 2);
 		Rect rect = (Rect) m_tail;
 		Point roundness = new Point(0,0);
-		if (rect instanceof Ellipse) {
+		if (rect instanceof InputShape) {
 			roundness.x = rect.m_w;
 			roundness.y = rect.m_h;
 		}
@@ -284,7 +284,7 @@ public class Arrow extends Line {
 
 			rect = (Rect) m_head;
 			roundness = new Point(0,0);
-			if (rect instanceof Ellipse) {
+			if (rect instanceof InputShape) {
 				roundness.x = rect.m_w;
 				roundness.y = rect.m_h;
 			}

@@ -26,6 +26,7 @@ package beast.app.draw;
 
 
 
+
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
@@ -64,21 +65,19 @@ public class Document {
         m_bIsSaved = false;
     }
 
-//    public final static String[] IMPLEMENTATION_DIR = {"beast.core", "beast.evolution", "beast.util"};
     public final static String[] IMPLEMENTATION_DIR = {"beast"};
 
 
     /**
-     * list of class names for constants and functions respectively to choose from *
+     * list of class names for plug-ins to choose from *
      */
-//	String [] m_sConstantNames;
-    String[] m_sFunctionNames;
+    String[] m_sPlugInNames;
 
 
     public Document() {
         // load all parsers
-        List<String> sFunctioNames = ClassDiscovery.find(beast.core.Plugin.class, IMPLEMENTATION_DIR);
-        m_sFunctionNames = sFunctioNames.toArray(new String[0]);
+        List<String> sPlugInNames = ClassDiscovery.find(beast.core.Plugin.class, IMPLEMENTATION_DIR);
+        m_sPlugInNames = sPlugInNames.toArray(new String[0]);
     } // c'tor
 
     void moveArrowsToBack() {
@@ -327,15 +326,15 @@ public class Document {
 
     
     void findAffectedShapes(Shape shape, List<Integer> selection) {
-    	if (shape instanceof Ellipse) {
-    		findInputs((Ellipse)shape, selection);
+    	if (shape instanceof InputShape) {
+    		findInputs((InputShape)shape, selection);
     	} else {
-    		for (Ellipse ellipse : ((PluginShape)shape).m_inputs) {
+    		for (InputShape ellipse : ((PluginShape)shape).m_inputs) {
         		findInputs(ellipse, selection);
     		}
     	}
     }
-	void findInputs(Ellipse ellipse, List<Integer> selection) {
+	void findInputs(InputShape ellipse, List<Integer> selection) {
 		for (Shape shape : m_objects) {
 			if (shape instanceof Arrow) {
 				Arrow arrow = (Arrow) shape;
@@ -912,10 +911,10 @@ public class Document {
             }
             for (int i = 0; i < m_nNrPrimePositions; i++) {
             	Shape shape = m_objects.get(m_nPositions.get(i));
-            	if (shape instanceof Ellipse) {
-            		moveInputShapes((Ellipse) shape);
+            	if (shape instanceof InputShape) {
+            		moveInputShapes((InputShape) shape);
             	} else {
-               		for (Ellipse ellipse : ((PluginShape)shape).m_inputs) {
+               		for (InputShape ellipse : ((PluginShape)shape).m_inputs) {
                			moveInputShapes(ellipse);
                 	}
             	}
@@ -924,7 +923,7 @@ public class Document {
         
         void moveInputShapes(PluginShape shape) {
         }
-    	void moveInputShapes(Ellipse ellipse) {
+    	void moveInputShapes(InputShape ellipse) {
     		for (Shape shape : m_objects) {
     			if (shape instanceof Arrow) {
     				Arrow arrow = (Arrow) shape;
@@ -1356,7 +1355,7 @@ public class Document {
 //            shape = new RoundRectangle(node, doc);
 //        } else 
         if (node.getNodeName().equals("ellipse")) {
-            shape = new Ellipse(node, doc);
+            shape = new InputShape(node, doc);
 //        } else if (node.getNodeName().equals("line")) {
 //            shape = new Line(node, doc);
 //        } else if (node.getNodeName().equals("rect")) {
@@ -1438,8 +1437,8 @@ public class Document {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 String sID = arrow.m_tail.m_id;
-                if (arrow.m_head instanceof Ellipse) {
-                    String sID2 = ((Ellipse) arrow.m_head).m_function.m_id;
+                if (arrow.m_head instanceof InputShape) {
+                    String sID2 = ((InputShape) arrow.m_head).m_function.m_id;
                     if (degreeMap.containsKey(sID)) {
                         degreeMap.put(sID, degreeMap.get(sID) + 1);
                     } else {
@@ -1461,8 +1460,8 @@ public class Document {
                 Shape source = arrow.m_tail;
                 int p1x = source.m_x + source.m_w / 2;
                 int p1y = source.m_y + source.m_h / 2;
-                if (arrow.m_head instanceof Ellipse) {
-                    Shape target = ((Ellipse) arrow.m_head).m_function;
+                if (arrow.m_head instanceof InputShape) {
+                    Shape target = ((InputShape) arrow.m_head).m_function;
                     int p2x = target.m_x + target.m_w / 2;
                     int p2y = target.m_y + target.m_h / 2;
 

@@ -1118,8 +1118,8 @@ public class ModelBuilder extends JPanel {
 				if (needsDrawing(plugin)) {
 					shape.m_bNeedsDrawing = true;
 				}
-			} else if (shape instanceof Ellipse) {
-				PluginShape pluginShape = ((Ellipse)shape).m_function;
+			} else if (shape instanceof InputShape) {
+				PluginShape pluginShape = ((InputShape)shape).m_function;
 				if (pluginShape != null) {
 					if (needsDrawing(pluginShape.m_function)) {
 						shape.m_bNeedsDrawing = true;
@@ -1135,8 +1135,8 @@ public class ModelBuilder extends JPanel {
 				}
 				if (bNeedsDrawing) {
 					Shape head = ((Arrow)shape).m_head;
-					if (head instanceof Ellipse) {
-						PluginShape pluginShape = ((Ellipse)head).m_function;
+					if (head instanceof InputShape) {
+						PluginShape pluginShape = ((InputShape)head).m_function;
 						if (pluginShape != null) {
 							bNeedsDrawing = needsDrawing(pluginShape.m_function);
 						}
@@ -1304,8 +1304,8 @@ public class ModelBuilder extends JPanel {
 						if (shape instanceof Arrow) {
 							return;
 						}
-						if (shape instanceof Ellipse) {
-							shape = ((Ellipse) shape).m_function;
+						if (shape instanceof InputShape) {
+							shape = ((InputShape) shape).m_function;
 						}
 						arrow = new Arrow(shape, me.getX(), me.getY());
 						arrow.m_w = 1;
@@ -1421,9 +1421,9 @@ public class ModelBuilder extends JPanel {
 					for (int  i = m_doc.m_objects.size()-1; i>=0; i--) {
 						Shape shape = m_doc.m_objects.get(i);
 						if (shape.m_bNeedsDrawing && shape.intersects(me.getX(), me.getY())) {
-							if (shape instanceof Ellipse) {
+							if (shape instanceof InputShape) {
 								// resolve the associated input
-								Ellipse ellipse = (Ellipse) shape;
+								InputShape ellipse = (InputShape) shape;
 								String sInput = ellipse.getInputName();
 								Plugin plugin = ellipse.getPlugin();
 								if (plugin.isPrimitive(sInput)) {
@@ -1621,7 +1621,7 @@ public class ModelBuilder extends JPanel {
 						String sFunctionClassName = (String) JOptionPane.showInputDialog(g_panel,
 								"Select a constant", "select",
 								JOptionPane.PLAIN_MESSAGE, null,
-								m_doc.m_sFunctionNames,
+								m_doc.m_sPlugInNames,
 								null);
 						if (sFunctionClassName != null) {
 							try {
@@ -1656,7 +1656,7 @@ public class ModelBuilder extends JPanel {
 							return;
 						}
 						Shape target = m_doc.m_objects.get(iSelection); 
-						if (!(target instanceof Ellipse)) {
+						if (!(target instanceof InputShape)) {
 							// only connect to inputs of functions
 							m_drawShape = null;
 							repaint();

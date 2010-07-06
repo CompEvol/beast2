@@ -1,0 +1,23 @@
+<doc name='not named'>
+<roundrectangle roundx='16' roundy='16' label='Plugin' fillcolor='100 200 200' id='id0' x='-355' y='349' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='MCMC' fillcolor='200 100 200' id='id1' x='-188' y='222' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='Data' fillcolor='200 100 200' id='id2' x='4' y='444' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='State' fillcolor='200 100 200' id='id3' x='6' y='212' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='Uncertainty' fillcolor='200 100 200' id='id4' x='7' y='318' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='Operator' fillcolor='200 100 200' id='id5' x='14' y='102' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='Input' fillcolor='100 200 200' id='id6' x='-354' y='222' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='Log' fillcolor='200 100 200' id='id7' x='17' y='-1' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='Parameter' fillcolor='255 255 153' id='id15' x='169' y='247' w='123' h='29'/>
+<roundrectangle roundx='16' roundy='16' label='Tree' fillcolor='255 255 153' id='id16' x='171' y='204' w='123' h='25'/>
+<arrow headid='id6' tailid='id0' penstyle='null' hashead='0' id='id8' x='-294' y='289' w='1' h='61'/>
+<arrow headid='id2' tailid='id2' penstyle='null' hashead='0' id='id10' x='-400' y='478' w='0' h='0'/>
+<arrow headid='id15' tailid='id3' penstyle='null' hashead='0' id='id17' x='128' y='257' w='41' h='-6'/>
+<arrow headid='id16' tailid='id3' penstyle='null' hashead='0' id='id18' x='128' y='228' w='45' h='8'/>
+<arrow headid='id3' tailid='id1' penstyle='null' hashead='0' id='id19' x='-66' y='249' w='72' h='4'/>
+<arrow headid='id2' tailid='id1' penstyle='null' hashead='0' id='id20' x='-99' y='445' w='136' h='-156'/>
+<arrow headid='id4' tailid='id1' penstyle='null' hashead='0' id='id21' x='-68' y='323' w='76' h='-37'/>
+<arrow headid='id5' tailid='id1' penstyle='null' hashead='0' id='id22' x='-72' y='170' w='91' h='54'/>
+<arrow headid='id7' tailid='id1' penstyle='null' hashead='0' id='id23' x='-97' y='66' w='145' h='157'/>
+<roundrectangle roundx='16' roundy='16' label='Sequence' fillcolor='255 255 153' id='id24' x='162' y='464' w='123' h='27'/>
+<arrow headid='id24' tailid='id2' penstyle='null' hashead='0' id='id25' x='126' y='478' w='36' h='0'/>
+</doc>

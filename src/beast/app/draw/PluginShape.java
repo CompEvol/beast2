@@ -46,7 +46,7 @@ import beast.core.Plugin;
 
 public class PluginShape extends Rect {
 	public beast.core.Plugin m_function;
-	List<Ellipse> m_inputs;
+	List<InputShape> m_inputs;
 	String m_sOutput = "";
 
 
@@ -73,11 +73,11 @@ public class PluginShape extends Rect {
 				m_function = (beast.core.Plugin) Class.forName(sClassName).newInstance();
 				setLabel(sClassName.substring(sClassName.lastIndexOf('.')+1));
 			}
-		m_inputs = new ArrayList<Ellipse>();
+		m_inputs = new ArrayList<InputShape>();
 		Input<?> [] sInputs = m_function.listInputs();
 		for (int i = 0; i < sInputs.length; i++) {
 			//int nOffset = i*m_w/(sInputs.length) + m_w/(2*(sInputs.length));
-			Ellipse input = new Ellipse();
+			InputShape input = new InputShape();
 			input.setFunction(this);
 			input.m_fillcolor = m_fillcolor;
 //			input.m_x = m_x + nOffset;
@@ -105,7 +105,7 @@ public class PluginShape extends Rect {
 		adjustInputs();
 		} catch (Exception e) {
 			System.err.println("Could not process inputs: " + e.getMessage());
-			m_inputs = new ArrayList<Ellipse>();
+			m_inputs = new ArrayList<InputShape>();
 			// TODO: handle exception
 		}
 	} // setClassName
@@ -186,7 +186,7 @@ public class PluginShape extends Rect {
 		if (m_function != null) {
 			for (int i = 0; i < m_inputs.size(); i++) {
 //				int nOffset = i*m_w/(m_inputs.size()) + m_w/(2*(m_inputs.size()));
-				Ellipse input = m_inputs.get(i);
+				InputShape input = m_inputs.get(i);
 //				input.m_x = m_x + nOffset;
 //				input.m_y = m_y-10;
 //				input.m_w = 10;
@@ -233,9 +233,9 @@ public class PluginShape extends Rect {
 		if (node.getAttributes().getNamedItem("inputids") != null) {
 			String sInputIDs = node.getAttributes().getNamedItem("inputids").getNodeValue();
 			String [] sInputID = sInputIDs.split(" ");
-			m_inputs = new ArrayList<Ellipse>();
+			m_inputs = new ArrayList<InputShape>();
 			for (int i = 0;i < sInputID.length; i++) {
-				Ellipse ellipse = (Ellipse) doc.findObjectWithID(sInputID[i]);
+				InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
 				m_inputs.add(ellipse);
 				ellipse.setFunction(this);
 			}
