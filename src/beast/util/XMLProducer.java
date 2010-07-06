@@ -24,11 +24,12 @@
 */
 package beast.util;
 
+
 import beast.core.*;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
 import javax.xml.transform.TransformerException;
@@ -88,7 +89,7 @@ public class XMLProducer extends XMLParser {
      * outside MCMC element.
      */
     String cleanUpXML(String sXML) throws TransformerException {
-
+//if(true) return sXML;
         StringWriter strWriter = new StringWriter();
         Reader xmlInput = new StringReader(sXML);
         javax.xml.transform.Source xmlSource =
@@ -123,7 +124,7 @@ public class XMLProducer extends XMLParser {
             "        <xsl:text>&#x0a;&#x0a;&#x0a;    </xsl:text>\n" +
             "        <xsl:apply-templates select='//beast.tree[not(@idref)]' mode='copy'/>\n" +
             "        <xsl:text>&#x0a;&#x0a;&#x0a;    </xsl:text>\n" +
-            "        <xsl:apply-templates select='//probabilityDistribution[not(@idref) and not(ancestor::probabilityDistribution)]' mode='copy'/>\n" +
+            "        <xsl:apply-templates select='//distribution[not(@idref) and not(ancestor::distribution)]' mode='copy'/>\n" +
             "        <xsl:text>&#x0a;&#x0a;&#x0a;    </xsl:text>\n" +
             "        <xsl:apply-templates select='node()'/>    \n" +
             "    </xsl:copy>\n" +
@@ -131,11 +132,14 @@ public class XMLProducer extends XMLParser {
             "\n" +
             "<xsl:template match='*' mode='copy'>\n" +
             "  <xsl:copy>\n" +
+            "    <xsl:attribute name='id'>\n" +
+            "         <xsl:value-of select='@id'/>\n" +
+            "    </xsl:attribute>\n" +
             "    <xsl:apply-templates select='@*|node()'/>\n" +
             "  </xsl:copy>\n" +
             "</xsl:template>\n" +
             "\n" +
-            "<xsl:template match='data|beast.tree|probabilityDistribution[not(ancestor::probabilityDistribution)]'>\n" +
+            "<xsl:template match='data|beast.tree|distribution[not(ancestor::distribution)]'>\n" +
             "    <xsl:copy>\n" +
             "        <xsl:attribute name='idref'>\n" +
             "            <xsl:choose>\n" +
@@ -184,7 +188,7 @@ public class XMLProducer extends XMLParser {
             sElementName = XMLParser.STATE_ELEMENT;
         }
         if (plugin instanceof Distribution) {
-            sElementName = XMLParser.PROBABILITY_ELEMENT;
+            sElementName = XMLParser.DISTRIBUTION_ELEMENT;
         }
         if (plugin instanceof Logger) {
             sElementName = XMLParser.LOG_ELEMENT;
@@ -204,7 +208,7 @@ public class XMLProducer extends XMLParser {
         if (plugin instanceof Tree) {
             sElementName = XMLParser.TREE_ELEMENT;
         }
-
+	     
         if (bIsTopLevel) {
             sElementName = XMLParser.RUN_ELEMENT;
         }

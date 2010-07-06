@@ -25,6 +25,7 @@
 package beast.util;
 
 
+
 import beast.core.*;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
@@ -53,6 +54,7 @@ import java.util.HashMap;
  * <sequence>
  * <state>
  * <parameter>
+ * <intParameter>
  * <tree>
  * <beast version='2.0' namespace='x.y.z:'>
  * <map name='elementName'>x.y.z.Class</map>
@@ -118,7 +120,7 @@ public class XMLParser {
 
     final static String BEAST_ELEMENT = "beast";
     final static String MAP_ELEMENT = "map";
-    final static String PROBABILITY_ELEMENT = "probabilityDistribution";
+    final static String DISTRIBUTION_ELEMENT = "distribution";
     final static String OPERATOR_ELEMENT = "operator";
     final static String INPUT_ELEMENT = "input";
     final static String LOG_ELEMENT = "log";
@@ -154,7 +156,7 @@ public class XMLParser {
     public XMLParser() {
         m_sElement2ClassMap = new HashMap<String, String>();
         //m_sElement2ClassMap.put(MCMC_ELEMENT, MCMC_CLASS);
-        m_sElement2ClassMap.put(PROBABILITY_ELEMENT, LIKELIHOOD_CLASS);
+        m_sElement2ClassMap.put(DISTRIBUTION_ELEMENT, LIKELIHOOD_CLASS);
         m_sElement2ClassMap.put(OPERATOR_ELEMENT, OPERATOR_CLASS);
         m_sElement2ClassMap.put(INPUT_ELEMENT, INPUT_CLASS);
         m_sElement2ClassMap.put(LOG_ELEMENT, LOG_CLASS);
@@ -178,12 +180,11 @@ public class XMLParser {
 
 
         parse();
-        if (m_runnable instanceof RunnablePlugin)
-            return (RunnablePlugin) m_runnable;
-        else {
+        if(m_runnable instanceof RunnablePlugin)
+            return (RunnablePlugin)m_runnable;
+        else{
             throw new Exception("Run element does not point to a runnable object.");
-        }
-    } // parseFile
+        }    } // parseFile
 
 
     /**
