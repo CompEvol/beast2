@@ -121,7 +121,7 @@ package beast.evolution.likelihood;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.ProbabilityDistribution;
+import beast.core.Distribution;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.sitemodel.SiteModel;
@@ -134,7 +134,7 @@ import java.util.List;
 import java.util.Random;
 
 @Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model.")
-public class TreeLikelihood extends ProbabilityDistribution {
+public class TreeLikelihood extends Distribution {
 
     public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree");
     public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs");

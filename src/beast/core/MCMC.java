@@ -39,7 +39,7 @@ public class MCMC extends RunnablePlugin{
     public Input<Integer> m_oBurnIn = new Input<Integer>("preBurnin", "Number of burn in samples taken before entering the main loop", new Integer(0));
     public Input<Integer> m_oChainLength = new Input<Integer>("chainLength", "Length of the MCMC chain i.e. number of samples taken in main loop", Input.Validate.REQUIRED);
     public Input<State> m_startState = new Input<State>("state", "elements of the state space", new State(), Input.Validate.REQUIRED);
-    public Input<ProbabilityDistribution> m_uncertainty = new Input<ProbabilityDistribution>("probabilityDistribution", "probability distribution to sample over (e.g. a posterior)", Input.Validate.REQUIRED);
+    public Input<Distribution> m_uncertainty = new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)", Input.Validate.REQUIRED);
 
     public Input<List<Operator>> m_operators = new Input<List<Operator>>("operator", "operator for generating proposals in MCMC state space", new ArrayList<Operator>(), Input.Validate.REQUIRED);
     public OperatorSet m_operatorset = new OperatorSet();

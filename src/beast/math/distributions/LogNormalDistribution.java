@@ -25,10 +25,10 @@
 
 package beast.math.distributions;
 
+
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
-
 /**
  * log normal distribution (pdf, cdf, quantile)
  *

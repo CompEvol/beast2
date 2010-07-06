@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
 
 
     <!-- The sequence alignment (each sequence refers to a taxon above).         -->
@@ -57,7 +57,7 @@
     <input spec='beast.core.Parameter' id="popSize">1.0</input>
 
 
-    <analyze spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
+    <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
             <!--
                         <tree spec='util.TreeParser' id='tree'>
@@ -70,15 +70,15 @@
             <input name='stateNode' idref='tree'/>
         </state>
 
-        <probabilityDistribution spec="CompoundProbabilityDistribution" id="posterior">
-            <probabilityDistribution id="coalescent" spec="Coalescent">
+        <distribution spec="CompoundDistribution" id="posterior">
+            <distribution id="coalescent" spec="Coalescent">
                 <tree idref="tree"/>
                 <populationModel spec="ConstantPopulation">
                     <parameter name="popSize" idref="popSize"/>
                 </populationModel>
-            </probabilityDistribution>
-            <probabilityDistribution id='likelihood' idref="treeLikelihood"/>
-        </probabilityDistribution>
+            </distribution>
+            <distribution id='likelihood' idref="treeLikelihood"/>
+        </distribution>
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <parameter idref="hky.kappa"/>
@@ -144,6 +144,6 @@
         <log logEvery="10000" fileName="test.$(seed).trees">
             <tree idref="tree"/>
         </log>
-    </analyze>
+    </run>
 
 </beast>

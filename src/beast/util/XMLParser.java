@@ -44,17 +44,17 @@ import java.util.HashMap;
  * <p/>
  * <p/>
  * Reserved elements (present in element2class map)
- * <mcmc>
- * <uncertainty>
+ * <probabilityDistribution>
  * <operator>
  * <log>
  * <data>
  * <sequence>
  * <state>
  * <parameter>
- * <beast.tree>
+ * <tree>
  * <beast version='2.0' namespace='x.y.z:'>
  * <map name='elementName'>x.y.z.Class</map>
+ * <run>
  * <p/>
  * Reserved attributes:
  * <input id='myId' idRef='otherId' name='inputName' spec='x.y.z.MyClass'/>
@@ -104,19 +104,17 @@ public class XMLParser {
     final static String DATA_CLASS = Alignment.class.getName();
     final static String SEQUENCE_CLASS = Sequence.class.getName();
     final static String STATE_CLASS = State.class.getName();
-    final static String LIKELIHOOD_CLASS = ProbabilityDistribution.class.getName();
+    final static String LIKELIHOOD_CLASS = Distribution.class.getName();
     final static String LOG_CLASS = Logger.class.getName();
-    final static String MCMC_CLASS = MCMC.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
     final static String PARAMETER_CLASS = Parameter.class.getName();
     final static String PLUGIN_CLASS = Plugin.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
-
+    final static String RUNNABLE_CLASS = Runnable.class.getName();
 
     final static String BEAST_ELEMENT = "beast";
     final static String MAP_ELEMENT = "map";
-    final static String MCMC_ELEMENT = "mcmc";
     final static String PROBABILITY_ELEMENT = "probabilityDistribution";
     final static String OPERATOR_ELEMENT = "operator";
     final static String INPUT_ELEMENT = "input";
@@ -126,9 +124,10 @@ public class XMLParser {
     final static String STATE_ELEMENT = "state";
     final static String TREE_ELEMENT = "tree";
     final static String PARAMETER_ELEMENT = "parameter";
+    final static String RUN_ELEMENT = "run";
 
 
-    MCMC m_mcmc;
+    RunnablePlugin m_runnable;
     State m_state;
     /**
      * DOM document representation of XML file *
@@ -150,7 +149,7 @@ public class XMLParser {
 
     public XMLParser() {
         m_sElement2ClassMap = new HashMap<String, String>();
-        m_sElement2ClassMap.put(MCMC_ELEMENT, MCMC_CLASS);
+        //m_sElement2ClassMap.put(MCMC_ELEMENT, MCMC_CLASS);
         m_sElement2ClassMap.put(PROBABILITY_ELEMENT, LIKELIHOOD_CLASS);
         m_sElement2ClassMap.put(OPERATOR_ELEMENT, OPERATOR_CLASS);
         m_sElement2ClassMap.put(INPUT_ELEMENT, INPUT_CLASS);
@@ -162,8 +161,7 @@ public class XMLParser {
         m_sElement2ClassMap.put(PARAMETER_ELEMENT, PARAMETER_CLASS);
     }
 
-    public MCMC parseFile(String sFileName) throws Exception {
-        m_mcmc = new MCMC();
+    public RunnablePlugin parseFile(String sFileName) throws Exception {
         // parse the XML file into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
@@ -175,9 +173,11 @@ public class XMLParser {
 
 
         parse();
-
-        return m_mcmc;
-    } // parseFile
+        if(m_runnable instanceof RunnablePlugin)
+            return (RunnablePlugin)m_runnable;
+        else{
+            throw new Exception("Run element does not point to a runnable object.");
+        }    } // parseFile
 
 
     /**
@@ -199,7 +199,7 @@ public class XMLParser {
         parseNameSpaceAndMap(topNode);
 
         //parseState();
-        parseMCMC(topNode);
+        parseRunElement(topNode);
     } // parse
 
 
@@ -288,18 +288,18 @@ public class XMLParser {
         }
     } // parseNameSpaceAndMap
 
-    void parseMCMC(Node topNode) throws Exception {
+    void parseRunElement(Node topNode) throws Exception {
         // find mcmc element
-        NodeList nodes = m_doc.getElementsByTagName(MCMC_ELEMENT);
+        NodeList nodes = m_doc.getElementsByTagName(RUN_ELEMENT);
         if (nodes.getLength() == 0) {
-            throw new XMLParserException(topNode, "Expected mcmc element in file", 102);
+            throw new XMLParserException(topNode, "Expected run element in file", 102);
         }
         if (nodes.getLength() > 1) {
             throw new XMLParserException(topNode, "Expected only one mcmc element in file, not " + nodes.getLength(), 103);
         }
         Node mcmc = nodes.item(0);
 
-        m_mcmc = (MCMC) createObject(mcmc, MCMC_CLASS, null);
+        m_runnable = (RunnablePlugin) createObject(mcmc, RUNNABLE_CLASS, null);
 
 
     } // parseMCMC

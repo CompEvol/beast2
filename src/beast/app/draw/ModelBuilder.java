@@ -90,7 +90,7 @@ public class ModelBuilder extends JPanel {
 	/** File extention for XML format containing all graphical details (colour, position, etc)
 	 * NB This is not the extention for GenerationD model files. **/
 	static public final String FILE_EXT = ".xml";
-	final public static String ICONPATH = "app/draw/icons/";
+	final public static String ICONPATH = "beast/app/draw/icons/";
 
 	public DrawPanel g_panel;
 

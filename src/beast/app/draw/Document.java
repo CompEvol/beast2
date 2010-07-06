@@ -25,11 +25,12 @@
 package beast.app.draw;
 
 
+
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
 import beast.core.RunnablePlugin;
-import beast.util.XMLParserAnalyze;
+import beast.util.XMLParser;
 import beast.util.XMLProducer;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -1180,7 +1181,7 @@ public class Document {
 
 
     public void loadFile(String sFileName) {
-        XMLParserAnalyze parser = new XMLParserAnalyze();
+        XMLParser parser = new XMLParser();
         try {
             m_mcmc = parser.parseFile(sFileName);
             PluginShape shape = new PluginShape(m_mcmc, this);

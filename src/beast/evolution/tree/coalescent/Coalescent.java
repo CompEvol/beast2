@@ -2,7 +2,7 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.ProbabilityDistribution;
+import beast.core.Distribution;
 import beast.core.State;
 import beast.evolution.tree.Tree;
 import beast.math.Binomial;
@@ -16,7 +16,7 @@ import java.util.Random;
  */
 
 @Description("Calculates the probability of a beast.tree conditional on a population size function.")
-public class Coalescent extends ProbabilityDistribution {
+public class Coalescent extends Distribution {
 
     public Input<Tree> tree = new Input<Tree>("tree", "phylogenetic beast.tree");
     public Input<PopulationFunction.Abstract> popSize = new Input<PopulationFunction.Abstract>("populationModel", "A population size model");

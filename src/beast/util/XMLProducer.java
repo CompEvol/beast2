@@ -70,7 +70,7 @@ public class XMLProducer extends XMLParser {
             m_bDone = new HashSet<Plugin>();
             m_sIDs = new HashSet<String>();
             m_nIndent = 0;
-            pluginToXML(plugin, buf, null);
+            pluginToXML(plugin, buf, null, true);
             buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
             //return buf.toString();
             return cleanUpXML(buf.toString());
@@ -121,7 +121,7 @@ public class XMLProducer extends XMLParser {
             "        <xsl:text>&#x0a;&#x0a;&#x0a;    </xsl:text>\n" +
             "        <xsl:apply-templates select='//beast.tree[not(@idref)]' mode='copy'/>\n" +
             "        <xsl:text>&#x0a;&#x0a;&#x0a;    </xsl:text>\n" +
-            "        <xsl:apply-templates select='//likelihood[not(@idref) and not(ancestor::likelihood)]' mode='copy'/>\n" +
+            "        <xsl:apply-templates select='//probabilityDistribution[not(@idref) and not(ancestor::probabilityDistribution)]' mode='copy'/>\n" +
             "        <xsl:text>&#x0a;&#x0a;&#x0a;    </xsl:text>\n" +
             "        <xsl:apply-templates select='node()'/>    \n" +
             "    </xsl:copy>\n" +
@@ -133,7 +133,7 @@ public class XMLProducer extends XMLParser {
             "  </xsl:copy>\n" +
             "</xsl:template>\n" +
             "\n" +
-            "<xsl:template match='data|beast.tree|likelihood[not(ancestor::likelihood)]'>\n" +
+            "<xsl:template match='data|beast.tree|probabilityDistribution[not(ancestor::probabilityDistribution)]'>\n" +
             "    <xsl:copy>\n" +
             "        <xsl:attribute name='idref'>\n" +
             "            <xsl:choose>\n" +
@@ -169,7 +169,7 @@ public class XMLProducer extends XMLParser {
      * that is moderately readable.
      */
     @SuppressWarnings("unchecked")
-    void pluginToXML(Plugin plugin, StringBuffer buf, String sName) throws Exception {
+    void pluginToXML(Plugin plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
         if (plugin instanceof Alignment) {
@@ -181,15 +181,15 @@ public class XMLProducer extends XMLParser {
         if (plugin instanceof State) {
             sElementName = XMLParser.STATE_ELEMENT;
         }
-        if (plugin instanceof ProbabilityDistribution) {
+        if (plugin instanceof Distribution) {
             sElementName = XMLParser.PROBABILITY_ELEMENT;
         }
         if (plugin instanceof Logger) {
             sElementName = XMLParser.LOG_ELEMENT;
         }
-        if (plugin instanceof MCMC) {
-            sElementName = XMLParser.MCMC_ELEMENT;
-        }
+//        if (plugin instanceof MCMC) {
+//            sElementName = XMLParser.MCMC_ELEMENT;
+//        }
         if (plugin instanceof Operator) {
             sElementName = XMLParser.OPERATOR_ELEMENT;
         }
@@ -198,6 +198,10 @@ public class XMLProducer extends XMLParser {
         }
         if (plugin instanceof Tree) {
             sElementName = XMLParser.TREE_ELEMENT;
+        }
+	     
+        if (bIsTopLevel) {
+            sElementName = XMLParser.RUN_ELEMENT;
         }
         for (int i = 0; i < m_nIndent; i++) {
             buf.append("    ");
@@ -292,13 +296,13 @@ public class XMLProducer extends XMLParser {
                         if (input.get() instanceof List) {
                             if (!bShort) {
                                 for (Object o2 : (List) input.get()) {
-                                    pluginToXML((Plugin) o2, buf, sInput);
+                                    pluginToXML((Plugin) o2, buf, sInput, false);
                                 }
                             }
                             return;
                         } else if (input.get() instanceof Plugin) {
                             if (!bShort) {
-                                pluginToXML((Plugin) input.get(), buf, sInput);
+                                pluginToXML((Plugin) input.get(), buf, sInput, false);
                             }
                             return;
                         } else {

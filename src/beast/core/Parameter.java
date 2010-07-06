@@ -162,9 +162,9 @@ public class Parameter extends StateNode {
         copy.m_fUpper = m_fUpper;
         return copy;
     }
-
-    public void prepare() throws Exception {
-    }
+    
+//    public void prepare() throws Exception {
+//    }
 
     public String toString() {
         StringBuffer buf = new StringBuffer();
