@@ -69,6 +69,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
+
 import beast.evolution.alignment.Sequence;
 import beast.util.Randomizer;
 
@@ -77,9 +78,6 @@ import beast.core.Plugin;
 
 //import weka.beast.core.ClassDiscovery;
 //import weka.beast.core.Utils;
-
-import beast.app.draw.printutils.PrintablePanel;
-
 
 /** program for drawing BEAST 2.0 models **/
 
@@ -96,11 +94,11 @@ public class ModelBuilder extends JPanel {
 
 	final static int MODE_SELECT = 0;
 	final static int MODE_MOVE = 1;
-	final static int MODE_RECT = 2;
-	final static int MODE_RRECT = 3;
-	final static int MODE_ELLIPSE = 4;
-	final static int MODE_LINE = 5;
-	final static int MODE_POLY = 6;
+//	final static int MODE_RECT = 2;
+//	final static int MODE_RRECT = 3;
+//	final static int MODE_ELLIPSE = 4;
+//	final static int MODE_LINE = 5;
+//	final static int MODE_POLY = 6;
 	final static int MODE_ARROW = 7;
 
 	final static int MODE_FUNCTION = 9;
@@ -388,47 +386,6 @@ public class ModelBuilder extends JPanel {
 		        outfile.write(m_doc.toXML());
 		        outfile.close();
 				m_sFileName = sFileName;
-
-				String sMapName = new String(sFileName);
-				if (sMapName.substring(sMapName.length() - 4).equals(FILE_EXT)) {
-					sMapName = sMapName.substring(0, sMapName.length() - 4) + ".htm";
-			        outfile = new FileWriter(sMapName);
-			        outfile.write(m_doc.getHTMLMap());
-			        outfile.close();
-					String sImgName = sMapName.substring(0, sMapName.length() - 4) + ".png";
-					a_export.m_bIsExporting = true;
-					g_panel.savePNG(sImgName);
-					a_export.m_bIsExporting = false;
-
-					sImgName = sMapName.substring(0, sMapName.length() - 4) + ".eps";
-			        outfile = new FileWriter(sImgName);
-					outfile.write("%%!PS-Adobe-3.0 EPSF-3.0\n"+
-							"%%%%BoundingBox: 0 0 "+g_panel.getWidth() + " " + g_panel.getHeight() + "\n" +
-							"2 setlinewidth\n" +
-							"/ellipsedict 8 dict\n"+
-							"def ellipsedict /mtrx matrix put\n"+
-							"/ellipse \n"+
-							"{ ellipsedict begin \n"+
-							"/endangle exch def \n"+
-							"/startangle exch def\n"+
-							"/yrad exch def \n"+
-							"/xrad exch def \n"+
-							"/y exch def \n"+
-							"/x exch def \n"+
-							"/savematrix mtrx currentmatrix def \n"+
-							"x y translate xrad yrad scale \n"+
-							"0 0 1 startangle endangle arc \n"+
-							"savematrix setmatrix \n"+
-							"end \n"+
-							"} def \n");
-					        outfile.write(m_doc.getPostScript());
-							outfile.write("showpage\n");
-					        outfile.close();
-
-
-
-				}
-
 		      }
 		      catch(IOException e) {
 		    	  e.printStackTrace();
@@ -473,6 +430,13 @@ public class ModelBuilder extends JPanel {
 		} // actionPerformed
 	} // class ActionSaveAs
 
+	abstract class MyFileFilter extends FileFilter {
+		public boolean accept(File f) {
+			return f.isDirectory() || f.getName().toLowerCase().endsWith(getExtention());
+		}
+		abstract public String getExtention();
+	}
+
 	class ActionExport extends MyAction {
 		boolean m_bIsExporting = false;
 		/** for serialization */
@@ -484,7 +448,67 @@ public class ModelBuilder extends JPanel {
 
 		public void actionPerformed(ActionEvent ae) {
 			m_bIsExporting = true;
-			g_panel.saveComponent();
+
+			JFileChooser fc = new JFileChooser(m_sDir);
+			fc.addChoosableFileFilter(new MyFileFilter() {
+				public String getExtention(){return ".bmp";}
+				public String getDescription() {return "Bitmap files (*.bmp)";}
+			});
+			fc.addChoosableFileFilter(new MyFileFilter() {
+				public String getExtention(){return ".jpg";}
+				public String getDescription() {return "JPEG bitmap files (*.jpg)";}
+			});
+			fc.addChoosableFileFilter(new MyFileFilter() {
+				public String getExtention(){return ".png";}
+				public String getDescription() {return "PNG bitmap files (*.png)";}
+			});
+			fc.setDialogTitle("Export DensiTree As");
+			int rval = fc.showSaveDialog(g_panel);
+			if (rval == JFileChooser.APPROVE_OPTION) {
+				// System.out.println("Saving to file \""+
+				// f.getAbsoluteFile().toString()+"\"");
+				String sFileName = fc.getSelectedFile().toString();
+				if (sFileName.lastIndexOf('/') > 0) {
+					m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+				}
+				if (sFileName != null && !sFileName.equals("")) {
+					if (!sFileName.toLowerCase().endsWith(".png") &&
+							sFileName.toLowerCase().endsWith(".jpg") &&
+							sFileName.toLowerCase().endsWith(".bmp") &&
+							sFileName.toLowerCase().endsWith(".svg")) {
+						sFileName += ((MyFileFilter)fc.getFileFilter()).getExtention();
+					}
+					
+					if (sFileName.toLowerCase().endsWith(".png") ||
+						sFileName.toLowerCase().endsWith(".jpg") ||
+						sFileName.toLowerCase().endsWith(".bmp")
+						) {
+					    BufferedImage	bi;
+					    Graphics		g;
+					    bi = new BufferedImage(g_panel.getWidth(), g_panel.getHeight(), BufferedImage.TYPE_INT_RGB);
+					    g  = bi.getGraphics();
+					    g.setPaintMode();
+					    g.setColor(getBackground());
+					    g.fillRect(0, 0, g_panel.getWidth(), g_panel.getHeight());
+					    g_panel.printAll(g);
+					    try {
+					    	if (sFileName.toLowerCase().endsWith(".png")) {
+					    		ImageIO.write(bi, "png", new File(sFileName));
+					    	} else if (sFileName.toLowerCase().endsWith(".jpg")) {
+					    		ImageIO.write(bi, "jpg", new File(sFileName));
+					    	} else if (sFileName.toLowerCase().endsWith(".bmp")) {
+						    	ImageIO.write(bi, "bmp", new File(sFileName));
+						    } 
+ 					    } catch (Exception e) {
+					    	JOptionPane.showMessageDialog(null, sFileName + " was not written properly: " + e.getMessage());
+					    	e.printStackTrace();
+					    }
+						return;
+					}
+					JOptionPane.showMessageDialog(null, "Extention of file " + sFileName + " not recognized as png,bmp,jpg or svg file");
+				}
+			}
+			
 			m_bIsExporting = false;
 			repaint();
 		}
@@ -736,31 +760,31 @@ public class ModelBuilder extends JPanel {
 		public ActionSelect() {super("Select", "Select", "select", "");} // c'tor
 		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_SELECT;}
 	} // class ActionSelect
-	class ActionRect  extends MyAction {
-		private static final long serialVersionUID = -1;
-		public ActionRect() {super("Rectangle", "Rectangle", "rect", "");} // c'tor
-		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_RECT;}
-	} // class ActionRect
-	class ActionRRect  extends MyAction {
-		private static final long serialVersionUID = -1;
-		public ActionRRect() {super("Round Rectangle", "Round Rectangle", "rrect", "");} // c'tor
-		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_RRECT;}
-	} // class ActionRRect
-	class ActionEllipse  extends MyAction {
-		private static final long serialVersionUID = -1;
-		public ActionEllipse() {super("Ellipse", "Ellipse", "ellipse", "");} // c'tor
-		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_ELLIPSE;}
-	} // class ActionEllipse
-	class ActionLine  extends MyAction {
-		private static final long serialVersionUID = -1;
-		public ActionLine() {super("Line", "Line", "line", "");} // c'tor
-		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_LINE;}
-	} // class ActionLine
-	class ActionPoly  extends MyAction {
-		private static final long serialVersionUID = -1;
-		public ActionPoly() {super("Poly", "Poly", "poly", "");} // c'tor
-		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_POLY;}
-	} // class ActionPoly
+//	class ActionRect  extends MyAction {
+//		private static final long serialVersionUID = -1;
+//		public ActionRect() {super("Rectangle", "Rectangle", "rect", "");} // c'tor
+//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_RECT;}
+//	} // class ActionRect
+//	class ActionRRect  extends MyAction {
+//		private static final long serialVersionUID = -1;
+//		public ActionRRect() {super("Round Rectangle", "Round Rectangle", "rrect", "");} // c'tor
+//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_RRECT;}
+//	} // class ActionRRect
+//	class ActionEllipse  extends MyAction {
+//		private static final long serialVersionUID = -1;
+//		public ActionEllipse() {super("Ellipse", "Ellipse", "ellipse", "");} // c'tor
+//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_ELLIPSE;}
+//	} // class ActionEllipse
+//	class ActionLine  extends MyAction {
+//		private static final long serialVersionUID = -1;
+//		public ActionLine() {super("Line", "Line", "line", "");} // c'tor
+//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_LINE;}
+//	} // class ActionLine
+//	class ActionPoly  extends MyAction {
+//		private static final long serialVersionUID = -1;
+//		public ActionPoly() {super("Poly", "Poly", "poly", "");} // c'tor
+//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_POLY;}
+//	} // class ActionPoly
 	class ActionArrow  extends MyAction {
 		private static final long serialVersionUID = -1;
 		public ActionArrow() {super("Arrow", "Arrow", "arrow", "");} // c'tor
@@ -1178,7 +1202,7 @@ public class ModelBuilder extends JPanel {
 	}
 
 
-	class DrawPanel extends PrintablePanel implements Printable {
+	class DrawPanel extends JPanel implements Printable {
 		/** for serialization */
 		static final long serialVersionUID = 1L;
 
@@ -1294,22 +1318,22 @@ public class ModelBuilder extends JPanel {
 					m_doc.adjustArrows();
 					g_panel.repaint();
 					break;
-				case MODE_RECT:
-					beast.app.draw.Rect rect = (beast.app.draw.Rect) m_drawShape;
-					if (m_drawShape == null) {
-						rect = new beast.app.draw.Rect();
-						rect.m_x = me.getX();
-						rect.m_y = me.getY();
-						rect.m_w = 1;
-						rect.m_h = 1;
-						m_drawShape = rect;
-					} else {
-						rect.m_w = me.getX() - rect.m_x;
-						rect.m_h = me.getY() - rect.m_y;
-					}
-					m_Selection.m_tracker = rect.getTracker();
-					g_panel.repaint();
-					break;
+//				case MODE_RECT:
+//					beast.app.draw.Rect rect = (beast.app.draw.Rect) m_drawShape;
+//					if (m_drawShape == null) {
+//						rect = new beast.app.draw.Rect();
+//						rect.m_x = me.getX();
+//						rect.m_y = me.getY();
+//						rect.m_w = 1;
+//						rect.m_h = 1;
+//						m_drawShape = rect;
+//					} else {
+//						rect.m_w = me.getX() - rect.m_x;
+//						rect.m_h = me.getY() - rect.m_y;
+//					}
+//					m_Selection.m_tracker = rect.getTracker();
+//					g_panel.repaint();
+//					break;
 				case MODE_FUNCTION:
 					beast.app.draw.PluginShape function = (beast.app.draw.PluginShape) m_drawShape;
 
@@ -1327,54 +1351,54 @@ public class ModelBuilder extends JPanel {
 					m_Selection.m_tracker = function.getTracker();
 					g_panel.repaint();
 					break;
-				case MODE_RRECT:
-					RoundRectangle rrect = (RoundRectangle) m_drawShape;
-					if (m_drawShape == null) {
-						rrect = new RoundRectangle();
-						rrect.m_x = me.getX();
-						rrect.m_y = me.getY();
-						rrect.m_w = 1;
-						rrect.m_h = 1;
-						m_drawShape = rrect;
-					} else {
-						rrect.m_w = me.getX() - rrect.m_x;
-						rrect.m_h = me.getY() - rrect.m_y;
-					}
-					m_Selection.m_tracker = rrect.getTracker();
-					g_panel.repaint();
-					break;
-				case MODE_ELLIPSE:
-					Ellipse ellipse = (Ellipse) m_drawShape;
-					if (m_drawShape == null) {
-						ellipse = new Ellipse();
-						ellipse.m_x = me.getX();
-						ellipse.m_y = me.getY();
-						ellipse.m_w = 1;
-						ellipse.m_h = 1;
-						m_drawShape = ellipse;
-					} else {
-						ellipse.m_w = me.getX() - ellipse.m_x;
-						ellipse.m_h = me.getY() - ellipse.m_y;
-					}
-					m_Selection.m_tracker = ellipse.getTracker();
-					g_panel.repaint();
-					break;
-				case MODE_LINE:
-					Line line = (Line) m_drawShape;
-					if (m_drawShape == null) {
-						line = new Line();
-						line.m_x = me.getX();
-						line.m_y = me.getY();
-						line.m_w = 1;
-						line.m_h = 1;
-						m_drawShape = line;
-					} else {
-						line.m_w = me.getX() - line.m_x;
-						line.m_h = me.getY() - line.m_y;
-					}
-					m_Selection.m_tracker = line.getTracker();
-					g_panel.repaint();
-					break;
+//				case MODE_RRECT:
+//					RoundRectangle rrect = (RoundRectangle) m_drawShape;
+//					if (m_drawShape == null) {
+//						rrect = new RoundRectangle();
+//						rrect.m_x = me.getX();
+//						rrect.m_y = me.getY();
+//						rrect.m_w = 1;
+//						rrect.m_h = 1;
+//						m_drawShape = rrect;
+//					} else {
+//						rrect.m_w = me.getX() - rrect.m_x;
+//						rrect.m_h = me.getY() - rrect.m_y;
+//					}
+//					m_Selection.m_tracker = rrect.getTracker();
+//					g_panel.repaint();
+//					break;
+//				case MODE_ELLIPSE:
+//					Ellipse ellipse = (Ellipse) m_drawShape;
+//					if (m_drawShape == null) {
+//						ellipse = new Ellipse();
+//						ellipse.m_x = me.getX();
+//						ellipse.m_y = me.getY();
+//						ellipse.m_w = 1;
+//						ellipse.m_h = 1;
+//						m_drawShape = ellipse;
+//					} else {
+//						ellipse.m_w = me.getX() - ellipse.m_x;
+//						ellipse.m_h = me.getY() - ellipse.m_y;
+//					}
+//					m_Selection.m_tracker = ellipse.getTracker();
+//					g_panel.repaint();
+//					break;
+//				case MODE_LINE:
+//					Line line = (Line) m_drawShape;
+//					if (m_drawShape == null) {
+//						line = new Line();
+//						line.m_x = me.getX();
+//						line.m_y = me.getY();
+//						line.m_w = 1;
+//						line.m_h = 1;
+//						m_drawShape = line;
+//					} else {
+//						line.m_w = me.getX() - line.m_x;
+//						line.m_h = me.getY() - line.m_y;
+//					}
+//					m_Selection.m_tracker = line.getTracker();
+//					g_panel.repaint();
+//					break;
 				case MODE_ARROW:
 					Arrow arrow = (Arrow) m_drawShape;
 					if (m_drawShape == null) {
@@ -1495,41 +1519,41 @@ public class ModelBuilder extends JPanel {
 					}
 					updateStatus();
 					break;
-				case MODE_POLY:
-					if (me.getClickCount() == 1) {
-						if (m_drawShape == null) {
-							m_drawShape = new Poly(me.getX(), me.getY());
-							m_Selection.m_tracker = m_drawShape.getTracker();
-						} else {
-							Poly poly = (Poly) m_drawShape;
-							int nPoints = poly.m_polygon.npoints;
-							if (poly.m_polygon.xpoints[nPoints - 1]!=me.getX() || poly.m_polygon.ypoints[nPoints - 1]!=me.getY()) {
-								poly.m_polygon.addPoint(me.getX(), me.getY());
-								m_Selection.m_tracker = m_drawShape.getTracker();
-							}
-						}
-						g_panel.repaint();
-					} else { // doubleclick = end of poly
- 						if (m_drawShape != null) {
-							Poly poly = (Poly) m_drawShape;
-							int nPoints = poly.m_polygon.npoints;
-							if (poly.m_polygon.xpoints[nPoints - 1]!=me.getX() || poly.m_polygon.ypoints[nPoints - 1]!=me.getY()) {
-								poly.m_polygon.addPoint(me.getX(), me.getY());
-							}
-							if (poly.m_polygon.npoints >= 3) {
-								m_doc.addNewShape(poly);
-								m_Selection.m_tracker = m_drawShape.getTracker();
-								m_nMode = MODE_SELECT;
-								m_Selection.setSingleSelection(m_doc.m_objects.size() - 1);
-								m_drawShape = null;
-							} else {
-								m_drawShape = null;
-								m_Selection.m_tracker = null;
-							}
-						}
-						updateStatus();
-					}
-					break;
+//				case MODE_POLY:
+//					if (me.getClickCount() == 1) {
+//						if (m_drawShape == null) {
+//							m_drawShape = new Poly(me.getX(), me.getY());
+//							m_Selection.m_tracker = m_drawShape.getTracker();
+//						} else {
+//							Poly poly = (Poly) m_drawShape;
+//							int nPoints = poly.m_polygon.npoints;
+//							if (poly.m_polygon.xpoints[nPoints - 1]!=me.getX() || poly.m_polygon.ypoints[nPoints - 1]!=me.getY()) {
+//								poly.m_polygon.addPoint(me.getX(), me.getY());
+//								m_Selection.m_tracker = m_drawShape.getTracker();
+//							}
+//						}
+//						g_panel.repaint();
+//					} else { // doubleclick = end of poly
+// 						if (m_drawShape != null) {
+//							Poly poly = (Poly) m_drawShape;
+//							int nPoints = poly.m_polygon.npoints;
+//							if (poly.m_polygon.xpoints[nPoints - 1]!=me.getX() || poly.m_polygon.ypoints[nPoints - 1]!=me.getY()) {
+//								poly.m_polygon.addPoint(me.getX(), me.getY());
+//							}
+//							if (poly.m_polygon.npoints >= 3) {
+//								m_doc.addNewShape(poly);
+//								m_Selection.m_tracker = m_drawShape.getTracker();
+//								m_nMode = MODE_SELECT;
+//								m_Selection.setSingleSelection(m_doc.m_objects.size() - 1);
+//								m_drawShape = null;
+//							} else {
+//								m_drawShape = null;
+//								m_Selection.m_tracker = null;
+//							}
+//						}
+//						updateStatus();
+//					}
+//					break;
 				}
 			} // mouseClicked
 
@@ -1754,15 +1778,15 @@ public class ModelBuilder extends JPanel {
 					m_nMode = MODE_SELECT;
 					updateStatus();
 					return;
-				case MODE_RECT:
-					Rect rect = (Rect) m_drawShape;
-					if (rect == null) {return;}
-					if (rect.m_w > 0 && rect.m_h>0) {
-						m_doc.addNewShape(rect);
-					} else {
-						bAdded = false;
-					}
-					break;
+//				case MODE_RECT:
+//					Rect rect = (Rect) m_drawShape;
+//					if (rect == null) {return;}
+//					if (rect.m_w > 0 && rect.m_h>0) {
+//						m_doc.addNewShape(rect);
+//					} else {
+//						bAdded = false;
+//					}
+//					break;
 				case MODE_FUNCTION:
 					PluginShape function = (PluginShape) m_drawShape;
 					if (function == null) {return;}
@@ -1787,35 +1811,35 @@ public class ModelBuilder extends JPanel {
 						bAdded = false;
 					}
 					break;
-				case MODE_RRECT:
-					RoundRectangle rrect = (RoundRectangle) m_drawShape;
-					if (rrect == null) {return;}
-					if (rrect.m_w > 0 && rrect.m_h>0) {
-						m_doc.addNewShape(rrect);
-					} else {
-						bAdded = false;
-					}
-					break;
-				case MODE_ELLIPSE:
-					Ellipse ellipse = (Ellipse) m_drawShape;
-					if (ellipse == null) {return;}
-					if (ellipse.m_w > 0 && ellipse.m_h>0) {
-						m_doc.addNewShape(ellipse);
-					} else {
-						bAdded = false;
-					}
-					break;
-				case MODE_LINE:
-					Line line = (Line) m_drawShape;
-					if (line == null) {return;}
-					if (Math.abs(line.m_w) > 0 && Math.abs(line.m_h)>0) {
-						m_doc.addNewShape(line);
-					} else {
-						bAdded = false;
-					}
-					break;
-				case MODE_POLY:
-					return;
+//				case MODE_RRECT:
+//					RoundRectangle rrect = (RoundRectangle) m_drawShape;
+//					if (rrect == null) {return;}
+//					if (rrect.m_w > 0 && rrect.m_h>0) {
+//						m_doc.addNewShape(rrect);
+//					} else {
+//						bAdded = false;
+//					}
+//					break;
+//				case MODE_ELLIPSE:
+//					Ellipse ellipse = (Ellipse) m_drawShape;
+//					if (ellipse == null) {return;}
+//					if (ellipse.m_w > 0 && ellipse.m_h>0) {
+//						m_doc.addNewShape(ellipse);
+//					} else {
+//						bAdded = false;
+//					}
+//					break;
+//				case MODE_LINE:
+//					Line line = (Line) m_drawShape;
+//					if (line == null) {return;}
+//					if (Math.abs(line.m_w) > 0 && Math.abs(line.m_h)>0) {
+//						m_doc.addNewShape(line);
+//					} else {
+//						bAdded = false;
+//					}
+//					break;
+//				case MODE_POLY:
+//					return;
 				case MODE_ARROW:
 					Arrow arrow = (Arrow) m_drawShape;
 					if (m_drawShape != null) {

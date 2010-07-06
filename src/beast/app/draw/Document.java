@@ -1256,22 +1256,23 @@ public class Document {
 
     static Shape parseNode(Node node, Document doc) {
         Shape shape = null;
-        if (node.getNodeName().equals("roundrectangle")) {
-            shape = new RoundRectangle(node, doc);
-        } else if (node.getNodeName().equals("ellipse")) {
+//        if (node.getNodeName().equals("roundrectangle")) {
+//            shape = new RoundRectangle(node, doc);
+//        } else 
+        if (node.getNodeName().equals("ellipse")) {
             shape = new Ellipse(node, doc);
-        } else if (node.getNodeName().equals("line")) {
-            shape = new Line(node, doc);
-        } else if (node.getNodeName().equals("rect")) {
-            shape = new Rect(node, doc);
-        } else if (node.getNodeName().equals("poly")) {
-            shape = new Poly(node, doc);
+//        } else if (node.getNodeName().equals("line")) {
+//            shape = new Line(node, doc);
+//        } else if (node.getNodeName().equals("rect")) {
+//            shape = new Rect(node, doc);
+//        } else if (node.getNodeName().equals("poly")) {
+//            shape = new Poly(node, doc);
         } else if (node.getNodeName().equals("arrow")) {
             shape = new Arrow(node, doc);
-        } else if (node.getNodeName().equals("picture")) {
-            shape = new Rect(node, doc);
-        } else if (node.getNodeName().equals("group")) {
-            shape = new Group(node, doc);
+//        } else if (node.getNodeName().equals("picture")) {
+//            shape = new Rect(node, doc);
+//        } else if (node.getNodeName().equals("group")) {
+//            shape = new Group(node, doc);
         } else if (node.getNodeName().equals("gdx:function")) {
             shape = new PluginShape(node, doc);
         }

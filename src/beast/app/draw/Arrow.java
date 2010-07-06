@@ -275,11 +275,6 @@ public class Arrow extends Line {
 		 (m_head.getY() + m_head.getY2()) / 2);
 		Rect rect = (Rect) m_tail;
 		Point roundness = new Point(0,0);
-		if (rect instanceof RoundRectangle) {
-			RoundRectangle rrect = (RoundRectangle) rect;
-			roundness.x = rrect.m_nRoundX;
-			roundness.y = rrect.m_nRoundY;
-		}
 		if (rect instanceof Ellipse) {
 			roundness.x = rect.m_w;
 			roundness.y = rect.m_h;
@@ -289,11 +284,6 @@ public class Arrow extends Line {
 
 			rect = (Rect) m_head;
 			roundness = new Point(0,0);
-			if (rect instanceof RoundRectangle) {
-				RoundRectangle rrect = (RoundRectangle) rect;
-				roundness.x = rrect.m_nRoundX;
-				roundness.y = rrect.m_nRoundY;
-			}
 			if (rect instanceof Ellipse) {
 				roundness.x = rect.m_w;
 				roundness.y = rect.m_h;
