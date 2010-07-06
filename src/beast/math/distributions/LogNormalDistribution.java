@@ -210,5 +210,5 @@ public class LogNormalDistribution implements Distribution {
 
     protected double M, S;
 
-    static NormalDistributionImpl normal = new NormalDistributionImpl(1, 0);
+    static NormalDistributionImpl normal = new NormalDistributionImpl(0, 1);
 }

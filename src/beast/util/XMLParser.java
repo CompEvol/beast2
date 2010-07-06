@@ -27,6 +27,7 @@ package beast.util;
 
 
 import beast.core.*;
+import beast.core.Runnable;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -133,7 +134,7 @@ public class XMLParser {
     final static String RUN_ELEMENT = "run";
 
 
-    RunnablePlugin m_runnable;
+    Runnable m_runnable;
     State m_state;
     /**
      * DOM document representation of XML file *
@@ -168,7 +169,7 @@ public class XMLParser {
         m_sElement2ClassMap.put(INT_PARAMETER_ELEMENT, INT_PARAMETER_CLASS);
     }
 
-    public RunnablePlugin parseFile(String sFileName) throws Exception {
+    public Runnable parseFile(String sFileName) throws Exception {
         // parse the XML file into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
@@ -180,8 +181,8 @@ public class XMLParser {
 
 
         parse();
-        if(m_runnable instanceof RunnablePlugin)
-            return (RunnablePlugin)m_runnable;
+        if(m_runnable instanceof Runnable)
+            return (Runnable)m_runnable;
         else{
             throw new Exception("Run element does not point to a runnable object.");
         }    } // parseFile
@@ -306,7 +307,7 @@ public class XMLParser {
         }
         Node mcmc = nodes.item(0);
 
-        m_runnable = (RunnablePlugin) createObject(mcmc, RUNNABLE_CLASS, null);
+        m_runnable = (Runnable) createObject(mcmc, RUNNABLE_CLASS, null);
 
 
     } // parseMCMC

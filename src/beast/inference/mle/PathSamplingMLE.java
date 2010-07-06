@@ -1,6 +1,10 @@
 package beast.inference.mle;
 
-import beast.core.*;
+import beast.core.Description;
+import beast.core.MCMC;
+import beast.core.Input;
+import beast.core.State;
+import beast.core.Runnable;
 
 /**
  * Package: PathSamplingMLE
@@ -16,7 +20,7 @@ import beast.core.*;
 
 @Description("Perform Marginal Likelihood Estimation using Thermodynamic Integration (a.k.a. Path Sampling)."+
 "Currently this does nothing... waiting for porting from Beast 1.x.y")
-public class PathSamplingMLE extends RunnablePlugin {
+public class PathSamplingMLE extends Runnable {
     public Input<MCMC> m_originalMCMC = new Input<MCMC>("originalMCMC",
                                                "MCMC sampler to sample with...",
                                                Input.Validate.REQUIRED);

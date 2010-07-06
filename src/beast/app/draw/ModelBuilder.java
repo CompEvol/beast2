@@ -76,17 +76,14 @@ import beast.util.Randomizer;
 import beast.core.Input;
 import beast.core.Plugin;
 
-//import weka.beast.core.ClassDiscovery;
-//import weka.beast.core.Utils;
-
 /** program for drawing BEAST 2.0 models **/
 
 public class ModelBuilder extends JPanel {
-	/** for serialization */
+	/** for serialisation */
 	static final long serialVersionUID = 1L;
 
-	/** File extention for XML format containing all graphical details (colour, position, etc)
-	 * NB This is not the extention for GenerationD model files. **/
+	/** File extension for XML format containing all graphical details (colour, position, etc)
+	 * NB This is not the extension for GenerationD model files. **/
 	static public final String FILE_EXT = ".xml";
 	final public static String ICONPATH = "beast/app/draw/icons/";
 
@@ -94,11 +91,6 @@ public class ModelBuilder extends JPanel {
 
 	final static int MODE_SELECT = 0;
 	final static int MODE_MOVE = 1;
-//	final static int MODE_RECT = 2;
-//	final static int MODE_RRECT = 3;
-//	final static int MODE_ELLIPSE = 4;
-//	final static int MODE_LINE = 5;
-//	final static int MODE_POLY = 6;
 	final static int MODE_ARROW = 7;
 
 	final static int MODE_FUNCTION = 9;
@@ -107,19 +99,16 @@ public class ModelBuilder extends JPanel {
 	Rectangle m_selectRect = null;
 	int m_nMode = MODE_SELECT;
 
-
-//	boolean m_bViewOperators = false;
-//	boolean m_bViewLoggers = false;
-//	boolean m_bViewSequences = false;
-//	boolean m_bViewState = false;
-//	boolean m_bRelax = false;
-
 	boolean m_bViewOperators = true;
 	boolean m_bViewLoggers = true;
 	boolean m_bViewSequences = true;
 	boolean m_bViewState = true;
 	boolean m_bRelax = false;
 
+	/** number of seconds to 'relax' after loading a file **/
+	int m_nRelaxSeconds = 10;
+	/** menu item indicating whether to relax or not **/
+	JCheckBoxMenuItem m_viewRelax;
 
 	Action a_new = new ActionNew();
 	Action a_load = new ActionLoad();
@@ -138,14 +127,8 @@ public class ModelBuilder extends JPanel {
 	Action a_pastenode = new ActionPasteNode();
 	Action a_group = new ActionGroup();
 	Action a_ungroup = new ActionUngroup();
-//	Action a_properties = new ActionProperties();
 
 	Action a_select = new ActionSelect();
-//	Action a_rect = new ActionRect();
-//	Action a_rrect = new ActionRRect();
-//	Action a_ellipse = new ActionEllipse();
-//	Action a_line = new ActionLine();
-//	Action a_poly = new ActionPoly();
 	Action a_arrow = new ActionArrow();
 	Action a_function = new ActionFunction();
 
@@ -207,7 +190,7 @@ public class ModelBuilder extends JPanel {
 	 * with a name, tool tip text, possibly an icon and accelerator key.
 	 * */
 	class MyAction extends AbstractAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038911111935517L;
 
 		/** path for icons */
@@ -332,7 +315,7 @@ public class ModelBuilder extends JPanel {
 	ExtensionFileFilter ef5 = new ExtensionFileFilter(".png", "PNG images");
 
 	class ActionSave extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -20389110859355156L;
 
 		public ActionSave() {
@@ -394,7 +377,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionSave
 
 	class ActionPrint extends ActionSave {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -20389001859354L;
 		boolean m_bIsPrinting = false;
 		public ActionPrint() {
@@ -418,7 +401,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionPrint
 
 	class ActionSaveAs extends ActionSave {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -20389110859354L;
 
 		public ActionSaveAs() {
@@ -439,7 +422,7 @@ public class ModelBuilder extends JPanel {
 
 	class ActionExport extends MyAction {
 		boolean m_bIsExporting = false;
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -3027642085935519L;
 
 		public ActionExport() {
@@ -465,8 +448,6 @@ public class ModelBuilder extends JPanel {
 			fc.setDialogTitle("Export DensiTree As");
 			int rval = fc.showSaveDialog(g_panel);
 			if (rval == JFileChooser.APPROVE_OPTION) {
-				// System.out.println("Saving to file \""+
-				// f.getAbsoluteFile().toString()+"\"");
 				String sFileName = fc.getSelectedFile().toString();
 				if (sFileName.lastIndexOf('/') > 0) {
 					m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
@@ -516,7 +497,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionExport
 
 	class ActionQuit extends ActionSave {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038911085935515L;
 
 		public ActionQuit() {
@@ -540,7 +521,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionQuit
 
 	class ActionNew extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038911085935515L;
 
 		public ActionNew() {
@@ -559,7 +540,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionNew
 
 	class ActionLoad extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038911085935515L;
 
 		public ActionLoad() {
@@ -582,13 +563,26 @@ public class ModelBuilder extends JPanel {
 				g_panel.repaint();
 				try {Thread.sleep(1000);} catch (Exception e) {}
 				setDrawingFlag();
+				m_bRelax = true;
+				m_viewRelax.setState(m_bRelax);
 				g_panel.repaint();
+				
+				new Thread() {
+					public void run() {
+						// user may toggle relax state, so break loop if that happens
+						for (int iSeconds = 0; iSeconds < m_nRelaxSeconds && m_bRelax; iSeconds++) {
+							try {Thread.sleep(1000);} catch (Exception e) {}
+						}
+						m_bRelax = false;
+						m_viewRelax.setState(m_bRelax);
+					}						
+				}.start();
 			}
 		}
 	} // class ActionLoad
 
 	class ActionUndo extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -3038910085935519L;
 
 		public ActionUndo() {
@@ -611,7 +605,7 @@ public class ModelBuilder extends JPanel {
 	} // ActionUndo
 
 	class ActionRedo extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -4038910085935519L;
 
 		public ActionRedo() {
@@ -631,7 +625,7 @@ public class ModelBuilder extends JPanel {
 	} // ActionRedo
 
 	class ActionSelectAll extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038912085935519L;
 
 		public ActionSelectAll() {
@@ -651,7 +645,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionSelectAll
 
 	class ActionDeleteNode extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038912085935519L;
 
 		public ActionDeleteNode() {
@@ -667,7 +661,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionDeleteNode
 
 	class ActionCopyNode extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038732085935519L;
 
 		public ActionCopyNode() {
@@ -692,7 +686,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionCopyNode
 
 	class ActionCutNode extends ActionCopyNode {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038822085935519L;
 
 		public ActionCutNode() {
@@ -709,7 +703,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionCutNode
 
 	class ActionPasteNode extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -2038732085935519L;
 
 		public ActionPasteNode() {
@@ -733,7 +727,7 @@ public class ModelBuilder extends JPanel {
 	class ActionGroup  extends MyAction {
 		private static final long serialVersionUID = -1;
 		public ActionGroup() {
-			super("Group shapes", "Group", "group", "");
+			super("Group shapes", "Group", "group", "G");
 			setEnabled(false);
 		} // c'tor
 		public void actionPerformed(ActionEvent ae) {
@@ -745,7 +739,7 @@ public class ModelBuilder extends JPanel {
 	class ActionUngroup  extends MyAction {
 		private static final long serialVersionUID = -1;
 		public ActionUngroup() {
-			super("Ungroup shapes", "Ungroup", "ungroup", "");
+			super("Ungroup shapes", "Ungroup", "ungroup", "Ctrl G");
 			setEnabled(false);
 		} // c'tor
 		public void actionPerformed(ActionEvent ae) {
@@ -760,31 +754,6 @@ public class ModelBuilder extends JPanel {
 		public ActionSelect() {super("Select", "Select", "select", "");} // c'tor
 		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_SELECT;}
 	} // class ActionSelect
-//	class ActionRect  extends MyAction {
-//		private static final long serialVersionUID = -1;
-//		public ActionRect() {super("Rectangle", "Rectangle", "rect", "");} // c'tor
-//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_RECT;}
-//	} // class ActionRect
-//	class ActionRRect  extends MyAction {
-//		private static final long serialVersionUID = -1;
-//		public ActionRRect() {super("Round Rectangle", "Round Rectangle", "rrect", "");} // c'tor
-//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_RRECT;}
-//	} // class ActionRRect
-//	class ActionEllipse  extends MyAction {
-//		private static final long serialVersionUID = -1;
-//		public ActionEllipse() {super("Ellipse", "Ellipse", "ellipse", "");} // c'tor
-//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_ELLIPSE;}
-//	} // class ActionEllipse
-//	class ActionLine  extends MyAction {
-//		private static final long serialVersionUID = -1;
-//		public ActionLine() {super("Line", "Line", "line", "");} // c'tor
-//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_LINE;}
-//	} // class ActionLine
-//	class ActionPoly  extends MyAction {
-//		private static final long serialVersionUID = -1;
-//		public ActionPoly() {super("Poly", "Poly", "poly", "");} // c'tor
-//		public void actionPerformed(ActionEvent ae) {m_nMode = MODE_POLY;}
-//	} // class ActionPoly
 	class ActionArrow  extends MyAction {
 		private static final long serialVersionUID = -1;
 		public ActionArrow() {super("Arrow", "Arrow", "arrow", "");} // c'tor
@@ -805,14 +774,12 @@ public class ModelBuilder extends JPanel {
 		} // c'tor
 
 		public void actionPerformed(ActionEvent ae) {
-//			if (m_Selection.isSingleSelection()) {
-				Shape shape = (Shape) m_doc.m_objects.get(m_Selection.getSingleSelection());
-				Color color = JColorChooser.showDialog(g_panel, "Select Fill color", shape.getFillColor());
-				if (color != null) {
-					m_doc.setFillColor(color, m_Selection);
-					g_panel.repaint();
-				}
-//			}
+			Shape shape = (Shape) m_doc.m_objects.get(m_Selection.getSingleSelection());
+			Color color = JColorChooser.showDialog(g_panel, "Select Fill color", shape.getFillColor());
+			if (color != null) {
+				m_doc.setFillColor(color, m_Selection);
+				g_panel.repaint();
+			}
 		}
 	} // class ActionFillColor
 
@@ -835,26 +802,9 @@ public class ModelBuilder extends JPanel {
 		}
 	} // class ActionPenColor
 
-//	class ActionProperties extends MyAction {
-//		private static final long serialVersionUID = -1;
-//
-//		public ActionProperties() {
-//			super("Properties", "Properties", "properties", "Alt enter");
-//			setEnabled(false);
-//		} // c'tor
-//
-//		public void actionPerformed(ActionEvent ae) {
-//			Shape shape = (Shape) m_doc.m_objects.get(m_Selection.getSingleSelection());
-//			if (shape instanceof beast.app.draw.Plugin) {
-//	            ConstantDialog myDialog = new ConstantDialog(m_doc, g_panel, (beast.app.draw.Plugin) shape);
-//			}
-//		}
-//	} // class ActionProperties
-
-
 
 	class ActionToFront extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -1;
 
 		public ActionToFront() {
@@ -868,7 +818,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionToFront
 
 	class ActionForward extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -1;
 
 		public ActionForward() {
@@ -882,7 +832,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionForward
 
 	class ActionToBack extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -1;
 
 		public ActionToBack() {
@@ -896,7 +846,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionToBack
 
 	class ActionBackward extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -1;
 
 		public ActionBackward() {
@@ -911,7 +861,7 @@ public class ModelBuilder extends JPanel {
 
 
 	class ActionAlignLeft extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -3138642085935519L;
 
 		public ActionAlignLeft() {
@@ -926,7 +876,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionAlignLeft
 
 	class ActionAlignRight extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -4238642085935519L;
 
 		public ActionAlignRight() {
@@ -941,7 +891,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionAlignRight
 
 	class ActionAlignTop extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -5338642085935519L;
 
 		public ActionAlignTop() {
@@ -956,7 +906,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionAlignTop
 
 	class ActionAlignBottom extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -6438642085935519L;
 
 		public ActionAlignBottom() {
@@ -971,7 +921,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionAlignBottom
 
 	class ActionCenterHorizontal extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -7538642085935519L;
 
 		public ActionCenterHorizontal() {
@@ -986,7 +936,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionCenterHorizontal
 
 	class ActionCenterVertical extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -8638642085935519L;
 
 		public ActionCenterVertical() {
@@ -1001,7 +951,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionCenterVertical
 
 	class ActionSpaceHorizontal extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -9738642085935519L;
 
 		public ActionSpaceHorizontal() {
@@ -1016,7 +966,7 @@ public class ModelBuilder extends JPanel {
 	} // class ActionSpaceHorizontal
 
 	class ActionSpaceVertical extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -838642085935519L;
 
 		public ActionSpaceVertical() {
@@ -1032,7 +982,7 @@ public class ModelBuilder extends JPanel {
 
 
 	class ActionAbout extends MyAction {
-		/** for serialization */
+		/** for serialisation */
 		private static final long serialVersionUID = -20389110859353L;
 
 		public ActionAbout() {
@@ -1067,7 +1017,7 @@ public class ModelBuilder extends JPanel {
 		a_tofront.setEnabled(hasSelection);
 		a_toback.setEnabled(hasSelection);
 
-		a_group.setEnabled(hasGroupSelection);
+		a_group.setEnabled(hasSelection);
 		boolean hasGroupedSelection = false;
 		if (nSelectionSize == 1) {
 		for (int i = 0; i < nSelectionSize; i++) {
@@ -1078,7 +1028,7 @@ public class ModelBuilder extends JPanel {
 
 		}
 		}
-		a_ungroup.setEnabled(hasGroupedSelection);
+		//a_ungroup.setEnabled(hasGroupedSelection);
 		a_alignbottom.setEnabled(hasGroupSelection);
 		a_aligntop.setEnabled(hasGroupSelection);
 		a_alignleft.setEnabled(hasGroupSelection);
@@ -1203,7 +1153,7 @@ public class ModelBuilder extends JPanel {
 
 
 	class DrawPanel extends JPanel implements Printable {
-		/** for serialization */
+		/** for serialisation */
 		static final long serialVersionUID = 1L;
 
 		public DrawPanel() {
@@ -1220,7 +1170,8 @@ public class ModelBuilder extends JPanel {
 			((Graphics2D) g).setBackground(Color.WHITE);
 			Rectangle r = g.getClipBounds();
 			g.clearRect(r.x, r.y, r.width, r.height);
-
+			
+			m_doc.adjustInputs();
 			for (int i = 0; i < m_doc.m_objects.size(); i++) {
 				Shape shape = (Shape) m_doc.m_objects.get(i);
 				if (shape.m_bNeedsDrawing) {
@@ -1249,9 +1200,8 @@ public class ModelBuilder extends JPanel {
 				m_doc.relax();
 				repaint();
 			}
-
-
-		}
+		} // paintComponent
+		
 	    /** implementation of Printable, used for printing
 	     * @see Printable
 	     */
@@ -1318,22 +1268,6 @@ public class ModelBuilder extends JPanel {
 					m_doc.adjustArrows();
 					g_panel.repaint();
 					break;
-//				case MODE_RECT:
-//					beast.app.draw.Rect rect = (beast.app.draw.Rect) m_drawShape;
-//					if (m_drawShape == null) {
-//						rect = new beast.app.draw.Rect();
-//						rect.m_x = me.getX();
-//						rect.m_y = me.getY();
-//						rect.m_w = 1;
-//						rect.m_h = 1;
-//						m_drawShape = rect;
-//					} else {
-//						rect.m_w = me.getX() - rect.m_x;
-//						rect.m_h = me.getY() - rect.m_y;
-//					}
-//					m_Selection.m_tracker = rect.getTracker();
-//					g_panel.repaint();
-//					break;
 				case MODE_FUNCTION:
 					beast.app.draw.PluginShape function = (beast.app.draw.PluginShape) m_drawShape;
 
@@ -1351,54 +1285,6 @@ public class ModelBuilder extends JPanel {
 					m_Selection.m_tracker = function.getTracker();
 					g_panel.repaint();
 					break;
-//				case MODE_RRECT:
-//					RoundRectangle rrect = (RoundRectangle) m_drawShape;
-//					if (m_drawShape == null) {
-//						rrect = new RoundRectangle();
-//						rrect.m_x = me.getX();
-//						rrect.m_y = me.getY();
-//						rrect.m_w = 1;
-//						rrect.m_h = 1;
-//						m_drawShape = rrect;
-//					} else {
-//						rrect.m_w = me.getX() - rrect.m_x;
-//						rrect.m_h = me.getY() - rrect.m_y;
-//					}
-//					m_Selection.m_tracker = rrect.getTracker();
-//					g_panel.repaint();
-//					break;
-//				case MODE_ELLIPSE:
-//					Ellipse ellipse = (Ellipse) m_drawShape;
-//					if (m_drawShape == null) {
-//						ellipse = new Ellipse();
-//						ellipse.m_x = me.getX();
-//						ellipse.m_y = me.getY();
-//						ellipse.m_w = 1;
-//						ellipse.m_h = 1;
-//						m_drawShape = ellipse;
-//					} else {
-//						ellipse.m_w = me.getX() - ellipse.m_x;
-//						ellipse.m_h = me.getY() - ellipse.m_y;
-//					}
-//					m_Selection.m_tracker = ellipse.getTracker();
-//					g_panel.repaint();
-//					break;
-//				case MODE_LINE:
-//					Line line = (Line) m_drawShape;
-//					if (m_drawShape == null) {
-//						line = new Line();
-//						line.m_x = me.getX();
-//						line.m_y = me.getY();
-//						line.m_w = 1;
-//						line.m_h = 1;
-//						m_drawShape = line;
-//					} else {
-//						line.m_w = me.getX() - line.m_x;
-//						line.m_h = me.getY() - line.m_y;
-//					}
-//					m_Selection.m_tracker = line.getTracker();
-//					g_panel.repaint();
-//					break;
 				case MODE_ARROW:
 					Arrow arrow = (Arrow) m_drawShape;
 					if (m_drawShape == null) {
@@ -1414,7 +1300,14 @@ public class ModelBuilder extends JPanel {
 						if (iSelection < 0) {
 							return;
 						}
-						arrow = new Arrow((Shape) m_doc.m_objects.get(iSelection), me.getX(), me.getY());
+						Shape shape = (Shape) m_doc.m_objects.get(iSelection);
+						if (shape instanceof Arrow) {
+							return;
+						}
+						if (shape instanceof Ellipse) {
+							shape = ((Ellipse) shape).m_function;
+						}
+						arrow = new Arrow(shape, me.getX(), me.getY());
 						arrow.m_w = 1;
 						arrow.m_h = 1;
 						m_drawShape = arrow;
@@ -1519,41 +1412,6 @@ public class ModelBuilder extends JPanel {
 					}
 					updateStatus();
 					break;
-//				case MODE_POLY:
-//					if (me.getClickCount() == 1) {
-//						if (m_drawShape == null) {
-//							m_drawShape = new Poly(me.getX(), me.getY());
-//							m_Selection.m_tracker = m_drawShape.getTracker();
-//						} else {
-//							Poly poly = (Poly) m_drawShape;
-//							int nPoints = poly.m_polygon.npoints;
-//							if (poly.m_polygon.xpoints[nPoints - 1]!=me.getX() || poly.m_polygon.ypoints[nPoints - 1]!=me.getY()) {
-//								poly.m_polygon.addPoint(me.getX(), me.getY());
-//								m_Selection.m_tracker = m_drawShape.getTracker();
-//							}
-//						}
-//						g_panel.repaint();
-//					} else { // doubleclick = end of poly
-// 						if (m_drawShape != null) {
-//							Poly poly = (Poly) m_drawShape;
-//							int nPoints = poly.m_polygon.npoints;
-//							if (poly.m_polygon.xpoints[nPoints - 1]!=me.getX() || poly.m_polygon.ypoints[nPoints - 1]!=me.getY()) {
-//								poly.m_polygon.addPoint(me.getX(), me.getY());
-//							}
-//							if (poly.m_polygon.npoints >= 3) {
-//								m_doc.addNewShape(poly);
-//								m_Selection.m_tracker = m_drawShape.getTracker();
-//								m_nMode = MODE_SELECT;
-//								m_Selection.setSingleSelection(m_doc.m_objects.size() - 1);
-//								m_drawShape = null;
-//							} else {
-//								m_drawShape = null;
-//								m_Selection.m_tracker = null;
-//							}
-//						}
-//						updateStatus();
-//					}
-//					break;
 				}
 			} // mouseClicked
 
@@ -1722,28 +1580,6 @@ public class ModelBuilder extends JPanel {
 				popupMenu.show(g_panel, me.getX(), me.getY());
 			} // handleRightClick
 
-
-//			boolean editConstant() {
-//				String sConstantClassName = (String) JOptionPane.showInputDialog(g_panel,
-//						"Select a constant", "select",
-//						JOptionPane.PLAIN_MESSAGE, null,
-//						m_doc.m_sConstantNames,
-//						null);
-//				if (sConstantClassName != null) {
-//					try {
-//						Constant constant = ((Constant)m_drawShape);
-//						constant.setClassName(sConstantClassName);
-//			            ConstantDialog myDialog = new ConstantDialog(m_doc, g_panel, constant);
-//						return true;
-//					} catch (Exception e) {
-//						// TODO: handle exception
-//						e.printStackTrace();
-//						return false;
-//					}
-//				}
-//				return false;
-//			}
-
 			public void mouseReleased(MouseEvent me) {
 				if (m_drawShape != null) {
 					m_drawShape.normalize();
@@ -1778,15 +1614,6 @@ public class ModelBuilder extends JPanel {
 					m_nMode = MODE_SELECT;
 					updateStatus();
 					return;
-//				case MODE_RECT:
-//					Rect rect = (Rect) m_drawShape;
-//					if (rect == null) {return;}
-//					if (rect.m_w > 0 && rect.m_h>0) {
-//						m_doc.addNewShape(rect);
-//					} else {
-//						bAdded = false;
-//					}
-//					break;
 				case MODE_FUNCTION:
 					PluginShape function = (PluginShape) m_drawShape;
 					if (function == null) {return;}
@@ -1811,35 +1638,6 @@ public class ModelBuilder extends JPanel {
 						bAdded = false;
 					}
 					break;
-//				case MODE_RRECT:
-//					RoundRectangle rrect = (RoundRectangle) m_drawShape;
-//					if (rrect == null) {return;}
-//					if (rrect.m_w > 0 && rrect.m_h>0) {
-//						m_doc.addNewShape(rrect);
-//					} else {
-//						bAdded = false;
-//					}
-//					break;
-//				case MODE_ELLIPSE:
-//					Ellipse ellipse = (Ellipse) m_drawShape;
-//					if (ellipse == null) {return;}
-//					if (ellipse.m_w > 0 && ellipse.m_h>0) {
-//						m_doc.addNewShape(ellipse);
-//					} else {
-//						bAdded = false;
-//					}
-//					break;
-//				case MODE_LINE:
-//					Line line = (Line) m_drawShape;
-//					if (line == null) {return;}
-//					if (Math.abs(line.m_w) > 0 && Math.abs(line.m_h)>0) {
-//						m_doc.addNewShape(line);
-//					} else {
-//						bAdded = false;
-//					}
-//					break;
-//				case MODE_POLY:
-//					return;
 				case MODE_ARROW:
 					Arrow arrow = (Arrow) m_drawShape;
 					if (m_drawShape != null) {
@@ -1857,14 +1655,15 @@ public class ModelBuilder extends JPanel {
 							repaint();
 							return;
 						}
-						if (m_doc.m_objects.get(iSelection) instanceof beast.app.draw.PluginShape) {
+						Shape target = m_doc.m_objects.get(iSelection); 
+						if (!(target instanceof Ellipse)) {
 							// only connect to inputs of functions
 							m_drawShape = null;
 							repaint();
 							return;
 						}
 						try {
-							arrow.setHead(((Shape) m_doc.m_objects.get(iSelection)), m_doc.m_objects, m_doc);
+							arrow.setHead(target, m_doc.m_objects, m_doc);
 							m_doc.addNewShape(arrow);
 						} catch (Exception e) {
 							JOptionPane.showMessageDialog(null, e.getMessage());
@@ -1929,7 +1728,6 @@ public class ModelBuilder extends JPanel {
 		editMenu.add(a_group);
 		editMenu.add(a_ungroup);
 		editMenu.addSeparator();
-//		editMenu.add(a_properties);
 
 
 		JMenu drawMenu = new JMenu("Draw");
@@ -1937,11 +1735,6 @@ public class ModelBuilder extends JPanel {
 		menuBar.add(drawMenu);
 		drawMenu.add(a_select);
 		drawMenu.add(a_function);
-//		drawMenu.add(a_rect);
-//		drawMenu.add(a_rrect);
-//		drawMenu.add(a_ellipse);
-//		drawMenu.add(a_line);
-//		drawMenu.add(a_poly);
 		drawMenu.add(a_arrow);
 
 		JMenu objectMenu = new JMenu("Object");
@@ -1996,14 +1789,14 @@ public class ModelBuilder extends JPanel {
 			}
 		});
 		viewMenu.add(viewState);
-		final JCheckBoxMenuItem viewRelax = new JCheckBoxMenuItem("Relax", m_bRelax);
-		viewRelax.addActionListener(new ActionListener() {
+		m_viewRelax = new JCheckBoxMenuItem("Relax", m_bRelax);
+		m_viewRelax.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				m_bRelax = viewRelax.getState();
+				m_bRelax = m_viewRelax.getState();
 				g_panel.repaint();
 			}
 		});
-		viewMenu.add(viewRelax);
+		viewMenu.add(m_viewRelax);
 
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic('H');
@@ -2011,8 +1804,9 @@ public class ModelBuilder extends JPanel {
 		helpMenu.add(a_about);
 
 		return menuBar;
-	}
+	} // makeMenuBar
 
+	
 	public static void main(String args[]) {
 		Randomizer.setSeed(127);
 		JFrame f = new JFrame("Model Builder");
@@ -2032,7 +1826,6 @@ public class ModelBuilder extends JPanel {
 			e.printStackTrace();
 			// ignore
 		}
-		//drawTest.m_doc.loadFile("G:\\eclipse\\workspace\\var\\test2.xdl");
 		if (args.length > 0) {
 			drawTest.m_doc.loadFile(args[0]);
 			drawTest.setDrawingFlag();
@@ -2040,4 +1833,5 @@ public class ModelBuilder extends JPanel {
 		f.setSize(600, 800);
 		f.setVisible(true);
 	} // main
-}
+	
+} // class ModelBuilder

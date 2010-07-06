@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import beast.core.*;
+import beast.core.Runnable;
 
 import beast.util.Randomizer;
 import beast.util.XMLParser;
@@ -53,7 +53,7 @@ public class BeastMCMC {
 	/** name of SnAP specification file **/
 	String m_sFileName = "";//"examples/testCoalescent.xml";
 	/** MCMC object to execute **/
-	RunnablePlugin m_runnable;
+	Runnable m_runnable;
 
 
 	/** parse command line arguments, and load file if specified
