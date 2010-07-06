@@ -1,8 +1,9 @@
 package beast.evolution.tree.coalescent;
 
 import beast.core.Input;
-import beast.core.Parameter;
 import beast.core.State;
+import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
 import java.util.ArrayList;
@@ -13,17 +14,17 @@ import java.util.List;
  */
 public class BayesianSkyline extends PopulationFunction.Abstract {
 
-    public Input<Parameter> popSizeParamInput = new Input<Parameter>("popSizes", "the popSizes parameter");
-    public Input<Parameter> groupSizeParamInput = new Input<Parameter>("groupSizes", "the group sizes parameter");
+    public Input<RealParameter> popSizeParamInput = new Input<RealParameter>("popSizes", "the popSizes parameter");
+    public Input<RealParameter> groupSizeParamInput = new Input<RealParameter>("groupSizes", "the group sizes parameter");
     public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
 
-    Parameter popSizes;
-    Parameter groupSizes;
+    Parameter<Double> popSizes;
+    Parameter<Double> groupSizes;
     Tree tree;
     TreeIntervals intervals;
 
     public void initAndValidate(State state) throws Exception {
-    	prepare(state);
+        prepare(state);
     }
 
     public void prepare(State state) {
@@ -45,7 +46,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
 
     public double getPopSize(double t) {
         double[] heights = intervals.getIntervals();
-        double[] sizes = popSizes.getValues();
+        Double[] sizes = popSizes.getValues();
 
         for (int i = 0; i < heights.length; i++) {
             if (t < heights[i]) {

@@ -26,6 +26,8 @@ package beast.util;
 
 
 import beast.core.*;
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
@@ -107,7 +109,8 @@ public class XMLParser {
     final static String LIKELIHOOD_CLASS = Distribution.class.getName();
     final static String LOG_CLASS = Logger.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
-    final static String PARAMETER_CLASS = Parameter.class.getName();
+    final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
+    final static String INT_PARAMETER_CLASS = IntegerParameter.class.getName();
     final static String PLUGIN_CLASS = Plugin.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
@@ -123,7 +126,8 @@ public class XMLParser {
     final static String SEQUENCE_ELEMENT = "sequence";
     final static String STATE_ELEMENT = "state";
     final static String TREE_ELEMENT = "tree";
-    final static String PARAMETER_ELEMENT = "parameter";
+    final static String REAL_PARAMETER_ELEMENT = "parameter";
+    final static String INT_PARAMETER_ELEMENT = "intParameter";
     final static String RUN_ELEMENT = "run";
 
 
@@ -158,7 +162,8 @@ public class XMLParser {
         m_sElement2ClassMap.put(STATE_ELEMENT, STATE_CLASS);
         m_sElement2ClassMap.put(SEQUENCE_ELEMENT, SEQUENCE_CLASS);
         m_sElement2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
-        m_sElement2ClassMap.put(PARAMETER_ELEMENT, PARAMETER_CLASS);
+        m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
+        m_sElement2ClassMap.put(INT_PARAMETER_ELEMENT, INT_PARAMETER_CLASS);
     }
 
     public RunnablePlugin parseFile(String sFileName) throws Exception {
@@ -173,11 +178,12 @@ public class XMLParser {
 
 
         parse();
-        if(m_runnable instanceof RunnablePlugin)
-            return (RunnablePlugin)m_runnable;
-        else{
+        if (m_runnable instanceof RunnablePlugin)
+            return (RunnablePlugin) m_runnable;
+        else {
             throw new Exception("Run element does not point to a runnable object.");
-        }    } // parseFile
+        }
+    } // parseFile
 
 
     /**

@@ -24,6 +24,9 @@
 */
 package beast.core;
 
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,9 +132,14 @@ public class State extends Plugin {
         return stateNode[nID];
     }
 
-    public Parameter getParameter(Input<Parameter> p) {
-        return (Parameter) getStateNode(p);
+    public RealParameter getParameter(Input<RealParameter> p) {
+        return (RealParameter) getStateNode(p);
     }
+
+    public IntegerParameter getIntParameter(Input<IntegerParameter> p) {
+        return (IntegerParameter) getStateNode(p);
+    }
+
 
 //    public void setValue(int nID, Object fValue) {
 //	        m_parameters[nID].setValue(fValue);

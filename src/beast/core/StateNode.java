@@ -23,7 +23,7 @@ public abstract class StateNode extends Plugin {
     /**
      * @return true if this node is acting as a random variable, false if this node is fixed and effectively data.
      */
-    final boolean isStochastic() {
+    public final boolean isStochastic() {
         return isStochastic;
     }
 

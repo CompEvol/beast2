@@ -24,7 +24,8 @@
 */
 package beast.evolution.tree;
 
-import beast.core.*;
+import beast.core.Description;
+import beast.core.StateNode;
 
 import java.util.Arrays;
 
@@ -233,4 +234,5 @@ public class Tree extends StateNode {
     public String toString() {
         return root.toString();
     }
+
 } // class Tree

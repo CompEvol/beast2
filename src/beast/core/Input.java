@@ -229,8 +229,15 @@ public class Input<T> {
 //                            } else
                             theClass = (Class<?>) genericTypes2[0];
                         } else {
-                            Class<?> genericType = (Class<?>) genericTypes[0];
-                            theClass = genericType;
+
+
+                            try {
+                                Class<?> genericType = (Class<?>) genericTypes[0];
+                                theClass = genericType;
+                            } catch (Exception e) {
+                                System.err.println(plugin.getID() + " failed.");
+                                System.exit(0);
+                            }
                         }
                         i = fields.length;
                     }

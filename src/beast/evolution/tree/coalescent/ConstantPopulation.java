@@ -1,8 +1,8 @@
 package beast.evolution.tree.coalescent;
 
 import beast.core.Input;
-import beast.core.Parameter;
 import beast.core.State;
+import beast.core.parameter.RealParameter;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +44,7 @@ import java.util.List;
  * @version $Id: ConstantPopulation.java,v 1.9 2005/05/24 20:25:55 rambaut Exp $
  */
 public class ConstantPopulation extends PopulationFunction.Abstract {
-    public Input<Parameter> popSizeParameter = new Input<Parameter>("popSize", "popSize parameter; defaults to 1.0)");
+    public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize", "popSize parameter; defaults to 1.0)");
 
     //
     // Public stuff

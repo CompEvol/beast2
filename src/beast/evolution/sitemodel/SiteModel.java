@@ -26,6 +26,8 @@ package beast.evolution.sitemodel;
 
 
 import beast.core.*;
+import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 
@@ -42,10 +44,10 @@ import java.util.List;
         "and gamma distributed rates across sites (optional) " +
         "and proportion of the sites invariant (also optional).")
 public class SiteModel extends Plugin implements Cacheable {
-    public Input<Parameter> muParameter = new Input<Parameter>("mutationRate", "mutation rate (defaults to 1.0)");
+    public Input<RealParameter> muParameter = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)");
     public Input<Integer> gammaCategoryCount = new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
-    public Input<Parameter> shapeParameter = new Input<Parameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
-    public Input<Parameter> invarParameter = new Input<Parameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
+    public Input<RealParameter> shapeParameter = new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
+    public Input<RealParameter> invarParameter = new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
     public Input<SubstitutionModel> m_pSubstModel = new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree");
     public Input<Frequencies> m_pFreqs = new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root");
 
@@ -70,10 +72,10 @@ public class SiteModel extends Plugin implements Cacheable {
             categoryCount = 1;
         }
 
-        if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
+        if (invarParameter.get() != null && ((Parameter<Double>) invarParameter.get()).getValue() > 0) {
             categoryCount += 1;
             invarParameter.get().setBounds(0.0, 1.0);
-        } else if (invarParameter.get() != null && invarParameter.get().getValue() <= 0) {
+        } else if (invarParameter.get() != null && ((Parameter<Double>) invarParameter.get()).getValue() <= 0) {
             invarParameter.setValue(null, this);
         }
 
@@ -135,7 +137,7 @@ public class SiteModel extends Plugin implements Cacheable {
             }
         }
 
-        final double mu = (muParameter.get() != null) ? ((Parameter) state.getStateNode(muParameter)).getValue() : 1.0;
+        final double mu = (muParameter.get() != null) ? state.getParameter(muParameter).getValue() : 1.0;
 
         return categoryRates[category] * mu;
     }
@@ -147,7 +149,7 @@ public class SiteModel extends Plugin implements Cacheable {
             }
         }
 
-        final double mu = (muParameter.get() != null) ? ((Parameter) state.getStateNode(muParameter)).getValue() : 1.0;
+        final double mu = (muParameter.get() != null) ? state.getParameter(muParameter).getValue() : 1.0;
 
         final double[] rates = new double[categoryRates.length];
         for (int i = 0; i < rates.length; i++) {
@@ -221,7 +223,7 @@ public class SiteModel extends Plugin implements Cacheable {
 
         if (invarParameter.get() != null) {
             categoryRates[0] = 0.0;
-            categoryProportions[0] = ((Parameter) state.getStateNode(invarParameter)).getValue();
+            categoryProportions[0] = state.getParameter(invarParameter).getValue();
 
             propVariable = 1.0 - categoryProportions[0];
             cat = 1;
@@ -229,7 +231,7 @@ public class SiteModel extends Plugin implements Cacheable {
 
         if (shapeParameter.get() != null) {
 
-            final double a = ((Parameter) state.getStateNode(shapeParameter)).getValue();
+            final double a = state.getParameter(shapeParameter).getValue();
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
@@ -262,20 +264,18 @@ public class SiteModel extends Plugin implements Cacheable {
         ratesKnown = true;
     }
 
-    
-    @Override
+
     public void store(int nSample) {
         m_pSubstModel.get().store(nSample);
     } // no additional state needs storing
 
-    @Override
     public void restore(int nSample) {
         m_pSubstModel.get().restore(nSample);
         ratesKnown = false;
     }
 
-    @Override
-    public void prepare(State state) {}
+    public void prepare(State state) {
+    }
 
     private boolean ratesKnown;
 

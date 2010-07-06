@@ -25,6 +25,7 @@
 package beast.core;
 
 
+import beast.core.parameter.Parameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;

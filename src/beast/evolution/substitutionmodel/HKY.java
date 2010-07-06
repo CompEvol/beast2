@@ -25,14 +25,18 @@
 package beast.evolution.substitutionmodel;
 
 
-import beast.core.*;
+import beast.core.Citation;
+import beast.core.Description;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.State;
+import beast.core.parameter.RealParameter;
 
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
 @Citation("Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. Journal of Molecular Evolution 22:160-174.")
 public class HKY extends SubstitutionModel {
     //public Input<Frequencies> m_freqs = new Input<Frequencies>("frequencies", "frequencies nucleotide letters");
-    public Input<Parameter> m_kappa = new Input<Parameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
+    public Input<RealParameter> m_kappa = new Input<RealParameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
     @Override
     public void initAndValidate(State state) throws Exception {

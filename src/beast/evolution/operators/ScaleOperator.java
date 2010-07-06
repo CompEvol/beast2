@@ -24,7 +24,12 @@
 */
 package beast.evolution.operators;
 
-import beast.core.*;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Operator;
+import beast.core.State;
+import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
@@ -32,7 +37,7 @@ import beast.util.Randomizer;
 public class ScaleOperator extends Operator {
 
     public Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
-    public Input<Parameter> m_pParameter = new Input<Parameter>("parameter", "if specified, this parameter is scaled", Input.Validate.XOR, m_pTree);
+    public Input<RealParameter> m_pParameter = new Input<RealParameter>("parameter", "if specified, this parameter is scaled", Input.Validate.XOR, m_pTree);
 
     public Input<Double> m_pScaleFactor = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", new Double(1.0));
     // shadows input
@@ -87,7 +92,7 @@ public class ScaleOperator extends Operator {
             m_iVar = state.getStateNodeIndex(m_pParameter.get().getID());
         }
 
-        Parameter param = (Parameter) state.getStateNode(m_iVar);
+        Parameter<Double> param = (Parameter<Double>) state.getStateNode(m_iVar);
         int dim = param.getDimension();
 
         if (bScaleAllIndependently) {

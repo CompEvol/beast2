@@ -52,7 +52,7 @@
         <input name='taxa' idref='alignment'/>
     </input>
 
-    <input spec='beast.core.Parameter' id="hky.kappa">1.0</input>
+    <input spec='beast.core.parameter.RealParameter' id="hky.kappa">1.0</input>
 
     <parameter id="popSize">1.0</parameter>
     <parameter id="growthRate">1.0</parameter>

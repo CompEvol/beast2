@@ -27,8 +27,9 @@ package beast.evolution.substitutionmodel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.Parameter;
 import beast.core.State;
+import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -38,7 +39,7 @@ import java.util.List;
         "than that one of the is equal to one and the others are specified relative to " +
         "this unit rate. Works for any number of states.")
 public class GeneralSubstitutionModel extends SubstitutionModel {
-    public Input<Parameter> m_pRateParameter = new Input<Parameter>("rates", "rate parameter which defines the transition rate matrix", Validate.REQUIRED);
+    public Input<RealParameter> m_pRateParameter = new Input<RealParameter>("rates", "rate parameter which defines the transition rate matrix", Validate.REQUIRED);
     public Input<Integer> m_pRelativeTo = new Input<Integer>("relativeto", "index of rate which equals 1 while other are rates relative to this one", new Integer(0));
 
     @Override
@@ -129,7 +130,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
      */
     public void setupRelativeRates(State state) {
         int nRelativeTo = m_pRelativeTo.get();
-        Parameter pRates = state.getParameter(m_pRateParameter);
+        Parameter<Double> pRates = state.getParameter(m_pRateParameter);
         for (int i = 0; i < relativeRates.length; i++) {
             if (i == nRelativeTo) {
                 relativeRates[i] = 1.0;

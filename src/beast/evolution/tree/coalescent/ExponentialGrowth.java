@@ -1,8 +1,8 @@
 package beast.evolution.tree.coalescent;
 
 import beast.core.Input;
-import beast.core.Parameter;
 import beast.core.State;
+import beast.core.parameter.RealParameter;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,8 +44,8 @@ import java.util.List;
  * @version $Id: ConstantPopulation.java,v 1.9 2005/05/24 20:25:55 rambaut Exp $
  */
 public class ExponentialGrowth extends PopulationFunction.Abstract {
-    public Input<Parameter> popSizeParameter = new Input<Parameter>("popSize", "the current popSize parameter; defaults to 1.0)");
-    public Input<Parameter> growthRateParameter = new Input<Parameter>("growthRate", "popSize parameter; defaults to 0.01)");
+    public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize", "the current popSize parameter; defaults to 1.0)");
+    public Input<RealParameter> growthRateParameter = new Input<RealParameter>("growthRate", "popSize parameter; defaults to 0.01)");
 
     //
     // Public stuff

@@ -25,6 +25,8 @@
 package beast.util;
 
 import beast.core.*;
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
@@ -193,13 +195,16 @@ public class XMLProducer extends XMLParser {
         if (plugin instanceof Operator) {
             sElementName = XMLParser.OPERATOR_ELEMENT;
         }
-        if (plugin instanceof Parameter) {
-            sElementName = XMLParser.PARAMETER_ELEMENT;
+        if (plugin instanceof RealParameter) {
+            sElementName = XMLParser.REAL_PARAMETER_ELEMENT;
+        }
+        if (plugin instanceof IntegerParameter) {
+            sElementName = XMLParser.INT_PARAMETER_ELEMENT;
         }
         if (plugin instanceof Tree) {
             sElementName = XMLParser.TREE_ELEMENT;
         }
-	     
+
         if (bIsTopLevel) {
             sElementName = XMLParser.RUN_ELEMENT;
         }

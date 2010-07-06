@@ -52,9 +52,9 @@
         <input name='taxa' idref='alignment'/>
     </input>
 
-    <input spec='beast.core.Parameter' id="hky.kappa">1.0</input>
+    <input spec='beast.core.parameter.RealParameter' id="hky.kappa">1.0</input>
 
-    <input spec='beast.core.Parameter' id="popSize">1.0</input>
+    <input spec='beast.core.parameter.RealParameter' id="popSize">1.0</input>
 
 
     <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
