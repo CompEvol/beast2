@@ -75,7 +75,7 @@ public class PluginLoader {
 	   }
 
 	  public static List<Plugin> loadPlugins(final String packageName/*, boolean pluginEnabled*/) {
-          //the class loader must still be assigned if the plugin isnt enabled so
+          //the class loader must still be assigned if the plugin isn't enabled so
 	      //documents from that plugin can still be displayed.
           final String loggerName = "beast.app";
           Logger.getLogger(loggerName).info("Loading plugin " + packageName);

@@ -124,6 +124,9 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
 
     }
 
+    public void prepare(final State state) {
+    }
+
     /**
      * sets up relative rate matrix *
      */

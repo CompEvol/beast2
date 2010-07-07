@@ -19,7 +19,7 @@ import java.util.Random;
 public class Coalescent extends Distribution {
 
     public Input<Tree> tree = new Input<Tree>("tree", "phylogenetic beast.tree");
-    public Input<PopulationFunction.Abstract> popSize = new Input<PopulationFunction.Abstract>("populationModel", "A population size model");
+    public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model");
 
 
     /**
@@ -28,8 +28,6 @@ public class Coalescent extends Distribution {
     public double calculateLogP(State state) throws Exception {
 
         Tree stateTree = (Tree) state.getStateNode(tree);
-
-        popSize.get().prepare(state);
 
         TreeIntervals intervals = new TreeIntervals(stateTree);
 

@@ -51,8 +51,8 @@ public class Logger extends Plugin {
     int m_nEvery = 1;
     /** stream to log to */
     PrintStream m_out;
-    
-    /** keep track of time taken between logs to estimate speed **/ 
+
+    /** keep track of time taken between logs to estimate speed **/
     long m_nStartLogTime;
 
     @Override
@@ -61,7 +61,7 @@ public class Logger extends Plugin {
         if (m_loggers.size() == 0) {
             throw new Exception("Logger with nothing to log specified");
         }
-        
+
         // verify everything is loggable
         for (Plugin plugin : m_loggers) {
             if (!(plugin instanceof Loggable)) {
@@ -130,38 +130,6 @@ public class Logger extends Plugin {
     public void close() {
         for (int i = 0; i < m_loggers.size(); i++) {
             ((Loggable) m_loggers.get(i)).close(m_out);
-        }
-        // close all file, except stdout
-        if (m_pFileName.get() != null && m_pFileName.get() != "") {
-            m_out.close();
-        }
-    } // close
-
-} // class Logger
-
-        }
-        if (m_mode == COMPOUND_LOGGER) {
-            m_out.print(nSample + "\t");
-        }
-        for (int i = 0; i < m_loggers.size(); i++) {
-        	((Loggable)m_loggers.get(i)).log(nSample, state, m_out);
-        }
-        if (m_out == System.out) {
-            long nLogTime = System.currentTimeMillis();
-            int nSecondsPerMSamples = (int) ((nLogTime - m_nStartLogTime) * 1000.0 / (nSample + 1.0));
-            String sTimePerMSamples =
-                    (nSecondsPerMSamples > 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
-                            (nSecondsPerMSamples > 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
-                            (nSecondsPerMSamples % 60 + "s");
-            m_out.print(sTimePerMSamples + "/Msamples");
-        }
-        m_out.println();
-    } // log
-
-    /** stop logging, produce end of log message and close file (if necessary) **/
-    public void close() {
-        for (int i = 0; i < m_loggers.size(); i++) {
-        	((Loggable)m_loggers.get(i)).close(m_out);
         }
         // close all file, except stdout
         if (m_pFileName.get() != null && m_pFileName.get() != "") {

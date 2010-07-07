@@ -75,20 +75,27 @@ public class CompoundDistribution extends Distribution {
         return conditions;
     }
 
-    @Override
-    public void restore(int nSample) {
-        super.restore(nSample);
-        for (Distribution likelihood : pDistributions.get()) {
-            likelihood.restore(nSample);
-        }
-    }
-
-    @Override
-    public void store(int nSample) {
-        super.store(nSample);
-        for (Distribution likelihood : pDistributions.get()) {
-            likelihood.store(nSample);
-        }
-    }
-
+//    @Override
+//    public void restore(int nSample) {
+//        super.restore(nSample);
+//        for (Distribution likelihood : pDistributions.get()) {
+//            likelihood.restore(nSample);
+//        }
+//    }
+//
+//    @Override
+//    public void store(int nSample) {
+//        super.store(nSample);
+//        for (Distribution likelihood : pDistributions.get()) {
+//            likelihood.store(nSample);
+//        }
+//    }
+//
+//    @Override
+//    public void prepare(State state) {
+//        super.prepare(state);
+//        for (Distribution likelihood : pDistributions.get()) {
+//            likelihood.prepare(state);
+//        }
+//    }
 } // class CompoundProbabilityDistribution

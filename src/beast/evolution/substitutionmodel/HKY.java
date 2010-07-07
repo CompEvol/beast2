@@ -360,4 +360,6 @@ public class HKY extends SubstitutionModel {
         updateIntermediates = true;
     }
 
+    public void prepare(final State state) {
+    }
 }

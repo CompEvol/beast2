@@ -274,7 +274,7 @@ public class SiteModel extends Plugin implements Cacheable {
         ratesKnown = false;
     }
 
-    public void prepare(State state) {
+    public void prepare(final State state) {
     }
 
     private boolean ratesKnown;

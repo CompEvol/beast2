@@ -82,32 +82,26 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
     }
 
     /** Cachable interface implementation follows **/
-    @Override
     public void store(int nSample) {
         storedLogP = logP;
     }
 
-    @Override
     public void restore(int nSample) {
         logP = storedLogP;
     }
 
-    @Override
 	public
     void prepare(State state) {}
 
     /** Loggable interface implementation follows **/
-	@Override
 	public void init(State state, PrintStream out) throws Exception {
 		out.print(getID() + "\t");
 	}
 
-	@Override
 	public void log(int nSample, State state, PrintStream out) {
 		out.print(getCurrentLogP() + "\t");
 	}
 
-	@Override
 	public void close(PrintStream out) {
 		// nothing to do
 	}
