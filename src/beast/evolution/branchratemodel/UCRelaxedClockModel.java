@@ -103,6 +103,31 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     IntegerParameter categories;
     Tree tree;
 
+    @Override
+    public void store(final int sample) {
+    }
+
+    @Override
+    public void restore(final int sample) {
+    	recompute = -Integer.MAX_VALUE;
+    }
+
+    @Override
+    public boolean isDirty(State state) {
+        if (recompute < state.stateNumber) {
+        	return true;
+        }
+        if (state.getStateNode(categoryInput).isDirty()) {
+        	return true;
+        }
+        if (state.getStateNode(treeInput).isDirty()) {
+        	return true;
+        }
+//        if (state.getStateNode(rateDistInput).isDirty()) {
+//        	return true;
+//        }
+    	return false;
+    }
 
     private int recompute = -Integer.MAX_VALUE;
 

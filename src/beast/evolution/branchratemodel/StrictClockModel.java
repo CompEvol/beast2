@@ -19,6 +19,7 @@ public class StrictClockModel extends BranchRateModel.Base {
     public void initAndValidate(State state) throws Exception {
         if (muParameter.get() != null) {
             muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+            mu = state.getParameter(muParameter).getValue();
         }
     }
 

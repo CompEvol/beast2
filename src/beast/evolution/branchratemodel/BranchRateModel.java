@@ -21,6 +21,8 @@ public interface BranchRateModel {
         public void restore(final int sample) {
         }
 
-
+        public boolean isDirty(State state) {
+        	return false;
+        }
     }
 }
