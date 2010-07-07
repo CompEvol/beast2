@@ -25,29 +25,95 @@
  */
 package beast.evolution.likelihood;
 
-abstract public class LikelihoodCore {
-	boolean m_bUseScaling = false;
+/** The likelihood core is the class that performs the calculations
+ * in the peeling algorithm (see Felsenstein, Joseph (1981). 
+ * Evolutionary trees from DNA sequences: a maximum likelihood approach. 
+ * J Mol Evol 17 (6): 368-376.). It does this by calculating the partial
+ * results for all sites, node by node. The order in which the nodes
+ * are visited is controlled by the TreeLikelihood. T
+ * 
+ * In order to reuse computations of previous likelihood calculations,
+ * a current state, and a stored state are maintained. Again, the TreeLikelihood
+ * controls when to update from current to stored and vice versa. So, in
+ * LikelihoodCore implementations, duplicates need to be kept for all partials.
+ * Also, a set of indices to indicate which of the data is stored state and which
+ * is current state is commonly the most efficient way to sort out which is which.
+ *   
+ *   
+ */
 
+abstract public class LikelihoodCore {
+
+	/** reserve memory for partials, indices and other 
+	 * data structures required by the core **/
 	abstract public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories);
+	
+	/** clean up after last likelihood calculation, if at all required **/
 	abstract public void finalize() throws java.lang.Throwable;
 
-	abstract public void integratePartials(int iNode, double[] fProportions, double[] fOutPartials);
-	abstract public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods);
+	/** reserve memory for partials for node with number iNode **/
+	abstract public void createNodePartials(int iNode);
+	
+	
+	/** indicate that the partials for node 
+	 * iNode is about the be changed, that is, that the stored
+	 * state for node iNode cannot be reused **/
+	abstract public void setNodePartialsForUpdate(int iNode);
+	/** assign values of partials for node with number iNode **/
+	// do we need these???
+	//abstract public void setNodePartials(int iNode, double[] fPartials);
+    //abstract public void setCurrentNodePartials(int iNode, double[] fPartials);
 
+    /** reserve memory for states for node with number iNode **/
+	abstract public void createNodeStates(int iNode);
+
+	/** assign values of states for node with number iNode **/
+	abstract public void setNodeStates(int iNode, int[] iStates);
+	
+	/** indicate that the probability transition matrix for node 
+	 * iNode is about the be changed, that is, that the stored
+	 * state for node iNode cannot be reused **/
+	abstract public void setNodeMatrixForUpdate(int iNode);
+	
+    /** assign values of states for probability transition matrix for node with number iNode **/
+	abstract public void setNodeMatrix(int iNode, int iMatrixIndex, double[] fMatrix);
+
+
+    
+    /** indicate that the topology of the tree chanced so the cache 
+	 * data structures cannot be reused **/
+    public void setNodeStatesForUpdate(int iNode) {};
+    
+
+    
+	/** flag to indicate whether scaling should be used in the
+	 * likelihood calculation. Scaling can help in dealing with
+	 * numeric issues (underflow).
+	 */
+	boolean m_bUseScaling = false;
 	abstract public void setUseScaling(boolean bUseScaling);
 	public boolean getUseScaling() {return m_bUseScaling;}
-	abstract public void createNodePartials(int iNode);
-	abstract public void setNodePartials(int iNode, double[] fPartials);
-	abstract public void createNodeStates(int iNode);
-	abstract public void setNodeStates(int iNode, int[] iStates);
-	abstract public void setNodeMatrixForUpdate(int iNode);
-	abstract public void setNodeMatrix(int iNode, int iMatrixIndex, double[] fMatrix);
-    abstract public void setNodePartialsForUpdate(int iNode);
-    public void setNodeStatesForUpdate(int iNode) {};
-    abstract public void setCurrentNodePartials(int iNode, double[] fPartials);
-    abstract public void calculatePartials(int iNode1, int iNode2, int iNode3);
-    abstract public void calculatePartials(int iNode1, int iNode2, int iNode3, int[] iMatrixMap);
+	/** return the cumulative scaling effect. Should be zero if no scaling is used **/
     abstract public double getLogScalingFactor(int iPattern);
+
+    /** Calculate partials for node iNode3, with children iNode1 and iNode2. 
+     * NB Depending on whether the child nodes contain states or partials, the
+     * calculation differs-**/
+    abstract public void calculatePartials(int iNode1, int iNode2, int iNode3);
+    //abstract public void calculatePartials(int iNode1, int iNode2, int iNode3, int[] iMatrixMap);
+    /** integrate partials over categories (if any). **/
+    abstract public void integratePartials(int iNode, double[] fProportions, double[] fOutPartials);
+
+    /** calculate log likelihoods at the root of the tree,
+     * using fFrequencies as root node distribution.
+     * fOutLogLikelihoods contains the resulting probabilities for each of 
+     * the patterns **/
+	abstract public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods);
+	
+    
+    
+    /** store current state **/
     abstract public void store();
+    /** restore state **/
     abstract public void restore();
 }

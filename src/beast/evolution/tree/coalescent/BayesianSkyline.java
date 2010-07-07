@@ -2,7 +2,6 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Input;
 import beast.core.State;
-import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
@@ -18,8 +17,8 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     public Input<RealParameter> groupSizeParamInput = new Input<RealParameter>("groupSizes", "the group sizes parameter");
     public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
 
-    Parameter<Double> popSizes;
-    Parameter<Double> groupSizes;
+    RealParameter popSizes;
+    RealParameter groupSizes;
     Tree tree;
     TreeIntervals intervals;
 

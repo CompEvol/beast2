@@ -28,7 +28,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.State;
-import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 
 import java.util.Arrays;
@@ -130,7 +129,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
      */
     public void setupRelativeRates(State state) {
         int nRelativeTo = m_pRelativeTo.get();
-        Parameter<Double> pRates = state.getParameter(m_pRateParameter);
+        RealParameter pRates = state.getParameter(m_pRateParameter);
         for (int i = 0; i < relativeRates.length; i++) {
             if (i == nRelativeTo) {
                 relativeRates[i] = 1.0;

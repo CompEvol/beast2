@@ -72,10 +72,10 @@ public class SiteModel extends Plugin implements Cacheable {
             categoryCount = 1;
         }
 
-        if (invarParameter.get() != null && ((Parameter<Double>) invarParameter.get()).getValue() > 0) {
+        if (invarParameter.get() != null && ((RealParameter) invarParameter.get()).getValue() > 0) {
             categoryCount += 1;
             invarParameter.get().setBounds(0.0, 1.0);
-        } else if (invarParameter.get() != null && ((Parameter<Double>) invarParameter.get()).getValue() <= 0) {
+        } else if (invarParameter.get() != null && ((RealParameter) invarParameter.get()).getValue() <= 0) {
             invarParameter.setValue(null, this);
         }
 

@@ -43,7 +43,7 @@ import javax.xml.transform.TransformerException;
  * NB: current limitations Only alignments are converted.
  */
 public class Beast1To2 {
-	final static String BEAST1TO2_XSL_FILE = "src/beast.app/beast1To2.xsl";
+	final static String BEAST1TO2_XSL_FILE = "src/beast/app/beast1To2.xsl";
 	String m_sXSL;
 
 	public Beast1To2() throws Exception {
