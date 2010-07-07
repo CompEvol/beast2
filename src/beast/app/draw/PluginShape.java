@@ -47,7 +47,6 @@ import beast.core.Plugin;
 public class PluginShape extends Rect {
 	public beast.core.Plugin m_function;
 	List<InputShape> m_inputs;
-	String m_sOutput = "";
 
 
 	public PluginShape() {
@@ -80,23 +79,8 @@ public class PluginShape extends Rect {
 			InputShape input = new InputShape();
 			input.setFunction(this);
 			input.m_fillcolor = m_fillcolor;
-//			input.m_x = m_x + nOffset;
-//			input.m_y = m_y-10;
 			input.m_w = 10;
-//			Class type = sInputs[i].type();
-//			if (type != null && List.class.isAssignableFrom(type)) {
-//				input.m_w = 20;
-//			} else {
-//				input.m_w = 10;
-//			}
-//			input.m_h = 10;
 			String sInputLabel = sInputs[i].getName();
-//			if (m_function.getInputType(i).getNrOfDimensions()>0) {
-//				sInputLabel += "[]";
-//			}
-//			if (m_function.getInputType(i).getNrOfDimensions()>1) {
-//				sInputLabel += "[]";
-//			}
 			input.setLabel(sInputLabel);
 			doc.addNewShape(input);
 			m_inputs.add(input);
@@ -144,53 +128,14 @@ public class PluginShape extends Rect {
 	}
 
 	boolean setInput(beast.core.Plugin plugin, String sName, beast.core.Plugin plugin2) throws Exception {
-//		try {
-			plugin.setInputValue(sName, plugin2);
-			return true;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-
-//		//return true;
-//		Field [] fields = plugin.getClass().getFields();
-//		for (int i = 0; i < fields.length; i++) {
-//			if (fields[i].getType().isAssignableFrom(Input.class)) {
-//				Input input = (Input) fields[i].get(plugin);
-//				if (input.getName().equals(sName)) {
-//					try {
-//						// check that if this is a vector input
-//						// the value is not already set
-//						if (input.get() instanceof List) {
-//							List vector = (List) input.get();
-//							for(Object o : vector) {
-//								if (o.equals(plugin2)) {
-//									return true;
-//								}
-//							}
-//						}
-//						// assign value, and do type check
-//						Object old = input.get();
-//						input.setValue(plugin2, plugin);
-//						return true;
-//					} catch (ClassCastException e) {
-//						return false;
-//					}
-//				}
-//			}
-//		}
-//		return false;
+		plugin.setInputValue(sName, plugin2);
+		return true;
 	}
 
 	void adjustInputs() {
 		if (m_function != null) {
 			for (int i = 0; i < m_inputs.size(); i++) {
-//				int nOffset = i*m_w/(m_inputs.size()) + m_w/(2*(m_inputs.size()));
 				InputShape input = m_inputs.get(i);
-//				input.m_x = m_x + nOffset;
-//				input.m_y = m_y-10;
-//				input.m_w = 10;
-//				input.m_h = 10;
 				int nOffset = i*m_h/(m_inputs.size()) + m_h/(2*(m_inputs.size()));
 				input.m_x = m_x - input.m_w;
 				input.m_y = m_y + nOffset;
@@ -210,13 +155,20 @@ public class PluginShape extends Rect {
 			//g.setColor(m_fillcolor);
 			g.fillOval(m_x, m_y, m_w, m_h);
 			g.fillRect(m_x, m_y, m_w/2, m_h);
+		} else {
+			g.setColor(m_fillcolor);
+			g.drawLine(m_x, m_y, m_x, m_y+m_h);
+			g.drawLine(m_x, m_y, m_x+m_w/2, m_y);
+			g.drawLine(m_x, m_y+m_h, m_x+m_w/2, m_y+m_h);
+			g.drawArc(m_x, m_y, m_w, m_h, 0, 90);
+			g.drawArc(m_x, m_y, m_w, m_h, 0, -90);
 		}
 		g.setStroke(new BasicStroke(m_nPenWidth));
 		g.setColor(m_pencolor);
 		//g.drawOval(m_x, m_y, m_w, m_h);
 		//g.drawRect(m_x, m_y, m_w, m_h);
 		drawLabel(g);
-		g.drawString(m_sOutput,m_x+m_w/2-5, m_y+m_h+10);
+		//g.drawString(m_sOutput,m_x+m_w/2-5, m_y+m_h+10);
 		adjustInputs();
 	}
 
@@ -263,23 +215,5 @@ public class PluginShape extends Rect {
 	boolean intersects(int nX, int nY) {
 		return super.intersects(nX, nY);
 		//return (m_x+m_w/2-nX)*(m_x+m_w/2-nX)+ (m_y+m_h/2-nY)*(m_y+m_h/2-nY) < m_w*m_w/4+m_h*m_h/4;
-	}
-	String getPostScript() {
-		StringBuffer sStr = new StringBuffer();
-		if (m_bFilled) {
-			sStr.append((m_fillcolor.getRed()/256.0) + " " + (m_fillcolor.getGreen()/256.0) + " " + (m_fillcolor.getBlue()/256.0) + " setrgbcolor\n");
-			sStr.append("newpath " + m_x + " " + (500-m_y) + " " + (m_w/2) + " " + (m_h/2));
-			sStr.append("0 360 ellipse fill\n");
-		}
-		sStr.append((m_pencolor.getRed()/256.0) + " " + (m_pencolor.getGreen()/256.0) + " " + (m_pencolor.getBlue()/256.0) + " setrgbcolor\n");
-		sStr.append(m_nPenWidth + " setlinewidth\n");
-		sStr.append("newpath " + (m_x+ m_w/2) + " " + (500-m_y - m_h/2) + " " + (m_w/2) + " " + (m_h/2));
-		sStr.append(" 0 360 ellipse stroke\n");
-		if (m_sLabel!=null && m_sLabel!="") {
-			sStr.append("/Times-Roman findfont 12 scalefont setfont\n");
-			sStr.append((m_x + m_w/2 - m_sLabel.length() * 6) + " " + (500-m_y + -m_h/2-6)+ " moveto\n");
-			sStr.append("(" + m_sLabel + ") show\n");
-		}
-		return sStr.toString();
 	}
 } // class Function

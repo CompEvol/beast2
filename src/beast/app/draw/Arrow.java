@@ -298,6 +298,7 @@ public class Arrow extends Line {
 		 setArrow();
 		 //System.err.println(m_x + " " + m_y + " " + (m_x+m_w) + " " + (m_y+m_h));
 	}
+	
 	Point CalcIntersectionLineAndNode(Point p0,Point p1,
 			Rect position, Point roundness) {
 //	 Note: a rounded rectangle is a rectangle in which the corners are quarter elipses
@@ -373,24 +374,5 @@ public class Arrow extends Line {
 		pt.y = (int) (ga * pt.x + gb);
 		return pt;
 
-	}
-	String getPostScript() {
-		StringBuffer sPostScript = new StringBuffer();
-		sPostScript.append(m_nPenWidth + " setlinewidth\n");
-		sPostScript.append((m_pencolor.getRed()/256.0) + " " + (m_pencolor.getGreen()/256.0) + " " + (m_pencolor.getBlue()/256.0) + " setrgbcolor\n");
-		sPostScript.append("newpath " + m_polygon.xpoints[0] + " " + (500-m_polygon.ypoints[0]) + " moveto\n");
-		for (int i = 1; i < m_polygon.npoints; i++) {
-			sPostScript.append(m_polygon.xpoints[i] + " " + (500-m_polygon.ypoints[i]) + " lineto\n");
-		}
-		sPostScript.append("closepath fill\n");
-		sPostScript.append("newpath " + m_polygon.xpoints[0] + " " + (500-m_polygon.ypoints[0]) + " moveto\n");
-		sPostScript.append(m_polygon.xpoints[1] + " " + (500-m_polygon.ypoints[1]) + " lineto stroke\n");
-
-		if (m_sLabel!=null && m_sLabel!="") {
-			sPostScript.append("/Times-Roman findfont 12 scalefont setfont\n");
-			sPostScript.append((m_x + m_w/2 - m_sLabel.length() * 6) + " " + (500-m_y + -m_h/2-6)+ " moveto\n");
-			sPostScript.append("(" + m_sLabel + ") show\n");
-		}
-		return sPostScript.toString();
 	}
 } // class Arrow

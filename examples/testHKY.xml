@@ -91,12 +91,11 @@
         <operator spec='WilsonBalding' weight="1">
             <tree idref="tree"/>
         </operator>
-
+<!--
         <log logEvery="10000">
             <log>
                 <probabilityDistribution idref="likelihood"/>
             </log>
-            <!--parameter idref="treeModel.rootHeight"/-->
             <log>
                 <parameter idref="hky.kappa"/>
             </log>
@@ -105,7 +104,6 @@
             <log>
                 <probabilityDistribution idref="likelihood"/>
             </log>
-            <!--parameter idref="treeModel.rootHeight"/-->
             <log>
                 <parameter idref="hky.kappa"/>
             </log>
@@ -113,6 +111,19 @@
         <log logEvery="10000" fileName="test.$(seed).trees">
             <tree idref="tree"/>
         </log>
+-->
+        <log logEvery="10000">
+            <distribution name='log' idref="likelihood"/>
+            <parameter name='log' idref="hky.kappa"/>
+        </log>
+        <log logEvery="10000" fileName="test.$(seed).log">
+            <distribution name='log' idref="likelihood"/>
+            <parameter name='log' idref="hky.kappa"/>
+        </log>
+        <log logEvery="10000" fileName="test.$(seed).trees">
+            <tree name='log' idref="tree"/>
+        </log>
+
     </run>
 
 </beast>

@@ -85,22 +85,4 @@ public class InputShape extends Rect {
 	boolean intersects(int nX, int nY) {
 		return (m_x+m_w/2-nX)*(m_x+m_w/2-nX)+ (m_y+m_h/2-nY)*(m_y+m_h/2-nY) < m_w*m_w/4+m_h*m_h/4;
 	}
-	String getPostScript() {
-		StringBuffer sStr = new StringBuffer();
-		if (m_bFilled) {
-			sStr.append((m_fillcolor.getRed()/256.0) + " " + (m_fillcolor.getGreen()/256.0) + " " + (m_fillcolor.getBlue()/256.0) + " setrgbcolor\n");
-			sStr.append("newpath " + m_x + " " + (500-m_y) + " " + (m_w/2) + " " + (m_h/2));
-			sStr.append("0 360 ellipse fill\n");
-		}
-		sStr.append((m_pencolor.getRed()/256.0) + " " + (m_pencolor.getGreen()/256.0) + " " + (m_pencolor.getBlue()/256.0) + " setrgbcolor\n");
-		sStr.append(m_nPenWidth + " setlinewidth\n");
-		sStr.append("newpath " + (m_x+ m_w/2) + " " + (500-m_y - m_h/2) + " " + (m_w/2) + " " + (m_h/2));
-		sStr.append(" 0 360 ellipse stroke\n");
-		if (m_sLabel!=null && m_sLabel!="") {
-			sStr.append("/Times-Roman findfont 12 scalefont setfont\n");
-			sStr.append((m_x + m_w/2 - m_sLabel.length() * 6) + " " + (500-m_y + -m_h/2-6)+ " moveto\n");
-			sStr.append("(" + m_sLabel + ") show\n");
-		}
-		return sStr.toString();
-	}
 } // class Ellipse

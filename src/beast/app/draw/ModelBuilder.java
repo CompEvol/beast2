@@ -125,7 +125,7 @@ public class ModelBuilder extends JPanel {
 	Action a_cutnode = new ActionCutNode();
 	Action a_copynode = new ActionCopyNode();
 	Action a_pastenode = new ActionPasteNode();
-	Action a_group = new ActionGroup();
+	Action a_group = new ActionCollapse();
 	Action a_ungroup = new ActionUngroup();
 
 	Action a_select = new ActionSelect();
@@ -314,6 +314,25 @@ public class ModelBuilder extends JPanel {
 	ExtensionFileFilter ef4 = new ExtensionFileFilter(".bmp", "BMP images");
 	ExtensionFileFilter ef5 = new ExtensionFileFilter(".png", "PNG images");
 
+	boolean validateModel() {
+		int nStatus = m_doc.isValidModel();
+		if (nStatus == Document.STATUS_OK) {
+			return true;
+		}
+		String sMsg = "<html>Document is not valid: ";
+		if (nStatus == Document.STATUS_CYCLE) {
+			sMsg += "there is a cycle in the model.";
+		}
+		if (nStatus == Document.STATUS_OK) {
+			sMsg += "there is no top level runnable item in the model (e.g. an MCMC node).";
+		}
+		sMsg += "<br>Do you still want to try to save the model?</html>";
+		if (JOptionPane.showConfirmDialog(this, sMsg, "Model not valid", JOptionPane.YES_NO_OPTION) ==JOptionPane.YES_OPTION) {
+			return true;
+		}
+		return false;
+	}
+
 	class ActionSave extends MyAction {
 		/** for serialisation */
 		private static final long serialVersionUID = -20389110859355156L;
@@ -328,6 +347,9 @@ public class ModelBuilder extends JPanel {
 
 		public void actionPerformed(ActionEvent ae) {
 			if (!m_sFileName.equals("")) {
+				if (!validateModel()) {
+					return;
+				}
 				saveFile(m_sFileName);
 				m_doc.isSaved();
 			} else {
@@ -339,9 +361,12 @@ public class ModelBuilder extends JPanel {
 
 
 		boolean saveAs() {
+			if (!validateModel()) {
+				return false;
+			}
 			JFileChooser fc = new JFileChooser(m_sDir);
 			fc.addChoosableFileFilter(ef1);
-			fc.setDialogTitle("Save Graph As");
+			fc.setDialogTitle("Save Model As");
 			if (!m_sFileName.equals("")) {
 				// can happen on actionQuit
 				fc.setSelectedFile(new File(m_sFileName));
@@ -724,14 +749,14 @@ public class ModelBuilder extends JPanel {
 		}
 	} // class ActionPasteNode
 
-	class ActionGroup  extends MyAction {
+	class ActionCollapse extends MyAction {
 		private static final long serialVersionUID = -1;
-		public ActionGroup() {
-			super("Group shapes", "Group", "group", "G");
+		public ActionCollapse() {
+			super("Collapse shapes", "Collapse", "collapse", "G");
 			setEnabled(false);
 		} // c'tor
 		public void actionPerformed(ActionEvent ae) {
-			m_doc.group(m_Selection);
+			m_doc.collapse(m_Selection);
 			m_Selection.refreshTracker();
 			updateStatus();
 		}
@@ -929,7 +954,7 @@ public class ModelBuilder extends JPanel {
 		} // c'tor
 
 		public void actionPerformed(ActionEvent ae) {
-			m_doc.centerHorizontal(m_Selection);
+			m_doc.centreHorizontal(m_Selection);
 			m_Selection.refreshTracker();
 			updateStatus();
 		}
@@ -944,7 +969,7 @@ public class ModelBuilder extends JPanel {
 		} // c'tor
 
 		public void actionPerformed(ActionEvent ae) {
-			m_doc.centerVertical(m_Selection);
+			m_doc.centreVertical(m_Selection);
 			m_Selection.refreshTracker();
 			updateStatus();
 		}
@@ -1007,8 +1032,6 @@ public class ModelBuilder extends JPanel {
 		a_cutnode.setEnabled(hasSelection);
 		a_pastenode.setEnabled(m_clipboard.hasText());
 
-//		a_properties.setEnabled(hasSelection);
-
 		a_fillcolor.setEnabled(hasSelection);
 		a_pencolor.setEnabled(hasSelection);
 
@@ -1018,17 +1041,7 @@ public class ModelBuilder extends JPanel {
 		a_toback.setEnabled(hasSelection);
 
 		a_group.setEnabled(hasSelection);
-		boolean hasGroupedSelection = false;
-		if (nSelectionSize == 1) {
-		for (int i = 0; i < nSelectionSize; i++) {
-			Shape shape = (Shape) m_doc.m_objects.get(((Integer)m_Selection.m_Selection.get(i)).intValue());
-			if (shape  instanceof Group) {
-				hasGroupedSelection = true;
-			}
 
-		}
-		}
-		//a_ungroup.setEnabled(hasGroupedSelection);
 		a_alignbottom.setEnabled(hasGroupSelection);
 		a_aligntop.setEnabled(hasGroupSelection);
 		a_alignleft.setEnabled(hasGroupSelection);
@@ -1486,22 +1499,22 @@ public class ModelBuilder extends JPanel {
 				addNodeItem.setEnabled(m_Selection.isSingleSelection());
 				popupMenu.add(addNodeItem);
 
-				JMenuItem urlItem = new JMenuItem("Change url");
-				ActionListener url = new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						Shape shape = m_Selection.getSingleSelectionShape();
-						String sName = (String) JOptionPane.showInputDialog(null, shape.getURL(), "New URL",
-								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getURL());
-						if (sName == null || sName.equals("")) {
-							return;
-						}
-						m_doc.setURL(sName, m_Selection.getSingleSelection());
-						repaint();
-					}
-				};
-				urlItem.addActionListener(url);
-				urlItem.setEnabled(m_Selection.isSingleSelection());
-				popupMenu.add(urlItem);
+//				JMenuItem urlItem = new JMenuItem("Change url");
+//				ActionListener url = new ActionListener() {
+//					public void actionPerformed(ActionEvent ae) {
+//						Shape shape = m_Selection.getSingleSelectionShape();
+//						String sName = (String) JOptionPane.showInputDialog(null, shape.getURL(), "New URL",
+//								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getURL());
+//						if (sName == null || sName.equals("")) {
+//							return;
+//						}
+//						m_doc.setURL(sName, m_Selection.getSingleSelection());
+//						repaint();
+//					}
+//				};
+//				urlItem.addActionListener(url);
+//				urlItem.setEnabled(m_Selection.isSingleSelection());
+//				popupMenu.add(urlItem);
 
 				JMenuItem isFilledMenu = new JMenuItem("Fill object");
 				if (m_Selection.isSingleSelection()) {
@@ -1520,60 +1533,60 @@ public class ModelBuilder extends JPanel {
 				popupMenu.add(isFilledMenu);
 
 
-				JMenuItem outlineMenu = new JMenuItem("Outline thickness");
-				outlineMenu.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						Shape shape = m_Selection.getSingleSelectionShape();
-						String sName = (String) JOptionPane.showInputDialog(null, shape.getPenWidth()+"", "Pen width",
-								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getPenWidth()+"");
-						if (sName == null || sName.equals("")) {
-							return;
-						}
-						int nThickness = 0;
-						try {
-							nThickness = (new Integer(sName)).intValue();
-						} catch (NumberFormatException e) {
-							return;
-						}
-						if (nThickness < 0) {
-							return;
-						}
-						m_doc.setPenWidth(nThickness, m_Selection.getSingleSelection());
-						g_panel.repaint();
-					}
-				});
-				outlineMenu.setEnabled(m_Selection.isSingleSelection());
-				popupMenu.add(outlineMenu);
+//				JMenuItem outlineMenu = new JMenuItem("Outline thickness");
+//				outlineMenu.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent ae) {
+//						Shape shape = m_Selection.getSingleSelectionShape();
+//						String sName = (String) JOptionPane.showInputDialog(null, shape.getPenWidth()+"", "Pen width",
+//								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getPenWidth()+"");
+//						if (sName == null || sName.equals("")) {
+//							return;
+//						}
+//						int nThickness = 0;
+//						try {
+//							nThickness = (new Integer(sName)).intValue();
+//						} catch (NumberFormatException e) {
+//							return;
+//						}
+//						if (nThickness < 0) {
+//							return;
+//						}
+//						m_doc.setPenWidth(nThickness, m_Selection.getSingleSelection());
+//						g_panel.repaint();
+//					}
+//				});
+//				outlineMenu.setEnabled(m_Selection.isSingleSelection());
+//				popupMenu.add(outlineMenu);
 
-				JMenuItem imgItem = new JMenuItem("Image");
-				ActionListener img = new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						Shape shape = m_Selection.getSingleSelectionShape();
-						JFileChooser fc = new JFileChooser(m_sDir);
-						fc.addChoosableFileFilter(ef2);
-						fc.addChoosableFileFilter(ef3);
-						fc.addChoosableFileFilter(ef4);
-						fc.addChoosableFileFilter(ef5);
-						fc.setDialogTitle("Select image file");
-						if (shape.getImageSrc()!=null && !shape.getImageSrc().equals("")) {
-							// can happen on actionQuit
-							fc.setSelectedFile(new File(shape.getImageSrc()));
-						}
-						int rval = fc.showOpenDialog(g_panel);
-
-						if (rval == JFileChooser.APPROVE_OPTION) {
-							String sFileName = fc.getSelectedFile().toString();
-							if (sFileName.lastIndexOf('/') > 0) {
-								m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-							}
-							m_doc.setImageSrc(sFileName, m_Selection.getSingleSelection());
-						}
-						repaint();
-					}
-				};
-				imgItem.addActionListener(img);
-				imgItem.setEnabled(m_Selection.isSingleSelection());
-				popupMenu.add(imgItem);
+//				JMenuItem imgItem = new JMenuItem("Image");
+//				ActionListener img = new ActionListener() {
+//					public void actionPerformed(ActionEvent ae) {
+//						Shape shape = m_Selection.getSingleSelectionShape();
+//						JFileChooser fc = new JFileChooser(m_sDir);
+//						fc.addChoosableFileFilter(ef2);
+//						fc.addChoosableFileFilter(ef3);
+//						fc.addChoosableFileFilter(ef4);
+//						fc.addChoosableFileFilter(ef5);
+//						fc.setDialogTitle("Select image file");
+//						if (shape.getImageSrc()!=null && !shape.getImageSrc().equals("")) {
+//							// can happen on actionQuit
+//							fc.setSelectedFile(new File(shape.getImageSrc()));
+//						}
+//						int rval = fc.showOpenDialog(g_panel);
+//
+//						if (rval == JFileChooser.APPROVE_OPTION) {
+//							String sFileName = fc.getSelectedFile().toString();
+//							if (sFileName.lastIndexOf('/') > 0) {
+//								m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+//							}
+//							m_doc.setImageSrc(sFileName, m_Selection.getSingleSelection());
+//						}
+//						repaint();
+//					}
+//				};
+//				imgItem.addActionListener(img);
+//				imgItem.setEnabled(m_Selection.isSingleSelection());
+//				popupMenu.add(imgItem);
 
 
 				popupMenu.setLocation(me.getX(), me.getY());

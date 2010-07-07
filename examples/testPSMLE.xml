@@ -93,25 +93,17 @@
         </operator>
 
         <log logEvery="10000">
-            <log>
-                <probabilityDistribution idref="likelihood"/>
-            </log>
+            <probabilityDistribution idref="likelihood" name='log'/>
             <!--parameter idref="treeModel.rootHeight"/-->
-            <log>
-                <parameter idref="hky.kappa"/>
-            </log>
+            <parameter idref="hky.kappa" name='log'/>
         </log>
         <log logEvery="10000" fileName="test.$(seed).log">
-            <log>
-                <probabilityDistribution idref="likelihood"/>
-            </log>
+            <probabilityDistribution idref="likelihood" name='log'/>
             <!--parameter idref="treeModel.rootHeight"/-->
-            <log>
-                <parameter idref="hky.kappa"/>
-            </log>
+            <parameter idref="hky.kappa" name='log'/>
         </log>
         <log logEvery="10000" fileName="test.$(seed).trees">
-            <tree idref="tree"/>
+            <tree idref="tree" name='log'/>
         </log>
     </run>
 

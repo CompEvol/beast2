@@ -167,29 +167,4 @@ public class Rect extends Shape {
 			e.printStackTrace();
 		}
 	}
-	String getPostScript() {
-		StringBuffer sStr = new StringBuffer();
-		if (m_bFilled) {
-			sStr.append((m_fillcolor.getRed()/256.0) + " " + (m_fillcolor.getGreen()/256.0) + " " + (m_fillcolor.getBlue()/256.0) + " setrgbcolor\n");
-			sStr.append("newpath " + m_x + " " + (500-m_y) + " moveto\n");
-			sStr.append("" + m_x + " " + (500-m_y + -m_h) + " lineto\n");
-			sStr.append("" + (m_x + m_w) + " " + (500-m_y + -m_h) + " lineto\n");
-			sStr.append("" + (m_x + m_w) + " " + (500-m_y) + " lineto\n");
-			sStr.append("closepath fill\n");
-
-		}
-		sStr.append((m_pencolor.getRed()/256.0) + " " + (m_pencolor.getGreen()/256.0) + " " + (m_pencolor.getBlue()/256.0) + " setrgbcolor\n");
-		sStr.append(m_nPenWidth + " setlinewidth\n");
-		sStr.append("newpath " + m_x + " " + (500-m_y) + " moveto\n");
-		sStr.append("" + m_x + " " + (500-m_y + -m_h) + " lineto\n");
-		sStr.append("" + (m_x + m_w) + " " + (500-m_y + -m_h) + " lineto\n");
-		sStr.append("" + (m_x + m_w) + " " + (500-m_y) + " lineto\n");
-		sStr.append("closepath stroke\n");
-		if (m_sLabel!=null && m_sLabel!="") {
-			sStr.append("/Times-Roman findfont 12 scalefont setfont\n");
-			sStr.append((m_x + m_w/2 - m_sLabel.length() * 6) + " " + (500-m_y + -m_h/2-6)+ " moveto\n");
-			sStr.append("(" + m_sLabel + ") show\n");
-		}
-		return sStr.toString();
-	}
 } // class Rectangle

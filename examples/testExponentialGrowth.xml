@@ -109,43 +109,23 @@
         </operator>
 
         <log logEvery="10000">
-            <log>
-                <probabilityDistribution idref="coalescent"/>
-            </log>
-            <log>
-                <probabilityDistribution idref="likelihood"/>
-            </log>
+            <probabilityDistribution idref="coalescent" name='log'/>
+            <probabilityDistribution idref="likelihood" name='log'/>
             <!--parameter idref="treeModel.rootHeight"/-->
-            <log>
-                <parameter idref="popSize"/>
-            </log>
-            <log>
-                <parameter idref="hky.kappa"/>
-            </log>
-            <log>
-                <probabilityDistribution idref="posterior"/>
-            </log>
+            <parameter idref="popSize" name='log'/>
+            <parameter idref="hky.kappa" name='log'/>
+            <probabilityDistribution idref="posterior" name='log'/>
         </log>
         <log logEvery="10000" fileName="test.$(seed).log">
-            <log>
-                <probabilityDistribution idref="coalescent"/>
-            </log>
-            <log>
-                <probabilityDistribution idref="likelihood"/>
-            </log>
+            <probabilityDistribution idref="coalescent" name='log'/>
+            <probabilityDistribution idref="likelihood" name='log'/>
             <!--parameter idref="treeModel.rootHeight"/-->
-            <log>
-                <parameter idref="popSize"/>
-            </log>
-            <log>
-                <parameter idref="hky.kappa"/>
-            </log>
-            <log>
-                <probabilityDistribution idref="posterior"/>
-            </log>
+            <parameter idref="popSize" name='log'/>
+            <parameter idref="hky.kappa" name='log'/>
+            <probabilityDistribution idref="posterior" name='log'/>
         </log>
         <log logEvery="10000" fileName="test.$(seed).trees">
-            <tree idref="tree"/>
+            <tree idref="tree" name='log'/>
         </log>
     </run>
 

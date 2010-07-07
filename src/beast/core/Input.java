@@ -235,7 +235,7 @@ public class Input<T> {
                                 Class<?> genericType = (Class<?>) genericTypes[0];
                                 theClass = genericType;
                             } catch (Exception e) {
-                                System.err.println(plugin.getID() + " failed.");
+                                System.err.println(plugin.getClass().getName() + " " + plugin.getID() + " failed. Possibly template or abstract Plugin used???");
                                 System.exit(0);
                             }
                         }

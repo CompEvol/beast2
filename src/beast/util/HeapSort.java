@@ -24,7 +24,8 @@ public class HeapSort {
      * @param list    the list of comparable objects
      * @param indices an array of indices describing an ascending order of the comparable object in the list
      */
-    public static void sort(List<Comparable> list, int[] indices) {
+    @SuppressWarnings("unchecked")
+	public static void sort(List<Comparable> list, int[] indices) {
 
         // ensures we are starting with valid indices
         for (int i = 0; i < indices.length; i++) {
@@ -54,9 +55,9 @@ public class HeapSort {
      *
      * @param array an array of Comparables to be sorted into ascending order
      */
-    public static void sort(Comparable[] array) {
+    public static void sort(Comparable<?>[] array) {
 
-        Comparable temp;
+        Comparable<?> temp;
         int j, n = array.length;
 
         // turn input array into a heap
@@ -80,7 +81,7 @@ public class HeapSort {
      * @param array      and array of objects to be sorted
      * @param comparator a comparator used to defined the ordering of the objects
      */
-    public static void sort(Object[] array, Comparator comparator) {
+    public static void sort(Object[] array, Comparator<?> comparator) {
 
         Object temp;
         int j, n = array.length;
@@ -195,7 +196,8 @@ public class HeapSort {
      * @param lower   starting index in array to heapify
      * @param upper   end index in array to heapify
      */
-    private static void adjust(List<Comparable> list, int[] indices, int lower, int upper) {
+    @SuppressWarnings("unchecked")
+	private static void adjust(List<Comparable> list, int[] indices, int lower, int upper) {
 
         int j, k;
         int temp;
@@ -226,10 +228,11 @@ public class HeapSort {
      * @param lower lower index of heapify
      * @param upper upper index of heapify
      */
-    private static void adjust(Comparable[] array, int lower, int upper) {
+    @SuppressWarnings("unchecked")
+	private static void adjust(Comparable[] array, int lower, int upper) {
 
         int j, k;
-        Comparable temp;
+        Comparable<?> temp;
 
         j = lower;
         k = lower * 2;
@@ -258,7 +261,8 @@ public class HeapSort {
      * @param lower      lower index of heapify
      * @param upper      upper index of heapify
      */
-    private static void adjust(Object[] array, Comparator comparator, int lower, int upper) {
+    @SuppressWarnings("unchecked")
+	private static void adjust(Object[] array, Comparator comparator, int lower, int upper) {
 
         int j, k;
         Object temp;

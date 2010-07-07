@@ -45,7 +45,7 @@
  *
  */
 
-package beast.app.draw;
+package beast.util;
 
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -72,6 +72,7 @@ import java.util.jar.JarFile;
  * @see StringCompare
  */
 public class ClassDiscovery {
+  public final static String[] IMPLEMENTATION_DIR = {"beast"};
 
   /** whether to output some debug information. */
   public final static boolean VERBOSE = false;
@@ -110,8 +111,8 @@ public class ClassDiscovery {
    *                        of the the superclass
    * @return                TRUE if "otherclass" is a true subclass
    */
-  public static boolean isSubclass(Class superclass, Class otherclass) {
-    Class       currentclass;
+  public static boolean isSubclass(Class<?> superclass, Class<?> otherclass) {
+    Class<?>       currentclass;
     boolean     result;
 
     result       = false;
@@ -154,11 +155,11 @@ public class ClassDiscovery {
    * @param cls       the class to check for the interface
    * @return          TRUE if the class contains the interface
    */
-  public static boolean hasInterface(Class intf, Class cls) {
-    Class[]       intfs;
+  public static boolean hasInterface(Class<?> intf, Class<?> cls) {
+    Class<?>[]       intfs;
     int           i;
     boolean       result;
-    Class         currentclass;
+    Class<?>         currentclass;
 
     result       = false;
     currentclass = cls;
@@ -200,7 +201,7 @@ public class ClassDiscovery {
     File                classpathFile;
     File                file;
     JarFile             jarfile;
-    Enumeration         enm;
+    Enumeration<JarEntry>         enm;
     String              pkgnameTmp;
 
     result = null;
@@ -259,7 +260,7 @@ public class ClassDiscovery {
    */
   public static List<String> find(String classname, String[] pkgnames) {
     List<String>      result;
-    Class       cls;
+    Class<?>       cls;
 
     result = new ArrayList<String>();
 
@@ -284,7 +285,7 @@ public class ClassDiscovery {
    */
   public static List<String> find(String classname, String pkgname) {
     List<String>      result;
-    Class       cls;
+    Class<?>       cls;
 
     result = new ArrayList<String>();
 
@@ -307,7 +308,7 @@ public class ClassDiscovery {
    * @param pkgnames        the packages to search in
    * @return                a list with all the found classnames
    */
-  public static List<String> find(Class cls, String[] pkgnames) {
+  public static List<String> find(Class<?> cls, String[] pkgnames) {
     List<String>	result;
     int		i;
     HashSet<String>	names;
@@ -333,20 +334,20 @@ public class ClassDiscovery {
    * @param pkgname         the package to search in
    * @return                a list with all the found classnames
    */
-  public static List<String> find(Class cls, String pkgname) {
+  public static List<String> find(Class<?> cls, String pkgname) {
     List<String>                result;
-    StringTokenizer       tok;
+//    StringTokenizer       tok;
     String                part;
     String                pkgpath;
     File                  dir;
     File[]                files;
     URL                   url;
     int                   i;
-    Class                 clsNew;
+    Class<?>                 clsNew;
     String                classname;
     JarFile               jar;
     JarEntry              entry;
-    Enumeration           enm;
+    Enumeration<JarEntry>           enm;
 
 
     // already cached?
@@ -607,7 +608,7 @@ public class ClassDiscovery {
    * @param pkgname	the package name the classes were found in
    * @param classnames	the list of classnames to cache
    */
-  protected static void addCache(Class cls, String pkgname, List<String> classnames) {
+  protected static void addCache(Class<?> cls, String pkgname, List<String> classnames) {
     initCache();
     m_Cache.put(cls.getName() + "-" + pkgname, classnames);
   }
@@ -620,7 +621,7 @@ public class ClassDiscovery {
    * @param pkgname	the package name for the classes
    * @return		the classnames if found, otherwise null
    */
-  protected static List<String> getCache(Class cls, String pkgname) {
+  protected static List<String> getCache(Class<?> cls, String pkgname) {
     initCache();
     return m_Cache.get(cls.getName() + "-" + pkgname);
   }

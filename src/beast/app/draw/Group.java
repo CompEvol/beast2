@@ -156,12 +156,4 @@ public class Group extends Shape {
 	void movePoint(int nPoint, int nOffsetX, int nOffsetY, int nToX, int nToY) {
 		//movePosition(nOffsetX, nOffsetY, nToX, nToY);
 	} // movePoint
-	String getPostScript() {
-		StringBuffer sPostScript = new StringBuffer();
-		for (int i = 0; i < m_objects.size(); i++) {
-			Shape shape = (Shape) m_objects.get(i);
-			sPostScript.append(shape.getPostScript());
-		}
-		return sPostScript.toString();
-	}
 } // class Group

@@ -1,5 +1,7 @@
 package beast.core.parameter;
 
+import java.io.PrintStream;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -33,7 +35,7 @@ public class RealParameter extends Parameter<Double> {
     /**
      * deep copy *
      */
-    public Parameter copy() {
+    public Parameter<?> copy() {
         Parameter<java.lang.Double> copy = new RealParameter();
         copy.setID(getID());
         copy.values = new java.lang.Double[values.length];
@@ -41,6 +43,15 @@ public class RealParameter extends Parameter<Double> {
         copy.m_fLower = m_fLower;
         copy.m_fUpper = m_fUpper;
         return copy;
+    }
+
+    @Override
+    public void log(int nSample, State state, PrintStream out) {
+      RealParameter var = (RealParameter) state.getStateNode(m_sID);
+      int nValues = var.getDimension();
+      for (int iValue = 0; iValue < nValues; iValue++) {
+          out.print(var.getValue(iValue) + "\t");
+      }
     }
 }
 

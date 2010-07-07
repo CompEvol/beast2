@@ -26,14 +26,17 @@ package beast.core.parameter;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Loggable;
+import beast.core.State;
 import beast.core.StateNode;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 
 
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
-public abstract class Parameter<T> extends StateNode {
+public abstract class Parameter<T> extends StateNode implements Loggable {
     public Input<java.lang.Integer> m_nDimension = new Input<java.lang.Integer>("dimension", "dimension (default 1)", new java.lang.Integer(1));
 
 
@@ -124,5 +127,25 @@ public abstract class Parameter<T> extends StateNode {
         }
         return buf.toString();
     }
+
+
+    @Override
+    public void init(State state, PrintStream out) throws Exception {
+		  int nValues = getDimension();
+		  if (nValues == 1) {
+		          out.print(getID() + "\t");
+		  } else {
+		          for (int iValue = 0; iValue < nValues; iValue++) {
+		              out.print(getID() + iValue + "\t");
+		          }
+		  }
+    }
+    
+
+    @Override
+    public void close(PrintStream out) {
+    	// nothing to do
+    }
+
 
 } // class Parameter

@@ -139,24 +139,12 @@ public class Shape {
 	public String getXML() {
 		return "<shape" + getAtts() + "/>";
 	}
-	String getHTMLMap() {
-		String sURL = getURL();
-		if (sURL != null && !sURL.equals("")) {
-			return "<AREA SHAPE=\"rect\" COORDS=\"" + m_x+","+ m_y+","+ (m_x+m_w)+","+(m_y+m_h) + "\" HREF=\""+ sURL + "\" ALT=\"" + getLabel() + "\">\n";
-		}
-		return "";
-	}
 	boolean intersects(int nX, int nY) {
 		return false;
 	}
 	boolean intersects(Rectangle rect) {
 		return false;
 	}
-//	void movePosition(int nX, int nY, int nToX, int nToY) {}
-//	void movePoint(int nPoint, int nX, int nY, int nToX, int nToY) {}
-//	int offsetX(int nX) {return 0;}
-//	int offsetY(int nX) {return 0;}
-//	void offset(int dX, int dY) {}
 
 	int offsetX(int nX) {return nX - m_x;}
 	int offsetY(int nY) {return nY - m_y;}
@@ -194,7 +182,6 @@ public class Shape {
 		}
 	} // movePoint
 
-//	void normalize() {};
 	void normalize() {
 		int nX1 = m_x;
 		int nX2 = m_x + m_w;
@@ -228,7 +215,4 @@ public class Shape {
 	void setPenWidth(int nPenWidth) {}
 	String getImageSrc() {return "";}
 	void setImageSrc(String sSrc) {};
-	String getPostScript() {
-		return "";
-	}
 }

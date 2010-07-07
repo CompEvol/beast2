@@ -326,6 +326,7 @@ public class XMLParser {
                 throw new XMLParserException(node, "id=" + sID + ". Expected object of type " + sClass + " instead of " + plugin.getClass().getName(), 105);
             }
         }
+        
         String sIDRef = getIDRef(node);
         if (sIDRef != null) {
             if (m_sIDMap.containsKey(sIDRef)) {

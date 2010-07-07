@@ -25,13 +25,16 @@
 package beast.evolution.tree;
 
 import beast.core.Description;
+import beast.core.Loggable;
+import beast.core.State;
 import beast.core.StateNode;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
-public class Tree extends StateNode {
+public class Tree extends StateNode implements Loggable {
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
     int nodeCount = -1;
@@ -235,4 +238,46 @@ public class Tree extends StateNode {
         return root.toString();
     }
 
+
+    /** implementation for Loggable interface follows **/
+    /**
+     * print translate block for NEXUS beast.tree file *
+     */
+    void printTranslate(Node node, PrintStream out, int nNodeCount) {
+        if (node.isLeaf()) {
+            out.print("\t\t" + node.getNr() + " " + node.getID());
+            if (node.getNr() < nNodeCount) {
+                out.println(",");
+            } else {
+                out.println();
+            }
+        } else {
+            printTranslate(node.m_left, out, nNodeCount);
+            printTranslate(node.m_right, out, nNodeCount);
+        }
+
+    }
+
+	@Override
+	public void init(State state, PrintStream out) throws Exception {
+		out.println("#NEXUS\n");
+		out.println("Begin trees");
+		Node node = getRoot();
+		out.println("\tTranslate");
+		printTranslate(node, out, getNodeCount() / 2);
+		out.print(";");
+	}
+
+	@Override
+	public void log(int nSample, State state, PrintStream out) {
+		Tree tree = (Tree) state.getStateNode(m_sID);
+		out.print("tree STATE_" + nSample + " = ");
+		out.print(tree.getRoot().toString());
+		out.print(";");
+	}
+
+	@Override
+	public void close(PrintStream out) {
+      out.print("End;");
+	}
 } // class Tree

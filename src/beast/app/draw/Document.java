@@ -28,9 +28,9 @@ package beast.app.draw;
 
 
 import beast.core.Input;
-import beast.core.MCMC;
 import beast.core.Plugin;
 import beast.core.Runnable;
+import beast.util.ClassDiscovery;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 import org.w3c.dom.Node;
@@ -43,43 +43,37 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.List;
 
-
+/**
+ * The Document class is the Document part in the doc-view pattern of 
+ * the Beast ModelBuilder application.
+ */
 public class Document {
-    String m_sName = "not named";
     Runnable m_mcmc = null;
-    public ArrayList<Shape> m_objects = new ArrayList<Shape>();
+    
+    /** list of PluginShapes, InputShapes and connecting Arrows **/
+    public List<Shape> m_objects = new ArrayList<Shape>();
+
+    /** undo/redo related stuff **/
     List<UndoAction> m_undoStack = new ArrayList<UndoAction>();
     int m_nCurrentEditAction = -1;
-    /**
-     * action that the network is saved
-     */
-    int m_nSavedPointer = -1;
-
+    
+    
+    //int m_nSavedPointer = -1;
     public boolean m_bIsSaved = true;
+    public void isSaved() {m_bIsSaved = true;}
+    void iSChanged() {m_bIsSaved = false;}
 
-    public void isSaved() {
-        m_bIsSaved = true;
-    }
-
-    void iSChanged() {
-        m_bIsSaved = false;
-    }
-
-    public final static String[] IMPLEMENTATION_DIR = {"beast"};
-
-
-    /**
-     * list of class names for plug-ins to choose from *
-     */
+    /** list of class names for plug-ins to choose from **/
     String[] m_sPlugInNames;
 
 
     public Document() {
         // load all parsers
-        List<String> sPlugInNames = ClassDiscovery.find(beast.core.Plugin.class, IMPLEMENTATION_DIR);
+        List<String> sPlugInNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
         m_sPlugInNames = sPlugInNames.toArray(new String[0]);
     } // c'tor
 
+    /** change order of shapes to ensure arrows are drawn before the rest **/
     void moveArrowsToBack() {
         ArrayList<Shape> arrows = new ArrayList<Shape>();
         List<Shape> others = new ArrayList<Shape>();
@@ -95,10 +89,7 @@ public class Document {
         m_objects = arrows;
     }
 
-    void adjustArrows() {
-        adjustArrows(false, m_objects);
-    }
-
+    /** adjust position of inputs to fit with the associated plug in **/
     void adjustInputs() {
     	for (Shape shape : m_objects) {
     		if (shape instanceof PluginShape) {
@@ -106,10 +97,17 @@ public class Document {
     		}
     	}
     }
+
+    /** adjust position of tail and head of arrows to the 
+     * Plug in and input shapes they are attached to 
+     * **/
+    void adjustArrows() {
+        adjustArrows(false, m_objects);
+    }
+
     
     void adjustArrows(boolean bResetID, List<Shape> objects) {
-        for (int i = 0; i < objects.size(); i++) {
-            Shape shape = (Shape) objects.get(i);
+    	for (Shape shape : m_objects) {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 arrow.adjustCoordinates(m_objects, bResetID);
@@ -123,8 +121,7 @@ public class Document {
 
 
     void adjustArrows(List<Shape> objects, List<Shape> groupObjects) {
-        for (int i = 0; i < objects.size(); i++) {
-            Shape shape = (Shape) objects.get(i);
+    	for (Shape shape : m_objects) {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 arrow.resetIDs(groupObjects);
@@ -137,8 +134,7 @@ public class Document {
     } // adjustArrows
 
     void readjustArrows(List<Shape> objects) {
-        for (int i = 0; i < objects.size(); i++) {
-            Shape shape = (Shape) objects.get(i);
+    	for (Shape shape : m_objects) {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 arrow.m_sHeadID = arrow.m_head.m_id;
@@ -149,10 +145,11 @@ public class Document {
         }
     } // readjustArrows
 
+    /** edit actions on shapes **/
     public void moveShape(int nX, int nY, int nToX, int nToY, int nPosition) {
         boolean bNeedsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
-            UndoAction undoAction = (UndoAction) m_undoStack.get(m_nCurrentEditAction);
+            UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
             if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.m_nPosition == nPosition) {
                 bNeedsUndoAction = false;
             }
@@ -168,7 +165,7 @@ public class Document {
     public void movePoint(int nPoint, int nX, int nY, int nToX, int nToY, int nPosition) {
         boolean bNeedsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
-            UndoAction undoAction = (UndoAction) m_undoStack.get(m_nCurrentEditAction);
+            UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
             if (undoAction.m_nActionType == UndoAction.RESHAPE_ACTION && undoAction.m_nPosition == nPosition) {
                 bNeedsUndoAction = false;
             }
@@ -182,8 +179,7 @@ public class Document {
     } // movePoint
 
     boolean containsID(String sID, List<Shape> objects, List<String> tabulist) {
-        for (int i = 0; i < objects.size(); i++) {
-            Shape shape = (Shape) objects.get(i);
+    	for (Shape shape : m_objects) {
             if (shape.m_id.equals(sID)) {
                 return true;
             }
@@ -197,8 +193,8 @@ public class Document {
         if (tabulist == null) {
             return false;
         }
-        for (int i = 0; i < tabulist.size(); i++) {
-            if (tabulist.get(i).equals(sID)) {
+        for (String sTabuID :  tabulist) {
+            if (sTabuID.equals(sID)) {
                 return true;
             }
         }
@@ -229,7 +225,7 @@ public class Document {
             shape.m_id = getNewID(null);
         }
         m_objects.add(shape);
-        if (shape instanceof PluginShape && ((PluginShape) shape).m_function instanceof MCMC) {
+        if (shape instanceof PluginShape && ((PluginShape) shape).m_function instanceof Runnable) {
             m_mcmc = (Runnable) ((PluginShape) shape).m_function;
         }
         addUndoAction(new AddAction());
@@ -250,6 +246,42 @@ public class Document {
                     if (arrow.m_sHeadID.equals(sIDs.get(j)) || arrow.m_sTailID.equals(sIDs.get(j))) {
                         if (!selection.contains(new Integer(i))) {
                             selection.add(new Integer(i));
+                        }
+                    }
+                }
+            }
+        }
+        return selection;
+    }
+
+    List<String> getIncomingArrows(List<String> sIDs) {
+    	List<String> selection = new ArrayList<String>();
+        for (int i = 0; i < m_objects.size(); i++) {
+            Shape shape = (Shape) m_objects.get(i);
+            if (shape instanceof Arrow) {
+                Arrow arrow = (Arrow) shape;
+                for (int j = 0; j < sIDs.size(); j++) {
+                    if (arrow.m_sHeadID.equals(sIDs.get(j))) {
+                        if (!selection.contains(arrow.m_sTailID)) {
+                            selection.add(arrow.m_sTailID);
+                        }
+                    }
+                }
+            }
+        }
+        return selection;
+    }
+    
+    List<String> getOutgoingArrows(List<String> sIDs) {
+    	List<String> selection = new ArrayList<String>();
+        for (int i = 0; i < m_objects.size(); i++) {
+            Shape shape = (Shape) m_objects.get(i);
+            if (shape instanceof Arrow) {
+                Arrow arrow = (Arrow) shape;
+                for (int j = 0; j < sIDs.size(); j++) {
+                    if (arrow.m_sTailID.equals(sIDs.get(j))) {
+                        if (!selection.contains(arrow.m_sTailID)) {
+                            selection.add(arrow.m_sTailID);
                         }
                     }
                 }
@@ -295,7 +327,8 @@ public class Document {
         addUndoAction(new AddAction());
     } // addNewShape
 
-    public void group(Selection selection) {
+    /** move all plug ins connected with selection **/
+    public void collapse(Selection selection) {
         // don't group arrows
         for (int i = selection.m_Selection.size() - 1; i >= 0; i--) {
             if ((Shape) m_objects.get(((Integer) selection.m_Selection.get(i)).intValue()) instanceof Arrow) {
@@ -322,9 +355,12 @@ public class Document {
         selection.m_Selection.add(new Integer(m_objects.size() - 1));
         adjustInputs();
         adjustArrows();
-    } // group
+    } // collapse
 
     
+    /** Find inputs to collapse, i.e. PlugInShapes connected to
+     * any input of a given PluginShape. 
+     * Shape IDs are recorder in selection. **/
     void findAffectedShapes(Shape shape, List<Integer> selection) {
     	if (shape instanceof InputShape) {
     		findInputs((InputShape)shape, selection);
@@ -334,6 +370,8 @@ public class Document {
     		}
     	}
     }
+    /** Find inputs to collapse, i.e. PlugInShapes connected to
+     * given InputShape. Shape IDs are recorder in selection. **/
 	void findInputs(InputShape ellipse, List<Integer> selection) {
 		for (Shape shape : m_objects) {
 			if (shape instanceof Arrow) {
@@ -387,7 +425,7 @@ public class Document {
             Shape shape = (Shape) m_objects.get(iSelection);
             shape.setPenColor(color);
         }
-    } // setFillColor
+    } // setPenColor
 
     public void addUndoGroupAction(Selection selection) {
         addUndoAction(new UndoGroupAction(selection.m_Selection));
@@ -649,11 +687,11 @@ public class Document {
     } // alignBottom
 
     /**
-     * center set of nodes half way between left and right most node in the list
+     * centre set of nodes half way between left and right most node in the list
      *
      * @param selection a selection
      */
-    public void centerHorizontal(Selection selection) {
+    public void centreHorizontal(Selection selection) {
         // update undo stack
         addUndoGroupAction(selection);
         List<Integer> nodes = selection.m_Selection;
@@ -675,14 +713,14 @@ public class Document {
             setPositionY((nMinY + nMaxY) / 2 - dY, nNode);
         }
         adjustArrows();
-    } // centerHorizontal
+    } // centreHorizontal
 
     /**
-     * center set of nodes half way between top and bottom most node in the list
+     * centre set of nodes half way between top and bottom most node in the list
      *
      * @param selection a selection
      */
-    public void centerVertical(Selection selection) {
+    public void centreVertical(Selection selection) {
         // update undo stack
         addUndoGroupAction(selection);
         List<Integer> nodes = selection.m_Selection;
@@ -704,7 +742,7 @@ public class Document {
             setPositionX((nMinX + nMaxX) / 2 - dX, nNode);
         }
         adjustArrows();
-    } // centerVertical
+    } // centreVertical
 
     /**
      * space out set of nodes evenly between left and right most node in the list
@@ -906,9 +944,11 @@ public class Document {
 
         void redo() {
             if (m_nNrPrimePositions == m_nPositions.size()) {
+            	// it is a regular group move action
                 doit();
                 return;
             }
+            // it is a collapse action
             for (int i = 0; i < m_nNrPrimePositions; i++) {
             	Shape shape = m_objects.get(m_nPositions.get(i));
             	if (shape instanceof InputShape) {
@@ -921,8 +961,6 @@ public class Document {
             }
         }
         
-        void moveInputShapes(PluginShape shape) {
-        }
     	void moveInputShapes(InputShape ellipse) {
     		for (Shape shape : m_objects) {
     			if (shape instanceof Arrow) {
@@ -943,8 +981,6 @@ public class Document {
     			}
     		}
     	}
-
-        
         
         void doit() {
             String sXML = "<doc>";
@@ -1066,9 +1102,9 @@ public class Document {
         while (iAction > m_nCurrentEditAction) {
             m_undoStack.remove(iAction--);
         }
-        if (m_nSavedPointer > m_nCurrentEditAction) {
-            m_nSavedPointer = -2;
-        }
+//        if (m_nSavedPointer > m_nCurrentEditAction) {
+//            m_nSavedPointer = -2;
+//        }
         m_undoStack.add(action);
         //m_sXMLStack.addElement(toXMLBIF03());
         m_nCurrentEditAction++;
@@ -1080,7 +1116,7 @@ public class Document {
     public void clearUndoStack() {
         m_undoStack = new ArrayList<UndoAction>();
         m_nCurrentEditAction = -1;
-        m_nSavedPointer = -1;
+//        m_nSavedPointer = -1;
     } // clearUndoStack
 
     public boolean canUndo() {
@@ -1095,7 +1131,7 @@ public class Document {
         if (!canUndo()) {
             return;
         }
-        UndoAction undoAction = (UndoAction) m_undoStack.get(m_nCurrentEditAction);
+        UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
         undoAction.undo();
         adjustInputs();
         adjustArrows(true, m_objects);
@@ -1107,20 +1143,19 @@ public class Document {
             return;
         }
         m_nCurrentEditAction++;
-        UndoAction undoAction = (UndoAction) m_undoStack.get(m_nCurrentEditAction);
+        UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
         undoAction.redo();
         adjustInputs();
         adjustArrows(true, m_objects);
 
     } // redo
 
-    @SuppressWarnings("unchecked")
     Object getInput(beast.core.Plugin plugin, String sName) throws IllegalArgumentException, IllegalAccessException {
         //Field [] fields = plugin.getClass().getDeclaredFields();
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
-                Input input = (Input) fields[i].get(plugin);
+                Input<?> input = (Input<?>) fields[i].get(plugin);
                 if (input.getName().equals(sName)) {
                     return input.get();
                 }
@@ -1168,9 +1203,6 @@ public class Document {
                 shape2 = new PluginShape((Plugin) o2, this);
                 shape2.m_x = nDepth * DX;
                 shape2.m_w = 80;
-                //Random random = new Random();
-                //shape2.m_y = random.nextInt(800);
-                //shape2.m_h = 50;
                 shape2.m_function = (Plugin) o2;
                 shape2.setLabel(createLabel(((Plugin) o2)));
                 shape2.m_id = createID(shape2);
@@ -1183,32 +1215,18 @@ public class Document {
         }
     }
 
-    @SuppressWarnings("unchecked")
     void process(PluginShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         Plugin plugin = shape.m_function;
-        Input[] sInputs = plugin.listInputs();
+        Input<?>[] sInputs = plugin.listInputs();
         for (int i = 0; i < sInputs.length; i++) {
             Object o = getInput(plugin, sInputs[i].getName());
             if (o != null) {
-                if (o instanceof List) {
-                    for (Object o2 : (List) o) {
+                if (o instanceof List<?>) {
+                    for (Object o2 : (List<?>) o) {
                         addInput(shape, o2, nDepth + 1, sInputs[i].getName());
                     }
                 } else if (o instanceof Plugin) {
                     addInput(shape, o, nDepth + 1, sInputs[i].getName());
-//					PluginShape shape2 = getObjectWithLabel(((Plugin) o).getID());
-//					if (shape2 == null) {
-//						shape2 = new PluginShape((Plugin) o, this);
-//						shape2.m_function = (Plugin) o;
-//						shape2.setLabel(createLabel((Plugin) o));
-//						shape2.m_id = createID(shape2);
-//						m_objects.add(shape2);
-//						addNewShape(shape2);
-//					}
-//					Arrow arrow = new Arrow(shape2, shape);
-//					arrow.m_id = getNewID(null);
-//					m_objects.add(arrow);
-//					process(shape2);
                 } else {
                     // it is a primitive type
                     String sValue = o + "";
@@ -1296,9 +1314,7 @@ public class Document {
         }
 
         layout();
-
         clearUndoStack();
-        //adjustArrows();
 
         // set inputs of functions by looking at where the arrows are
         for (int i = 0; i < m_objects.size(); i++) {
@@ -1313,7 +1329,6 @@ public class Document {
         }
         adjustArrows();
         moveArrowsToBack();
-
     } // loadFile
 
     Shape XML2Shape(String sXML) {
@@ -1349,25 +1364,13 @@ public class Document {
         return shapes;
     }
 
+    /** parse XDL xml format **/
     static Shape parseNode(Node node, Document doc) {
         Shape shape = null;
-//        if (node.getNodeName().equals("roundrectangle")) {
-//            shape = new RoundRectangle(node, doc);
-//        } else 
         if (node.getNodeName().equals("ellipse")) {
             shape = new InputShape(node, doc);
-//        } else if (node.getNodeName().equals("line")) {
-//            shape = new Line(node, doc);
-//        } else if (node.getNodeName().equals("rect")) {
-//            shape = new Rect(node, doc);
-//        } else if (node.getNodeName().equals("poly")) {
-//            shape = new Poly(node, doc);
         } else if (node.getNodeName().equals("arrow")) {
             shape = new Arrow(node, doc);
-//        } else if (node.getNodeName().equals("picture")) {
-//            shape = new Rect(node, doc);
-//        } else if (node.getNodeName().equals("group")) {
-//            shape = new Group(node, doc);
         } else if (node.getNodeName().equals("gdx:function")) {
             shape = new PluginShape(node, doc);
         }
@@ -1377,39 +1380,8 @@ public class Document {
     public String toXML() {
         XMLProducer xmlProducer = new XMLProducer();
         return xmlProducer.toXML(m_mcmc);
-//		StringBuffer sXML = new StringBuffer();
-//		sXML.append("<doc name='" + m_sName + "'>\n");
-//		for (int i = 0; i < m_objects.size(); i++) {
-//			Shape shape = (Shape) m_objects.get(i);
-//			sXML.append(shape.getXML());
-//			sXML.append("\n");
-//		}
-//		sXML.append("</doc>");
-//		return sXML.toString();
     } // toXML
 
-    public String getHTMLMap() {
-        StringBuffer sMAP = new StringBuffer();
-        sMAP.append("<html><head><title>" + m_sName + "</title></head>\n<body>\n");
-        sMAP.append("<MAP NAME=\"" + m_sName + "\">\n");
-        for (int i = 0; i < m_objects.size(); i++) {
-            Shape shape = (Shape) m_objects.get(i);
-            sMAP.append(shape.getHTMLMap());
-        }
-        sMAP.append("</MAP>\n");
-        sMAP.append("<IMG SRC=\"" + m_sName + ".png\" ALT=\"" + m_sName + "\" BORDER=0 USEMAP=\"#" + m_sName + "\">\n");
-        sMAP.append("</body>\n</html>");
-        return sMAP.toString();
-    }
-
-    public String getPostScript() {
-        StringBuffer sPostScript = new StringBuffer();
-        for (int i = 0; i < m_objects.size(); i++) {
-            Shape shape = (Shape) m_objects.get(i);
-            sPostScript.append(shape.getPostScript());
-        }
-        return sPostScript.toString();
-    }
 
     Shape findObjectWithID(String sID) {
         for (int i = 0; i < m_objects.size(); i++) {
@@ -1421,8 +1393,8 @@ public class Document {
     }
 
 
+    /** apply spring model algorithm to the placement of plug-in shapes **/
     public void relax() {
-
         List<Shape> objects = new ArrayList<Shape>();
         for (Shape shape : m_objects) {
             if (shape.m_bNeedsDrawing) {
@@ -1521,18 +1493,10 @@ public class Document {
                             dx += factor * vx / distanceSq / distanceSq;
                             dy += factor * vy / distanceSq / distanceSq;
                         }
-//			            double dlen = dx * dx + dy * dy;
-//			            if (dlen > 0) {
-//			                dlen = Math.sqrt(dlen) / 2;
-//			                svd.repulsiondx += dx / dlen;
-//			                svd.repulsiondy += dy / dlen;
-//			            }
                     }
                 }
                 shape1.m_x = (int) Math.min(800, Math.max(10, shape1.m_x + dx));
                 shape1.m_y = (int) Math.min(800, Math.max(10, shape1.m_y + dy));
-//				shape1.m_x += dx;
-//				shape1.m_y += dy;
             }
         }
 
@@ -1543,76 +1507,77 @@ public class Document {
             }
         }
         adjustArrows();
-    }
+    } // relax
 
 
-//	/** return list of labels of objects that contain an index **/
-//	String [] getIndices() {
-//		List<String> sIndices = new ArrayList<String>();
-//		for (int i = 0; i < m_objects.size(); i++) {
-//			Shape shape = m_objects.get(i);
-//			if (shape instanceof Constant && ((Constant) shape).m_constant instanceof imp.Index) {
-//				sIndices.add(shape.getLabel());
-//			}
-//		}
-//		return sIndices.toArray(new String[0]);
-//	}
-//	/** return index of object represented by particular name **/
-//	Index getIndex(String sName) {
-//		List<String> sIndices = new ArrayList<String>();
-//		for (int i = 0; i < m_objects.size(); i++) {
-//			Shape shape = m_objects.get(i);
-//			if (shape instanceof Constant && ((Constant) shape).m_constant instanceof imp.Index) {
-//				if (shape.getLabel().equals(sName)) {
-//					return ((Index)((Constant) shape).m_constant);
-//				}
-//			}
-//		}
-//		return null;
-//	}
-//
-//	/** return index of object represented by particular name **/
-//	String [] getTypes() {
-//	//String [] sTypes = {"BOOL", "INT", "REAL", "CATEGORIAL", "RANKED", "STRING"};
-//		List<String> sTypes = new ArrayList<String>();
-//		sTypes.addElement("BOOL");
-//		sTypes.addElement("INT");
-//		sTypes.addElement("REAL");
-//		sTypes.addElement("STRING");
-//		for (int i = 0; i < m_objects.size(); i++) {
-//			Shape shape = m_objects.get(i);
-//			if (shape instanceof Constant && ((Constant) shape).m_constant instanceof imp.Index) {
-//				sTypes.add(shape.getLabel());
-//			}
-//		}
-//		return sTypes.toArray(new String[0]);
-//	}
-//
-//	/** parse constant **/
-//	beast.core.Plugin getConstant(Node node) {
-//		try {
-//			NodeList children = node.getChildNodes();
-//			for(int iChild = 0; iChild < children.getLength(); iChild++) {
-//				Node child = children.item(iChild);
-//				if (child.getNodeType() == Node.ELEMENT_NODE) {
-//					Object object = XMLParserHelper.parseNode(child, m_parserMap, m_indices, null, null, false);
-//					if (object != null && object instanceof Index) {
-//						Index index = (Index) object;
-//						if (m_indices.get(index.getID()) != null) {
-//							throw new XMLParserException(child, "Index defined more than once: id='" + index.getID() + "'");
-//						}
-//						m_indices.put(index.getID(), index);
-//					}
-//					if (object instanceof beast.core.Plugin) {
-//						return (beast.core.Plugin) object;
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//		return null;
-//	}
-//
+    
+    
+    /** sanity check: make sure there are no cycles and there is a Runnable 
+     * plug in that is not an input of another plug in
+     */
+    final static int STATUS_OK = 0, STATUS_CYCLE = 1, STATUS_NOT_RUNNABLE = 2;
+    int isValidModel() {
+    	if (hasCycle()) {
+    		return STATUS_CYCLE;
+    	}
+    	m_mcmc = getRunnable();
+    	if (m_mcmc == null) {
+    		return STATUS_NOT_RUNNABLE;
+    	}
+    	return STATUS_OK;
+    } // isValidModel
+    
+    /** check anywhere in the model whether there is a cycle **/
+    boolean hasCycle() {
+    	for (Shape shape : m_objects) {
+    		if (shape instanceof PluginShape) {
+    			if (hasCyclicPath((PluginShape)shape)) {
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    } // hasCycle
+    
+    /** check if there is a path starting at plug in, going back to same plug in **/
+    boolean hasCyclicPath(PluginShape plugin) {
+    	List<String> isReachable = new ArrayList<String>();
+    	isReachable.add(plugin.m_id);
+    	
+    	boolean bProgress = true;
+    	do {
+	    	List<String> sIDs = getIncomingArrows(isReachable);
+	    	if (sIDs.contains(plugin.m_id)) {
+	    		// we found a cycle
+	    		return true;
+	    	}
+	    	bProgress = false;
+	    	for (String sID : sIDs) {
+	    		if (!(isReachable.contains(sID))) {
+	    			isReachable.add(sID);
+	    			bProgress = true;
+	    		}
+	    	}
+    	} while (bProgress);
+    	return false;
+    } // hasCyclicPath
+    
+    
+    Runnable getRunnable() {
+    	for (Shape shape : m_objects) {
+    		if (shape instanceof PluginShape) {
+    			PluginShape plugin = (PluginShape)shape;
+    			if (plugin.m_function instanceof Runnable) {
+    				List<String> sID = new ArrayList<String>();
+    				sID.add(plugin.m_id);
+    				List<String> sOutgoings = getOutgoingArrows(sID);
+    				if (sOutgoings.size() == 0) {
+    					return (Runnable) plugin.m_function;
+    				}
+    			}
+    		}
+    	}
+    	return null;
+    } // isRunnable
+    
 } // class Document

@@ -25,11 +25,11 @@
 package beast.app;
 
 
-import beast.app.draw.ClassDiscovery;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
+import beast.util.ClassDiscovery;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -388,7 +388,7 @@ public class DocMaker {
      */
     public void generateDocs() throws Exception {
         // find plug ins to document
-        m_sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, beast.app.draw.Document.IMPLEMENTATION_DIR);
+        m_sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
 
         /** determine hierarchical relation between plug-ins **/
         m_isa = new HashMap<String, String[]>();

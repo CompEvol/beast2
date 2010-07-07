@@ -24,12 +24,13 @@
 */
 package beast.core;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
         "a log probability for running an MCMC chain.")
-public abstract class Distribution extends Plugin implements Cacheable {
+public abstract class Distribution extends Plugin implements Cacheable, Loggable {
 
     /**
      * current and stored log probability/log likelihood/log uncertainty *
@@ -80,6 +81,7 @@ public abstract class Distribution extends Plugin implements Cacheable {
         // nothing to do
     }
 
+    /** Cachable interface implementation follows **/
     @Override
     public void store(int nSample) {
         storedLogP = logP;
@@ -94,5 +96,19 @@ public abstract class Distribution extends Plugin implements Cacheable {
 	public
     void prepare(State state) {}
 
-    
+    /** Loggable interface implementation follows **/
+	@Override
+	public void init(State state, PrintStream out) throws Exception {
+		out.print(getID() + "\t");
+	}
+
+	@Override
+	public void log(int nSample, State state, PrintStream out) {
+		out.print(getCurrentLogP() + "\t");
+	}
+
+	@Override
+	public void close(PrintStream out) {
+		// nothing to do
+	}
 } // class ProbabilityDistribution

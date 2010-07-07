@@ -45,9 +45,9 @@
  *
  */
 
-package beast.app.draw;
+package beast.util;
 
-import java.io.File;
+//import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -62,26 +62,26 @@ import java.net.URLClassLoader;
 public class ClassloaderUtil {
 
   // Parameters
-  private static final Class[] parameters = new Class[]{URL.class};
+  private static final Class<?>[] parameters = new Class[]{URL.class};
 
-  /**
-   * Add file to CLASSPATH
-   * @param s File name
-   * @throws IOException if something goes wrong when adding a file
-   */
-  public static void addFile(String s) throws IOException {
-    File f = new File(s);
-    addFile(f);
-  }
-
-  /**
-   * Add file to CLASSPATH
-   * @param f  File object
-   * @throws IOException if something goes wrong when adding a file
-   */
-  public static void addFile(File f) throws IOException {
-    addURL(f.toURL());
-  }
+//  /**
+//   * Add file to CLASSPATH
+//   * @param s File name
+//   * @throws IOException if something goes wrong when adding a file
+//   */
+//  public static void addFile(String s) throws IOException {
+//    File f = new File(s);
+//    addFile(f);
+//  }
+//
+//  /**
+//   * Add file to CLASSPATH
+//   * @param f  File object
+//   * @throws IOException if something goes wrong when adding a file
+//   */
+//  public static void addFile(File f) throws IOException {
+//    addURL(f.toURL());
+//  }
 
   /**
    * Add URL to CLASSPATH

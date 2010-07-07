@@ -1,8 +1,11 @@
 package beast.core.parameter;
 
+import java.io.PrintStream;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.StateNode;
 
 
 /**
@@ -34,7 +37,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     /**
      * deep copy *
      */
-    public Parameter copy() {
+    public Parameter<?> copy() {
         Parameter<Integer> copy = new IntegerParameter();
         copy.setID(getID());
         copy.values = new Integer[values.length];
@@ -42,5 +45,14 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         copy.m_fLower = m_fLower;
         copy.m_fUpper = m_fUpper;
         return copy;
+    }
+
+    @Override
+    public void log(int nSample, State state, PrintStream out) {
+      IntegerParameter var = (IntegerParameter) state.getStateNode(m_sID);
+      int nValues = var.getDimension();
+      for (int iValue = 0; iValue < nValues; iValue++) {
+          out.print(var.getValue(iValue) + "\t");
+      }
     }
 }
