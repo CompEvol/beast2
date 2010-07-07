@@ -34,12 +34,12 @@ import java.util.List;
 
 @Description("Logs results of calculation processes.")
 public class Logger extends Plugin implements Loggable {
-    final static int COMPOUND_LOGGER = 0, 
+    final static int COMPOUND_LOGGER = 0,
 //	    PARAMATER_LOGGER = 1, 
-	    TREE_LOGGER = 2//, 
+            TREE_LOGGER = 2//,
 //	    LIKELIHOOD_LOGGER = 3, 
 //	    OTHER_LOGGER = 4
-	    ;
+                    ;
 
     public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log", "element in a log", new ArrayList<Plugin>());
 //    public Input<RealParameter> m_pParameter = new Input<RealParameter>("parameter", "parameter for logging");
@@ -63,20 +63,20 @@ public class Logger extends Plugin implements Loggable {
     @Override
     public void initAndValidate(State state) throws Exception {
         m_loggers = m_pLoggers.get();
-        
+
         // verify everything is loggable
-        for (Plugin plugin: m_loggers) {
-        	if (!(plugin instanceof Loggable)) {
-        		throw new Exception("Object " + plugin.getClass().getName() + " " + plugin.getID() +" is not loggable");
-        	}
+        for (Plugin plugin : m_loggers) {
+            if (!(plugin instanceof Loggable)) {
+                throw new Exception("Object " + plugin.getClass().getName() + " " + plugin.getID() + " is not loggable");
+            }
         }
-        
+
 //        int nInputs = 0;
 //        if (m_pLoggers.get().size() > 0) {
-            m_mode = COMPOUND_LOGGER;
-            if (m_pEvery.get() != null) {
-                m_nEvery = m_pEvery.get();
-            }
+        m_mode = COMPOUND_LOGGER;
+        if (m_pEvery.get() != null) {
+            m_nEvery = m_pEvery.get();
+        }
 //            nInputs++;
 //        }
 //        if (m_pParameter.get() != null) {
@@ -85,9 +85,9 @@ public class Logger extends Plugin implements Loggable {
 //            //m_pEvery.setValue(null);
 //            nInputs++;
 //        }
-            if (m_loggers.size()==1 && m_loggers.get(0) instanceof Tree) {
-                m_mode = TREE_LOGGER;
-            }
+        if (m_loggers.size() == 1 && m_loggers.get(0) instanceof Tree) {
+            m_mode = TREE_LOGGER;
+        }
 //        if (m_pTree.get() != null) {
 //            m_nVarId = state.getStateNodeIndex(m_pTree.get().getID());
 //            m_mode = TREE_LOGGER;
@@ -120,8 +120,8 @@ public class Logger extends Plugin implements Loggable {
             m_out.print("Sample\t");
         }
         for (int i = 0; i < m_loggers.size(); i++) {
-             System.out.println("logger " + i);
-             ((Loggable)m_loggers.get(i)).init(state, m_out);
+            System.out.println("logger " + i);
+            ((Loggable) m_loggers.get(i)).init(state, m_out);
         }
         m_out.println();
     } // init
@@ -134,7 +134,7 @@ public class Logger extends Plugin implements Loggable {
             m_out.print(nSample + "\t");
         }
         for (int i = 0; i < m_loggers.size(); i++) {
-        	((Loggable)m_loggers.get(i)).log(nSample, state, m_out);
+            ((Loggable) m_loggers.get(i)).log(nSample, state, m_out);
         }
         if (m_out == System.out) {
             long nLogTime = System.currentTimeMillis();
@@ -150,14 +150,13 @@ public class Logger extends Plugin implements Loggable {
 
     public void close() {
         for (int i = 0; i < m_loggers.size(); i++) {
-        	((Loggable)m_loggers.get(i)).close(m_out);
+            ((Loggable) m_loggers.get(i)).close(m_out);
         }
         // close all file, except stdout
         if (m_pFileName.get() != null && m_pFileName.get() != "") {
             m_out.close();
         }
     } // close
-
 
 
 //    void init(State state, PrintStream out) throws Exception {
@@ -232,8 +231,15 @@ public class Logger extends Plugin implements Loggable {
 //        }
 //    } // close
 
-    /** Dummy Loggable interface implementation **/
-    @Override public void close(PrintStream out) {}
-	@Override public void init(State state, PrintStream out) throws Exception {}
-	@Override public void log(int nSample, State state, PrintStream out) {}
+    /**
+     * Dummy Loggable interface implementation *
+     */
+    public void close(PrintStream out) {
+    }
+
+    public void init(State state, PrintStream out) throws Exception {
+    }
+
+    public void log(int nSample, State state, PrintStream out) {
+    }
 }

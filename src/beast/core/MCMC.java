@@ -28,24 +28,25 @@ package beast.core;
 import beast.util.Randomizer;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
 @Citation("A prototype for BEAST 2.0: The computational science of evolutionary software. Bouckaert, Drummond, Rambaut, Alekseyenko, Suchard & the BEAST Core Development Team. 2010")
-public class MCMC extends Runnable{
+public class MCMC extends Runnable {
 
     public Input<Integer> m_oBurnIn = new Input<Integer>("preBurnin", "Number of burn in samples taken before entering the main loop", new Integer(0));
     public Input<Integer> m_oChainLength = new Input<Integer>("chainLength", "Length of the MCMC chain i.e. number of samples taken in main loop", Input.Validate.REQUIRED);
     public Input<State> m_startState = new Input<State>("state", "elements of the state space", new State(), Input.Validate.REQUIRED);
-    public Input<Distribution> m_uncertainty = new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)", Input.Validate.REQUIRED);
+    public Input<Distribution> posteriorInput = new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)", Input.Validate.REQUIRED);
 
-    public Input<List<Operator>> m_operators = new Input<List<Operator>>("operator", "operator for generating proposals in MCMC state space", new ArrayList<Operator>(), Input.Validate.REQUIRED);
-    public OperatorSet m_operatorset = new OperatorSet();
+    public Input<List<Operator>> operatorsInput = new Input<List<Operator>>("operator", "operator for generating proposals in MCMC state space", new ArrayList<Operator>(), Input.Validate.REQUIRED);
+    public OperatorSet operatorSet = new OperatorSet();
 
     public Input<List<Logger>> m_loggers = new Input<List<Logger>>("log", "loggers for reporting progress of MCMC chain", new ArrayList<Logger>(), Input.Validate.REQUIRED);
-    protected State m_state;
+    protected State state;
 
     @Override
     public void initAndValidate(State state) throws Exception {
@@ -54,19 +55,19 @@ public class MCMC extends Runnable{
         System.out.println(getCitations());
         System.out.println("======================================================");
 
-        for (Operator op : m_operators.get()) {
-            m_operatorset.addOperator(op);
+        for (Operator op : operatorsInput.get()) {
+            operatorSet.addOperator(op);
         }
 
-        m_state = m_startState.get();
+        this.state = m_startState.get();
 
         for (Logger log : m_loggers.get()) {
-            log.init(m_state);
+            log.init(this.state);
         }
 
 
     } // init
-    
+
     /**
      * number of samples taken where calculation is checked against full
      * recalculation of the posterior.
@@ -111,7 +112,7 @@ public class MCMC extends Runnable{
 
     public void log(int nSample) {
         for (Logger log : m_loggers.get()) {
-            log.log(nSample, m_state);
+            log.log(nSample, state);
         }
     } // log
 
@@ -123,32 +124,33 @@ public class MCMC extends Runnable{
 
     protected void showOperatorRates(PrintStream out) {
         out.println("Operator                                        #accept\t#reject\t#total\tacceptance rate");
-        for (int i = 0; i < m_operatorset.getNrOperators(); i++) {
-            out.println(m_operatorset.getOperator(i));
+        for (int i = 0; i < operatorSet.getNrOperators(); i++) {
+            out.println(operatorSet.getOperator(i));
         }
     }
 
     public void run() throws Exception {
         long tStart = System.currentTimeMillis();
-        m_state.setDirty(true);
+        state.setDirty(true);
 
         int nBurnIn = m_oBurnIn.get();
         int nChainLength = m_oChainLength.get();
 
         System.err.println("Start state:");
-        System.err.println(m_state.toString());
+        System.err.println(state.toString());
 
         // do the sampling
         double logAlpha = 0;
 
         boolean bDebug = true;
-        m_state.setDirty(true);
-        double fOldLogLikelihood = m_uncertainty.get().calculateLogP(m_state);
+        state.setDirty(true);
+        double fOldLogLikelihood = posteriorInput.get().calculateLogP(state);
         System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
 
-            State proposedState = m_state.copy();
-            Operator operator = m_operatorset.selectOperator();
+            State proposedState = state.copy();
+            proposedState.stateNumber = iSample;
+            Operator operator = operatorSet.selectOperator();
             if (iSample == 24) {
                 int h = 3;
                 h++;
@@ -168,13 +170,13 @@ public class MCMC extends Runnable{
                 }
 
 
-                double fNewLogLikelihood = m_uncertainty.get().calculateLogP(proposedState);
+                double fNewLogLikelihood = posteriorInput.get().calculateLogP(proposedState);
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     fOldLogLikelihood = fNewLogLikelihood;
-                    m_state = proposedState;
-                    m_state.setDirty(false);
+                    state = proposedState;
+                    state.setDirty(false);
                     if (iSample >= 0) {
                         operator.accept();
                     }
@@ -195,10 +197,10 @@ public class MCMC extends Runnable{
             log(iSample);
 
             if (bDebug) {
-                m_state.validate();
-                m_state.setDirty(true);
-                //System.err.println(m_state.toString());
-                double fLogLikelihood = m_uncertainty.get().calculateLogP(m_state);
+                state.validate();
+                state.setDirty(true);
+                //System.err.println(state.toString());
+                double fLogLikelihood = posteriorInput.get().calculateLogP(state);
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
                     throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
                 }
@@ -216,10 +218,10 @@ public class MCMC extends Runnable{
     } // run;
 
     public void restoreCachables(int nSample) {
-        m_uncertainty.get().restore(nSample);
+        posteriorInput.get().restore(nSample);
     }
 
     public void storeCachables(int nSample) {
-        m_uncertainty.get().store(nSample);
+        posteriorInput.get().store(nSample);
     }
 } // class MCMC

@@ -28,7 +28,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.State;
-import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -92,7 +91,7 @@ public class ScaleOperator extends Operator {
             m_iVar = state.getStateNodeIndex(m_pParameter.get().getID());
         }
 
-        Parameter<Double> param = (Parameter<Double>) state.getStateNode(m_iVar);
+        RealParameter param = (RealParameter) state.getStateNode(m_iVar);
         int dim = param.getDimension();
 
         if (bScaleAllIndependently) {
@@ -105,7 +104,7 @@ public class ScaleOperator extends Operator {
 
                 hastingsRatio -= Math.log(scaleOne);
 
-                if (value < getLower() || value > getUpper()) {
+                if (value < param.getLower() || value > param.getUpper()) {
                     throw new Exception("Error scaleOperator 101: proposed value outside boundaries");
                 }
 
@@ -128,8 +127,8 @@ public class ScaleOperator extends Operator {
             }
 
             for (int i = 0; i < dim; i++) {
-                if (param.getValue(i) < getLower() ||
-                        param.getValue(i) > getUpper()) {
+                if (param.getValue(i) < param.getLower() ||
+                        param.getValue(i) > param.getUpper()) {
                     throw new Exception("Error scaleOperator 102: proposed value outside boundaries");
                 }
             }
@@ -183,8 +182,10 @@ public class ScaleOperator extends Operator {
             }
             double newValue = scale * oldValue;
 
-            if (newValue < getLower() || newValue > getUpper()) {
-                throw new Exception("Error scaleOperator 105: proposed value outside boundaries");
+            if (param.getLower() != null && newValue < param.getLower() || param.getUpper() != null && newValue > param.getUpper()) {
+                // reject out of bounds scales
+                return Double.NEGATIVE_INFINITY;
+                //throw new Exception("Error scaleOperator 105: proposed value outside boundaries");
             }
 
             param.setValue(index, newValue);

@@ -120,10 +120,11 @@ sys	    0m0.164s  0m1.448s            0m1.328s 0m4.740s
 package beast.evolution.likelihood;
 
 import beast.core.Description;
-import beast.core.Input;
 import beast.core.Distribution;
+import beast.core.Input;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -139,8 +140,8 @@ public class TreeLikelihood extends Distribution {
     public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree");
     public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs");
     public Input<SiteModel> m_pSiteModel = new Input<SiteModel>("siteModel", "site model for leafs in the beast.tree");
-//    public Input<BranchRateModel> branchRateModel = new Input<BranchRateModel>("branchRateModel",
-//            "A model describing the rates on the branches of the beast.tree.", Input.Validate.OPTIONAL);
+    public Input<BranchRateModel.Base> branchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
+            "A model describing the rates on the branches of the beast.tree.");
 
     LikelihoodCore m_likelihoodCore;
 
@@ -252,10 +253,11 @@ public class TreeLikelihood extends Distribution {
 //        /if (pParent != NULL && m_updateNode[nodeNum]) {
         if (!node.isRoot() && (m_bNodeIsDirty[iNode] != Tree.IS_CLEAN)) {
 
-            //final double branchRate = branchRateModel.getBranchRate(beast.tree, node);
+            double branchRate = 1.0;
+            if (branchRateModel.get() != null) branchRate = branchRateModel.get().getRateForBranch(state, node);
 
             // Get the operational time of the branch
-            double branchTime /*= branchRate */ = node.getLength();//((*pParent).height - (*pNode).height);
+            double branchTime = branchRate * node.getLength();//((*pParent).height - (*pNode).height);
             if (branchTime < 0) {
                 throw new Exception("Negative branch length found");
             }

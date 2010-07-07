@@ -1,11 +1,10 @@
 package beast.core.parameter;
 
-import java.io.PrintStream;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
-import beast.core.StateNode;
+
+import java.io.PrintStream;
 
 
 /**
@@ -26,8 +25,8 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
 
     @Override
     public void initAndValidate(State state) throws Exception {
-        m_fUpper = lowerValueInput.get();
-        m_fLower = upperValueInput.get();
+        m_fLower = lowerValueInput.get();
+        m_fUpper = upperValueInput.get();
         values = new Integer[m_nDimension.get()];
         for (int i = 0; i < values.length; i++) {
             values[i] = m_pValues.get();
@@ -47,12 +46,11 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         return copy;
     }
 
-    @Override
     public void log(int nSample, State state, PrintStream out) {
-      IntegerParameter var = (IntegerParameter) state.getStateNode(m_sID);
-      int nValues = var.getDimension();
-      for (int iValue = 0; iValue < nValues; iValue++) {
-          out.print(var.getValue(iValue) + "\t");
-      }
+        IntegerParameter var = (IntegerParameter) state.getStateNode(m_sID);
+        int nValues = var.getDimension();
+        for (int iValue = 0; iValue < nValues; iValue++) {
+            out.print(var.getValue(iValue) + "\t");
+        }
     }
 }

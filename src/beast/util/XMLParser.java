@@ -25,7 +25,6 @@
 package beast.util;
 
 
-
 import beast.core.*;
 import beast.core.Runnable;
 import beast.core.parameter.IntegerParameter;
@@ -181,11 +180,12 @@ public class XMLParser {
 
 
         parse();
-        if(m_runnable instanceof Runnable)
-            return (Runnable)m_runnable;
-        else{
+        if (m_runnable instanceof Runnable)
+            return (Runnable) m_runnable;
+        else {
             throw new Exception("Run element does not point to a runnable object.");
-        }    } // parseFile
+        }
+    } // parseFile
 
 
     /**
@@ -326,7 +326,7 @@ public class XMLParser {
                 throw new XMLParserException(node, "id=" + sID + ". Expected object of type " + sClass + " instead of " + plugin.getClass().getName(), 105);
             }
         }
-        
+
         String sIDRef = getIDRef(node);
         if (sIDRef != null) {
             if (m_sIDMap.containsKey(sIDRef)) {
@@ -526,12 +526,12 @@ public class XMLParser {
 //						beast.core.Logger newLogger = null;
 //						if (sName.equals(PARAMETER_ELEMENT)) {
 //							String sIDRef = getIDRef(logger);
-//							int iVar = m_state.getStateNodeIndex(sIDRef);
+//							int iVar = state.getStateNodeIndex(sIDRef);
 //							newLogger = pLogger.new VarLogger(iVar);
 //							pLogger.addLogger(newLogger);
 //						} else if (sName.equals(TREE_ELEMENT)) {
 //							String sIDRef = getIDRef(logger);
-//							int iID = m_state.getTreeIndex(sIDRef);
+//							int iID = state.getTreeIndex(sIDRef);
 //							newLogger = pLogger.new TreeLogger(iID);
 //							pLogger.addLogger(newLogger);
 //						} else if (sName.equals(PROBABILITY_ELEMENT)) {

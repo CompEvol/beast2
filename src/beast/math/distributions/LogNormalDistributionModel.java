@@ -17,11 +17,21 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     public void initAndValidate(State state) throws Exception {
 
         if (MParameter.get() != null) {
-            MParameter.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            if (MParameter.get().getLower() == null) {
+                MParameter.get().setLower(Double.NEGATIVE_INFINITY);
+            }
+            if (MParameter.get().getUpper() == null) {
+                MParameter.get().setUpper(Double.POSITIVE_INFINITY);
+            }
         }
 
         if (SParameter.get() != null) {
-            SParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+            if (SParameter.get().getLower() == null) {
+                SParameter.get().setLower(0.0);
+            }
+            if (SParameter.get().getUpper() == null) {
+                SParameter.get().setUpper(Double.POSITIVE_INFINITY);
+            }
         }
     }
 
