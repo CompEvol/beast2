@@ -239,8 +239,10 @@ public class Node extends Plugin {
 		return node;
 	} // copy
 
-	public void setMetaData(String sPattern, double fValue) {
+	public void setMetaData(String sPattern, Object fValue) {
+		m_bIsDirty = Tree.IS_DIRTY;
 	}
+	
 	public double getMetaData(String sPattern) {
 		return 0;
 	}

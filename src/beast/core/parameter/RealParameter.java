@@ -5,6 +5,7 @@ import beast.core.Input;
 import beast.core.State;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 
 /**
  * @author Alexei Drummond
@@ -33,17 +34,18 @@ public class RealParameter extends Parameter<Double> {
         for (int i = 0; i < values.length; i++) {
             values[i] = m_pValues.get();
         }
+        super.initAndValidate(state);
     }
 
-    public void setValue(Double fValue) throws Exception {
-
-        if (fValue < getLower() || fValue > getUpper()) throw new IllegalArgumentException("new value outside bounds!");
-
-        if (isStochastic()) {
-            values[0] = fValue;
-            setDirty(true);
-        } else throw new Exception("Can't set the value of a fixed parameter.");
-    }
+//    public void setValue(Double fValue) throws Exception {
+//
+//        if (fValue < getLower() || fValue > getUpper()) throw new IllegalArgumentException("new value outside bounds!");
+//
+//        if (isStochastic()) {
+//            values[0] = fValue;
+//            setDirty(true);
+//        } else throw new Exception("Can't set the value of a fixed parameter.");
+//    }
 
 
     /**
@@ -56,6 +58,7 @@ public class RealParameter extends Parameter<Double> {
         System.arraycopy(values, 0, copy.values, 0, values.length);
         copy.m_fLower = m_fLower;
         copy.m_fUpper = m_fUpper;
+        copy.m_bIsDirty = new boolean[values.length];
         return copy;
     }
 

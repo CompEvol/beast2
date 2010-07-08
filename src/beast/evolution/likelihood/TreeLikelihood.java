@@ -336,14 +336,14 @@ public class TreeLikelihood extends Distribution {
         if (m_pSiteModel.get().isDirty(state)) {
             hasDirt = Tree.IS_DIRTY;
         }
-        if (branchRateModel != null && branchRateModel.get().isDirty(state)) {
+        if (branchRateModel.get() != null && branchRateModel.get().isDirty(state)) {
             hasDirt = Tree.IS_DIRTY;
         }
-        
     	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
         // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);
         //m_likelihoodCore.checkForDirt(state);
         Tree tree = (Tree) state.getStateNode(m_tree);
+        tree.syncTreeWithTraitsInState(state);
         checkNodesForDirt(tree.getRoot(), hasDirt);
     } // checkForDirt
 
@@ -375,7 +375,7 @@ public class TreeLikelihood extends Distribution {
         m_pSiteModel.get().store(nSample);
         //m_pSubstModel.get().store(nSample);
         m_likelihoodCore.store();
-        if (branchRateModel != null) {
+        if (branchRateModel.get() != null) {
         	branchRateModel.get().store(nSample);
         }
     }
@@ -386,7 +386,7 @@ public class TreeLikelihood extends Distribution {
         m_pSiteModel.get().restore(nSample);
         //m_pSubstModel.get().restore(nSample);
         m_likelihoodCore.restore();
-        if (branchRateModel != null) {
+        if (branchRateModel.get() != null) {
         	branchRateModel.get().restore(nSample);
         }
     }

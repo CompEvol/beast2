@@ -43,8 +43,13 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     /**
      * constructors *
      */
-    public Parameter() {
+    public Parameter() {}
+    
+    @Override
+    public void initAndValidate(State state) throws Exception {
+    	m_bIsDirty = new boolean[m_nDimension.get()];
     }
+    
 
     /**
      * upper & lower bound *
@@ -55,7 +60,12 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
      * the actual values of this parameter
      */
     protected T[] values;
-
+    /**
+     * isDirty flags for individual elements in high dimensional parameters
+     */
+    protected boolean [] m_bIsDirty;
+    public boolean isDirty(int iParam) {return m_bIsDirty[iParam];}
+    
     /** number of the id, to find it quickly in the list of parameters of the State **/
     /**
      * initialised by State.initAndValidate *
@@ -104,6 +114,7 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     public void setValue(T fValue) throws Exception {
         if (isStochastic()) {
             values[0] = fValue;
+            m_bIsDirty[0] = true;
             setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
@@ -111,6 +122,7 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     public void setValue(int iParam, T fValue) throws Exception {
         if (isStochastic()) {
             values[iParam] = fValue;
+            m_bIsDirty[iParam] = true;
             setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }

@@ -5,6 +5,7 @@ import beast.core.Input;
 import beast.core.State;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 
 
 /**
@@ -31,6 +32,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         for (int i = 0; i < values.length; i++) {
             values[i] = m_pValues.get();
         }
+        super.initAndValidate(state);
     }
 
     /**
@@ -43,6 +45,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         System.arraycopy(values, 0, copy.values, 0, values.length);
         copy.m_fLower = m_fLower;
         copy.m_fUpper = m_fUpper;
+        copy.m_bIsDirty = new boolean[values.length];
         return copy;
     }
 

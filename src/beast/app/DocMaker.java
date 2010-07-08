@@ -167,7 +167,7 @@ public class DocMaker {
         }
 
         {
-            InputStream in = new FileInputStream(new File("doc/beast.jpg"));
+            InputStream in = new FileInputStream(new File("doc/book/beast.jpg"));
             OutputStream out = new FileOutputStream(new File(m_sDir + "/beast.jpg"));
             byte[] buf = new byte[1024];
             int len;

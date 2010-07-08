@@ -60,6 +60,7 @@
     </input>
 
     <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+	<trait idref='rateCategories'/> 
         <input name='taxa' idref='alignment'/>
     </input>
 
@@ -70,12 +71,6 @@
 
     <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
         <state>
-            <!--
-                        <tree spec='util.TreeParser' id='tree'>
-                            <input name='newick'>((5:0.04847887618847128,(3:0.03189934232093919,((2:0.011076861832266626,1:0.011076861832266626):0.009810542752873795,4:0.02088740458514042):0.011011937735798769):0.01657953386753209):0.017232517763959114,6:0.06571139395243039);</input>
-                           <input name='taxa' idref='alignment'/>
-                        </tree>
-            -->
             <input name='stateNode' idref='hky.kappa'/>
             <input name='stateNode' idref='popSize'/>
             <input name='stateNode' idref='M'/>

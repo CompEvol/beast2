@@ -24,25 +24,36 @@
 */
 package beast.evolution.tree;
 
+
 import beast.core.Description;
+import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.State;
 import beast.core.StateNode;
+import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
 public class Tree extends StateNode implements Loggable {
-    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
+    
+	@SuppressWarnings("unchecked")
+	public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
+	
+	public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
     int nodeCount = -1;
 
     /**
      * node representation of the beast.tree *
      */
-    protected Node root;
+    protected beast.evolution.tree.Node root;
 
     private boolean isStochastic = true;
 
@@ -82,6 +93,7 @@ public class Tree extends StateNode implements Loggable {
             return getNode(iNodeNr, node.m_right);
         }
     } // getNode
+    
 
     /**
      * copy meta data matching sPattern to double array
@@ -238,7 +250,36 @@ public class Tree extends StateNode implements Loggable {
         return root.toString();
     }
 
+    
+    /** synchronise tree nodes with its traits stored in an array **/
+	public void syncTreeWithTraitsInState(State state) {
+		boolean bSyncNeeded = false;
+		for (Parameter<?> p : treeTraitsInput.get()) {
+			p = (Parameter<?>) state.getStateNode(p.getIndex(state));
+			if (p.isDirty()) {
+				bSyncNeeded = true;
+			}
+		}	
+		if (bSyncNeeded) {
+			syncTreeWithTraits(getRoot(), state);
+		}
+	} // syncTreeWithTraitsInState
 
+	void syncTreeWithTraits(Node node, State state) {
+		for (Parameter<?> p : treeTraitsInput.get()) {
+			p = (Parameter<?>) state.getStateNode(p.getIndex(state));
+			int iNode = Math.abs(node.getNr());
+			if (p.isDirty(iNode)) {
+				node.setMetaData(p.getID(), p.getValue(iNode));
+			}
+		}
+		if (!node.isLeaf()) {
+			syncTreeWithTraits(node.m_left, state);
+			syncTreeWithTraits(node.m_right, state);
+		}
+	} // syncTreeWithTraits
+	
+    /** Loggable interface implementation follows **/
     /** implementation for Loggable interface follows **/
     /**
      * print translate block for NEXUS beast.tree file *
@@ -257,7 +298,7 @@ public class Tree extends StateNode implements Loggable {
         }
 
     }
-
+    
 	@Override
 	public void init(State state, PrintStream out) throws Exception {
 		out.println("#NEXUS\n");

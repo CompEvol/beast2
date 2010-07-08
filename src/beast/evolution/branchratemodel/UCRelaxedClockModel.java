@@ -117,9 +117,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         if (recompute < state.stateNumber) {
         	return true;
         }
-        if (state.getStateNode(categoryInput).isDirty()) {
-        	return true;
-        }
+//	    processed as trait on the tree      
+//      if (state.getStateNode(categoryInput).isDirty()) {
+//       	return true;
+//      }
         if (state.getStateNode(treeInput).isDirty()) {
         	return true;
         }
