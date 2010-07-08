@@ -26,12 +26,14 @@
 	</target>
 
 	<target name="clean">
+<!--
 		<delete dir="${build}" />
+-->		
 	</target>
 
 	<!-- clean previous build, and then compile Java source code, and Juint test -->
 	<!--target name="build_all_BEAST" depends="clean,compile-all,junit"-->
-	<target name="build_all_BEAST" depends="clean,compile-all"
+	<target name="build_all_BEAST" depends="clean,compile-all,junit"
         description="Clean and Build all run-time stuff">
 	</target>
 
@@ -59,7 +61,7 @@
 			<!-- compile JUnit test classes -->
 			<include name="test/beast/**" />
 		</javac>
-		<echo message="Successfully complied." />
+		<echo message="Successfully compiled." />
 	</target>
 
 	<!-- make the beast.jar and beauti.jar -->
@@ -87,5 +89,23 @@
 	</target>
 
 	
+	<!-- JUnit test -->
+	<target name="junit">
+		<mkdir dir="${report}" />
+		<junit printsummary="yes">
+			<classpath>
+				<path refid="classpath" />
+				<path location="${build}" />
+			</classpath>
 
+			<formatter type="xml" />
+
+			<batchtest fork="yes" todir="${report}">
+				<fileset dir="${src}">
+                    <include name="test/**/*Test.java"/>                                         
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo message="JUnit test finished." />
+	</target>
 </project>
