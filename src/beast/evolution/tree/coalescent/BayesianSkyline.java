@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Alexei Drummond
  */
-@Description("Alexie, what description goes here???")
+@Description("A likelihood function for the generalized skyline plot coalescent.")
 public class BayesianSkyline extends PopulationFunction.Abstract {
 
     public Input<RealParameter> popSizeParamInput = new Input<RealParameter>("popSizes", 
