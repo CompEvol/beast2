@@ -40,7 +40,7 @@ public class DocumentationTest extends TestCase {
         	} catch (Exception e) {
 			}
 		}
-		assertTrue(sUndocumentedPlugins.toString(), sUndocumentedPlugins.size() == 0);
+		assertTrue("No proper description for: " + sUndocumentedPlugins.toString(), sUndocumentedPlugins.size() == 0);
 	} // testDescriptions
 
 	/** Check all inputs of plug-ins have a proper tip text, again
@@ -53,7 +53,7 @@ public class DocumentationTest extends TestCase {
 			try {
         		Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
         		Input<?>[] inputs = plugin.listInputs();
-                for (Input input: inputs) {
+                for (Input<?> input: inputs) {
            			boolean hasSatisfactoryDescription = false;
                		String sTipText = input.getTipText();
                		if (isProperDocString(sTipText)) {
@@ -67,7 +67,7 @@ public class DocumentationTest extends TestCase {
 			}
 		}
 	
-		assertTrue(sUndocumentedInputs.toString(), sUndocumentedInputs.size() == 0);
+		assertTrue("No proper input tip text for: " + sUndocumentedInputs.toString(), sUndocumentedInputs.size() == 0);
 	} // testInputTipText
 
 	

@@ -8,7 +8,7 @@ import beast.core.parameter.RealParameter;
 /**
  * @author Alexei Drummond
  */
-@Description("A lognormal distribution.")
+@Description("A log-normal distribution.")
 public class LogNormalDistributionModel extends ParametricDistribution {
 
     public Input<RealParameter> MParameter = new Input<RealParameter>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");

@@ -18,7 +18,7 @@ import java.util.Random;
 @Description("Calculates the probability of a beast.tree conditional on a population size function.")
 public class Coalescent extends Distribution {
 
-    public Input<Tree> tree = new Input<Tree>("tree", "phylogenetic beast.tree");
+    public Input<Tree> tree = new Input<Tree>("tree", "A phylogenetic beast tree");
     public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model");
 
 

@@ -30,7 +30,7 @@ import beast.core.Input.Validate;
 
 @Description("Specifies transition probability matrix for a given distance")
 public abstract class SubstitutionModel extends Plugin implements Cacheable {
-    public Input<Frequencies> m_pFreqs = new Input<Frequencies>("frequencies", "frequencies of characters", Validate.REQUIRED);
+    public Input<Frequencies> m_pFreqs = new Input<Frequencies>("frequencies", "frequencies of characters in state space", Validate.REQUIRED);
 
     /**
      * get the complete transition probability matrix for the given distance

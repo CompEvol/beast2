@@ -37,7 +37,7 @@ import java.util.Arrays;
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
 public abstract class Parameter<T> extends StateNode implements Loggable {
-    public Input<java.lang.Integer> m_nDimension = new Input<java.lang.Integer>("dimension", "dimension (default 1)", new java.lang.Integer(1));
+    public Input<java.lang.Integer> m_nDimension = new Input<java.lang.Integer>("dimension", "dimension of the paperameter(default 1)", new java.lang.Integer(1));
 
 
     /**

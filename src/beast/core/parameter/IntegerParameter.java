@@ -1,19 +1,19 @@
 package beast.core.parameter;
 
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 
 
 /**
  * @author Alexei Drummond
  */
 
-@Description("An integer-valued parameter represents a value in the state space that can be changed " +
-        "by operators.")
+@Description("An integer-valued parameter represents a value (or array of values if the dimension is larger than one) " +
+		"in the state space that can be changed by operators.")
 public class IntegerParameter extends Parameter<java.lang.Integer> {
     public Input<Integer> m_pValues = new Input<Integer>("value", "start value for this parameter");
     public Input<Integer> lowerValueInput = new Input<Integer>("lower", "lower value for this parameter");

@@ -31,7 +31,6 @@ import beast.core.Loggable;
 import beast.core.State;
 import beast.core.StateNode;
 import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -102,7 +101,7 @@ public class Tree extends StateNode implements Loggable {
      * @param fT       the double array to be filled with meta data
      * @param sPattern the name of the meta data
      */
-    public void getMetaData(Node node, double[] fT, String sPattern) {
+    public void getMetaData(Node node, Double[] fT, String sPattern) {
         fT[Math.abs(node.getNr())] = node.getMetaData(sPattern);
         if (!node.isLeaf()) {
             getMetaData(node.m_left, fT, sPattern);
@@ -110,7 +109,7 @@ public class Tree extends StateNode implements Loggable {
         }
     }
 
-    public void setMetaData(Node node, double[] fT, String sPattern) {
+    public void setMetaData(Node node, Double[] fT, String sPattern) {
         node.setMetaData(sPattern, fT[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
             setMetaData(node.m_left, fT, sPattern);

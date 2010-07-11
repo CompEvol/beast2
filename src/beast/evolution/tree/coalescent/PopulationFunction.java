@@ -105,7 +105,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
      */
     double getThreshold();
 
-    @Description("An abstract implementation of a population size function plugin.")
+    @Description("An implementation of a population size function plugin.")
     public abstract class Abstract extends Plugin implements PopulationFunction, Cacheable {
 
         RombergIntegrator numericalIntegrator = new RombergIntegrator();

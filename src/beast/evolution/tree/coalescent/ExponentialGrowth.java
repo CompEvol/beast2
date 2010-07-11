@@ -1,5 +1,6 @@
 package beast.evolution.tree.coalescent;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
@@ -32,20 +33,20 @@ import java.util.List;
  */
 
 /**
- * This class models coalescent intervals for a constant population
- * (parameter: N0=present-day population size). <BR>
- * If time units are set to Units.EXPECTED_SUBSTITUTIONS then
- * the N0 parameter will be interpreted as N0 * mu. <BR>
- * Also note that if you are dealing with a diploid population
- * N0 will be out by a factor of 2.
- *
  * @author Andrew Rambaut
  * @author Alexei Drummond
  * @version $Id: ConstantPopulation.java,v 1.9 2005/05/24 20:25:55 rambaut Exp $
  */
+@Description("coalescent intervals for a exponentially growing population")
 public class ExponentialGrowth extends PopulationFunction.Abstract {
-    public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize", "the current popSize parameter; defaults to 1.0)");
-    public Input<RealParameter> growthRateParameter = new Input<RealParameter>("growthRate", "popSize parameter; defaults to 0.01)");
+    public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize",
+    		"present-day population size (defaults to 1.0). " +
+    		"If time units are set to Units.EXPECTED_SUBSTITUTIONS then"+
+    		"the N0 parameter will be interpreted as N0 * mu. "+
+    		"Also note that if you are dealing with a diploid population "+
+    		"N0 will be out by a factor of 2.");
+    public Input<RealParameter> growthRateParameter = new Input<RealParameter>("growthRate", 
+    		"growth rate is the exponent of the exponential growth");
 
     //
     // Public stuff

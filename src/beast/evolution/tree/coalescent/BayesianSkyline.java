@@ -1,5 +1,6 @@
 package beast.evolution.tree.coalescent;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
@@ -11,9 +12,15 @@ import java.util.List;
 /**
  * @author Alexei Drummond
  */
+@Description("Alexie, what description goes here???")
 public class BayesianSkyline extends PopulationFunction.Abstract {
 
-    public Input<RealParameter> popSizeParamInput = new Input<RealParameter>("popSizes", "the popSizes parameter");
+    public Input<RealParameter> popSizeParamInput = new Input<RealParameter>("popSizes", 
+    		"present-day population size. " +
+    		"If time units are set to Units.EXPECTED_SUBSTITUTIONS then"+
+    		"the N0 parameter will be interpreted as N0 * mu. "+
+    		"Also note that if you are dealing with a diploid population "+
+    		"N0 will be out by a factor of 2.");
     public Input<RealParameter> groupSizeParamInput = new Input<RealParameter>("groupSizes", "the group sizes parameter");
     public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
 

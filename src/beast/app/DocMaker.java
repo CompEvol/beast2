@@ -231,18 +231,27 @@ public class DocMaker {
      * Extract description from @Description annotation
      * but only if the description is inheritable *
      */
-    String getInheritableDescription(Plugin plugin) {
-        Annotation[] classAnnotations = plugin.getClass().getAnnotations();
+    String getInheritableDescription(Class<?> pluginClass) {
+        String sStr = "";
+        Class<?> superClass = pluginClass.getSuperclass();
+        if (superClass != null) {
+        	String sSuper = getInheritableDescription(superClass);
+        	if (sSuper != null) {
+        		sStr += sSuper + "<br/>"; 
+        	}
+        }
+    	Annotation [] classAnnotations = pluginClass.getAnnotations();
         for (Annotation annotation : classAnnotations) {
             if (annotation instanceof Description) {
                 Description description = (Description) annotation;
                 if (description.isInheritable()) {
-                    return description.value();
+                	sStr += description.value();
+                } else {
+                	return  null;
                 }
-                return "";
             }
         }
-        return "";
+        return sStr;
     }
 
     /**
@@ -270,16 +279,16 @@ public class DocMaker {
 	        }
 	
 	        // show descriptions of all plug-ins implemented by this plug in...
-	        List<String> sAncestors = m_ancestors.get(sPlugin);
-	        for (String sAncestor : sAncestors) {
-	            String sDescription = m_descriptions.get(sAncestor);
-	            if (sDescription.length() > 0) {
-	                //out.println("<p>"+ sAncestor + ":"+sDescription + "</p>");
-	                out.println("<p>" + sDescription + "</p>");
-	            }
-	        }
+//	        List<String> sAncestors = m_ancestors.get(sPlugin);
+//	        for (String sAncestor : sAncestors) {
+//	            String sDescription = m_descriptions.get(sAncestor);
+//	            if (sDescription.length() > 0) {
+//	                //out.println("<p>"+ sAncestor + ":"+sDescription + "</p>");
+//	                out.println("<p>" + sDescription + "</p>");
+//	            }
+//	        }
 	        // ... plus its own description
-	        out.println("<p>" + plugin.getDescription() + "</p>");
+	        out.println("<p>" + m_descriptions.get(sPlugin) + "</p>");
 	
 	
 	        // show citation (if any)
@@ -400,7 +409,9 @@ public class DocMaker {
         for (String sPlugin : m_sPluginNames) {
         	try {
 	            Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
-	            m_descriptions.put(sPlugin, getInheritableDescription(plugin));
+	            String sDescription = getInheritableDescription(plugin.getClass());
+	            System.err.println(sPlugin + " => " + sDescription);
+	            m_descriptions.put(sPlugin, sDescription);
 	            String[] sImplementations = getImplementations(plugin);
 	            m_isa.put(sPlugin, sImplementations);
 	            for (String sImp : sImplementations) {
