@@ -1,0 +1,56 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- test Yule birth model and Birth Death model per Gernhard 2008-->
+<beast version='2.0'
+       namespace='beast.evolution.speciation:beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+
+    <data id="alignment" dataType="nucleotide">
+        <sequence taxon="A">A</sequence>
+        <sequence taxon="B">A</sequence>
+        <sequence taxon="C">A</sequence>
+        <sequence taxon="D">A</sequence>
+    </data>
+    
+    <!-- A prior on the distribution node heights defined given                  -->
+    <!-- a Yule speciation process (a pure birth process).                       -->
+    <input spec='YuleModel' id="yule">
+        <parameter name='birthDiffRate' idref="birthRate"/>
+	<tree spec='TreeParser' id='tree'>
+	        <input name='newick'>((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0);</input>
+       		<input name='taxa' idref='alignment'/>
+	</tree>
+    </input>
+
+    <input spec='BirthDeathGernhard08Model' id="yulelike" type='timesonly'>
+        <parameter name='birthDiffRate' idref="birthRate"/>
+	<parameter name='relativeDeathRate' idref='relativeDeathRate'/>
+	<tree idref='tree'/>
+    </input>
+
+
+    <parameter id="birthRate" value="1.0" lower="0.0" upper="100.0"/>
+    <parameter id='relativeDeathRate' value='1'/>
+
+    <!-- initial yule prior = -6.0, yule-like prior = -2.8219461696520542 -->
+    <run spec='MCMC' chainLength="1">
+	<state>
+	    <stateNode idref='birthRate'/>
+	    <stateNode idref='relativeDeathRate'/>
+	    <stateNode idref='tree'/>
+	</state>
+
+	<distribution spec='CompoundDistribution'>
+	        <distribution id="yule.prior" idref='yule'/>
+	        <distribution id="yulelike.prior" idref='yulelike'/>
+	</distribution>
+
+        <operator spec='ScaleOperator' scaleFactor="0.75" weight="3">
+            <parameter idref="birthRate"/>
+        </operator>
+
+	<log>
+		<distribution name='log' idref='yule.prior'/>
+		<distribution name='log' idref='yulelike.prior'/>
+	</log>
+    </run>
+
+</beast>
