@@ -27,7 +27,7 @@ package beast.evolution.tree.coalescent;
 
 
 /**
- * An interface for a set of coalescent intevals.
+ * An interface for a set of coalescent intervals.
  *
  * @author Andrew Rambaut
  * @author Alexei Drummond

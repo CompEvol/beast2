@@ -81,6 +81,7 @@ public class TreeIntervals implements IntervalList {
     }
 
     public int getSampleCount() {
+        // Assumes a binary tree!
         return (tree.getNodeCount() - 1) / 2;
     }
 
@@ -101,15 +102,38 @@ public class TreeIntervals implements IntervalList {
         if (!intervalsKnown) {
             calculateIntervals();
         }
-        if (i >= intervalCount) throw new IllegalArgumentException();
+        if (i < 0 || i >= intervalCount) throw new IllegalArgumentException();
         return intervals[i];
     }
 
-    public double[] getIntervals() {
+    /**
+     * Defensive implementation creates copy
+     *
+     * @return
+     */
+    public double[] getIntervals(double[] inters) {
         if (!intervalsKnown) {
             calculateIntervals();
         }
-        return intervals;
+        if (inters == null) inters = new double[intervals.length];
+        System.arraycopy(intervals, 0, inters, 0, intervals.length);
+        return inters;
+    }
+
+    public double[] getCoalescentTimes(double[] coalescentTimes) {
+
+        if (coalescentTimes == null) coalescentTimes = new double[getSampleCount()];
+
+        double time = 0;
+        int coalescentIndex = 0;
+        for (int i = 0; i < intervals.length; i++) {
+            time += intervals[i];
+            for (int j = 0; j < getCoalescentEvents(i); j++) {
+                coalescentTimes[coalescentIndex] = time;
+                coalescentIndex += 1;
+            }
+        }
+        return coalescentTimes;
     }
 
     /**

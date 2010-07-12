@@ -3,10 +3,12 @@ package beast.evolution.tree.coalescent;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,30 +17,43 @@ import java.util.List;
 @Description("A likelihood function for the generalized skyline plot coalescent.")
 public class BayesianSkyline extends PopulationFunction.Abstract {
 
-    public Input<RealParameter> popSizeParamInput = new Input<RealParameter>("popSizes", 
-    		"present-day population size. " +
-    		"If time units are set to Units.EXPECTED_SUBSTITUTIONS then"+
-    		"the N0 parameter will be interpreted as N0 * mu. "+
-    		"Also note that if you are dealing with a diploid population "+
-    		"N0 will be out by a factor of 2.");
-    public Input<RealParameter> groupSizeParamInput = new Input<RealParameter>("groupSizes", "the group sizes parameter");
+    public Input<RealParameter> popSizeParamInput = new Input<RealParameter>("popSizes",
+            "present-day population size. " +
+                    "If time units are set to Units.EXPECTED_SUBSTITUTIONS then" +
+                    "the N0 parameter will be interpreted as N0 * mu. " +
+                    "Also note that if you are dealing with a diploid population " +
+                    "N0 will be out by a factor of 2.");
+    public Input<IntegerParameter> groupSizeParamInput = new Input<IntegerParameter>("groupSizes", "the group sizes parameter");
     public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
 
     RealParameter popSizes;
-    RealParameter groupSizes;
+    IntegerParameter groupSizes;
     Tree tree;
     TreeIntervals intervals;
+    double[] coalescentTimes;
+    int[] cumulativeGroupSizes;
 
     public void initAndValidate(State state) throws Exception {
+
         prepare(state);
     }
 
     public void prepare(State state) {
         super.prepare(state);
         popSizes = state.getParameter(popSizeParamInput);
-        groupSizes = state.getParameter(groupSizeParamInput);
+        groupSizes = (IntegerParameter) state.getStateNode(groupSizeParamInput);
         tree = (Tree) state.getStateNode(treeInput);
         intervals = new TreeIntervals(tree);
+
+        int intervalCount = 0;
+        for (int i = 0; i < groupSizes.getDimension(); i++) {
+            intervalCount += groupSizes.getValue(i);
+            cumulativeGroupSizes[i] = intervalCount;
+        }
+
+        coalescentTimes = intervals.getCoalescentTimes(coalescentTimes);
+
+        assert (intervals.getSampleCount() == intervalCount);
     }
 
     public List<String> getParameterIds() {
@@ -50,52 +65,81 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         return paramIDs;
     }
 
+    /**
+     * Not yet tested!
+     *
+     * @param t time
+     * @return
+     */
     public double getPopSize(double t) {
-        double[] heights = intervals.getIntervals();
-        Double[] sizes = popSizes.getValues();
-
-        for (int i = 0; i < heights.length; i++) {
-            if (t < heights[i]) {
-                return sizes[i];
-            }
-        }
-
-        return Double.NaN;
+        if (t > coalescentTimes[coalescentTimes.length - 1]) return popSizes.getValue(popSizes.getDimension() - 1);
+        return popSizes.getValue(Arrays.binarySearch(cumulativeGroupSizes, Arrays.binarySearch(coalescentTimes, t)));
     }
 
+    /**
+     * Not yet tested!
+     *
+     * @param t time
+     * @return
+     */
     public double getIntensity(double t) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+
+        int index = 0;
+        int groupIndex = 0;
+
+        if (t < coalescentTimes[0]) {
+            return t / popSizes.getValue(0);
+        } else {
+
+            double intensity = coalescentTimes[0] / popSizes.getValue(0);
+            index += 1;
+            if (cumulativeGroupSizes[groupIndex] >= index) {
+                groupIndex += 1;
+            }
+            while (t > coalescentTimes[index]) {
+
+                intensity += (coalescentTimes[index] - coalescentTimes[index - 1]) / popSizes.getValue(groupIndex);
+
+                index += 1;
+                if (cumulativeGroupSizes[groupIndex] >= index) {
+                    groupIndex += 1;
+                }
+            }
+            intensity += (t - coalescentTimes[index - 1]) / popSizes.getValue(groupIndex);
+
+            return intensity;
+        }
     }
 
     public double getInverseIntensity(double x) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public int getNumArguments() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public String getArgumentName(int n) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public double getArgument(int n) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public void setArgument(int n, double value) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public double getLowerBound(int n) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public double getUpperBound(int n) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public PopulationFunction getCopy() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 }

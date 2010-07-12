@@ -27,7 +27,10 @@ package beast.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Description(
         value = "Base class for all plug-ins, which is pretty much every class " +
@@ -49,7 +52,7 @@ public class Plugin {
 
     public Plugin() {
         if (this instanceof Cacheable) {
-            cacheables.add((Cacheable)this);
+            cacheables.add((Cacheable) this);
         }
     }
 
@@ -81,7 +84,7 @@ public class Plugin {
     }
 
     /**
-     * produce references for this plug in in and all its inputs *
+     * produce references for this plug in and all its inputs *
      */
     public final String getCitations() {
         return getCitations(new HashSet<String>());
@@ -203,7 +206,7 @@ public class Plugin {
                 }
             }
         }
-        throw new Exception("This plugin ("+ this.getID() +") has no input with name " + sName);
+        throw new Exception("This plugin (" + this.getID() + ") has no input with name " + sName);
     } // getInput
 
     /**
@@ -235,7 +238,6 @@ public class Plugin {
 
     protected List<String> conditions = null;
 
-    
 
     public static final Set<Cacheable> cacheables = new HashSet<Cacheable>();
 
