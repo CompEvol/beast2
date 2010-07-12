@@ -72,7 +72,7 @@ public class Frequencies extends Plugin {
 	} // calcFrequencies
 
 
-	public boolean isDirty(State state) {
+	public boolean isDirty() {
 		return false;
 	}
 

@@ -119,6 +119,7 @@ sys	    0m0.164s  0m1.448s            0m1.328s 0m4.740s
 
 package beast.evolution.likelihood;
 
+
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -216,10 +217,10 @@ public class TreeLikelihood extends Distribution {
      * @throws Exception
      */
     @Override
-    public double calculateLogP(State state) throws Exception {
-        checkForDirt(state);
-        Tree tree = (Tree) state.getStateNode(m_tree);
-        traverse(state, tree.getRoot());
+    public double calculateLogP() throws Exception {
+        checkForDirt();
+        Tree tree = m_tree.get();
+        traverse(tree.getRoot());
         logP = 0.0;
         //double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
         for (int i = 0; i < m_data.get().getPatternCount(); i++) {
@@ -230,7 +231,7 @@ public class TreeLikelihood extends Distribution {
             System.err.println("Turning on scaling to prevent numeric instability");
             m_likelihoodCore.setUseScaling(true);
             Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
-            return calculateLogP(state);
+            return calculateLogP();
         }
         return logP;
     }
@@ -241,7 +242,7 @@ public class TreeLikelihood extends Distribution {
      * @return whether the partials for this node were recalculated.
      * @throws Exception
      */
-    int traverse(State state, Node node) throws Exception {
+    int traverse(Node node) throws Exception {
 
         int update = Tree.IS_CLEAN;
 
@@ -254,7 +255,7 @@ public class TreeLikelihood extends Distribution {
         if (!node.isRoot() && (m_bNodeIsDirty[iNode] != Tree.IS_CLEAN)) {
 
             double branchRate = 1.0;
-            if (branchRateModel.get() != null) branchRate = branchRateModel.get().getRateForBranch(state, node);
+            if (branchRateModel.get() != null) branchRate = branchRateModel.get().getRateForBranch(node);
 
             // Get the operational time of the branch
             double branchTime = branchRate * node.getLength();//((*pParent).height - (*pNode).height);
@@ -268,9 +269,9 @@ public class TreeLikelihood extends Distribution {
             //}
 
             for (int i = 0; i < m_pSiteModel.get().getCategoryCount(); i++) {
-                double branchLength = m_pSiteModel.get().getRateForCategory(i, state) * branchTime;
+                double branchLength = m_pSiteModel.get().getRateForCategory(i) * branchTime;
                 m_pSiteModel.get()
-                        /*m_pSubstModel.get()*/.getTransitionProbabilities(branchLength, m_fProbabilities, state);
+                        /*m_pSubstModel.get()*/.getTransitionProbabilities(branchLength, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
             }
 
@@ -282,10 +283,10 @@ public class TreeLikelihood extends Distribution {
 
             // Traverse down the two child nodes
             Node child1 = node.m_left; //Two children
-            int update1 = traverse(state, child1);
+            int update1 = traverse(child1);
 
             Node child2 = node.m_right;
-            int update2 = traverse(state, child2);
+            int update2 = traverse(child2);
 
             // If either child node was updated then update this node too
             if (update1 != Tree.IS_CLEAN || update2 != Tree.IS_CLEAN) {
@@ -315,7 +316,7 @@ public class TreeLikelihood extends Distribution {
                             m_pSiteModel.get().getFrequencies();
 
                     //getRootPartials(node.getNr());
-                    double[] proportions = m_pSiteModel.get().getCategoryProportions(state);
+                    double[] proportions = m_pSiteModel.get().getCategoryProportions();
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
@@ -331,19 +332,19 @@ public class TreeLikelihood extends Distribution {
     /**
      * check state for changed variables and update temp results if necessary *
      */
-    public void checkForDirt(State state) {
+    public void checkForDirt() {
         int hasDirt = Tree.IS_CLEAN;
-        if (m_pSiteModel.get().isDirty(state)) {
+        if (m_pSiteModel.get().isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
-        if (branchRateModel.get() != null && branchRateModel.get().isDirty(state)) {
+        if (branchRateModel.get() != null && branchRateModel.get().isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
     	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
         // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);
         //m_likelihoodCore.checkForDirt(state);
-        Tree tree = (Tree) state.getStateNode(m_tree);
-        tree.syncTreeWithTraitsInState(state);
+        Tree tree = m_tree.get();
+        tree.syncTreeWithTraitsInState();
         checkNodesForDirt(tree.getRoot(), hasDirt);
     } // checkForDirt
 

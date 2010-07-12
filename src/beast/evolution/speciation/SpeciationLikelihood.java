@@ -32,11 +32,9 @@ import beast.core.State;
 import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.math.distributions.Distribution;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Ported from Beast 1.6
@@ -63,15 +61,15 @@ public class SpeciationLikelihood extends beast.core.Distribution implements Cac
      * @return the log likelihood
      */
 	@Override
-    public final double calculateLogP(State state) {
-      	Tree stateTree = (Tree)state.getStateNode(m_tree);
+    public final double calculateLogP() {
+      	Tree stateTree = m_tree.get();
       	
 //        if (m_bIsDirty || stateTree.isDirty()) {
         if (isDirty(stateTree.getRoot())) {
 //          if (exclude != null) {
 //          logP = calculateTreeLogLikelihood(tree, exclude);
 //          }
-  		    logP = calculateTreeLogLikelihood(stateTree, state);
+  		    logP = calculateTreeLogLikelihood(stateTree);
 //            m_bIsDirty = false;
         }
         return logP;
@@ -93,7 +91,7 @@ public class SpeciationLikelihood extends beast.core.Distribution implements Cac
      * Generic likelihood calculation
      * @return log-likelihood of density
      */
-	double calculateTreeLogLikelihood(Tree tree, State state) {
+	double calculateTreeLogLikelihood(Tree tree) {
 		return 0;
 	}
 
@@ -109,7 +107,7 @@ public class SpeciationLikelihood extends beast.core.Distribution implements Cac
     // Private and protected stuff
     // ****************************************************************
 
-    private boolean storedLikelihoodKnown = false;
+//    private boolean storedLikelihoodKnown = false;
 
     /******************************/
     /** Cacheable implementation **/

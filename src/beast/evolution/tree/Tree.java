@@ -251,30 +251,30 @@ public class Tree extends StateNode implements Loggable {
 
     
     /** synchronise tree nodes with its traits stored in an array **/
-	public void syncTreeWithTraitsInState(State state) {
+	public void syncTreeWithTraitsInState() {
 		boolean bSyncNeeded = false;
 		for (Parameter<?> p : treeTraitsInput.get()) {
-			p = (Parameter<?>) state.getStateNode(p.getIndex(state));
+			//p = (Parameter<?>) state.getStateNode(p.getIndex(state));
 			if (p.isDirty()) {
 				bSyncNeeded = true;
 			}
 		}	
 		if (bSyncNeeded) {
-			syncTreeWithTraits(getRoot(), state);
+			syncTreeWithTraits(getRoot());
 		}
 	} // syncTreeWithTraitsInState
 
-	void syncTreeWithTraits(Node node, State state) {
+	void syncTreeWithTraits(Node node) {
 		for (Parameter<?> p : treeTraitsInput.get()) {
-			p = (Parameter<?>) state.getStateNode(p.getIndex(state));
+			//p = (Parameter<?>) state.getStateNode(p.getIndex(state));
 			int iNode = Math.abs(node.getNr());
 			if (p.isDirty(iNode)) {
 				node.setMetaData(p.getID(), p.getValue(iNode));
 			}
 		}
 		if (!node.isLeaf()) {
-			syncTreeWithTraits(node.m_left, state);
-			syncTreeWithTraits(node.m_right, state);
+			syncTreeWithTraits(node.m_left);
+			syncTreeWithTraits(node.m_right);
 		}
 	} // syncTreeWithTraits
 	

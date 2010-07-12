@@ -43,7 +43,8 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
      * @return the normalised probability (density) for this distribution
      * @throws Exception an exception
      */
-    public double calculateLogP(State state) throws Exception {
+    //public double calculateLogP(State state) throws Exception {
+    public double calculateLogP() throws Exception {
         logP = 0;
         return logP;
     }

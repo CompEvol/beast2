@@ -27,9 +27,9 @@ public class YuleModel extends SpeciationLikelihood {
     }
 
     @Override
-    public double calculateTreeLogLikelihood(Tree tree, State state) {
+    public double calculateTreeLogLikelihood(Tree tree) {
         final int taxonCount = tree.getNodeCount()/2+1;
-        final double r = state.getParameter(birthDiffRateParameter).getValue();
+        final double r = birthDiffRateParameter.get().getValue();
         final double rho = 1;
         final double a = 0;
         

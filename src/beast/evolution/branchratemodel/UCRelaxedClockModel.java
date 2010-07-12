@@ -34,16 +34,17 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
         rates = new double[categories.getDimension()];
         for (int i = 0; i < rates.length; i++) {
-            rates[i] = distribution.getDistribution(state).quantile((i + 0.5) / rates.length);
+            rates[i] = distribution.getDistribution().quantile((i + 0.5) / rates.length);
         }
     }
 
-    public double getRateForBranch(State state, Node node) {
+    public double getRateForBranch(Node node) {
 
-        if (recompute < state.stateNumber) {
-            prepare(state);
-            recompute = state.stateNumber;
-        }
+    	// RRB: TODO this is broken with the state overhaul
+//        if (recompute < state.stateNumber) {
+            prepare();
+//            recompute = state.stateNumber;
+//        }
 
         assert !node.isRoot() : "root node doesn't have a rate!";
 
@@ -81,19 +82,19 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     }
 
 
-    public void prepare(final State state) {
+    public void prepare() {
 
         //System.out.println("prepare");
 
-        categories = (IntegerParameter) state.getStateNode(categoryInput);
+        categories = (IntegerParameter) categoryInput.get();
 
         distribution = rateDistInput.get();
 
-        tree = (Tree) state.getStateNode(treeInput);
+        tree = treeInput.get();
 
         rates = new double[categories.getDimension()];
         for (int i = 0; i < rates.length; i++) {
-            rates[i] = distribution.getDistribution(state).quantile((i + 0.5) / rates.length);
+            rates[i] = distribution.getDistribution().quantile((i + 0.5) / rates.length);
         }
 
         if (normalize) computeFactor();
@@ -113,15 +114,16 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     }
 
     @Override
-    public boolean isDirty(State state) {
-        if (recompute < state.stateNumber) {
-        	return true;
-        }
+    public boolean isDirty() {
+//        if (recompute < state.stateNumber) {
+//        	return true;
+//        }
+        
 //	    processed as trait on the tree      
 //      if (state.getStateNode(categoryInput).isDirty()) {
 //       	return true;
 //      }
-        if (state.getStateNode(treeInput).isDirty()) {
+        if (treeInput.get().isDirty()) {
         	return true;
         }
 //        if (state.getStateNode(rateDistInput).isDirty()) {

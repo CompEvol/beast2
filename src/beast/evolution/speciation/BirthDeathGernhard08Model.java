@@ -73,11 +73,11 @@ public class BirthDeathGernhard08Model extends YuleModel {
     }
     
     @Override
-    public double calculateTreeLogLikelihood(Tree tree, State state) {
+    public double calculateTreeLogLikelihood(Tree tree) {
         final int taxonCount = tree.getNodeCount()/2;
-        final double r = state.getParameter(birthDiffRateParameter).getValue();
-        final double rho = state.getParameter(relativeDeathRateParameter).getValue();
-        final double a = (sampleProbability.get() == null ? 0 : state.getParameter(sampleProbability).getValue());
+        final double r = birthDiffRateParameter.get().getValue();
+        final double rho = relativeDeathRateParameter.get().getValue();
+        final double a = (sampleProbability.get() == null ? 0 : sampleProbability.get().getValue());
         
         double logL = logTreeProbability(taxonCount, r, rho, a);
 

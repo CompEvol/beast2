@@ -25,8 +25,13 @@
 package beast.evolution.sitemodel;
 
 
-import beast.core.*;
-import beast.core.parameter.Parameter;
+
+
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Cacheable;
+import beast.core.Plugin;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.SubstitutionModel;
@@ -94,23 +99,23 @@ public class SiteModel extends Plugin implements Cacheable {
         return conditions;
     }
 
-    public boolean isDirty(State state) {
+    public boolean isDirty() {
         if (muParameter.get() != null) {
-            if (state.isDirty(muParameter)) {
+            if (muParameter.get().isDirty()) {
                 ratesKnown = false;
             }
         }
         if (shapeParameter.get() != null) {
-            if (state.isDirty(shapeParameter)) {
+            if (shapeParameter.get().isDirty()) {
                 ratesKnown = false;
             }
         }
         if (invarParameter.get() != null) {
-            if (state.isDirty(invarParameter)) {
+            if (invarParameter.get().isDirty()) {
                 ratesKnown = false;
             }
         }
-        return m_pSubstModel.get().isDirty(state) || !ratesKnown;
+        return m_pSubstModel.get().isDirty() || !ratesKnown;
     }
 
 
@@ -130,26 +135,26 @@ public class SiteModel extends Plugin implements Cacheable {
         throw new IllegalArgumentException("Integrating across categories");
     }
 
-    public double getRateForCategory(int category, State state) {
+    public double getRateForCategory(int category) {
         synchronized (this) {
             if (!ratesKnown) {
-                calculateCategoryRates(state);
+                calculateCategoryRates();
             }
         }
 
-        final double mu = (muParameter.get() != null) ? state.getParameter(muParameter).getValue() : 1.0;
+        final double mu = (muParameter.get() != null) ? muParameter.get().getValue() : 1.0;
 
         return categoryRates[category] * mu;
     }
 
-    public double[] getCategoryRates(State state) {
+    public double[] getCategoryRates() {
         synchronized (this) {
             if (!ratesKnown) {
-                calculateCategoryRates(state);
+                calculateCategoryRates();
             }
         }
 
-        final double mu = (muParameter.get() != null) ? state.getParameter(muParameter).getValue() : 1.0;
+        final double mu = (muParameter.get() != null) ? muParameter.get().getValue() : 1.0;
 
         final double[] rates = new double[categoryRates.length];
         for (int i = 0; i < rates.length; i++) {
@@ -174,8 +179,8 @@ public class SiteModel extends Plugin implements Cacheable {
      * @param matrix        an array to store the matrix
      * @param state         the state
      */
-    public void getTransitionProbabilities(double substitutions, double[] matrix, State state) {
-        m_pSubstModel.get().getTransitionProbabilities(substitutions, matrix, state);
+    public void getTransitionProbabilities(double substitutions, double[] matrix) {
+        m_pSubstModel.get().getTransitionProbabilities(substitutions, matrix);
     }
 
     /**
@@ -185,10 +190,10 @@ public class SiteModel extends Plugin implements Cacheable {
      * @param state    the state
      * @return the proportion.
      */
-    public double getProportionForCategory(int category, State state) {
+    public double getProportionForCategory(int category) {
         synchronized (this) {
             if (!ratesKnown) {
-                calculateCategoryRates(state);
+                calculateCategoryRates();
             }
         }
 
@@ -201,10 +206,10 @@ public class SiteModel extends Plugin implements Cacheable {
      * @param state the state
      * @return an array of the proportion.
      */
-    public double[] getCategoryProportions(State state) {
+    public double[] getCategoryProportions() {
         synchronized (this) {
             if (!ratesKnown) {
-                calculateCategoryRates(state);
+                calculateCategoryRates();
             }
         }
 
@@ -217,13 +222,13 @@ public class SiteModel extends Plugin implements Cacheable {
      *
      * @param state the state
      */
-    private void calculateCategoryRates(State state) {
+    private void calculateCategoryRates() {
         double propVariable = 1.0;
         int cat = 0;
 
         if (invarParameter.get() != null) {
             categoryRates[0] = 0.0;
-            categoryProportions[0] = state.getParameter(invarParameter).getValue();
+            categoryProportions[0] = invarParameter.get().getValue();
 
             propVariable = 1.0 - categoryProportions[0];
             cat = 1;
@@ -231,7 +236,7 @@ public class SiteModel extends Plugin implements Cacheable {
 
         if (shapeParameter.get() != null) {
 
-            final double a = state.getParameter(shapeParameter).getValue();
+            final double a = shapeParameter.get().getValue();
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
@@ -274,8 +279,6 @@ public class SiteModel extends Plugin implements Cacheable {
         ratesKnown = false;
     }
 
-    public void prepare(final State state) {
-    }
 
     private boolean ratesKnown;
 

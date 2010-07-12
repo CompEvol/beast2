@@ -38,7 +38,7 @@ public abstract class SubstitutionModel extends Plugin implements Cacheable {
      * @param substitutions the expected number of substitutions
      * @param matrix        an array to store the matrix
      */
-    public void getTransitionProbabilities(double substitutions, double[] matrix, State state) {
+    public void getTransitionProbabilities(double substitutions, double[] matrix) {
     }
 
     /**
@@ -47,10 +47,10 @@ public abstract class SubstitutionModel extends Plugin implements Cacheable {
      * needs to be recalculated. Set flag if
      * recalculation is required.
      */
-    public boolean isDirty(State state) {
+    public boolean isDirty() {
         return false;
     }
 
-    @Override
-    public void prepare(State state) {}
+//    @Override
+//    public void prepare(State state) {}
 }

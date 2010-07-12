@@ -35,27 +35,95 @@ import java.util.List;
 public class State extends Plugin {
 
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
-    //public Input<StateNode> stateNodeInput = new Input<StateNode>("stateNode", "a part of the state");
-
-    //public Input<List<Parameter>> m_pParameters = new Input<List<Parameter>>("parameter", "parameter, part of the state", new ArrayList<Parameter>());
-    //public Input<List<Tree>> m_pTrees = new Input<List<Tree>>("tree", "beast.tree, part of the state", new ArrayList<Tree>());
-
-    /**
-     * the two components of the state: beast.tree & parameters *
-     */
-    public StateNode[] stateNode;
-    public int stateNumber = 0;
 
     @Override
     public void initAndValidate(State state) {
-
-        //stateNode = new StateNode[] {stateNodeInput.get()};
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
+        // allocate memory for storing the state
+        storedStateNode = new StateNode[stateNode.length];
 
         for (StateNode node : stateNode) {
             node.index = getStateNodeIndex(node.getID());
         }
     }
+
+    /** Recursively visit all Inputs of the plug-in provided,
+     * and collect all inputs connected to a state node.
+     * 
+     * This should be called by any runnable in its initAndValidate method.
+     */
+    public void getInputsConnectedToState(Plugin run) {
+    	List<Input<?>> inputsConnectedToState = new ArrayList<Input<?>>();
+    	List<Integer> stateNodeNr = new ArrayList<Integer>();
+    	getInputsConnectedToState(inputsConnectedToState, stateNodeNr, run);
+    	m_inputs = inputsConnectedToState.toArray(new Input<?>[0]);
+    	m_stateNodenr = stateNodeNr.toArray(new Integer[0]);
+    } // getInputsConnectedToState
+    
+    public void getInputsConnectedToState(List<Input<?>> inputsConnectedToState, 
+    		List<Integer> stateNodeNr,
+    		Plugin plugin) {
+    	try {
+    		Input<?> [] inputs = plugin.listInputs();
+    		for (Input<?> input : inputs) {
+    			if (input.get() != null) {
+    				if (input.get() instanceof StateNode) {
+    					// check it is part of the state
+    					for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
+    						if (stateNode[iStateNode] == input.get()) {
+    							inputsConnectedToState.add(input);
+    							stateNodeNr.add(iStateNode);
+    							break;
+    						}
+    					}
+    				}
+    				if (input.get() instanceof Plugin) {
+    					// recurse
+    			    	getInputsConnectedToState(inputsConnectedToState, stateNodeNr, (Plugin) input.get());
+    				}
+    			}
+    		}
+    	} catch (Exception e) {
+    		// ignore
+    		System.err.println(e.getMessage());
+    	}
+    } // getInputsConnectedToState
+    
+    /**
+     * the components of the state, for instance beast.tree & parameters 
+     */
+    public StateNode[] stateNode;
+
+    /** copy of state nodes, for restoration if required **/
+    public StateNode[] storedStateNode;
+    /** list of inputs connected to StateNodes in the state **/
+    Input<?> [] m_inputs;
+    Integer [] m_stateNodenr;
+    
+    /** Store a State.
+     * This copies the state for possible later restoration
+     * but does not affect any inputs, which are all still connected
+     * to the StateNodes in  **/
+    public void store() {
+    	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
+    		storedStateNode[iStateNode] = stateNode[iStateNode].copy();
+    	}
+    }
+    /** Restore a State. 
+     * This assigns the state to the stored state and
+     * reassigns all Inputs connected to the state. **/
+    public void restore() {
+    	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
+    		stateNode[iStateNode] = storedStateNode[iStateNode];
+    	}
+    	for(int iInput = 0; iInput < m_inputs.length; iInput++) {
+    		m_inputs[iInput].set(stateNode[m_stateNodenr[iInput]]);
+    	}
+    }
+
+    
+    public int stateNumber = 0;
+
 
 
     /**
@@ -66,7 +134,7 @@ public class State extends Plugin {
             stateNode = new StateNode[1];
             stateNode[0] = node;
             return;
-        }
+        } 
         StateNode[] h = new StateNode[stateNode.length + 1];
         for (int i = 0; i < h.length - 1; i++) {
             h[i] = stateNode[i];

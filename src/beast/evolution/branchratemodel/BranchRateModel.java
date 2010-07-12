@@ -12,7 +12,7 @@ import beast.evolution.tree.Node;
 @Description("Defines a mean rate for each branch in the beast.tree.")
 public interface BranchRateModel {
 
-    public double getRateForBranch(State state, Node node);
+    public double getRateForBranch(Node node);
 
     public abstract class Base extends Plugin implements BranchRateModel, Cacheable {
         public void store(final int sample) {
@@ -21,7 +21,7 @@ public interface BranchRateModel {
         public void restore(final int sample) {
         }
 
-        public boolean isDirty(State state) {
+        public boolean isDirty() {
         	return false;
         }
     }

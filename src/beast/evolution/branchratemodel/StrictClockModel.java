@@ -23,7 +23,7 @@ public class StrictClockModel extends BranchRateModel.Base {
         }
     }
 
-    public double getRateForBranch(State state, Node node) {
+    public double getRateForBranch(Node node) {
         return mu;
     }
 

@@ -40,10 +40,11 @@ public class CompoundDistribution extends Distribution {
     public Input<List<Distribution>> pDistributions = new Input<List<Distribution>>("distribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<Distribution>());
 
     @Override
-    public double calculateLogP(State state) throws Exception {
+    //public double calculateLogP(State state) throws Exception {
+    public double calculateLogP() throws Exception {
         logP = 0;
         for (int i = 0; i < pDistributions.get().size(); i++) {
-            double f = pDistributions.get().get(i).calculateLogP(state);
+            double f = pDistributions.get().get(i).calculateLogP();
             logP += f;
         }
         return logP;

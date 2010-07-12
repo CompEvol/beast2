@@ -71,13 +71,13 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
     protected boolean storedUpdateMatrix = true;
 
     @Override
-    public boolean isDirty(State state) {
-        if (m_pFreqs.get().isDirty(state)) {
+    public boolean isDirty() {
+        if (m_pFreqs.get().isDirty()) {
             checkFrequencies();
             updateMatrix = true;
             return true;
         }
-        if (state.isDirty(m_pRateParameter)) {
+        if (m_pRateParameter.get().isDirty()) {
             updateMatrix = true;
             return true;
         }

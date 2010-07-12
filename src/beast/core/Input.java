@@ -151,6 +151,11 @@ public class Input<T> {
     public T get() {
         return value;
     }
+    // should only be called by State when doing a restore()
+    @SuppressWarnings("unchecked")
+	protected void set(Object value) {
+    	this.value = (T) value;
+    }
 
     public Class<?> type() {
         return theClass;

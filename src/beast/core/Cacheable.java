@@ -20,6 +20,7 @@ public interface Cacheable {
      **/
     void restore(int sample);
 
+    // prepare is obsolete now the State takes care of this
     /**
      * Tell an instance to prepare for the evaluation of the state by extracting required
      * information from the state. Some of the nodes in state may have been changed by the
@@ -28,5 +29,5 @@ public interface Cacheable {
      * This is called prior to the evaluation of a proposed state.
      * @param state
      */
-    void prepare(State state);
+//    void prepare(State state);
 }

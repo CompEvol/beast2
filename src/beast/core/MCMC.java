@@ -59,13 +59,13 @@ public class MCMC extends Runnable {
             operatorSet.addOperator(op);
         }
 
+        // state initialization
         this.state = m_startState.get();
+        this.state.getInputsConnectedToState(this);
 
         for (Logger log : m_loggers.get()) {
             log.init(this.state);
         }
-
-
     } // init
 
     /**
@@ -144,19 +144,20 @@ public class MCMC extends Runnable {
 
         boolean bDebug = true;
         state.setDirty(true);
-        double fOldLogLikelihood = posteriorInput.get().calculateLogP(state);
+        double fOldLogLikelihood = posteriorInput.get().calculateLogP();
         System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
 
-            State proposedState = state.copy();
-            proposedState.stateNumber = iSample;
+            //State proposedState = state.copy();
+        	state.store();
+            state.stateNumber = iSample;
             Operator operator = operatorSet.selectOperator();
             if (iSample == 24) {
                 int h = 3;
                 h++;
                 //proposedState.makeDirty(State.IS_GORED);
             }
-            double fLogHastingsRatio = operator.proposal(proposedState);
+            double fLogHastingsRatio = operator.proposal(state);
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
                 //System.out.print("store ");
                 storeCachables(iSample);
@@ -166,17 +167,17 @@ public class MCMC extends Runnable {
                 if (bDebug) {
                     //System.out.print(operator.getName()+ "\n");
                     //System.err.println(proposedState.toString());
-                    proposedState.validate();
+                    state.validate();
                 }
 
-                prepareCachables(proposedState);
+                //prepareCachables(proposedState);
 
-                double fNewLogLikelihood = posteriorInput.get().calculateLogP(proposedState);
+                double fNewLogLikelihood = posteriorInput.get().calculateLogP();
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     fOldLogLikelihood = fNewLogLikelihood;
-                    state = proposedState;
+                    //state = proposedState;
                     state.setDirty(false);
                     if (iSample >= 0) {
                         operator.accept();
@@ -186,6 +187,8 @@ public class MCMC extends Runnable {
                     if (iSample >= 0) {
                         operator.reject();
                     }
+                    state.restore();
+                    state.setDirty(false);
                     restoreCachables(iSample);
                     //System.out.println("restore ");
                 }
@@ -200,9 +203,9 @@ public class MCMC extends Runnable {
             if (bDebug) {
                 state.validate();
                 state.setDirty(true);
-                prepareCachables(state);
+                //prepareCachables(state);
                 //System.err.println(state.toString());
-                double fLogLikelihood = posteriorInput.get().calculateLogP(state);
+                double fLogLikelihood = posteriorInput.get().calculateLogP();
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
                     throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
                 }
@@ -231,9 +234,73 @@ public class MCMC extends Runnable {
         }
     }
 
-    public void prepareCachables(State state) {
-        for (Cacheable cacheable : Plugin.cacheables) {
-            cacheable.prepare(state);
-        }
-    }
+//    public void prepareCachables(State state) {
+//        for (Cacheable cacheable : Plugin.cacheables) {
+//            cacheable.prepare(state);
+//        }
+//    }
 } // class MCMC
+
+
+
+/*
+File: examples/testHKY.xml seed: 127 threads: 1
+Lower = 0.0
+Upper = null
+human: 768 4
+chimp: 768 4
+bonobo: 768 4
+gorilla: 768 4
+orangutan: 768 4
+siamang: 768 4
+6 taxa
+768 sites
+69 patterns
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCoreCnG4
+======================================================
+Please cite the following when publishing this model:
+
+A prototype for BEAST 2.0: The computational science of evolutionary software. Bouckaert, Drummond, Rambaut, Alekseyenko, Suchard & the BEAST Core Development Team. 2010
+
+Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. Journal of Molecular Evolution 22:160-174.
+
+
+======================================================
+Sample	treeLikelihood	hky.kappa	
+Start state:
+hky.kappa: 1.0 
+((((0:0.037,(1:0.017,2:0.017):0.020):0.015,3:0.052):0.040,4:0.092):0.015,5:0.107):0.000
+
+Start likelihood: = -1986.8413139341137
+0	-1986.8413139341137	1.0	55h33m20s/Msamples
+10000	-1814.92113338769	21.66796994677653	2m54s/Msamples
+20000	-1818.8101068616031	51.98152434088116	1m41s/Msamples
+30000	-1819.113725846539	49.03766158847062	1m15s/Msamples
+40000	-1815.9663938391454	18.629217392424117	1m1s/Msamples
+50000	-1817.144049480813	55.81063632037919	53s/Msamples
+60000	-1815.2571396605886	22.147665912494507	48s/Msamples
+70000	-1816.0511221698043	24.08873388729444	44s/Msamples
+80000	-1814.2518084163676	21.073628288342405	41s/Msamples
+90000	-1814.7930847528262	28.26427465971234	39s/Msamples
+100000	-1815.5227937881589	40.94855267668329	37s/Msamples
+110000	-1813.5123750008786	32.21727495653929	36s/Msamples
+120000	-1819.6721489955953	14.538413824582234	35s/Msamples
+130000	-1814.1181305547886	26.36806603344612	35s/Msamples
+140000	-1816.1132951004397	21.381522899499952	34s/Msamples
+150000	-1817.5057640208154	18.877928721085038	33s/Msamples
+160000	-1815.0159082796106	34.87536922803266	32s/Msamples
+170000	-1816.3491406208418	28.08820453587267	32s/Msamples
+180000	-1814.5526381353877	19.90808310405016	31s/Msamples
+190000	-1817.460189041238	61.17332776603251	30s/Msamples
+200000	-1818.8357813654582	70.24727650928979	30s/Msamples
+210000	-1814.9261685669217	40.8580753199353	29s/Msamples
+220000	-1818.907363494417	41.99976265360081	29s/Msamples
+230000	-1814.9228311898894	35.71729427466099	28s/Msamples
+240000	-1817.794769913191	36.23375632942445	28s/Msamples
+250000	-1815.3481685825905	38.44708497269882	28s/Msamples
+260000	-1814.761852338523	35.30188693115693	27s/Msamples
+270000	-1813.3980755204464	32.91251642975589	27s/Msamples
+280000	-1814.4740619398299	20.64708480493364	27s/Msamples
+290000	-1818.7866799654755	63.82548882530605	26s/Msamples
+300000	-1815.888601854904	23.519043483831584	26s/Msamples
+*/

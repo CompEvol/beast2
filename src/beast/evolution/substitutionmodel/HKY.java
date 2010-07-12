@@ -25,6 +25,7 @@
 package beast.evolution.substitutionmodel;
 
 
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -166,14 +167,14 @@ public class HKY extends SubstitutionModel {
      * @param matrix   an array to store the matrix
      */
     @Override
-    public void getTransitionProbabilities(double distance, double[] matrix, State state) {
+    public void getTransitionProbabilities(double distance, double[] matrix) {
         synchronized (this) {
             if (updateIntermediates) {
                 calculateIntermediates();
             }
 
             if (updateMatrix) {
-                setupMatrix(state);
+                setupMatrix();
             }
         }
 
@@ -213,8 +214,8 @@ public class HKY extends SubstitutionModel {
     /**
      * setup substitution matrix
      */
-    public void setupMatrix(State state) {
-        final double kappa = state.getParameter(m_kappa).getValue();//getKappa();
+    public void setupMatrix() {
+        final double kappa = m_kappa.get().getValue();//getKappa();
         beta = -1.0 / (2.0 * (freqR * freqY + kappa * (freqA * freqG + freqC * freqT)));
 
         A_R = 1.0 + freqR * (kappa - 1);
@@ -231,10 +232,10 @@ public class HKY extends SubstitutionModel {
      *
      * @return the array
      */
-    public double[][] getEigenVectors(State state) {
+    public double[][] getEigenVectors() {
         synchronized (this) {
             if (updateMatrix) {
-                setupEigenSystem(state);
+                setupEigenSystem();
             }
         }
         return Evec;
@@ -245,10 +246,10 @@ public class HKY extends SubstitutionModel {
      *
      * @return the array
      */
-    public double[][] getInverseEigenVectors(State state) {
+    public double[][] getInverseEigenVectors() {
         synchronized (this) {
             if (updateMatrix) {
-                setupEigenSystem(state);
+                setupEigenSystem();
             }
         }
         return Ievc;
@@ -257,10 +258,10 @@ public class HKY extends SubstitutionModel {
     /**
      * This function returns the Eigen values.
      */
-    public double[] getEigenValues(State state) {
+    public double[] getEigenValues() {
         synchronized (this) {
             if (updateMatrix) {
-                setupEigenSystem(state);
+                setupEigenSystem();
             }
         }
         return Eval;
@@ -269,11 +270,11 @@ public class HKY extends SubstitutionModel {
     /**
      * setup substitution matrix
      */
-    protected void setupEigenSystem(State state) {
+    protected void setupEigenSystem() {
         if (!eigenInitialised)
             initialiseEigen();
 
-        final double kappa = state.getParameter(m_kappa).getValue();//getKappa();
+        final double kappa = m_kappa.get().getValue();//getKappa();
 
         // left eigenvector #1
         Ievc[0][0] = freqA; // or, evec[0] = pi;
@@ -338,13 +339,13 @@ public class HKY extends SubstitutionModel {
         updateMatrix = true;
     }
 
-    public boolean isDirty(State state) {
-        if (m_pFreqs.get().isDirty(state)) {
+    public boolean isDirty() {
+        if (m_pFreqs.get().isDirty()) {
             updateIntermediates = true;
             updateMatrix = true;
             return true;
         }
-        if (state.isDirty(m_kappa)) {
+        if (m_kappa.get().isDirty()) {
             updateMatrix = true;
             return true;
         }
@@ -360,6 +361,4 @@ public class HKY extends SubstitutionModel {
         updateIntermediates = true;
     }
 
-    public void prepare(final State state) {
-    }
 }

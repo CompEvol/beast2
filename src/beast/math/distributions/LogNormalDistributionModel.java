@@ -36,10 +36,10 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     }
 
 
-    public Distribution getDistribution(State state) {
+    public Distribution getDistribution() {
 
-        logNormal.setM(state.getParameter(MParameter).getValue());
-        logNormal.setS(state.getParameter(SParameter).getValue());
+        logNormal.setM(MParameter.get().getValue());
+        logNormal.setS(SParameter.get().getValue());
         return logNormal;
     }
 
