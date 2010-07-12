@@ -373,23 +373,23 @@ public class TreeLikelihood extends Distribution {
     @Override
     public void store(int nSample) {
         super.store(nSample);
-        m_pSiteModel.get().store(nSample);
+        //m_pSiteModel.get().store(nSample);
         //m_pSubstModel.get().store(nSample);
         m_likelihoodCore.store();
-        if (branchRateModel.get() != null) {
-        	branchRateModel.get().store(nSample);
-        }
+        //if (branchRateModel.get() != null) {
+        //	branchRateModel.get().store(nSample);
+        //}
     }
 
     @Override
     public void restore(int nSample) {
         super.restore(nSample);
-        m_pSiteModel.get().restore(nSample);
+        //m_pSiteModel.get().restore(nSample);
         //m_pSubstModel.get().restore(nSample);
         m_likelihoodCore.restore();
-        if (branchRateModel.get() != null) {
-        	branchRateModel.get().restore(nSample);
-        }
+        //if (branchRateModel.get() != null) {
+        //	branchRateModel.get().restore(nSample);
+        //}
     }
 
     double[] m_fPatternLogLikelihoods;

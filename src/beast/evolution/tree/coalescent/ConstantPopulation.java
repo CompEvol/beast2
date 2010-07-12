@@ -40,11 +40,7 @@ import java.util.List;
 @Description("coalescent intervals for a constant population")
 public class ConstantPopulation extends PopulationFunction.Abstract {
     public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize", 
-    		"present-day population size (defaults to 1.0). " +
-    		"If time units are set to Units.EXPECTED_SUBSTITUTIONS then"+
-    		"the N0 parameter will be interpreted as N0 * mu. "+
-    		"Also note that if you are dealing with a diploid population "+
-    		"N0 will be out by a factor of 2.");
+    		"present-day population size (defaults to 1.0). ");
 
     //
     // Public stuff

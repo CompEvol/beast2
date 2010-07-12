@@ -37,14 +37,10 @@ import java.util.List;
  * @author Alexei Drummond
  * @version $Id: ConstantPopulation.java,v 1.9 2005/05/24 20:25:55 rambaut Exp $
  */
-@Description("coalescent intervals for a exponentially growing population")
+@Description("Coalescent intervals for a exponentially growing population.")
 public class ExponentialGrowth extends PopulationFunction.Abstract {
     public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize",
-    		"present-day population size (defaults to 1.0). " +
-    		"If time units are set to Units.EXPECTED_SUBSTITUTIONS then"+
-    		"the N0 parameter will be interpreted as N0 * mu. "+
-    		"Also note that if you are dealing with a diploid population "+
-    		"N0 will be out by a factor of 2.");
+    		"present-day population size (defaults to 1.0). ");
     public Input<RealParameter> growthRateParameter = new Input<RealParameter>("growthRate", 
     		"growth rate is the exponent of the exponential growth");
 

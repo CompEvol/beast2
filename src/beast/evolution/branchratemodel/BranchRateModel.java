@@ -3,7 +3,6 @@ package beast.evolution.branchratemodel;
 import beast.core.Cacheable;
 import beast.core.Description;
 import beast.core.Plugin;
-import beast.core.State;
 import beast.evolution.tree.Node;
 
 /**

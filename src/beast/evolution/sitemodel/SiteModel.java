@@ -271,11 +271,11 @@ public class SiteModel extends Plugin implements Cacheable {
 
 
     public void store(int nSample) {
-        m_pSubstModel.get().store(nSample);
+        //m_pSubstModel.get().store(nSample);
     } // no additional state needs storing
 
     public void restore(int nSample) {
-        m_pSubstModel.get().restore(nSample);
+        //m_pSubstModel.get().restore(nSample);
         ratesKnown = false;
     }
 

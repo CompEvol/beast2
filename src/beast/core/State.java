@@ -64,6 +64,13 @@ public class State extends Plugin {
     		List<Integer> stateNodeNr,
     		Plugin plugin) {
     	try {
+    		// Ignore operators.
+    		// Operators still get the stated passed on so that
+    		// we leave open the option of an operator efficiently
+    		// notifying parts of the state that changed.
+    		if (plugin instanceof Operator) {
+    			return;
+    		}
     		Input<?> [] inputs = plugin.listInputs();
     		for (Input<?> input : inputs) {
     			if (input.get() != null) {
@@ -71,8 +78,10 @@ public class State extends Plugin {
     					// check it is part of the state
     					for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
     						if (stateNode[iStateNode] == input.get()) {
-    							inputsConnectedToState.add(input);
-    							stateNodeNr.add(iStateNode);
+    							if (!inputsConnectedToState.contains(input)) {
+    								inputsConnectedToState.add(input);
+    								stateNodeNr.add(iStateNode);
+    							}
     							break;
     						}
     					}
@@ -80,6 +89,13 @@ public class State extends Plugin {
     				if (input.get() instanceof Plugin) {
     					// recurse
     			    	getInputsConnectedToState(inputsConnectedToState, stateNodeNr, (Plugin) input.get());
+    				} else if (input.get() instanceof List<?>) {
+    					for (Object o : (List<?>) input.get()) {
+    						if (o instanceof Plugin) {
+    	    					// recurse
+    	    			    	getInputsConnectedToState(inputsConnectedToState, stateNodeNr, (Plugin) o);
+    						}
+    					}
     				}
     			}
     		}

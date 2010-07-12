@@ -170,8 +170,6 @@ public class MCMC extends Runnable {
                     state.validate();
                 }
 
-                //prepareCachables(proposedState);
-
                 double fNewLogLikelihood = posteriorInput.get().calculateLogP();
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
@@ -234,11 +232,6 @@ public class MCMC extends Runnable {
         }
     }
 
-//    public void prepareCachables(State state) {
-//        for (Cacheable cacheable : Plugin.cacheables) {
-//            cacheable.prepare(state);
-//        }
-//    }
 } // class MCMC
 
 

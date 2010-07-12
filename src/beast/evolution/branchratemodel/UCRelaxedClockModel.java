@@ -1,5 +1,6 @@
 package beast.evolution.branchratemodel;
 
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -41,10 +42,11 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     public double getRateForBranch(Node node) {
 
     	// RRB: TODO this is broken with the state overhaul
-//        if (recompute < state.stateNumber) {
+        if (recompute < 0) {
             prepare();
+            recompute = 1;
 //            recompute = state.stateNumber;
-//        }
+        }
 
         assert !node.isRoot() : "root node doesn't have a rate!";
 
@@ -106,27 +108,35 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     public void store(final int sample) {
+    	m_bIsDirty = false;
     }
 
     @Override
     public void restore(final int sample) {
     	recompute = -Integer.MAX_VALUE;
+    	m_bIsDirty = true;
     }
+    
+    boolean  m_bIsDirty = true;
 
     @Override
     public boolean isDirty() {
-//        if (recompute < state.stateNumber) {
-//        	return true;
-//        }
+        if (recompute < 0 || m_bIsDirty) {
+        	m_bIsDirty = true;
+        	return true;
+        }
         
 //	    processed as trait on the tree      
 //      if (state.getStateNode(categoryInput).isDirty()) {
 //       	return true;
 //      }
         if (treeInput.get().isDirty()) {
+        	m_bIsDirty = true;
         	return true;
         }
-//        if (state.getStateNode(rateDistInput).isDirty()) {
+        // rateDistInput cannot be dirty?!?
+//        if (rateDistInput.get().isDirty()) {
+//        	m_bIsDirty = true;
 //        	return true;
 //        }
     	return false;
