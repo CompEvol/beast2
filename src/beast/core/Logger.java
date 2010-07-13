@@ -118,8 +118,8 @@ public class Logger extends Plugin {
             long nLogTime = System.currentTimeMillis();
             int nSecondsPerMSamples = (int) ((nLogTime - m_nStartLogTime) * 1000.0 / (nSample + 1.0));
             String sTimePerMSamples =
-                    (nSecondsPerMSamples > 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
-                            (nSecondsPerMSamples > 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
+                    (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
+                            (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
                             (nSecondsPerMSamples % 60 + "s");
             m_out.print(sTimePerMSamples + "/Msamples");
         }

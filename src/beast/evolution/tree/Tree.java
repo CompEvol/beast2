@@ -44,6 +44,15 @@ public class Tree extends StateNode implements Loggable {
     
 	@SuppressWarnings("unchecked")
 	public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
+	// pointer to the state to handle traits
+	// TODO: fix this clutch!!!
+	State m_state;
+
+	
+	@Override
+	public void initAndValidate(State state) throws Exception {
+		m_state = state;
+	}
 	
 	public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
@@ -127,6 +136,8 @@ public class Tree extends StateNode implements Loggable {
         tree.m_sID = m_sID;
         tree.root = root.copy();
         tree.nodeCount = nodeCount;
+        tree.treeTraitsInput = treeTraitsInput;
+        tree.m_state = m_state;
         return tree;
     }
 
@@ -254,7 +265,7 @@ public class Tree extends StateNode implements Loggable {
 	public void syncTreeWithTraitsInState() {
 		boolean bSyncNeeded = false;
 		for (Parameter<?> p : treeTraitsInput.get()) {
-			//p = (Parameter<?>) state.getStateNode(p.getIndex(state));
+			p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
 			if (p.isDirty()) {
 				bSyncNeeded = true;
 			}
@@ -266,7 +277,7 @@ public class Tree extends StateNode implements Loggable {
 
 	void syncTreeWithTraits(Node node) {
 		for (Parameter<?> p : treeTraitsInput.get()) {
-			//p = (Parameter<?>) state.getStateNode(p.getIndex(state));
+			p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
 			int iNode = Math.abs(node.getNr());
 			if (p.isDirty(iNode)) {
 				node.setMetaData(p.getID(), p.getValue(iNode));
@@ -279,7 +290,6 @@ public class Tree extends StateNode implements Loggable {
 	} // syncTreeWithTraits
 	
     /** Loggable interface implementation follows **/
-    /** implementation for Loggable interface follows **/
     /**
      * print translate block for NEXUS beast.tree file *
      */

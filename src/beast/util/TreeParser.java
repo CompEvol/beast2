@@ -61,6 +61,7 @@ public class TreeParser extends Tree {
 	/** assure the class behaves properly, even when inputs are not specified **/
 	@Override
 	public void initAndValidate(State state) throws Exception {
+		super.initAndValidate(state);
 		m_sLabels = m_oData.get().m_sTaxaNames;
 		setRoot(parseNewick(m_oNewick.get()));
 	} // init
@@ -83,7 +84,7 @@ public class TreeParser extends Tree {
 					}
 					String sPattern = sStrs[0];
 					sStrs[1] = sStrs[1].replaceAll("[\"']", "");
-					double fValue = Double.parseDouble(sStrs[1]);
+					Double fValue = Double.parseDouble(sStrs[1]);
 					node.setMetaData(sPattern, fValue);
 				} catch (Exception e) {
 					System.err.println("Warning 333: Attempt to parse metadata failed: " + node.m_sMetaData);

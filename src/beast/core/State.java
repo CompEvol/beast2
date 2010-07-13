@@ -65,7 +65,7 @@ public class State extends Plugin {
      * but does not affect any inputs, which are all still connected
      * to the StateNodes in  **/
     public void store() {
-    	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
+for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
     		storedStateNode[iStateNode] = stateNode[iStateNode].copy();
     	}
     }
@@ -302,6 +302,7 @@ public class State extends Plugin {
     protected List<Cacheable> getCacheableOutputs(Plugin run) {
     	List<Plugin> plugins = new ArrayList<Plugin>();
     	getAllOutputPlugins(plugins, run);
+    	//getAllPrecedingPlugins(plugins, run);
     	
     	List<Cacheable> cacheables = new ArrayList<Cacheable>();
     	for (Plugin plugin: plugins) {
@@ -347,6 +348,11 @@ public class State extends Plugin {
     	do {
     		bProgress = false;
         	for (Plugin plugin : allPlugins) {
+        		if (plugin.getClass().getName().contains("Compound")) {
+        			int h = 34;
+        			h++;
+        		}
+        			
         		try {
     	    		for (Input<?> input : plugin.listInputs()) {
     	    			if (input.get() instanceof Plugin) {
@@ -354,13 +360,28 @@ public class State extends Plugin {
     	    				// check it is part of the state
     	    				for (Plugin connectedPlugin : plugins) {
     	    					if (connectedPlugin == inputPlugin) {
-    	    						if (!plugins.contains(inputPlugin)) {
+    	    						if (!plugins.contains(plugin)) {
     	    							plugins.add(plugin);
     	    							bProgress = true;
     	    						}
     	    					}
     	    				}
+    	    			} else if (input.get() instanceof List<?>) {
+        					for (Object o : (List<?>) input.get()) {
+        						if (o instanceof Plugin) {
+            	    				// check it is part of the state
+            	    				for (Plugin connectedPlugin : plugins) {
+            	    					if (connectedPlugin == (Plugin) o) {
+            	    						if (!plugins.contains(plugin)) {
+            	    							plugins.add(plugin);
+            	    							bProgress = true;
+            	    						}
+            	    					}
+            	    				}
+        						}
+        					}    	    				
     	    			}
+
     	    		}
         		} catch (Exception e) {
         			// ignore

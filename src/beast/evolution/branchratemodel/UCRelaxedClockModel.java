@@ -41,7 +41,6 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     public double getRateForBranch(Node node) {
 
-    	// RRB: TODO this is broken with the state overhaul
         if (recompute < 0) {
             prepare();
             recompute = 1;
@@ -127,9 +126,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         }
         
 //	    processed as trait on the tree      
-//      if (state.getStateNode(categoryInput).isDirty()) {
-//       	return true;
-//      }
+//        if (categoryInput.get().isDirty()) {
+//       	    return true;
+//        }
         if (treeInput.get().isDirty()) {
         	m_bIsDirty = true;
         	return true;

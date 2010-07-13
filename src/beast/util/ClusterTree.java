@@ -59,6 +59,7 @@ public class ClusterTree extends Tree {
 
 	@Override
 	public void initAndValidate(State state) throws Exception {
+		super.initAndValidate(state);
 		String sType = m_sClusterType.get().toLowerCase();
 		if (sType.equals("single")) {m_nLinkType = SINGLE;}
 		else if (sType.equals("complete")) {m_nLinkType = COMPLETE;}

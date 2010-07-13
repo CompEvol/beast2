@@ -50,7 +50,8 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
      * @return initial population size.
      */
     public double getN0() {
-        return N0;
+    	return popSizeParameter.get().getValue();
+        //return N0;
     }
 
     /**
