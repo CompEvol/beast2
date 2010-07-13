@@ -46,7 +46,11 @@ public class MCMC extends Runnable {
     public OperatorSet operatorSet = new OperatorSet();
 
     public Input<List<Logger>> m_loggers = new Input<List<Logger>>("log", "loggers for reporting progress of MCMC chain", new ArrayList<Logger>(), Input.Validate.REQUIRED);
+
+    
     protected State state;
+    
+    List<Cacheable> m_cacheables;
 
     @Override
     public void initAndValidate(State state) throws Exception {
@@ -61,7 +65,8 @@ public class MCMC extends Runnable {
 
         // state initialization
         this.state = m_startState.get();
-        this.state.getInputsConnectedToState(this);
+        this.state.calcInputsConnectedToState(this);
+        m_cacheables = this.state.getCacheableOutputs(this);
 
         for (Logger log : m_loggers.get()) {
             log.init(this.state);
@@ -152,11 +157,6 @@ public class MCMC extends Runnable {
         	state.store();
             state.stateNumber = iSample;
             Operator operator = operatorSet.selectOperator();
-            if (iSample == 24) {
-                int h = 3;
-                h++;
-                //proposedState.makeDirty(State.IS_GORED);
-            }
             double fLogHastingsRatio = operator.proposal(state);
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
                 //System.out.print("store ");
@@ -201,7 +201,6 @@ public class MCMC extends Runnable {
             if (bDebug) {
                 state.validate();
                 state.setDirty(true);
-                //prepareCachables(state);
                 //System.err.println(state.toString());
                 double fLogLikelihood = posteriorInput.get().calculateLogP();
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
@@ -221,13 +220,13 @@ public class MCMC extends Runnable {
     } // run;
 
     public void restoreCachables(int nSample) {
-        for (Cacheable cacheable : Plugin.cacheables) {
+        for (Cacheable cacheable : m_cacheables) {
             cacheable.restore(nSample);
         }
     }
 
     public void storeCachables(int nSample) {
-        for (Cacheable cacheable : Plugin.cacheables) {
+        for (Cacheable cacheable : m_cacheables) {
             cacheable.store(nSample);
         }
     }
@@ -296,4 +295,16 @@ Start likelihood: = -1986.8413139341137
 280000	-1814.4740619398299	20.64708480493364	27s/Msamples
 290000	-1818.7866799654755	63.82548882530605	26s/Msamples
 300000	-1815.888601854904	23.519043483831584	26s/Msamples
+
+File: examples/testRelaxedClock.xml seed: 127 threads: 1
+Start likelihood: = -1971.9584304300113
+0	-0.6805989583333334	-1971.277831471678	1.0	1.0	0.5	1	1	1	1	1	1	1	1	1	1	1	-1971.9584304300113	77h30m0s/Msamples
+10000	4.097529781888577	-1821.4822569352193	0.27048790235392195	80.55471926102881	1.9925102158819592	3	2	3	2	4	0	3	7	0	5	6	-1817.3847271533307	7m24s/Msamples
+20000	4.4585405373737625	-1816.639798774722	0.026125491972496407	42.888164068150125	1.063864595966609	5	3	1	5	7	4	1	4	4	5	5	-1812.1812582373484	4m56s/Msamples
+30000	11.40815042542252	-1817.8580469892504	0.0415698927941224	28.49997060383918	0.4720855325423099	6	7	6	6	9	5	7	8	5	10	6	-1806.449896563828	4m0s/Msamples
+40000	10.31719083587631	-1814.724921195894	0.04385625821341157	34.09192825349246	2.768087635590423	9	5	6	9	8	3	6	7	9	5	4	-1804.4077303600177	3m27s/Msamples
+50000	6.220327480209562	-1826.5341161712147	0.1678037059977731	56.57191474321893	3.4167151308884227	2	7	2	7	4	6	3	5	5	2	8	-1820.3137886910051	3m7s/Msamples
+60000	3.8960747361878507	-1814.4935295244468	0.1990933920353586	50.84124691332969	1.2312276538020093	3	5	1	4	3	0	2	4	0	9	0	-1810.597454788259	2m53s/Msamples
+70000	4.694063240671446	-1816.0469312470898	0.2531282520880706	15.988053753149037	3.457257135667433	8	3	6	3	4	1	7	1	1	3	1	-1811.3528680064182	2m44s/Msamples
+80000	3.9161231494206676	-1815.0873953895348	0.049675335888533505	32.291015635795226	0.11265306268090347	4	1	0	5	6	0	6	6	3	8	5	-1811.1712722401141	2m37s/Msamples
 */

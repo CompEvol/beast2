@@ -298,6 +298,7 @@ public class Tree extends StateNode implements Loggable {
 
     }
     
+    /** Loggable implementation follows **/
 	@Override
 	public void init(State state, PrintStream out) throws Exception {
 		out.println("#NEXUS\n");

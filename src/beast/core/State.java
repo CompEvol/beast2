@@ -47,63 +47,7 @@ public class State extends Plugin {
         }
     }
 
-    /** Recursively visit all Inputs of the plug-in provided,
-     * and collect all inputs connected to a state node.
-     * 
-     * This should be called by any runnable in its initAndValidate method.
-     */
-    public void getInputsConnectedToState(Plugin run) {
-    	List<Input<?>> inputsConnectedToState = new ArrayList<Input<?>>();
-    	List<Integer> stateNodeNr = new ArrayList<Integer>();
-    	getInputsConnectedToState(inputsConnectedToState, stateNodeNr, run);
-    	m_inputs = inputsConnectedToState.toArray(new Input<?>[0]);
-    	m_stateNodenr = stateNodeNr.toArray(new Integer[0]);
-    } // getInputsConnectedToState
     
-    public void getInputsConnectedToState(List<Input<?>> inputsConnectedToState, 
-    		List<Integer> stateNodeNr,
-    		Plugin plugin) {
-    	try {
-    		// Ignore operators.
-    		// Operators still get the stated passed on so that
-    		// we leave open the option of an operator efficiently
-    		// notifying parts of the state that changed.
-    		if (plugin instanceof Operator) {
-    			return;
-    		}
-    		Input<?> [] inputs = plugin.listInputs();
-    		for (Input<?> input : inputs) {
-    			if (input.get() != null) {
-    				if (input.get() instanceof StateNode) {
-    					// check it is part of the state
-    					for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
-    						if (stateNode[iStateNode] == input.get()) {
-    							if (!inputsConnectedToState.contains(input)) {
-    								inputsConnectedToState.add(input);
-    								stateNodeNr.add(iStateNode);
-    							}
-    							break;
-    						}
-    					}
-    				}
-    				if (input.get() instanceof Plugin) {
-    					// recurse
-    			    	getInputsConnectedToState(inputsConnectedToState, stateNodeNr, (Plugin) input.get());
-    				} else if (input.get() instanceof List<?>) {
-    					for (Object o : (List<?>) input.get()) {
-    						if (o instanceof Plugin) {
-    	    					// recurse
-    	    			    	getInputsConnectedToState(inputsConnectedToState, stateNodeNr, (Plugin) o);
-    						}
-    					}
-    				}
-    			}
-    		}
-    	} catch (Exception e) {
-    		// ignore
-    		System.err.println(e.getMessage());
-    	}
-    } // getInputsConnectedToState
     
     /**
      * the components of the state, for instance beast.tree & parameters 
@@ -304,4 +248,157 @@ public class State extends Plugin {
             node.setDirty(isDirty);
         }
     }
-}
+
+
+
+    /** 
+     * Collect all inputs connected to a state node that can be reached from
+     * the run-plug-in via a path connecting plug-ins with inputs (except 
+     * operators and loggers).
+     * 
+     * This should be called by any runnable in its initAndValidate method.
+     */
+    protected void calcInputsConnectedToState(Plugin run) {
+    	List<Input<?>> inputsConnectedToState = new ArrayList<Input<?>>();
+    	List<Integer> stateNodeNr = new ArrayList<Integer>();
+
+    	List<Plugin> plugins = new ArrayList<Plugin>();
+    	getAllPrecedingPlugins(plugins, run);
+    	for (Plugin plugin : plugins) {
+    		// ignore operators
+    		if (!(plugin instanceof Operator) && !(plugin instanceof Logger)) {
+    		try {
+	    		for (Input<?> input : plugin.listInputs()) {
+	    			if (input.get() instanceof StateNode) {
+	    				// check it is part of the state
+	    				for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
+	    					if (stateNode[iStateNode] == input.get()) {
+	    						if (!inputsConnectedToState.contains(input)) {
+	    							inputsConnectedToState.add(input);
+	    							stateNodeNr.add(iStateNode);
+	    						}
+	    						break;
+	    					}
+	    				}
+	    			}
+	    		}
+    		} catch (Exception e) {
+    			// ignore
+				System.err.println(e.getMessage());
+			}
+    		}
+    	}
+    	
+    	m_inputs = inputsConnectedToState.toArray(new Input<?>[0]);
+    	m_stateNodenr = stateNodeNr.toArray(new Integer[0]);
+    } // calcInputsConnectedToState
+    
+    /** 
+     * Collect all Cacheables that are on a path from a StateNode to 
+     * the run Plugin.
+     * 
+     * This should be called by any runnable in its initAndValidate method.
+     */
+    protected List<Cacheable> getCacheableOutputs(Plugin run) {
+    	List<Plugin> plugins = new ArrayList<Plugin>();
+    	getAllOutputPlugins(plugins, run);
+    	
+    	List<Cacheable> cacheables = new ArrayList<Cacheable>();
+    	for (Plugin plugin: plugins) {
+    		if (plugin instanceof Cacheable) {
+    			cacheables.add((Cacheable) plugin);
+    		}
+    	}
+    	return cacheables;
+    } // getCacheableOutputs
+
+    /** get all Plugins on a path from the a StateNode to the run 
+     * Plugin connected through Plugin Inputs.
+     */
+	void getAllOutputPlugins(List<Plugin> plugins, Plugin run) {
+		// collect all plug-ins in the model
+    	List<Plugin> allPlugins = new ArrayList<Plugin>();
+    	getAllPrecedingPlugins(allPlugins, run);
+    	
+    	// start with all plug-ins connected to the state
+    	for (Plugin plugin : allPlugins) {
+    		try {
+	    		for (Input<?> input : plugin.listInputs()) {
+	    			if (input.get() instanceof StateNode) {
+	    				// check it is part of the state
+	    				for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
+	    					if (stateNode[iStateNode] == input.get()) {
+	    						if (!plugins.contains(plugin)) {
+	    							plugins.add(plugin);
+	    						}
+	    						break;
+	    					}
+	    				}
+	    			}
+	    		}
+    		} catch (Exception e) {
+    			// ignore
+				System.err.println(e.getMessage());
+			}
+    	}
+    	
+    	// add plug-ins connected to plug-ins connected to the state, etc.
+    	boolean bProgress = false;
+    	do {
+    		bProgress = false;
+        	for (Plugin plugin : allPlugins) {
+        		try {
+    	    		for (Input<?> input : plugin.listInputs()) {
+    	    			if (input.get() instanceof Plugin) {
+    	    				Plugin inputPlugin = (Plugin) input.get();
+    	    				// check it is part of the state
+    	    				for (Plugin connectedPlugin : plugins) {
+    	    					if (connectedPlugin == inputPlugin) {
+    	    						if (!plugins.contains(inputPlugin)) {
+    	    							plugins.add(plugin);
+    	    							bProgress = true;
+    	    						}
+    	    					}
+    	    				}
+    	    			}
+    	    		}
+        		} catch (Exception e) {
+        			// ignore
+    				System.err.println(e.getMessage());
+    			}
+        	}
+    	} while (bProgress);
+	} // getAllOutputPlugins
+
+    
+    
+    /** Get all plug-ins that have a path via inputs to plugin (including plugin itself)
+     */
+	void getAllPrecedingPlugins(List<Plugin> plugins, Plugin plugin) {
+		if (!plugins.contains(plugin)) {
+			plugins.add(plugin);
+		}
+		try {
+			Input<?> [] inputs = plugin.listInputs();
+    		for (Input<?> input : inputs) {
+    			if (input.get() != null) {
+    				if (input.get() instanceof Plugin) {
+    					// recurse
+    					getAllPrecedingPlugins(plugins, (Plugin) input.get());
+    				} else if (input.get() instanceof List<?>) {
+    					for (Object o : (List<?>) input.get()) {
+    						if (o instanceof Plugin) {
+    	    					// recurse
+    							getAllPrecedingPlugins(plugins, (Plugin) o);
+    						}
+    					}
+    				}
+    			}
+    		}
+		} catch (Exception e) {
+			// ignore
+			System.err.println(e.getMessage());
+		}
+	} // getAllPrecedingPlugins
+	
+} // class State

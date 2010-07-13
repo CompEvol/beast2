@@ -140,7 +140,8 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         return buf.toString();
     }
 
-
+    /** Loggable interface implementation follows (partly) **/
+    
     @Override
     public void init(State state, PrintStream out) throws Exception {
 		  int nValues = getDimension();

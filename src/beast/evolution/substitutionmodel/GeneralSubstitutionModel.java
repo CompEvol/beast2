@@ -124,15 +124,13 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
 
     }
 
-    public void prepare(final State state) {
-    }
 
     /**
      * sets up relative rate matrix *
      */
-    public void setupRelativeRates(State state) {
+    public void setupRelativeRates() {
         int nRelativeTo = m_pRelativeTo.get();
-        RealParameter pRates = state.getParameter(m_pRateParameter);
+        RealParameter pRates = m_pRateParameter.get();
         for (int i = 0; i < relativeRates.length; i++) {
             if (i == nRelativeTo) {
                 relativeRates[i] = 1.0;
@@ -163,7 +161,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
      * @param distance the expected number of substitutions
      * @param matrix   an array to store the matrix
      */
-    public void getTransitionProbabilities(double distance, double[] matrix, State state) {
+    public void getTransitionProbabilities(double distance, double[] matrix) {
         int i, j, k;
         double temp;
 
@@ -171,7 +169,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
         // two different likelihood threads - AJD
         synchronized (this) {
             if (updateMatrix) {
-                setupMatrix(state);
+                setupMatrix();
             }
         }
 
@@ -205,10 +203,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
      *
      * @return the array
      */
-    public double[][] getEigenVectors(State state) {
+    public double[][] getEigenVectors() {
         synchronized (this) {
             if (updateMatrix) {
-                setupMatrix(state);
+                setupMatrix();
             }
         }
         return Evec;
@@ -219,10 +217,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
      *
      * @return the array
      */
-    public double[][] getInverseEigenVectors(State state) {
+    public double[][] getInverseEigenVectors() {
         synchronized (this) {
             if (updateMatrix) {
-                setupMatrix(state);
+                setupMatrix();
             }
         }
         return Ievc;
@@ -231,10 +229,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
     /**
      * This function returns the Eigen values.
      */
-    public double[] getEigenValues(State state) {
+    public double[] getEigenValues() {
         synchronized (this) {
             if (updateMatrix) {
-                setupMatrix(state);
+                setupMatrix();
             }
         }
         return Eval;
@@ -243,8 +241,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
     /**
      * setup substitution matrix
      */
-    public void setupMatrix(State state) {
-        setupRelativeRates(state);
+    public void setupMatrix() {
+        setupRelativeRates();
 
         if (!eigenInitialised)
             initialiseEigen();

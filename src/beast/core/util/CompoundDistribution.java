@@ -33,14 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Description("Takes a collection of uncertainties, typically a number of likelihoods " +
-        "and priors and combines them into the compound of these uncertainties " +
+@Description("Takes a collection of distributions, typically a number of likelihoods " +
+        "and priors and combines them into the compound of these distributions " +
         "typically interpreted as the posterior.")
 public class CompoundDistribution extends Distribution {
     public Input<List<Distribution>> pDistributions = new Input<List<Distribution>>("distribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<Distribution>());
 
+    /** Distribution implementation follows **/
     @Override
-    //public double calculateLogP(State state) throws Exception {
     public double calculateLogP() throws Exception {
         logP = 0;
         for (int i = 0; i < pDistributions.get().size(); i++) {
@@ -52,7 +52,6 @@ public class CompoundDistribution extends Distribution {
 
     @Override
     public void sample(State state, Random random) {
-
         for (int i = 0; i < pDistributions.get().size(); i++) {
             pDistributions.get().get(i).sample(state, random);
         }
@@ -76,27 +75,4 @@ public class CompoundDistribution extends Distribution {
         return conditions;
     }
 
-//    @Override
-//    public void restore(int nSample) {
-//        super.restore(nSample);
-//        for (Distribution likelihood : pDistributions.get()) {
-//            likelihood.restore(nSample);
-//        }
-//    }
-//
-//    @Override
-//    public void store(int nSample) {
-//        super.store(nSample);
-//        for (Distribution likelihood : pDistributions.get()) {
-//            likelihood.store(nSample);
-//        }
-//    }
-//
-//    @Override
-//    public void prepare(State state) {
-//        super.prepare(state);
-//        for (Distribution likelihood : pDistributions.get()) {
-//            likelihood.prepare(state);
-//        }
-//    }
 } // class CompoundProbabilityDistribution

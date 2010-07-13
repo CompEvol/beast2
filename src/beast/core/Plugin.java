@@ -30,7 +30,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Description(
         value = "Base class for all plug-ins, which is pretty much every class " +
@@ -50,11 +49,11 @@ public class Plugin {
     }
 
 
-    public Plugin() {
-        if (this instanceof Cacheable) {
-            cacheables.add((Cacheable) this);
-        }
-    }
+//    public Plugin() {
+//        if (this instanceof Cacheable) {
+//            cacheables.add((Cacheable) this);
+//        }
+//    }
 
     /**
      * Extract description from @Description annotation *
@@ -239,6 +238,6 @@ public class Plugin {
     protected List<String> conditions = null;
 
 
-    public static final Set<Cacheable> cacheables = new HashSet<Cacheable>();
+//    public static final Set<Cacheable> cacheables = new HashSet<Cacheable>();
 
 } // class Plugin

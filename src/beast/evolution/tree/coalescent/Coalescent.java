@@ -25,9 +25,10 @@ public class Coalescent extends Distribution {
     /**
      * do the actual calculation *
      */
-    public double calculateLogP(State state) throws Exception {
+    @Override
+    public double calculateLogP() throws Exception {
 
-        Tree stateTree = (Tree) state.getStateNode(tree);
+        Tree stateTree = tree.get();
 
         TreeIntervals intervals = new TreeIntervals(stateTree);
 

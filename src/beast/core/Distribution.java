@@ -1,5 +1,5 @@
 /*
-* File Uncertainty.java
+* File Distribution.java
 *
 * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
@@ -33,7 +33,7 @@ import java.util.Random;
 public abstract class Distribution extends Plugin implements Cacheable, Loggable {
 
     /**
-     * current and stored log probability/log likelihood/log uncertainty *
+     * current and stored log probability/log likelihood/log distribution *
      */
     protected double logP = 0;
     private double storedLogP = 0;
@@ -43,7 +43,6 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
      * @return the normalised probability (density) for this distribution
      * @throws Exception an exception
      */
-    //public double calculateLogP(State state) throws Exception {
     public double calculateLogP() throws Exception {
         logP = 0;
         return logP;
