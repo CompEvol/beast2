@@ -1499,22 +1499,6 @@ public class ModelBuilder extends JPanel {
 				addNodeItem.setEnabled(m_Selection.isSingleSelection());
 				popupMenu.add(addNodeItem);
 
-//				JMenuItem urlItem = new JMenuItem("Change url");
-//				ActionListener url = new ActionListener() {
-//					public void actionPerformed(ActionEvent ae) {
-//						Shape shape = m_Selection.getSingleSelectionShape();
-//						String sName = (String) JOptionPane.showInputDialog(null, shape.getURL(), "New URL",
-//								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getURL());
-//						if (sName == null || sName.equals("")) {
-//							return;
-//						}
-//						m_doc.setURL(sName, m_Selection.getSingleSelection());
-//						repaint();
-//					}
-//				};
-//				urlItem.addActionListener(url);
-//				urlItem.setEnabled(m_Selection.isSingleSelection());
-//				popupMenu.add(urlItem);
 
 				JMenuItem isFilledMenu = new JMenuItem("Fill object");
 				if (m_Selection.isSingleSelection()) {
@@ -1533,61 +1517,26 @@ public class ModelBuilder extends JPanel {
 				popupMenu.add(isFilledMenu);
 
 
-//				JMenuItem outlineMenu = new JMenuItem("Outline thickness");
-//				outlineMenu.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent ae) {
-//						Shape shape = m_Selection.getSingleSelectionShape();
-//						String sName = (String) JOptionPane.showInputDialog(null, shape.getPenWidth()+"", "Pen width",
-//								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getPenWidth()+"");
-//						if (sName == null || sName.equals("")) {
-//							return;
-//						}
-//						int nThickness = 0;
-//						try {
-//							nThickness = (new Integer(sName)).intValue();
-//						} catch (NumberFormatException e) {
-//							return;
-//						}
-//						if (nThickness < 0) {
-//							return;
-//						}
-//						m_doc.setPenWidth(nThickness, m_Selection.getSingleSelection());
-//						g_panel.repaint();
-//					}
-//				});
-//				outlineMenu.setEnabled(m_Selection.isSingleSelection());
-//				popupMenu.add(outlineMenu);
+				JMenuItem propertiesItem = new JMenuItem("Properties");
+				ActionListener url = new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						Shape shape = m_Selection.getSingleSelectionShape();
+						Plugin plugin = ((PluginShape) shape).m_function;
+						
+						PluginDialog dlg = new PluginDialog(plugin, plugin.getClass());
+						dlg.setVisible(true);
+						if (dlg.m_bOK) {
+							// TODO: figure out what to do next
+							// how to edit the diagram?
+						}
+						repaint();
+					}
+				};
+				propertiesItem.addActionListener(url);
+				propertiesItem.setEnabled(m_Selection.isSingleSelection());
+				popupMenu.add(propertiesItem);
 
-//				JMenuItem imgItem = new JMenuItem("Image");
-//				ActionListener img = new ActionListener() {
-//					public void actionPerformed(ActionEvent ae) {
-//						Shape shape = m_Selection.getSingleSelectionShape();
-//						JFileChooser fc = new JFileChooser(m_sDir);
-//						fc.addChoosableFileFilter(ef2);
-//						fc.addChoosableFileFilter(ef3);
-//						fc.addChoosableFileFilter(ef4);
-//						fc.addChoosableFileFilter(ef5);
-//						fc.setDialogTitle("Select image file");
-//						if (shape.getImageSrc()!=null && !shape.getImageSrc().equals("")) {
-//							// can happen on actionQuit
-//							fc.setSelectedFile(new File(shape.getImageSrc()));
-//						}
-//						int rval = fc.showOpenDialog(g_panel);
-//
-//						if (rval == JFileChooser.APPROVE_OPTION) {
-//							String sFileName = fc.getSelectedFile().toString();
-//							if (sFileName.lastIndexOf('/') > 0) {
-//								m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-//							}
-//							m_doc.setImageSrc(sFileName, m_Selection.getSingleSelection());
-//						}
-//						repaint();
-//					}
-//				};
-//				imgItem.addActionListener(img);
-//				imgItem.setEnabled(m_Selection.isSingleSelection());
-//				popupMenu.add(imgItem);
-
+				
 
 				popupMenu.setLocation(me.getX(), me.getY());
 				popupMenu.show(g_panel, me.getX(), me.getY());

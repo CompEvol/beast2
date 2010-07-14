@@ -28,6 +28,7 @@ package beast.app;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Loggable;
 import beast.core.Plugin;
 import beast.util.ClassDiscovery;
 
@@ -38,7 +39,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 
 /**
  * Plug in documentation generator.
@@ -51,7 +55,9 @@ import java.util.List;
  */
 public class DocMaker {
 
-    /**
+	private static final long serialVersionUID = 1L;
+	
+	/**
      * output directory *
      */
     String m_sDir = "/tmp";
@@ -72,73 +78,110 @@ public class DocMaker {
      */
     HashMap<String, String> m_descriptions;
 
-
+    Set<String> m_sLoggables;
+    
     public DocMaker(String[] args) {
+    	this();
         if (args.length > 0) {
             m_sDir = args[0];
         }
     } // c'tor
 
+    public DocMaker() {
+        // find plug ins to document
+        m_sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+        /** determine hierarchical relation between plug-ins **/
+        m_isa = new HashMap<String, String[]>();
+        m_ancestors = new HashMap<String, List<String>>();
+        m_descriptions = new HashMap<String, String>();
+        m_sLoggables = new HashSet<String>();
+        for (String sPlugin : m_sPluginNames) {
+            m_ancestors.put(sPlugin, new ArrayList<String>());
+        }
+        for (String sPlugin : m_sPluginNames) {
+        	try {
+	            Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+	            String sDescription = getInheritableDescription(plugin.getClass());
+	            System.err.println(sPlugin + " => " + sDescription);
+	            m_descriptions.put(sPlugin, sDescription);
+	            String[] sImplementations = getImplementations(plugin);
+	            m_isa.put(sPlugin, sImplementations);
+	            for (String sImp : sImplementations) {
+	                m_ancestors.get(sImp).add(sPlugin);
+	            }
+	            if (plugin instanceof Loggable) {
+	            	m_sLoggables.add(sPlugin);
+	            }
+        	} catch (Exception e) {
+        		System.err.println(sPlugin + " not documented :" + e.getMessage());
+        	}
+        }
+    } // c'tor
+
+    
     /**
      * create CSS style sheet for all pages *
      */
     void createCSS() throws Exception {
         PrintStream out = new PrintStream(m_sDir + "/doc.css");
-        out.println("table {\n" +
-                "	width: 650px;\n" +
-                "	border-collapse:collapse;\n" +
-                "	border:1px solid #2E2E2E;\n" +
-                "}\n" +
-                "caption {\n" +
-                "	font: 1.8em/1.8em Arial, Helvetica, sans-serif;\n" +
-                "	text-align: left;\n" +
-                "	text-indent: 10px;\n" +
-                "	background: url(images/caption.jpg) right top;\n" +
-                "	height: 45px;\n" +
-                "	color: #243D02;\n" +
-                "	border-top: 1px solid #243D02;\n" +
-                "}\n" +
-                "thead {\n" +
-                "background: #AAAAAA;\n" +
-                "	color: #FFFFFF;\n" +
-                "	font-size: 0.8em;\n" +
-                "	font-weight: bold;\n" +
-                "	margin: 20px 0px 0px;\n" +
-                "	text-align: left;\n" +
-                "	border-right: 1px solid #8D8D8D;\n" +
-                "}\n" +
-                "tbody tr {\n" +
-                "}\n" +
+        out.println(getCSS());
+    }
 
-                "tbody th,td {\n" +
-                "	font-size: 0.8em;\n" +
-                "	line-height: 1.4em;\n" +
-                "	font-family: Arial, Helvetica, sans-serif;\n" +
-                "	color: #2E2E2E;\n" +
-                "	border-top: 1px solid #243D02;\n" +
-                "	border-right: 1px solid #8D8D8D;\n" +
-                "	text-align: left;\n" +
-                "}\n" +
-                "a {\n" +
-                "	color: #2E2E2E;\n" +
-                "	font-weight: bold;\n" +
-                "	text-decoration: underline;\n" +
-                "}\n" +
-                "a:hover {\n" +
-                "	color: #FFFF50;\n" +
-                "	text-decoration: underline;\n" +
-                "}\n" +
-                "tfoot th {\n" +
-                "	background: #243D02 url(images/foot.jpg) repeat-x bottom;\n" +
-                "	border-top: 1px solid #243D02;\n" +
-                "	color: #FFFFFF;\n" +
-                "	height: 30px;\n" +
-                "}\n" +
-                "tfoot td {\n" +
-                "	background: #243D02 url(images/foot.jpg) repeat-x bottom;\n" +
-                "	color: #FFFFFF;\n" +
-                "	height: 30px;\n" +
-                "}");
+    String getCSS() {
+    	return "table {\n" +
+        "	width: 650px;\n" +
+        "	border-collapse:collapse;\n" +
+        "	border:1px solid #2E2E2E;\n" +
+        "}\n" +
+        "caption {\n" +
+        "	font:  20pt Arial, Helvetica, sans-serif;\n" +
+        "	text-align: left;\n" +
+        "	text-indent: 10px;\n" +
+        "	height: 45px;\n" +
+        "	color: #243D02;\n" +
+        "	border-top: 1px solid #243D02;\n" +
+        "}\n" +
+        "thead {\n" +
+        "background: #AAAAAA;\n" +
+        "	color: #FFFFFF;\n" +
+        "	font-size: 0.8em;\n" +
+        "	font-weight: bold;\n" +
+        "	margin: 20px 0px 0px;\n" +
+        "	text-align: left;\n" +
+        "	border-right: 1px solid #8D8D8D;\n" +
+        "}\n" +
+        "tbody tr {\n" +
+        "}\n" +
+
+        "tbody th,td {\n" +
+        "	font-size: 0.8em;\n" +
+        "	line-height: 1.4em;\n" +
+        "	font-family: Arial, Helvetica, sans-serif;\n" +
+        "	color: #2E2E2E;\n" +
+        "	border-top: 1px solid #243D02;\n" +
+        "	border-right: 1px solid #8D8D8D;\n" +
+        "	text-align: left;\n" +
+        "}\n" +
+        "a {\n" +
+        "	color: #2E2E2E;\n" +
+        "	font-weight: bold;\n" +
+        "	text-decoration: underline;\n" +
+        "}\n" +
+        "a:hover {\n" +
+        "	color: #FFFF50;\n" +
+        "	text-decoration: underline;\n" +
+        "}\n" +
+        "tfoot th {\n" +
+        "	background: #243D02;\n" +
+        "	border-top: 1px solid #243D02;\n" +
+        "	color: #FFFFFF;\n" +
+        "	height: 30px;\n" +
+        "}\n" +
+        "tfoot td {\n" +
+        "	background: #243D02;\n" +
+        "	color: #FFFFFF;\n" +
+        "	height: 30px;\n" +
+        "}";
     }
 
     /**
@@ -259,88 +302,102 @@ public class DocMaker {
      */
     void createPluginPage(String sPlugin) throws Exception {
         PrintStream out = new PrintStream(m_sDir + "/" + sPlugin + ".html");
-        out.println("<html>\n<head>\n<title>BEAST 2.0 Documentation: " + sPlugin + "</title>\n" +
-                "<link rel='StyleSheet' href='doc.css' type='text/css'>\n" +
-                "</head>\n");
-        out.println("<body>\n");
-        out.println("<h1>BEAST 2.0 Documentation: " + sPlugin + "</h1>\n");
         try {
-	        Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
-	
-	        // show all implementation of this plug-in
-	        String[] sImplementations = m_isa.get(sPlugin);
-	        if (sImplementations.length > 0) {
-	            out.println("<table>");
-	            out.println("<thead><tr><td>implemented by the following</td></tr></thead>");
-	            for (String sImp : sImplementations) {
-	                out.println("<tr><td><a href='" + sImp + ".html'>" + sImp + "</a></td></tr>");
-	            }
-	            out.println("</table>");
-	        }
-	
-	        // show descriptions of all plug-ins implemented by this plug in...
-//	        List<String> sAncestors = m_ancestors.get(sPlugin);
-//	        for (String sAncestor : sAncestors) {
-//	            String sDescription = m_descriptions.get(sAncestor);
-//	            if (sDescription.length() > 0) {
-//	                //out.println("<p>"+ sAncestor + ":"+sDescription + "</p>");
-//	                out.println("<p>" + sDescription + "</p>");
-//	            }
-//	        }
-	        // ... plus its own description
-	        out.println("<p>" + m_descriptions.get(sPlugin) + "</p>");
-	
-	
-	        // show citation (if any)
-	        Citation citation = plugin.getCitation();
-	        if (citation != null) {
-	            out.println("<h2>Reference:</h2><p>" + citation.value() + "</p>");
-	            if (citation.DOI().length() > 0) {
-	                out.println("<p><a href=\"http://dx.doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>");
-	            }
-	        }
-	
-	        // list its inputs
-	        out.println("<h2>Inputs:</h2>");
-	        Input<?>[] inputs = plugin.listInputs();
-	        if (inputs.length == 0) {
-	            out.println("&lt;none&gt;");
-	        }
-	        for (Input<?> input : inputs) {
-	            out.println("<table>");
-	            out.println("<caption>" + input.getName() + "</caption>");
-	            out.println("<thead><tr><td>type: " + getType(plugin, input.getName()) + "</td></tr></thead>");
-	            out.println("<tr><td>" + input.getTipText() + "</td></tr>");
-	            out.print("<tr><td>");
-	            switch (input.getRule()) {
-	                case OPTIONAL:
-	                    out.print("Optional input");
-	                    if (input.defaultValue != null) {
-	                        if (input.defaultValue instanceof Integer ||
-	                                input.defaultValue instanceof Double ||
-	                                input.defaultValue instanceof Boolean ||
-	                                input.defaultValue instanceof String) {
-	                            out.print(". Default: " + input.defaultValue.toString());
-	                        }
-	                    }
-	                    break;
-	                case REQUIRED:
-	                    out.print("Required input");
-	                    break;
-	                case XOR:
-	                    out.print("Either this, or " + input.getOther().getName() + " needs to be specified");
-	                    break;
-	            }
-	            out.println("</td></tr>");
-	            out.println("</table>");
-	        }
-	        out.println("</body>\n");
-	        out.println("</html>\n");
+        	out.print(getHTML(sPlugin, true));
         } catch (Exception e) {
 			System.err.println("Page creation failed for " +sPlugin + ": " + e.getMessage());
 		}
     } // createPluginPage
 
+    
+    public String getHTML(String sPlugin, boolean bUseExternalStyleSheet) throws Exception {
+    	StringBuffer buf = new StringBuffer();
+        buf.append("<html>\n<head>\n<title>BEAST 2.0 Documentation: " + sPlugin + "</title>\n");
+        if (bUseExternalStyleSheet) {
+        	buf.append("<link rel='StyleSheet' href='doc.css' type='text/css'>\n");
+        } else {
+        	buf.append("<style type='text/css'>\n");
+        	buf.append(getCSS());
+        	buf.append("</style>\n");
+        }
+        buf.append("</head>\n");
+        buf.append("<body>\n");
+        buf.append("<h1>BEAST 2.0 Documentation: " + sPlugin + "</h1>\n");
+        Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+
+        // show all implementation of this plug-in
+        String[] sImplementations = m_isa.get(sPlugin);
+        if (sImplementations.length > 0) {
+            buf.append("<table>\n");
+            buf.append("<thead><tr><td>implemented by the following</td></tr></thead>\n");
+            for (String sImp : sImplementations) {
+                buf.append("<tr><td><a href='" + sImp + ".html'>" + sImp + "</a></td></tr>\n");
+            }
+            buf.append("</table>\n");
+        }
+
+        // show descriptions of all plug-ins implemented by this plug in...
+        buf.append("<p>" + m_descriptions.get(sPlugin) + "</p>\n");
+
+
+        // show citation (if any)
+        Citation citation = plugin.getCitation();
+        if (citation != null) {
+            buf.append("<h2>Reference:</h2><p>" + citation.value() + "</p>\n");
+            if (citation.DOI().length() > 0) {
+                buf.append("<p><a href=\"http://dx.doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>\n");
+            }
+        }
+
+        
+        // show if this is Loggable
+        if (m_sLoggables.contains(sPlugin)) {
+        	buf.append("<p>Logable:");
+        	buf.append(" yes, this can be used in a log.");
+        	buf.append("</p>\n");
+//        } else {
+//        	buf.append(" no, this cannot be used in a log.");
+        }
+        
+        // list its inputs
+        buf.append("<h2>Inputs:</h2>\n");
+        Input<?>[] inputs = plugin.listInputs();
+        if (inputs.length == 0) {
+            buf.append("&lt;none&gt;");
+        }
+        for (Input<?> input : inputs) {
+            buf.append("<table>\n");
+            buf.append("<caption>" + input.getName() + "</caption>\n");
+            buf.append("<thead><tr><td>type: " + getType(plugin, input.getName()) + "</td></tr></thead>\n");
+            buf.append("<tr><td>" + input.getTipText() + "</td></tr>\n");
+            buf.append("<tr><td>\n");
+            switch (input.getRule()) {
+                case OPTIONAL:
+                    buf.append("Optional input");
+                    if (input.defaultValue != null) {
+                        if (input.defaultValue instanceof Integer ||
+                                input.defaultValue instanceof Double ||
+                                input.defaultValue instanceof Boolean ||
+                                input.defaultValue instanceof String) {
+                            buf.append(". Default: " + input.defaultValue.toString());
+                        }
+                    }
+                    break;
+                case REQUIRED:
+                    buf.append("Required input");
+                    break;
+                case XOR:
+                    buf.append("Either this, or " + input.getOther().getName() + " needs to be specified");
+                    break;
+            }
+            buf.append("</td></tr>\n");
+            buf.append("</table>\n");
+        }
+        buf.append("</body>\n");
+        buf.append("</html>\n");
+        return buf.toString();
+    } // getHTML
+    
     /**
      * determine type of input of a plug in with name sName*
      */
@@ -396,32 +453,6 @@ public class DocMaker {
      * *
      */
     public void generateDocs() throws Exception {
-        // find plug ins to document
-        m_sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
-
-        /** determine hierarchical relation between plug-ins **/
-        m_isa = new HashMap<String, String[]>();
-        m_ancestors = new HashMap<String, List<String>>();
-        m_descriptions = new HashMap<String, String>();
-        for (String sPlugin : m_sPluginNames) {
-            m_ancestors.put(sPlugin, new ArrayList<String>());
-        }
-        for (String sPlugin : m_sPluginNames) {
-        	try {
-	            Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
-	            String sDescription = getInheritableDescription(plugin.getClass());
-	            System.err.println(sPlugin + " => " + sDescription);
-	            m_descriptions.put(sPlugin, sDescription);
-	            String[] sImplementations = getImplementations(plugin);
-	            m_isa.put(sPlugin, sImplementations);
-	            for (String sImp : sImplementations) {
-	                m_ancestors.get(sImp).add(sPlugin);
-	            }
-        	} catch (Exception e) {
-        		System.err.println(sPlugin + " not documented :" + e.getMessage());
-        	}
-        }
-
         // first, produce CSS & index page
         createCSS();
         createIndex();
@@ -431,7 +462,8 @@ public class DocMaker {
         }
     } // generateDocs
 
-    /**
+
+	/**
      * Usage: DocMaker <target directory>
      * where <target directory> is the place where the HTML files
      * should go. Default directory is /tmp
@@ -446,5 +478,6 @@ public class DocMaker {
             e.printStackTrace();
         }
     } // main
+
 
 } // BeastDocMaker

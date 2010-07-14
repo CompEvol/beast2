@@ -216,7 +216,7 @@ public class Input<T> {
      * If T is a vector, i.e. Input<List<S>>, the actual value of S
      * is assigned instead *
      */
-    void determineClass(Plugin plugin) {
+    public void determineClass(Plugin plugin) {
         try {
             Field[] fields = plugin.getClass().getFields();
             for (int i = 0; i < fields.length; i++) {

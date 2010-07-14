@@ -223,6 +223,9 @@ for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
 //    }
 
     public String toString() {
+    	if (stateNode == null) {
+    		return "";
+    	}
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < stateNode.length; i++) {
             buf.append(stateNode[i].toString());

@@ -80,7 +80,13 @@
 			</fileset>
 			<zipgroupfileset dir="${lib}" includes="commons-math-2.0.jar" />
 		</jar>
-
+		<jar jarfile="${dist}/beast.src.jar">
+			<fileset dir="${src}">
+				<include name="beast/**/*.java" />
+				<include name="beast/**/*.png" />
+				<include name="beast/**/*.xsl" />
+			</fileset>
+        </jar>
 	</target>
 
 	<!-- run beast.jar -->
