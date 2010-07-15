@@ -27,6 +27,8 @@ package beast.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.Input;
+
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of parameters and trees.")
 public class State extends Plugin {
@@ -42,6 +44,7 @@ public class State extends Plugin {
         
         for (int i = 0; i < stateNode.length; i++) {
             stateNode[i].index = i;
+            stateNode[i].m_state = this;
         }
     } // initAndValidate
 
@@ -63,8 +66,8 @@ public class State extends Plugin {
     	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
     		storedStateNode[iStateNode] = stateNode[iStateNode].copy();
         	// mark stateNodes as being current/stored by setting its m_state attribute
-    		stateNode[iStateNode].m_state = null;
     		storedStateNode[iStateNode].m_state = this;
+    		//stateNode[iStateNode].m_state = this;
     	}
     }
     /** Restore a State. 
@@ -76,10 +79,15 @@ public class State extends Plugin {
     	stateNode = tmp;
 
     	// mark stateNnodes as being current/stored by setting its m_state attribute
-    	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
-    		stateNode[iStateNode].m_state = null;
-    		storedStateNode[iStateNode].m_state = this;
-    	}
+    	//for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
+    		// note, setting the m_sate field needs to be in order
+    		// first storedStateNode[iStateNode] then stateNode[iStateNode]
+    		// so that if storedStateNode[iStateNode] == stateNode[iStateNode]
+    		// the m_state field is set to null, indicating that stateNode 
+    		// is the current one, not a stored one.
+			//storedStateNode[iStateNode].m_state = this;
+    		//stateNode[iStateNode].m_state = this;
+    	//}
     }
 
     

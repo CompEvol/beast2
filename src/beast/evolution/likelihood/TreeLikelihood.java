@@ -337,7 +337,8 @@ public class TreeLikelihood extends Distribution {
         if (m_pSiteModel.get().isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
-        if (branchRateModel.get() != null && branchRateModel.get().isDirty()) {
+        BranchRateModel.Base brm = branchRateModel.get(); 
+        if (brm != null && brm.isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
     	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);

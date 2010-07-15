@@ -151,14 +151,10 @@ public class Input<T> {
     @SuppressWarnings("unchecked")
 	public T get() {
     	if (value instanceof StateNode) {
-        	value =  (T) ((StateNode)value).getCurrent();
+    		//value=(T) ((StateNode)value).getCurrent();
+    		return (T) ((StateNode)value).getCurrent();
     	}
         return value;
-    }
-    // should only be called by State when doing a restore()
-    @SuppressWarnings("unchecked")
-	protected void set(Object value) {
-    	this.value = (T) value;
     }
 
     public Class<?> type() {
@@ -220,7 +216,11 @@ public class Input<T> {
      * If T is a vector, i.e. Input<List<S>>, the actual value of S
      * is assigned instead *
      */
-    public void determineClass(Plugin plugin) {
+    public void determineClass(Plugin plugin) throws Exception {
+    	determineClass(plugin, false);
+    }
+    public void determineClass(Plugin plugin, boolean bIsStateNode) throws Exception {
+    	
         try {
             Field[] fields = plugin.getClass().getFields();
             for (int i = 0; i < fields.length; i++) {
@@ -257,6 +257,11 @@ public class Input<T> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+//        if (!bIsStateNode) {
+//        	if (StateNode.class.isAssignableFrom(theClass)) {
+//        		throw new Exception("Input should be an SNInput");
+//        	}
+//        }
     } // determineClass
 
     /**

@@ -136,6 +136,7 @@ public class MCMC extends Runnable {
 
     public void run() throws Exception {
         long tStart = System.currentTimeMillis();
+        Distribution posterior = posteriorInput.get();
         state.setDirty(true);
 
         int nBurnIn = m_oBurnIn.get();
@@ -149,7 +150,7 @@ public class MCMC extends Runnable {
 
         boolean bDebug = true;
         state.setDirty(true);
-        double fOldLogLikelihood = posteriorInput.get().calculateLogP();
+        double fOldLogLikelihood = posterior.calculateLogP();
         System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
 
@@ -161,7 +162,7 @@ public class MCMC extends Runnable {
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
                 //System.out.print("store ");
                 storeCachables(iSample);
-//				proposedState.makeDirty(State.IS_GORED);
+				//state.setDirty(true);
                 //System.out.print(operator.getName()+ "\n");
                 //System.err.println(proposedState.toString());
                 if (bDebug) {
@@ -170,7 +171,7 @@ public class MCMC extends Runnable {
                     state.validate();
                 }
 
-                double fNewLogLikelihood = posteriorInput.get().calculateLogP();
+                double fNewLogLikelihood = posterior.calculateLogP();
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
@@ -202,7 +203,7 @@ public class MCMC extends Runnable {
                 state.validate();
                 state.setDirty(true);
                 //System.err.println(state.toString());
-                double fLogLikelihood = posteriorInput.get().calculateLogP();
+                double fLogLikelihood = posterior.calculateLogP();
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
                     throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
                 }

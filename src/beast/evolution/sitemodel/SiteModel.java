@@ -100,20 +100,17 @@ public class SiteModel extends Plugin implements Cacheable {
     }
 
     public boolean isDirty() {
-        if (muParameter.get() != null) {
-            if (muParameter.get().isDirty()) {
-                ratesKnown = false;
-            }
+    	RealParameter tmp = muParameter.get(); 
+        if (tmp != null && tmp.isDirty()) {
+            ratesKnown = false;
         }
-        if (shapeParameter.get() != null) {
-            if (shapeParameter.get().isDirty()) {
-                ratesKnown = false;
-            }
+    	tmp = shapeParameter.get(); 
+        if (tmp != null && tmp.isDirty()) {
+            ratesKnown = false;
         }
-        if (invarParameter.get() != null) {
-            if (invarParameter.get().isDirty()) {
-                ratesKnown = false;
-            }
+    	tmp = invarParameter.get(); 
+        if (tmp != null && tmp.isDirty()) {
+            ratesKnown = false;
         }
         return m_pSubstModel.get().isDirty() || !ratesKnown;
     }
@@ -142,7 +139,8 @@ public class SiteModel extends Plugin implements Cacheable {
             }
         }
 
-        final double mu = (muParameter.get() != null) ? muParameter.get().getValue() : 1.0;
+    	RealParameter tmp = muParameter.get(); 
+        final double mu = (tmp != null) ? tmp.getValue() : 1.0;
 
         return categoryRates[category] * mu;
     }
@@ -154,7 +152,8 @@ public class SiteModel extends Plugin implements Cacheable {
             }
         }
 
-        final double mu = (muParameter.get() != null) ? muParameter.get().getValue() : 1.0;
+    	RealParameter tmp = muParameter.get(); 
+        final double mu = (tmp != null) ? tmp.getValue() : 1.0;
 
         final double[] rates = new double[categoryRates.length];
         for (int i = 0; i < rates.length; i++) {

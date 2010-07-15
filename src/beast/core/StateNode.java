@@ -7,13 +7,19 @@ package beast.core;
  */
 public abstract class StateNode extends Plugin {
     /** 
-     * Pointer to state, normally null. This is only set if
+     * Pointer to state, null if not part of a State.
+     */
+    protected State m_state = null;
+     /*  This is only set to false
      * 1. This StateNode is part of the state and
      * 2. This is not the current version of this StateNode.
      * The State manages StateNodes and sets/resets this pointer where required.   
      */
-    protected State m_state = null;
+    protected boolean m_bIsCurrent = true;
     public StateNode getCurrent() {
+//    	if (m_bIsCurrent) {
+//    		return this;
+//    	}
     	if (m_state == null) {
     		return this;
     	}
