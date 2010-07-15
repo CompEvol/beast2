@@ -148,7 +148,11 @@ public class Input<T> {
         return tipText;
     }
 
-    public T get() {
+    @SuppressWarnings("unchecked")
+	public T get() {
+    	if (value instanceof StateNode) {
+        	value =  (T) ((StateNode)value).getCurrent();
+    	}
         return value;
     }
     // should only be called by State when doing a restore()

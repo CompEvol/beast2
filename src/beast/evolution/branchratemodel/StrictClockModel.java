@@ -17,9 +17,10 @@ public class StrictClockModel extends BranchRateModel.Base {
 
     @Override
     public void initAndValidate(State state) throws Exception {
-        if (muParameter.get() != null) {
-            muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
-            mu = state.getParameter(muParameter).getValue();
+    	RealParameter muParameter = this.muParameter.get();
+        if (muParameter != null) {
+        	muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);
+            mu = muParameter.getValue();
         }
     }
 
@@ -27,11 +28,11 @@ public class StrictClockModel extends BranchRateModel.Base {
         return mu;
     }
 
-    public void prepare(final State state) {
-        if (muParameter.get() != null) {
-            mu = state.getParameter(muParameter).getValue();
-        }
-    }
+//    public void prepare(final State state) {
+//        if (muParameter.get() != null) {
+//            mu = state.getParameter(muParameter).getValue();
+//        }
+//    }
 
     private double mu = 1.0;
 }

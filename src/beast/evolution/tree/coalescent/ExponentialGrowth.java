@@ -185,14 +185,14 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
         return eg;
     }
 
-    public void prepare(State state) {
-        if (popSizeParameter.get() != null) {
-            N0 = state.getParameter(popSizeParameter).getValue();
-        }
-        if (growthRateParameter.get() != null) {
-            r = state.getParameter(growthRateParameter).getValue();
-        }
-    }
+//    public void prepare(State state) {
+//        if (popSizeParameter.get() != null) {
+//            N0 = popSizeParameter.get().getValue();//state.getParameter(popSizeParameter).getValue();
+//        }
+//        if (growthRateParameter.get() != null) {
+//            r = growthRateParameter.get().getValue();//state.getParameter(growthRateParameter).getValue();
+//        }
+//    }
 
     //
     // private stuff

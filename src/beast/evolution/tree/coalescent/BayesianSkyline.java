@@ -40,9 +40,9 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
 
     public void prepare(State state) {
         super.prepare(state);
-        popSizes = state.getParameter(popSizeParamInput);
-        groupSizes = (IntegerParameter) state.getStateNode(groupSizeParamInput);
-        tree = (Tree) state.getStateNode(treeInput);
+        popSizes = popSizeParamInput.get();//state.getParameter(popSizeParamInput);
+        groupSizes = groupSizeParamInput.get();//(IntegerParameter) state.getStateNode(groupSizeParamInput);
+        tree = treeInput.get();//(Tree) state.getStateNode(treeInput);
         intervals = new TreeIntervals(tree);
 
         int intervalCount = 0;

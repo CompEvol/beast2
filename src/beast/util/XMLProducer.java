@@ -76,7 +76,26 @@ public class XMLProducer extends XMLParser {
             pluginToXML(plugin, buf, null, true);
             buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
             //return buf.toString();
-            return cleanUpXML(buf.toString());
+            return cleanUpXML(buf.toString(), m_sXSL);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    } // toXML
+
+    public String modelToXML(Plugin plugin) {
+        try {
+            StringBuffer buf = new StringBuffer();
+            //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
+            m_bDone = new HashSet<Plugin>();
+            m_sIDs = new HashSet<String>();
+            m_nIndent = 0;
+            pluginToXML(plugin, buf, null, false);
+            //buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
+            String sXML = cleanUpXML(buf.toString(), m_sXSL2);
+            sXML = sXML.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>", "");
+            sXML = sXML.replaceAll("\\n\\s*\\n", "\n");
+            return sXML;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -88,13 +107,13 @@ public class XMLProducer extends XMLParser {
      * nicer by removing unused IDs and moving data, beast.tree and likelihood
      * outside MCMC element.
      */
-    String cleanUpXML(String sXML) throws TransformerException {
+    String cleanUpXML(String sXML, String sXSL) throws TransformerException {
 //if(true) return sXML;
         StringWriter strWriter = new StringWriter();
         Reader xmlInput = new StringReader(sXML);
         javax.xml.transform.Source xmlSource =
                 new javax.xml.transform.stream.StreamSource(xmlInput);
-        Reader xslInput = new StringReader(m_sXSL);
+        Reader xslInput = new StringReader(sXSL);
         javax.xml.transform.Source xsltSource =
                 new javax.xml.transform.stream.StreamSource(xslInput);
         javax.xml.transform.Result result =
@@ -169,6 +188,24 @@ public class XMLProducer extends XMLParser {
             "\n" +
             "</xsl:stylesheet>\n";
 
+
+    /**
+     * XSL stylesheet for suppressing alignment*
+     */
+    String m_sXSL2 = "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns='http://www.w3.org/TR/xhtml1/strict'>\n" +
+            "\n" +
+            "<xsl:output method='xml'/>\n" +
+            "\n" +
+            "<xsl:template match='data'/>\n" +
+            "\n" +
+            "<xsl:template match='@*|node()'>\n" +
+            "  <xsl:copy>\n" +
+            "    <xsl:apply-templates select='@*|node()'/>\n" +
+            "  </xsl:copy>\n" +
+            "</xsl:template>\n" +
+            "\n" +
+            "</xsl:stylesheet>\n";
+    
     /**
      * produce elements for a plugin with name sName, putting results in buf.
      * It tries to create XML conforming to the XML transformation rules (see XMLParser)

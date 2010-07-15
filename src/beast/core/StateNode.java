@@ -6,6 +6,19 @@ package beast.core;
  * @author Alexei Drummond
  */
 public abstract class StateNode extends Plugin {
+    /** 
+     * Pointer to state, normally null. This is only set if
+     * 1. This StateNode is part of the state and
+     * 2. This is not the current version of this StateNode.
+     * The State manages StateNodes and sets/resets this pointer where required.   
+     */
+    protected State m_state = null;
+    public StateNode getCurrent() {
+    	if (m_state == null) {
+    		return this;
+    	}
+    	return m_state.getStateNode(index);
+    }
 
     /**
      * @return a deep copy of this node in the state. This will generally be called only for stochastic nodes.
@@ -49,6 +62,6 @@ public abstract class StateNode extends Plugin {
     /**
      * The index of the parameter for logging et cetera
      */
-    int index = -1;
+    public int index = -1;
 
 }

@@ -134,6 +134,7 @@ public class Tree extends StateNode implements Loggable {
     public Tree copy() {
         Tree tree = new Tree();
         tree.m_sID = m_sID;
+        tree.index = index;
         tree.root = root.copy();
         tree.nodeCount = nodeCount;
         tree.treeTraitsInput = treeTraitsInput;
@@ -321,7 +322,7 @@ public class Tree extends StateNode implements Loggable {
 
 	@Override
 	public void log(int nSample, State state, PrintStream out) {
-		Tree tree = (Tree) state.getStateNode(m_sID);
+		Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
 		out.print("tree STATE_" + nSample + " = ");
 		out.print(tree.getRoot().toString());
 		out.print(";");

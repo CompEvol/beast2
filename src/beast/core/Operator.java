@@ -34,7 +34,7 @@ public class Operator extends Plugin {
 
 	/** override this for proposals,
 	 * returns log of hastingRatio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
-	public double proposal(State state) throws Exception {
+	public double proposal() throws Exception {
 		throw new Exception("proposal method not implemented");
 	}
 

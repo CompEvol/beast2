@@ -74,8 +74,8 @@ public class Exchange extends TreeOperator {
     }
 
     @Override
-    public double proposal(State state) throws Exception {
-        Tree tree = (Tree) state.getStateNode(m_tree);
+    public double proposal() throws Exception {
+        Tree tree = m_tree.get();//(Tree) state.getStateNode(m_tree);
 //		calculateHeightsFromLengths(beast.tree);
 
 

@@ -73,8 +73,8 @@ public class Uniform extends TreeOperator {
      * change the parameter and return the hastings ratio.
      */
     @Override
-    public double proposal(State state) throws Exception {
-        Tree tree = (Tree) state.getStateNode(m_tree);
+    public double proposal() throws Exception {
+        Tree tree = m_tree.get();//(Tree) state.getStateNode(m_tree);
 
         // randomly select internal node
         int nNodeCount = tree.getNodeCount();

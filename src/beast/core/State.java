@@ -24,9 +24,6 @@
 */
 package beast.core;
 
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +39,11 @@ public class State extends Plugin {
         // allocate memory for storing the state
         storedStateNode = new StateNode[stateNode.length];
 
-        for (StateNode node : stateNode) {
-            node.index = getStateNodeIndex(node.getID());
+        
+        for (int i = 0; i < stateNode.length; i++) {
+            stateNode[i].index = i;
         }
-    }
+    } // initAndValidate
 
     
     
@@ -56,28 +54,31 @@ public class State extends Plugin {
 
     /** copy of state nodes, for restoration if required **/
     public StateNode[] storedStateNode;
-    /** list of inputs connected to StateNodes in the state **/
-    Input<?> [] m_inputs;
-    Integer [] m_stateNodenr;
     
     /** Store a State.
      * This copies the state for possible later restoration
      * but does not affect any inputs, which are all still connected
      * to the StateNodes in  **/
     public void store() {
-for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
+    	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
     		storedStateNode[iStateNode] = stateNode[iStateNode].copy();
+        	// mark stateNodes as being current/stored by setting its m_state attribute
+    		stateNode[iStateNode].m_state = null;
+    		storedStateNode[iStateNode].m_state = this;
     	}
     }
     /** Restore a State. 
      * This assigns the state to the stored state and
      * reassigns all Inputs connected to the state. **/
     public void restore() {
+    	StateNode [] tmp = storedStateNode;
+    	storedStateNode = stateNode;
+    	stateNode = tmp;
+
+    	// mark stateNnodes as being current/stored by setting its m_state attribute
     	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
-    		stateNode[iStateNode] = storedStateNode[iStateNode];
-    	}
-    	for(int iInput = 0; iInput < m_inputs.length; iInput++) {
-    		m_inputs[iInput].set(stateNode[m_stateNodenr[iInput]]);
+    		stateNode[iStateNode].m_state = null;
+    		storedStateNode[iStateNode].m_state = this;
     	}
     }
 
@@ -103,38 +104,10 @@ for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
         stateNode = h;
     }
 
-    /**
-     * return a value with identifier sID. This assumes a single dimensional parameter. *
-     */
-    public int getStateNodeIndex(String sID) {
-        for (int i = 0; i < stateNode.length; i++) {
-            if (stateNode[i].getID().equals(sID)) {
-                return i;
-            }
-        }
-        return -1;
-        //throw new Exception("Error 124: No such id (" + sID + ") in parameters");
-    }
 
     public boolean isDirty(Input<? extends StateNode> p) {
         return stateNode[p.get().index].isDirty();
     }
-
-//    public Double getValue(Input<Parameter> p) {
-//        return getValue(p.get());
-//    }
-
-//    public Double getValue(Parameter p) {
-//        return (Double) getValue(p.getParamNr(this));
-//    }
-
-//    public Object getValue(int nID) {
-//        return m_parameters[nID].getValue();
-//    }
-
-//    public Object getValue(int nID, int iDim) {
-//        return m_parameters[nID].getValue(iDim);
-//    }
 
     public boolean isDirty(int nID) {
         return stateNode[nID].isDirty();
@@ -144,37 +117,6 @@ for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
         return stateNode[nID];
     }
 
-    public StateNode getStateNode(String sID) {
-        int nID = getStateNodeIndex(sID);
-        return stateNode[nID];
-    }
-
-    public StateNode getStateNode(Input<? extends StateNode> p) {
-
-        //for (int i = 0; i < stateNode.length; i++) {
-        //    if (stateNode[i].getID().equals(p.get().getID())) return stateNode[i];
-        //}
-        //throw new IllegalArgumentException(p.getName() + " is not found in this state");
-
-        int nID = p.get().getIndex(this);
-        return stateNode[nID];
-    }
-
-    public RealParameter getParameter(Input<RealParameter> p) {
-        return (RealParameter) getStateNode(p);
-    }
-
-    public IntegerParameter getIntParameter(Input<IntegerParameter> p) {
-        return (IntegerParameter) getStateNode(p);
-    }
-
-
-//    public void setValue(int nID, Object fValue) {
-//	        m_parameters[nID].setValue(fValue);
-//	}
-//	void setValue(int nID, int iDim, Object fValue) {
-//	        m_parameters[nID].setValue(iDim, fValue);
-//	}
 
     /**
      * multiply a value by a given amount *
@@ -204,23 +146,6 @@ for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
         }
         return copy;
     }
-
-
-//    public void prepare() throws Exception {
-//        for (int i = 0; i < m_parameters.length; i++) {
-//            m_parameters[i].prepare();
-//        }
-//    }
-
-
-//    public String toString(List<String> sTaxaNames) {
-//        StringBuffer buf = new StringBuffer();
-//        for (int i = 0; i < m_parameters.length; i++) {
-//            buf.append(m_parameters[i].toString());
-//            buf.append("\n");
-//        }
-//        return buf.toString();
-//    }
 
     public String toString() {
     	if (stateNode == null) {
@@ -254,6 +179,9 @@ for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
 
 
 
+    /** list of inputs connected to StateNodes in the state **/
+    //Input<?> [] m_inputs;
+    //Integer [] m_stateNodenr;
     /** 
      * Collect all inputs connected to a state node that can be reached from
      * the run-plug-in via a path connecting plug-ins with inputs (except 
@@ -261,40 +189,40 @@ for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
      * 
      * This should be called by any runnable in its initAndValidate method.
      */
-    protected void calcInputsConnectedToState(Plugin run) {
-    	List<Input<?>> inputsConnectedToState = new ArrayList<Input<?>>();
-    	List<Integer> stateNodeNr = new ArrayList<Integer>();
-
-    	List<Plugin> plugins = new ArrayList<Plugin>();
-    	getAllPrecedingPlugins(plugins, run);
-    	for (Plugin plugin : plugins) {
-    		// ignore operators
-    		if (!(plugin instanceof Operator) && !(plugin instanceof Logger)) {
-    		try {
-	    		for (Input<?> input : plugin.listInputs()) {
-	    			if (input.get() instanceof StateNode) {
-	    				// check it is part of the state
-	    				for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
-	    					if (stateNode[iStateNode] == input.get()) {
-	    						if (!inputsConnectedToState.contains(input)) {
-	    							inputsConnectedToState.add(input);
-	    							stateNodeNr.add(iStateNode);
-	    						}
-	    						break;
-	    					}
-	    				}
-	    			}
-	    		}
-    		} catch (Exception e) {
-    			// ignore
-				System.err.println(e.getMessage());
-			}
-    		}
-    	}
-    	
-    	m_inputs = inputsConnectedToState.toArray(new Input<?>[0]);
-    	m_stateNodenr = stateNodeNr.toArray(new Integer[0]);
-    } // calcInputsConnectedToState
+//    protected void calcInputsConnectedToState(Plugin run) {
+//    	List<Input<?>> inputsConnectedToState = new ArrayList<Input<?>>();
+//    	List<Integer> stateNodeNr = new ArrayList<Integer>();
+//
+//    	List<Plugin> plugins = new ArrayList<Plugin>();
+//    	getAllPrecedingPlugins(plugins, run);
+//    	for (Plugin plugin : plugins) {
+//    		// ignore operators
+//    		if (!(plugin instanceof Operator) && !(plugin instanceof Logger)) {
+//    		try {
+//	    		for (Input<?> input : plugin.listInputs()) {
+//	    			if (input.get() instanceof StateNode) {
+//	    				// check it is part of the state
+//	    				for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
+//	    					if (stateNode[iStateNode] == input.get()) {
+//	    						if (!inputsConnectedToState.contains(input)) {
+//	    							inputsConnectedToState.add(input);
+//	    							stateNodeNr.add(iStateNode);
+//	    						}
+//	    						break;
+//	    					}
+//	    				}
+//	    			}
+//	    		}
+//    		} catch (Exception e) {
+//    			// ignore
+//				System.err.println(e.getMessage());
+//			}
+//    		}
+//    	}
+//    	
+//    	m_inputs = inputsConnectedToState.toArray(new Input<?>[0]);
+//    	m_stateNodenr = stateNodeNr.toArray(new Integer[0]);
+//    } // calcInputsConnectedToState
     
     /** 
      * Collect all Cacheables that are on a path from a StateNode to 

@@ -41,6 +41,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     public Parameter<?> copy() {
         Parameter<Integer> copy = new IntegerParameter();
         copy.setID(getID());
+        copy.index = index;
         copy.values = new Integer[values.length];
         System.arraycopy(values, 0, copy.values, 0, values.length);
         copy.m_fLower = m_fLower;
@@ -49,8 +50,9 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         return copy;
     }
 
+    @Override
     public void log(int nSample, State state, PrintStream out) {
-        IntegerParameter var = (IntegerParameter) state.getStateNode(m_sID);
+        IntegerParameter var = (IntegerParameter) getCurrent();//state.getStateNode(m_sID);
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
             out.print(var.getValue(iValue) + "\t");

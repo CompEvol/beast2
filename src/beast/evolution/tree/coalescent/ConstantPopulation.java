@@ -50,8 +50,12 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
      * @return initial population size.
      */
     public double getN0() {
-    	return popSizeParameter.get().getValue();
-        //return N0;
+//    	if (!isDirty) {
+//    		return N0;
+//    	}
+    	N0 = popSizeParameter.get().getValue();
+//    	isDirty = false;
+        return N0;
     }
 
     /**
@@ -124,11 +128,11 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
         return cp;
     }
 
-    public void prepare(State state) {
-        if (popSizeParameter.get() != null) {
-            N0 = state.getParameter(popSizeParameter).getValue();
-        }
-    }
+//    public void prepare(State state) {
+//        if (popSizeParameter.get() != null) {
+//            N0 = popSizeParameter.get().getValue();//state.getParameter(popSizeParameter).getValue();
+//        }
+//    }
 
 
     //

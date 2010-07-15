@@ -54,6 +54,7 @@ public class RealParameter extends Parameter<Double> {
     public Parameter<?> copy() {
         RealParameter copy = new RealParameter();
         copy.setID(getID());
+        copy.index = index;
         copy.values = new java.lang.Double[values.length];
         System.arraycopy(values, 0, copy.values, 0, values.length);
         copy.m_fLower = m_fLower;
@@ -61,9 +62,10 @@ public class RealParameter extends Parameter<Double> {
         copy.m_bIsDirty = new boolean[values.length];
         return copy;
     }
-
+    
+    @Override
     public void log(int nSample, State state, PrintStream out) {
-        RealParameter var = (RealParameter) state.getStateNode(m_sID);
+        RealParameter var = (RealParameter) getCurrent();//state.getStateNode(m_sID);
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
             out.print(var.getValue(iValue) + "\t");

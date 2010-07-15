@@ -23,9 +23,10 @@ public class IntRandomWalkOperator extends Operator {
      * override this for proposals,
      * returns log of hastingRatio, or Double.NEGATIVE_INFINITY if proposal should not be accepted *
      */
-    public double proposal(State state) throws Exception {
+    @Override
+    public double proposal() throws Exception {
 
-        IntegerParameter param = (IntegerParameter) state.getStateNode(parameterInput);
+        IntegerParameter param = parameterInput.get();//(IntegerParameter) state.getStateNode(parameterInput);
 
         int i = Randomizer.nextInt(param.getDimension());
         int value = param.getValue(i);

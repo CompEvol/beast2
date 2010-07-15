@@ -27,6 +27,7 @@ package beast.core;
 
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
+import beast.util.XMLProducer;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -38,6 +39,10 @@ public class Logger extends Plugin {
     public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log", "Element in a log. This can be any plug in that is Loggable.", new ArrayList<Plugin>());
     public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "Number of the samples logged", new Integer(1));
     public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
+    public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
+    		"If specified, XML will be produced for the model, commented out by # at the start of a line. " +
+    		"Alignments are suppressed. " +
+    		"This way, the log file documents itself. ");
 
     /** list of loggers, if any */
     List<Plugin> m_loggers;
@@ -92,6 +97,14 @@ public class Logger extends Plugin {
                 sFileName = sFileName.replace("$(seed)", Randomizer.getSeed() + "");
             }
             m_out = new PrintStream(sFileName);
+        }
+        if (m_pModelPlugin.get() != null) {
+        	// print model at top of log
+        	String sXML = new XMLProducer().modelToXML(m_pModelPlugin.get());
+        	sXML = "#" + sXML.replaceAll("\\n", "\n#");
+        	m_out.println("\n#model:\n#");
+        	m_out.println(sXML);
+        	m_out.println("#");
         }
         if (m_mode == COMPOUND_LOGGER) {
             m_out.print("Sample\t");

@@ -72,6 +72,7 @@ import javax.swing.filechooser.FileFilter;
 
 import beast.evolution.alignment.Sequence;
 import beast.util.Randomizer;
+import beast.util.XMLProducer;
 
 import beast.core.Input;
 import beast.core.Plugin;
@@ -1518,7 +1519,7 @@ public class ModelBuilder extends JPanel {
 
 
 				JMenuItem propertiesItem = new JMenuItem("Properties");
-				ActionListener url = new ActionListener() {
+				propertiesItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						Shape shape = m_Selection.getSingleSelectionShape();
 						Plugin plugin = ((PluginShape) shape).m_function;
@@ -1531,11 +1532,47 @@ public class ModelBuilder extends JPanel {
 						}
 						repaint();
 					}
-				};
-				propertiesItem.addActionListener(url);
+				});
 				propertiesItem.setEnabled(m_Selection.isSingleSelection());
 				popupMenu.add(propertiesItem);
 
+				JMenuItem saveAsItem = new JMenuItem("Save as");
+				saveAsItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						Shape shape = m_Selection.getSingleSelectionShape();
+						Plugin plugin = ((PluginShape) shape).m_function;
+						JFileChooser fc = new JFileChooser(m_sDir);
+						fc.addChoosableFileFilter(ef1);
+						fc.setDialogTitle("Save Plugin As");
+						if (!m_sFileName.equals("")) {
+							// can happen on actionQuit
+							fc.setSelectedFile(new File(m_sFileName));
+						}
+						int rval = fc.showSaveDialog(g_panel);
+
+						if (rval == JFileChooser.APPROVE_OPTION) {
+							// System.out.println("Saving to file \""+
+							// f.getAbsoluteFile().toString()+"\"");
+							String sFileName = fc.getSelectedFile().toString();
+							if (sFileName.lastIndexOf('/') > 0) {
+								m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+							}
+							if (!sFileName.endsWith(FILE_EXT))
+								sFileName = sFileName.concat(FILE_EXT);
+							try {
+								FileWriter outfile = new FileWriter(sFileName);
+								outfile.write(new XMLProducer().modelToXML(plugin));
+								outfile.close();
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(null, "Something went wrong when writing the file: " + e.getClass().getName() + " " + e.getMessage());
+							}
+							m_sFileName = sFileName;
+						}
+						repaint();
+					}
+				});
+				saveAsItem.setEnabled(m_Selection.isSingleSelection());
+				popupMenu.add(saveAsItem);
 				
 
 				popupMenu.setLocation(me.getX(), me.getY());

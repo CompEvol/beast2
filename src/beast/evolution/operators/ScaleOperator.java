@@ -69,29 +69,25 @@ public class ScaleOperator extends Operator {
     int m_iVar = -1;
     int m_nTreeID = -1;
 
-    public double proposal(State state) throws Exception {
+    @Override
+    public double proposal() throws Exception {
         //double fScaleFactor = m_pScaleFactor.get();
 
         double hastingsRatio = 1.0;
         double d = Randomizer.nextDouble();
         double scale = (m_fScaleFactor + (d * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
 
-        if (m_pTree.get() != null) {
-            if (m_nTreeID < 0) {
-                m_nTreeID = state.getStateNodeIndex(m_pTree.get().getID());
-            }
+        Tree tree = m_pTree.get(); 
+        if (tree != null) {
             // scale the beast.tree
-            ((Tree) state.getStateNode(m_nTreeID)).getRoot().scale(scale);
+        	tree.getRoot().scale(scale);
             return Math.log(hastingsRatio);
         }
         boolean bScaleAll = m_pScaleAll.get();
         int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
         boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
-        if (m_iVar < 0) {
-            m_iVar = state.getStateNodeIndex(m_pParameter.get().getID());
-        }
 
-        RealParameter param = (RealParameter) state.getStateNode(m_iVar);
+        RealParameter param = m_pParameter.get();
         int dim = param.getDimension();
 
         if (bScaleAllIndependently) {

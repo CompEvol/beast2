@@ -65,7 +65,7 @@ public class MCMC extends Runnable {
 
         // state initialization
         this.state = m_startState.get();
-        this.state.calcInputsConnectedToState(this);
+        //this.state.calcInputsConnectedToState(this);
         m_cacheables = this.state.getCacheableOutputs(this);
 
         for (Logger log : m_loggers.get()) {
@@ -157,7 +157,7 @@ public class MCMC extends Runnable {
         	state.store();
             state.stateNumber = iSample;
             Operator operator = operatorSet.selectOperator();
-            double fLogHastingsRatio = operator.proposal(state);
+            double fLogHastingsRatio = operator.proposal();
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
                 //System.out.print("store ");
                 storeCachables(iSample);

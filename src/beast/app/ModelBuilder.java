@@ -40,9 +40,7 @@ import java.awt.*;
  */
 
 public class ModelBuilder extends JPanel {
-    /**
-     * for serialization
-     */
+    /** for serialisation */
     static final long serialVersionUID = 1L;
 
     public static void main(String args[]) {

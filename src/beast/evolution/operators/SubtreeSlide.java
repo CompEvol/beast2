@@ -89,8 +89,8 @@ public class SubtreeSlide extends TreeOperator {
      * @return the log-transformed hastings ratio
      */
     @Override
-    public double proposal(State state) throws Exception {
-        Tree tree = (Tree) state.getStateNode(m_tree);
+    public double proposal() throws Exception {
+        Tree tree = m_tree.get();//(Tree) state.getStateNode(m_tree);
 
         //calculateHeightsFromLengths(beast.tree);
 
