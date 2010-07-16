@@ -90,7 +90,7 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public double proposal() throws Exception {
-        Tree tree = m_tree.get();//(Tree) state.getStateNode(m_tree);
+        Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
 
         //calculateHeightsFromLengths(beast.tree);
 

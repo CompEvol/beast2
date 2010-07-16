@@ -41,10 +41,16 @@ public class State extends Plugin {
         // allocate memory for storing the state
         storedStateNode = new StateNode[stateNode.length];
 
-        
         for (int i = 0; i < stateNode.length; i++) {
             stateNode[i].index = i;
-            stateNode[i].m_state = this;
+        }
+        // create a copy, for store/restore
+        for (int i = 0; i < stateNode.length; i++) {
+//        	StateNode other = stateNode[i].copy();
+//        	other.m_other = stateNode[i];
+//        	stateNode[i].m_other = other;
+//        	other.m_state = this;
+        	stateNode[i].m_state = this;
         }
     } // initAndValidate
 
@@ -61,35 +67,33 @@ public class State extends Plugin {
     /** Store a State.
      * This copies the state for possible later restoration
      * but does not affect any inputs, which are all still connected
-     * to the StateNodes in  **/
+     * to the original StateNodes **/
     public void store() {
-    	for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
-    		storedStateNode[iStateNode] = stateNode[iStateNode].copy();
-        	// mark stateNodes as being current/stored by setting its m_state attribute
-    		storedStateNode[iStateNode].m_state = this;
-    		//stateNode[iStateNode].m_state = this;
-    	}
+    	System.arraycopy(stateNode, 0, storedStateNode, 0, stateNode.length);
     }
+    
     /** Restore a State. 
-     * This assigns the state to the stored state and
-     * reassigns all Inputs connected to the state. **/
+     * This assigns the state to the stored state 
+     * but does not affect any Inputs connected to any stateNode. **/
     public void restore() {
     	StateNode [] tmp = storedStateNode;
     	storedStateNode = stateNode;
     	stateNode = tmp;
-
-    	// mark stateNnodes as being current/stored by setting its m_state attribute
-    	//for (int iStateNode = 0; iStateNode < stateNode.length; iStateNode++) {
-    		// note, setting the m_sate field needs to be in order
-    		// first storedStateNode[iStateNode] then stateNode[iStateNode]
-    		// so that if storedStateNode[iStateNode] == stateNode[iStateNode]
-    		// the m_state field is set to null, indicating that stateNode 
-    		// is the current one, not a stored one.
-			//storedStateNode[iStateNode].m_state = this;
-    		//stateNode[iStateNode].m_state = this;
-    	//}
     }
 
+    public StateNode getStateNode(int nID) {
+        return stateNode[nID];
+    }
+    protected StateNode getEditableStateNode(int nID, Operator operator) {
+    	if (stateNode[nID] == storedStateNode[nID]) {
+    		storedStateNode[nID] = stateNode[nID].copy();
+    		storedStateNode[nID].m_state = this;
+    		
+//    		storedStateNode[nID] = stateNode[nID].m_other;
+//    		stateNode[nID].assignTo(storedStateNode[nID]);
+    	}
+        return stateNode[nID];
+    }
     
     public int stateNumber = 0;
 
@@ -121,9 +125,6 @@ public class State extends Plugin {
         return stateNode[nID].isDirty();
     }
 
-    public StateNode getStateNode(int nID) {
-        return stateNode[nID];
-    }
 
 
     /**

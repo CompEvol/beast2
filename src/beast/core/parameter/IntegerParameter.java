@@ -4,6 +4,7 @@ package beast.core.parameter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.StateNode;
 
 import java.io.PrintStream;
 
@@ -38,6 +39,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     /**
      * deep copy *
      */
+    @Override
     public Parameter<?> copy() {
         Parameter<Integer> copy = new IntegerParameter();
         copy.setID(getID());
@@ -50,6 +52,19 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         return copy;
     }
 
+    @SuppressWarnings("unchecked")
+	@Override
+    public void assignTo(StateNode other) {
+    	Parameter<Integer> copy = (Parameter<Integer>)other;
+        copy.setID(getID());
+        copy.index = index;
+        copy.values = new Integer[values.length];
+        System.arraycopy(values, 0, copy.values, 0, values.length);
+        copy.m_fLower = m_fLower;
+        copy.m_fUpper = m_fUpper;
+        copy.m_bIsDirty = new boolean[values.length];
+    }
+    
     @Override
     public void log(int nSample, State state, PrintStream out) {
         IntegerParameter var = (IntegerParameter) getCurrent();//state.getStateNode(m_sID);

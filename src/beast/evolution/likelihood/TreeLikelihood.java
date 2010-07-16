@@ -127,6 +127,7 @@ import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -141,16 +142,23 @@ public class TreeLikelihood extends Distribution {
     public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree");
     public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs");
     public Input<SiteModel> m_pSiteModel = new Input<SiteModel>("siteModel", "site model for leafs in the beast.tree");
-    public Input<BranchRateModel.Base> branchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
+    public Input<BranchRateModel.Base> m_pBranchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
 
+    /** calculation engine **/
     LikelihoodCore m_likelihoodCore;
+    /** Plugin associated with inputs. Since none of the inputs are StateNodes, it
+     * is safe to link to them only once, during initAndValidate.
+     */
+    SubstitutionModel m_substitutionModel;
+    SiteModel m_siteModel;
+    BranchRateModel.Base m_branchRateModel;
 
     @Override
     public void initAndValidate(State state) throws Exception {
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
-            //m_likelihoodCore = new BeerLikelihoodCore4();
+        	//m_likelihoodCore = new BeerLikelihoodCore4();
             m_likelihoodCore = new BeerLikelihoodCoreCnG4();
         } else {
             //m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
@@ -182,7 +190,9 @@ public class TreeLikelihood extends Distribution {
         for (int i = 0; i < nodeCount; i++) {
             m_bNodeIsDirty[i] = Tree.IS_FILTHY;
         }
-
+        m_siteModel = m_pSiteModel.get();
+        m_substitutionModel = m_siteModel.m_pSubstModel.get();
+        m_branchRateModel = m_pBranchRateModel.get();
     }
 
     /**
@@ -255,7 +265,7 @@ public class TreeLikelihood extends Distribution {
         if (!node.isRoot() && (m_bNodeIsDirty[iNode] != Tree.IS_CLEAN)) {
 
             double branchRate = 1.0;
-            if (branchRateModel.get() != null) branchRate = branchRateModel.get().getRateForBranch(node);
+            if (m_branchRateModel != null) branchRate = m_branchRateModel.getRateForBranch(node);
 
             // Get the operational time of the branch
             double branchTime = branchRate * node.getLength();//((*pParent).height - (*pNode).height);
@@ -268,10 +278,11 @@ public class TreeLikelihood extends Distribution {
             //	m_pLikelihoodCore->setNodeStatesForUpdate(nodeNum);
             //}
 
-            for (int i = 0; i < m_pSiteModel.get().getCategoryCount(); i++) {
-                double branchLength = m_pSiteModel.get().getRateForCategory(i) * branchTime;
-                m_pSiteModel.get()
-                        /*m_pSubstModel.get()*/.getTransitionProbabilities(branchLength, m_fProbabilities);
+            for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
+                double branchLength = m_siteModel.getRateForCategory(i) * branchTime;
+//                m_siteModel
+//                        /*m_pSubstModel.get()*/.getTransitionProbabilities(branchLength, m_fProbabilities);
+                m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
             }
 
@@ -300,7 +311,7 @@ public class TreeLikelihood extends Distribution {
                     m_likelihoodCore.setNodeStatesForUpdate(iNode);
                 }
 
-                if (m_pSiteModel.get().integrateAcrossCategories()) {
+                if (m_siteModel.integrateAcrossCategories()) {
 //cout << "cal partials " << childNum1 << " " << childNum2 << " " << nodeNum << " " <<
 //m_bNodeIsDirty[childNum1] << " " << m_bNodeIsDirty[childNum2] << " " << m_bNodeIsDirty[nodeNum] <<endl;
                     m_likelihoodCore.calculatePartials(childNum1, childNum2, iNode);
@@ -313,10 +324,10 @@ public class TreeLikelihood extends Distribution {
                     // No parent this is the root of the beast.tree -
                     // calculate the pattern likelihoods
                     double[] frequencies = //m_pFreqs.get().
-                            m_pSiteModel.get().getFrequencies();
+                            m_siteModel.getFrequencies();
 
                     //getRootPartials(node.getNr());
-                    double[] proportions = m_pSiteModel.get().getCategoryProportions();
+                    double[] proportions = m_siteModel.getCategoryProportions();
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
@@ -334,11 +345,10 @@ public class TreeLikelihood extends Distribution {
      */
     public void checkForDirt() {
         int hasDirt = Tree.IS_CLEAN;
-        if (m_pSiteModel.get().isDirty()) {
+        if (m_siteModel.isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
-        BranchRateModel.Base brm = branchRateModel.get(); 
-        if (brm != null && brm.isDirty()) {
+        if (m_branchRateModel != null && m_branchRateModel.isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
     	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
@@ -368,13 +378,13 @@ public class TreeLikelihood extends Distribution {
      * @return a list of unique ids for the state nodes that make up the conditions
      */
     public List<String> getConditions() {
-        return m_pSiteModel.get().getConditions();
+        return m_siteModel.getConditions();
     }
 
     @Override
     public void store(int nSample) {
         super.store(nSample);
-        //m_pSiteModel.get().store(nSample);
+        //m_siteModel.store(nSample);
         //m_pSubstModel.get().store(nSample);
         m_likelihoodCore.store();
         //if (branchRateModel.get() != null) {
@@ -385,7 +395,7 @@ public class TreeLikelihood extends Distribution {
     @Override
     public void restore(int nSample) {
         super.restore(nSample);
-        //m_pSiteModel.get().restore(nSample);
+        //m_siteModel.restore(nSample);
         //m_pSubstModel.get().restore(nSample);
         m_likelihoodCore.restore();
         //if (branchRateModel.get() != null) {

@@ -239,6 +239,24 @@ public class Node extends Plugin {
 		return node;
 	} // copy
 
+	public void assignTo(Node [] nodes) {
+		Node node = nodes[getNr()];
+		node.m_fHeight = m_fHeight;
+		node.m_iLabel = m_iLabel;
+		node.m_sMetaData = m_sMetaData;
+		node.m_Parent = null;
+		node.m_sID = m_sID;
+		if (m_left != null) {
+			node.m_left = nodes[m_left.getNr()];
+			m_left.assignTo(nodes);
+			node.m_right = nodes[m_right.getNr()];
+			m_right.assignTo(nodes);
+			node.m_left.m_Parent = node;
+			node.m_right.m_Parent = node;
+		}
+	}
+	
+	
 	public void setMetaData(String sPattern, Object fValue) {
 		m_bIsDirty = Tree.IS_DIRTY;
 	}

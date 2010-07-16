@@ -34,7 +34,6 @@ import beast.core.parameter.Parameter;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -63,7 +62,8 @@ public class Tree extends StateNode implements Loggable {
      */
     protected beast.evolution.tree.Node root;
 
-    private boolean isStochastic = true;
+    // dead code
+    // private boolean isStochastic = true;
 
     /**
      * getters and setters
@@ -131,6 +131,7 @@ public class Tree extends StateNode implements Loggable {
      *
      * @return a deep copy of this beast.tree.
      */
+    @Override
     public Tree copy() {
         Tree tree = new Tree();
         tree.m_sID = m_sID;
@@ -138,121 +139,32 @@ public class Tree extends StateNode implements Loggable {
         tree.root = root.copy();
         tree.nodeCount = nodeCount;
         tree.treeTraitsInput = treeTraitsInput;
-        tree.m_state = m_state;
+//        tree.m_state = m_state;
         return tree;
     }
-
-    /**
-     * validation for debugging only.
-     * This code should be removed probably...
-     *
-     * @throws java.lang.Exception if the beast.tree is not valid
-     */
-    public void validate() throws Exception {
-        // check
-        // 1. all nodes have (correct) parents, except root
-        // 2. nr of nodes adds up to m_nNodeCount
-        // 3. branch lengths positive
-        if (root.getParent() != null) {
-            throw new Exception("v1: root has a parent!!!");
-        }
-        int[] nParents = new int[nodeCount];
-        Arrays.fill(nParents, -1);
-        int[] nLeft = new int[nodeCount];
-        Arrays.fill(nLeft, -1);
-        int[] nRight = new int[nodeCount];
-        Arrays.fill(nRight, -1);
-
-        int nNodes = validateNode(root, nParents, nLeft, nRight);
-        if (nNodes != nodeCount) {
-            System.err.println("v2: Lost some nodes " + (nodeCount - nNodes) + " out of " + nodeCount + " to be exact");
-            System.err.println(root.toString());
-            throw new Exception("v2: Lost some nodes " + (nodeCount - nNodes) + " out of " + nodeCount + " to be exact");
-        }
-
-        // check that leaf heights have are the same
-//		double [] fHeights = new double[getNodeCount()];
-//		calculateHeightsFromLengths(m_root, fHeights);
-//		for (int i = 0; i < m_nNrOfNodes/2 + 1; i++) {
-//			if (Math.abs(fHeights[i]-fHeights[0]) > 1e-8) {
-//				throw new Exception("leaf heights have changed\n" + Arrays.toString(fHeights));
-//			}
-//		}
-        checkLeafHeights(root);
-    } // validate
-
-    void checkLeafHeights(Node node) throws Exception {
-        if (node.isLeaf()) {
-            if (node.getHeight() != 0) {
-                throw new Exception("leaf node is non-zero\n" + node.toString());
-            }
-        } else {
-            checkLeafHeights(node.m_left);
-            checkLeafHeights(node.m_right);
-        }
-        if (node.getLength() < 0) {
-            throw new Exception("Negative branch length found" + node.toString());
-        }
+    
+    @Override
+    public void assignTo(StateNode other) {
+    	Tree tree = (Tree) other;
+    	Node [] nodes = new Node[nodeCount];
+    	listNodes(tree.root, nodes);
+        tree.m_sID = m_sID;
+        tree.index = index;
+        root.assignTo(nodes);
+        tree.root = nodes[root.getNr()];
+        tree.nodeCount = nodeCount;
+        tree.treeTraitsInput = treeTraitsInput;
+        //tree.m_state = m_state;
     }
-
-//	void calculateHeightsFromLengths(Node node, double [] fHeights) {
-//		Node parent = node.getParent();
-//		if (parent != null) {
-//			fHeights[node.getNr()] = fHeights[parent.getNr()] - node.m_fLength;
-//		}
-//		if (!node.isLeaf()) {
-//			calculateHeightsFromLengths(node.m_left, fHeights);
-//			calculateHeightsFromLengths(node.m_right, fHeights);
-//		}
-//	} // calculateHeightsFromLengths
-
-    /**
-     * traverse through beast.tree and check beast.tree on internal consistency
-     *
-     * @param node     the node
-     * @param nParents the parents
-     * @param nLeft    the left children
-     * @param nRight   the right children
-     * @return the total number of nodes below the given node, including the given node
-     * @throws Exception if the beast.tree is not valid
-     */
-    int validateNode(Node node, int[] nParents, int[] nLeft, int[] nRight) throws Exception {
-//		if (node.m_fLength < 0) {
-//			throw new Exception("v3: Negative branch length for node " + node.getNr() + ": " + node.getID());
-//		}
-        if (!node.isRoot()) {
-            // check consistency of parent-child link
-            int iParent = node.getParent().getNr();
-            int iNode = node.getNr();
-            if (nLeft[iParent] != iNode && nRight[iParent] != iNode) {
-                throw new Exception("v4: parent and child relation is broken");
-            }
-        }
-        if (node.isLeaf()) {
-            if (node.getParent() == null) {
-                throw new Exception("v5: Suspect: single node which is leaf and root at the same time... (" + node.getID() + ")");
-            }
-            if (nParents[node.getNr()] != -1) {
-                throw new Exception("v6: duplicate node number " + node.getNr());
-            }
-            nParents[node.getNr()] = node.getParent().getNr();
-            return 1;
-        } else {
-            // check for cycles
-            if (nLeft[node.getNr()] != -1) {
-                throw new Exception("v7: duplicate left node number " + node.getNr());
-            }
-            if (nRight[node.getNr()] != -1) {
-                throw new Exception("v8: duplicate left node number " + node.getNr());
-            }
-            nLeft[node.getNr()] = node.m_left.getNr();
-            nRight[node.getNr()] = node.m_right.getNr();
-            int nNodeCount = validateNode(node.m_left, nParents, nLeft, nRight);
-            nNodeCount += validateNode(node.m_right, nParents, nLeft, nRight);
-            return nNodeCount + 1;
-        }
-    } // validateNode
-
+    
+    void listNodes(Node node, Node[] nodes) {
+    	nodes[node.getNr()] = node;
+    	if (!node.isLeaf()) {
+    		listNodes(node.m_left, nodes);
+    		listNodes(node.m_right, nodes);
+    	}
+    }
+    
     public void makeDirty(int nDirt) {
         root.makeAllDirty(nDirt);
     }
@@ -260,7 +172,6 @@ public class Tree extends StateNode implements Loggable {
     public String toString() {
         return root.toString();
     }
-
     
     /** synchronise tree nodes with its traits stored in an array **/
 	public void syncTreeWithTraitsInState() {

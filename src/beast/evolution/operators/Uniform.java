@@ -74,7 +74,7 @@ public class Uniform extends TreeOperator {
      */
     @Override
     public double proposal() throws Exception {
-        Tree tree = m_tree.get();//(Tree) state.getStateNode(m_tree);
+        Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
 
         // randomly select internal node
         int nNodeCount = tree.getNodeCount();

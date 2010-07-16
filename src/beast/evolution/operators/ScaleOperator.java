@@ -45,10 +45,14 @@ public class ScaleOperator extends Operator {
     public Input<Boolean> m_pScaleAllIndependently = new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with a different factor, otherwise a single factor is used", new Boolean(false));
     public Input<Integer> m_pDegreesOfFreedom = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used in ...", new Integer(1));
 
+    /** flag to indicate this scales trees as opposed to scaling a parameter **/
+    boolean m_bIsTreeScaler = true;
+    
     @Override
     public void initAndValidate(State state) {
         // todo : implement this properly
         m_fScaleFactor = m_pScaleFactor.get();
+        m_bIsTreeScaler = (m_pTree.get() != null);
     }
 
 
@@ -77,8 +81,8 @@ public class ScaleOperator extends Operator {
         double d = Randomizer.nextDouble();
         double scale = (m_fScaleFactor + (d * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
 
-        Tree tree = m_pTree.get(); 
-        if (tree != null) {
+        if (m_bIsTreeScaler) {
+        	Tree tree = m_pTree.get(this); 
             // scale the beast.tree
         	tree.getRoot().scale(scale);
             return Math.log(hastingsRatio);
@@ -87,7 +91,7 @@ public class ScaleOperator extends Operator {
         int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
         boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
 
-        RealParameter param = m_pParameter.get();
+        RealParameter param = m_pParameter.get(this);
         int dim = param.getDimension();
 
         if (bScaleAllIndependently) {

@@ -148,13 +148,32 @@ public class Input<T> {
         return tipText;
     }
 
+    /** Get the value of this input -- not to be called from operators!!! 
+     * If this is a StateNode input, instead of returning
+     * the actual value, the current value of the StateNode
+     * is returned. This is defined as the current StateNode
+     * in the State, or itself if it is not part of the state.
+     * **/
     @SuppressWarnings("unchecked")
 	public T get() {
     	if (value instanceof StateNode) {
+    		// TODO: rrb: the commented line seems a lot slower. Why???
     		//value=(T) ((StateNode)value).getCurrent();
     		return (T) ((StateNode)value).getCurrent();
     	}
         return value;
+    }
+    
+    /**
+     * As get() but with this difference that the State can manage
+     * whether to make a copy and register the operator.
+     * 
+     * Only Operators should call this method.
+     * Also Operators should never call Input.get(), always Input.get(operator).
+     */
+    @SuppressWarnings("unchecked")
+	public T get(Operator operator) {
+   		return (T) ((StateNode)value).getCurrentEditable(operator);
     }
 
     public Class<?> type() {

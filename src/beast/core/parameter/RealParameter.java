@@ -4,6 +4,7 @@ package beast.core.parameter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.StateNode;
 
 import java.io.PrintStream;
 
@@ -51,6 +52,7 @@ public class RealParameter extends Parameter<Double> {
     /**
      * deep copy *
      */
+    @Override 
     public Parameter<?> copy() {
         RealParameter copy = new RealParameter();
         copy.setID(getID());
@@ -61,6 +63,18 @@ public class RealParameter extends Parameter<Double> {
         copy.m_fUpper = m_fUpper;
         copy.m_bIsDirty = new boolean[values.length];
         return copy;
+    }
+
+    @Override 
+    public void assignTo(StateNode other) {
+    	RealParameter copy = (RealParameter) other;
+        copy.setID(getID());
+        copy.index = index;
+        copy.values = new java.lang.Double[values.length];
+        System.arraycopy(values, 0, copy.values, 0, values.length);
+        copy.m_fLower = m_fLower;
+        copy.m_fUpper = m_fUpper;
+        copy.m_bIsDirty = new boolean[values.length];
     }
     
     @Override
