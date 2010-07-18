@@ -25,6 +25,7 @@
 package beast.core;
 
 
+import beast.core.Input.Validate;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
@@ -36,7 +37,7 @@ import java.util.List;
 @Description("Logs results of calculation processes.")
 public class Logger extends Plugin {
 
-    public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log", "Element in a log. This can be any plug in that is Loggable.", new ArrayList<Plugin>());
+    public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log", "Element in a log. This can be any plug in that is Loggable.", new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
     public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "Number of the samples logged", new Integer(1));
     public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
     public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
@@ -68,11 +69,11 @@ public class Logger extends Plugin {
         }
 
         // verify everything is loggable
-        for (Plugin plugin : m_loggers) {
-            if (!(plugin instanceof Loggable)) {
-                throw new Exception("Object " + plugin.getClass().getName() + " " + plugin.getID() + " is not loggable");
-            }
-        }
+//        for (Plugin plugin : m_loggers) {
+//            if (!(plugin instanceof Loggable)) {
+//                throw new Exception("Object " + plugin.getClass().getName() + " " + plugin.getID() + " is not loggable");
+//            }
+//        }
 
         // determine logging mode
         m_mode = COMPOUND_LOGGER;

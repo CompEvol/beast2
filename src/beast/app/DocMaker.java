@@ -129,7 +129,7 @@ public class DocMaker {
 
     String getCSS() {
     	return "table {\n" +
-        "	width: 650px;\n" +
+        "	width: 550px;\n" +
         "	border-collapse:collapse;\n" +
         "	border:1px solid #2E2E2E;\n" +
         "}\n" +
@@ -328,7 +328,7 @@ public class DocMaker {
         // show all implementation of this plug-in
         String[] sImplementations = m_isa.get(sPlugin);
         if (sImplementations.length > 0) {
-            buf.append("<table>\n");
+            buf.append("<table border='1px'>\n");
             buf.append("<thead><tr><td>implemented by the following</td></tr></thead>\n");
             for (String sImp : sImplementations) {
                 buf.append("<tr><td><a href='" + sImp + ".html'>" + sImp + "</a></td></tr>\n");
@@ -366,9 +366,9 @@ public class DocMaker {
             buf.append("&lt;none&gt;");
         }
         for (Input<?> input : inputs) {
-            buf.append("<table>\n");
+            buf.append("<table border='1px'>\n");
             buf.append("<caption>" + input.getName() + "</caption>\n");
-            buf.append("<thead><tr><td>type: " + getType(plugin, input.getName()) + "</td></tr></thead>\n");
+            buf.append("<thead><tr bgcolor='#AAAAAA'><td>type: " + getType(plugin, input.getName()) + "</td></tr></thead>\n");
             buf.append("<tr><td>" + input.getTipText() + "</td></tr>\n");
             buf.append("<tr><td>\n");
             switch (input.getRule()) {
@@ -399,7 +399,7 @@ public class DocMaker {
     } // getHTML
     
     /**
-     * determine type of input of a plug in with name sName*
+     * determine type of input of a plug in with name sName
      */
     String getType(Plugin plugin, String sName) {
         try {
@@ -410,6 +410,12 @@ public class DocMaker {
                     if (input.getName().equals(sName)) {
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
+                        if (input.type() != null) {
+                            return (input.type().isAssignableFrom(Plugin.class) ?"<a href='" + input.type().getName() + ".html'>":"") +
+                                input.type().getName() + 
+                            	(input.get() != null && input.get() instanceof List<?> ? "***" : "") + 
+                            	(input.type().isAssignableFrom(Plugin.class) ?"</a>" :"");
+                        }
                         if (input.get() != null && input.get() instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
                             Class<?> _class = (Class<?>) genericTypes2[0];

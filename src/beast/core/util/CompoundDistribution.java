@@ -28,6 +28,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Distribution;
 import beast.core.State;
+import beast.core.Input.Validate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.Random;
         "and priors and combines them into the compound of these distributions " +
         "typically interpreted as the posterior.")
 public class CompoundDistribution extends Distribution {
-    public Input<List<Distribution>> pDistributions = new Input<List<Distribution>>("distribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<Distribution>());
+    public Input<List<Distribution>> pDistributions = new Input<List<Distribution>>("distribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<Distribution>(), Validate.REQUIRED);
 
     /** Distribution implementation follows **/
     @Override

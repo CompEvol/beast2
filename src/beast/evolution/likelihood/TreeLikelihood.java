@@ -167,7 +167,7 @@ public class TreeLikelihood extends Distribution {
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
         //probabilities = new double[stateCount * stateCount];
-        int nodeCount = m_tree.get().getNodeCount();
+        int nodeCount = m_tree.getStateNode().getNodeCount();
         m_likelihoodCore.initialize(
                 nodeCount,
                 m_data.get().getPatternCount(),
@@ -178,7 +178,7 @@ public class TreeLikelihood extends Distribution {
         int extNodeCount = nodeCount / 2 + 1;
         int intNodeCount = nodeCount / 2;
 
-        setStates(m_tree.get().getRoot(), m_data.get().getPatternCount());
+        setStates(m_tree.getStateNode().getRoot(), m_data.get().getPatternCount());
 
         for (int i = 0; i < intNodeCount; i++) {
             m_likelihoodCore.createNodePartials(extNodeCount + i);
@@ -229,7 +229,7 @@ public class TreeLikelihood extends Distribution {
     @Override
     public double calculateLogP() throws Exception {
         checkForDirt();
-        Tree tree = m_tree.get();
+        Tree tree = m_tree.getStateNode();
         traverse(tree.getRoot());
         logP = 0.0;
         //double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
@@ -354,7 +354,7 @@ public class TreeLikelihood extends Distribution {
     	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
         // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);
         //m_likelihoodCore.checkForDirt(state);
-        Tree tree = m_tree.get();
+        Tree tree = m_tree.getStateNode();
         tree.syncTreeWithTraitsInState();
         checkNodesForDirt(tree.getRoot(), hasDirt);
     } // checkForDirt

@@ -94,6 +94,23 @@ public class Input<T> {
         defaultValue = startValue;
     } // c'tor
 
+    public Input(String sName, String sTipText, T startValue, Class<?> type) {
+        name = sName;
+        tipText = sTipText;
+        value = startValue;
+        defaultValue = startValue;
+        theClass = type;
+    } // c'tor
+
+    public Input(String sName, String sTipText, T startValue, Validate rule, Class<?> type) {
+        name = sName;
+        tipText = sTipText;
+        value = startValue;
+        defaultValue = startValue;
+        theClass = type;
+        this.rule = rule;
+    } // c'tor
+
     /**
      * constructor for REQUIRED rules for array-inputs *
      */
@@ -159,11 +176,21 @@ public class Input<T> {
     	if (value instanceof StateNode) {
     		// TODO: rrb: the commented line seems a lot slower. Why???
     		//value=(T) ((StateNode)value).getCurrent();
+    		new Exception().printStackTrace();
     		return (T) ((StateNode)value).getCurrent();
+//    		System.err.println("Do not call Input.get() on Input<StateNode>");
+//    		System.err.println("Use Input.getStateNode() instead.");
     	}
         return value;
     }
-    
+//	public T getUnsafe() {
+//        return value;
+//    }
+	
+    @SuppressWarnings("unchecked")
+	public T getStateNode() {
+		return (T) ((StateNode)value).getCurrent();
+	}    
     /**
      * As get() but with this difference that the State can manage
      * whether to make a copy and register the operator.
@@ -200,6 +227,10 @@ public class Input<T> {
      */
     @SuppressWarnings("unchecked")
     public void setValue(Object value, Plugin plugin) throws Exception {
+    	if (value == null) {
+    		this.value = null;
+    		return;
+    	}
         if (theClass == null) {
             determineClass(plugin);
         }

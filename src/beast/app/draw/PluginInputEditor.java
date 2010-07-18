@@ -1,12 +1,12 @@
 package beast.app.draw;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import beast.core.Input;
 import beast.core.Plugin;
@@ -14,7 +14,7 @@ import beast.util.ClassDiscovery;
 
 public class PluginInputEditor extends InputEditor {
 	private static final long serialVersionUID = 1L;
-	JComboBox m_selectPluginComboBox;
+	JButton m_selectPluginBox;
 	JButton m_editPluginButton;
 	
 	public PluginInputEditor() {
@@ -27,42 +27,65 @@ public class PluginInputEditor extends InputEditor {
 	 * o a label
 	 * o a button for selecting another plug-in
 	 * o a button for editing the plug-in 
+	 * o validation label -- optional, if input is not valid
 	 **/
 	@Override
 	public void init(Input<?> input, Plugin plugin) {
 		m_input = input;
 		m_plugin = plugin;
 
-		JLabel label = new JLabel(input.getName());
-		label.setToolTipText(input.getTipText());
-		add(label);
+		addInputLabel();
 		
 		String [] sAvailablePlugins = getAvailablePlugins();
 		if (sAvailablePlugins.length > 1) {
-			m_selectPluginComboBox = new JComboBox(sAvailablePlugins);
-			m_selectPluginComboBox.addActionListener(new ActionListener() {
+			m_selectPluginBox = new JButton();
+			if (input.get() != null) {
+				m_selectPluginBox.setText(((Plugin)input.get()).getID());
+			} else {
+				m_selectPluginBox.setText(NO_VALUE);
+			}
+			m_selectPluginBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// do something
+					Plugin plugin = PluginDialog.pluginSelector(m_input, null);
+					if (plugin == m_input.get()) {
+						// nothing changed
+						return;
+					}
+					if (plugin == null) {
+						// selection cancelled
+						return;
+					}
+					
+					try {
+						m_input.setValue(plugin, m_plugin);
+						m_selectPluginBox.setText(plugin.getID());
+						m_editPluginButton.setEnabled(true);
+						checkValidation();
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Could not change plugin: " +
+								ex.getClass().getName() + " " +
+								ex.getMessage()
+								);
+					}
 				}
 			});
-			add(m_selectPluginComboBox);
+			add(m_selectPluginBox);
 		}
 		
 		m_editPluginButton = new JButton();
 		if (input.get() == null) {
 			m_editPluginButton.setText("...");
+			m_editPluginButton.setEnabled(false);
 		} else {
-			String sName = input.get().getClass().getName();
-			sName = sName.substring(sName.lastIndexOf('.') + 1);
-			m_editPluginButton.setText(sName);
+			m_editPluginButton.setText(((Plugin)input.get()).getID());
 		}
 		m_editPluginButton.setToolTipText(input.getTipText());
 		
 		m_editPluginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PluginDialog dlg = new PluginDialog(m_plugin, m_input.type());
+				PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.type());
 				dlg.setVisible(true);
 				if (dlg.m_bOK) {
 					m_plugin = dlg.m_plugin;
@@ -70,6 +93,8 @@ public class PluginInputEditor extends InputEditor {
 			}
 		});
 		add(m_editPluginButton);
+
+		addValidationLabel();
 	} // init
 	
 	String [] getAvailablePlugins() {

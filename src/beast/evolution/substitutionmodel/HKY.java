@@ -215,7 +215,7 @@ public class HKY extends SubstitutionModel {
      * setup substitution matrix
      */
     public void setupMatrix() {
-        final double kappa = m_kappa.get().getValue();//getKappa();
+        final double kappa = m_kappa.getStateNode().getValue();//getKappa();
         beta = -1.0 / (2.0 * (freqR * freqY + kappa * (freqA * freqG + freqC * freqT)));
 
         A_R = 1.0 + freqR * (kappa - 1);
@@ -345,7 +345,7 @@ public class HKY extends SubstitutionModel {
             updateMatrix = true;
             return true;
         }
-        if (m_kappa.get().isDirty()) {
+        if (m_kappa.getStateNode().isDirty()) {
             updateMatrix = true;
             return true;
         }

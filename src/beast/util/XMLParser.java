@@ -477,7 +477,20 @@ public class XMLParser {
             plugin.setInputValue(sName, plugin2);
             return;
         } catch (Exception e) {
-            throw new XMLParserException(node, e.getMessage(), 123);
+        	if (e.getMessage().contains("101")) {
+            	String sType = "?";
+            	try {
+            		sType = plugin.getInput(sName).type().getName().replaceAll(".*\\.","");
+            	} catch (Exception e2) {
+    				// TODO: handle exception
+    			}
+            	throw new XMLParserException(node, e.getMessage() + 
+            		" expected '" + sType +
+            		"' but got '"+plugin2.getClass().getName().replaceAll(".*\\.","") + "'"
+            		, 123);
+        	} else {
+            	throw new XMLParserException(node, e.getMessage(), 130);
+        	}
         }
         //throw new XMLParserException(node, "no such input '"+sName+"' for element <" + node.getNodeName() + ">", 167);
     }

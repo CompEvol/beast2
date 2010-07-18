@@ -1,5 +1,7 @@
 package beast.app.draw;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,6 +15,7 @@ import beast.core.Input;
 import beast.core.Plugin;
 
 public abstract class InputEditor extends Box {
+	final static String NO_VALUE = "<none>";
 	private static final long serialVersionUID = 1L;
 	/** the input to be edited **/
 	Input<?> m_input;
@@ -20,6 +23,10 @@ public abstract class InputEditor extends Box {
 	Plugin m_plugin;
 	/** text field used for primitive input editors **/
 	JTextField m_entry;
+
+	/** label that shows up when validation fails **/
+	SmallLabel m_validateLabel;
+	
 	
 	public InputEditor() {
 		super(BoxLayout.X_AXIS);
@@ -35,9 +42,7 @@ public abstract class InputEditor extends Box {
 		m_input = input;
 		m_plugin = plugin;
 
-		JLabel label = new JLabel(input.getName());
-		label.setToolTipText(input.getTipText());
-		add(label);
+		addInputLabel();
 		m_entry = new JTextField();
 		if (input.get()!= null) {
 			m_entry.setText(input.get().toString());
@@ -54,6 +59,39 @@ public abstract class InputEditor extends Box {
 			}
 		});
 		add(m_entry);
+		addValidationLabel();
 	} // init
 
+	
+	protected void addInputLabel() {
+		JLabel label = new JLabel(m_input.getName());
+		label.setToolTipText(m_input.getTipText());
+		Dimension size = new Dimension(150,15);
+		label.setMaximumSize(size);
+		label.setMinimumSize(size);
+		label.setPreferredSize(size);
+		add(label);
+	}
+	
+	protected void addValidationLabel() {
+		m_validateLabel = new SmallLabel("x", new Color(200,0,0));
+		try {
+			m_input.validate();
+			m_validateLabel.setVisible(false);
+		} catch (Exception e) {
+			m_validateLabel.setToolTipText(e.getMessage());
+			m_validateLabel.setVisible(true);
+		}
+		add(m_validateLabel);
+	}
+	protected void checkValidation() {
+		try {
+			m_input.validate();
+			m_validateLabel.setVisible(false);
+		} catch (Exception e) {
+			m_validateLabel.setToolTipText(e.getMessage());
+			m_validateLabel.setVisible(true);
+		}
+	}
+	
 } // class InputEditor

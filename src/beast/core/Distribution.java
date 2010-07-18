@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
-        "a log probability for running an MCMC chain.")
+        "a log probability for instance for running an MCMC chain.")
 public abstract class Distribution extends Plugin implements Cacheable, Loggable {
 
     /**
