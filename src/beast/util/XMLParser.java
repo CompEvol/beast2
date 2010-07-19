@@ -36,9 +36,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.StringReader;
 import java.util.HashMap;
 
 
@@ -187,6 +189,44 @@ public class XMLParser {
         }
     } // parseFile
 
+    /** Parse an XML fragment representing a Plug-in
+     * Only the last child element of the top level <beast> element is considered.
+     */
+    public Plugin parseFragment(String sXML) throws Exception {
+        // parse the XML file into a DOM document
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        m_doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        m_doc.normalize();
+        m_sIDMap = new HashMap<String, Plugin>();
+        m_LikelihoodMap = new HashMap<String, Integer[]>();
+        m_sIDNodeMap = new HashMap<String, Node>();
+    	
+        // find top level beast element
+        NodeList nodes = m_doc.getElementsByTagName("*");
+        if (nodes == null || nodes.getLength() == 0) {
+            throw new Exception("Expected top level beast element in XML");
+        }
+        Node topNode = nodes.item(0);
+        initIDNodeMap(topNode);
+        parseNameSpaceAndMap(topNode);
+        
+        NodeList children = topNode.getChildNodes();
+        if (children.getLength() == 0) {
+        	throw new Exception("Need at least one child element");
+        }
+        Plugin plugin = (Plugin) createObject(children.item(children.getLength()-1), PLUGIN_CLASS, null);
+        return plugin;
+    } // parseFragment
+    
+    /** Parse XML fragment that will be wrapped in a beast element
+     * before parsing. This allows for ease of creating Plugin objects,
+     * like this:
+     * Tree tree = (Tree) new XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
+     * to create a simple tree.
+     */
+    public Plugin parseBareFragment(String sXML) throws Exception {
+    	return parseFragment("<beast>" + sXML + "</beast>");
+    }
 
     /**
      * parse BEAST file as DOM document
@@ -622,4 +662,14 @@ public class XMLParser {
         return false;
     }
 
-} // Parser
+    public static void main(String [] args) {
+    	try {
+    		XMLParser parser = new XMLParser();
+    		Plugin plugin = parser.parseFragment(args[0]);
+    		System.err.println(plugin.toString());
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+} // classXMLParser

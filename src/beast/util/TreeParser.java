@@ -58,11 +58,17 @@ public class TreeParser extends Tree {
 	public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
 	public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", new Integer(1));
 	public Input<Double> m_nThreshold = new Input<Double>("threshold" ,"threshold under wich node heights (derived from lengths) are set to zero. Default=0.", new Double(0));
+
 	/** assure the class behaves properly, even when inputs are not specified **/
 	@Override
 	public void initAndValidate(State state) throws Exception {
 		super.initAndValidate(state);
-		m_sLabels = m_oData.get().m_sTaxaNames;
+		if (m_oData.get() != null) {
+			m_sLabels = m_oData.get().m_sTaxaNames;
+		} else {
+			m_sLabels = null;
+			m_bIsLabelledNewick = false;
+		}
 		setRoot(parseNewick(m_oNewick.get()));
 	} // init
 
@@ -92,7 +98,9 @@ public class TreeParser extends Tree {
 			}
 		}
 		if (node.isLeaf()) {
-			node.setID(m_sLabels.get(node.getNr()));
+			if (m_sLabels != null) {
+				node.setID(m_sLabels.get(node.getNr()));
+			}
 		} else {
 			processMetadata(node.m_left);
 			processMetadata(node.m_right);

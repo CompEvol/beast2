@@ -361,8 +361,8 @@ public class DocMaker {
         
         // list its inputs
         buf.append("<h2>Inputs:</h2>\n");
-        Input<?>[] inputs = plugin.listInputs();
-        if (inputs.length == 0) {
+        List<Input<?>> inputs = plugin.listInputs();
+        if (inputs.size() == 0) {
             buf.append("&lt;none&gt;");
         }
         for (Input<?> input : inputs) {

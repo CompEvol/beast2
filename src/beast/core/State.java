@@ -340,7 +340,7 @@ public class State extends Plugin {
 			plugins.add(plugin);
 		}
 		try {
-			Input<?> [] inputs = plugin.listInputs();
+			List<Input<?>> inputs = plugin.listInputs();
     		for (Input<?> input : inputs) {
     			if (input.get() != null) {
     				if (input.get() instanceof Plugin) {

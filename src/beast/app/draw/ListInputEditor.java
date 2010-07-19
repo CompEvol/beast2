@@ -3,14 +3,13 @@ package beast.app.draw;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
@@ -65,6 +64,7 @@ public class ListInputEditor extends InputEditor {
 		}
 		m_list = new JList(m_listModel);
 		m_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		m_list.setSelectedIndex(0);
 		
 		m_list.setLayoutOrientation(JList.VERTICAL);
 		m_list.setVisibleRowCount(-1);
@@ -85,7 +85,7 @@ public class ListInputEditor extends InputEditor {
 				for (int i = 0; i < m_list.getModel().getSize(); i++) {
 					sTabuList.add((String) m_list.getModel().getElementAt(i));
 				}
-				Plugin plugin = PluginDialog.pluginSelector(m_input, sTabuList);
+				Plugin plugin = pluginSelector(m_input, m_plugin, sTabuList);
 				if (plugin != null) {
 					try {
 						m_input.setValue(plugin, m_plugin);
@@ -115,10 +115,12 @@ public class ListInputEditor extends InputEditor {
 				Plugin plugin = PluginDialog.g_plugins.get(sID);
 				PluginDialog dlg = new PluginDialog(plugin, m_input.type());
 				dlg.setVisible(true);
-				if (dlg.m_bOK){
+				if (dlg.getOK()){
 					((List<Plugin>)m_input.get()).set(iSelected, dlg.m_plugin);
 					m_listModel.set(iSelected, dlg.m_plugin.getID());
 				}
+				PluginDialog.m_position.x -= 20;
+				PluginDialog.m_position.y -= 20;
 				checkValidation();
 				updateState();
 			}
@@ -149,6 +151,45 @@ public class ListInputEditor extends InputEditor {
 		updateState();
 	} // init
 	
+	/** Select existing plug-in, or create a new one.
+	 * Suppress existing plug-ins with IDs from the tabu list. 
+	 * Return null if nothing is selected.
+	 */
+	public Plugin pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
+		List<String> sPlugins = PluginDialog.getAvailablePlugins(input, parent, sTabuList);
+		/* select a plugin **/
+		String sClassName = null;
+		if (sPlugins.size() == 1) {
+			// if there is only one candidate, select that one
+			sClassName = sPlugins.get(0);
+		} else {
+			// otherwise, pop up a list box
+			sClassName = (String) JOptionPane.showInputDialog(null,
+				"Select a constant", "select",
+				JOptionPane.PLAIN_MESSAGE, null,
+				sPlugins.toArray(new String[0]),
+				null);
+			if (sClassName == null) {
+				return null;
+			}
+		}
+		if (!sClassName.startsWith("new ")) {
+			/* return existing plugin */
+			return (PluginDialog.g_plugins.get(sClassName));
+		}
+		/* create new plugin */
+		try {
+			Plugin plugin = (Plugin) Class.forName(sClassName.substring(4)).newInstance();
+			PluginDialog.addPluginToMap(plugin);
+			return plugin;
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, "Could not select plugin: " +
+					ex.getClass().getName() + " " +
+					ex.getMessage()
+					);
+			return null;
+		}
+	} // pluginSelector	
 	
 	void updateState() {
 		boolean bValidSelection = false;

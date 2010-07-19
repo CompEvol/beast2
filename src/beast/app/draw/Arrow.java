@@ -44,6 +44,8 @@ public class Arrow extends Line {
 	boolean m_bHasTail = false;
 	boolean m_bHasHead= true;
 	Polygon m_polygon;
+	public Shape m_tail;
+	public Shape m_head;
 
 	final static double m_nArrowAngle = 0.08;
 	final static int m_nArrowLength = 15;
@@ -62,7 +64,10 @@ public class Arrow extends Line {
 	}
 	public Arrow(Shape tailShape, PluginShape headShape, String sInputName) {
 		m_sTailID = tailShape.m_id;
-		m_sHeadID = headShape.getInput(sInputName).m_id;
+		m_tail = tailShape;
+		Shape input = headShape.getInput(sInputName);
+		m_sHeadID = input.m_id;
+		m_head = input;
 		//m_sHeadID = headShape.m_id;
 		m_x = 0;
 		m_y = 0;
@@ -245,8 +250,6 @@ public class Arrow extends Line {
 	public String getXML() {
 		return "<arrow" + getAtts() + "/>";
 	}
-	public Shape m_tail;
-	public Shape m_head;
 	void resetIDs(List<Shape> objects) {
 		for (int i = 0; i < objects.size(); i++) {
 			Shape shape = (Shape) objects.get(i);

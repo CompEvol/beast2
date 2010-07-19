@@ -110,16 +110,17 @@ public class Plugin {
         return buf.toString();
     } // getCitations
 
-    public Input<?>[] listInputs() throws IllegalArgumentException, IllegalAccessException {
-        List<Input<?>> sInputs = new ArrayList<Input<?>>();
+    public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
+        List<Input<?>> inputs = new ArrayList<Input<?>>();
         Field[] fields = getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
                 Input<?> input = (Input<?>) fields[i].get(this);
-                sInputs.add(input);
+                inputs.add(input);
             }
         }
-        return sInputs.toArray(new Input[0]);
+        return inputs;
+        //return sInputs.toArray(new Input[0]);
     } // listInputs
 
     /**
@@ -237,6 +238,9 @@ public class Plugin {
 
     protected List<String> conditions = null;
 
+    public String toString() {
+    	return getID();
+    }
 
 //    public static final Set<Cacheable> cacheables = new HashSet<Cacheable>();
 

@@ -73,19 +73,19 @@ public class PluginShape extends Rect {
 				setLabel(sClassName.substring(sClassName.lastIndexOf('.')+1));
 			}
 		m_inputs = new ArrayList<InputShape>();
-		Input<?> [] sInputs = m_function.listInputs();
-		for (int i = 0; i < sInputs.length; i++) {
+		List<Input<?>> sInputs = m_function.listInputs();
+		for (Input<?> input_ : sInputs) {
 			//int nOffset = i*m_w/(sInputs.length) + m_w/(2*(sInputs.length));
 			InputShape input = new InputShape();
 			input.setFunction(this);
 			input.m_fillcolor = m_fillcolor;
 			input.m_w = 10;
-			String sInputLabel = sInputs[i].getName();
+			String sInputLabel = input_.getName();
 			input.setLabel(sInputLabel);
 			doc.addNewShape(input);
 			m_inputs.add(input);
 		}
-		m_h = Math.max(40, sInputs.length*12);
+		m_h = Math.max(40, sInputs.size()*12);
 		adjustInputs();
 		} catch (Exception e) {
 			System.err.println("Could not process inputs: " + e.getMessage());
@@ -215,5 +215,10 @@ public class PluginShape extends Rect {
 	boolean intersects(int nX, int nY) {
 		return super.intersects(nX, nY);
 		//return (m_x+m_w/2-nX)*(m_x+m_w/2-nX)+ (m_y+m_h/2-nY)*(m_y+m_h/2-nY) < m_w*m_w/4+m_h*m_h/4;
+	}
+	
+	@Override
+	String getLabel() {
+		return m_function.getID();
 	}
 } // class Function

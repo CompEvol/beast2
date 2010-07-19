@@ -176,7 +176,7 @@ public class Input<T> {
     	if (value instanceof StateNode) {
     		// TODO: rrb: the commented line seems a lot slower. Why???
     		//value=(T) ((StateNode)value).getCurrent();
-    		new Exception().printStackTrace();
+    		//new Exception().printStackTrace();
     		return (T) ((StateNode)value).getCurrent();
 //    		System.err.println("Do not call Input.get() on Input<StateNode>");
 //    		System.err.println("Use Input.getStateNode() instead.");

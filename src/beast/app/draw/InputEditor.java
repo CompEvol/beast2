@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -24,6 +25,7 @@ public abstract class InputEditor extends Box {
 	/** text field used for primitive input editors **/
 	JTextField m_entry;
 
+	JLabel m_inputLabel;
 	/** label that shows up when validation fails **/
 	SmallLabel m_validateLabel;
 	
@@ -52,10 +54,13 @@ public abstract class InputEditor extends Box {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-				m_input.setValue(m_entry.getText(), m_plugin);
+					m_input.setValue(m_entry.getText(), m_plugin);
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Error while setting " + m_input.getName() + ": " + ex.getMessage());
+					JOptionPane.showMessageDialog(null, "Error while setting " + m_input.getName() + ": " + ex.getMessage() +
+							" Leaving value at " + m_input.get());
+					m_entry.setText(m_input.get() + "");
 				}
+				checkValidation();
 			}
 		});
 		add(m_entry);
@@ -64,34 +69,77 @@ public abstract class InputEditor extends Box {
 
 	
 	protected void addInputLabel() {
-		JLabel label = new JLabel(m_input.getName());
-		label.setToolTipText(m_input.getTipText());
+		String sName = m_input.getName();
+		sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
+		sName = sName.substring(0,1).toUpperCase() + sName.substring(1);
+		m_inputLabel = new JLabel(sName);
+		m_inputLabel.setToolTipText(m_input.getTipText());
 		Dimension size = new Dimension(150,15);
-		label.setMaximumSize(size);
-		label.setMinimumSize(size);
-		label.setPreferredSize(size);
-		add(label);
+		m_inputLabel.setMaximumSize(size);
+		m_inputLabel.setMinimumSize(size);
+		m_inputLabel.setPreferredSize(size);
+		add(m_inputLabel);
 	}
 	
 	protected void addValidationLabel() {
 		m_validateLabel = new SmallLabel("x", new Color(200,0,0));
-		try {
-			m_input.validate();
-			m_validateLabel.setVisible(false);
-		} catch (Exception e) {
-			m_validateLabel.setToolTipText(e.getMessage());
-			m_validateLabel.setVisible(true);
-		}
 		add(m_validateLabel);
+		m_validateLabel.setVisible(true);
+		checkValidation();
 	}
+	
+	/* check the input is valid, continue checking recursively */
 	protected void checkValidation() {
 		try {
 			m_input.validate();
+			// recurse
+			try {
+				validateRecursively(m_input);
+			} catch (Exception e) {
+				m_validateLabel.setVisible(true);
+				m_validateLabel.setToolTipText("<html><p>Recursive error in " + e.getMessage() + "</p></html>");
+				m_validateLabel.m_circleColor = Color.orange;
+				repaint();
+				return;
+			}
 			m_validateLabel.setVisible(false);
 		} catch (Exception e) {
 			m_validateLabel.setToolTipText(e.getMessage());
+			m_validateLabel.m_circleColor = Color.red;
 			m_validateLabel.setVisible(true);
 		}
+		repaint();
 	}
+	
+	/* Recurse in any of the input plugins
+	 * and validate its inputs */
+	void validateRecursively(Input<?> input) throws Exception {
+		if (input.get() != null) {
+			if (input.get() instanceof Plugin) {
+				for (Input<?> input2: ((Plugin)input.get()).listInputs()) {
+					try {
+						input2.validate();
+					} catch (Exception e) {
+						throw new Exception(((Plugin)input.get()).getID() + "</p><p> " + e.getMessage());
+					}
+					validateRecursively(input2);
+				}
+			}
+			if (input.get() instanceof List<?>) {
+				for (Object o : (List<?>)input.get()) {
+					if (o != null && o instanceof Plugin) {
+						for (Input<?> input2: ((Plugin)o).listInputs()) {
+							try {
+								input2.validate();
+							} catch (Exception e) {
+								throw new Exception(((Plugin)o).getID() + " " + e.getMessage());
+							}
+							validateRecursively(input2);
+						}
+					}
+				}
+			}
+		}
+	} // validateRecursively
 	
 } // class InputEditor

@@ -293,7 +293,7 @@ public class XMLProducer extends XMLParser {
         if (!bSkipInputs) {
             // process inputs of this plugin
             // first, collect values as attributes
-            Input[] sInputs = plugin.listInputs();
+            List<Input<?>> sInputs = plugin.listInputs();
             for (Input sInput : sInputs) {
                 inputToXML(sInput.getName(), plugin, buf, true);
             }

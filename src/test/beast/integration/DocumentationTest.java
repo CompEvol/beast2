@@ -52,7 +52,7 @@ public class DocumentationTest extends TestCase {
 		for (String sPlugin : sPluginNames) {
 			try {
         		Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
-        		Input<?>[] inputs = plugin.listInputs();
+        		List<Input<?>> inputs = plugin.listInputs();
                 for (Input<?> input: inputs) {
            			boolean hasSatisfactoryDescription = false;
                		String sTipText = input.getTipText();

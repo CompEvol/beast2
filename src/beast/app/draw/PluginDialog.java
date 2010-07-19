@@ -2,6 +2,7 @@ package beast.app.draw;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -17,13 +18,14 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+
 import javax.swing.border.EtchedBorder;
 
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
 import beast.util.ClassDiscovery;
+import beast.util.XMLProducer;
 
 /** Dialog for editing Plugins.
  * 
@@ -39,12 +41,13 @@ public class PluginDialog extends JDialog {
 	 * that is allowable if the plugin class is changed.
 	 */
 	Class<?> m_pluginClass;
-	JButton m_pluginButton; 
-	public boolean m_bOK = false;
+	JLabel m_pluginButton; 
+	private boolean m_bOK = false;
 	/* Set of plugins in the system. 
 	 * These are the plugins that an input can be connected to **/
-	static public Map<String, Plugin> g_plugins = null; 
-	//static public String [] g_sPlugInNames;
+	static public Map<String, Plugin> g_plugins = null;
+	
+	static Point m_position;
 	
 	/** map that identifies the InputEditor to use for a particular type of Input **/ 
 	static HashMap<Class<?>, String> g_inputEditorMap;
@@ -63,28 +66,53 @@ public class PluginDialog extends JDialog {
 				System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			}
 		}
+		m_position = new Point(0,0);
 	} // finished registering input editors
 		
 	
+	public PluginDialog(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins) {
+		g_plugins = new HashMap<String, Plugin>();
+		for (Plugin plugin2 : plugins) {
+			String sID = getID(plugin2);
+			// ensure IDs are unique
+			if (g_plugins.containsKey(sID)) {
+				plugin2.setID(null);
+				sID = getID(plugin2);
+			}
+			g_plugins.put(getID(plugin2), plugin2);
+		}
+		init(plugin, _pluginClass);
+	}
 	public PluginDialog(Plugin plugin, Class<?> _pluginClass) {
 		if (g_plugins == null) {
 			initPlugins(plugin);
 		}
+		init(plugin, _pluginClass);
+	}
+	
+	void init(Plugin plugin, Class<?> _pluginClass) {
 		
-		setTitle("Generic Input Editor");
 		setModal(true);
 		m_plugin = plugin;
 		m_pluginClass = _pluginClass;
+		setTitle(m_plugin.getID() + " Editor");
+		
 		Box mainBox = Box.createVerticalBox();
 		mainBox.add(Box.createVerticalStrut(5));
+		/* add plugin + help button at the top */
 		Box pluginBox = createPluginBox();
-		//pluginBox.setAlignmentX(LEFT_ALIGNMENT);
 		mainBox.add(pluginBox);
 		mainBox.add(Box.createVerticalStrut(5));
 		
+		/* add individual inputs **/
+		List<Input<?>> inputs = null;
 		try {
-			Input<?> [] inputs = plugin.listInputs();
-			for (Input<?> input : inputs) {
+			inputs = plugin.listInputs();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		for (Input<?> input : inputs) {
+			try {
 		        if (input.type() == null) {
 					input.determineClass(m_plugin);
 		        }
@@ -106,13 +134,16 @@ public class PluginDialog extends JDialog {
 				inputEditor.setBorder(new EtchedBorder());
 				mainBox.add(inputEditor);
 				mainBox.add(Box.createVerticalStrut(5));
+			} catch (Exception e) {
+				// ignore
+				System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
+						"input " + input.getName() + " could not be added.");
 			}
-		} catch (Exception e) {
-			// ignore
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
+
 		mainBox.add(Box.createVerticalStrut(5));
 
+		/* add cancel and ok buttons at the bottom */
 		Box cancelOkBox = Box.createHorizontalBox();
 		cancelOkBox.setBorder(new EtchedBorder());
 		JButton okButton = new JButton("Ok");
@@ -141,7 +172,17 @@ public class PluginDialog extends JDialog {
 		this.add(mainBox);
 		Dimension dim = mainBox.getPreferredSize(); 
 		setSize(dim.width + 10, dim.height + 30);
+		
+		PluginDialog.m_position.x += 30;
+		PluginDialog.m_position.y += 30;
+		setLocation(PluginDialog.m_position);				
 	} // c'tor
+	
+	public boolean getOK() {
+		PluginDialog.m_position.x -= 30;
+		PluginDialog.m_position.y -= 30;
+		return m_bOK;
+	}
 
 	/** create box for manipulating the plugin, or ask for help **/
 	Box createPluginBox() {
@@ -151,56 +192,43 @@ public class PluginDialog extends JDialog {
 		Icon _icon = new ImageIcon(url);
 		icon.setIcon(_icon);
 		box.add(icon);
+		box.add(Box.createHorizontalGlue());
 		
 		JLabel label = new JLabel(m_pluginClass.getName().replaceAll(".*\\.", "")+ ":");
 		box.add(label);
 		
-		m_pluginButton = new JButton(m_plugin.getID());
+		m_pluginButton = new JLabel(m_plugin.getID());
 		m_pluginButton.setToolTipText(m_plugin.getID() + " is of type " + m_plugin.getClass().getName() + " Click to change.");
-		m_pluginButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String sClassName = (String) JOptionPane.showInputDialog(null,
-						"Select a constant", "select",
-						JOptionPane.PLAIN_MESSAGE, null,
-						ClassDiscovery.find("beast.core.Plugin", "beast").toArray(new String[0]),
-						null);
-				if (sClassName.equals(m_plugin.getClass().getName())) {
-					return;
-				}
-				try {
-					m_plugin = (Plugin) Class.forName(sClassName).newInstance();
-					m_pluginButton.setText(sClassName.replaceAll(".*\\.", ""));
-					// TODO: replace InputEditors where appropriate.
-					
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Could not change plugin: " +
-							ex.getClass().getName() + " " +
-							ex.getMessage()
-							);
-				}
-			}
-		});
+//		m_pluginButton.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				List<String> sClasses = ClassDiscovery.find(m_pluginClass, "beast"); 
+//				String sClassName = (String) JOptionPane.showInputDialog(null,
+//						"Select another type of " + m_pluginClass.getName().replaceAll(".*\\.", ""), 
+//						"Select",
+//						JOptionPane.PLAIN_MESSAGE, null,
+//						sClasses.toArray(new String[0]),
+//						null);
+//				if (sClassName.equals(m_plugin.getClass().getName())) {
+//					return;
+//				}
+//				try {
+//					m_plugin = (Plugin) Class.forName(sClassName).newInstance();
+//					m_pluginButton.setText(sClassName.replaceAll(".*\\.", ""));
+//					// TODO: replace InputEditors where appropriate.
+//					
+//				} catch (Exception ex) {
+//					JOptionPane.showMessageDialog(null, "Could not change plugin: " +
+//							ex.getClass().getName() + " " +
+//							ex.getMessage()
+//							);
+//				}
+//			}
+//		});
 		box.add(Box.createHorizontalStrut(10));
 		box.add(m_pluginButton);
 		
 		
-		//box.add(Box.createHorizontalGlue());
-		
-//		JButton helpButton = new JButton("Help");
-//		helpButton.setToolTipText("Show help for this plugin");
-//		helpButton.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				setCursor(new Cursor(Cursor.WAIT_CURSOR));
-//				HelpBrowser b = new HelpBrowser(m_plugin.getClass().getName());
-//				b.setSize(800,800);
-//				b.setVisible(true);
-//				b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//			}
-//		});
-//		box.add(helpButton);
 
 		SmallButton helpButton2 = new SmallButton("?", true);
 		helpButton2.setToolTipText("Show help for this plugin");
@@ -217,6 +245,7 @@ public class PluginDialog extends JDialog {
 		});
 		box.add(Box.createHorizontalStrut(10));
 		box.add(helpButton2);
+		box.add(Box.createHorizontalGlue());
 		
 		Box vbox = Box.createVerticalBox();
 		vbox.setBorder(new EtchedBorder());
@@ -227,14 +256,18 @@ public class PluginDialog extends JDialog {
 		return vbox;
 	} // createPluginBox
 	
+	static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
+		/* add ascendants to tabu list */
+		if (sTabuList == null) {
+			sTabuList = new ArrayList<String>();
+		}
+		for (Plugin plugin: listAscendants(parent)) {
+			sTabuList.add(plugin.getID());
+		}
+		System.err.println(sTabuList);
 	
-	/** Select existing plug-in, or create a new one.
-	 * Suppress existing plug-ins with IDs from the tabu list. 
-	 * Return null if nothing is selected.
-	 */
-	public static Plugin pluginSelector(Input<?> input, List<String> sTabuList) {
+		/* collect all plugins in the system, that are not in the tabu list*/
 		List<String> sPlugins = new ArrayList<String>();
-		Class<?> _class = input.type();
 		for (Plugin plugin : g_plugins.values()) {
 			if (input.type().isAssignableFrom(plugin.getClass())) {
 				boolean bIsTabu = false;
@@ -250,51 +283,66 @@ public class PluginDialog extends JDialog {
 				}
 			}
 		}
+		/* add all plugin-classes of type assignable to the input */
 		for(String sClass: ClassDiscovery.find(input.type(), "beast")) {
 			sPlugins.add("new " + sClass);
 		}
-		String sClassName = null;
-		if (sPlugins.size() == 1) {
-			sClassName = sPlugins.get(0);
-		} else {
-			sClassName = (String) JOptionPane.showInputDialog(null,
-				"Select a constant", "select",
-				JOptionPane.PLAIN_MESSAGE, null,
-				sPlugins.toArray(new String[0]),
-				null);
-		}
-		
-		if (sClassName == null) {
-			return null;
-		}
-		if (!sClassName.startsWith("new ")) {
-			return (g_plugins.get(sClassName));
-		}
-		try {
-			Plugin plugin = (Plugin) Class.forName(sClassName.substring(4)).newInstance();
-			g_plugins.put(getID(plugin), plugin);
-			return plugin;
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null, "Could not select plugin: " +
-					ex.getClass().getName() + " " +
-					ex.getMessage()
-					);
-			return null;
-		}
-	} // pluginSelector
+		return sPlugins;
+	} // getAvailablePlugins
 	
-	/** rudimentary test **/
-	public static void main(String [] args) {
-		PluginDialog dlg = new PluginDialog(new MCMC(), Runnable.class);
-		dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		dlg.setVisible(true);
+	/** collect all plugins that can reach this input (actually, it's parent)
+	 * and add them to the tabu list.
+	 */
+	static List<Plugin> listAscendants(Plugin parent) {
+		/* First, calculate outputs for each plugin */
+		HashMap<Plugin, List<Plugin>> outputs = new HashMap<Plugin, List<Plugin>>();
+		for (Plugin plugin : g_plugins.values()) {
+			outputs.put(plugin, new ArrayList<Plugin>());
+		}
+		for (Plugin plugin : g_plugins.values()) {
+			try {
+				for (Input<?> input2: plugin.listInputs()) {
+					Object o = input2.get();
+					if (o != null && o instanceof Plugin) {
+						outputs.get(o).add(plugin);
+					}
+					if (o != null && o instanceof List<?>) {
+						for (Object o2 : (List<?>) o) {
+							if (o2 != null && o2 instanceof Plugin) {
+								outputs.get(o2).add(plugin); 
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		/* process outputs */ 
+		List<Plugin> ascendants = new ArrayList<Plugin>();
+		ascendants.add(parent);
+		boolean bProgress = true;
+		while (bProgress) {
+			bProgress = false;
+			for (int i= 0 ; i < ascendants.size(); i++) {
+				Plugin ascendant = ascendants.get(i);
+				for (Plugin parent2 : outputs.get(ascendant)) {
+					if (!ascendants.contains(parent2)) {
+						ascendants.add(parent2);
+						bProgress = true;
+					}
+				}
+			}
+		}
+		return ascendants;
 	}
 
 	public void initPlugins(Plugin plugin) {
 		g_plugins = new HashMap<String, Plugin>();
 		addPluginToMap(plugin);
 	}
-	void addPluginToMap(Plugin plugin) {
+	
+	static void addPluginToMap(Plugin plugin) {
 		g_plugins.put(getID(plugin), plugin);
 		try {
 		for (Input<?> input : plugin.listInputs()) {
@@ -315,7 +363,8 @@ public class PluginDialog extends JDialog {
 			// ignore
 			System.err.println(e.getClass().getName() + " " + e.getMessage());
 		}
-	}
+	} // addPluginToMap
+	
 	/** return ID of plugin, if no ID is specified, generate an appropriate ID first */
 	static 
 	String getID(Plugin plugin) {
@@ -329,5 +378,36 @@ public class PluginDialog extends JDialog {
 		}
 		return plugin.getID();
 	}
+
+	/** rudimentary test **/
+	public static void main(String [] args) {
+		PluginDialog dlg = null;
+		try {
+			if (args.length == 0) {
+				dlg = new PluginDialog(new MCMC(), Runnable.class);
+			} else if (args.length == 1) {
+				dlg = new PluginDialog((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0]));
+			} else if (args.length == 2) {
+				dlg = new PluginDialog((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[1]));
+			} else {
+				throw new Exception("Incorrect number of arguments");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Usage: " + PluginDialog.class.getName() + " [class [type]]\n" +
+					"where [class] (optional, default MCMC) is a Plugin to edit\n" +
+					"and [type] (optional only if class is specified, default Runnable) the type of the Plugin.\n" +
+					"for example\n" +
+					"");
+			System.exit(0);
+		}
+		dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		dlg.setVisible(true);
+		if (dlg.m_bOK) {
+			Plugin plugin = dlg.m_plugin;
+			String sXML = new XMLProducer().modelToXML(plugin);
+			System.out.println(sXML);
+		}
+	} // main
 } // class PluginDialog
 

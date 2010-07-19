@@ -1217,20 +1217,20 @@ public class Document {
 
     void process(PluginShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         Plugin plugin = shape.m_function;
-        Input<?>[] sInputs = plugin.listInputs();
-        for (int i = 0; i < sInputs.length; i++) {
-            Object o = getInput(plugin, sInputs[i].getName());
+        List<Input<?>> sInputs = plugin.listInputs();
+        for (Input<?> input_ : sInputs) {
+            Object o = getInput(plugin, input_.getName());
             if (o != null) {
                 if (o instanceof List<?>) {
                     for (Object o2 : (List<?>) o) {
-                        addInput(shape, o2, nDepth + 1, sInputs[i].getName());
+                        addInput(shape, o2, nDepth + 1, input_.getName());
                     }
                 } else if (o instanceof Plugin) {
-                    addInput(shape, o, nDepth + 1, sInputs[i].getName());
+                    addInput(shape, o, nDepth + 1, input_.getName());
                 } else {
                     // it is a primitive type
                     String sValue = o + "";
-                    Shape input = shape.getInput(sInputs[i].getName());
+                    Shape input = shape.getInput(input_.getName());
                     if (input != null) {
                         String sLabel = input.getLabel();
                         if (sLabel == null) {
@@ -1579,5 +1579,56 @@ public class Document {
     	}
     	return null;
     } // isRunnable
+
+    /** remove all arrows, then add based on the plugin inputs **/
+    void recalcArrows() {
+    	// remove all arrows
+    	for (int i = m_objects.size()-1; i >=0; i--) {
+    		Shape shape = m_objects.get(i);
+    		if (shape instanceof Arrow) {
+    			m_objects.remove(i);
+    		}
+    	}
+    	// build map for quick resolution of PluginShapes
+    	HashMap<Plugin, PluginShape> map = new HashMap<Plugin, PluginShape>();
+    	for (Shape shape : m_objects) {
+    		if (shape instanceof PluginShape) {
+    			map.put(((PluginShape) shape).m_function, (PluginShape)shape);
+    		}
+    	}
+    	// re-insert arrows, if any
+    	for (int i = m_objects.size()-1; i >=0; i--) {
+    		Shape shape = m_objects.get(i);
+    		if (shape instanceof PluginShape) {
+    			PluginShape headShape = ((PluginShape) shape);
+    			Plugin plugin = headShape.m_function;
+    			try {
+    			List<Input<?>> inputs = plugin.listInputs();
+	    			for (Input<?> input : inputs) {
+	    				if (input.get() != null) {
+	    					if (input.get() instanceof Plugin) {
+	    						Shape tailShape = map.get((Plugin)input.get());
+	    						Arrow arrow = new Arrow(tailShape, headShape, input.getName());
+	    						m_objects.add(arrow);
+	    					}
+	    					if (input.get() instanceof List<?>) {
+	    						for (Object o : (List<?>) input.get()) {
+	    							if (o != null && o instanceof Plugin) {
+	    	    						Shape tailShape = map.get((Plugin)o);
+	    	    						Arrow arrow = new Arrow(tailShape, headShape, input.getName());
+	    	    						m_objects.add(arrow);
+	    							}
+	    						}
+	    					}
+	    				}
+	    			}
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+    		}
+    	}
+    	// recalc coordinates
+    	adjustArrows();
+    } // recalcArrows
     
 } // class Document

@@ -50,6 +50,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -1522,15 +1524,42 @@ public class ModelBuilder extends JPanel {
 				propertiesItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						Shape shape = m_Selection.getSingleSelectionShape();
-						Plugin plugin = ((PluginShape) shape).m_function;
-						
-						PluginDialog dlg = new PluginDialog(plugin, plugin.getClass());
-						dlg.setVisible(true);
-						if (dlg.m_bOK) {
-							// TODO: figure out what to do next
-							// how to edit the diagram?
+						if (shape instanceof PluginShape) {
+							Plugin plugin = ((PluginShape) shape).m_function;
+							
+							List<Plugin> plugins = new ArrayList<Plugin>();
+							for (Shape shape2 : m_doc.m_objects) {
+								if (shape2 instanceof PluginShape) {
+									plugins.add(((PluginShape) shape2).m_function);
+								}
+							}
+							PluginDialog dlg = new PluginDialog(plugin, plugin.getClass(), plugins);
+							dlg.setVisible(true);
+							if (dlg.getOK()) {
+								// add newly created Plug-ins
+								int nNewShapes = 0;
+								if (plugins.size() < PluginDialog.g_plugins.size()) {
+									for (Plugin plugin2 : PluginDialog.g_plugins.values()) {
+										if (!plugins.contains(plugin2)) {
+											try {
+												nNewShapes++;
+												Shape shape2 = new PluginShape(plugin2, m_doc);
+												shape2.m_x = 10;
+												shape2.m_y = nNewShapes * 50;
+												shape2.m_w = 80;
+												m_doc.addNewShape(shape2);
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+										}
+									}
+								}
+								// re-attach all arrows
+								m_Selection.clear();
+								m_doc.recalcArrows();
+							}
+							repaint();
 						}
-						repaint();
 					}
 				});
 				propertiesItem.setEnabled(m_Selection.isSingleSelection());

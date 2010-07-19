@@ -32,8 +32,10 @@ import beast.core.Input;
 import beast.core.Cacheable;
 import beast.core.Plugin;
 import beast.core.State;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.Frequencies;
+import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 
 import java.util.List;
@@ -53,8 +55,8 @@ public class SiteModel extends Plugin implements Cacheable {
     public Input<Integer> gammaCategoryCount = new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
     public Input<RealParameter> shapeParameter = new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
     public Input<RealParameter> invarParameter = new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
-    public Input<SubstitutionModel> m_pSubstModel = new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree");
-    public Input<Frequencies> m_pFreqs = new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root");
+    public Input<SubstitutionModel> m_pSubstModel = new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
+    public Input<Frequencies> m_pFreqs = new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
 
 
     @Override

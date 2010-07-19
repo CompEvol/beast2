@@ -43,9 +43,6 @@ public class Tree extends StateNode implements Loggable {
     
 	@SuppressWarnings("unchecked")
 	public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
-	// pointer to the state to handle traits
-	// TODO: fix this clutch!!!
-	State m_state;
 
 	
 	@Override

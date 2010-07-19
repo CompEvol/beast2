@@ -39,7 +39,7 @@ import beast.core.State;
 import beast.evolution.tree.Tree;
 
 /** Adapted from Weka's HierarchicalClustering class **/
-@Description("Create initial beast.tree by hierarchical clustering, either through one of the classic link methods" +
+@Description("Create initial beast.tree by hierarchical clustering, either through one of the classic link methods " +
 		"or by neighbor joining. The following link methods are supported: " +
 		"<br/>o single link, " +
 		"<br/>o complete link, " +
@@ -50,7 +50,18 @@ import beast.evolution.tree.Tree;
 		"<br/>o adjusted complete link")
 public class ClusterTree extends Tree {
 
-	public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree");
+	public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
+			"Should be one of " + 
+			M_SINGLE + ", " +
+			M_AVERAGE + ", " +
+			M_COMPLETE + ", " +
+			M_UPGMA + ", " +
+			M_MEAN + ", " +
+			M_CENTROID + ", " +
+			M_WARD + ", " +
+			M_ADJCOMPLETE + ", or " +
+			M_NEIGHBORJOINING + "."
+			);
 	public Input<Alignment> m_pData = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
 	public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
 
@@ -61,15 +72,15 @@ public class ClusterTree extends Tree {
 	public void initAndValidate(State state) throws Exception {
 		super.initAndValidate(state);
 		String sType = m_sClusterType.get().toLowerCase();
-		if (sType.equals("single")) {m_nLinkType = SINGLE;}
-		else if (sType.equals("complete")) {m_nLinkType = COMPLETE;}
-		else if (sType.equals("average")) {m_nLinkType = AVERAGE;}
-		else if (sType.equals("upgma")) {m_nLinkType = AVERAGE;}
-		else if (sType.equals("mean")) {m_nLinkType = MEAN;}
-		else if (sType.equals("centroid")) {m_nLinkType = CENTROID;}
-		else if (sType.equals("ward")) {m_nLinkType = WARD;}
-		else if (sType.equals("adjcomplete")) {m_nLinkType = ADJCOMLPETE;}
-		else if (sType.equals("neighborjoining")) {m_nLinkType = NEIGHBOR_JOINING;m_bDistanceIsBranchLength = true;}
+		if (sType.equals(M_SINGLE)) {m_nLinkType = SINGLE;}
+		else if (sType.equals(M_COMPLETE)) {m_nLinkType = COMPLETE;}
+		else if (sType.equals(M_AVERAGE)) {m_nLinkType = AVERAGE;}
+		else if (sType.equals(M_UPGMA)) {m_nLinkType = AVERAGE;}
+		else if (sType.equals(M_MEAN)) {m_nLinkType = MEAN;}
+		else if (sType.equals(M_CENTROID)) {m_nLinkType = CENTROID;}
+		else if (sType.equals(M_WARD)) {m_nLinkType = WARD;}
+		else if (sType.equals(M_ADJCOMPLETE)) {m_nLinkType = ADJCOMLPETE;}
+		else if (sType.equals(M_NEIGHBORJOINING)) {m_nLinkType = NEIGHBOR_JOINING;m_bDistanceIsBranchLength = true;}
 		else {
 			System.err.println("Warning: unrecognized cluster type. Using Average/UPGMA.");
 			m_nLinkType = AVERAGE;
@@ -84,6 +95,15 @@ public class ClusterTree extends Tree {
 		//return new NodeData();
 	}
 
+	final static String M_SINGLE = "single";
+	final static String M_AVERAGE = "average";
+	final static String M_COMPLETE = "complete";
+	final static String M_UPGMA = "upgma";
+	final static String M_MEAN = "mean";
+	final static String M_CENTROID = "centroid";
+	final static String M_WARD = "ward";
+	final static String M_ADJCOMPLETE = "adjcomplete";
+	final static String M_NEIGHBORJOINING = "neighborjoining";
 	/** the various link types */
 	final static int SINGLE = 0;
 	final static int COMPLETE = 1;

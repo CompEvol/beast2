@@ -29,6 +29,8 @@ public class SmallButton extends JButton {
 		setBackground(new Color(128,128,255));
 		setPreferredSize(new Dimension(15,15));
 		setSize(15,15);
+		setMinimumSize(new Dimension(15,15));
+		setMaximumSize(new Dimension(15,15));
 		setEnabled(bIsEnabled);
 	} // c'tor
 
@@ -40,7 +42,7 @@ public class SmallButton extends JButton {
 		int s=14;
 		if (isEnabled()) {
 			if (m_bPressed) {
-				GradientPaint m_gradientPaint = new GradientPaint(new Point(0, 0), Color.WHITE, new Point(getWidth(), getHeight()), getBackground().darker().darker());
+				GradientPaint m_gradientPaint = new GradientPaint(new Point(5, 5), Color.WHITE, new Point(getWidth(), getHeight()), getBackground().darker().darker());
 				((Graphics2D) g).setPaint(m_gradientPaint);
 			} else {
 				//g.setColor(getBackground());
