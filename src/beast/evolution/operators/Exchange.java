@@ -51,7 +51,6 @@ package beast.evolution.operators;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -70,7 +69,7 @@ public class Exchange extends TreeOperator {
     public Input<Boolean> m_bIsNarrow = new Input<Boolean>("isNarrow", "if true (default) a narrow exchange is performed, otherwise a wide exchange", new Boolean(true));
 
     @Override
-    public void initAndValidate(State state) {
+    public void initAndValidate() {
     }
 
     @Override

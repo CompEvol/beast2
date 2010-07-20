@@ -2,7 +2,6 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 
 import java.util.Collections;
@@ -48,7 +47,7 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
     // Public stuff
     //
 
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         if (popSizeParameter.get() != null) {
             popSizeParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
         }

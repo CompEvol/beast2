@@ -31,7 +31,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Cacheable;
 import beast.core.Plugin;
-import beast.core.State;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.Frequencies;
@@ -60,7 +59,7 @@ public class SiteModel extends Plugin implements Cacheable {
 
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
 
         if (muParameter.get() != null) {
             muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);

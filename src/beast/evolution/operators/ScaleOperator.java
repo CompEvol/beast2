@@ -27,7 +27,6 @@ package beast.evolution.operators;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -49,7 +48,7 @@ public class ScaleOperator extends Operator {
     boolean m_bIsTreeScaler = true;
     
     @Override
-    public void initAndValidate(State state) {
+    public void initAndValidate() {
         // todo : implement this properly
         m_fScaleFactor = m_pScaleFactor.get();
         m_bIsTreeScaler = (m_pTree.get() != null);

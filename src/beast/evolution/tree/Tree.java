@@ -42,8 +42,7 @@ public class Tree extends StateNode implements Loggable {
 
 
     @Override
-    public void initAndValidate(State state) throws Exception {
-        m_state = state;
+    public void initAndValidate() throws Exception {
     }
 
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;

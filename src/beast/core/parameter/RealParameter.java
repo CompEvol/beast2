@@ -37,7 +37,7 @@ public class RealParameter extends Parameter<Double> {
         lowerValueInput.setValue(lower, this);
         upperValueInput.setValue(upper, this);
         m_nDimension.setValue(dimension, this);
-        initAndValidate(null);
+        initAndValidate();
     }
 
 
@@ -46,7 +46,7 @@ public class RealParameter extends Parameter<Double> {
     }
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         m_fLower = lowerValueInput.get();
         m_fUpper = upperValueInput.get();
 
@@ -57,7 +57,7 @@ public class RealParameter extends Parameter<Double> {
         for (int i = 0; i < values.length; i++) {
             values[i] = m_pValues.get();
         }
-        super.initAndValidate(state);
+        super.initAndValidate();
     }
 
 //    public void setValue(Double fValue) throws Exception {

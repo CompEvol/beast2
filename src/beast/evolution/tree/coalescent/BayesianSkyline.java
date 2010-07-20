@@ -33,8 +33,6 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     double[] coalescentTimes;
     int[] cumulativeGroupSizes;
 
-    public BayesianSkyline() {
-    }
 
     /**
      * This constructor is only used for testing purposes
@@ -43,21 +41,25 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
      * @param groupSizes
      * @param tree
      */
-    public BayesianSkyline(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
+     public BayesianSkyline() {}
+     public BayesianSkyline(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
+    	 super(populationSize, groupSizes, tree);
+     }
+//    public BayesianSkyline(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
+//
+//        popSizeParamInput.setValue(populationSize, this);
+//        groupSizeParamInput.setValue(groupSizes, this);
+//        treeInput.setValue(tree, this);
+//        initAndValidate();
+//    }
 
-        popSizeParamInput.setValue(populationSize, this);
-        groupSizeParamInput.setValue(groupSizes, this);
-        treeInput.setValue(tree, this);
-        initAndValidate(null);
+    public void initAndValidate() throws Exception {
+
+        prepare();
     }
 
-    public void initAndValidate(State state) throws Exception {
-
-        prepare(state);
-    }
-
-    public void prepare(State state) {
-        super.prepare(state);
+    public void prepare() {
+        super.prepare();
         popSizes = popSizeParamInput.get();//state.getParameter(popSizeParamInput);
         groupSizes = groupSizeParamInput.get();//(IntegerParameter) state.getStateNode(groupSizeParamInput);
         tree = treeInput.get();//(Tree) state.getStateNode(treeInput);

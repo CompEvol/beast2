@@ -43,7 +43,7 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     }
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         m_bIsDirty = new boolean[m_nDimension.get()];
     }
 

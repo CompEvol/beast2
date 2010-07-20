@@ -50,7 +50,6 @@
 package beast.evolution.operators;
 
 import beast.core.Description;
-import beast.core.State;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -66,7 +65,7 @@ public class Uniform extends TreeOperator {
 
 
     @Override
-    public void initAndValidate(State state) {
+    public void initAndValidate() {
     }
 
     /**

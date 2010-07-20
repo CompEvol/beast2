@@ -30,7 +30,6 @@ import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
@@ -40,7 +39,7 @@ public class HKY extends SubstitutionModel {
     public Input<RealParameter> m_kappa = new Input<RealParameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         initialiseEigen();
     }
 

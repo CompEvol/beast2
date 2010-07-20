@@ -3,7 +3,6 @@ package beast.inference.mle;
 import beast.core.Description;
 import beast.core.MCMC;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.Runnable;
 
 /**
@@ -24,7 +23,7 @@ public class PathSamplingMLE extends Runnable {
     public Input<MCMC> m_originalMCMC = new Input<MCMC>("originalMCMC",
                                                "MCMC sampler to sample with...",
                                                Input.Validate.REQUIRED);
-    public void initAndValidate(State state){
+    public void initAndValidate(){
 
     }
     public void run() {

@@ -29,7 +29,6 @@ package beast.evolution.speciation;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
@@ -56,8 +55,8 @@ public class BirthDeathGernhard08Model extends YuleModel {
     public Input<String> m_pType = new Input<String>("type", "tree type, should be one of unscaled, timesonly, oriented and labeled (default unscaled)", new String("unscaled"));
     
     @Override
-    public void initAndValidate(State state) throws Exception {
-    	super.initAndValidate(state);
+    public void initAndValidate() throws Exception {
+    	super.initAndValidate();
     	String sType = m_pType.get().toLowerCase();
     	if (sType.equals("unscaled")) {
     		type = TreeType.UNSCALED;

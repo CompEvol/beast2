@@ -28,7 +28,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
-import beast.core.State;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +65,7 @@ public class Alignment extends Plugin {
     	}
         m_nStateCount.setValue(stateCount, this);
         m_sDataType.setValue(dataType, this);
-        initAndValidate(null);
+        initAndValidate();
     }
 
 
@@ -80,7 +79,7 @@ public class Alignment extends Plugin {
     protected int[] m_nPatternIndex;
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
 
         // grab data from child sequences
         for (Sequence seq : m_pSequences.get()) {

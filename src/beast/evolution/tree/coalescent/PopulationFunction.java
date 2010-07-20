@@ -117,10 +117,11 @@ public interface PopulationFunction extends UnivariateRealFunction {
          */
         public Abstract() {
         }
+        public Abstract(Object ... objects) throws Exception {super(objects);}
 
         // general functions
-        public void initAndValidate(State state) throws Exception {
-            prepare(state);
+        public void initAndValidate() throws Exception {
+            prepare();
         }
 
 
@@ -184,7 +185,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
             // empty - may be overridden
         }
 
-        public void prepare(final State state) {
+        public void prepare() {
             // empty - may be overridden
         }
 

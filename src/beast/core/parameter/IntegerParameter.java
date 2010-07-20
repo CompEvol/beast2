@@ -38,7 +38,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         lowerValueInput.setValue(lower, this);
         upperValueInput.setValue(upper, this);
         m_nDimension.setValue(dimension, this);
-        initAndValidate(null);
+        initAndValidate();
     }
 
 
@@ -47,14 +47,14 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     }
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         m_fLower = lowerValueInput.get();
         m_fUpper = upperValueInput.get();
         values = new Integer[m_nDimension.get()];
         for (int i = 0; i < values.length; i++) {
             values[i] = m_pValues.get();
         }
-        super.initAndValidate(state);
+        super.initAndValidate();
     }
 
     /**

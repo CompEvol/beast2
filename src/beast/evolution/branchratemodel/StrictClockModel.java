@@ -2,7 +2,6 @@ package beast.evolution.branchratemodel;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 
@@ -16,7 +15,7 @@ public class StrictClockModel extends BranchRateModel.Base {
     public Input<RealParameter> muParameter = new Input<RealParameter>("clock.rate", "the clock rate (defaults to 1.0)");
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
     	RealParameter muParameter = this.muParameter.get();
         if (muParameter != null) {
         	muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);

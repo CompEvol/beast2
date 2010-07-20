@@ -156,7 +156,7 @@ public class TreeLikelihood extends Distribution {
     BranchRateModel.Base m_branchRateModel;
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
         	//m_likelihoodCore = new BeerLikelihoodCore4();

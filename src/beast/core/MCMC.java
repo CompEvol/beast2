@@ -53,7 +53,7 @@ public class MCMC extends Runnable {
     List<Cacheable> m_cacheables;
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         System.out.println("======================================================");
         System.out.println("Please cite the following when publishing this model:\n");
         System.out.println(getCitations());

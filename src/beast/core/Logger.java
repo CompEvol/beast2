@@ -62,7 +62,7 @@ public class Logger extends Plugin {
     long m_nStartLogTime;
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         m_loggers = m_pLoggers.get();
         if (m_loggers.size() == 0) {
             throw new Exception("Logger with nothing to log specified");

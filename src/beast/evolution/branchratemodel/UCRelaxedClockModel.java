@@ -4,7 +4,6 @@ package beast.evolution.branchratemodel;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -23,7 +22,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
 
         tree = treeInput.get();
 

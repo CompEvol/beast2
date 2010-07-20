@@ -27,7 +27,6 @@ package beast.util;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -67,8 +66,8 @@ public class TreeParser extends Tree {
      * assure the class behaves properly, even when inputs are not specified *
      */
     @Override
-    public void initAndValidate(State state) throws Exception {
-        super.initAndValidate(state);
+    public void initAndValidate() throws Exception {
+        super.initAndValidate();
         if (m_oData.get() != null) {
             m_sLabels = m_oData.get().m_sTaxaNames;
         } else {
@@ -85,7 +84,7 @@ public class TreeParser extends Tree {
 
         //m_oData.setValue(alignment, this);
         m_oNewick.setValue(newick, this);
-        initAndValidate(null);
+        initAndValidate();
     }
 
     Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {

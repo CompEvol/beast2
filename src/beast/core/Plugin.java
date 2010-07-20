@@ -37,6 +37,25 @@ import java.util.List;
         isInheritable = false
 )
 public class Plugin {
+	
+	/* default constructor */
+	public Plugin() {}
+	
+	/* constructor utility for testing purposes only
+	 * Assigns objects to inputs in order in which the
+	 * inputs are declared in the class, then calls
+	 * initAndValidate().
+	 */
+	public Plugin(Object...objects) throws Exception {
+		List<Input<?>> inputs = listInputs();
+		int i = 0;
+		for(Object object : objects) {
+			inputs.get(i).setValue(object, this);
+		}
+		initAndValidate();
+	} // c'tor
+	
+	
     // identifiable
     protected String m_sID;
 
@@ -210,10 +229,9 @@ public class Plugin {
     } // getInput
 
     /**
-     * @param state
      * @throws Exception
      */
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         // todo: AR - Why is this not an abstract method? Does Plugin need to be concrete?
         throw new Exception("Plugin.initAndValidate(): Every plugin should implement this method to assure the class behaves, even when inputs are not specified");
     }

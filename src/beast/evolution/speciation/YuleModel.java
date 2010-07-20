@@ -2,7 +2,6 @@ package beast.evolution.speciation;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -21,8 +20,8 @@ public class YuleModel extends SpeciationLikelihood {
     protected boolean conditionalOnRoot;
     
     @Override
-    public void initAndValidate(State state) throws Exception {
-    	super.initAndValidate(state);
+    public void initAndValidate() throws Exception {
+    	super.initAndValidate();
     	conditionalOnRoot = m_pConditionlOnRoot.get();
     }
 

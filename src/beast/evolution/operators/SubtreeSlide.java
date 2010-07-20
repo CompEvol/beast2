@@ -52,7 +52,6 @@ package beast.evolution.operators;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -79,7 +78,7 @@ public class SubtreeSlide extends TreeOperator {
 //    public Input<Boolean> m_scaledDirichletBranches= new Input<Boolean>("scaledDirichletBranches","scaledDirichletBranches???", new Boolean(true));
 
     @Override
-    public void initAndValidate(State state) {
+    public void initAndValidate() {
         m_fSize = m_size.get();
     }
 

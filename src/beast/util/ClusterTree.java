@@ -35,7 +35,6 @@ import beast.evolution.alignment.Alignment;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
-import beast.core.State;
 import beast.evolution.tree.Tree;
 
 /** Adapted from Weka's HierarchicalClustering class **/
@@ -69,8 +68,8 @@ public class ClusterTree extends Tree {
 	protected boolean m_bDistanceIsBranchLength = false;
 
 	@Override
-	public void initAndValidate(State state) throws Exception {
-		super.initAndValidate(state);
+	public void initAndValidate() throws Exception {
+		super.initAndValidate();
 		String sType = m_sClusterType.get().toLowerCase();
 		if (sType.equals(M_SINGLE)) {m_nLinkType = SINGLE;}
 		else if (sType.equals(M_COMPLETE)) {m_nLinkType = COMPLETE;}

@@ -36,7 +36,7 @@ public class State extends Plugin {
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
 
     @Override
-    public void initAndValidate(State state) {
+    public void initAndValidate() {
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
         // allocate memory for storing the state
         storedStateNode = new StateNode[stateNode.length];

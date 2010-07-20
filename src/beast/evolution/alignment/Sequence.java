@@ -27,7 +27,6 @@ package beast.evolution.alignment;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
-import beast.core.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +51,12 @@ public class Sequence extends Plugin {
     public Sequence(String taxon, String sequence) throws Exception {
         m_sTaxon.setValue(taxon, this);
         m_sData.setValue(sequence, this);
-        initAndValidate(null);
+        initAndValidate();
     }
 
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
     } // initAndValidate
 
 

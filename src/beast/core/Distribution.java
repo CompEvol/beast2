@@ -77,7 +77,7 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
     }
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         // nothing to do
     }
 

@@ -28,7 +28,6 @@ package beast.evolution.substitutionmodel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
-import beast.core.State;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 
@@ -37,7 +36,7 @@ public class Frequencies extends Plugin {
 	public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated", Validate.REQUIRED);
 
 	@Override
-	public void initAndValidate(State state) throws Exception {
+	public void initAndValidate() throws Exception {
 		if (m_data.get() == null) {
 			throw new Exception("data input is not specified");
 		}

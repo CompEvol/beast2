@@ -27,7 +27,6 @@ package beast.evolution.substitutionmodel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 
 import java.util.Arrays;
@@ -42,7 +41,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel {
     public Input<Integer> m_pRelativeTo = new Input<Integer>("relativeto", "index of rate which equals 1 while other are rates relative to this one", new Integer(0));
 
     @Override
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
         //setStateCount(m_pData.get().getMaxStateCount());
         setStateCount(m_pFreqs.get().getFreqs().length);
 

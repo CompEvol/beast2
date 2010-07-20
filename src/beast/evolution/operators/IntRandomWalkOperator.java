@@ -3,7 +3,6 @@ package beast.evolution.operators;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.util.Randomizer;
 
@@ -15,7 +14,7 @@ public class IntRandomWalkOperator extends Operator {
 
     int windowSize = 1;
 
-    public void initAndValidate(State state) {
+    public void initAndValidate() {
         windowSize = windowSizeInput.get();
     }
 

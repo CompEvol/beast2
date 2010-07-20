@@ -2,7 +2,6 @@ package beast.math.distributions;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 
 /**
@@ -14,7 +13,7 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     public Input<RealParameter> MParameter = new Input<RealParameter>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
     public Input<RealParameter> SParameter = new Input<RealParameter>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
 
-    public void initAndValidate(State state) throws Exception {
+    public void initAndValidate() throws Exception {
 
         if (MParameter.get() != null) {
             if (MParameter.get().getLower() == null) {
