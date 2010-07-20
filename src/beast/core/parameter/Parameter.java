@@ -24,11 +24,7 @@
 */
 package beast.core.parameter;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.State;
-import beast.core.StateNode;
+import beast.core.*;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -43,13 +39,14 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     /**
      * constructors *
      */
-    public Parameter() {}
-    
+    public Parameter() {
+    }
+
     @Override
     public void initAndValidate(State state) throws Exception {
-    	m_bIsDirty = new boolean[m_nDimension.get()];
+        m_bIsDirty = new boolean[m_nDimension.get()];
     }
-    
+
 
     /**
      * upper & lower bound *
@@ -63,9 +60,12 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     /**
      * isDirty flags for individual elements in high dimensional parameters
      */
-    protected boolean [] m_bIsDirty;
-    public boolean isDirty(int iParam) {return m_bIsDirty[iParam];}
-    
+    protected boolean[] m_bIsDirty;
+
+    public boolean isDirty(int iParam) {
+        return m_bIsDirty[iParam];
+    }
+
     /** number of the id, to find it quickly in the list of parameters of the State **/
     /**
      * initialised by State.initAndValidate *
@@ -140,24 +140,23 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         return buf.toString();
     }
 
-    /** Loggable interface implementation follows (partly) **/
-    
-    @Override
-    public void init(State state, PrintStream out) throws Exception {
-		  int nValues = getDimension();
-		  if (nValues == 1) {
-		          out.print(getID() + "\t");
-		  } else {
-		          for (int iValue = 0; iValue < nValues; iValue++) {
-		              out.print(getID() + iValue + "\t");
-		          }
-		  }
-    }
-    
+    /**
+     * Loggable interface implementation follows (partly) *
+     */
 
-    @Override
+    public void init(State state, PrintStream out) throws Exception {
+        int nValues = getDimension();
+        if (nValues == 1) {
+            out.print(getID() + "\t");
+        } else {
+            for (int iValue = 0; iValue < nValues; iValue++) {
+                out.print(getID() + iValue + "\t");
+            }
+        }
+    }
+
     public void close(PrintStream out) {
-    	// nothing to do
+        // nothing to do
     }
 
 

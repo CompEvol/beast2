@@ -33,6 +33,24 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     double[] coalescentTimes;
     int[] cumulativeGroupSizes;
 
+    public BayesianSkyline() {
+    }
+
+    /**
+     * This constructor is only used for testing purposes
+     *
+     * @param populationSize
+     * @param groupSizes
+     * @param tree
+     */
+    public BayesianSkyline(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
+
+        popSizeParamInput.setValue(populationSize, this);
+        groupSizeParamInput.setValue(groupSizes, this);
+        treeInput.setValue(tree, this);
+        initAndValidate(null);
+    }
+
     public void initAndValidate(State state) throws Exception {
 
         prepare(state);

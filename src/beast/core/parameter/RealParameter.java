@@ -13,11 +13,33 @@ import java.io.PrintStream;
  */
 
 @Description("A real-valued parameter represents a value (or array of values if the dimension is larger than one) " +
-		"in the state space that can be changed by operators.")
+        "in the state space that can be changed by operators.")
 public class RealParameter extends Parameter<Double> {
     public Input<Double> m_pValues = new Input<Double>("value", "start value for this parameter");
     public Input<Double> lowerValueInput = new Input<Double>("lower", "lower value for this parameter");
     public Input<Double> upperValueInput = new Input<Double>("upper", "upper value for this parameter");
+
+    public RealParameter() {
+    }
+
+    /**
+     * Constructor for testing.
+     *
+     * @param value
+     * @param lower
+     * @param upper
+     * @param dimension
+     * @throws Exception
+     */
+    public RealParameter(Double value, Double lower, Double upper, Integer dimension) throws Exception {
+
+        m_pValues.setValue(value, this);
+        lowerValueInput.setValue(lower, this);
+        upperValueInput.setValue(upper, this);
+        m_nDimension.setValue(dimension, this);
+        initAndValidate(null);
+    }
+
 
     public Double getValue() {
         return values[0];
@@ -52,7 +74,7 @@ public class RealParameter extends Parameter<Double> {
     /**
      * deep copy *
      */
-    @Override 
+    @Override
     public Parameter<?> copy() {
         RealParameter copy = new RealParameter();
         copy.setID(getID());
@@ -65,9 +87,9 @@ public class RealParameter extends Parameter<Double> {
         return copy;
     }
 
-    @Override 
+    @Override
     public void assignTo(StateNode other) {
-    	RealParameter copy = (RealParameter) other;
+        RealParameter copy = (RealParameter) other;
         copy.setID(getID());
         copy.index = index;
         copy.values = new java.lang.Double[values.length];
@@ -76,8 +98,7 @@ public class RealParameter extends Parameter<Double> {
         copy.m_fUpper = m_fUpper;
         copy.m_bIsDirty = new boolean[values.length];
     }
-    
-    @Override
+
     public void log(int nSample, State state, PrintStream out) {
         RealParameter var = (RealParameter) getCurrent();//state.getStateNode(m_sID);
         int nValues = var.getDimension();

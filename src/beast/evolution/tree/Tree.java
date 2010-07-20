@@ -25,11 +25,7 @@
 package beast.evolution.tree;
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.State;
-import beast.core.StateNode;
+import beast.core.*;
 import beast.core.parameter.Parameter;
 
 import java.io.PrintStream;
@@ -40,17 +36,17 @@ import java.util.List;
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
 public class Tree extends StateNode implements Loggable {
-    
-	@SuppressWarnings("unchecked")
-	public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
 
-	
-	@Override
-	public void initAndValidate(State state) throws Exception {
-		m_state = state;
-	}
-	
-	public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
+    @SuppressWarnings("unchecked")
+    public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
+
+
+    @Override
+    public void initAndValidate(State state) throws Exception {
+        m_state = state;
+    }
+
+    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
     int nodeCount = -1;
 
@@ -98,7 +94,7 @@ public class Tree extends StateNode implements Loggable {
             return getNode(iNodeNr, node.m_right);
         }
     } // getNode
-    
+
 
     /**
      * copy meta data matching sPattern to double array
@@ -139,12 +135,12 @@ public class Tree extends StateNode implements Loggable {
 //        tree.m_state = m_state;
         return tree;
     }
-    
+
     @Override
     public void assignTo(StateNode other) {
-    	Tree tree = (Tree) other;
-    	Node [] nodes = new Node[nodeCount];
-    	listNodes(tree.root, nodes);
+        Tree tree = (Tree) other;
+        Node[] nodes = new Node[nodeCount];
+        listNodes(tree.root, nodes);
         tree.m_sID = m_sID;
         tree.index = index;
         root.assignTo(nodes);
@@ -153,15 +149,15 @@ public class Tree extends StateNode implements Loggable {
         tree.treeTraitsInput = treeTraitsInput;
         //tree.m_state = m_state;
     }
-    
+
     void listNodes(Node node, Node[] nodes) {
-    	nodes[node.getNr()] = node;
-    	if (!node.isLeaf()) {
-    		listNodes(node.m_left, nodes);
-    		listNodes(node.m_right, nodes);
-    	}
+        nodes[node.getNr()] = node;
+        if (!node.isLeaf()) {
+            listNodes(node.m_left, nodes);
+            listNodes(node.m_right, nodes);
+        }
     }
-    
+
     public void makeDirty(int nDirt) {
         root.makeAllDirty(nDirt);
     }
@@ -169,35 +165,37 @@ public class Tree extends StateNode implements Loggable {
     public String toString() {
         return root.toString();
     }
-    
-    /** synchronise tree nodes with its traits stored in an array **/
-	public void syncTreeWithTraitsInState() {
-		boolean bSyncNeeded = false;
-		for (Parameter<?> p : treeTraitsInput.get()) {
-			p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
-			if (p.isDirty()) {
-				bSyncNeeded = true;
-			}
-		}	
-		if (bSyncNeeded) {
-			syncTreeWithTraits(getRoot());
-		}
-	} // syncTreeWithTraitsInState
 
-	void syncTreeWithTraits(Node node) {
-		for (Parameter<?> p : treeTraitsInput.get()) {
-			p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
-			int iNode = Math.abs(node.getNr());
-			if (p.isDirty(iNode)) {
-				node.setMetaData(p.getID(), p.getValue(iNode));
-			}
-		}
-		if (!node.isLeaf()) {
-			syncTreeWithTraits(node.m_left);
-			syncTreeWithTraits(node.m_right);
-		}
-	} // syncTreeWithTraits
-	
+    /**
+     * synchronise tree nodes with its traits stored in an array *
+     */
+    public void syncTreeWithTraitsInState() {
+        boolean bSyncNeeded = false;
+        for (Parameter<?> p : treeTraitsInput.get()) {
+            p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+            if (p.isDirty()) {
+                bSyncNeeded = true;
+            }
+        }
+        if (bSyncNeeded) {
+            syncTreeWithTraits(getRoot());
+        }
+    } // syncTreeWithTraitsInState
+
+    void syncTreeWithTraits(Node node) {
+        for (Parameter<?> p : treeTraitsInput.get()) {
+            p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+            int iNode = Math.abs(node.getNr());
+            if (p.isDirty(iNode)) {
+                node.setMetaData(p.getID(), p.getValue(iNode));
+            }
+        }
+        if (!node.isLeaf()) {
+            syncTreeWithTraits(node.m_left);
+            syncTreeWithTraits(node.m_right);
+        }
+    } // syncTreeWithTraits
+
     /** Loggable interface implementation follows **/
     /**
      * print translate block for NEXUS beast.tree file *
@@ -216,28 +214,27 @@ public class Tree extends StateNode implements Loggable {
         }
 
     }
-    
-    /** Loggable implementation follows **/
-	@Override
-	public void init(State state, PrintStream out) throws Exception {
-		out.println("#NEXUS\n");
-		out.println("Begin trees");
-		Node node = getRoot();
-		out.println("\tTranslate");
-		printTranslate(node, out, getNodeCount() / 2);
-		out.print(";");
-	}
 
-	@Override
-	public void log(int nSample, State state, PrintStream out) {
-		Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
-		out.print("tree STATE_" + nSample + " = ");
-		out.print(tree.getRoot().toString());
-		out.print(";");
-	}
+    /**
+     * Loggable implementation follows *
+     */
+    public void init(State state, PrintStream out) throws Exception {
+        out.println("#NEXUS\n");
+        out.println("Begin trees");
+        Node node = getRoot();
+        out.println("\tTranslate");
+        printTranslate(node, out, getNodeCount() / 2);
+        out.print(";");
+    }
 
-	@Override
-	public void close(PrintStream out) {
-      out.print("End;");
-	}
+    public void log(int nSample, State state, PrintStream out) {
+        Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
+        out.print("tree STATE_" + nSample + " = ");
+        out.print(tree.getRoot().toString());
+        out.print(";");
+    }
+
+    public void close(PrintStream out) {
+        out.print("End;");
+    }
 } // class Tree
