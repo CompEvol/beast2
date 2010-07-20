@@ -117,7 +117,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
          */
         public Abstract() {
         }
-        public Abstract(Object ... objects) throws Exception {super(objects);}
+        //public void init(Object ... objects) throws Exception {super(objects);}
 
         // general functions
         public void initAndValidate() throws Exception {

@@ -42,8 +42,8 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
      * @param tree
      */
      public BayesianSkyline() {}
-     public BayesianSkyline(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
-    	 super(populationSize, groupSizes, tree);
+     public void init(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
+    	 super.init(populationSize, groupSizes, tree);
      }
 //    public BayesianSkyline(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
 //

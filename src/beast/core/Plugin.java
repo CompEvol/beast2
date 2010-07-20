@@ -41,16 +41,19 @@ public class Plugin {
 	/* default constructor */
 	public Plugin() {}
 	
-	/* constructor utility for testing purposes only
+	/* Utility for testing purposes only.
+	 * This cannot be done in a constructor, since the 
+	 * inputs will not exist yet at that point in time
+	 * and listInputs returns a list of nulls!
 	 * Assigns objects to inputs in order in which the
 	 * inputs are declared in the class, then calls
 	 * initAndValidate().
 	 */
-	public Plugin(Object...objects) throws Exception {
+	public void init(Object...objects) throws Exception {
 		List<Input<?>> inputs = listInputs();
 		int i = 0;
 		for(Object object : objects) {
-			inputs.get(i).setValue(object, this);
+			inputs.get(i++).setValue(object, this);
 		}
 		initAndValidate();
 	} // c'tor

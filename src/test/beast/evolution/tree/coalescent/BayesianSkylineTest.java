@@ -38,7 +38,8 @@ public class BayesianSkylineTest extends TestCase {
 
         TreeParser tree = new TreeParser("(((1:1,2:1):2.5,(3:1.5,4:1.5):2):2,5:5.5);");
 
-        BayesianSkyline skyline = new BayesianSkyline(popSize, groupSize, tree);
+        BayesianSkyline skyline = new BayesianSkyline();
+        skyline.init(popSize, groupSize, tree);
 
         assertEquals(skyline.getPopSize(0.01), 1.0);
         assertEquals(skyline.getPopSize(1.49), 1.0);
