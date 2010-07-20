@@ -214,7 +214,15 @@ public class XMLParser {
         if (children.getLength() == 0) {
         	throw new Exception("Need at least one child element");
         }
-        Plugin plugin = (Plugin) createObject(children.item(children.getLength()-1), PLUGIN_CLASS, null);
+        int i = children.getLength()-1;
+        while (i >= 0 && children.item(i).getNodeType() != Node.ELEMENT_NODE) {
+        	i--;
+        }
+        if (i < 0) {
+        	throw new Exception("Need at least one child element");
+        }
+
+        Plugin plugin = (Plugin) createObject(children.item(i), PLUGIN_CLASS, null);
         return plugin;
     } // parseFragment
     

@@ -5,11 +5,13 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.swing.Box;
 import javax.swing.Icon;
@@ -385,6 +387,20 @@ public class PluginDialog extends JDialog {
 		try {
 			if (args.length == 0) {
 				dlg = new PluginDialog(new MCMC(), Runnable.class);
+			} else if (args[0].equals("-x")) {
+				StringBuilder text = new StringBuilder();
+			    String NL = System.getProperty("line.separator");
+			    Scanner scanner = new Scanner(new File(args[1]));
+			    try {
+			      while (scanner.hasNextLine()){
+			        text.append(scanner.nextLine() + NL);
+			      }
+			    }
+			    finally{
+			      scanner.close();
+			    }
+				Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString());
+				dlg = new PluginDialog(plugin, plugin.getClass());
 			} else if (args.length == 1) {
 				dlg = new PluginDialog((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0]));
 			} else if (args.length == 2) {
@@ -394,7 +410,7 @@ public class PluginDialog extends JDialog {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Usage: " + PluginDialog.class.getName() + " [class [type]]\n" +
+			System.err.println("Usage: " + PluginDialog.class.getName() + " [-x file ] [class [type]]\n" +
 					"where [class] (optional, default MCMC) is a Plugin to edit\n" +
 					"and [type] (optional only if class is specified, default Runnable) the type of the Plugin.\n" +
 					"for example\n" +

@@ -24,19 +24,19 @@ public class BayesianSkylineTest extends TestCase {
         RealParameter popSize = new RealParameter(1.0, 0.0, 10.0, 2);
         IntegerParameter groupSize = new IntegerParameter(2, 1, 4, 2);
 
-        List<Sequence> sequences = new ArrayList<Sequence>();
-
-        sequences.add(new Sequence("A", ""));
-        sequences.add(new Sequence("B", ""));
-        sequences.add(new Sequence("C", ""));
-        sequences.add(new Sequence("D", ""));
-        sequences.add(new Sequence("E", ""));
+//        List<Sequence> sequences = new ArrayList<Sequence>();
+//
+//        sequences.add(new Sequence("A", ""));
+//        sequences.add(new Sequence("B", ""));
+//        sequences.add(new Sequence("C", ""));
+//        sequences.add(new Sequence("D", ""));
+//        sequences.add(new Sequence("E", ""));
 
         popSize.setValue(1, 2.0);
 
-        Alignment alignment = new Alignment(sequences, 4, "nucleotide");
+//        Alignment alignment = new Alignment(sequences, 4, "nucleotide");
 
-        TreeParser tree = new TreeParser(alignment, "(((A:1, B:1):2.5,(C:1.5, D:1.5):2):2,D:5.5);");
+        TreeParser tree = new TreeParser("(((1:1,2:1):2.5,(3:1.5,4:1.5):2):2,5:5.5);");
 
         BayesianSkyline skyline = new BayesianSkyline(popSize, groupSize, tree);
 

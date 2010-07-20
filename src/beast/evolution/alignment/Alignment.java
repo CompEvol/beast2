@@ -61,7 +61,9 @@ public class Alignment extends Plugin {
      */
     public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) throws Exception {
 
-        m_pSequences.setValue(sequences, this);
+    	for (Sequence sequence : sequences) {
+    		m_pSequences.setValue(sequence, this);
+    	}
         m_nStateCount.setValue(stateCount, this);
         m_sDataType.setValue(dataType, this);
         initAndValidate(null);

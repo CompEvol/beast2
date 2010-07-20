@@ -81,9 +81,9 @@ public class TreeParser extends Tree {
     public TreeParser() {
     }
 
-    public TreeParser(Alignment alignment, String newick) throws Exception {
+    public TreeParser(String newick) throws Exception {
 
-        m_oData.setValue(alignment, this);
+        //m_oData.setValue(alignment, this);
         m_oNewick.setValue(newick, this);
         initAndValidate(null);
     }
