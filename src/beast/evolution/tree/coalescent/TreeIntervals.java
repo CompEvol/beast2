@@ -122,6 +122,10 @@ public class TreeIntervals implements IntervalList {
 
     public double[] getCoalescentTimes(double[] coalescentTimes) {
 
+        if (!intervalsKnown) {
+            calculateIntervals();
+        }
+
         if (coalescentTimes == null) coalescentTimes = new double[getSampleCount()];
 
         double time = 0;

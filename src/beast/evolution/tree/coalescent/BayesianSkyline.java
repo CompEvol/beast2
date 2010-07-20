@@ -2,7 +2,6 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
@@ -34,24 +33,20 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     int[] cumulativeGroupSizes;
 
 
+    public BayesianSkyline() {
+    }
+
     /**
-     * This constructor is only used for testing purposes
+     * This pseudo-constructor is only used for junit tests
      *
      * @param populationSize
      * @param groupSizes
      * @param tree
+     * @throws Exception
      */
-     public BayesianSkyline() {}
-     public void init(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
-    	 super.init(populationSize, groupSizes, tree);
-     }
-//    public BayesianSkyline(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
-//
-//        popSizeParamInput.setValue(populationSize, this);
-//        groupSizeParamInput.setValue(groupSizes, this);
-//        treeInput.setValue(tree, this);
-//        initAndValidate();
-//    }
+    public void init(RealParameter populationSize, IntegerParameter groupSizes, Tree tree) throws Exception {
+        super.init(populationSize, groupSizes, tree);
+    }
 
     public void initAndValidate() throws Exception {
 
@@ -65,10 +60,13 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         tree = treeInput.get();//(Tree) state.getStateNode(treeInput);
         intervals = new TreeIntervals(tree);
 
+        cumulativeGroupSizes = new int[groupSizes.getDimension()];
+
         int intervalCount = 0;
-        for (int i = 0; i < groupSizes.getDimension(); i++) {
+        for (int i = 0; i < cumulativeGroupSizes.length; i++) {
             intervalCount += groupSizes.getValue(i);
             cumulativeGroupSizes[i] = intervalCount;
+            System.out.println("cumulative group size " + i + ": " + cumulativeGroupSizes[i]);
         }
 
         coalescentTimes = intervals.getCoalescentTimes(coalescentTimes);
@@ -93,7 +91,19 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
      */
     public double getPopSize(double t) {
         if (t > coalescentTimes[coalescentTimes.length - 1]) return popSizes.getValue(popSizes.getDimension() - 1);
-        return popSizes.getValue(Arrays.binarySearch(cumulativeGroupSizes, Arrays.binarySearch(coalescentTimes, t)));
+
+        int epoch = Arrays.binarySearch(coalescentTimes, t);
+        if (epoch < 0) {
+            epoch = -epoch;
+        }
+
+        int groupIndex = Arrays.binarySearch(cumulativeGroupSizes, epoch);
+
+        if (groupIndex < 0) {
+            groupIndex = -groupIndex - 1;
+        }
+
+        return popSizes.getValue(groupIndex);
     }
 
     /**
