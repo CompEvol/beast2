@@ -45,6 +45,7 @@ public class Rect extends Shape {
 		parse(node, doc);
 	} // c'tor
 
+	@Override
 	public void draw(Graphics2D g, JPanel panel) {
 		if (m_bFilled) {
 			g.setColor(m_fillcolor);
@@ -59,6 +60,7 @@ public class Rect extends Shape {
 
 
 
+	@Override
 	void parse(Node node, Document doc) {
 		super.parse(node, doc);
 		if (node.getAttributes().getNamedItem("penwidth") != null) {
@@ -100,6 +102,7 @@ public class Rect extends Shape {
 		return new Color(r,g,b);
 	} // string2Color
 
+	@Override
 	String getAtts() {
 		return
 		(m_nPenWidth != 1 ? " penwidth='" + m_nPenWidth + "'" : "") +
@@ -108,9 +111,11 @@ public class Rect extends Shape {
 		(m_pencolor.equals(DEFUALT_PEN_COLOR)? "" : " pencolor='" + m_pencolor.getRed() + " " + m_pencolor.getGreen() + " " + m_pencolor.getBlue() + "'") +
 		 super.getAtts();
 	}
+	@Override
 	boolean intersects(int nX, int nY) {
 		return (nX>=m_x - 1&& nX <= m_x+m_w + 1&& nY >= m_y - 1 && nY <= m_y+m_h + 1);
 	}
+	@Override
 	boolean intersects(Rectangle rect) {
 		return rect.intersects(m_x-1, m_y-1, m_w + 2,m_h + 2);
 	}

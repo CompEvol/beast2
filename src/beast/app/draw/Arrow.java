@@ -29,7 +29,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.geom.GeneralPath;
 import java.util.List;
 
@@ -40,33 +39,29 @@ import org.w3c.dom.Node;
 public class Arrow extends Line {
 	String m_sHeadID;
 	String m_sTailID;
-	String m_sPenStyle;
-	boolean m_bHasTail = false;
-	boolean m_bHasHead= true;
-	Polygon m_polygon;
 	public PluginShape m_tailShape;
-	public Shape m_headShape;
+	public InputShape m_headShape;
+	String m_sPenStyle;
 
-	final static double m_nArrowAngle = 0.08;
-	final static int m_nArrowLength = 15;
-
+	/* c'tor for creating arrow while parsing XDL format XML **/
 	public Arrow(Node node, Document doc) {
 		parse(node, doc);
-		setArrow();
 	}
+	/* c'tor for creating arrow when starting to draw new one **/
 	public Arrow(PluginShape tailShape, int x, int y) {
 		m_sTailID = tailShape.getID();
 		m_x = x;
 		m_y = y;
 		m_w = 1;
 		m_h = 1;
-		setArrow();
 		m_tailShape = tailShape;
 	}
+	/* c'tor for creating arrow with all fields set properly 
+	 * Used when arrows are created by Document.recalcArrows */
 	public Arrow(PluginShape tailShape, PluginShape headShape, String sInputName) {
 		m_sTailID = tailShape.getID();
 		m_tailShape = tailShape;
-		Shape input = headShape.getInput(sInputName);
+		InputShape input = headShape.getInputShape(sInputName);
 		m_sHeadID = input.getID();
 		m_headShape = input;
 		//m_sHeadID = headShape.m_id;
@@ -74,71 +69,36 @@ public class Arrow extends Line {
 		m_y = 0;
 		m_w = 1;
 		m_h = 1;
-		setArrow();
 		m_pencolor = Color.gray;
 	}
+
+	@Override
 	public void draw(Graphics2D g, JPanel panel) {
 		g.setStroke(new BasicStroke(m_nPenWidth));
 		g.setColor(m_pencolor);
-//		g.fill(m_polygon);
-//		g.draw(m_polygon);
-
-
-//		 for (int i = 0; i < 4; i++) {
-//		      if (i == 0 || i == 3)
-//		        g.setColor(Color.blue);
-//		      else
-//		        g.setColor(Color.cyan);
-//		      g.fillOval(xs[i] - 6, ys[i] - 6, 12, 12);
-//		    }
-//		    Graphics2D g2d = (Graphics2D) g;
-//		    g2d.setColor(Color.black);
-		    GeneralPath path = new GeneralPath();
-		    path.moveTo(m_polygon.xpoints[0], m_polygon.ypoints[0]);
-		    path.curveTo(
-		    		m_polygon.xpoints[0]+20, m_polygon.ypoints[0],
-		    		m_polygon.xpoints[1]-40, m_polygon.ypoints[1],
-		    		m_polygon.xpoints[1], m_polygon.ypoints[1]);
-		    g.draw(path);
-
-
+	    GeneralPath path = new GeneralPath();
+	    path.moveTo(m_x, m_y);
+	    path.curveTo(m_x+20, m_y,  m_x+m_w-40, m_y+m_h, m_x+m_w, m_y+m_h);
+	    g.draw(path);
 		drawLabel(g);
 	}
+	/* change head position while dragging by mouse */
 	public void setHead(int w, int h) {
 		m_w = w;
 		m_h = h;
-		setArrow();
 	}
-	public boolean setHead(Shape shape, List<Shape> objects, Document doc) throws Exception {
+	/* set all parameters properly at end of dragging when mouse is released */
+	public boolean setHead(InputShape shape, List<Shape> objects, Document doc) throws Exception {
 		m_sHeadID = shape.getID();
 		m_headShape = shape;
-		adjustCoordinates(objects, true);
-		setArrow();
-		return setFunctionInput(objects, doc);
+		adjustCoordinates();
+		String sInputName = m_headShape.getInputName();
+		m_headShape.getPlugin().setInputValue(sInputName, m_tailShape.m_plugin);
+		return true;//setFunctionInput(objects, doc);
 	}
-
-	boolean setFunctionInput(List<Shape> objects, Document doc) throws Exception {
-		Shape head = null;
-		int i = 0;
-		while (i < objects.size() && !((Shape)objects.get(i)).getID().equals(m_sHeadID)) {
-			i++;
-		}
-		head = (Shape)objects.get(i);
-		if (head instanceof InputShape && ((InputShape)head).getPluginShape()!=null) {
-			Shape tail = null;
-			int j = 0;
-			while (j < objects.size() && !((Shape)objects.get(j)).getID().equals(m_sTailID)) {
-				j++;
-			}
-			tail = (Shape)objects.get(j);
-			//try {
-				return ((InputShape)head).getPluginShape().connect(tail, m_sHeadID, doc);
-			//} catch (Exception e) {
-				//return false;
-			//}
-		}
-		return false;
-	}
+	
+	/* parse arrow in XDL format XML **/
+	@Override
 	void parse(Node node, Document doc) {
 		super.parse(node, doc);
 		if (node.getAttributes().getNamedItem("headid") != null) {
@@ -147,137 +107,28 @@ public class Arrow extends Line {
 		if (node.getAttributes().getNamedItem("tailid") != null) {
 			m_sTailID = node.getAttributes().getNamedItem("tailid").getNodeValue();
 		}
-		if (node.getAttributes().getNamedItem("hastail") != null) {
-			m_bHasTail = node.getAttributes().getNamedItem("hastail").getNodeValue().equals("1");
-		}
-		if (node.getAttributes().getNamedItem("hashead") != null) {
-			m_bHasHead = node.getAttributes().getNamedItem("hashead").getNodeValue().equals("1");
-		}
 		if (node.getAttributes().getNamedItem("penstyle") != null) {
 			m_sPenStyle = node.getAttributes().getNamedItem("penstyle").getNodeValue();
 		}
 	}
-	void setArrow() {
-		m_polygon = new Polygon();
-		m_polygon.addPoint(m_x, m_y);
-		m_polygon.addPoint(m_x+m_w, m_y+m_h);
 
-		//m_points[4] = m_points[1];
-		m_polygon.addPoint(m_polygon.xpoints[1], m_polygon.ypoints[1]);
-		//m_points[5] = m_points[0];
-		m_polygon.addPoint(m_polygon.xpoints[0], m_polygon.ypoints[0]);
-
-		//m_points[8] = m_points[0];
-		m_polygon.addPoint(m_polygon.xpoints[0], m_polygon.ypoints[0]);
-
-	if (m_bHasHead && (m_polygon.xpoints[0] != m_polygon.xpoints[1] || m_polygon.ypoints[0] != m_polygon.ypoints[1])) {
-			double fi, dx, dy;
-			dx = m_polygon.xpoints[0] - m_polygon.xpoints[1];
-			dy = m_polygon.ypoints[0] - m_polygon.ypoints[1];
-			if (dx != 0) {
-				fi = Math.atan(dy / dx);
-				if (dx < 0) {
-					fi = fi + Math.PI;
-				}
-			} else {
-				if (dy > 0) {
-					fi = Math.PI / 2;
-				}  else {
-					fi = 3 * Math.PI / 2;
-				}
-			}
-			double ARROWANGLE = m_nArrowAngle * Math.PI;
-			long ARROWLENGTH = m_nArrowLength;
-			//m_points[2] = m_points[1];
-			//m_points[2].Offset((int) (ARROWLENGTH * cos(fi + ARROWANGLE)), (int) (ARROWLENGTH * sin(fi + ARROWANGLE)));
-			m_polygon.addPoint(m_x+m_w, m_y+m_h);
-			m_polygon.addPoint(m_polygon.xpoints[1] + (int) (ARROWLENGTH * Math.cos(fi + ARROWANGLE)), m_polygon.ypoints[1] + (int) (ARROWLENGTH * Math.sin(fi + ARROWANGLE)));
-			//m_points[3] = m_points[1];
-			//m_points[3].Offset((int) (ARROWLENGTH * cos(fi - ARROWANGLE)), (int) (ARROWLENGTH * sin(fi - ARROWANGLE)));
-			m_polygon.addPoint(m_polygon.xpoints[1] + (int) (ARROWLENGTH * Math.cos(fi - ARROWANGLE)), m_polygon.ypoints[1] + (int) (ARROWLENGTH * Math.sin(fi - ARROWANGLE)));
-			m_polygon.addPoint(m_x+m_w, m_y+m_h);
-	} else {
-			//m_points[2] = m_points[1];
-//		m_polygon.addPoint(m_x+m_w, m_y+m_h);
-			//m_points[3] = m_points[1];
-//		m_polygon.addPoint(m_x+m_w, m_y+m_h);
-	}
-
-	if (m_bHasTail)
-	{
-		if (m_polygon.xpoints[0] != m_polygon.xpoints[1] || m_polygon.ypoints[0] != m_polygon.ypoints[1]) {
-			double fi, dx, dy;
-			dx = m_polygon.xpoints[1] - m_polygon.xpoints[0];
-			dy = m_polygon.ypoints[1] - m_polygon.ypoints[0];
-			if (dx != 0) {
-				fi = Math.atan(dy / dx);
-				if (dx < 0) {
-					fi = fi + Math.PI;
-				}
-			} else {
-				if (dy > 0) {
-					fi = Math.PI / 2;
-				}  else {
-					fi = 3 * Math.PI / 2;
-				}
-			}
-			double ARROWANGLE = m_nArrowAngle * Math.PI;
-			long ARROWLENGTH = m_nArrowLength;
-			//m_points[6] = m_points[0];
-			//m_points[6].Offset((int) (ARROWLENGTH * cos(fi + ARROWANGLE)), (int) (ARROWLENGTH * sin(fi + ARROWANGLE)));
-			m_polygon.addPoint(m_x, m_y);
-			m_polygon.addPoint(m_x + (int) (ARROWLENGTH * Math.cos(fi + ARROWANGLE)), m_y + (int) (ARROWLENGTH * Math.sin(fi + ARROWANGLE)));
-			//m_points[7] = m_points[0];
-			//m_points[7].Offset((int) (ARROWLENGTH * cos(fi - ARROWANGLE)), (int) (ARROWLENGTH * sin(fi - ARROWANGLE)));
-			m_polygon.addPoint(m_x + (int) (ARROWLENGTH * Math.cos(fi - ARROWANGLE)), m_y + (int) (ARROWLENGTH * Math.sin(fi - ARROWANGLE)));
-			m_polygon.addPoint(m_x, m_y);
-		}
-	} else {
-			//m_points[6] = m_points[0];
-//			m_polygon.addPoint(m_x, m_y);
-			//m_points[7] = m_points[0];
-//			m_polygon.addPoint(m_x, m_y);
-	}
-
-	}
+	@Override
 	String getAtts() {
 		return
 		" headid='" + m_sHeadID + "'" +
 		" tailid='" + m_sTailID + "'" +
 		" penstyle='" + m_sPenStyle + "'" +
-		(!m_bHasHead ? " hashead='0'" : "") +
-		(m_bHasTail ? " hastail='1'" : "")
-		+ super.getAtts();
-   }
+		super.getAtts();
+    }
+	
+	@Override
 	public String getXML() {
 		return "<arrow" + getAtts() + "/>";
 	}
-//	void resetIDs(List<Shape> objects) {
-//		for (int i = 0; i < objects.size(); i++) {
-//			Shape shape = (Shape) objects.get(i);
-//			if (shape.m_id.equals(m_sHeadID)) {
-//				m_head = shape;
-//			}
-//			if (shape.m_id.equals(m_sTailID)) {
-//				m_tail = shape;
-//			}
-//			if (shape instanceof Group) {
-//				Group group = (Group) shape;
-//				resetIDs(group.m_objects);
-//			}
-//		}
-//	}
-	void adjustCoordinates(List<Shape> objects, boolean bResetIDs) {
-//		if (m_tail == null || bResetIDs == true) {
-//			resetIDs(objects);
-//
-//		}
-		Point tailCenter = new Point(
-		 (m_tailShape.getX() + m_tailShape.getX2()) / 2,
-		 (m_tailShape.getY() + m_tailShape.getY2()) / 2);
-		Point headCenter = new Point(
-		 (m_headShape.getX() + m_headShape.getX2()) / 2,
-		 (m_headShape.getY() + m_headShape.getY2()) / 2);
+
+	void adjustCoordinates() {
+		Point tailCenter = new Point((m_tailShape.getX() + m_tailShape.getX2()) / 2, (m_tailShape.getY() + m_tailShape.getY2()) / 2);
+		Point headCenter = new Point((m_headShape.getX() + m_headShape.getX2()) / 2, (m_headShape.getY() + m_headShape.getY2()) / 2);
 		Rect rect = (Rect) m_tailShape;
 		Point roundness = new Point(0,0);
 		if (rect instanceof InputShape) {
@@ -300,8 +151,6 @@ public class Arrow extends Line {
 		 m_y = tailPoint.y;
 		 m_w = headPoint.x - m_x;
 		 m_h = headPoint.y - m_y;
-		 setArrow();
-		 //System.err.println(m_x + " " + m_y + " " + (m_x+m_w) + " " + (m_y+m_h));
 	}
 	
 	Point CalcIntersectionLineAndNode(Point p0,Point p1,

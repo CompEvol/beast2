@@ -26,8 +26,11 @@
 package beast.app.draw;
 
 import java.awt.BasicStroke;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.util.List;
+
 import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
@@ -37,6 +40,7 @@ import beast.core.Plugin;
 
 public class InputShape extends Rect {
 	Input<?> m_input;
+	static Font g_InputFont = new Font("arial", Font.PLAIN, 8);
 	
 	public InputShape(Input<?> input) {
 		super();
@@ -61,6 +65,7 @@ public class InputShape extends Rect {
 	}
 
 
+	@Override
 	public void draw(Graphics2D g, JPanel panel) {
 		if (m_pluginShape == null || m_pluginShape.m_bNeedsDrawing) {
 			if (m_bFilled) {
@@ -70,6 +75,7 @@ public class InputShape extends Rect {
 			g.setStroke(new BasicStroke(m_nPenWidth));
 			g.setColor(m_pencolor);
 			g.drawOval(m_x, m_y, m_w, m_h);
+			g.setFont(g_InputFont);
 			if (getLabel() !=null) {
 				FontMetrics fm = g.getFontMetrics(g.getFont());
 				String sLabel = getLabel();
@@ -79,12 +85,15 @@ public class InputShape extends Rect {
 		}
 	}
 	
+	@Override
 	void parse(Node node, Document doc) {
 		super.parse(node, doc);
 	}
+	@Override
 	public String getXML() {
 		return "<ellipse" + getAtts() + "/>";
 	}
+	@Override
 	boolean intersects(int nX, int nY) {
 		return (m_x+m_w/2-nX)*(m_x+m_w/2-nX)+ (m_y+m_h/2-nY)*(m_y+m_h/2-nY) < m_w*m_w/4+m_h*m_h/4;
 	}
@@ -99,6 +108,43 @@ public class InputShape extends Rect {
 				o instanceof Double ||
 				o instanceof Boolean) {
 				sLabel += "=" + o.toString();
+			}
+		}
+		return sLabel;
+	}
+	String toString(Object o) {
+		if (o instanceof String ||
+				o instanceof Integer ||
+				o instanceof Double ||
+				o instanceof Boolean) {
+				return o.toString();
+		} else if (o instanceof Plugin) {
+			return ((Plugin)o).getID();
+		}
+		return "";
+	}
+	String getLongLabel() {
+		String sLabel = m_input.getName();
+		if (m_input.get() != null) {
+			Object o = m_input.get();
+			if (o instanceof String ||
+				o instanceof Integer ||
+				o instanceof Double ||
+				o instanceof Boolean) {
+				sLabel += "=" + o.toString();
+			} else if (o instanceof Plugin) {
+				sLabel += "=" + ((Plugin)o).getID();
+			} else if (o instanceof List<?>) {
+				sLabel += "=[";
+				boolean bNeedsComma = false;
+				for (Object o2:(List<?>) o) {
+					if (bNeedsComma) {
+						sLabel += ",";
+					}
+					sLabel += toString(o2);
+					bNeedsComma = true;
+				}
+				sLabel +="]";
 			}
 		}
 		return sLabel;

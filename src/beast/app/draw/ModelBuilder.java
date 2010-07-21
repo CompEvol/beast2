@@ -76,7 +76,6 @@ import beast.evolution.alignment.Sequence;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
 
-import beast.core.Input;
 import beast.core.Plugin;
 
 /** program for drawing BEAST 2.0 models **/
@@ -601,25 +600,14 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 				if (sFileName.lastIndexOf('/') > 0) {
 					m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
 				}
+				g_panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				m_doc.loadFile(sFileName);
 				m_sFileName = sFileName;
 				g_panel.repaint();
 				try {Thread.sleep(1000);} catch (Exception e) {}
 				setDrawingFlag();
-				//m_bRelax = true;
-				//m_viewRelax.setState(m_bRelax);
 				g_panel.repaint();
-				
-//				new Thread() {
-//					public void run() {
-//						// user may toggle relax state, so break loop if that happens
-//						for (int iSeconds = 0; iSeconds < m_nRelaxSeconds && m_bRelax; iSeconds++) {
-//							try {Thread.sleep(1000);} catch (Exception e) {}
-//						}
-//						m_bRelax = false;
-//						m_viewRelax.setState(m_bRelax);
-//					}						
-//				}.start();
+				g_panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		}
 	} // class ActionLoad
@@ -1395,15 +1383,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 							PluginShape plugin = (PluginShape) shape;
 							try {
 								String sToolTip = "<html>";
-								for (Input<?> input : plugin.m_plugin.listInputs()) {
-									sToolTip += input.getName() + "<br>";
+								for (InputShape input : plugin.m_inputs) {
+									sToolTip += input.getLongLabel() + "<br>";
 								}
 								sToolTip += "</html>";
 								setToolTipText(sToolTip);
 							} catch (IllegalArgumentException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IllegalAccessException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
@@ -1582,6 +1567,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 								// re-attach all arrows
 								m_Selection.clear();
 								m_doc.recalcArrows();
+								m_doc.adjustArrows();
 							}
 							repaint();
 						}
@@ -1678,7 +1664,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 								null);
 						if (sFunctionClassName != null) {
 							try {
-								function.setClassName(sFunctionClassName, m_doc);
+								function.init(sFunctionClassName, m_doc);
 								m_doc.addNewShape(function);
 							} catch (Exception e) {
 								// TODO: handle exception
@@ -1728,7 +1714,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 							// this links the input of the target plugin
 							// to the source plugin. If types mismatch, 
 							// an exception is thrown and no arrow added.
-							arrow.setHead(target, m_doc.m_objects, m_doc);
+							arrow.setHead(target2, m_doc.m_objects, m_doc);
 							m_doc.addNewShape(arrow);
 						} catch (Exception e) {
 							JOptionPane.showMessageDialog(null, e.getMessage());
@@ -1869,11 +1855,11 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 		layoutMenu.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setCursor(new Cursor(Cursor.WAIT_CURSOR));
+				g_panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				m_doc.layout();
 				m_doc.adjustArrows();
 				repaint();
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				g_panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 		viewMenu.add(layoutMenu);

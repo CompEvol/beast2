@@ -41,12 +41,14 @@ public class Line extends Rect {
 	public Line(Node node, Document doc) {
 		parse(node, doc);
 	}
+	@Override
 	public void draw(Graphics2D g, JPanel panel) {
 		g.setStroke(new BasicStroke(m_nPenWidth));
 		g.setColor(m_pencolor);
 		g.drawLine(m_x, m_y, m_x + m_w, m_y + m_h);
 		drawLabel(g);
 	}
+	@Override
 	boolean intersects(int nX, int nY) {
 		int nX1 = m_x;
 		int nX2 = m_x + m_w;
@@ -58,15 +60,18 @@ public class Line extends Rect {
 		int _h = Math.max(nY1, nY2) - _y;
 		return (nX>_x && nX < _x+_w && nY > _y && nY < _y+_h);
 	}
+	@Override
 	boolean intersects(Rectangle rect) {
 		return rect.intersectsLine(m_x, m_y, m_x+m_w,m_y+m_h);
 	}
+	@Override
 	List<TrackPoint> getTracker() {
 		List<TrackPoint> tracker = new ArrayList<TrackPoint>();
 		tracker.add(new TrackPoint(m_x,m_y, Cursor.MOVE_CURSOR ));
 		tracker.add(new TrackPoint(m_x+m_w,m_y+m_h, Cursor.MOVE_CURSOR ));
 		return tracker;
 	}
+	@Override
 	void movePoint(int nPoint, int nOffsetX, int nOffsetY, int nToX, int nToY) {
 		switch (nPoint) {
 		case 0:

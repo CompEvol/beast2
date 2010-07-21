@@ -28,6 +28,7 @@ package beast.app.draw;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -45,6 +46,7 @@ import beast.core.Plugin;
 
 
 public class PluginShape extends Rect {
+	static Font g_PluginFont = new Font("arial", Font.PLAIN, 11);
 	public beast.core.Plugin m_plugin;
 	List<InputShape> m_inputs;
 
@@ -57,46 +59,33 @@ public class PluginShape extends Rect {
 		super();
 		m_plugin = plugin;
 		m_fillcolor = new Color(Randomizer.nextInt(256), 128+Randomizer.nextInt(128), Randomizer.nextInt(128));
-		setClassName(plugin.getClass().getName(), doc);
+		init(plugin.getClass().getName(), doc);
 	}
 	public PluginShape(Node node, Document doc) {
 		parse(node, doc);
 	}
-//	void setLabel(String sLabel) {
-//		super.setLabel(sLabel);
-//		m_plugin.setID(sLabel);
-//	}
-	public void setClassName(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		try {
-			if (m_plugin == null) {
-				m_plugin = (beast.core.Plugin) Class.forName(sClassName).newInstance();
-				//setLabel(sClassName.substring(sClassName.lastIndexOf('.')+1));
-			}
+
+	public void init(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		if (m_plugin == null) {
+			m_plugin = (beast.core.Plugin) Class.forName(sClassName).newInstance();
+		}
 		m_inputs = new ArrayList<InputShape>();
 		List<Input<?>> sInputs = m_plugin.listInputs();
 		for (Input<?> input_ : sInputs) {
-			//int nOffset = i*m_w/(sInputs.length) + m_w/(2*(sInputs.length));
 			InputShape input = new InputShape(input_);
 			input.setPluginShape(this);
 			input.m_fillcolor = m_fillcolor;
 			input.m_w = 10;
-			String sInputLabel = input_.getName();
-			//input.setLabel(sInputLabel);
 			doc.addNewShape(input);
 			m_inputs.add(input);
 		}
 		m_h = Math.max(40, sInputs.size()*12);
 		adjustInputs();
-		} catch (Exception e) {
-			System.err.println("Could not process inputs: " + e.getMessage());
-			m_inputs = new ArrayList<InputShape>();
-			// TODO: handle exception
-		}
 	} // setClassName
 
-	Shape getInput(String sLabel) {
-		// find relevant input
-		for (Shape shape: m_inputs) {
+	// find input shape associated with input with name sLabel
+	InputShape getInputShape(String sLabel) {
+		for (InputShape shape: m_inputs) {
 			String sLabel2 = shape.getLabel();
 			if (sLabel2 != null) {
 				if (sLabel2.contains("=")) {
@@ -109,29 +98,8 @@ public class PluginShape extends Rect {
 		}
 		return null;
 	}
-	int getNrInputs() {
-		return m_inputs.size();
-	}
-	public boolean connect(Shape tail, String sInputID, Document doc) throws Exception {
-		// find relevant input
-		int iInput = 0;
-		while (!m_inputs.get(iInput).getID().equals(sInputID)) {
-			iInput++;
-		}
-		String sInput = m_inputs.get(iInput).getLabel();
-		Shape inputShape = doc.getShapeByID(tail.getID());
-		if (inputShape instanceof PluginShape) {
-			beast.core.Plugin input = ((PluginShape) inputShape).m_plugin;
-			return setInput(m_plugin, sInput, input);
-		}
-		return false;
-	}
 
-	boolean setInput(beast.core.Plugin plugin, String sName, beast.core.Plugin plugin2) throws Exception {
-		plugin.setInputValue(sName, plugin2);
-		return true;
-	}
-
+	/** set coordinates of inputs based on location of this PluginShape */
 	void adjustInputs() {
 		if (m_plugin != null) {
 			for (int i = 0; i < m_inputs.size(); i++) {
@@ -148,11 +116,11 @@ public class PluginShape extends Rect {
 	}
 
 
+	@Override
 	public void draw(Graphics2D g, JPanel panel) {
 		if (m_bFilled) {
 			GradientPaint m_gradientPaint = new GradientPaint(new Point(m_x, m_y), Color.WHITE, new Point(m_x + m_w, m_y + m_h), m_fillcolor);
 			g.setPaint(m_gradientPaint);
-			//g.setColor(m_fillcolor);
 			g.fillOval(m_x, m_y, m_w, m_h);
 			g.fillRect(m_x, m_y, m_w/2, m_h);
 		} else {
@@ -165,13 +133,12 @@ public class PluginShape extends Rect {
 		}
 		g.setStroke(new BasicStroke(m_nPenWidth));
 		g.setColor(m_pencolor);
-		//g.drawOval(m_x, m_y, m_w, m_h);
-		//g.drawRect(m_x, m_y, m_w, m_h);
+		g.setFont(g_PluginFont);
 		drawLabel(g);
-		//g.drawString(m_sOutput,m_x+m_w/2-5, m_y+m_h+10);
 		adjustInputs();
 	}
 
+	@Override
 	void parse(Node node, Document doc) {
 		super.parse(node, doc);
 		if (node.getAttributes().getNamedItem("class") != null) {
@@ -192,9 +159,9 @@ public class PluginShape extends Rect {
 				ellipse.setPluginShape(this);
 			}
 		}
-//		m_function = doc.getConstant(node);
-		//updateOutput();
 	}
+
+	@Override
 	public String getXML() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("<gdx:function");
@@ -208,13 +175,12 @@ public class PluginShape extends Rect {
 
 		buf.append(getAtts());
 		buf.append(">\n");
-//		buf.append(m_function.toXML());
 		buf.append("</gdx:function>");
 		return buf.toString();
 	}
+	@Override
 	boolean intersects(int nX, int nY) {
 		return super.intersects(nX, nY);
-		//return (m_x+m_w/2-nX)*(m_x+m_w/2-nX)+ (m_y+m_h/2-nY)*(m_y+m_h/2-nY) < m_w*m_w/4+m_h*m_h/4;
 	}
 	
 	@Override
