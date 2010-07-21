@@ -65,6 +65,11 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     public boolean isDirty(int iParam) {
         return m_bIsDirty[iParam];
     }
+//    @Override
+//    public void setDirty(final boolean dirty) {
+//    	super.setDirty(dirty);
+//    	Arrays.fill(m_bIsDirty, dirty);
+//    }
 
     /** number of the id, to find it quickly in the list of parameters of the State **/
     /**

@@ -25,7 +25,7 @@ public class IntRandomWalkOperator extends Operator {
     @Override
     public double proposal() throws Exception {
 
-        IntegerParameter param = parameterInput.get();//(IntegerParameter) state.getStateNode(parameterInput);
+        IntegerParameter param = parameterInput.get(this);//(IntegerParameter) state.getStateNode(parameterInput);
 
         int i = Randomizer.nextInt(param.getDimension());
         int value = param.getValue(i);

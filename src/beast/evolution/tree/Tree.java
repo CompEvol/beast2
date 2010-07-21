@@ -171,7 +171,8 @@ public class Tree extends StateNode implements Loggable {
     public void syncTreeWithTraitsInState() {
         boolean bSyncNeeded = false;
         for (Parameter<?> p : treeTraitsInput.get()) {
-            p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+            p = (Parameter<?>) p.getCurrent();
             if (p.isDirty()) {
                 bSyncNeeded = true;
             }
@@ -183,7 +184,8 @@ public class Tree extends StateNode implements Loggable {
 
     void syncTreeWithTraits(Node node) {
         for (Parameter<?> p : treeTraitsInput.get()) {
-            p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+            p = (Parameter<?>) p.getCurrent();
             int iNode = Math.abs(node.getNr());
             if (p.isDirty(iNode)) {
                 node.setMetaData(p.getID(), p.getValue(iNode));

@@ -22,7 +22,7 @@ public class IntUniformOperator extends Operator {
     @Override
     public double proposal() throws Exception {
 
-        IntegerParameter param = parameterInput.get();//(IntegerParameter) state.getStateNode(parameterInput);
+        IntegerParameter param = parameterInput.get(this);//(IntegerParameter) state.getStateNode(parameterInput);
 
         int i = Randomizer.nextInt(param.getDimension());
         int newValue = Randomizer.nextInt(param.getUpper() - param.getLower() + 1) + param.getLower();

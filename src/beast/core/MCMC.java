@@ -164,7 +164,7 @@ public class MCMC extends Runnable {
                 storeCachables(iSample);
 				//state.setDirty(true);
                 //System.out.print(operator.getName()+ "\n");
-                //System.err.println(proposedState.toString());
+                //System.err.println(state.toString());
                 if (bDebug) {
                     //System.out.print(operator.getName()+ "\n");
                     //System.err.println(proposedState.toString());
@@ -172,6 +172,7 @@ public class MCMC extends Runnable {
                 }
 
                 double fNewLogLikelihood = posterior.calculateLogP();
+                //System.out.print("posterior: " + fNewLogLikelihood+ "\n");
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
@@ -181,6 +182,7 @@ public class MCMC extends Runnable {
                     if (iSample >= 0) {
                         operator.accept();
                     }
+                    //System.out.println("store ");
                 } else {
                     // reject
                     if (iSample >= 0) {

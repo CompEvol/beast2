@@ -79,7 +79,7 @@ public class ScaleOperator extends Operator {
         double hastingsRatio = 1.0;
         double d = Randomizer.nextDouble();
         double scale = (m_fScaleFactor + (d * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
-
+        
         if (m_bIsTreeScaler) {
         	Tree tree = m_pTree.get(this); 
             // scale the beast.tree

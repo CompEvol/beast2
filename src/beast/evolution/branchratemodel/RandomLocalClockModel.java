@@ -143,6 +143,23 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 //        	m_bIsDirty = true;
 //        	return true;
 //        }
+
+        RealParameter meanRate_ = meanRateInput.get();
+        if (meanRate_ != null && meanRate_.isDirty()) {
+            m_bIsDirty = true;
+            return true;
+        }
+        RealParameter rates_ = rateParamInput.get();
+        if (rates_ != null && rates_.isDirty()) {
+            m_bIsDirty = true;
+            return true;
+        }
+        IntegerParameter indicators_ = indicatorParamInput.get();
+        if (indicators_ != null && indicators_.isDirty()) {
+            m_bIsDirty = true;
+            return true;
+        }
+        
         return false;
     }
 
