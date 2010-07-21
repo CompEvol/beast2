@@ -43,6 +43,12 @@ public class Shape {
 	int m_y = 0;
 	int m_w = 1;
 	int m_h = 1;
+
+	int m_nPenWidth = 1;
+	boolean m_bFilled = true;
+	Color m_fillcolor = DEFUALT_FILL_COLOR;
+	Color m_pencolor = DEFUALT_PEN_COLOR;
+	
 	public boolean m_bNeedsDrawing = true;
 
 	final static Color DEFUALT_FILL_COLOR =new Color(128,128,128);
@@ -141,11 +147,17 @@ public class Shape {
 		return "<shape" + getAtts() + "/>";
 	}
 	boolean intersects(int nX, int nY) {
-		return false;
+		return (nX>=m_x - 1&& nX <= m_x+m_w + 1&& nY >= m_y - 1 && nY <= m_y+m_h + 1);
 	}
 	boolean intersects(Rectangle rect) {
-		return false;
+		return rect.intersects(m_x-1, m_y-1, m_w + 2,m_h + 2);
 	}
+//	boolean intersects(int nX, int nY) {
+//		return false;
+//	}
+//	boolean intersects(Rectangle rect) {
+//		return false;
+//	}
 
 	int offsetX(int nX) {return nX - m_x;}
 	int offsetY(int nY) {return nY - m_y;}

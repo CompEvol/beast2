@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
-public class Arrow extends Line {
+public class Arrow extends Shape {
 	String m_sHeadID;
 	String m_sTailID;
 	public PluginShape m_tailShape;
@@ -129,7 +129,7 @@ public class Arrow extends Line {
 	void adjustCoordinates() {
 		Point tailCenter = new Point((m_tailShape.getX() + m_tailShape.getX2()) / 2, (m_tailShape.getY() + m_tailShape.getY2()) / 2);
 		Point headCenter = new Point((m_headShape.getX() + m_headShape.getX2()) / 2, (m_headShape.getY() + m_headShape.getY2()) / 2);
-		Rect rect = (Rect) m_tailShape;
+		Shape rect = m_tailShape;
 		Point roundness = new Point(0,0);
 		if (rect instanceof InputShape) {
 			roundness.x = rect.m_w;
@@ -138,7 +138,7 @@ public class Arrow extends Line {
 		 Point tailPoint = CalcIntersectionLineAndNode(
 				tailCenter, headCenter, rect, roundness);
 
-			rect = (Rect) m_headShape;
+			rect = m_headShape;
 			roundness = new Point(0,0);
 			if (rect instanceof InputShape) {
 				roundness.x = rect.m_w;
@@ -154,7 +154,7 @@ public class Arrow extends Line {
 	}
 	
 	Point CalcIntersectionLineAndNode(Point p0,Point p1,
-			Rect position, Point roundness) {
+			Shape position, Point roundness) {
 //	 Note: a rounded rectangle is a rectangle in which the corners are quarter elipses
 //		.p0			   .
 //					   .

@@ -38,7 +38,7 @@ import org.w3c.dom.Node;
 import beast.core.Input;
 import beast.core.Plugin;
 
-public class InputShape extends Rect {
+public class InputShape extends Shape {
 	Input<?> m_input;
 	static Font g_InputFont = new Font("arial", Font.PLAIN, 8);
 	

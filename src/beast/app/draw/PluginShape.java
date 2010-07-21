@@ -45,7 +45,7 @@ import beast.core.Input;
 import beast.core.Plugin;
 
 
-public class PluginShape extends Rect {
+public class PluginShape extends Shape {
 	static Font g_PluginFont = new Font("arial", Font.PLAIN, 11);
 	public beast.core.Plugin m_plugin;
 	List<InputShape> m_inputs;
