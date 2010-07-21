@@ -101,11 +101,56 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
 
     public double getRateForBranch(Node node) {
+
+        if (recompute) {
+            prepare();
+            recompute = false;
+        }
+
         return unscaledBranchRates[node.getNr()] * scaleFactor;
     }
 
+    @Override
+    public void store(final int sample) {
+        m_bIsDirty = false;
+    }
+
+    @Override
+    public void restore(final int sample) {
+        recompute = true;
+        m_bIsDirty = true;
+    }
+
+    boolean m_bIsDirty = true;
+
+    @Override
+    public boolean isDirty() {
+        if (recompute || m_bIsDirty) {
+            m_bIsDirty = true;
+            return true;
+        }
+
+//	    processed as trait on the tree
+//        if (categoryInput.get().isDirty()) {
+//       	    return true;
+//        }
+        if (treeInput.get().isDirty()) {
+            m_bIsDirty = true;
+            return true;
+        }
+        // rateDistInput cannot be dirty?!?
+//        if (rateDistInput.get().isDirty()) {
+//        	m_bIsDirty = true;
+//        	return true;
+//        }
+        return false;
+    }
+
+
     double[] unscaledBranchRates;
     double scaleFactor;
+
+    boolean recompute = true;
 
     RealParameter meanRate; // can be null
     RealParameter rates;

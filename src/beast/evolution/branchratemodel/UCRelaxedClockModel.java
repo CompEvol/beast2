@@ -40,10 +40,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     public double getRateForBranch(Node node) {
 
-        if (recompute < 0) {
+        if (recompute) {
             prepare();
-            recompute = 1;
-//            recompute = state.stateNumber;
+            recompute = false;
         }
 
         assert !node.isRoot() : "root node doesn't have a rate!";
@@ -108,7 +107,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     public void restore(final int sample) {
-        recompute = -Integer.MAX_VALUE;
+        recompute = true;
         m_bIsDirty = true;
     }
 
@@ -116,7 +115,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     public boolean isDirty() {
-        if (recompute < 0 || m_bIsDirty) {
+        if (recompute || m_bIsDirty) {
             m_bIsDirty = true;
             return true;
         }
@@ -141,7 +140,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     IntegerParameter categories;
     Tree tree;
 
-    private int recompute = -Integer.MAX_VALUE;
+    private boolean recompute = true;
 
     private boolean normalize = false;
     private double normalizeBranchRateTo = Double.NaN;
