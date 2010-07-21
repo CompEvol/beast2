@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,7 +264,7 @@ public class PluginDialog extends JDialog {
 		if (sTabuList == null) {
 			sTabuList = new ArrayList<String>();
 		}
-		for (Plugin plugin: listAscendants(parent)) {
+		for (Plugin plugin: listAscendants(parent, g_plugins.values())) {
 			sTabuList.add(plugin.getID());
 		}
 		System.err.println(sTabuList);
@@ -295,31 +296,9 @@ public class PluginDialog extends JDialog {
 	/** collect all plugins that can reach this input (actually, it's parent)
 	 * and add them to the tabu list.
 	 */
-	static List<Plugin> listAscendants(Plugin parent) {
+	static List<Plugin> listAscendants(Plugin parent, Collection<Plugin> plugins) {
 		/* First, calculate outputs for each plugin */
-		HashMap<Plugin, List<Plugin>> outputs = new HashMap<Plugin, List<Plugin>>();
-		for (Plugin plugin : g_plugins.values()) {
-			outputs.put(plugin, new ArrayList<Plugin>());
-		}
-		for (Plugin plugin : g_plugins.values()) {
-			try {
-				for (Input<?> input2: plugin.listInputs()) {
-					Object o = input2.get();
-					if (o != null && o instanceof Plugin) {
-						outputs.get(o).add(plugin);
-					}
-					if (o != null && o instanceof List<?>) {
-						for (Object o2 : (List<?>) o) {
-							if (o2 != null && o2 instanceof Plugin) {
-								outputs.get(o2).add(plugin); 
-							}
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		HashMap<Plugin, List<Plugin>> outputs = getOutputs(plugins); 
 		/* process outputs */ 
 		List<Plugin> ascendants = new ArrayList<Plugin>();
 		ascendants.add(parent);
@@ -338,6 +317,37 @@ public class PluginDialog extends JDialog {
 		}
 		return ascendants;
 	}
+	
+	/* calculate outputs for each plugin 
+	 * and put them as ArrayLists in a Map
+	 * so they can be retrieved indexed by plugin like this: 
+	 * ArrayList<Plugin> output = outputs.get(plugin)*/
+	static HashMap<Plugin, List<Plugin>> getOutputs(Collection<Plugin> plugins) {
+		HashMap<Plugin, List<Plugin>> outputs = new HashMap<Plugin, List<Plugin>>();
+		for (Plugin plugin : plugins) {
+			outputs.put(plugin, new ArrayList<Plugin>());
+		}
+		for (Plugin plugin : plugins) {
+			try {
+				for (Input<?> input2: plugin.listInputs()) {
+					Object o = input2.get();
+					if (o != null && o instanceof Plugin) {
+						outputs.get(o).add(plugin);
+					}
+					if (o != null && o instanceof List<?>) {
+						for (Object o2 : (List<?>) o) {
+							if (o2 != null && o2 instanceof Plugin) {
+								outputs.get(o2).add(plugin); 
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return outputs;
+	} // getOutputs
 
 	public void initPlugins(Plugin plugin) {
 		g_plugins = new HashMap<String, Plugin>();
@@ -399,7 +409,7 @@ public class PluginDialog extends JDialog {
 			    finally{
 			      scanner.close();
 			    }
-				Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString());
+				Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
 				dlg = new PluginDialog(plugin, plugin.getClass());
 			} else if (args.length == 1) {
 				dlg = new PluginDialog((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0]));

@@ -155,6 +155,11 @@ public class XMLParser {
 
     String[] m_sNameSpaces;
 
+    /** Flag to indicate initAndValidate should be called after
+     * all inputs of a plugin have been parsed
+     */
+    boolean m_bInitialize = true;
+    
     public XMLParser() {
         m_sElement2ClassMap = new HashMap<String, String>();
         //m_sElement2ClassMap.put(MCMC_ELEMENT, MCMC_CLASS);
@@ -192,7 +197,8 @@ public class XMLParser {
     /** Parse an XML fragment representing a Plug-in
      * Only the last child element of the top level <beast> element is considered.
      */
-    public Plugin parseFragment(String sXML) throws Exception {
+    public Plugin parseFragment(String sXML, boolean bInitialize) throws Exception {
+    	m_bInitialize = bInitialize;
         // parse the XML file into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         m_doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
@@ -232,8 +238,14 @@ public class XMLParser {
      * Tree tree = (Tree) new XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
      * to create a simple tree.
      */
-    public Plugin parseBareFragment(String sXML) throws Exception {
-    	return parseFragment("<beast>" + sXML + "</beast>");
+    public Plugin parseBareFragment(String sXML, boolean bInitialize) throws Exception {
+    	// get rid of XML processing instruction
+    	sXML = sXML.replaceAll("<\\?xml[^>]*>","");
+    	if (sXML.indexOf("<beast") > -1) {
+    		return parseFragment(sXML, bInitialize);
+    	} else {
+    		return parseFragment("<beast>" + sXML + "</beast>", bInitialize);
+    	}
     }
 
     /**
@@ -454,12 +466,14 @@ public class XMLParser {
         // process inputs
         parseInputs(plugin, node);
         // initialise
-        try {
-            plugin.validateInputs();
-            plugin.initAndValidate();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new XMLParserException(node, "validate and intialize error: " + e.getMessage(), 110);
+        if (m_bInitialize) {
+        	try {
+            	plugin.validateInputs();
+            	plugin.initAndValidate();
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        		throw new XMLParserException(node, "validate and intialize error: " + e.getMessage(), 110);
+            }
         }
         return plugin;
     } // createObject
@@ -670,10 +684,10 @@ public class XMLParser {
         return false;
     }
 
-    public static void main(String [] args) {
+    public static void mainx(String [] args) {
     	try {
     		XMLParser parser = new XMLParser();
-    		Plugin plugin = parser.parseFragment(args[0]);
+    		Plugin plugin = parser.parseFragment(args[0], false);
     		System.err.println(plugin.toString());
     	} catch (Exception e) {
 			e.printStackTrace();

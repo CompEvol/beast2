@@ -28,23 +28,17 @@ package beast.app.draw;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
 public class Rect extends Shape {
-	String m_sURL = null;
-	String m_sLabel = null;
 	int m_nPenWidth = 1;
 	boolean m_bFilled = true;
 	Color m_fillcolor = DEFUALT_FILL_COLOR;
 	Color m_pencolor = DEFUALT_PEN_COLOR;
-	String m_src = null;
-	Image m_icon;
 
 	public Rect() {}
 	public Rect(Node node, Document doc) {
@@ -59,9 +53,6 @@ public class Rect extends Shape {
 		g.setStroke(new BasicStroke(m_nPenWidth));
 		g.setColor(m_pencolor);
 		g.drawRect(m_x, m_y, m_w, m_h);
-		if (m_icon != null) {
-			g.drawImage(m_icon, m_x, m_y, m_w, m_h, panel);
-		}
 		drawLabel(g);
 	} // draw
 
@@ -70,12 +61,6 @@ public class Rect extends Shape {
 
 	void parse(Node node, Document doc) {
 		super.parse(node, doc);
-		if (node.getAttributes().getNamedItem("url") != null) {
-			m_sURL = node.getAttributes().getNamedItem("url").getNodeValue();
-		}
-		if (node.getAttributes().getNamedItem("label") != null) {
-			m_sLabel = node.getAttributes().getNamedItem("label").getNodeValue();
-		}
 		if (node.getAttributes().getNamedItem("penwidth") != null) {
 			m_nPenWidth = (new Integer(node.getAttributes().getNamedItem("penwidth").getNodeValue())).intValue();
 		}
@@ -87,15 +72,6 @@ public class Rect extends Shape {
 		}
 		if (node.getAttributes().getNamedItem("filled") != null) {
 			m_bFilled = !node.getAttributes().getNamedItem("filled").getNodeValue().equals("no");
-		}
-		if (node.getAttributes().getNamedItem("src") != null) {
-			m_src = node.getAttributes().getNamedItem("src").getNodeValue();
-			try {
-				//URL url = new URL("file://"+m_src);
-				m_icon = new ImageIcon(m_src).getImage();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 	} // parse
 
@@ -126,17 +102,11 @@ public class Rect extends Shape {
 
 	String getAtts() {
 		return
-		(m_sURL!=null && m_sURL!="" ? " url='" + XMLnormalizeAtt(m_sURL) + "'" : "") +
-		(m_sLabel!=null && m_sLabel!="" ? " label='" + XMLnormalizeAtt(m_sLabel)+ "'" : "") +
 		(m_nPenWidth != 1 ? " penwidth='" + m_nPenWidth + "'" : "") +
 		(!m_bFilled ? " filled='no'" : "") +
 		(m_fillcolor.equals(DEFUALT_FILL_COLOR)? "" : " fillcolor='" + m_fillcolor.getRed() + " " + m_fillcolor.getGreen() + " " + m_fillcolor.getBlue() + "'") +
 		(m_pencolor.equals(DEFUALT_PEN_COLOR)? "" : " pencolor='" + m_pencolor.getRed() + " " + m_pencolor.getGreen() + " " + m_pencolor.getBlue() + "'") +
-		(m_src!=null && m_src!="" ? " src='" + m_src+ "'" : "") +
 		 super.getAtts();
-	}
-	public String getXML() {
-		return (m_src!=null && m_src!="" ? "<picture" + getAtts() + "/>" : "<rect" + getAtts() + "/>");
 	}
 	boolean intersects(int nX, int nY) {
 		return (nX>=m_x - 1&& nX <= m_x+m_w + 1&& nY >= m_y - 1 && nY <= m_y+m_h + 1);
@@ -150,21 +120,8 @@ public class Rect extends Shape {
 	void setFillColor(Color color) {m_fillcolor = color;}
 	void setPenColor(Color color) {m_pencolor = color;}
 
-	void setLabel(String sLabel) {m_sLabel = sLabel;}
-	String getLabel() {return m_sLabel;}
-	void setURL(String sURL) {m_sURL = sURL;}
-	String getURL() {return m_sURL;}
 	boolean isFilled() {return m_bFilled;}
 	void toggleFilled() {m_bFilled = !m_bFilled;}
 	int getPenWidth() {return m_nPenWidth;}
 	void setPenWidth(int nPenWidth) {m_nPenWidth = nPenWidth;}
-	String getImageSrc() {return m_src;}
-	void setImageSrc(String sSrc) {
-		m_src = sSrc;
-		try {
-			m_icon = new ImageIcon(m_src).getImage();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 } // class Rectangle

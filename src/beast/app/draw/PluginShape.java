@@ -45,7 +45,7 @@ import beast.core.Plugin;
 
 
 public class PluginShape extends Rect {
-	public beast.core.Plugin m_function;
+	public beast.core.Plugin m_plugin;
 	List<InputShape> m_inputs;
 
 
@@ -55,33 +55,33 @@ public class PluginShape extends Rect {
 	}
 	public PluginShape(Plugin plugin, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		super();
-		m_function = plugin;
+		m_plugin = plugin;
 		m_fillcolor = new Color(Randomizer.nextInt(256), 128+Randomizer.nextInt(128), Randomizer.nextInt(128));
 		setClassName(plugin.getClass().getName(), doc);
 	}
 	public PluginShape(Node node, Document doc) {
 		parse(node, doc);
 	}
-	void setLabel(String sLabel) {
-		super.setLabel(sLabel);
-		(m_function).setID(sLabel);
-	}
+//	void setLabel(String sLabel) {
+//		super.setLabel(sLabel);
+//		m_plugin.setID(sLabel);
+//	}
 	public void setClassName(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		try {
-			if (m_function == null) {
-				m_function = (beast.core.Plugin) Class.forName(sClassName).newInstance();
-				setLabel(sClassName.substring(sClassName.lastIndexOf('.')+1));
+			if (m_plugin == null) {
+				m_plugin = (beast.core.Plugin) Class.forName(sClassName).newInstance();
+				//setLabel(sClassName.substring(sClassName.lastIndexOf('.')+1));
 			}
 		m_inputs = new ArrayList<InputShape>();
-		List<Input<?>> sInputs = m_function.listInputs();
+		List<Input<?>> sInputs = m_plugin.listInputs();
 		for (Input<?> input_ : sInputs) {
 			//int nOffset = i*m_w/(sInputs.length) + m_w/(2*(sInputs.length));
-			InputShape input = new InputShape();
-			input.setFunction(this);
+			InputShape input = new InputShape(input_);
+			input.setPluginShape(this);
 			input.m_fillcolor = m_fillcolor;
 			input.m_w = 10;
 			String sInputLabel = input_.getName();
-			input.setLabel(sInputLabel);
+			//input.setLabel(sInputLabel);
 			doc.addNewShape(input);
 			m_inputs.add(input);
 		}
@@ -115,14 +115,14 @@ public class PluginShape extends Rect {
 	public boolean connect(Shape tail, String sInputID, Document doc) throws Exception {
 		// find relevant input
 		int iInput = 0;
-		while (!m_inputs.get(iInput).m_id.equals(sInputID)) {
+		while (!m_inputs.get(iInput).getID().equals(sInputID)) {
 			iInput++;
 		}
 		String sInput = m_inputs.get(iInput).getLabel();
-		Shape inputShape = doc.getID(tail.m_id);
+		Shape inputShape = doc.getShapeByID(tail.getID());
 		if (inputShape instanceof PluginShape) {
-			beast.core.Plugin input = ((PluginShape) inputShape).m_function;
-			return setInput(m_function, sInput, input);
+			beast.core.Plugin input = ((PluginShape) inputShape).m_plugin;
+			return setInput(m_plugin, sInput, input);
 		}
 		return false;
 	}
@@ -133,7 +133,7 @@ public class PluginShape extends Rect {
 	}
 
 	void adjustInputs() {
-		if (m_function != null) {
+		if (m_plugin != null) {
 			for (int i = 0; i < m_inputs.size(); i++) {
 				InputShape input = m_inputs.get(i);
 				int nOffset = i*m_h/(m_inputs.size()) + m_h/(2*(m_inputs.size()));
@@ -177,7 +177,7 @@ public class PluginShape extends Rect {
 		if (node.getAttributes().getNamedItem("class") != null) {
 			String sClassName = node.getAttributes().getNamedItem("class").getNodeValue();
 			try {
-			m_function = (beast.core.Plugin) Class.forName(sClassName).newInstance();
+			m_plugin = (beast.core.Plugin) Class.forName(sClassName).newInstance();
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -189,7 +189,7 @@ public class PluginShape extends Rect {
 			for (int i = 0;i < sInputID.length; i++) {
 				InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
 				m_inputs.add(ellipse);
-				ellipse.setFunction(this);
+				ellipse.setPluginShape(this);
 			}
 		}
 //		m_function = doc.getConstant(node);
@@ -198,10 +198,10 @@ public class PluginShape extends Rect {
 	public String getXML() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("<gdx:function");
-		buf.append(" class='"); buf.append(m_function.getClass().getName());buf.append("'");
+		buf.append(" class='"); buf.append(m_plugin.getClass().getName());buf.append("'");
 		buf.append(" inputids='");
 		for (int i = 0; i < m_inputs.size(); i++) {
-			buf.append(m_inputs.get(i).m_id);
+			buf.append(m_inputs.get(i).getID());
 			buf.append(' ');
 		}
 		buf.append("'");
@@ -219,6 +219,16 @@ public class PluginShape extends Rect {
 	
 	@Override
 	String getLabel() {
-		return m_function.getID();
+		if (m_plugin == null) {
+			return "";
+		}
+		return m_plugin.getID();
+	}
+	@Override 
+	String getID() {
+		if (m_plugin == null) {
+			return null;
+		}
+		return m_plugin.getID();
 	}
 } // class Function

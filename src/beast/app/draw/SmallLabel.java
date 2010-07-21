@@ -32,27 +32,35 @@ public class SmallLabel extends JLabel {
 		setMinimumSize(new Dimension(15,15));
 		setMaximumSize(new Dimension(15,15));
 		m_circleColor = circleColor;
+		super.setVisible(true);
 	} // c'tor
 
 	/**
 	 * paints the SmallButton
 	 */
 	public void paint(Graphics g) {
-		int s=14;
-		GradientPaint m_gradientPaint = new GradientPaint(new Point(0, 0), Color.WHITE, new Point(getWidth(), getHeight()), m_circleColor);
-		((Graphics2D) g).setPaint(m_gradientPaint);
-		//g.setColor(m_circleColor);
-		g.fillArc(0, 0, s, s, 0, 360);
-		g.setColor(getBackground().darker().darker().darker());
-		g.drawArc(0, 0, s, s, 0, 360);
-		Font f = getFont();
-		if (f != null) {
-			FontMetrics fm = getFontMetrics(getFont());
-			g.setColor(getForeground());
-			g.drawString(getText(), 
-					s / 2 - fm.stringWidth(getText()) / 2 +0, 
-					s / 2 + fm.getMaxDescent() + 1);
+		if (m_bIsEnabled) {
+			int s=14;
+			GradientPaint m_gradientPaint = new GradientPaint(new Point(0, 0), Color.WHITE, new Point(getWidth(), getHeight()), m_circleColor);
+			((Graphics2D) g).setPaint(m_gradientPaint);
+			//g.setColor(m_circleColor);
+			g.fillArc(0, 0, s, s, 0, 360);
+			g.setColor(getBackground().darker().darker().darker());
+			g.drawArc(0, 0, s, s, 0, 360);
+			Font f = getFont();
+			if (f != null) {
+				FontMetrics fm = getFontMetrics(getFont());
+				g.setColor(getForeground());
+				g.drawString(getText(), 
+						s / 2 - fm.stringWidth(getText()) / 2 +0, 
+						s / 2 + fm.getMaxDescent() + 1);
+			}
 		}
 	} // paint
 
+	boolean m_bIsEnabled = true;
+	@Override public void setVisible(boolean bIsEnabled) {
+		m_bIsEnabled = bIsEnabled;
+	}
+	
 } // class SmallButton

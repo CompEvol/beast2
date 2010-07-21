@@ -25,9 +25,6 @@
  */
 package beast.app.draw;
 
-
-
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -38,6 +35,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -67,6 +66,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
@@ -81,7 +81,7 @@ import beast.core.Plugin;
 
 /** program for drawing BEAST 2.0 models **/
 
-public class ModelBuilder extends JPanel {
+public class ModelBuilder extends JPanel implements ComponentListener {
 	/** for serialisation */
 	static final long serialVersionUID = 1L;
 
@@ -90,6 +90,8 @@ public class ModelBuilder extends JPanel {
 	static public final String FILE_EXT = ".xml";
 	final public static String ICONPATH = "beast/app/draw/icons/";
 
+	/** contains the Panel */
+	JScrollPane m_jScrollPane;
 	public DrawPanel g_panel;
 
 	final static int MODE_SELECT = 0;
@@ -102,10 +104,15 @@ public class ModelBuilder extends JPanel {
 	Rectangle m_selectRect = null;
 	int m_nMode = MODE_SELECT;
 
-	boolean m_bViewOperators = true;
-	boolean m_bViewLoggers = true;
-	boolean m_bViewSequences = true;
-	boolean m_bViewState = true;
+//	boolean m_bViewOperators = true;
+//	boolean m_bViewLoggers = true;
+//	boolean m_bViewSequences = true;
+//	boolean m_bViewState = true;
+
+	boolean m_bViewOperators = false;
+	boolean m_bViewLoggers = false;
+	boolean m_bViewSequences = false;
+	boolean m_bViewState = false;
 	boolean m_bRelax = false;
 
 	/** number of seconds to 'relax' after loading a file **/
@@ -323,11 +330,19 @@ public class ModelBuilder extends JPanel {
 			return true;
 		}
 		String sMsg = "<html>Document is not valid: ";
-		if (nStatus == Document.STATUS_CYCLE) {
+		switch (nStatus) {
+		case Document.STATUS_CYCLE:
 			sMsg += "there is a cycle in the model.";
-		}
-		if (nStatus == Document.STATUS_OK) {
+			break;
+		case Document.STATUS_EMPTY_MODEL:
+			sMsg += "The model is empty, there is nothing to save.";
+			break;
+		case Document.STATUS_NOT_RUNNABLE:
 			sMsg += "there is no top level runnable item in the model (e.g. an MCMC node).";
+			break;
+		case Document.STATUS_ORPHANS_IN_MODEL:
+			sMsg += "there are orphaned items in the model (i.e. plugins that have no parents).";
+			break;
 		}
 		sMsg += "<br>Do you still want to try to save the model?</html>";
 		if (JOptionPane.showConfirmDialog(this, sMsg, "Model not valid", JOptionPane.YES_NO_OPTION) ==JOptionPane.YES_OPTION) {
@@ -591,20 +606,20 @@ public class ModelBuilder extends JPanel {
 				g_panel.repaint();
 				try {Thread.sleep(1000);} catch (Exception e) {}
 				setDrawingFlag();
-				m_bRelax = true;
-				m_viewRelax.setState(m_bRelax);
+				//m_bRelax = true;
+				//m_viewRelax.setState(m_bRelax);
 				g_panel.repaint();
 				
-				new Thread() {
-					public void run() {
-						// user may toggle relax state, so break loop if that happens
-						for (int iSeconds = 0; iSeconds < m_nRelaxSeconds && m_bRelax; iSeconds++) {
-							try {Thread.sleep(1000);} catch (Exception e) {}
-						}
-						m_bRelax = false;
-						m_viewRelax.setState(m_bRelax);
-					}						
-				}.start();
+//				new Thread() {
+//					public void run() {
+//						// user may toggle relax state, so break loop if that happens
+//						for (int iSeconds = 0; iSeconds < m_nRelaxSeconds && m_bRelax; iSeconds++) {
+//							try {Thread.sleep(1000);} catch (Exception e) {}
+//						}
+//						m_bRelax = false;
+//						m_viewRelax.setState(m_bRelax);
+//					}						
+//				}.start();
 			}
 		}
 	} // class ActionLoad
@@ -1061,9 +1076,18 @@ public class ModelBuilder extends JPanel {
 
 	public void init() {
 		m_Selection.setDocument(m_doc);
-		setLayout(new BorderLayout());
+		setSize(2048,2048);
 		g_panel = new DrawPanel();
-
+		m_jScrollPane = new JScrollPane(g_panel);
+		makeToolbar();
+		makeMenuBar();
+		addComponentListener(this);
+		this.setLayout(new BorderLayout());
+		this.add(m_jScrollPane, BorderLayout.CENTER);
+		g_panel.setPreferredSize(getSize());
+	}
+	
+	void makeToolbar() {
 		m_jTbTools = new JToolBar();
 		m_jTbTools.setFloatable(false);
 		//m_jTbTools.setLayout(new GridBagLayout());
@@ -1130,31 +1154,31 @@ public class ModelBuilder extends JPanel {
 				shape.m_bNeedsDrawing = true;
 			}
 			if (shape instanceof PluginShape){
-				Plugin plugin = ((PluginShape) shape).m_function;
+				Plugin plugin = ((PluginShape) shape).m_plugin;
 				if (needsDrawing(plugin)) {
 					shape.m_bNeedsDrawing = true;
 				}
 			} else if (shape instanceof InputShape) {
-				PluginShape pluginShape = ((InputShape)shape).m_function;
+				PluginShape pluginShape = ((InputShape)shape).m_pluginShape;
 				if (pluginShape != null) {
-					if (needsDrawing(pluginShape.m_function)) {
+					if (needsDrawing(pluginShape.m_plugin)) {
 						shape.m_bNeedsDrawing = true;
 					}
 				} else {
 					shape.m_bNeedsDrawing = true;
 				}
 			} else if (shape instanceof Arrow) {
-				Shape tail = ((Arrow)shape).m_tail;
+				Shape tail = ((Arrow)shape).m_tailShape;
 				boolean bNeedsDrawing = true;
 				if (tail instanceof PluginShape) {
-					bNeedsDrawing = needsDrawing(((PluginShape) tail).m_function);
+					bNeedsDrawing = needsDrawing(((PluginShape) tail).m_plugin);
 				}
 				if (bNeedsDrawing) {
-					Shape head = ((Arrow)shape).m_head;
+					Shape head = ((Arrow)shape).m_headShape;
 					if (head instanceof InputShape) {
-						PluginShape pluginShape = ((InputShape)head).m_function;
+						PluginShape pluginShape = ((InputShape)head).m_pluginShape;
 						if (pluginShape != null) {
-							bNeedsDrawing = needsDrawing(pluginShape.m_function);
+							bNeedsDrawing = needsDrawing(pluginShape.m_plugin);
 						}
 					}
 					if (bNeedsDrawing) {
@@ -1213,9 +1237,10 @@ public class ModelBuilder extends JPanel {
 
 
 			if (m_bRelax) {
-				m_doc.relax();
+				m_doc.relax(true);
 				repaint();
 			}
+			m_jScrollPane.revalidate();
 		} // paintComponent
 		
 	    /** implementation of Printable, used for printing
@@ -1321,9 +1346,9 @@ public class ModelBuilder extends JPanel {
 							return;
 						}
 						if (shape instanceof InputShape) {
-							shape = ((InputShape) shape).m_function;
+							shape = ((InputShape) shape).m_pluginShape;
 						}
-						arrow = new Arrow(shape, me.getX(), me.getY());
+						arrow = new Arrow((PluginShape) shape, me.getX(), me.getY());
 						arrow.m_w = 1;
 						arrow.m_h = 1;
 						m_drawShape = arrow;
@@ -1370,7 +1395,7 @@ public class ModelBuilder extends JPanel {
 							PluginShape plugin = (PluginShape) shape;
 							try {
 								String sToolTip = "<html>";
-								for (Input<?> input : plugin.m_function.listInputs()) {
+								for (Input<?> input : plugin.m_plugin.listInputs()) {
 									sToolTip += input.getName() + "<br>";
 								}
 								sToolTip += "</html>";
@@ -1450,7 +1475,7 @@ public class ModelBuilder extends JPanel {
 									sValue = JOptionPane.showInputDialog(sInput + ":",sValue);
 									if (sValue != null) {
 										plugin.setInputValue(sInput, sValue);
-										ellipse.setLabel(sInput + "=" + plugin.getInputValue(sInput).toString());
+										//ellipse.setLabel(sInput + "=" + plugin.getInputValue(sInput).toString());
 										g_panel.repaint();
 									}
 								}
@@ -1485,8 +1510,8 @@ public class ModelBuilder extends JPanel {
 				ActionListener label = new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						Shape shape = m_Selection.getSingleSelectionShape();
-						String sName = (String) JOptionPane.showInputDialog(null, shape.getLabel(), "New label",
-								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getLabel());
+						String sName = (String) JOptionPane.showInputDialog(null, shape.getID(), "New label",
+								JOptionPane.OK_CANCEL_OPTION, null, null, shape.getID());
 						if (sName == null || sName.equals("")) {
 							return;
 						}
@@ -1494,7 +1519,7 @@ public class ModelBuilder extends JPanel {
 							int i = sName.indexOf("\\n");
 							sName = sName.substring(0, i-1) + '\n' + sName.substring(i+2);
 						}
-						m_doc.setLabel(sName, m_Selection.getSingleSelection());
+						m_doc.setID(sName, m_Selection.getSingleSelection());
 						repaint();
 					}
 				};
@@ -1525,12 +1550,12 @@ public class ModelBuilder extends JPanel {
 					public void actionPerformed(ActionEvent ae) {
 						Shape shape = m_Selection.getSingleSelectionShape();
 						if (shape instanceof PluginShape) {
-							Plugin plugin = ((PluginShape) shape).m_function;
+							Plugin plugin = ((PluginShape) shape).m_plugin;
 							
 							List<Plugin> plugins = new ArrayList<Plugin>();
 							for (Shape shape2 : m_doc.m_objects) {
 								if (shape2 instanceof PluginShape) {
-									plugins.add(((PluginShape) shape2).m_function);
+									plugins.add(((PluginShape) shape2).m_plugin);
 								}
 							}
 							PluginDialog dlg = new PluginDialog(plugin, plugin.getClass(), plugins);
@@ -1569,7 +1594,7 @@ public class ModelBuilder extends JPanel {
 				saveAsItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						Shape shape = m_Selection.getSingleSelectionShape();
-						Plugin plugin = ((PluginShape) shape).m_function;
+						Plugin plugin = ((PluginShape) shape).m_plugin;
 						JFileChooser fc = new JFileChooser(m_sDir);
 						fc.addChoosableFileFilter(ef1);
 						fc.setDialogTitle("Save Plugin As");
@@ -1690,11 +1715,24 @@ public class ModelBuilder extends JPanel {
 							repaint();
 							return;
 						}
+						
+						// check no cycle is introduced
+						InputShape target2 = (InputShape) target;
+						if (m_doc.isAscendant(arrow.m_tailShape.m_plugin, target2.getPlugin())) {
+							JOptionPane.showMessageDialog(null, "Cannot make this connection since this creates a cycle in the model");
+							return;
+						}
+						
 						try {
+							// try to add connection
+							// this links the input of the target plugin
+							// to the source plugin. If types mismatch, 
+							// an exception is thrown and no arrow added.
 							arrow.setHead(target, m_doc.m_objects, m_doc);
 							m_doc.addNewShape(arrow);
 						} catch (Exception e) {
 							JOptionPane.showMessageDialog(null, e.getMessage());
+							repaint();
 						}
 					}
 					break;
@@ -1708,7 +1746,7 @@ public class ModelBuilder extends JPanel {
 					m_Selection.clear();
 					g_panel.repaint();
 				}
-			}
+			} // mouseReleased
 		} // GBDrawMouseEventListener
 	} // class DrawPanel
 
@@ -1826,6 +1864,20 @@ public class ModelBuilder extends JPanel {
 		});
 		viewMenu.add(m_viewRelax);
 
+		JMenuItem layoutMenu = new JMenuItem("Layout Visible Items");
+		layoutMenu.setMnemonic('L');
+		layoutMenu.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
+				m_doc.layout();
+				m_doc.adjustArrows();
+				repaint();
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+		viewMenu.add(layoutMenu);
+
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic('H');
 		menuBar.add(helpMenu);
@@ -1844,7 +1896,7 @@ public class ModelBuilder extends JPanel {
 		f.setJMenuBar(menuBar);
 
 		f.add(drawTest.m_jTbTools, BorderLayout.NORTH);
-		f.add(drawTest.g_panel, BorderLayout.CENTER);
+		f.add(drawTest, BorderLayout.CENTER);
 
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		java.net.URL tempURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "/GenerationD.png");
@@ -1861,5 +1913,21 @@ public class ModelBuilder extends JPanel {
 		f.setSize(600, 800);
 		f.setVisible(true);
 	} // main
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		m_jScrollPane.revalidate();
+	}
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		m_jScrollPane.revalidate();
+	}
+	@Override
+	public void componentResized(ComponentEvent e) {
+		m_jScrollPane.revalidate();
+	}
+	@Override
+	public void componentShown(ComponentEvent e) {
+		m_jScrollPane.revalidate();
+	}
 	
 } // class ModelBuilder

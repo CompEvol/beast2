@@ -44,8 +44,8 @@ public class Arrow extends Line {
 	boolean m_bHasTail = false;
 	boolean m_bHasHead= true;
 	Polygon m_polygon;
-	public Shape m_tail;
-	public Shape m_head;
+	public PluginShape m_tailShape;
+	public Shape m_headShape;
 
 	final static double m_nArrowAngle = 0.08;
 	final static int m_nArrowLength = 15;
@@ -54,20 +54,21 @@ public class Arrow extends Line {
 		parse(node, doc);
 		setArrow();
 	}
-	public Arrow(Shape tailShape, int x, int y) {
-		m_sTailID = tailShape.m_id;
+	public Arrow(PluginShape tailShape, int x, int y) {
+		m_sTailID = tailShape.getID();
 		m_x = x;
 		m_y = y;
 		m_w = 1;
 		m_h = 1;
 		setArrow();
+		m_tailShape = tailShape;
 	}
-	public Arrow(Shape tailShape, PluginShape headShape, String sInputName) {
-		m_sTailID = tailShape.m_id;
-		m_tail = tailShape;
+	public Arrow(PluginShape tailShape, PluginShape headShape, String sInputName) {
+		m_sTailID = tailShape.getID();
+		m_tailShape = tailShape;
 		Shape input = headShape.getInput(sInputName);
-		m_sHeadID = input.m_id;
-		m_head = input;
+		m_sHeadID = input.getID();
+		m_headShape = input;
 		//m_sHeadID = headShape.m_id;
 		m_x = 0;
 		m_y = 0;
@@ -109,7 +110,8 @@ public class Arrow extends Line {
 		setArrow();
 	}
 	public boolean setHead(Shape shape, List<Shape> objects, Document doc) throws Exception {
-		m_sHeadID = shape.m_id;
+		m_sHeadID = shape.getID();
+		m_headShape = shape;
 		adjustCoordinates(objects, true);
 		setArrow();
 		return setFunctionInput(objects, doc);
@@ -118,19 +120,19 @@ public class Arrow extends Line {
 	boolean setFunctionInput(List<Shape> objects, Document doc) throws Exception {
 		Shape head = null;
 		int i = 0;
-		while (i < objects.size() && !((Shape)objects.get(i)).m_id.equals(m_sHeadID)) {
+		while (i < objects.size() && !((Shape)objects.get(i)).getID().equals(m_sHeadID)) {
 			i++;
 		}
 		head = (Shape)objects.get(i);
-		if (head instanceof InputShape && ((InputShape)head).getFunction()!=null) {
+		if (head instanceof InputShape && ((InputShape)head).getPluginShape()!=null) {
 			Shape tail = null;
 			int j = 0;
-			while (j < objects.size() && !((Shape)objects.get(j)).m_id.equals(m_sTailID)) {
+			while (j < objects.size() && !((Shape)objects.get(j)).getID().equals(m_sTailID)) {
 				j++;
 			}
 			tail = (Shape)objects.get(j);
 			//try {
-				return ((InputShape)head).getFunction().connect(tail, m_sHeadID, doc);
+				return ((InputShape)head).getPluginShape().connect(tail, m_sHeadID, doc);
 			//} catch (Exception e) {
 				//return false;
 			//}
@@ -250,33 +252,33 @@ public class Arrow extends Line {
 	public String getXML() {
 		return "<arrow" + getAtts() + "/>";
 	}
-	void resetIDs(List<Shape> objects) {
-		for (int i = 0; i < objects.size(); i++) {
-			Shape shape = (Shape) objects.get(i);
-			if (shape.m_id.equals(m_sHeadID)) {
-				m_head = shape;
-			}
-			if (shape.m_id.equals(m_sTailID)) {
-				m_tail = shape;
-			}
-			if (shape instanceof Group) {
-				Group group = (Group) shape;
-				resetIDs(group.m_objects);
-			}
-		}
-	}
+//	void resetIDs(List<Shape> objects) {
+//		for (int i = 0; i < objects.size(); i++) {
+//			Shape shape = (Shape) objects.get(i);
+//			if (shape.m_id.equals(m_sHeadID)) {
+//				m_head = shape;
+//			}
+//			if (shape.m_id.equals(m_sTailID)) {
+//				m_tail = shape;
+//			}
+//			if (shape instanceof Group) {
+//				Group group = (Group) shape;
+//				resetIDs(group.m_objects);
+//			}
+//		}
+//	}
 	void adjustCoordinates(List<Shape> objects, boolean bResetIDs) {
-		if (m_tail == null || bResetIDs == true) {
-			resetIDs(objects);
-
-		}
+//		if (m_tail == null || bResetIDs == true) {
+//			resetIDs(objects);
+//
+//		}
 		Point tailCenter = new Point(
-		 (m_tail.getX() + m_tail.getX2()) / 2,
-		 (m_tail.getY() + m_tail.getY2()) / 2);
+		 (m_tailShape.getX() + m_tailShape.getX2()) / 2,
+		 (m_tailShape.getY() + m_tailShape.getY2()) / 2);
 		Point headCenter = new Point(
-		 (m_head.getX() + m_head.getX2()) / 2,
-		 (m_head.getY() + m_head.getY2()) / 2);
-		Rect rect = (Rect) m_tail;
+		 (m_headShape.getX() + m_headShape.getX2()) / 2,
+		 (m_headShape.getY() + m_headShape.getY2()) / 2);
+		Rect rect = (Rect) m_tailShape;
 		Point roundness = new Point(0,0);
 		if (rect instanceof InputShape) {
 			roundness.x = rect.m_w;
@@ -285,7 +287,7 @@ public class Arrow extends Line {
 		 Point tailPoint = CalcIntersectionLineAndNode(
 				tailCenter, headCenter, rect, roundness);
 
-			rect = (Rect) m_head;
+			rect = (Rect) m_headShape;
 			roundness = new Point(0,0);
 			if (rect instanceof InputShape) {
 				roundness.x = rect.m_w;
@@ -377,5 +379,14 @@ public class Arrow extends Line {
 		pt.y = (int) (ga * pt.x + gb);
 		return pt;
 
+	}
+	
+	String m_sID = null;
+	@Override
+	public String getID() {
+		return m_sID;
+	}
+	public void setID(String sID) {
+		m_sID = sID;
 	}
 } // class Arrow

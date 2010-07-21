@@ -32,17 +32,25 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
+import beast.core.Input;
 import beast.core.Plugin;
 
 public class InputShape extends Rect {
-	public InputShape() {super();}
+	Input<?> m_input;
+	
+	public InputShape(Input<?> input) {
+		super();
+		m_input = input;
+	}
 	public InputShape(Node node, Document doc) {
 		parse(node, doc);
+		//TODO: set inputName
 	}
 
-	public PluginShape m_function = null;
-	PluginShape getFunction() {return m_function;}
-	void setFunction(PluginShape function) {m_function = function;}
+	public PluginShape m_pluginShape = null;
+	PluginShape getPluginShape() {return m_pluginShape;}
+	void setPluginShape(PluginShape function) {m_pluginShape = function;}
+	Plugin getPlugin() {return m_pluginShape.m_plugin;}
 
 	String getInputName() throws Exception {
 		String sName = getLabel();
@@ -50,16 +58,11 @@ public class InputShape extends Rect {
 			sName = sName.substring(0, sName.indexOf('='));
 		}
 		return sName;
-		// should never get here
-		//throw new Exception("Ellipse::getInput should not get here. Label not properly set/validated");
-	}
-	Plugin getPlugin() {
-		return m_function.m_function;
 	}
 
 
 	public void draw(Graphics2D g, JPanel panel) {
-		if (m_function == null || m_function.m_bNeedsDrawing) {
+		if (m_pluginShape == null || m_pluginShape.m_bNeedsDrawing) {
 			if (m_bFilled) {
 				g.setColor(m_fillcolor);
 				g.fillOval(m_x, m_y, m_w, m_h);
@@ -84,5 +87,25 @@ public class InputShape extends Rect {
 	}
 	boolean intersects(int nX, int nY) {
 		return (m_x+m_w/2-nX)*(m_x+m_w/2-nX)+ (m_y+m_h/2-nY)*(m_y+m_h/2-nY) < m_w*m_w/4+m_h*m_h/4;
+	}
+
+	@Override
+	String getLabel() {
+		String sLabel = m_input.getName();
+		if (m_input.get() != null) {
+			Object o = m_input.get();
+			if (o instanceof String ||
+				o instanceof Integer ||
+				o instanceof Double ||
+				o instanceof Boolean) {
+				sLabel += "=" + o.toString();
+			}
+		}
+		return sLabel;
+	}
+
+	@Override 
+	String getID() {
+		return m_pluginShape.m_plugin.getID()+"." + m_input.getName();
 	}
 } // class Ellipse

@@ -47,7 +47,8 @@ public class Shape {
 
 	final static Color DEFUALT_FILL_COLOR =new Color(128,128,128);
 	final static Color DEFUALT_PEN_COLOR =new Color(0, 0, 0);
-	String m_id;
+	//String m_id;
+	String getID() {return null;}
 	public Shape() {}
 	public Shape(Node node, Document doc) {}
 	public void draw(Graphics2D g, JPanel panel) {}
@@ -79,9 +80,9 @@ public class Shape {
 		return tracker;
 	}
 	void parse(Node node, Document doc) {
-		if (node.getAttributes().getNamedItem("id") != null) {
-			m_id = node.getAttributes().getNamedItem("id").getNodeValue();
-		}
+//		if (node.getAttributes().getNamedItem("id") != null) {
+//			m_id = node.getAttributes().getNamedItem("id").getNodeValue();
+//		}
 		if (node.getAttributes().getNamedItem("x") != null) {
 			m_x = (new Integer(node.getAttributes().getNamedItem("x").getNodeValue())).intValue();
 			m_x += 400;
@@ -130,7 +131,7 @@ public class Shape {
 	return sStr2.toString();
 	} // XMLnormalizeAtt
 	String getAtts() {
-		return " id='" + m_id + "'" +
+		return //" id='" + m_id + "'" +
 		" x='" + (m_x-400) + "'" +
 		" y='" + (550-m_y - m_h) + "'" +
 		" w='" + m_w + "'" +
@@ -205,14 +206,10 @@ public class Shape {
 	void setY(int nY) {m_y = nY;}
 	void setX2(int nX2) {m_w = nX2 - m_x;}
 	void setY2(int nY2) {m_h = nY2 - m_y;}
-	void setLabel(String sLabel) {}
+	//void setLabel(String sLabel) {}
 	String getLabel() {return "";}
-	void setURL(String sURL) {}
-	String getURL() {return "";}
 	boolean isFilled() {return false;}
 	void toggleFilled() {}
 	int getPenWidth() {return 0;}
 	void setPenWidth(int nPenWidth) {}
-	String getImageSrc() {return "";}
-	void setImageSrc(String sSrc) {};
 }
