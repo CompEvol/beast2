@@ -66,7 +66,6 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         for (int i = 0; i < cumulativeGroupSizes.length; i++) {
             intervalCount += groupSizes.getValue(i);
             cumulativeGroupSizes[i] = intervalCount;
-            System.out.println("cumulative group size " + i + ": " + cumulativeGroupSizes[i]);
         }
 
         coalescentTimes = intervals.getCoalescentTimes(coalescentTimes);
