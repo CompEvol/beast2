@@ -125,10 +125,9 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     @Override
     public boolean isDirty() {
+    	recompute = true;
     	if (true) {
-        	recompute = true;
-            m_bIsDirty = true;
-            return true;
+            return false;
     	}
     	
     	if (recompute || m_bIsDirty) {

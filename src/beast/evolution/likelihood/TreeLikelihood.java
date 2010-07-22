@@ -155,6 +155,9 @@ public class TreeLikelihood extends Distribution {
     SiteModel m_siteModel;
     BranchRateModel.Base m_branchRateModel;
 
+    double [] m_branchLengths;
+    double [] m_StoredBranchLengths;
+    
     @Override
     public void initAndValidate() throws Exception {
         int nStateCount = m_data.get().getMaxStateCount();
@@ -194,6 +197,8 @@ public class TreeLikelihood extends Distribution {
         m_siteModel = m_pSiteModel.get();
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
         m_branchRateModel = m_pBranchRateModel.get();
+        m_branchLengths = new double[nodeCount];
+        m_StoredBranchLengths = new double[nodeCount];
     }
 
     /**
@@ -265,20 +270,20 @@ public class TreeLikelihood extends Distribution {
 //        /if (pParent != NULL && m_updateNode[nodeNum]) {
         if (!node.isRoot() && (m_bNodeIsDirty[iNode] != Tree.IS_CLEAN)) {
 
-            double branchRate = 1.0;
-            if (m_branchRateModel != null) branchRate = m_branchRateModel.getRateForBranch(node);
-
-            // Get the operational time of the branch
-            double branchTime = branchRate * node.getLength();//((*pParent).height - (*pNode).height);
-            if (branchTime < 0) {
-                throw new Exception("Negative branch length found");
-            }
+//            double branchRate = 1.0;
+//            if (m_branchRateModel != null) branchRate = m_branchRateModel.getRateForBranch(node);
+//
+//            // Get the operational time of the branch
+//            double branchTime = branchRate * node.getLength();//((*pParent).height - (*pNode).height);
+//            if (branchTime < 0) {
+//                throw new Exception("Negative branch length found");
+//            }
 
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             //if (m_bNodeIsDirty[nodeNum] == IS_GORED) {
             //	m_pLikelihoodCore->setNodeStatesForUpdate(nodeNum);
             //}
-
+            double branchTime = m_branchLengths[node.getNr()];
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
                 double branchLength = m_siteModel.getRateForCategory(i) * branchTime;
 //                m_siteModel
@@ -350,18 +355,29 @@ public class TreeLikelihood extends Distribution {
             hasDirt = Tree.IS_DIRTY;
         }
         if (m_branchRateModel != null && m_branchRateModel.isDirty()) {
-            hasDirt = Tree.IS_DIRTY;
+            //hasDirt |= Tree.IS_DIRTY;
+            hasDirt |= Tree.IS_CLEAN;
         }
     	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
         // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);
         //m_likelihoodCore.checkForDirt(state);
         Tree tree = m_tree.getStateNode();
-        tree.syncTreeWithTraitsInState();
+        //tree.syncTreeWithTraitsInState();
         checkNodesForDirt(tree.getRoot(), hasDirt);
     } // checkForDirt
 
     void checkNodesForDirt(Node node, int hasDirt) {
-        m_bNodeIsDirty[node.getNr()] = Math.max(node.isDirty(), hasDirt);
+    	int iNodeNr = node.getNr();
+        // Get the operational time of the branch
+        double branchRate = 1.0;
+        if (m_branchRateModel != null) {
+        	branchRate = m_branchRateModel.getRateForBranch(node);
+        }
+        m_branchLengths[iNodeNr] = branchRate * node.getLength();//((*pParent).height - (*pNode).height);
+        if (m_branchLengths[iNodeNr] != m_StoredBranchLengths[iNodeNr]) {
+        	node.makeDirty(Tree.IS_DIRTY);
+        }
+        m_bNodeIsDirty[iNodeNr] = Math.max(node.isDirty(), hasDirt);
         if (!node.isLeaf()) {
             checkNodesForDirt(node.m_left, hasDirt);
             checkNodesForDirt(node.m_right, hasDirt);
@@ -385,23 +401,17 @@ public class TreeLikelihood extends Distribution {
     @Override
     public void store(int nSample) {
         super.store(nSample);
-        //m_siteModel.store(nSample);
-        //m_pSubstModel.get().store(nSample);
         m_likelihoodCore.store();
-        //if (branchRateModel.get() != null) {
-        //	branchRateModel.get().store(nSample);
-        //}
+        System.arraycopy(m_branchLengths, 0, m_StoredBranchLengths, 0, m_branchLengths.length);
     }
 
     @Override
     public void restore(int nSample) {
         super.restore(nSample);
-        //m_siteModel.restore(nSample);
-        //m_pSubstModel.get().restore(nSample);
         m_likelihoodCore.restore();
-        //if (branchRateModel.get() != null) {
-        //	branchRateModel.get().restore(nSample);
-        //}
+        double [] tmp = m_branchLengths;
+        m_branchLengths = m_StoredBranchLengths;
+        m_StoredBranchLengths = tmp;
     }
 
     double[] m_fPatternLogLikelihoods;

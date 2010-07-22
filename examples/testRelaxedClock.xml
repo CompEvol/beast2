@@ -60,7 +60,7 @@
     </input>
 
     <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
-	<trait idref='rateCategories'/> 
+	<!--trait idref='rateCategories'/--> 
         <input name='taxa' idref='alignment'/>
     </input>
 

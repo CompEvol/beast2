@@ -37,8 +37,8 @@ import java.util.List;
         "other time-beast.tree relationships among sequence data.")
 public class Tree extends StateNode implements Loggable {
 
-    @SuppressWarnings("unchecked")
-    public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
+//    @SuppressWarnings("unchecked")
+//    public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
 
 
     @Override
@@ -130,7 +130,7 @@ public class Tree extends StateNode implements Loggable {
         tree.index = index;
         tree.root = root.copy();
         tree.nodeCount = nodeCount;
-        tree.treeTraitsInput = treeTraitsInput;
+//        tree.treeTraitsInput = treeTraitsInput;
 //        tree.m_state = m_state;
         return tree;
     }
@@ -145,7 +145,7 @@ public class Tree extends StateNode implements Loggable {
         root.assignTo(nodes);
         tree.root = nodes[root.getNr()];
         tree.nodeCount = nodeCount;
-        tree.treeTraitsInput = treeTraitsInput;
+//        tree.treeTraitsInput = treeTraitsInput;
         //tree.m_state = m_state;
     }
 
@@ -170,37 +170,37 @@ public class Tree extends StateNode implements Loggable {
         return root.toString();
     }
 
-    /**
-     * synchronise tree nodes with its traits stored in an array *
-     */
-    public void syncTreeWithTraitsInState() {
-        boolean bSyncNeeded = false;
-        for (Parameter<?> p : treeTraitsInput.get()) {
-            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
-            p = (Parameter<?>) p.getCurrent();
-            if (p.isDirty()) {
-                bSyncNeeded = true;
-            }
-        }
-        if (bSyncNeeded) {
-            syncTreeWithTraits(getRoot());
-        }
-    } // syncTreeWithTraitsInState
-
-    void syncTreeWithTraits(Node node) {
-        for (Parameter<?> p : treeTraitsInput.get()) {
-            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
-            p = (Parameter<?>) p.getCurrent();
-            int iNode = Math.abs(node.getNr());
-            if (p.isDirty(iNode)) {
-                node.setMetaData(p.getID(), p.getValue(iNode));
-            }
-        }
-        if (!node.isLeaf()) {
-            syncTreeWithTraits(node.m_left);
-            syncTreeWithTraits(node.m_right);
-        }
-    } // syncTreeWithTraits
+//    /**
+//     * synchronise tree nodes with its traits stored in an array *
+//     */
+//    public void syncTreeWithTraitsInState() {
+//        boolean bSyncNeeded = false;
+//        for (Parameter<?> p : treeTraitsInput.get()) {
+//            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+//            p = (Parameter<?>) p.getCurrent();
+//            if (p.isDirty()) {
+//                bSyncNeeded = true;
+//            }
+//        }
+//        if (bSyncNeeded) {
+//            syncTreeWithTraits(getRoot());
+//        }
+//    } // syncTreeWithTraitsInState
+//
+//    void syncTreeWithTraits(Node node) {
+//        for (Parameter<?> p : treeTraitsInput.get()) {
+//            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
+//            p = (Parameter<?>) p.getCurrent();
+//            int iNode = Math.abs(node.getNr());
+//            if (p.isDirty(iNode)) {
+//                node.setMetaData(p.getID(), p.getValue(iNode));
+//            }
+//        }
+//        if (!node.isLeaf()) {
+//            syncTreeWithTraits(node.m_left);
+//            syncTreeWithTraits(node.m_right);
+//        }
+//    } // syncTreeWithTraits
 
     /** Loggable interface implementation follows **/
     /**
