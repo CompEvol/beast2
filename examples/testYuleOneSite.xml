@@ -31,11 +31,13 @@
     <parameter id='relativeDeathRate' value='1'/>
 
     <!-- initial yule prior = -6.0, yule-like prior = -2.8219461696520542 -->
-    <run spec='MCMC' chainLength="1">
+    <run spec='MCMC' chainLength="1000">
 	<state>
 	    <stateNode idref='birthRate'/>
+<!--
 	    <stateNode idref='relativeDeathRate'/>
 	    <stateNode idref='tree'/>
+-->
 	</state>
 
 	<distribution spec='CompoundDistribution'>

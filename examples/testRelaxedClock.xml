@@ -77,7 +77,6 @@
             <input name='stateNode' idref='S'/>
             <input name='stateNode' idref='tree'/>
             <input name='stateNode' idref='rateCategories'/>
-
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
@@ -90,11 +89,9 @@
             <distribution id='likelihood' idref="treeLikelihood"/>
         </distribution>
 
-
         <operator id="categoriesRandomWalk" spec="IntUniformOperator" weight="1">
             <input name="parameter" idref="rateCategories"/>
         </operator>
-
         <operator id='SScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <parameter idref="S"/>
         </operator>

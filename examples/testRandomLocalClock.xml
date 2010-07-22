@@ -58,8 +58,10 @@
     </input>
 
     <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+<!--
         <trait idref='indicators'/>
         <trait idref='rates'/>
+-->
         <input name='taxa' idref='alignment'/>
     </input>
 
@@ -87,11 +89,9 @@
             <distribution id='likelihood' idref="treeLikelihood"/>
         </distribution>
 
-
         <operator id="categoriesRandomWalk" spec="IntUniformOperator" weight="1">
             <input name="parameter" idref="indicators"/>
         </operator>
-
         <operator id='rateScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <parameter idref="rates"/>
         </operator>

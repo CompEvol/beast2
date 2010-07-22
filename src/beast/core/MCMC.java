@@ -151,25 +151,20 @@ public class MCMC extends Runnable {
         boolean bDebug = true;
         state.setDirty(true);
         double fOldLogLikelihood = posterior.calculateLogP();
-        System.err.println("Start likelihood: = " + fOldLogLikelihood);
+        //System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
-
             //State proposedState = state.copy();
         	state.store();
             state.stateNumber = iSample;
+            //System.err.println(state.toString());
             Operator operator = operatorSet.selectOperator();
             double fLogHastingsRatio = operator.proposal();
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
-                //System.out.print("store ");
+                //System.out.print(iSample +  " store ");
                 storeCachables(iSample);
 				//state.setDirty(true);
                 //System.out.print(operator.getName()+ "\n");
                 //System.err.println(state.toString());
-                if (bDebug) {
-                    //System.out.print(operator.getName()+ "\n");
-                    //System.err.println(proposedState.toString());
-                    state.validate();
-                }
 
                 double fNewLogLikelihood = posterior.calculateLogP();
                 //System.out.print("posterior: " + fNewLogLikelihood+ "\n");
@@ -182,7 +177,7 @@ public class MCMC extends Runnable {
                     if (iSample >= 0) {
                         operator.accept();
                     }
-                    //System.out.println("store ");
+                    //System.out.println("accept ");
                 } else {
                     // reject
                     if (iSample >= 0) {
@@ -212,6 +207,8 @@ public class MCMC extends Runnable {
                 if (iSample > NR_OF_DEBUG_SAMPLES) {
                     bDebug = false;
                 }
+                //System.out.println("check passed");
+                state.setDirty(false);
             } else {
                 operator.optimize(logAlpha);
             }

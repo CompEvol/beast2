@@ -125,37 +125,39 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     @Override
     public boolean isDirty() {
-        if (recompute || m_bIsDirty) {
+    	if (true) {
+        	recompute = true;
+            m_bIsDirty = true;
+            return true;
+    	}
+    	
+    	if (recompute || m_bIsDirty) {
+        	recompute = true;
             m_bIsDirty = true;
             return true;
         }
 
-//	    processed as trait on the tree
-//        if (categoryInput.get().isDirty()) {
-//       	    return true;
-//        }
         if (treeInput.get().isDirty()) {
+        	recompute = true;
             m_bIsDirty = true;
             return true;
         }
-        // rateDistInput cannot be dirty?!?
-//        if (rateDistInput.get().isDirty()) {
-//        	m_bIsDirty = true;
-//        	return true;
-//        }
 
         RealParameter meanRate_ = meanRateInput.get();
         if (meanRate_ != null && meanRate_.isDirty()) {
+        	recompute = true;
             m_bIsDirty = true;
             return true;
         }
         RealParameter rates_ = rateParamInput.get();
         if (rates_ != null && rates_.isDirty()) {
+        	recompute = true;
             m_bIsDirty = true;
             return true;
         }
         IntegerParameter indicators_ = indicatorParamInput.get();
         if (indicators_ != null && indicators_.isDirty()) {
+        	recompute = true;
             m_bIsDirty = true;
             return true;
         }

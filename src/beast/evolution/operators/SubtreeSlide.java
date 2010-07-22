@@ -128,7 +128,6 @@ public class SubtreeSlide extends TreeOperator {
 
                 // 3.1.1 if creating a new root
                 if (newChild.isRoot()) {
-
                     replace(iP, CiP, newChild);
                     replace(PiP, iP, CiP);
 

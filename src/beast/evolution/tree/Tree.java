@@ -156,9 +156,14 @@ public class Tree extends StateNode implements Loggable {
             listNodes(node.m_right, nodes);
         }
     }
-
-    public void makeDirty(int nDirt) {
-        root.makeAllDirty(nDirt);
+    
+    @Override
+    public void setDirty(boolean bDirty) {
+    	if (bDirty == false) {
+    		root.makeAllDirty(IS_CLEAN);
+    	} else {
+    		root.makeAllDirty(IS_FILTHY);
+    	}
     }
 
     public String toString() {

@@ -147,22 +147,22 @@ public class State extends Plugin {
 //        }
 //        param.m_bIsDirty = State.IS_DIRTY;
 //    }
-    public State copy() throws Exception {
-        State copy = new State();
-        copy.stateNode = new StateNode[stateNode.length];
-        for (int i = 0; i < stateNode.length; i++) {
-            copy.stateNode[i] = stateNode[i].copy();
-        }
-        return copy;
-    }
+//    public State copy() throws Exception {
+//        State copy = new State();
+//        copy.stateNode = new StateNode[stateNode.length];
+//        for (int i = 0; i < stateNode.length; i++) {
+//            copy.stateNode[i] = stateNode[i].copy();
+//        }
+//        return copy;
+//    }
 
     public String toString() {
     	if (stateNode == null) {
     		return "";
     	}
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < stateNode.length; i++) {
-            buf.append(stateNode[i].toString());
+        for (StateNode node : stateNode) {
+            buf.append(node.toString());
             buf.append("\n");
         }
         return buf.toString();
