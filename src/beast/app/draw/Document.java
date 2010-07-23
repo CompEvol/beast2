@@ -24,6 +24,7 @@
 */
 package beast.app.draw;
 
+
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.Runnable;
@@ -126,7 +127,7 @@ public class Document {
         boolean bNeedsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
-            if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.m_nPosition == nPosition) {
+            if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSingleSelection(nPosition)) {
                 bNeedsUndoAction = false;
             }
         }
@@ -142,7 +143,7 @@ public class Document {
         boolean bNeedsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
-            if (undoAction.m_nActionType == UndoAction.RESHAPE_ACTION && undoAction.m_nPosition == nPosition) {
+            if (undoAction.m_nActionType == UndoAction.RESHAPE_ACTION && undoAction.isSingleSelection(nPosition)) {
                 bNeedsUndoAction = false;
             }
         }
@@ -224,7 +225,11 @@ public class Document {
         	}
         }
         m_objects.add(shape);
-        addUndoAction(new AddAction());
+//        if (shape instanceof PluginShape) {
+//        	addUndoAction(new AddPluginAction());
+//        } else if (shape instanceof Arrow) {
+//        	addUndoAction(new AddArrowAction());
+//        }
     } // addNewShape
 
     List<Integer> getConnectedArrows(List<String> sIDs, List<Integer> selection) {
@@ -287,9 +292,9 @@ public class Document {
 
         }
         selection = getConnectedArrows(sIDs, selection);
-        DeleteAction action = new DeleteAction(selection);
-        addUndoAction(action);
-        action.redo();
+//        DeletePluginAction action = new DeletePluginAction(selection);
+//        addUndoAction(action);
+//        action.redo();
     } // deleteShape
 
     void ensureUniqueID(Shape shape, List<String> tabulist) {
@@ -313,37 +318,37 @@ public class Document {
         }
         ensureUniqueID(shape, new ArrayList<String>());
         m_objects.add(shape);
-        addUndoAction(new AddAction());
+//        addUndoAction(new AddPluginAction());
     } // addNewShape
 
     /** move all plug ins connected with selection **/
     public void collapse(Selection selection) {
-        // don't group arrows
-        for (int i = selection.m_Selection.size() - 1; i >= 0; i--) {
-            if ((Shape) m_objects.get(((Integer) selection.m_Selection.get(i)).intValue()) instanceof Arrow) {
-                selection.m_Selection.remove(i);
-            }
-        }
-        int nNrOfPrimePositions = selection.m_Selection.size();
-        if (nNrOfPrimePositions == 0) {
-            return;
-        }
-        for (int i = 0; i < nNrOfPrimePositions; i++) {
-        	Shape shape = m_objects.get(((Integer) selection.m_Selection.get(i)).intValue());
-        	findAffectedShapes(shape, selection.m_Selection);
-        }
-        if (selection.m_Selection.size() == nNrOfPrimePositions) {
-        	// nothing to collapse
-        	return;
-        }
-        
-        UndoAction action = new UndoGroupAction(selection.m_Selection, nNrOfPrimePositions);
-        addUndoAction(action);
-        action.redo();
-        selection.clear();
-        selection.m_Selection.add(new Integer(m_objects.size() - 1));
-        adjustInputs();
-        adjustArrows();
+//        // don't group arrows
+//        for (int i = selection.m_Selection.size() - 1; i >= 0; i--) {
+//            if ((Shape) m_objects.get(((Integer) selection.m_Selection.get(i)).intValue()) instanceof Arrow) {
+//                selection.m_Selection.remove(i);
+//            }
+//        }
+//        int nNrOfPrimePositions = selection.m_Selection.size();
+//        if (nNrOfPrimePositions == 0) {
+//            return;
+//        }
+//        for (int i = 0; i < nNrOfPrimePositions; i++) {
+//        	Shape shape = m_objects.get(((Integer) selection.m_Selection.get(i)).intValue());
+//        	findAffectedShapes(shape, selection.m_Selection);
+//        }
+//        if (selection.m_Selection.size() == nNrOfPrimePositions) {
+//        	// nothing to collapse
+//        	return;
+//        }
+//        
+//        UndoAction action = new UndoMultiSelectionAction(selection.m_Selection, nNrOfPrimePositions);
+//        addUndoAction(action);
+//        action.redo();
+//        selection.clear();
+//        selection.m_Selection.add(new Integer(m_objects.size() - 1));
+//        adjustInputs();
+//        adjustArrows();
     } // collapse
 
     
@@ -377,24 +382,22 @@ public class Document {
 		}
 	}
     
-    
-    
-    public void ungroup(Selection selection) {
-        UngroupAction action = new UngroupAction(selection);
-        addUndoAction(action);
-        action.redo();
-        int nSize = action.getGroupSize();
-        selection.clear();
-        for (int i = 0; i < nSize; i++) {
-            selection.m_Selection.add(new Integer(m_objects.size() - i - 1));
-        }
-    } // ungroup
+//    public void ungroup(Selection selection) {
+//        UngroupAction action = new UngroupAction(selection);
+//        addUndoAction(action);
+//        action.redo();
+//        int nSize = action.getGroupSize();
+//        selection.clear();
+//        for (int i = 0; i < nSize; i++) {
+//            selection.m_Selection.add(new Integer(m_objects.size() - i - 1));
+//        }
+//    } // ungroup
 
     public void setFillColor(Color color, Selection selection) {
         if (selection.isSingleSelection()) {
             addUndoAction(new UndoAction(selection.getSingleSelection(), UndoAction.FILL_COLOR_ACTION));
         } else {
-            addUndoGroupAction(selection);
+        	addUndoAction(new UndoAction(selection.m_Selection));
         }
         for (int i = 0; i < selection.m_Selection.size(); i++) {
             int iSelection = ((Integer) selection.m_Selection.get(i)).intValue();
@@ -407,7 +410,7 @@ public class Document {
         if (selection.isSingleSelection()) {
             addUndoAction(new UndoAction(selection.getSingleSelection(), UndoAction.PEN_COLOR_ACTION));
         } else {
-            addUndoGroupAction(selection);
+        	addUndoAction(new UndoAction(selection.m_Selection));
         }
         for (int i = 0; i < selection.m_Selection.size(); i++) {
             int iSelection = ((Integer) selection.m_Selection.get(i)).intValue();
@@ -416,9 +419,9 @@ public class Document {
         }
     } // setPenColor
 
-    public void addUndoGroupAction(Selection selection) {
-        addUndoAction(new UndoGroupAction(selection.m_Selection));
-    }
+//    public void addUndoGroupAction(Selection selection) {
+//        addUndoAction(new UndoAction(selection.m_Selection));
+//    }
 
     int getPositionX(int iShape) {
         Shape shape = (Shape) m_objects.get(iShape);
@@ -470,12 +473,6 @@ public class Document {
         addUndoAction(new UndoAction(iObject, UndoAction.TOGGLE_FILL_ACTION));
         Shape shape = (Shape) m_objects.get(iObject);
         shape.toggleFilled();
-    }
-
-    public void setPenWidth(int nPenWidth, int iObject) {
-        addUndoAction(new UndoAction(iObject, UndoAction.SET_URL_ACTION));
-        Shape shape = (Shape) m_objects.get(iObject);
-        shape.setPenWidth(nPenWidth);
     }
 
     public void toFront(Selection selection) {
@@ -575,7 +572,7 @@ public class Document {
      */
     public void alignLeft(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
 
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
@@ -599,7 +596,7 @@ public class Document {
      */
     public void alignRight(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
         List<Integer> nodes = selection.m_Selection;
         int nMaxX = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -623,7 +620,7 @@ public class Document {
      */
     public void alignTop(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -646,7 +643,7 @@ public class Document {
      */
     public void alignBottom(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
         List<Integer> nodes = selection.m_Selection;
         int nMaxY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -670,7 +667,7 @@ public class Document {
      */
     public void centreHorizontal(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         int nMaxY = -1;
@@ -699,7 +696,7 @@ public class Document {
      */
     public void centreVertical(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
         int nMaxX = -1;
@@ -728,7 +725,7 @@ public class Document {
      */
     public void spaceHorizontal(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
         int nMaxX = -1;
@@ -755,7 +752,7 @@ public class Document {
      */
     public void spaceVertical(Selection selection) {
         // update undo stack
-        addUndoGroupAction(selection);
+    	addUndoAction(new UndoAction(selection.m_Selection));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         int nMaxY = -1;
@@ -775,143 +772,50 @@ public class Document {
         adjustArrows();
     } // spaceVertical
 
-    class UndoAction {
+
+    
+    public class UndoAction {
         final static int UNDO_ACTION = 0;
         final static int MOVE_ACTION = 1;
         final static int RESHAPE_ACTION = 2;
-        final static int ADD_ACTION = 3;
-        final static int DELETE_ACTION = 4;
+        final static int ADD_PLUGIN_ACTION = 3;
+        final static int DELETE_PLUGIN_ACTION = 4;
+        final static int ADD_ARROW_ACTION = 5;
+        final static int DELETE_ARROW_ACTION = 6;
         final static int DELETE_SET_ACTION = 11;
         final static int FILL_COLOR_ACTION = 5;
         final static int PEN_COLOR_ACTION = 6;
         final static int SET_LABEL_ACTION = 7;
-        final static int SET_URL_ACTION = 8;
-        final static int SET_IMG_ACTION = 9;
         final static int TOGGLE_FILL_ACTION = 10;
-
 
         int m_nActionType = UNDO_ACTION;
 
         String m_sXML;
-        int m_nPosition;
-
-        UndoAction() {
-        }
-
-        UndoAction(String sXML, int nPosition, int nType) {
-            m_sXML = sXML;
-            m_nPosition = nPosition;
-            m_nActionType = nType;
-        }
-
-        UndoAction(int nPosition, int nType) {
-            m_sXML = ((Shape) m_objects.get(nPosition)).getXML();
-            m_nPosition = nPosition;
-            m_nActionType = nType;
-        }
-
-        void undo() {
-            Shape originalShape = XML2Shape(m_sXML);
-            Shape currentShape = (Shape) m_objects.get(m_nPosition);
-            m_objects.set(m_nPosition, originalShape);
-            m_sXML = currentShape.getXML();
-        } // undo
-
-        void redo() {
-            Shape newShape = XML2Shape(m_sXML);
-            Shape currentShape = (Shape) m_objects.get(m_nPosition);
-            m_objects.set(m_nPosition, newShape);
-            m_sXML = currentShape.getXML();
-        } // redo
-    } // class UndoAction
-
-    class AddAction extends UndoAction {
-        public AddAction() {
-            super(m_objects.size() - 1, ADD_ACTION);
-        }
-
-        void undo() {
-            m_objects.remove(m_nPosition);
-        }
-
-        void redo() {
-            Shape shape = XML2Shape(m_sXML);
-            m_objects.add(shape);
-        }
-    } // class AddAction
-
-    class DeleteAction extends UndoAction {
-        public DeleteAction(int nPosition) {
-            super(nPosition, DELETE_ACTION);
-        }
-
         List<Integer> m_nPositions;
-        List<Shape> m_shapes;
-
-        public DeleteAction(List<Integer> selection) {
-            super();
-            m_nActionType = DELETE_SET_ACTION;
-            m_nPositions = new ArrayList<Integer>();
-            int[] selection2 = new int[selection.size()];
-            for (int i = 0; i < selection2.length; i++) {
-                selection2[i] = ((Integer) selection.get(i)).intValue();
-            }
-            Arrays.sort(selection2);
-            for (int i = 0; i < selection2.length; i++) {
-                m_nPositions.add(new Integer(selection2[i]));
-            }
-            List<Shape> shapes = new ArrayList<Shape>();
-            for (int i = 0; i < selection.size(); i++) {
-                shapes.add(m_objects.get(((Integer) selection.get(i)).intValue()));
-            }
-            m_shapes = shapes;
-        }
-
-        void undo() {
-            if (m_nActionType == DELETE_ACTION) {
-                Shape shape = XML2Shape(m_sXML);
-                m_objects.add(m_nPosition, shape);
-            } else { // m_nActionType == DELETE_SET_ACTION
-                for (int i = 0; i < m_nPositions.size(); i++) {
-                    int iShape = ((Integer) m_nPositions.get(i)).intValue();
-                    Shape shape = (Shape) m_shapes.get(i);
-                    m_objects.add(iShape, shape);
-                }
-            }
-        }
-
-        void redo() {
-            if (m_nActionType == DELETE_ACTION) {
-            	Shape shape = m_objects.get(m_nPosition);
-            	if (shape instanceof Arrow) {
-            		
-            	} else if (shape instanceof Arrow) {
-            		
-            	}
-                m_objects.remove(m_nPosition);
-            } else { // m_nActionType == DELETE_SET_ACTION
-                for (int i = m_nPositions.size() - 1; i >= 0; i--) {
-                    int iShape = ((Integer) m_nPositions.get(i)).intValue();
-                    m_objects.remove(iShape);
-                }
-            }
-        }
-    } // class DeleteAction
-
-    public class UndoGroupAction extends UndoAction {
-        List<Integer> m_nPositions;
-        int m_nNrPrimePositions;
         
-        public UndoGroupAction(List<Integer> selection) {
-            this(selection, selection.size());
+        /* single selection undo actions **/
+        public UndoAction(int nSelection, int nActionType) {
+        	m_nActionType = nActionType;
+        	m_nPositions = new ArrayList<Integer>();
+        	m_nPositions.add(nSelection);
+        	init();
         }
-        public UndoGroupAction(List<Integer> selection, int nNrPrimePositions) {
-            super();
-        	m_nNrPrimePositions = nNrPrimePositions;
+        /* multiple selection undo actions **/
+        public UndoAction(List<Integer> selection) {
             m_nPositions = new ArrayList<Integer>();
             for (int i = 0; i < selection.size(); i++) {
                 m_nPositions.add(new Integer(((Integer) selection.get(i)).intValue()));
             }
+            init();
+        }
+        /* undo actions that don't need a selection **/
+        public UndoAction() {}
+        
+        boolean isSingleSelection(int nPosition) {
+        	return (m_nPositions.size() == 1 && m_nPositions.get(0) == nPosition);
+        }
+
+        void init() {
             m_sXML = "<doc>";
             for (int i = 0; i < m_nPositions.size(); i++) {
                 int iShape = ((Integer) m_nPositions.get(i)).intValue();
@@ -926,44 +830,40 @@ public class Document {
         }
 
         void redo() {
-            if (m_nNrPrimePositions == m_nPositions.size()) {
-            	// it is a regular group move action
-                doit();
-                return;
-            }
-            // it is a collapse action
-            for (int i = 0; i < m_nNrPrimePositions; i++) {
-            	Shape shape = m_objects.get(m_nPositions.get(i));
-            	if (shape instanceof InputShape) {
-            		moveInputShapes((InputShape) shape);
-            	} else {
-               		for (InputShape ellipse : ((PluginShape)shape).m_inputs) {
-               			moveInputShapes(ellipse);
-                	}
-            	}
-            }
+            doit();
         }
+//            // it is a collapse action
+//            for (int i = 0; i < m_nNrPrimePositions; i++) {
+//            	Shape shape = m_objects.get(m_nPositions.get(i));
+//            	if (shape instanceof InputShape) {
+//            		moveInputShapes((InputShape) shape);
+//            	} else {
+//               		for (InputShape ellipse : ((PluginShape)shape).m_inputs) {
+//               			moveInputShapes(ellipse);
+//                	}
+//            	}
+//            }
         
-    	void moveInputShapes(InputShape ellipse) {
-    		for (Shape shape : m_objects) {
-    			if (shape instanceof Arrow) {
-    				Arrow arrow = (Arrow) shape;
-    				if (arrow.m_sHeadID.equals(ellipse.getID())) {
-    					String sTailID = arrow.m_sTailID;
-    					for (int i = 0; i < m_objects.size(); i++) {
-    						Shape shape2 = m_objects.get(i); 
-    						if (shape2.getID().equals(sTailID)) {
-    							shape2.m_x = ellipse.m_x;
-    							shape2.m_y = ellipse.m_y;
-    							shape2.m_w = 2;
-    							shape2.m_h = 2;
-    							shape2.m_bNeedsDrawing = false;
-    						}
-    					}					
-    				}
-    			}
-    		}
-    	}
+//    	void moveInputShapes(InputShape ellipse) {
+//    		for (Shape shape : m_objects) {
+//    			if (shape instanceof Arrow) {
+//    				Arrow arrow = (Arrow) shape;
+//    				if (arrow.m_sHeadID.equals(ellipse.getID())) {
+//    					String sTailID = arrow.m_sTailID;
+//    					for (int i = 0; i < m_objects.size(); i++) {
+//    						Shape shape2 = m_objects.get(i); 
+//    						if (shape2.getID().equals(sTailID)) {
+//    							shape2.m_x = ellipse.m_x;
+//    							shape2.m_y = ellipse.m_y;
+//    							shape2.m_w = 2;
+//    							shape2.m_h = 2;
+//    							shape2.m_bNeedsDrawing = false;
+//    						}
+//    					}					
+//    				}
+//    			}
+//    		}
+//    	}
         
         void doit() {
             String sXML = "<doc>";
@@ -976,14 +876,164 @@ public class Document {
             List<Shape> shapes = XML2Shapes(m_sXML);
             for (int i = 0; i < m_nPositions.size(); i++) {
                 int iShape = ((Integer) m_nPositions.get(i)).intValue();
+                Shape originalShape = m_objects.get(iShape);
                 Shape shape = (Shape) shapes.get(i);
+                if (originalShape instanceof PluginShape) {
+                	((PluginShape) shape).m_plugin = ((PluginShape) originalShape).m_plugin;
+                }
                 m_objects.set(iShape, shape);
             }
-            if (m_nNrPrimePositions == m_nPositions.size()) {
-            	m_sXML = sXML;
-            }
+           	m_sXML = sXML;
         }
-    } // class UndoGroupAction
+    } // class UndoAction
+    
+
+//    class AddPluginAction extends UndoAction {
+//        public AddPluginAction() {
+//            super(m_objects.size() - 1, ADD_PLUGIN_ACTION);
+//        }
+//
+//        void undo() {
+//            m_objects.remove(m_nPosition);
+//        }
+//
+//        void redo() {
+//            Shape shape = XML2Shape(m_sXML);
+//            m_objects.add(shape);
+//        }
+//    } // class AddAction
+//
+//    class DeletePluginAction extends UndoAction {
+//        public DeletePluginAction(int nPosition) {
+//            super(nPosition, DELETE_PLUGIN_ACTION);
+//        }
+//
+//        List<Integer> m_nPositions;
+//        List<Shape> m_shapes;
+//
+//        public DeletePluginAction(List<Integer> selection) {
+//            super();
+//            m_nActionType = DELETE_SET_ACTION;
+//            m_nPositions = new ArrayList<Integer>();
+//            int[] selection2 = new int[selection.size()];
+//            for (int i = 0; i < selection2.length; i++) {
+//                selection2[i] = ((Integer) selection.get(i)).intValue();
+//            }
+//            Arrays.sort(selection2);
+//            for (int i = 0; i < selection2.length; i++) {
+//                m_nPositions.add(new Integer(selection2[i]));
+//            }
+//            List<Shape> shapes = new ArrayList<Shape>();
+//            for (int i = 0; i < selection.size(); i++) {
+//                shapes.add(m_objects.get(((Integer) selection.get(i)).intValue()));
+//            }
+//            m_shapes = shapes;
+//        }
+//
+//        void undo() {
+//            if (m_nActionType == DELETE_PLUGIN_ACTION) {
+//                Shape shape = XML2Shape(m_sXML);
+//                m_objects.add(m_nPosition, shape);
+//            } else { // m_nActionType == DELETE_SET_ACTION
+//                for (int i = 0; i < m_nPositions.size(); i++) {
+//                    int iShape = ((Integer) m_nPositions.get(i)).intValue();
+//                    Shape shape = (Shape) m_shapes.get(i);
+//                    m_objects.add(iShape, shape);
+//                }
+//            }
+//        }
+//
+//        void redo() {
+//            if (m_nActionType == DELETE_PLUGIN_ACTION) {
+//            	Shape shape = m_objects.get(m_nPosition);
+//            	if (shape instanceof Arrow) {
+//            		
+//            	} else if (shape instanceof Arrow) {
+//            		
+//            	}
+//                m_objects.remove(m_nPosition);
+//            } else { // m_nActionType == DELETE_SET_ACTION
+//                for (int i = m_nPositions.size() - 1; i >= 0; i--) {
+//                    int iShape = ((Integer) m_nPositions.get(i)).intValue();
+//                    m_objects.remove(iShape);
+//                }
+//            }
+//        }
+//    } // class DeleteAction
+//
+//    class AddArrowAction extends UndoAction {
+//        public AddArrowAction() {
+//            super(m_objects.size() - 1, ADD_ARROW_ACTION);
+//        }
+//
+//        void undo() {
+//            m_objects.remove(m_nPosition);
+//        }
+//
+//        void redo() {
+//            Shape shape = XML2Shape(m_sXML);
+//            m_objects.add(shape);
+//        }
+//    } // class AddAction
+//
+//    class DeleteArrowAction extends UndoAction {
+//        public DeleteArrowAction(int nPosition) {
+//            super(nPosition, DELETE_ARROW_ACTION);
+//        }
+//
+//        List<Integer> m_nPositions;
+//        List<Shape> m_shapes;
+//
+//        public DeleteArrowAction(List<Integer> selection) {
+//            super();
+//            m_nActionType = DELETE_SET_ACTION;
+//            m_nPositions = new ArrayList<Integer>();
+//            int[] selection2 = new int[selection.size()];
+//            for (int i = 0; i < selection2.length; i++) {
+//                selection2[i] = ((Integer) selection.get(i)).intValue();
+//            }
+//            Arrays.sort(selection2);
+//            for (int i = 0; i < selection2.length; i++) {
+//                m_nPositions.add(new Integer(selection2[i]));
+//            }
+//            List<Shape> shapes = new ArrayList<Shape>();
+//            for (int i = 0; i < selection.size(); i++) {
+//                shapes.add(m_objects.get(((Integer) selection.get(i)).intValue()));
+//            }
+//            m_shapes = shapes;
+//        }
+//
+//        void undo() {
+//            if (m_nActionType == DELETE_PLUGIN_ACTION) {
+//                Shape shape = XML2Shape(m_sXML);
+//                m_objects.add(m_nPosition, shape);
+//            } else { // m_nActionType == DELETE_SET_ACTION
+//                for (int i = 0; i < m_nPositions.size(); i++) {
+//                    int iShape = ((Integer) m_nPositions.get(i)).intValue();
+//                    Shape shape = (Shape) m_shapes.get(i);
+//                    m_objects.add(iShape, shape);
+//                }
+//            }
+//        }
+//
+//        void redo() {
+//            if (m_nActionType == DELETE_PLUGIN_ACTION) {
+//            	Shape shape = m_objects.get(m_nPosition);
+//            	if (shape instanceof Arrow) {
+//            		
+//            	} else if (shape instanceof Arrow) {
+//            		
+//            	}
+//                m_objects.remove(m_nPosition);
+//            } else { // m_nActionType == DELETE_SET_ACTION
+//                for (int i = m_nPositions.size() - 1; i >= 0; i--) {
+//                    int iShape = ((Integer) m_nPositions.get(i)).intValue();
+//                    m_objects.remove(iShape);
+//                }
+//            }
+//        }
+//    } // class DeleteAction
+
 
     class ReorderAction extends UndoAction {
         int[] m_oldOrder;
@@ -1043,38 +1093,38 @@ public class Document {
 //
 //    } // class GroupAction
 
-    class UngroupAction extends UndoAction {
-
-        //Group m_group;
-        List<Shape> m_shapes;
-        int m_nGroupSize;
-
-        UngroupAction(Selection selection) {
-            super();
-            m_nPosition = selection.getSingleSelection();
-            //m_group = (Group) m_objects.get(m_nPosition);
-        } // c'tor
-
-        int getGroupSize() {
-            return m_shapes.size();//m_group.m_objects.size();
-        }
-
-        void undo() {
-//            m_objects.add(m_nPosition, m_group);
-//            for (int i = 0; i < m_group.m_objects.size(); i++) {
-//                m_objects.remove(m_objects.size() - 1);
-//            }
-        }
-
-        void redo() {
-//            for (int i = 0; i < m_group.m_objects.size(); i++) {
-//                Shape shape = (Shape) m_group.m_objects.get(i);
-//                m_objects.add(shape);
-//            }
-//            m_objects.remove(m_nPosition);
-        }
-
-    } // class UngroupAction
+//    class UngroupAction extends UndoAction {
+//
+//        //Group m_group;
+//        List<Shape> m_shapes;
+//        int m_nGroupSize;
+//
+//        UngroupAction(Selection selection) {
+//            super();
+//            m_nPosition = selection.getSingleSelection();
+//            //m_group = (Group) m_objects.get(m_nPosition);
+//        } // c'tor
+//
+//        int getGroupSize() {
+//            return m_shapes.size();//m_group.m_objects.size();
+//        }
+//
+//        void undo() {
+////            m_objects.add(m_nPosition, m_group);
+////            for (int i = 0; i < m_group.m_objects.size(); i++) {
+////                m_objects.remove(m_objects.size() - 1);
+////            }
+//        }
+//
+//        void redo() {
+////            for (int i = 0; i < m_group.m_objects.size(); i++) {
+////                Shape shape = (Shape) m_group.m_objects.get(i);
+////                m_objects.add(shape);
+////            }
+////            m_objects.remove(m_nPosition);
+//        }
+//
+//    } // class UngroupAction
 
     /**
      * add undo action to the undo stack.
@@ -1113,6 +1163,7 @@ public class Document {
         UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
         undoAction.undo();
         adjustInputs();
+        recalcArrows();
         adjustArrows();
         m_nCurrentEditAction--;
     } // undo
@@ -1125,8 +1176,8 @@ public class Document {
         UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
         undoAction.redo();
         adjustInputs();
+        recalcArrows();
         adjustArrows();
-
     } // redo
 
 
@@ -1261,19 +1312,22 @@ public class Document {
         return shapes;
     }
 
+    final static String PLUGIN_SHAPE_ELEMENT = "pluginshape";
+    final static String INPUT_SHAPE_ELEMENT = "inputshape";
+    final static String ARROW_ELEMENT = "arrow";
+
     /** parse XDL xml format **/
     static Shape parseNode(Node node, Document doc) {
         Shape shape = null;
-        if (node.getNodeName().equals("ellipse")) {
+        if (node.getNodeName().equals(INPUT_SHAPE_ELEMENT)) {
             shape = new InputShape(node, doc);
-        } else if (node.getNodeName().equals("arrow")) {
+        } else if (node.getNodeName().equals(ARROW_ELEMENT)) {
             shape = new Arrow(node, doc);
-        } else if (node.getNodeName().equals("gdx:function")) {
+        } else if (node.getNodeName().equals(PLUGIN_SHAPE_ELEMENT)) {
             shape = new PluginShape(node, doc);
         }
         return shape;
     } // parseNode
-
     
     public String toXML() {
         XMLProducer xmlProducer = new XMLProducer();

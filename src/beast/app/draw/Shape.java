@@ -103,6 +103,18 @@ public class Shape {
 		if (node.getAttributes().getNamedItem("w") != null) {
 			m_w = (new Integer(node.getAttributes().getNamedItem("w").getNodeValue())).intValue();
 		}
+        if (node.getAttributes().getNamedItem("penwidth") != null) {
+            m_nPenWidth = (new Integer(node.getAttributes().getNamedItem("penwidth").getNodeValue())).intValue();
+	    }
+	    if (node.getAttributes().getNamedItem("fillcolor") != null) {
+	            m_fillcolor = string2Color(node.getAttributes().getNamedItem("fillcolor").getNodeValue());
+	    }
+	    if (node.getAttributes().getNamedItem("pencolor") != null) {
+	            m_pencolor = string2Color(node.getAttributes().getNamedItem("pencolor").getNodeValue());
+	    }
+	    if (node.getAttributes().getNamedItem("filled") != null) {
+	            m_bFilled = !node.getAttributes().getNamedItem("filled").getNodeValue().equals("no");
+	    }
 	}
 	String XMLnormalizeAtt(String sStr) {
 	StringBuffer sStr2 = new StringBuffer();
@@ -136,13 +148,45 @@ public class Shape {
 	}
 	return sStr2.toString();
 	} // XMLnormalizeAtt
+	
 	String getAtts() {
 		return //" id='" + m_id + "'" +
 		" x='" + (m_x-400) + "'" +
 		" y='" + (550-m_y - m_h) + "'" +
 		" w='" + m_w + "'" +
-		" h='" + m_h + "'";
+		" h='" + m_h + "'" +
+        (m_nPenWidth != 1 ? " penwidth='" + m_nPenWidth + "'" : "") +
+        (!m_bFilled ? " filled='no'" : "") +
+        (m_fillcolor.equals(DEFUALT_FILL_COLOR)? "" : " fillcolor='" + m_fillcolor.getRed() + " " + m_fillcolor.getGreen() + " " + m_fillcolor.getBlue() + "'") +
+        (m_pencolor.equals(DEFUALT_PEN_COLOR)? "" : " pencolor='" + m_pencolor.getRed() + " " + m_pencolor.getGreen() + " " + m_pencolor.getBlue() + "'")
+        ;
 	}
+	
+    Color string2Color(String sColor) {
+        int iSpace = sColor.indexOf(' ');
+        if (iSpace < 0) {
+                return new Color(128,128,128);
+        }
+        int iStart = 0;
+        String sR = sColor.substring(iStart,iSpace);
+        int r = (new Integer(sR)).intValue();
+        iStart = iSpace+1;
+        iSpace = sColor.indexOf(' ', iStart);
+        if (iSpace < 0) {
+                return new Color(128,128,128);
+        }
+        String sG = sColor.substring(iStart,iSpace);
+        int g = (new Integer(sG)).intValue();
+        iStart = iSpace+1;
+        iSpace = sColor.indexOf(' ', iStart);
+        if (iSpace < 0) {
+                iSpace = sColor.length();
+        }
+        String sB = sColor.substring(iStart,iSpace);
+        int b = (new Integer(sB)).intValue();
+        return new Color(r,g,b);
+    } // string2Color
+    
 	public String getXML() {
 		return "<shape" + getAtts() + "/>";
 	}

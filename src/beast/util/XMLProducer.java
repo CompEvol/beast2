@@ -57,6 +57,7 @@ public class XMLProducer extends XMLParser {
      */
     int m_nIndent;
 
+    final static String DEFAULT_NAMESPACE="beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood";
     public XMLProducer() {
         super();
     }
@@ -69,14 +70,21 @@ public class XMLProducer extends XMLParser {
     public String toXML(Plugin plugin) {
         try {
             StringBuffer buf = new StringBuffer();
-            buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
+            buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0' namespace='" + DEFAULT_NAMESPACE + "'>\n");
             m_bDone = new HashSet<Plugin>();
             m_sIDs = new HashSet<String>();
             m_nIndent = 0;
             pluginToXML(plugin, buf, null, true);
             buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
             //return buf.toString();
-            return cleanUpXML(buf.toString(), m_sXSL);
+            // beautify XML hierarchy
+            String sXML = cleanUpXML(buf.toString(), m_sXSL);
+            // beatify by applying name spaces to spec attributes
+            String [] sNameSpaces = DEFAULT_NAMESPACE.split(":");
+            for (String sNameSpace : sNameSpaces) {
+            	sXML = sXML.replaceAll("spec=\"" + sNameSpace+".", "spec=\"");
+            }
+            return sXML;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -133,7 +141,7 @@ public class XMLProducer extends XMLParser {
      */
     String m_sXSL = "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns='http://www.w3.org/TR/xhtml1/strict'>\n" +
             "\n" +
-            "<xsl:output method='xml'/>\n" +
+            "<xsl:output method='xml' indent='yes'/>\n" +
             "\n" +
             "<xsl:template match='beast'>\n" +
             "    <xsl:copy>\n" +
@@ -170,12 +178,18 @@ public class XMLProducer extends XMLParser {
             "    </xsl:copy>\n" +
             "</xsl:template>\n" +
             "\n" +
+            "<xsl:template match='input'>\n" +
+            "    <xsl:element name='{@name}'>" +
+            "		<xsl:apply-templates select='node()|@*[name()!=\"name\"]'/>" +
+            "	</xsl:element>\n" +
+            "</xsl:template>\n" +
+            
             "<xsl:template match='log/log'>\n" +
             "    <xsl:copy><xsl:apply-templates select='*[@*!=\"\"]'/> </xsl:copy>\n" +
             "</xsl:template>\n" +
             "\n" +
             "<xsl:template match='@id'>\n" +
-            "    <xsl:if test='//@idref=.'>\n" +
+            "    <xsl:if test='//@idref=. or not(contains(../@spec,substring(.,string-length(.)-2)))'>\n" +
             "        <xsl:copy/>\n" +
             "    </xsl:if>\n" +
             "</xsl:template>\n" +
@@ -384,3 +398,4 @@ public class XMLProducer extends XMLParser {
     } // inputToXML
 
 } // class XMLProducer
+

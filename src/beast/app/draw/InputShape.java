@@ -91,7 +91,7 @@ public class InputShape extends Shape {
 	}
 	@Override
 	public String getXML() {
-		return "<ellipse" + getAtts() + "/>";
+		return "<" + Document.INPUT_SHAPE_ELEMENT + getAtts() + "/>";
 	}
 	@Override
 	boolean intersects(int nX, int nY) {

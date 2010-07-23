@@ -102,15 +102,21 @@ public class PluginShape extends Shape {
 	/** set coordinates of inputs based on location of this PluginShape */
 	void adjustInputs() {
 		if (m_plugin != null) {
-			for (int i = 0; i < m_inputs.size(); i++) {
-				InputShape input = m_inputs.get(i);
-				int nOffset = i*m_h/(m_inputs.size()) + m_h/(2*(m_inputs.size()));
-				input.m_x = m_x - input.m_w;
-				input.m_y = m_y + nOffset;
-				//input.m_w = 10;
-				input.m_h = 10;
-				input.m_fillcolor = m_fillcolor;
-				input.m_nPenWidth = 0;
+			try {
+				List<Input<?>> inputs = m_plugin.listInputs();
+				for (int i = 0; i < m_inputs.size(); i++) {
+					InputShape input = m_inputs.get(i);
+					input.m_input = inputs.get(i); 
+					int nOffset = i*m_h/(m_inputs.size()) + m_h/(2*(m_inputs.size()));
+					input.m_x = m_x - input.m_w;
+					input.m_y = m_y + nOffset;
+					//input.m_w = 10;
+					input.m_h = 10;
+					input.m_fillcolor = m_fillcolor;
+					input.m_nPenWidth = 0;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -164,7 +170,7 @@ public class PluginShape extends Shape {
 	@Override
 	public String getXML() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("<gdx:function");
+		buf.append("<" + Document.PLUGIN_SHAPE_ELEMENT);
 		buf.append(" class='"); buf.append(m_plugin.getClass().getName());buf.append("'");
 		buf.append(" inputids='");
 		for (int i = 0; i < m_inputs.size(); i++) {
@@ -175,7 +181,7 @@ public class PluginShape extends Shape {
 
 		buf.append(getAtts());
 		buf.append(">\n");
-		buf.append("</gdx:function>");
+		buf.append("</" + Document.PLUGIN_SHAPE_ELEMENT + ">");
 		return buf.toString();
 	}
 	@Override

@@ -41,7 +41,7 @@ public class Arrow extends Shape {
 	String m_sTailID;
 	public PluginShape m_tailShape;
 	public InputShape m_headShape;
-	String m_sPenStyle;
+//	String m_sPenStyle;
 
 	/* c'tor for creating arrow while parsing XDL format XML **/
 	public Arrow(Node node, Document doc) {
@@ -107,9 +107,9 @@ public class Arrow extends Shape {
 		if (node.getAttributes().getNamedItem("tailid") != null) {
 			m_sTailID = node.getAttributes().getNamedItem("tailid").getNodeValue();
 		}
-		if (node.getAttributes().getNamedItem("penstyle") != null) {
-			m_sPenStyle = node.getAttributes().getNamedItem("penstyle").getNodeValue();
-		}
+//		if (node.getAttributes().getNamedItem("penstyle") != null) {
+//			m_sPenStyle = node.getAttributes().getNamedItem("penstyle").getNodeValue();
+//		}
 	}
 
 	@Override
@@ -117,13 +117,13 @@ public class Arrow extends Shape {
 		return
 		" headid='" + m_sHeadID + "'" +
 		" tailid='" + m_sTailID + "'" +
-		" penstyle='" + m_sPenStyle + "'" +
+//		" penstyle='" + m_sPenStyle + "'" +
 		super.getAtts();
     }
 	
 	@Override
 	public String getXML() {
-		return "<arrow" + getAtts() + "/>";
+		return "<" + Document.ARROW_ELEMENT + getAtts() + "/>";
 	}
 
 	void adjustCoordinates() {

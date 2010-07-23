@@ -684,11 +684,12 @@ public class XMLParser {
         return false;
     }
 
-    public static void mainx(String [] args) {
+    public static void main(String [] args) {
     	try {
     		XMLParser parser = new XMLParser();
-    		Plugin plugin = parser.parseFragment(args[0], false);
-    		System.err.println(plugin.toString());
+    		Plugin plugin = parser.parseFile(args[0]);
+    		//System.err.println(plugin.toString());
+    		System.out.println(new XMLProducer().toXML(plugin));
     	} catch (Exception e) {
 			e.printStackTrace();
 		}

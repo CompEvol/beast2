@@ -135,7 +135,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 	Action a_copynode = new ActionCopyNode();
 	Action a_pastenode = new ActionPasteNode();
 	Action a_group = new ActionCollapse();
-	Action a_ungroup = new ActionUngroup();
+//	Action a_ungroup = new ActionUngroup();
 
 	Action a_select = new ActionSelect();
 	Action a_arrow = new ActionArrow();
@@ -627,10 +627,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
 		public void actionPerformed(ActionEvent ae) {
 			m_doc.undo();
-			//if (!sMsg.equals("")) {
-			//	JOptionPane.showMessageDialog(null, sMsg, "Undo action successful", JOptionPane.INFORMATION_MESSAGE);
-			//}
 			m_Selection.clear();
+			setDrawingFlag();
 			updateStatus();
 		}
 	} // ActionUndo
@@ -651,6 +649,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 		public void actionPerformed(ActionEvent ae) {
 			m_doc.redo();
 			m_Selection.clear();
+			setDrawingFlag();
 			updateStatus();
 		}
 	} // ActionRedo
@@ -767,18 +766,18 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 			updateStatus();
 		}
 	} // class ActionGroup
-	class ActionUngroup  extends MyAction {
-		private static final long serialVersionUID = -1;
-		public ActionUngroup() {
-			super("Ungroup shapes", "Ungroup", "ungroup", "Ctrl G");
-			setEnabled(false);
-		} // c'tor
-		public void actionPerformed(ActionEvent ae) {
-			m_doc.ungroup(m_Selection);
-			m_Selection.refreshTracker();
-			updateStatus();
-		}
-	} // class ActionUngroup
+//	class ActionUngroup  extends MyAction {
+//		private static final long serialVersionUID = -1;
+//		public ActionUngroup() {
+//			super("Ungroup shapes", "Ungroup", "ungroup", "Ctrl G");
+//			setEnabled(false);
+//		} // c'tor
+//		public void actionPerformed(ActionEvent ae) {
+//			m_doc.ungroup(m_Selection);
+//			m_Selection.refreshTracker();
+//			updateStatus();
+//		}
+//	} // class ActionUngroup
 
 	class ActionSelect  extends MyAction {
 		private static final long serialVersionUID = -1;
@@ -1274,7 +1273,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 							if (m_Selection.intersects(me.getX(), me.getY())) {
 								// move selection
 								m_nMode = MODE_MOVE;
-								m_doc.addUndoGroupAction(m_Selection);
+//								m_doc.addUndoGroupAction(m_Selection);
 								m_nPosX = me.getX();
 								m_nPosY = me.getY();
 							} else {
@@ -1778,7 +1777,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 		editMenu.add(a_spacevertical);
 		editMenu.addSeparator();
 		editMenu.add(a_group);
-		editMenu.add(a_ungroup);
+//		editMenu.add(a_ungroup);
 		editMenu.addSeparator();
 
 

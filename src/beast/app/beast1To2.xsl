@@ -6,8 +6,9 @@ XSL script for converting Beast version 1 files to Beast 2.0 XML files
 <xsl:output method='xml' indent='yes'/>
 
 <xsl:template match='/'>
-    <beast version='2.0'>
-        <xsl:apply-templates  select='//alignment'/>
+    <beast version='2.0' namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+        <xsl:apply-templates  select='//alignment[not(name(@*)="idref")]'/>
+        <xsl:apply-templates  select='//mcmc'/>
     </beast>
 </xsl:template>
 
@@ -24,6 +25,78 @@ XSL script for converting Beast version 1 files to Beast 2.0 XML files
         <xsl:value-of select='taxon/@idref'/>
     </xsl:variable>
     <sequence taxon='{$taxon}'><xsl:value-of select='.'/></sequence>
+</xsl:template>
+
+
+
+
+
+
+
+<xsl:template match='mcmc'>
+    <run spec='beast.core.MCMC' chainLength='@chainLength' preBurnin='@preBurnin'>
+        <state>
+            <xsl:for-each select='//operators/*/*|//log//*'>
+                <xsl:if test='string-length(concat(@idref,@id))&gt;0'>
+                    <statNode idref='{@id}{@idref}'/>
+                </xsl:if>
+            </xsl:for-each>
+        </state>
+        <xsl:apply-templates select='//operators[not(name(@*)="idref")]/*' mode='operator'/>
+        <xsl:apply-templates select='log|logTree'/>
+    </run>
+</xsl:template>
+
+
+
+<xsl:template match='log|logTree'>
+    <log logEvery='@logEvery' fileName='@fileName'>
+        <xsl:for-each select='*[not(name()="column")]|column/*'>
+            <xsl:copy>
+                <xsl:attribute name='name'>log</xsl:attribute>
+                <xsl:attribute name='idref'><xsl:value-of select='@id'/><xsl:value-of select='@idref'/></xsl:attribute>
+            </xsl:copy>
+        </xsl:for-each>
+    </log>
+</xsl:template>
+
+<xsl:template match='@*|node()' mode='operator'>
+    <xsl:variable name='name' select='name()'/>
+  <operator>
+    <xsl:attribute name='spec'>
+        <xsl:choose>
+        <xsl:when test='$name="uniformOperator"'>Uniform</xsl:when>
+        <xsl:when test='$name="wideExchange"'>Exchange</xsl:when>
+        <xsl:when test='$name="narrowExchange"'>Exchange</xsl:when>
+        <xsl:otherwise><xsl:value-of select='translate(substring($name,1,1),"abcdefghijklmnopqrstuvwxyz","ABCDEFGHIJKLMNOPQRSTUVWXYZ")'/><xsl:value-of select='substring($name,2)'/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:attribute>
+    <xsl:if test='$name="wideExchange"'><xsl:attribute name='isNarrow'>false</xsl:attribute></xsl:if>
+    <xsl:apply-templates select='@*|node()'/>
+  </operator>
+</xsl:template>
+
+<xsl:template match='@idref'>
+    <xsl:attribute name='idref'>
+        <xsl:choose>
+            <xsl:when test='contains(.,".rootHeight")'>
+                <xsl:value-of select='substring-before(.,".rootHeight")'/>
+            </xsl:when>
+            <xsl:when test='contains(.,".internalNodeHeights")'>
+                <xsl:value-of select='substring-before(.,".internalNodeHeights")'/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select='.'/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:attribute>
+</xsl:template>
+
+
+<xsl:template match='treeModel'>
+  <tree>
+    <xsl:apply-templates select='@*|node()'/>
+  </tree>
 </xsl:template>
 
 <xsl:template match='@*|node()'>

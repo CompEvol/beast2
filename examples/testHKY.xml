@@ -28,35 +28,35 @@
 
     <!-- The HKY substitution model (Hasegawa, Kishino & Yano, 1985)             -->
     <input spec='HKY' id='hky'>
-        <parameter name='kappa' idref='hky.kappa'/>
-        <input id='freqs' name='frequencies' spec='Frequencies'>
-            <input name='data' idref='alignment'/>
-        </input>
+        <kappa idref='hky.kappa'/>
+        <frequencies id='freqs' spec='Frequencies'>
+            <data idref='alignment'/>
+        </frequencies>
     </input>
 
     <!-- site model                                                              -->
     <input spec='SiteModel' id="siteModel">
-        <input idref='freqs' name='frequencies'/>
-        <input name='substModel' idref='hky'/>
+        <frequencies idref='freqs'/>
+        <substModel idref='hky'/>
     </input>
 
     <input spec='TreeLikelihood' id="treeLikelihood">
-        <input name='data' idref="alignment"/>
-        <input name='tree' idref="tree"/>
-        <input name='siteModel' idref="siteModel"/>
+        <data idref="alignment"/>
+        <tree idref="tree"/>
+        <siteModel idref="siteModel"/>
     </input>
 
     <parameter id="hky.kappa" value="1.0" lower="0.0"/>
 
     <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
-        <input name='taxa' idref='alignment'/>
+        <taxa idref='alignment'/>
     </tree>
 
 
     <run spec="MCMC" id="mcmc" chainLength="5000000"> <!--autoOptimize="true"-->
         <state>
-            <input name='stateNode' idref="hky.kappa"/>
-            <input name='stateNode' idref="tree"/>
+            <stateNode idref="hky.kappa"/>
+            <stateNode idref="tree"/>
         </state>
 
         <distribution id='likelihood' idref="treeLikelihood"/>
