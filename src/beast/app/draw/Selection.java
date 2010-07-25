@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public class Selection {
     public List<TrackPoint> m_tracker = null;
-    public List<Integer> m_Selection;
+    List<Integer> m_Selection;
     Document m_doc = null;
     public Selection() {
     	m_Selection = new ArrayList<Integer>(1);

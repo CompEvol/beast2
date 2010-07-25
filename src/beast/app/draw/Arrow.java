@@ -44,8 +44,8 @@ public class Arrow extends Shape {
 //	String m_sPenStyle;
 
 	/* c'tor for creating arrow while parsing XDL format XML **/
-	public Arrow(Node node, Document doc) {
-		parse(node, doc);
+	public Arrow(Node node, Document doc, boolean bReconstructPlugins) {
+		parse(node, doc, bReconstructPlugins);
 	}
 	/* c'tor for creating arrow when starting to draw new one **/
 	public Arrow(PluginShape tailShape, int x, int y) {
@@ -99,8 +99,8 @@ public class Arrow extends Shape {
 	
 	/* parse arrow in XDL format XML **/
 	@Override
-	void parse(Node node, Document doc) {
-		super.parse(node, doc);
+	void parse(Node node, Document doc, boolean bReconstructPlugins) {
+		super.parse(node, doc, bReconstructPlugins);
 		if (node.getAttributes().getNamedItem("headid") != null) {
 			m_sHeadID = node.getAttributes().getNamedItem("headid").getNodeValue();
 		}

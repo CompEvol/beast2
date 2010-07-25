@@ -36,6 +36,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
+import java.io.File;
 import java.io.StringReader;
 import java.util.*;
 import java.util.List;
@@ -48,6 +49,7 @@ public class Document {
     
     /** list of PluginShapes, InputShapes and connecting Arrows **/
     public List<Shape> m_objects = new ArrayList<Shape>();
+    public List<Shape> m_tmpobjects;
 
     /** undo/redo related stuff **/
     List<UndoAction> m_undoStack = new ArrayList<UndoAction>();
@@ -69,21 +71,21 @@ public class Document {
         m_sPlugInNames = sPlugInNames.toArray(new String[0]);
     } // c'tor
 
-    /** change order of shapes to ensure arrows are drawn before the rest **/
-    void moveArrowsToBack() {
-        ArrayList<Shape> arrows = new ArrayList<Shape>();
-        List<Shape> others = new ArrayList<Shape>();
-
-        for (Shape shape : m_objects) {
-            if (shape instanceof Arrow) {
-                arrows.add(shape);
-            } else {
-                others.add(shape);
-            }
-        }
-        arrows.addAll(others);
-        m_objects = arrows;
-    }
+//    /** change order of shapes to ensure arrows are drawn before the rest **/
+//    void moveArrowsToBack() {
+//        ArrayList<Shape> arrows = new ArrayList<Shape>();
+//        List<Shape> others = new ArrayList<Shape>();
+//
+//        for (Shape shape : m_objects) {
+//            if (shape instanceof Arrow) {
+//                arrows.add(shape);
+//            } else {
+//                others.add(shape);
+//            }
+//        }
+//        arrows.addAll(others);
+//        m_objects = arrows;
+//    }
 
     /** adjust position of inputs to fit with the associated plug in **/
     void adjustInputs() {
@@ -139,6 +141,19 @@ public class Document {
         adjustArrows();
     } // moveShape
 
+    public void moveShapes(int dX, int dY, List<Integer> nPositions) {
+        boolean bNeedsUndoAction = true;
+        if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
+            UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
+            if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSelection(nPositions)) {
+                bNeedsUndoAction = false;
+            }
+        }
+        if (bNeedsUndoAction) {
+            addUndoAction(new UndoAction(nPositions, UndoAction.MOVE_ACTION));
+        }
+    } // moveShape
+    
     public void movePoint(int nPoint, int nX, int nY, int nToX, int nToY, int nPosition) {
         boolean bNeedsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
@@ -225,13 +240,45 @@ public class Document {
         	}
         }
         m_objects.add(shape);
-//        if (shape instanceof PluginShape) {
-//        	addUndoAction(new AddPluginAction());
-//        } else if (shape instanceof Arrow) {
-//        	addUndoAction(new AddArrowAction());
-//        }
+        if (shape instanceof PluginShape) {
+        	List<Integer> iObjects = new ArrayList<Integer>();
+        	iObjects.add(m_objects.size() - 1);
+        	checkForOtherPluginShapes(iObjects, (PluginShape) shape);
+        	if (iObjects.size() == 1) {
+        		addUndoAction(new AddPluginAction(m_objects.size() - 1, UndoAction.ADD_PLUGIN_ACTION));
+        	} else {
+        		addUndoAction(new MultiObjectAction(iObjects, UndoAction.ADD_GROUP_ACTION));
+        	}
+        } else if (shape instanceof Arrow) {
+        	addUndoAction(new ArrowAction(m_objects.size() - 1, UndoAction.ADD_ARROW_ACTION));
+        }
     } // addNewShape
 
+	void checkForOtherPluginShapes(List<Integer> iObjects, PluginShape shape) {
+    	// check whether we need to create any input plugins
+    	try {
+    		List<Input<?>> inputs = ((PluginShape) shape).m_plugin.listInputs();
+    		for (Input<?> input : inputs) {
+    			if (input.get() instanceof Plugin) {
+    				Plugin plugin = (Plugin) input.get();
+    				PluginShape pluginShape = new PluginShape(plugin, this);
+    				pluginShape.m_x = Math.max(shape.m_x - DX, 0);
+    				pluginShape.m_y = shape.m_y;
+    				pluginShape.m_w = 100;
+    		        m_objects.add(shape);
+    	        	iObjects.add(m_objects.size() - 1);
+    	        	Arrow arrow = new Arrow(pluginShape, (PluginShape) shape, input.getName());
+    		        m_objects.add(arrow);
+    	        	iObjects.add(m_objects.size() - 1);
+    	        	// recurse
+    	        	checkForOtherPluginShapes(iObjects, pluginShape);
+    			}
+    		}
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}    
+    
     List<Integer> getConnectedArrows(List<String> sIDs, List<Integer> selection) {
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = (Shape) m_objects.get(i);
@@ -292,6 +339,10 @@ public class Document {
 
         }
         selection = getConnectedArrows(sIDs, selection);
+        UndoAction action = new MultiObjectAction(selection, UndoAction.DEL_GROUP_ACTION);
+        addUndoAction(action);
+        action.redo();
+        
 //        DeletePluginAction action = new DeletePluginAction(selection);
 //        addUndoAction(action);
 //        action.redo();
@@ -312,12 +363,12 @@ public class Document {
     } // ensureUniqueID
 
     public void pasteShape(String sXML) {
-        Shape shape = XML2Shape(sXML);
-        if (shape == null) {
-            return;
-        }
-        ensureUniqueID(shape, new ArrayList<String>());
-        m_objects.add(shape);
+//        Shape shape = XML2Shape(sXML);
+//        if (shape == null) {
+//            return;
+//        }
+//        ensureUniqueID(shape, new ArrayList<String>());
+//        m_objects.add(shape);
 //        addUndoAction(new AddPluginAction());
     } // addNewShape
 
@@ -397,7 +448,7 @@ public class Document {
         if (selection.isSingleSelection()) {
             addUndoAction(new UndoAction(selection.getSingleSelection(), UndoAction.FILL_COLOR_ACTION));
         } else {
-        	addUndoAction(new UndoAction(selection.m_Selection));
+        	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         }
         for (int i = 0; i < selection.m_Selection.size(); i++) {
             int iSelection = ((Integer) selection.m_Selection.get(i)).intValue();
@@ -410,7 +461,7 @@ public class Document {
         if (selection.isSingleSelection()) {
             addUndoAction(new UndoAction(selection.getSingleSelection(), UndoAction.PEN_COLOR_ACTION));
         } else {
-        	addUndoAction(new UndoAction(selection.m_Selection));
+        	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         }
         for (int i = 0; i < selection.m_Selection.size(); i++) {
             int iSelection = ((Integer) selection.m_Selection.get(i)).intValue();
@@ -475,6 +526,35 @@ public class Document {
         shape.toggleFilled();
     }
 
+    void setInputValue(PluginShape pluginShape, String sInput, String sValue) throws Exception {
+    	addUndoAction(new SetInputAction(pluginShape, sInput, sValue));
+    	//pluginShape.m_plugin.setInputValue(sInput, sValue);
+	}
+
+	/** action representing assignment of value to a primitive input **/
+    class SetInputAction extends UndoAction {
+    	PluginShape m_pluginShape;
+    	String m_sInput;
+    	String m_sValue;
+    	SetInputAction(PluginShape pluginShape, String sInput, String sValue) {
+    		m_pluginShape = pluginShape;
+    		m_sInput = sInput;
+    		m_sValue = sValue;
+    		doit();
+    	}
+    	void redo() {doit();}
+    	void undo() {doit();}
+    	void doit() {
+    		try {
+    			String sValue = m_pluginShape.m_plugin.getInput(m_sInput).get().toString();
+    			m_pluginShape.m_plugin.setInputValue(m_sInput, m_sValue);
+    			m_sValue = sValue;
+    		} catch (Exception e) {
+    			e.printStackTrace();
+			}
+    	}
+    } // class SetInputAction
+    
     public void toFront(Selection selection) {
         if (selection.m_Selection.size() == 0) {
             return;
@@ -572,7 +652,7 @@ public class Document {
      */
     public void alignLeft(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
 
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
@@ -596,7 +676,7 @@ public class Document {
      */
     public void alignRight(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMaxX = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -620,7 +700,7 @@ public class Document {
      */
     public void alignTop(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -643,7 +723,7 @@ public class Document {
      */
     public void alignBottom(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMaxY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -667,7 +747,7 @@ public class Document {
      */
     public void centreHorizontal(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         int nMaxY = -1;
@@ -696,7 +776,7 @@ public class Document {
      */
     public void centreVertical(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
         int nMaxX = -1;
@@ -725,7 +805,7 @@ public class Document {
      */
     public void spaceHorizontal(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
         int nMaxX = -1;
@@ -752,7 +832,7 @@ public class Document {
      */
     public void spaceVertical(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection));
+    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         int nMaxY = -1;
@@ -779,14 +859,16 @@ public class Document {
         final static int MOVE_ACTION = 1;
         final static int RESHAPE_ACTION = 2;
         final static int ADD_PLUGIN_ACTION = 3;
-        final static int DELETE_PLUGIN_ACTION = 4;
+        final static int DEL_PLUGIN_ACTION = 4;
         final static int ADD_ARROW_ACTION = 5;
-        final static int DELETE_ARROW_ACTION = 6;
-        final static int DELETE_SET_ACTION = 11;
+        final static int DEL_ARROW_ACTION = 6;
+        //final static int DELETE_SET_ACTION = 11;
         final static int FILL_COLOR_ACTION = 5;
         final static int PEN_COLOR_ACTION = 6;
         final static int SET_LABEL_ACTION = 7;
         final static int TOGGLE_FILL_ACTION = 10;
+        final static int ADD_GROUP_ACTION = 20;
+        final static int DEL_GROUP_ACTION = 21;
 
         int m_nActionType = UNDO_ACTION;
 
@@ -795,16 +877,22 @@ public class Document {
         
         /* single selection undo actions **/
         public UndoAction(int nSelection, int nActionType) {
+        	if (!(m_objects.get(nSelection) instanceof PluginShape)) {
+        		return;
+        	}
         	m_nActionType = nActionType;
         	m_nPositions = new ArrayList<Integer>();
         	m_nPositions.add(nSelection);
         	init();
         }
         /* multiple selection undo actions **/
-        public UndoAction(List<Integer> selection) {
+        public UndoAction(List<Integer> selection, int nActionType) {
+        	m_nActionType = nActionType;
             m_nPositions = new ArrayList<Integer>();
             for (int i = 0; i < selection.size(); i++) {
-                m_nPositions.add(new Integer(((Integer) selection.get(i)).intValue()));
+            	if (m_objects.get(selection.get(i)) instanceof PluginShape) {
+            		m_nPositions.add(new Integer(((Integer) selection.get(i)).intValue()));
+            	}
             }
             init();
         }
@@ -815,6 +903,19 @@ public class Document {
         	return (m_nPositions.size() == 1 && m_nPositions.get(0) == nPosition);
         }
 
+        boolean isSelection(List<Integer> nPositions) {
+        	int nMatches = 0;
+    		for (Integer i : nPositions) {
+    			if (m_objects.get(i) instanceof PluginShape) {
+	    			if (m_nPositions.contains(i)) {
+	    				nMatches++;
+	    			} else {
+	    				return false;
+	    			}
+    			}
+    		}
+        	return nMatches == m_nPositions.size();
+        }
         void init() {
             m_sXML = "<doc>";
             for (int i = 0; i < m_nPositions.size(); i++) {
@@ -873,36 +974,124 @@ public class Document {
                 sXML += shape.getXML();
             }
             sXML += "</doc>";
-            List<Shape> shapes = XML2Shapes(m_sXML);
+            List<Shape> shapes = XML2Shapes(m_sXML, false);
             for (int i = 0; i < m_nPositions.size(); i++) {
                 int iShape = ((Integer) m_nPositions.get(i)).intValue();
                 Shape originalShape = m_objects.get(iShape);
                 Shape shape = (Shape) shapes.get(i);
-                if (originalShape instanceof PluginShape) {
+                //if (originalShape instanceof PluginShape) {
                 	((PluginShape) shape).m_plugin = ((PluginShape) originalShape).m_plugin;
-                }
-                m_objects.set(iShape, shape);
+                //}
+                originalShape.assignFrom(shape);
+                //m_objects.set(iShape, shape);
             }
            	m_sXML = sXML;
         }
     } // class UndoAction
     
 
-//    class AddPluginAction extends UndoAction {
-//        public AddPluginAction() {
-//            super(m_objects.size() - 1, ADD_PLUGIN_ACTION);
-//        }
-//
-//        void undo() {
-//            m_objects.remove(m_nPosition);
-//        }
-//
-//        void redo() {
-//            Shape shape = XML2Shape(m_sXML);
-//            m_objects.add(shape);
-//        }
-//    } // class AddAction
-//
+    class AddPluginAction extends UndoAction {
+        public AddPluginAction(int nPosition, int nActionType) {
+        	// assumes pluginShape + all its inputs has just been added
+            m_nActionType = nActionType;
+            PluginShape pluginShape = (PluginShape) m_objects.get(nPosition);
+            m_nPositions = new ArrayList<Integer>();
+        	m_nPositions.add(nPosition);
+        	nPosition--;
+            while (nPosition >= 0 && 
+            		m_objects.get(nPosition) instanceof InputShape && 
+            		((InputShape)m_objects.get(nPosition)).getPluginShape() == pluginShape) {
+           		m_nPositions.add(0, nPosition--);
+            }
+            // creat XML
+            init();
+        }
+
+        @Override
+        void undo() {
+        	switch (m_nActionType) {
+        		case ADD_PLUGIN_ACTION: removePlugin(); return;
+        		case DEL_PLUGIN_ACTION:addPlugin(); return;
+        	}
+        	System.err.println("Error 101: action type not set properly");
+        }
+        
+        @Override
+        void redo() {
+        	switch (m_nActionType) {
+    		case ADD_PLUGIN_ACTION: addPlugin(); return;
+    		case DEL_PLUGIN_ACTION: removePlugin(); return;
+    	}
+    	System.err.println("Error 102: action type not set properly");
+        }
+
+        void removePlugin() {
+        	for (int i = m_nPositions.size() - 1; i >= 0; i--) {
+        		m_objects.remove((int) m_nPositions.get(i));
+        	}
+        }
+
+        void addPlugin() {
+        	List<Shape> shapes = XML2Shapes(m_sXML, true);
+        	for (int i = 0; i < m_nPositions.size(); i++) {
+        		m_objects.add(m_nPositions.get(i), shapes.get(i));
+        	}
+        }
+    } // class AddPluginAction
+    
+    class MultiObjectAction extends UndoAction {
+    	List<UndoAction> m_actions;
+    	
+    	MultiObjectAction(List<Integer> nPositions, int nActionType) {
+    		m_nActionType = nActionType;
+    		m_actions = new ArrayList<UndoAction>();
+    		List<Integer> iArrows = new ArrayList<Integer>();
+    		List<Integer> iPluginsShapes = new ArrayList<Integer>();
+			for (int i : nPositions) {
+				Shape shape = m_objects.get(i);
+				if (shape instanceof PluginShape) {
+					iPluginsShapes.add(i);
+				} else if (shape instanceof Arrow) {
+					iArrows.add(i);
+				}
+			}
+    		switch (nActionType) {
+    		case ADD_GROUP_ACTION:
+    			for (int i : iPluginsShapes) {
+					m_actions.add(new AddPluginAction(i, ADD_PLUGIN_ACTION));
+    			}
+    			for (int i : iArrows) {
+   					m_actions.add(new ArrowAction(i, ADD_ARROW_ACTION));
+   				}
+    			break;
+    		case DEL_GROUP_ACTION:
+    			for (int i : iArrows) {
+   					m_actions.add(new ArrowAction(i, DEL_ARROW_ACTION));
+   				}
+    			for (int i : iPluginsShapes) {
+					m_actions.add(new AddPluginAction(i, DEL_PLUGIN_ACTION));
+    			}
+    			break;
+   			default:
+   				System.err.println("Error 105: unrecognized action type");
+    		}
+    	}
+    	
+    	
+    	@Override
+    	void undo() {
+    		for (int i = m_actions.size()-1; i >= 0; i--) {
+    			m_actions.get(i).undo();
+    		}
+    	}
+    	@Override
+    	void redo() {
+    		for (int i = 0; i < m_actions.size(); i++) {
+    			m_actions.get(i).redo();
+    		}
+    	}
+    }
+
 //    class DeletePluginAction extends UndoAction {
 //        public DeletePluginAction(int nPosition) {
 //            super(nPosition, DELETE_PLUGIN_ACTION);
@@ -961,21 +1150,62 @@ public class Document {
 //        }
 //    } // class DeleteAction
 //
-//    class AddArrowAction extends UndoAction {
-//        public AddArrowAction() {
-//            super(m_objects.size() - 1, ADD_ARROW_ACTION);
-//        }
-//
-//        void undo() {
-//            m_objects.remove(m_nPosition);
-//        }
-//
-//        void redo() {
-//            Shape shape = XML2Shape(m_sXML);
-//            m_objects.add(shape);
-//        }
-//    } // class AddAction
-//
+    class ArrowAction extends UndoAction {
+        public ArrowAction(int nPosition, int nArrowAction) {
+        	m_nActionType = nArrowAction;
+        	m_nPositions = new ArrayList<Integer>();
+        	m_nPositions.add(nPosition);
+        	init();
+        }
+
+        @Override
+        void undo() {
+        	switch (m_nActionType) {
+    			case ADD_ARROW_ACTION: removeArrow(); return;
+    			case DEL_ARROW_ACTION:addArrow(); return;
+        	}
+        	System.err.println("Error 103: action type not set properly");
+        }
+        @Override
+        void redo() {
+        	switch (m_nActionType) {
+				case ADD_ARROW_ACTION: addArrow(); return;
+				case DEL_ARROW_ACTION: removeArrow(); return;
+        	}
+        	System.err.println("Error 104: action type not set properly");
+        }
+
+        void removeArrow() {
+            Arrow arrow = (Arrow) m_objects.get((int) m_nPositions.get(0));
+            m_objects.remove((int) m_nPositions.get(0));
+            // unconnect plug-in and input
+            Input<?> input = arrow.m_headShape.m_input;
+            if (input instanceof List<?>) {
+            	((List<?>)input.get()).remove(arrow.m_tailShape.m_plugin);
+            } else {
+            	try {
+            		input.setValue(null, arrow.m_headShape.getPlugin());
+            	} catch (Exception e) {
+					e.printStackTrace();
+				}
+            }
+        }
+        
+        void addArrow() {
+            List<Shape> shapes = XML2Shapes(m_sXML, true);
+            Arrow arrow = (Arrow) shapes.get(0);
+            m_objects.add((int) m_nPositions.get(0), arrow);
+            // reconnect plug-in with input
+            arrow.m_tailShape = getPluginShapeWithLabel(arrow.m_sTailID);
+            arrow.m_headShape = getInputShapeWithID(arrow.m_sHeadID);
+            try {
+            	arrow.m_headShape.m_input.setValue(arrow.m_tailShape.m_plugin, arrow.m_headShape.getPlugin());
+            } catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
+    } // class AddAction
+
 //    class DeleteArrowAction extends UndoAction {
 //        public DeleteArrowAction(int nPosition) {
 //            super(nPosition, DELETE_ARROW_ACTION);
@@ -1181,11 +1411,21 @@ public class Document {
     } // redo
 
 
-    PluginShape getObjectWithLabel(String sLabel) {
+    PluginShape getPluginShapeWithLabel(String sLabel) {
         for (Shape shape : m_objects) {
             if (shape instanceof PluginShape) {
                 if (shape.getLabel() != null && shape.getLabel().equals(sLabel)) {
                     return (PluginShape) shape;
+                }
+            }
+        }
+        return null;
+    }
+    InputShape getInputShapeWithID(String sLabel) {
+        for (Shape shape : m_objects) {
+            if (shape instanceof InputShape) {
+                if (shape.getID() != null && shape.getID().equals(sLabel)) {
+                    return (InputShape) shape;
                 }
             }
         }
@@ -1197,7 +1437,7 @@ public class Document {
 
     void addInput(PluginShape shape, Object o2, int nDepth, String sInput) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         if (o2 instanceof Plugin) {
-            PluginShape shape2 = getObjectWithLabel(((Plugin) o2).getID());
+            PluginShape shape2 = getPluginShapeWithLabel(((Plugin) o2).getID());
             if (shape2 == null) {
                 shape2 = new PluginShape((Plugin) o2, this);
                 shape2.m_x = nDepth * DX;
@@ -1235,7 +1475,19 @@ public class Document {
     	m_objects.clear();
         XMLParser parser = new XMLParser();
         try {
-            Plugin plugin0 = parser.parseFile(sFileName);
+        	//sFileName;
+			StringBuilder sXML = new StringBuilder();
+		    String NL = System.getProperty("line.separator");
+		    Scanner scanner = new Scanner(new File(sFileName));
+		    try {
+		      while (scanner.hasNextLine()){
+		        sXML.append(scanner.nextLine() + NL);
+		      }
+		    }
+		    finally{
+		      scanner.close();
+		    }
+            Plugin plugin0 = parser.parseBareFragment(sXML.toString(), false);
             
             if (plugin0 instanceof PluginSet) {
             	List<Plugin> set = ((PluginSet) plugin0).m_plugins.get();
@@ -1279,22 +1531,23 @@ public class Document {
         adjustArrows();
     } // loadFile
 
-    Shape XML2Shape(String sXML) {
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setValidating(false);
-            org.w3c.dom.Document doc = factory.newDocumentBuilder().parse(new org.xml.sax.InputSource(new StringReader(sXML)));
-            doc.normalize();
-            Node node = doc.getDocumentElement();
-            Shape shape = parseNode(node, this);
-            return shape;
-        } catch (Throwable t) {
-        }
-        return null;
-    } // XML2Shape
+//    Shape XML2Shape(String sXML) {
+//        try {
+//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//            factory.setValidating(false);
+//            org.w3c.dom.Document doc = factory.newDocumentBuilder().parse(new org.xml.sax.InputSource(new StringReader(sXML)));
+//            doc.normalize();
+//            Node node = doc.getDocumentElement();
+//            Shape shape = parseNode(node, this);
+//            return shape;
+//        } catch (Throwable t) {
+//        }
+//        return null;
+//    } // XML2Shape
 
-    List<Shape> XML2Shapes(String sXML) {
+    List<Shape> XML2Shapes(String sXML, boolean bReconstructPlugins) {
         List<Shape> shapes = new ArrayList<Shape>();
+        m_tmpobjects = shapes;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(false);
@@ -1304,11 +1557,12 @@ public class Document {
             for (int iNode = 0; iNode < nodes.getLength(); iNode++) {
                 Node node = nodes.item(iNode);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    shapes.add(parseNode(node, this));
+                    shapes.add(parseNode(node, this, bReconstructPlugins));
                 }
             }
         } catch (Throwable t) {
         }
+        m_tmpobjects = null;
         return shapes;
     }
 
@@ -1317,14 +1571,14 @@ public class Document {
     final static String ARROW_ELEMENT = "arrow";
 
     /** parse XDL xml format **/
-    static Shape parseNode(Node node, Document doc) {
+    static Shape parseNode(Node node, Document doc, boolean bReconstructPlugins) {
         Shape shape = null;
-        if (node.getNodeName().equals(INPUT_SHAPE_ELEMENT)) {
-            shape = new InputShape(node, doc);
-        } else if (node.getNodeName().equals(ARROW_ELEMENT)) {
-            shape = new Arrow(node, doc);
+        if (node.getNodeName().equals(INPUT_SHAPE_ELEMENT) && bReconstructPlugins) {
+            shape = new InputShape(node, doc, bReconstructPlugins);
+        } else if (node.getNodeName().equals(ARROW_ELEMENT) && bReconstructPlugins) {
+            shape = new Arrow(node, doc, bReconstructPlugins);
         } else if (node.getNodeName().equals(PLUGIN_SHAPE_ELEMENT)) {
-            shape = new PluginShape(node, doc);
+            shape = new PluginShape(node, doc, bReconstructPlugins);
         }
         return shape;
     } // parseNode
@@ -1382,6 +1636,14 @@ public class Document {
             if (m_objects.get(i).getID().equals(sID)) {
                 return m_objects.get(i);
             }
+        }
+        
+        if (m_tmpobjects != null) {
+	        for (int i = 0; i < m_tmpobjects.size(); i++) {
+	            if (m_tmpobjects.get(i).getID().equals(sID)) {
+	                return m_tmpobjects.get(i);
+	            }
+	        }
         }
         return null;
     }
@@ -1710,7 +1972,7 @@ public class Document {
     			}
     		}
     	}
-        moveArrowsToBack();
+        //moveArrowsToBack();
     } // recalcArrows
     
 } // class Document

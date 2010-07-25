@@ -53,8 +53,8 @@ public class Shape {
 
 	final static Color DEFUALT_FILL_COLOR =new Color(128,128,128);
 	final static Color DEFUALT_PEN_COLOR =new Color(0, 0, 0);
-	//String m_id;
-	String getID() {return null;}
+	String m_sID;
+	String getID() {return m_sID;}
 	public Shape() {}
 	public Shape(Node node, Document doc) {}
 	public void draw(Graphics2D g, JPanel panel) {}
@@ -85,10 +85,10 @@ public class Shape {
 		tracker.add(new TrackPoint(m_x+m_w/2,m_y+m_h, Cursor.S_RESIZE_CURSOR));
 		return tracker;
 	}
-	void parse(Node node, Document doc) {
-//		if (node.getAttributes().getNamedItem("id") != null) {
-//			m_id = node.getAttributes().getNamedItem("id").getNodeValue();
-//		}
+	void parse(Node node, Document doc, boolean bReconstructPlugins) {
+		if (node.getAttributes().getNamedItem("id") != null) {
+			m_sID = node.getAttributes().getNamedItem("id").getNodeValue();
+		}
 		if (node.getAttributes().getNamedItem("x") != null) {
 			m_x = (new Integer(node.getAttributes().getNamedItem("x").getNodeValue())).intValue();
 			m_x += 400;
@@ -150,7 +150,7 @@ public class Shape {
 	} // XMLnormalizeAtt
 	
 	String getAtts() {
-		return //" id='" + m_id + "'" +
+		return " id='" + getID() + "'" +
 		" x='" + (m_x-400) + "'" +
 		" y='" + (550-m_y - m_h) + "'" +
 		" w='" + m_w + "'" +
@@ -161,7 +161,16 @@ public class Shape {
         (m_pencolor.equals(DEFUALT_PEN_COLOR)? "" : " pencolor='" + m_pencolor.getRed() + " " + m_pencolor.getGreen() + " " + m_pencolor.getBlue() + "'")
         ;
 	}
-	
+	void assignFrom(Shape other) {
+		m_x = other.m_x;
+		m_y = other.m_y;
+		m_w = other.m_w;
+		m_h = other.m_h;
+		m_nPenWidth = other.m_nPenWidth;
+		m_bFilled = other.m_bFilled;
+		m_fillcolor = other.m_fillcolor;
+		m_pencolor = other.m_pencolor;
+	}
     Color string2Color(String sColor) {
         int iSpace = sColor.indexOf(' ');
         if (iSpace < 0) {
@@ -250,10 +259,10 @@ public class Shape {
 		m_h = Math.max(nY1, nY2) - m_y;
 	}
 
-	public Color getFillColor() {return DEFUALT_FILL_COLOR;}
-	void setFillColor(Color color) {}
-	Color getPenColor() {return DEFUALT_PEN_COLOR;}
-	void setPenColor(Color color) {}
+	public Color getFillColor() {return m_fillcolor;}
+	void setFillColor(Color color) {m_fillcolor = color;}
+	Color getPenColor() {return m_pencolor;}
+	void setPenColor(Color color) {m_pencolor = color;}
 	int getX() {return m_x;}
 	int getY() {return m_y;}
 	int getX2() {return m_x+m_w;}
@@ -264,8 +273,8 @@ public class Shape {
 	void setY2(int nY2) {m_h = nY2 - m_y;}
 	//void setLabel(String sLabel) {}
 	String getLabel() {return "";}
-	boolean isFilled() {return false;}
-	void toggleFilled() {}
-	int getPenWidth() {return 0;}
-	void setPenWidth(int nPenWidth) {}
+	boolean isFilled() {return m_bFilled;}
+	void toggleFilled() {m_bFilled = !m_bFilled;}
+	int getPenWidth() {return m_nPenWidth;}
+	void setPenWidth(int nPenWidth) {m_nPenWidth = nPenWidth;}
 }

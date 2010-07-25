@@ -61,8 +61,8 @@ public class PluginShape extends Shape {
 		m_fillcolor = new Color(Randomizer.nextInt(256), 128+Randomizer.nextInt(128), Randomizer.nextInt(128));
 		init(plugin.getClass().getName(), doc);
 	}
-	public PluginShape(Node node, Document doc) {
-		parse(node, doc);
+	public PluginShape(Node node, Document doc, boolean bReconstructPlugins) {
+		parse(node, doc, bReconstructPlugins);
 	}
 
 	public void init(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -145,24 +145,33 @@ public class PluginShape extends Shape {
 	}
 
 	@Override
-	void parse(Node node, Document doc) {
-		super.parse(node, doc);
-		if (node.getAttributes().getNamedItem("class") != null) {
-			String sClassName = node.getAttributes().getNamedItem("class").getNodeValue();
-			try {
-			m_plugin = (beast.core.Plugin) Class.forName(sClassName).newInstance();
-			} catch (Exception e) {
-				// TODO: handle exception
+	void parse(Node node, Document doc, boolean bReconstructPlugins) {
+		super.parse(node, doc, bReconstructPlugins);
+		if (bReconstructPlugins) {
+			if (node.getAttributes().getNamedItem("class") != null) {
+				String sClassName = node.getAttributes().getNamedItem("class").getNodeValue();
+				try {
+					m_plugin = (beast.core.Plugin) Class.forName(sClassName).newInstance();
+					m_plugin.setID(m_sID);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
-		}
-		if (node.getAttributes().getNamedItem("inputids") != null) {
-			String sInputIDs = node.getAttributes().getNamedItem("inputids").getNodeValue();
-			String [] sInputID = sInputIDs.split(" ");
-			m_inputs = new ArrayList<InputShape>();
-			for (int i = 0;i < sInputID.length; i++) {
-				InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
-				m_inputs.add(ellipse);
-				ellipse.setPluginShape(this);
+			if (node.getAttributes().getNamedItem("inputids") != null) {
+				String sInputIDs = node.getAttributes().getNamedItem("inputids").getNodeValue();
+				String [] sInputID = sInputIDs.split(" ");
+				m_inputs = new ArrayList<InputShape>();
+				try {
+					List<Input<?>> inputs = m_plugin.listInputs();
+					for (int i = 0;i < sInputID.length; i++) {
+						InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
+						m_inputs.add(ellipse);
+						ellipse.setPluginShape(this);
+						ellipse.m_input = inputs.get(i);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -185,17 +194,17 @@ public class PluginShape extends Shape {
 		return buf.toString();
 	}
 	@Override
+	void assignFrom(Shape other) {
+		super.assignFrom(other);
+		m_plugin.setID(other.m_sID);
+	}
+	@Override
 	boolean intersects(int nX, int nY) {
 		return super.intersects(nX, nY);
 	}
 	
 	@Override
-	String getLabel() {
-		if (m_plugin == null) {
-			return "";
-		}
-		return m_plugin.getID();
-	}
+	String getLabel() {return getID();}
 	@Override 
 	String getID() {
 		if (m_plugin == null) {

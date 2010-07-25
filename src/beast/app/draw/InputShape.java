@@ -46,8 +46,8 @@ public class InputShape extends Shape {
 		super();
 		m_input = input;
 	}
-	public InputShape(Node node, Document doc) {
-		parse(node, doc);
+	public InputShape(Node node, Document doc, boolean bReconstructPlugins) {
+		parse(node, doc, bReconstructPlugins);
 		//TODO: set inputName
 	}
 
@@ -86,8 +86,8 @@ public class InputShape extends Shape {
 	}
 	
 	@Override
-	void parse(Node node, Document doc) {
-		super.parse(node, doc);
+	void parse(Node node, Document doc, boolean bReconstructPlugins) {
+		super.parse(node, doc, bReconstructPlugins);
 	}
 	@Override
 	public String getXML() {
@@ -100,6 +100,9 @@ public class InputShape extends Shape {
 
 	@Override
 	String getLabel() {
+		if (m_input == null) {
+			return "XXX";
+		}
 		String sLabel = m_input.getName();
 		if (m_input.get() != null) {
 			Object o = m_input.get();
@@ -152,6 +155,10 @@ public class InputShape extends Shape {
 
 	@Override 
 	String getID() {
-		return m_pluginShape.m_plugin.getID()+"." + m_input.getName();
+		if (m_pluginShape != null) {
+			return m_pluginShape.m_plugin.getID()+"." + m_input.getName();
+		} else {
+			return m_sID;
+		}
 	}
 } // class Ellipse
