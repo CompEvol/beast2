@@ -122,6 +122,7 @@
         </operator>
 
         <log logEvery="10000">
+	    <model idref='posterior'/>
             <probabilityDistribution idref="coalescent" name='log'/>
             <probabilityDistribution idref="likelihood" name='log'/>
             <!--parameter idref="treeModel.rootHeight"/-->
@@ -132,6 +133,7 @@
             <probabilityDistribution idref="posterior" name='log'/>
         </log>
         <log logEvery="10000" fileName="test.$(seed).log">
+	    <model idref='posterior'/>
             <probabilityDistribution idref="coalescent" name='log'/>
             <probabilityDistribution idref="likelihood" name='log'/>
             <!--parameter idref="treeModel.rootHeight"/-->

@@ -84,10 +84,12 @@
         </operator>
 
         <log logEvery="10000">
+	    <model idref='likelihood'/>
             <distribution name='log' idref="likelihood"/>
             <parameter name='log' idref="hky.kappa"/>
         </log>
         <log logEvery="10000" fileName="test.$(seed).log">
+	    <model idref='likelihood'/>
             <distribution name='log' idref="likelihood"/>
             <parameter name='log' idref="hky.kappa"/>
         </log>

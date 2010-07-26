@@ -103,15 +103,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 	Rectangle m_selectRect = null;
 	int m_nMode = MODE_SELECT;
 
-	// boolean m_bViewOperators = true;
-	// boolean m_bViewLoggers = true;
-	// boolean m_bViewSequences = true;
-	// boolean m_bViewState = true;
+	 boolean m_bViewOperators = true;
+	 boolean m_bViewLoggers = true;
+	 boolean m_bViewSequences = true;
+	 boolean m_bViewState = true;
 
-	boolean m_bViewOperators = false;
-	boolean m_bViewLoggers = false;
-	boolean m_bViewSequences = false;
-	boolean m_bViewState = false;
+//	boolean m_bViewOperators = false;
+//	boolean m_bViewLoggers = false;
+//	boolean m_bViewSequences = false;
+//	boolean m_bViewState = false;
 	boolean m_bRelax = false;
 
 	/** number of seconds to 'relax' after loading a file **/
@@ -761,9 +761,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 		}
 
 		public void copy() {
-			if (m_Selection.isSingleSelection()) {
-				String sXML = ((Shape) m_doc.m_objects.get(m_Selection
-						.getSingleSelection())).getXML();
+			if (m_Selection.hasSelection()) {
+				String sXML = "<doc>\n";
+				for (int i : m_Selection.m_Selection) {
+					sXML += m_doc.m_objects.get(i).getXML() + "\n";
+				}
+				sXML += "</doc>\n";
 				m_clipboard.setText(sXML);
 			}
 		} // copy
