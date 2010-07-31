@@ -41,6 +41,8 @@ public class Frequencies extends Plugin {
 			throw new Exception("data input is not specified");
 		}
 		calcFrequencies();
+
+        checkFrequencies();
 	}
 
 	double [] m_fFreqs;
@@ -69,6 +71,44 @@ public class Frequencies extends Plugin {
 			m_fFreqs[i] /= fSum;
 		}
 	} // calcFrequencies
+
+    /**
+     * Ensures that frequencies are not smaller than MINFREQ and
+     * that two frequencies differ by at least 2*MINFDIFF.
+     * This avoids potential problems later when eigenvalues
+     * are computed.
+     */
+    private void checkFrequencies() {
+        // required frequency difference
+        double MINFDIFF = 1.0E-10;
+
+        // lower limit on frequency
+        double MINFREQ = 1.0E-10;
+
+        int maxi = 0;
+        double sum = 0.0;
+        double maxfreq = 0.0;
+        for (int i = 0; i < m_fFreqs.length; i++) {
+            double freq = m_fFreqs[i];
+            if (freq < MINFREQ) m_fFreqs[i] = MINFREQ;
+            if (freq > maxfreq) {
+                maxfreq = freq;
+                maxi = i;
+            }
+            sum += m_fFreqs[i];
+        }
+        double diff = 1.0 - sum;
+        m_fFreqs[maxi] += diff;
+
+        for (int i = 0; i < m_fFreqs.length - 1; i++) {
+            for (int j = i + 1; j < m_fFreqs.length; j++) {
+                if (m_fFreqs[i] == m_fFreqs[j]) {
+                    m_fFreqs[i] += MINFDIFF;
+                    m_fFreqs[j] += MINFDIFF;
+                }
+            }
+        }
+    }
 
 
 	public boolean isDirty() {

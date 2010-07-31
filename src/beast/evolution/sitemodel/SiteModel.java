@@ -177,7 +177,6 @@ public class SiteModel extends Plugin implements Cacheable {
      *
      * @param substitutions the expected number of substitutions
      * @param matrix        an array to store the matrix
-     * @param state         the state
      */
     public void getTransitionProbabilities(double substitutions, double[] matrix) {
         m_pSubstModel.get().getTransitionProbabilities(substitutions, matrix);
@@ -187,7 +186,6 @@ public class SiteModel extends Plugin implements Cacheable {
      * Get the expected proportion of sites in this category.
      *
      * @param category the category number
-     * @param state    the state
      * @return the proportion.
      */
     public double getProportionForCategory(int category) {
@@ -203,7 +201,6 @@ public class SiteModel extends Plugin implements Cacheable {
     /**
      * Get an array of the expected proportion of sites in this category.
      *
-     * @param state the state
      * @return an array of the proportion.
      */
     public double[] getCategoryProportions() {
@@ -219,8 +216,6 @@ public class SiteModel extends Plugin implements Cacheable {
     /**
      * discretization of gamma distribution with equal proportions in each
      * category
-     *
-     * @param state the state
      */
     private void calculateCategoryRates() {
         double propVariable = 1.0;

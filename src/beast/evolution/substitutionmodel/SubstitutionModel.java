@@ -29,8 +29,7 @@ import beast.core.Input.Validate;
 
 
 @Description("Specifies transition probability matrix for a given distance")
-public abstract class SubstitutionModel extends Plugin implements Cacheable {
-    public Input<Frequencies> m_pFreqs = new Input<Frequencies>("frequencies", "frequencies of characters in state space", Validate.REQUIRED);
+public interface SubstitutionModel {
 
     /**
      * get the complete transition probability matrix for the given distance
@@ -38,8 +37,14 @@ public abstract class SubstitutionModel extends Plugin implements Cacheable {
      * @param substitutions the expected number of substitutions
      * @param matrix        an array to store the matrix
      */
-    public void getTransitionProbabilities(double substitutions, double[] matrix) {
-    }
+    void getTransitionProbabilities(double substitutions, double[] matrix);
+
+    /**
+     * This function returns the Eigen decomposition of the instantaneous rate matrix if available.
+     *
+     * @return the EigenDecomposition, null if not available
+     */
+    EigenDecomposition getEigenDecomposition();
 
     /**
      * return true if state is changed such that
@@ -47,10 +52,15 @@ public abstract class SubstitutionModel extends Plugin implements Cacheable {
      * needs to be recalculated. Set flag if
      * recalculation is required.
      */
-    public boolean isDirty() {
-        return false;
+    boolean isDirty();
+
+    public abstract class Base extends Plugin implements SubstitutionModel, Cacheable {
+        public Input<Frequencies> frequencies = new Input<Frequencies>("frequencies", "equilibrium state frequencies", Validate.REQUIRED);
+
+
+        public boolean isDirty() {
+            return false;
+        }
     }
 
-//    @Override
-//    public void prepare(State state) {}
 }
