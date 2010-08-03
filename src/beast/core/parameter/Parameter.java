@@ -33,7 +33,8 @@ import java.util.Arrays;
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
 public abstract class Parameter<T> extends StateNode implements Loggable {
-    public Input<java.lang.Integer> m_nDimension = new Input<java.lang.Integer>("dimension", "dimension of the paperameter(default 1)", new java.lang.Integer(1));
+    public Input<java.lang.Integer> m_nDimension =
+            new Input<java.lang.Integer>("dimension", "dimension of the paperameter(default 1)", 1);
 
 
     /**
@@ -136,11 +137,12 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        final StringBuffer buf = new StringBuffer();
         buf.append(m_sID);
         buf.append(": ");
-        for (int i = 0; i < values.length; i++) {
-            buf.append(values[i] + " ");
+
+        for(T value : values) {
+            buf.append(value).append(" ");
         }
         return buf.toString();
     }
@@ -151,7 +153,7 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
 
     //public void init(State state, PrintStream out) throws Exception {
     public void init(PrintStream out) throws Exception {
-        int nValues = getDimension();
+        final int nValues = getDimension();
         if (nValues == 1) {
             out.print(getID() + "\t");
         } else {
@@ -164,6 +166,4 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     public void close(PrintStream out) {
         // nothing to do
     }
-
-
 } // class Parameter

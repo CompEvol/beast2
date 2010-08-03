@@ -37,8 +37,12 @@ import java.util.List;
 @Description("Logs results of calculation processes.")
 public class Logger extends Plugin {
 
-    public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log", "Element in a log. This can be any plug in that is Loggable.", new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
-    public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "Number of the samples logged", new Integer(1));
+    public Input<List<Plugin>> m_pLoggers =
+            new Input<List<Plugin>>("log",
+                    "Element in a log. This can be any plug in that is Loggable.",
+                    new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
+    
+    public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "Number of the samples logged", 1);
     public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
     public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
     		"If specified, XML will be produced for the model, commented out by # at the start of a line. " +
@@ -88,7 +92,9 @@ public class Logger extends Plugin {
         m_nStartLogTime = System.currentTimeMillis();
     } // initAndValidate
 
-    /** initialise log, open file (if necessary) and produce header of log **/
+    /** initialise log, open file (if necessary) and produce header of log
+     * @param state
+     **/
     public void init(State state) throws Exception {
         String sFileName = m_pFileName.get();
         if (sFileName == null || sFileName.length() == 0) {
@@ -110,14 +116,16 @@ public class Logger extends Plugin {
         if (m_mode == COMPOUND_LOGGER) {
             m_out.print("Sample\t");
         }
-        for (int i = 0; i < m_loggers.size(); i++) {
-             //System.out.println("logger " + i);
-             ((Loggable)m_loggers.get(i)).init(m_out);
+        for(Plugin m_logger : m_loggers) {
+            //System.out.println("logger " + i);
+            ((Loggable) m_logger).init(m_out);
         }
         m_out.println();
     } // init
 
-    /** log the state for given sample nr **/
+    /** log the state for given sample nr
+     * @param nSample
+     **/
     public void log(int nSample) {
         if ((nSample < 0) || (nSample % m_nEvery > 0)) {
             return;
@@ -125,8 +133,8 @@ public class Logger extends Plugin {
         if (m_mode == COMPOUND_LOGGER) {
             m_out.print(nSample + "\t");
         }
-        for (int i = 0; i < m_loggers.size(); i++) {
-            ((Loggable) m_loggers.get(i)).log(nSample, m_out);
+        for(Plugin m_logger : m_loggers) {
+            ((Loggable) m_logger).log(nSample, m_out);
         }
         if (m_out == System.out) {
             long nLogTime = System.currentTimeMillis();
@@ -142,11 +150,11 @@ public class Logger extends Plugin {
 
     /** stop logging, produce end of log message and close file (if necessary) **/
     public void close() {
-        for (int i = 0; i < m_loggers.size(); i++) {
-            ((Loggable) m_loggers.get(i)).close(m_out);
+        for(Plugin m_logger : m_loggers) {
+            ((Loggable) m_logger).close(m_out);
         }
         // close all file, except stdout
-        if (m_pFileName.get() != null && m_pFileName.get() != "") {
+        if (m_pFileName.get() != null && !m_pFileName.get().equals("") ) {
             m_out.close();
         }
     } // close
