@@ -50,7 +50,7 @@ public class Logger extends Plugin {
     		"This way, the log file documents itself. ");
 
     /** list of loggers, if any */
-    List<Plugin> m_loggers;
+    Loggable m_loggers[];
 
     /** Compound loggers get a sample number printed at the beginning of the line,
      * while tree loggers don't.
@@ -67,8 +67,9 @@ public class Logger extends Plugin {
 
     @Override
     public void initAndValidate() throws Exception {
-        m_loggers = m_pLoggers.get();
-        if (m_loggers.size() == 0) {
+        List<Plugin> loggers = m_pLoggers.get();
+        final int nLoggers = loggers.size();
+        if ( nLoggers == 0) {
             throw new Exception("Logger with nothing to log specified");
         }
 
@@ -78,10 +79,14 @@ public class Logger extends Plugin {
 //                throw new Exception("Object " + plugin.getClass().getName() + " " + plugin.getID() + " is not loggable");
 //            }
 //        }
+        m_loggers = new Loggable[nLoggers];
+        for(int k = 0; k < nLoggers; ++k) {
+            m_loggers[k] = (Loggable)loggers.get(k);
+        }
 
         // determine logging mode
         m_mode = COMPOUND_LOGGER;
-        if (m_loggers.size()==1 && m_loggers.get(0) instanceof Tree) {
+        if ( nLoggers==1 && m_loggers[0] instanceof Tree) {
             m_mode = TREE_LOGGER;
         }
 
@@ -117,9 +122,9 @@ public class Logger extends Plugin {
         if (m_mode == COMPOUND_LOGGER) {
             m_out.print("Sample\t");
         }
-        for(Plugin m_logger : m_loggers) {
+        for(Loggable m_logger : m_loggers) {
             //System.out.println("logger " + i);
-            ((Loggable) m_logger).init(m_out);
+            m_logger.init(m_out);
         }
         m_out.println();
     } // init
@@ -134,8 +139,8 @@ public class Logger extends Plugin {
         if (m_mode == COMPOUND_LOGGER) {
             m_out.print(nSample + "\t");
         }
-        for(Plugin m_logger : m_loggers) {
-            ((Loggable) m_logger).log(nSample, m_out);
+        for(Loggable m_logger : m_loggers) {
+            m_logger.log(nSample, m_out);
         }
         if (m_out == System.out) {
             long nLogTime = System.currentTimeMillis();
@@ -151,11 +156,15 @@ public class Logger extends Plugin {
 
     /** stop logging, produce end of log message and close file (if necessary) **/
     public void close() {
-        for(Plugin m_logger : m_loggers) {
-            ((Loggable) m_logger).close(m_out);
+        for(Loggable m_logger : m_loggers) {
+            m_logger.close(m_out);
         }
+
+        if( m_out != System.out )  {
         // close all file, except stdout
-        if (m_pFileName.get() != null && !m_pFileName.get().equals("") ) {
+
+             //final String s = m_pFileName.get();
+             //if ( s != null && !s.equals("") ) {
             m_out.close();
         }
     } // close

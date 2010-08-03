@@ -29,12 +29,7 @@ package beast.evolution.substitutionmodel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 @Description("Specifies transition probability matrix with no restrictions on the rates other " +
         "than that one of the is equal to one and the others are specified relative to " +

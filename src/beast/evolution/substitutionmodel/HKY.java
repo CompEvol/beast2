@@ -32,7 +32,8 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
-@Citation("Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. Journal of Molecular Evolution 22:160-174.")
+@Citation("Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. " +
+        "Journal of Molecular Evolution 22:160-174.")
 public final class HKY extends SubstitutionModel.Base {
     public Input<RealParameter> kappa = new Input<RealParameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
@@ -163,11 +164,10 @@ public final class HKY extends SubstitutionModel.Base {
     /**
      * Used for precalculations
      */
-    private double freqA, freqC, freqG, freqT,
-            // A+G
-            freqR,
-            // C+T
-            freqY;
+    private double freqA;
+    private double freqC;
+    private double freqG;
+    private double freqT;
 
     private double beta, A_R, A_Y;
     private double tab1A, tab2A, tab3A;
@@ -182,8 +182,8 @@ public final class HKY extends SubstitutionModel.Base {
         freqC = freqs[1];
         freqG = freqs[2];
         freqT = freqs[3];
-        freqR = freqA + freqG;
-        freqY = freqC + freqT;
+        final double freqR = freqA + freqG;
+        final double freqY = freqC + freqT;
 
         // small speed up - reduce calculations. Comments show original code
 
@@ -237,5 +237,4 @@ public final class HKY extends SubstitutionModel.Base {
         updateMatrix = true;
         updateEigen = true;
     }
-
 }

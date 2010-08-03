@@ -1,13 +1,12 @@
 package beast.evolution.tree;
 
-import java.io.PrintStream;
-
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.Plugin;
-import beast.core.State;
-import beast.core.Input.Validate;
+
+import java.io.PrintStream;
 
 @Description("Logger to report height of a tree")
 public class TreeHeightLogger extends Plugin implements Loggable {

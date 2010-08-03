@@ -47,7 +47,7 @@ public interface SubstitutionModel {
     EigenDecomposition getEigenDecomposition();
 
     /**
-     * return true if state is changed such that
+     * @return true if state is changed such that
      * the internal state of this substitution model
      * needs to be recalculated. Set flag if
      * recalculation is required.
@@ -63,5 +63,4 @@ public interface SubstitutionModel {
             return false;
         }
     }
-
 }
