@@ -57,6 +57,7 @@ public class Alignment extends Plugin {
      * @param sequences
      * @param stateCount
      * @param dataType
+     * @throws Exception  when validation fails
      */
     public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) throws Exception {
 
@@ -104,7 +105,7 @@ public class Alignment extends Plugin {
     } // initAndValidate
 
     /**
-     * return string (depending on datatype) which represents map of character onto
+     * @return string (depending on datatype) which represents map of character onto
      * state representation, e.g. the string "ACGT" corresponds to a map that encodes
      * 'A' as 0, 'C' as 1, 'G' as 2 and 'T' as 3. Unknown characters are mapped to the
      * length of the string, so a '-' with map "ACGT" is encoded as 4.*
@@ -123,7 +124,7 @@ public class Alignment extends Plugin {
     } // getMap
 
 
-    /**
+    /*
      * assorted getters and setters *
      */
     public int getNrTaxa() {
@@ -264,8 +265,8 @@ public class Alignment extends Plugin {
         // Usually, the state count is equal for all sites,
         // though for SnAP analysis, this is typically not the case.
         m_nMaxStateCount = 0;
-        for (int i = 0; i < m_nStateCounts.size(); i++) {
-            m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCounts.get(i));
+        for(int m_nStateCount1 : m_nStateCounts) {
+            m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCount1);
         }
         // report some statistics
         for (int i = 0; i < m_sTaxaNames.size(); i++) {
