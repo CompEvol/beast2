@@ -99,7 +99,7 @@ public class RealParameter extends Parameter<Double> {
         copy.m_bIsDirty = new boolean[values.length];
     }
 
-    public void log(int nSample, State state, PrintStream out) {
+    public void log(int nSample, PrintStream out) {
         RealParameter var = (RealParameter) getCurrent();//state.getStateNode(m_sID);
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {

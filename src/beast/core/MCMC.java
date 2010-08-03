@@ -117,7 +117,7 @@ public class MCMC extends Runnable {
 
     public void log(int nSample) {
         for (Logger log : m_loggers.get()) {
-            log.log(nSample, state);
+            log.log(nSample);
         }
     } // log
 

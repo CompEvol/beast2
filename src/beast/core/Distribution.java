@@ -94,11 +94,11 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
     void prepare(State state) {}
 
     /** Loggable interface implementation follows **/
-	public void init(State state, PrintStream out) throws Exception {
+	public void init(PrintStream out) throws Exception {
 		out.print(getID() + "\t");
 	}
 
-	public void log(int nSample, State state, PrintStream out) {
+	public void log(int nSample, PrintStream out) {
 		out.print(getCurrentLogP() + "\t");
 	}
 

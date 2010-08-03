@@ -112,13 +112,13 @@ public class Logger extends Plugin {
         }
         for (int i = 0; i < m_loggers.size(); i++) {
              //System.out.println("logger " + i);
-             ((Loggable)m_loggers.get(i)).init(state, m_out);
+             ((Loggable)m_loggers.get(i)).init(m_out);
         }
         m_out.println();
     } // init
 
     /** log the state for given sample nr **/
-    public void log(int nSample, State state) {
+    public void log(int nSample) {
         if ((nSample < 0) || (nSample % m_nEvery > 0)) {
             return;
         }
@@ -126,7 +126,7 @@ public class Logger extends Plugin {
             m_out.print(nSample + "\t");
         }
         for (int i = 0; i < m_loggers.size(); i++) {
-            ((Loggable) m_loggers.get(i)).log(nSample, state, m_out);
+            ((Loggable) m_loggers.get(i)).log(nSample, m_out);
         }
         if (m_out == System.out) {
             long nLogTime = System.currentTimeMillis();

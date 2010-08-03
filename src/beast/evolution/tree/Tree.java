@@ -224,7 +224,7 @@ public class Tree extends StateNode implements Loggable {
     /**
      * Loggable implementation follows *
      */
-    public void init(State state, PrintStream out) throws Exception {
+    public void init(PrintStream out) throws Exception {
         out.println("#NEXUS\n");
         out.println("Begin trees");
         Node node = getRoot();
@@ -233,7 +233,7 @@ public class Tree extends StateNode implements Loggable {
         out.print(";");
     }
 
-    public void log(int nSample, State state, PrintStream out) {
+    public void log(int nSample, PrintStream out) {
         Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
         out.print("tree STATE_" + nSample + " = ");
         out.print(tree.getRoot().toString());
