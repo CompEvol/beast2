@@ -78,7 +78,7 @@ public class Plugin {
 //    }
 
     /**
-     * Extract description from @Description annotation *
+     * @return  description from @Description annotation
      */
     public String getDescription() {
         Annotation[] classAnnotations = this.getClass().getAnnotations();
@@ -92,7 +92,7 @@ public class Plugin {
     }
 
     /**
-     * Extract citation from @Citation annotation *
+     * @return  citation from @Citation annotation *
      */
     public final Citation getCitation() {
         Annotation[] classAnnotations = this.getClass().getAnnotations();
@@ -105,13 +105,13 @@ public class Plugin {
     }
 
     /**
-     * produce references for this plug in and all its inputs *
+     * @return  references for this plug in and all its inputs *
      */
     public final String getCitations() {
         return getCitations(new HashSet<String>());
     }
 
-    private final String getCitations(HashSet<String> bDone) {
+    private String getCitations(HashSet<String> bDone) {
         StringBuffer buf = new StringBuffer();
         if (!bDone.contains(getID())) {
             // only add citation if it is not already processed
@@ -135,9 +135,9 @@ public class Plugin {
     public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
         List<Input<?>> inputs = new ArrayList<Input<?>>();
         Field[] fields = getClass().getFields();
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) fields[i].get(this);
+        for(Field field : fields) {
+            if( field.getType().isAssignableFrom(Input.class) ) {
+                Input<?> input = (Input<?>) field.get(this);
                 inputs.add(input);
             }
         }
@@ -149,37 +149,40 @@ public class Plugin {
      * create array of all plug-ins in the inputs that are instantiated.
      * If the input is a List of plug-ins, these individual plug-ins are
      * added to the list.
+     * @return list of all active plugins
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
      */
     @SuppressWarnings("unchecked")
     public Plugin[] listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
         List<Plugin> sPlugins = new ArrayList<Plugin>();
         Field[] fields = getClass().getFields();
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) fields[i].get(this);
-                if (input.get() != null) {
-                    if (input.get() instanceof List<?>) {
+        for(Field field : fields) {
+            if( field.getType().isAssignableFrom(Input.class) ) {
+                Input<?> input = (Input<?>) field.get(this);
+                if( input.get() != null ) {
+                    if( input.get() instanceof List<?> ) {
                         List vector = (List<?>) input.get();
-                        for (Object o : vector) {
-                            if (o instanceof Plugin) {
+                        for(Object o : vector) {
+                            if( o instanceof Plugin ) {
                                 sPlugins.add((Plugin) o);
                             }
                         }
-                    } else if (input.get() != null && input.get() instanceof Plugin) {
+                    } else if( input.get() != null && input.get() instanceof Plugin ) {
                         sPlugins.add((Plugin) input.get());
                     }
                 }
             }
         }
-        return sPlugins.toArray(new Plugin[0]);
+        return sPlugins.toArray(new Plugin[sPlugins.size()]);
     } // listActivePlugins
 
     public String getTipText(String sName) throws IllegalArgumentException, IllegalAccessException {
         Field[] fields = getClass().getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) fields[i].get(this);
-                if (input.getName().equals(sName)) {
+        for(Field field : fields) {
+            if( field.getType().isAssignableFrom(Input.class) ) {
+                Input<?> input = (Input<?>) field.get(this);
+                if( input.getName().equals(sName) ) {
                     return input.getTipText();
                 }
             }
@@ -220,10 +223,10 @@ public class Plugin {
 
     public Input<?> getInput(String sName) throws Exception {
         Field[] fields = getClass().getFields();
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) fields[i].get(this);
-                if (input.getName().equals(sName)) {
+        for(Field field : fields) {
+            if( field.getType().isAssignableFrom(Input.class) ) {
+                Input<?> input = (Input<?>) field.get(this);
+                if( input.getName().equals(sName) ) {
                     return input;
                 }
             }
@@ -232,15 +235,17 @@ public class Plugin {
     } // getInput
 
     /**
-     * @throws Exception
+     * @throws Exception when plugin does not implement this method
      */
     public void initAndValidate() throws Exception {
         // todo: AR - Why is this not an abstract method? Does Plugin need to be concrete?
-        throw new Exception("Plugin.initAndValidate(): Every plugin should implement this method to assure the class behaves, even when inputs are not specified");
+        throw new Exception("Plugin.initAndValidate(): Every plugin should implement this method to assure the class behaves, " +
+                "even when inputs are not specified");
     }
 
     /**
      * check validation rules for all its inputs *
+     * @throws Exception when validation fails
      */
     public void validateInputs() throws Exception {
         for (Input<?> input : listInputs()) {

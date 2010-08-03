@@ -39,7 +39,6 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
     private double storedLogP = 0;
 
     /**
-     * @param state a state
      * @return the normalised probability (density) for this distribution
      * @throws Exception an exception
      */

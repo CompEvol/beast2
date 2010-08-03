@@ -35,7 +35,7 @@ import java.util.List;
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
-public class Tree extends StateNode implements Loggable {
+public class Tree extends LoggableStat {
 
 //    @SuppressWarnings("unchecked")
 //    public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());

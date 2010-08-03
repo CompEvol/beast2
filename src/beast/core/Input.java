@@ -67,7 +67,6 @@ public class Input<T> {
         OPTIONAL, REQUIRED, XOR
     }
 
-    ;
     Validate rule = Validate.OPTIONAL;
     /**
      * used only if validation rule is XOR *
@@ -113,6 +112,10 @@ public class Input<T> {
 
     /**
      * constructor for REQUIRED rules for array-inputs *
+     * @param sName
+     * @param sTipText
+     * @param startValue
+     * @param rule
      */
     public Input(String sName, String sTipText, T startValue, Validate rule) {
         name = sName;
@@ -127,6 +130,9 @@ public class Input<T> {
 
     /**
      * constructor for REQUIRED rules *
+     * @param sName
+     * @param sTipText
+     * @param rule
      */
     public Input(String sName, String sTipText, Validate rule) {
         name = sName;
@@ -140,6 +146,10 @@ public class Input<T> {
 
     /**
      * constructor for XOR rules *
+     * @param sName
+     * @param sTipText
+     * @param rule
+     * @param other
      */
     public Input(String sName, String sTipText, Validate rule, Input<?> other) {
         name = sName;
@@ -154,8 +164,8 @@ public class Input<T> {
         this.other.rule = rule;
     } // c'tor
 
-    /**
-     * various setters and getters *
+    /*
+     * various setters and getters
      */
     public String getName() {
         return name;
@@ -170,7 +180,9 @@ public class Input<T> {
      * the actual value, the current value of the StateNode
      * is returned. This is defined as the current StateNode
      * in the State, or itself if it is not part of the state.
-     * **/
+     *
+     * @return value of this input
+     **/
     @SuppressWarnings("unchecked")
 	public T get() {
     	if (value instanceof StateNode) {
@@ -197,6 +209,8 @@ public class Input<T> {
      * 
      * Only Operators should call this method.
      * Also Operators should never call Input.get(), always Input.get(operator).
+     * @param operator
+     * @return
      */
     @SuppressWarnings("unchecked")
 	public T get(Operator operator) {
@@ -264,11 +278,14 @@ public class Input<T> {
      * Determine class through introspection,
      * This sets the m_class member of Input<T> to the actual value of T.
      * If T is a vector, i.e. Input<List<S>>, the actual value of S
-     * is assigned instead *
+     * is assigned instead
+     * @param plugin whose type is to be determined
+     * @throws Exception
      */
     public void determineClass(Plugin plugin) throws Exception {
     	determineClass(plugin, false);
     }
+
     public void determineClass(Plugin plugin, boolean bIsStateNode) throws Exception {
     	
         try {
@@ -291,8 +308,7 @@ public class Input<T> {
 
 
                             try {
-                                Class<?> genericType = (Class<?>) genericTypes[0];
-                                theClass = genericType;
+                                theClass = (Class<?>) genericTypes[0];
                             } catch (Exception e) {
                                 System.err.println(plugin.getClass().getName() + " " + plugin.getID() + " failed. Possibly template or abstract Plugin used???");
                                 System.err.println("class is " + plugin.getClass());
@@ -317,6 +333,8 @@ public class Input<T> {
     /**
      * Try to parse value of string into Integer, Double or Boolean,
      * or it this types differs, just assign as string.
+     * @param sValue  value representation
+     * @throws Exception when all conversions fail
      */
     @SuppressWarnings("unchecked")
     private void setStringValue(String sValue) throws Exception {
@@ -331,9 +349,12 @@ public class Input<T> {
         }
         if (theClass.equals(Boolean.class)) {
             String sValue2 = sValue.toLowerCase();
-            if (sValue2.equals("yes") || sValue2.equals("no") || sValue2.equals("true") || sValue2.equals("false")) {
-                value = (T) new Boolean(sValue != null && sValue.equals("yes") || sValue.equals("true"));
+            if( sValue2.equals("yes") || sValue2.equals("true") ) {
+                value = (T) Boolean.TRUE;
                 return;
+            } else if (sValue2.equals("no") || sValue2.equals("false") ) {
+               value = (T) Boolean.FALSE;
+               return;
             }
         }
         // settle for a string
@@ -346,6 +367,7 @@ public class Input<T> {
 
     /**
      * validate input according to validation rule *
+     * @throws Exception when validation fails. why not return a string?
      */
     public void validate() throws Exception {
         switch (rule) {

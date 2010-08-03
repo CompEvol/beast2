@@ -27,6 +27,8 @@ public interface Loggable {
     //void log(int nSample, State state, PrintStream out);
     void log(int nSample, PrintStream out);
 
-    /** close log. An end of log message can be left (as in End; for Nexus trees) **/
+    /** close log. An end of log message can be left (as in End; for Nexus trees)
+     * @param out log stream
+     **/
     void close(PrintStream out);
 }

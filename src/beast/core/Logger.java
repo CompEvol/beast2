@@ -93,7 +93,8 @@ public class Logger extends Plugin {
     } // initAndValidate
 
     /** initialise log, open file (if necessary) and produce header of log
-     * @param state
+     *
+     * @throws Exception
      **/
     public void init(State state) throws Exception {
         String sFileName = m_pFileName.get();
