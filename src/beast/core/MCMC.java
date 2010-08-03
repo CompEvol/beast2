@@ -69,7 +69,7 @@ public class MCMC extends Runnable {
         m_cacheables = this.state.getCacheableOutputs(this);
 
         for (Logger log : m_loggers.get()) {
-            log.init(this.state);
+            log.init();
         }
     } // init
 

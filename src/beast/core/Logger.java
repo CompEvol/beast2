@@ -96,7 +96,7 @@ public class Logger extends Plugin {
      *
      * @throws Exception
      **/
-    public void init(State state) throws Exception {
+    public void init() throws Exception {
         String sFileName = m_pFileName.get();
         if (sFileName == null || sFileName.length() == 0) {
             m_out = System.out;
