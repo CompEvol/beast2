@@ -38,7 +38,10 @@ import java.util.Random;
         "and priors and combines them into the compound of these distributions " +
         "typically interpreted as the posterior.")
 public class CompoundDistribution extends Distribution {
-    public Input<List<Distribution>> pDistributions = new Input<List<Distribution>>("distribution", "individual probability distributions, e.g. the likelihood and prior making up a posterior", new ArrayList<Distribution>(), Validate.REQUIRED);
+    public Input<List<Distribution>> pDistributions =
+            new Input<List<Distribution>>("distribution",
+                    "individual probability distributions, e.g. the likelihood and prior making up a posterior",
+                    new ArrayList<Distribution>(), Validate.REQUIRED);
 
     /** Distribution implementation follows **/
     @Override
@@ -53,16 +56,18 @@ public class CompoundDistribution extends Distribution {
 
     @Override
     public void sample(State state, Random random) {
-        for (int i = 0; i < pDistributions.get().size(); i++) {
-            pDistributions.get().get(i).sample(state, random);
+        final List<Distribution> distributions = pDistributions.get();
+        for(Distribution distribution : distributions) {
+            distribution.sample(state, random);
         }
     }
 
     @Override
     public List<String> getArguments() {
         List<String> arguments = new ArrayList<String>();
-        for (int i = 0; i < pDistributions.get().size(); i++) {
-            arguments.addAll(pDistributions.get().get(i).getArguments());
+        final List<Distribution> distributions = pDistributions.get();
+        for(Distribution distribution : distributions) {
+            arguments.addAll(distribution.getArguments());
         }
         return arguments;
     }
@@ -70,8 +75,9 @@ public class CompoundDistribution extends Distribution {
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<String>();
-        for (int i = 0; i < pDistributions.get().size(); i++) {
-            conditions.addAll(pDistributions.get().get(i).getConditions());
+        final List<Distribution> distributions = pDistributions.get();
+        for(Distribution distribution : distributions) {
+            conditions.addAll(distribution.getConditions());
         }
         return conditions;
     }

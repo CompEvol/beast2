@@ -40,7 +40,8 @@ import java.util.List;
         "than that one of the is equal to one and the others are specified relative to " +
         "this unit rate. Works for any number of states.")
 public class GeneralSubstitutionModel extends SubstitutionModel.Base {
-    public Input<RealParameter> rates = new Input<RealParameter>("rates", "rate parameter which defines the transition rate matrix", Validate.REQUIRED);
+    public Input<RealParameter> rates =
+            new Input<RealParameter>("rates", "rate parameter which defines the transition rate matrix", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() throws Exception {

@@ -55,7 +55,8 @@ public interface SubstitutionModel {
     boolean isDirty();
 
     public abstract class Base extends Plugin implements SubstitutionModel, Cacheable {
-        public Input<Frequencies> frequencies = new Input<Frequencies>("frequencies", "equilibrium state frequencies", Validate.REQUIRED);
+        public Input<Frequencies> frequencies =
+                new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
 
 
         public boolean isDirty() {

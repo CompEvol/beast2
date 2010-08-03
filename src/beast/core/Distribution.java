@@ -53,6 +53,7 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
      * parameters conditioned on
      *
      * @param state the state
+     * @param random  random number generator
      */
     public abstract void sample(State state, Random random);
 
@@ -89,8 +90,7 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
         logP = storedLogP;
     }
 
-	public
-    void prepare(State state) {}
+	public void prepare(State state) {}
 
     /** Loggable interface implementation follows **/
 	public void init(PrintStream out) throws Exception {

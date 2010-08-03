@@ -12,10 +12,13 @@ import beast.evolution.tree.Tree;
 // for (int i = 1; i < n; i++) {
 //    p *= exp(-lambda*height[i])
 // }
+
 @Description("Pure birth model (i.e. no deaths)")	 
 public class YuleModel extends SpeciationLikelihood {
-    public Input<RealParameter> birthDiffRateParameter = new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model");
-    public Input<Boolean> m_pConditionlOnRoot = new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", new Boolean(false));
+    public Input<RealParameter> birthDiffRateParameter = 
+            new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model");
+    public Input<Boolean> m_pConditionlOnRoot =
+            new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
 
     protected boolean conditionalOnRoot;
     
@@ -39,11 +42,14 @@ public class YuleModel extends SpeciationLikelihood {
         return logL;
     }
     
-    /** calculate contribution of the tree to the log likelihood 
-     * r = relative birth rate (birth rate - death rate)
-     * rho = rho parameter in Gernhard 2008 birth death model
-     * a = death rate relative to birth rate
-     * **/
+    /** calculate contribution of the tree to the log likelihood
+     *
+     * @param taxonCount
+     * @param r   relative birth rate (birth rate - death rate)
+     * @param rho parameter in Gernhard 2008 birth death model
+     * @param a  death/birth rates ratio
+     * @return
+     **/
     protected double logTreeProbability(int taxonCount, double r, double rho, double a) {
         double c1 = logCoeff(taxonCount);
         if( ! conditionalOnRoot ) {
@@ -52,10 +58,20 @@ public class YuleModel extends SpeciationLikelihood {
         return c1;
     }
 
-    /** default implementation, equivalent with unscaled tree in Grerhard 2008 model */
+    /** default implementation, equivalent with unscaled tree in Grerhard 2008 model
+     * @param taxonCount
+     * @return
+     **/
     protected double logCoeff(int taxonCount) {return 0.0;}	
 	
-    /** recursively calculate contribution of the nodes to the log likelihood */
+    /** recursively calculate contribution of the nodes to the log likelihood
+     * @param node
+     * @param r
+     * @param rho
+     * @param a
+     * @param taxonCount
+     * @return
+     **/
     protected double logNodeProbability(Node node, double r, double rho, double a, int taxonCount) {
     	if (node.isLeaf()) {
     		if (includeExternalNodesInLikelihoodCalculation()) {
@@ -75,7 +91,14 @@ public class YuleModel extends SpeciationLikelihood {
     * r = relative birth rate (birth rate - death rate)
     * rho = rho parameter in Gernhard 2008 birth death model
     * a = death rate relative to birth rate
-    * **/
+    *
+     * @param node
+     * @param r
+     * @param rho
+     * @param a
+     * @param taxonCount
+     * @return
+     **/
     protected double calcLogNodeProbability(Node node, double r, double rho, double a, int taxonCount) {
         final double height = node.getHeight();
         final double mrh = -r * height;

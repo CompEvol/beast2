@@ -1,6 +1,7 @@
 package beast.evolution.branchratemodel;
 
 import beast.core.Input;
+import beast.core.Description;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
@@ -9,13 +10,24 @@ import beast.evolution.tree.Tree;
 /**
  * @author Alexei Drummond
  */
+@Description("Random Local Clock Model.")
 public class RandomLocalClockModel extends BranchRateModel.Base {
 
-    public Input<IntegerParameter> indicatorParamInput = new Input<IntegerParameter>("indicators", "the indicators associated with nodes in the tree for sampling of individual rate changes among branches.", Input.Validate.REQUIRED);
-    public Input<RealParameter> rateParamInput = new Input<RealParameter>("rates", "the rate parameters associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
-    public Input<RealParameter> meanRateInput = new Input<RealParameter>("meanRate", "an optional parameter to set the mean rate across the whole tree");
-    public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
-    public Input<Boolean> ratesAreMultipliersInput = new Input<Boolean>("ratesAreMultipliers", "true if the rates should be treated as multipliers.");
+    public Input<IntegerParameter> indicatorParamInput = 
+            new Input<IntegerParameter>("indicators",
+                    "the indicators associated with nodes in the tree for sampling of individual rate changes among branches.",
+                    Input.Validate.REQUIRED);
+    public Input<RealParameter> rateParamInput =
+            new Input<RealParameter>("rates",
+                    "the rate parameters associated with nodes in the tree for sampling of individual rates among branches.",
+                    Input.Validate.REQUIRED);
+    public Input<RealParameter> meanRateInput =
+            new Input<RealParameter>("meanRate",
+                    "an optional parameter to set the mean rate across the whole tree");
+    public Input<Tree> treeInput =
+            new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
+    public Input<Boolean> ratesAreMultipliersInput =
+            new Input<Boolean>("ratesAreMultipliers", "true if the rates should be treated as multipliers.");
 
     @Override
     public void initAndValidate() throws Exception {

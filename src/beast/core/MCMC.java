@@ -37,7 +37,7 @@ import java.util.List;
 @Citation("A prototype for BEAST 2.0: The computational science of evolutionary software. Bouckaert, Drummond, Rambaut, Alekseyenko, Suchard & the BEAST Core Development Team. 2010")
 public class MCMC extends Runnable {
 
-    public Input<Integer> m_oBurnIn = new Input<Integer>("preBurnin", "Number of burn in samples taken before entering the main loop", new Integer(0));
+    public Input<Integer> m_oBurnIn = new Input<Integer>("preBurnin", "Number of burn in samples taken before entering the main loop", 0);
     public Input<Integer> m_oChainLength = new Input<Integer>("chainLength", "Length of the MCMC chain i.e. number of samples taken in main loop", Input.Validate.REQUIRED);
     public Input<State> m_startState = new Input<State>("state", "elements of the state space", new State(), Input.Validate.REQUIRED);
     public Input<Distribution> posteriorInput = new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)", Input.Validate.REQUIRED);

@@ -25,12 +25,11 @@
 package beast.evolution.tree;
 
 
-import beast.core.*;
-import beast.core.parameter.Parameter;
+import beast.core.Description;
+import beast.core.Loggable;
+import beast.core.StateNode;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
@@ -159,7 +158,7 @@ public class Tree extends StateNode implements Loggable {
     
     @Override
     public void setDirty(boolean bDirty) {
-    	if (bDirty == false) {
+    	if ( !bDirty ) {
     		root.makeAllDirty(IS_CLEAN);
     	} else {
     		root.makeAllDirty(IS_FILTHY);
@@ -202,9 +201,13 @@ public class Tree extends StateNode implements Loggable {
 //        }
 //    } // syncTreeWithTraits
 
-    /** Loggable interface implementation follows **/
+    /* Loggable interface implementation follows */
+
     /**
-     * print translate block for NEXUS beast.tree file *
+     * print translate block for NEXUS beast.tree file
+     * @param node
+     * @param out
+     * @param nNodeCount
      */
     void printTranslate(Node node, PrintStream out, int nNodeCount) {
         if (node.isLeaf()) {
@@ -218,7 +221,6 @@ public class Tree extends StateNode implements Loggable {
             printTranslate(node.m_left, out, nNodeCount);
             printTranslate(node.m_right, out, nNodeCount);
         }
-
     }
 
     /**

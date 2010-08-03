@@ -14,7 +14,7 @@ import beast.util.ClassDiscovery;
 
 public class DocumentationTest extends TestCase {
 
-	/** Check all plug-ins have a proper description so that
+    /** Check all plug-ins have a proper description so that
 	 * everything is at least moderately well documented. **/
 	@Test
 	public void testDescriptions() {
@@ -67,20 +67,23 @@ public class DocumentationTest extends TestCase {
 			}
 		}
 	
-		assertTrue("No proper input tip text for: " + sUndocumentedInputs.toString(), sUndocumentedInputs.size() == 0);
+		assertTrue("No proper input tip text (at least " + N_WORDS + " words and " + N_CHARS + " characters) for: "
+                + sUndocumentedInputs.toString(), sUndocumentedInputs.size() == 0);
 	} // testInputTipText
 
-	
+	private final int N_WORDS = 4;
+    private final int N_CHARS = 15;
+
 	// description of at least 15 chars and at least 4 words is satisfactory?!?
 	// TODO: needs a bit more smarts to prevent as df a hsf jasd;fajasdf
 	boolean isProperDocString(String sStr) {
 		// check length
-		if (sStr.length() < 15) {
+		if (sStr.length() < N_CHARS ) {
 			return false;
 		}
 		// count nr of words
 		String [] sWords = sStr.split("\\s+");
-		if (sWords.length < 4) {
+		if (sWords.length < N_WORDS ) {
 			return false;
 		}
 		return true;
