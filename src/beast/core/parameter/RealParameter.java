@@ -3,7 +3,6 @@ package beast.core.parameter;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.StateNode;
 
 import java.io.PrintStream;

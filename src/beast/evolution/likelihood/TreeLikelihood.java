@@ -242,8 +242,7 @@ public class TreeLikelihood extends Distribution {
         for (int i = 0; i < m_data.get().getPatternCount(); i++) {
             logP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
         }
-        //if (m_fLogP == Double.NEGATIVE_INFINITY) {
-        if (logP < -1e4 && !m_likelihoodCore.getUseScaling()) {
+        if (logP < -1.1e5 && !m_likelihoodCore.getUseScaling()) {
             System.err.println("Turning on scaling to prevent numeric instability");
             m_likelihoodCore.setUseScaling(true);
             Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
@@ -351,6 +350,7 @@ public class TreeLikelihood extends Distribution {
      */
     public void checkForDirt() {
         int hasDirt = Tree.IS_CLEAN;
+        //hasDirt = Tree.IS_FILTHY;
         if (m_siteModel.isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }

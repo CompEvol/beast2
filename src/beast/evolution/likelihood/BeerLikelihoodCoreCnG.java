@@ -686,6 +686,18 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 			}
             fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
 		}
+//		if (m_bUseScaling) {
+//			double fSum = 0;
+//			for (int k = 0; k < m_nPatterns; k++) {
+//				fSum += fOutLogLikelihoods[k];
+//			}
+//			if (fSum - getLogScalingFactor(0) * m_nPatterns > 0) {
+//				SCALE *= 0.99;
+//			} else {
+//				SCALE *= 1.01;
+//			}
+//		}
+//		System.err.print(SCALE+" ");
 	}
 
 
@@ -991,16 +1003,21 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
      * @param iNode
      */
     protected void scalePartials(int iNode) {
-        int v = 0;
-    	double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode]; 
-        for (int i = 0; i < m_nNrOfID[m_iCurrentStates[iNode]][iNode]; i++) {
-            for (int k = 0; k < m_nMatrixCount; k++) {
-                for (int j = 0; j < m_nStates; j++) {
-                	fPartials[v] *= SCALE;
-                	v++;
-                }
-            }
-        }
+    	double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+    	int k = m_nNrOfID[m_iCurrentStates[iNode]][iNode] * m_nMatrixCount * m_nStates;
+    	for (int v = 0; v < k; v++) {
+    		fPartials[v] *= SCALE;
+    	}
+    	
+//        int v = 0;
+//        for (int i = 0; i < m_nNrOfID[m_iCurrentStates[iNode]][iNode]; i++) {
+//            for (int k = 0; k < m_nMatrixCount; k++) {
+//                for (int j = 0; j < m_nStates; j++) {
+//                	fPartials[v] *= SCALE;
+//                	v++;
+//                }
+//            }
+//        }
         
 //    	double [] fScaleFactor = m_fScalingFactors[m_iCurrentPartials[iNode]][iNode]; 
 //        for (int i = 0; i < m_nNrOfID[m_iCurrentStates[iNode]][iNode]; i++) {

@@ -622,7 +622,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //    	}
 
     	// turn scaling off for now
-    	m_bUseScaling = false;
+    	//m_bUseScaling = false;
     	int nThreads = BeastMCMC.m_nThreads;
 		m_lock = new ReentrantLock[nThreads];
 //    	boolean bHopeForSpeed = false;

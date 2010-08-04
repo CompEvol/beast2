@@ -63,9 +63,9 @@ public class XMLProducer extends XMLParser {
     }
 
     /**
-     * main entry point for this class
+     * Main entry point for this class
      * Given a plug-in, produces the XML in BEAST 2.0 format
-     * representing the plug-in
+     * representing the plug-in. This assumes plugin is Runnable
      */
     public String toXML(Plugin plugin) {
         try {
@@ -91,6 +91,7 @@ public class XMLProducer extends XMLParser {
         }
     } // toXML
 
+    /** like toXML() but without the assumption that plugin is Runnable **/
     public String modelToXML(Plugin plugin) {
         try {
             StringBuffer buf = new StringBuffer();
@@ -110,6 +111,20 @@ public class XMLProducer extends XMLParser {
         }
     } // toXML
 
+    public String stateNodeToXML(Plugin plugin) {
+        try {
+            StringBuffer buf = new StringBuffer();
+            //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
+            m_bDone = new HashSet<Plugin>();
+            m_sIDs = new HashSet<String>();
+            m_nIndent = 0;
+            pluginToXML(plugin, buf, null, false);
+            return buf.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     /**
      * applies XSL script (specified in m_sXSL) to make XML a bit
      * nicer by removing unused IDs and moving data, beast.tree and likelihood
@@ -225,7 +240,7 @@ public class XMLProducer extends XMLParser {
      * It tries to create XML conforming to the XML transformation rules (see XMLParser)
      * that is moderately readable.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     void pluginToXML(Plugin plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
@@ -343,12 +358,12 @@ public class XMLProducer extends XMLParser {
      * @param bShort: flag to indicate attribute/value format (true) or element format (false)
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
-    void inputToXML(String sInput, Plugin plugin, StringBuffer buf, boolean bShort) throws Exception {
+    @SuppressWarnings("rawtypes")
+	void inputToXML(String sInput, Plugin plugin, StringBuffer buf, boolean bShort) throws Exception {
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
-                Input input = (Input) fields[i].get(plugin);
+				Input input = (Input) fields[i].get(plugin);
                 if (input.getName().equals(sInput)) {
                     // found the input with name sInput
                     if (input.get() != null) {

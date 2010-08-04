@@ -46,8 +46,8 @@ public class Beast1To2 {
 	final static String BEAST1TO2_XSL_FILE = "src/beast/app/beast1To2.xsl";
 	String m_sXSL;
 
-	public Beast1To2() throws Exception {
-		BufferedReader fin = new BufferedReader(new FileReader(BEAST1TO2_XSL_FILE));
+	public Beast1To2(String [] args) throws Exception {
+		BufferedReader fin = new BufferedReader(new FileReader((args.length < 2 ? BEAST1TO2_XSL_FILE : args[1])));
 		StringBuffer buf = new StringBuffer();
 		while (fin.ready()) {
 			buf.append(fin.readLine());
@@ -62,7 +62,7 @@ public class Beast1To2 {
 		try {
 			String sBeast1 = args[0];
 
-			Beast1To2 b = new Beast1To2();
+			Beast1To2 b = new Beast1To2(args);
 			StringWriter strWriter = new StringWriter();
 			Reader xmlInput =  new FileReader(sBeast1);
 			javax.xml.transform.Source xmlSource =

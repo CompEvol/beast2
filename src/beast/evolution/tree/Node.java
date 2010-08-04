@@ -190,7 +190,7 @@ public class Node extends Plugin {
 	public String toString() {
 		return toShortNewick();
 	}
-
+	
 	/**
 	 * sorts nodes in children according to lowest numbered label in subtree
 	 **/

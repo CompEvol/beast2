@@ -34,7 +34,7 @@ XSL script for converting Beast version 1 files to Beast 2.0 XML files
 
 
 <xsl:template match='mcmc'>
-    <run spec='beast.core.MCMC' chainLength='@chainLength' preBurnin='@preBurnin'>
+    <run spec='beast.core.MCMC' chainLength='{@chainLength}' preBurnin='{@preBurnin}'>
         <state>
             <xsl:for-each select='//operators/*/*|//log//*'>
                 <xsl:if test='string-length(concat(@idref,@id))&gt;0'>

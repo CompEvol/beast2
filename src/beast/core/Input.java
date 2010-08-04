@@ -253,7 +253,8 @@ public class Input<T> {
         } else if (this.value != null && this.value instanceof List<?>) {
             if (theClass.isAssignableFrom(value.getClass())) {
                 // don't insert duplicates
-                List vector = (List) this.value;
+                @SuppressWarnings("rawtypes")
+				List vector = (List) this.value;
                 for (Object o : vector) {
                     if (o.equals(value)) {
                         return;

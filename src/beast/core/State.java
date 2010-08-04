@@ -24,17 +24,22 @@
 */
 package beast.core;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import beast.core.Input;
+import beast.util.XMLProducer;
 
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of parameters and trees.")
 public class State extends Plugin {
 
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
-
+    public Input<Integer> m_storeEvery = new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
+    		"resume computation later on", -1);
+    final static String STATE_STORAGE_FILE = "state.backup.xml";
+    
     @Override
     public void initAndValidate() {
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
@@ -44,14 +49,12 @@ public class State extends Plugin {
         for (int i = 0; i < stateNode.length; i++) {
             stateNode[i].index = i;
         }
-        // create a copy, for store/restore
+        // make itself known
         for (int i = 0; i < stateNode.length; i++) {
-//        	StateNode other = stateNode[i].copy();
-//        	other.m_other = stateNode[i];
-//        	stateNode[i].m_other = other;
-//        	other.m_state = this;
         	stateNode[i].m_state = this;
         }
+        
+        m_nStoreEvery = m_storeEvery.get();
     } // initAndValidate
 
     
@@ -64,12 +67,33 @@ public class State extends Plugin {
     /** copy of state nodes, for restoration if required **/
     public StateNode[] storedStateNode;
     
+    /** interval for storing state to disk **/
+    int m_nStoreEvery;
+    
     /** Store a State.
      * This copies the state for possible later restoration
      * but does not affect any inputs, which are all still connected
-     * to the original StateNodes **/
-    public void store() {
+     * to the original StateNodes 
+     * 
+     * Also, store the state to disk for resumption of analysis later on.
+     **/
+    public void store(int nSample) {
     	System.arraycopy(stateNode, 0, storedStateNode, 0, stateNode.length);
+    	if (m_nStoreEvery> 0 && nSample > 0 && nSample % m_nStoreEvery == 0) {
+    		try {
+    			PrintStream out = new PrintStream(STATE_STORAGE_FILE);
+    			XMLProducer xmlProducer = new XMLProducer();
+    			out.print("<beast version='2.0'>\n");
+    			for(StateNode node : stateNode) {
+    				out.print(xmlProducer.stateNodeToXML(node));
+    				out.print(node.toString());
+    			}
+    			out.print("</beast>\n");
+    			out.close();
+    		} catch (Exception e) {
+				e.printStackTrace();
+			}
+    	}
     }
     
     /** Restore a State. 
@@ -88,9 +112,6 @@ public class State extends Plugin {
     	if (stateNode[nID] == storedStateNode[nID]) {
     		storedStateNode[nID] = stateNode[nID].copy();
     		storedStateNode[nID].m_state = this;
-    		
-//    		storedStateNode[nID] = stateNode[nID].m_other;
-//    		stateNode[nID].assignTo(storedStateNode[nID]);
     	}
         return stateNode[nID];
     }

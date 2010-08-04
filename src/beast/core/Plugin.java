@@ -153,7 +153,7 @@ public class Plugin {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Plugin[] listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
         List<Plugin> sPlugins = new ArrayList<Plugin>();
         Field[] fields = getClass().getFields();

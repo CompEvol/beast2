@@ -153,8 +153,12 @@ public class MCMC extends Runnable {
         double fOldLogLikelihood = posterior.calculateLogP();
         //System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
+if (iSample==1021) {
+	int h = 3;
+	h++;
+}
             //State proposedState = state.copy();
-        	state.store();
+        	state.store(iSample);
             state.stateNumber = iSample;
             //System.err.println(state.toString());
             Operator operator = operatorSet.selectOperator();
