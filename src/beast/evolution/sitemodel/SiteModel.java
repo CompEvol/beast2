@@ -51,11 +51,16 @@ import java.util.List;
         "and proportion of the sites invariant (also optional).")
 public class SiteModel extends Plugin implements Cacheable {
     public Input<RealParameter> muParameter = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)");
-    public Input<Integer> gammaCategoryCount = new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
-    public Input<RealParameter> shapeParameter = new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
-    public Input<RealParameter> invarParameter = new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
-    public Input<SubstitutionModel> m_pSubstModel = new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
-    public Input<Frequencies> m_pFreqs = new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
+    public Input<Integer> gammaCategoryCount =
+            new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
+    public Input<RealParameter> shapeParameter =
+            new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
+    public Input<RealParameter> invarParameter =
+            new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
+    public Input<SubstitutionModel> m_pSubstModel =
+            new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
+    public Input<Frequencies> m_pFreqs =
+            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
 
 
     @Override
@@ -78,10 +83,10 @@ public class SiteModel extends Plugin implements Cacheable {
             categoryCount = 1;
         }
 
-        if (invarParameter.get() != null && ((RealParameter) invarParameter.get()).getValue() > 0) {
+        if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
             categoryCount += 1;
             invarParameter.get().setBounds(0.0, 1.0);
-        } else if (invarParameter.get() != null && ((RealParameter) invarParameter.get()).getValue() <= 0) {
+        } else if (invarParameter.get() != null && invarParameter.get().getValue() <= 0) {
             invarParameter.setValue(null, this);
         }
 

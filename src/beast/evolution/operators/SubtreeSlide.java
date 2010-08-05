@@ -69,10 +69,10 @@ import java.util.List;
 public class SubtreeSlide extends TreeOperator {
 
 //    public Input<Tree> m_tree = new Input<Tree>("beast.tree", "beast.tree on which the subtree slide operator is applied");
-    public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0", new Double(1.0));
+    public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
     // shadows m_size
     double m_fSize;
-    public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", new Boolean(true));
+    public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
 //    public Input<Boolean> m_swapInRandomRate= new Input<Boolean>("swapInRandomRate","swapInRandomRate???", new Boolean(true));
 //    public Input<Boolean> m_swapInRandomTrait= new Input<Boolean>("swapInRandomTrait","swapInRandomTrait???", new Boolean(true));
 //    public Input<Boolean> m_scaledDirichletBranches= new Input<Boolean>("scaledDirichletBranches","scaledDirichletBranches???", new Boolean(true));
@@ -335,7 +335,7 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public void optimize(double logAlpha) {
-        Double fDelta = calcDelta(logAlpha);
+        double fDelta = calcDelta(logAlpha);
         fDelta += Math.log(m_fSize);
         m_fSize = Math.exp(fDelta);
     }
