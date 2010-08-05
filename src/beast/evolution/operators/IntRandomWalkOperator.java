@@ -32,9 +32,11 @@ public class IntRandomWalkOperator extends Operator {
 
         int i = Randomizer.nextInt(param.getDimension());
         int value = param.getValue(i);
-        int newValue = value + Randomizer.nextInt(2 * windowSize) - windowSize;
+        int newValue = value + Randomizer.nextInt(2 * windowSize + 1) - windowSize;
 
-        if (newValue < param.getLower() || newValue > param.getUpper()) throw new Exception("Operation failed");
+        if (newValue < param.getLower() || newValue > param.getUpper()) {
+        	return Double.NEGATIVE_INFINITY;
+        }
 
         param.setValue(i, newValue);
 

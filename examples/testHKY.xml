@@ -87,11 +87,17 @@
 	    <model idref='likelihood'/>
             <distribution name='log' idref="likelihood"/>
             <parameter name='log' idref="hky.kappa"/>
+            <log spec='beast.evolution.tree.TreeHeightLogger'>
+                <tree idref='tree'/>
+            </log>
         </log>
         <log logEvery="10000" fileName="test.$(seed).log">
 	    <model idref='likelihood'/>
             <distribution name='log' idref="likelihood"/>
             <parameter name='log' idref="hky.kappa"/>
+            <log spec='beast.evolution.tree.TreeHeightLogger'>
+                <tree idref='tree'/>
+            </log>
         </log>
         <log logEvery="10000" fileName="test.$(seed).trees">
             <tree name='log' idref="tree"/>

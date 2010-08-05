@@ -27,9 +27,10 @@ package beast.util;
 
 import beast.core.*;
 import beast.core.Runnable;
-import beast.core.parameter.IntegerParameter;
+//import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
-import beast.core.parameter.BooleanParameter;
+//import beast.core.parameter.BooleanParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
@@ -57,7 +58,6 @@ import java.util.HashMap;
  * <sequence>
  * <state>
  * <parameter>
- * <intParameter>
  * <tree>
  * <beast version='2.0' namespace='x.y.z:'>
  * <map name='elementName'>x.y.z.Class</map>
@@ -115,13 +115,17 @@ public class XMLParser {
     final static String LOG_CLASS = Logger.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
     final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
-    final static String INT_PARAMETER_CLASS = IntegerParameter.class.getName();
-    final static String BOOL_PARAMETER_CLASS = BooleanParameter.class.getName();
+//    final static String INT_PARAMETER_CLASS = IntegerParameter.class.getName();
+//    final static String BOOL_PARAMETER_CLASS = BooleanParameter.class.getName();
     final static String PLUGIN_CLASS = Plugin.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
     final static String RUNNABLE_CLASS = Runnable.class.getName();
 
+    
+    /* This is the set of keywords in XML.
+     * This list should not be added to unless there 
+     * is a very very good reason. */
     final static String BEAST_ELEMENT = "beast";
     final static String MAP_ELEMENT = "map";
     final static String DISTRIBUTION_ELEMENT = "distribution";
@@ -133,8 +137,8 @@ public class XMLParser {
     final static String STATE_ELEMENT = "state";
     final static String TREE_ELEMENT = "tree";
     final static String REAL_PARAMETER_ELEMENT = "parameter";
-    final static String INT_PARAMETER_ELEMENT = "intParameter";
-    final static String BOOL_PARAMETER_ELEMENT = "boolParameter";
+//    final static String INT_PARAMETER_ELEMENT = "intParameter";
+//    final static String BOOL_PARAMETER_ELEMENT = "boolParameter";
     final static String RUN_ELEMENT = "run";
 
 
@@ -175,8 +179,8 @@ public class XMLParser {
         m_sElement2ClassMap.put(SEQUENCE_ELEMENT, SEQUENCE_CLASS);
         m_sElement2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
         m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
-        m_sElement2ClassMap.put(INT_PARAMETER_ELEMENT, INT_PARAMETER_CLASS);
-        m_sElement2ClassMap.put(BOOL_PARAMETER_ELEMENT, BOOL_PARAMETER_CLASS);
+//        m_sElement2ClassMap.put(INT_PARAMETER_ELEMENT, INT_PARAMETER_CLASS);
+//        m_sElement2ClassMap.put(BOOL_PARAMETER_ELEMENT, BOOL_PARAMETER_CLASS);
     }
 
     public Runnable parseFile(String sFileName) throws Exception {
@@ -379,16 +383,29 @@ public class XMLParser {
         m_runnable = (Runnable) createObject(mcmc, RUNNABLE_CLASS, null);
     } // parseMCMC
 
-    @SuppressWarnings("unchecked")
+    /** Check that plugin is a class that is assignable to class with name sClass.
+     * This involves a parameter clutch to deal with non-real parameters.
+     * This needs a bit of work, obviously...
+     */
+    boolean checkType(String sClass, Plugin plugin) throws Exception {
+        if (sClass.equals(INPUT_CLASS) || Class.forName(sClass).isInstance(plugin)) {
+            return true;
+        }
+        // parameter clutch
+        if (sClass.equals(RealParameter.class.getName()) && plugin instanceof Parameter<?>) {
+        	return true;
+        }
+        return false;
+    } // checkType
+
     Plugin createObject(Node node, String sClass, Plugin parent) throws Exception {
         // try the IDMap first
         String sID = getID(node);
         if (sID != null) {
             if (m_sIDMap.containsKey(sID)) {
                 Plugin plugin = m_sIDMap.get(sID);
-                if (sClass.equals(INPUT_CLASS) || Class.forName(sClass).isInstance(plugin)) {
-                    //if ( plugin.getClass().isInstance(Class.forName(sClass))) {
-                    return plugin;
+                if (checkType(sClass, plugin)) {
+                	return plugin;
                 }
                 throw new XMLParserException(node, "id=" + sID + ". Expected object of type " + sClass + " instead of " + plugin.getClass().getName(), 105);
             }
@@ -398,13 +415,13 @@ public class XMLParser {
         if (sIDRef != null) {
             if (m_sIDMap.containsKey(sIDRef)) {
                 Plugin plugin = m_sIDMap.get(sIDRef);
-                if (sClass.equals(INPUT_CLASS) || Class.forName(sClass).isInstance(plugin)) {
+                if (checkType(sClass, plugin)) {
                     return plugin;
                 }
                 throw new XMLParserException(node, "id=" + sIDRef + ". Expected object of type " + sClass + " instead of " + plugin.getClass().getName(), 106);
             } else if (m_sIDNodeMap.containsKey(sIDRef)) {
                 Plugin plugin = createObject(m_sIDNodeMap.get(sIDRef), sClass, parent);
-                if (sClass.equals(INPUT_CLASS) || Class.forName(sClass).isInstance(plugin)) {
+                if (checkType(sClass, plugin)) {
                     return plugin;
                 }
                 throw new XMLParserException(node, "id=" + sIDRef + ". Expected object of type " + sClass + " instead of " + plugin.getClass().getName(), 107);

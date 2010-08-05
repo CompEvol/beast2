@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood'>
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter'>
 
 
     <!-- The sequence alignment (each sequence refers to a taxon above).         -->
@@ -46,7 +46,7 @@
         <!--<parameter name='mutationRate'>1.0</parameter>-->
 
         <parameter name='rates' id='rates' dimension="11" value="1"/>
-        <intParameter name='indicators' id='indicators' dimension="11" value="0"/>
+        <parameter spec='IntegerParameter' name='indicators' id='indicators' dimension="11" value="0"/>
         <input name='tree' idref="tree"/>
     </input>
 
@@ -125,7 +125,9 @@
 	    <model idref='posterior'/>
             <probabilityDistribution idref="coalescent" name='log'/>
             <probabilityDistribution idref="likelihood" name='log'/>
-            <!--parameter idref="treeModel.rootHeight"/-->
+            <log spec='beast.evolution.tree.TreeHeightLogger'>
+                <tree idref='tree'/>
+            </log>
             <parameter idref="popSize" name='log'/>
             <parameter idref="hky.kappa" name='log'/>
             <intParameter idref="indicators" name='log'/>
@@ -135,7 +137,9 @@
 	    <model idref='posterior'/>
             <probabilityDistribution idref="coalescent" name='log'/>
             <probabilityDistribution idref="likelihood" name='log'/>
-            <!--parameter idref="treeModel.rootHeight"/-->
+            <log spec='beast.evolution.tree.TreeHeightLogger'>
+                <tree idref='tree'/>
+            </log>
             <parameter idref="popSize" name='log'/>
             <parameter idref="hky.kappa" name='log'/>
             <intParameter idref="indicators" name='log'/>

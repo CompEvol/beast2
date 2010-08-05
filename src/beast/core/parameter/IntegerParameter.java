@@ -85,6 +85,18 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         copy.m_bIsDirty = new boolean[values.length];
     }
 
+    @SuppressWarnings("unchecked")
+    public void assignFrom(StateNode other) {
+        Parameter<Integer> source = (Parameter<Integer>) other;
+        setID(source.getID());
+        //index = source.index;
+        values = new Integer[source.values.length];
+        System.arraycopy(source.values, 0, values, 0, values.length);
+        m_fLower = source.m_fLower;
+        m_fUpper = source.m_fUpper;
+        m_bIsDirty = new boolean[source.values.length];
+    }
+
     public void log(int nSample, PrintStream out) {
         IntegerParameter var = (IntegerParameter) getCurrent();//state.getStateNode(m_sID);
         int nValues = var.getDimension();

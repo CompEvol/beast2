@@ -214,6 +214,14 @@ public class Input<T> {
             return ((CalculationNode)value).isDirty();
         }
 
+        if (value instanceof List<?>) {
+        	for (Object o : (List<?>) value) {
+        		if (o instanceof CalculationNode && ((CalculationNode)o).isDirty()) {
+        			return true;
+        		}
+        	}
+        }
+
         return false;
     }
     
