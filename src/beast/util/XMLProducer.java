@@ -30,6 +30,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.parameter.BooleanParameter;
 import beast.evolution.tree.Tree;
 
 import javax.xml.transform.TransformerException;
@@ -271,6 +272,9 @@ public class XMLProducer extends XMLParser {
         if (plugin instanceof IntegerParameter) {
             sElementName = XMLParser.INT_PARAMETER_ELEMENT;
         }
+        if (plugin instanceof BooleanParameter) {
+            sElementName = XMLParser.BOOL_PARAMETER_ELEMENT;
+        }
         if (plugin instanceof Tree) {
             sElementName = XMLParser.TREE_ELEMENT;
         }
@@ -284,7 +288,7 @@ public class XMLProducer extends XMLParser {
         m_nIndent++;
 
         // open element
-        buf.append("<" + sElementName);
+        buf.append("<").append(sElementName);
 
         boolean bSkipInputs = false;
         if (m_bDone.contains(plugin)) {

@@ -1,0 +1,22 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood'>
+
+    <boolParameter name='indicators' id='indicators' dimension="5" value="false"/>
+
+    <run spec="MCMC" id="mcmc" chainLength="100000"> <!--autoOptimize="true"-->
+        <state>
+            <input name='stateNode' idref='indicators'/>
+        </state>
+	
+	<distribution spec="CompoundDistribution" id="posterior"/>
+	  
+        <operator id="bitflip" spec="BitFlipOperator" weight="1">
+            <input name="parameter" idref="indicators"/>
+        </operator>
+
+        <log logEvery="10" fileName="bitflip.log">
+            <boolParameter idref="indicators" name='log'/>
+        </log>
+    </run>
+
+</beast>
