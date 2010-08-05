@@ -109,10 +109,4 @@ public class Frequencies extends Plugin {
             }
         }
     }
-
-
-	public boolean isDirty() {
-		return false;
-	}
-
 } // class Frequencies

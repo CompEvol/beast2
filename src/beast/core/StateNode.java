@@ -33,7 +33,7 @@ public abstract class StateNode extends Plugin {
     public abstract StateNode copy();
     public abstract void assignTo(StateNode other);
 
-    public boolean isDirty() {
+    boolean isDirty() {
         return dirty;
     }
 

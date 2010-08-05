@@ -1,6 +1,6 @@
 package beast.evolution.branchratemodel;
 
-import beast.core.Cacheable;
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Plugin;
 import beast.evolution.tree.Node;
@@ -13,15 +13,7 @@ public interface BranchRateModel {
 
     public double getRateForBranch(Node node);
 
-    public abstract class Base extends Plugin implements BranchRateModel, Cacheable {
-        public void store(final int sample) {
-        }
-
-        public void restore(final int sample) {
-        }
-
-        public boolean isDirty() {
-        	return false;
-        }
+    public abstract class Base extends CalculationNode implements BranchRateModel {
+        // empty at the moment but brings together the required interfaces
     }
 }

@@ -123,57 +123,24 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     }
 
     @Override
-    public void store(final int sample) {
-        m_bIsDirty = false;
-    }
+    protected boolean requiresRecalculation() {
+    	recompute = false;
 
-    @Override
-    public void restore(final int sample) {
-        recompute = true;
-        m_bIsDirty = true;
-    }
-
-    boolean m_bIsDirty = true;
-
-    @Override
-    public boolean isDirty() {
-    	recompute = true;
-    	if (true) {
-            return false;
-    	}
-    	
-    	if (recompute || m_bIsDirty) {
+        if (treeInput.isDirty()) {
         	recompute = true;
-            m_bIsDirty = true;
-            return true;
         }
 
-        if (treeInput.get().isDirty()) {
+        if (meanRateInput.isDirty()) {
         	recompute = true;
-            m_bIsDirty = true;
-            return true;
         }
-
-        RealParameter meanRate_ = meanRateInput.get();
-        if (meanRate_ != null && meanRate_.isDirty()) {
+        if (rateParamInput.isDirty()) {
         	recompute = true;
-            m_bIsDirty = true;
-            return true;
         }
-        RealParameter rates_ = rateParamInput.get();
-        if (rates_ != null && rates_.isDirty()) {
+        if (indicatorParamInput.isDirty()) {
         	recompute = true;
-            m_bIsDirty = true;
-            return true;
-        }
-        IntegerParameter indicators_ = indicatorParamInput.get();
-        if (indicators_ != null && indicators_.isDirty()) {
-        	recompute = true;
-            m_bIsDirty = true;
-            return true;
         }
         
-        return false;
+        return recompute;
     }
 
 

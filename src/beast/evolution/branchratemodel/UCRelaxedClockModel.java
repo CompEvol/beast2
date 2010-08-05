@@ -81,7 +81,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     }
 
 
-    public void prepare() {
+    private void prepare() {
 
         //System.out.println("prepare");
 
@@ -99,41 +99,23 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         if (normalize) computeFactor();
     }
 
-
     @Override
-    public void store(final int sample) {
-        m_bIsDirty = false;
-    }
+    protected boolean requiresRecalculation() {
+        recompute = false;
 
-    @Override
-    public void restore(final int sample) {
-        recompute = true;
-        m_bIsDirty = true;
-    }
-
-    boolean m_bIsDirty = true;
-
-    @Override
-    public boolean isDirty() {
-        if (recompute || m_bIsDirty) {
-            m_bIsDirty = true;
-            return true;
-        }
-
-//	    processed as trait on the tree      
+//	    processed as trait on the tree
 //        if (categoryInput.get().isDirty()) {
 //       	    return true;
 //        }
-        if (treeInput.get().isDirty()) {
-            m_bIsDirty = true;
-            return true;
+        if (treeInput.isDirty()) {
+            recompute = true;
         }
         // rateDistInput cannot be dirty?!?
 //        if (rateDistInput.get().isDirty()) {
 //        	m_bIsDirty = true;
 //        	return true;
 //        }
-        return false;
+        return recompute;
     }
 
     ParametricDistribution distribution;

@@ -30,7 +30,7 @@ import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
         "a log probability for instance for running an MCMC chain.")
-public abstract class Distribution extends Plugin implements Cacheable, Loggable {
+public abstract class Distribution extends CalculationNode implements Loggable {
 
     /**
      * current and stored log probability/log likelihood/log distribution *
@@ -81,16 +81,17 @@ public abstract class Distribution extends Plugin implements Cacheable, Loggable
         // nothing to do
     }
 
-    /** Cachable interface implementation follows **/
-    public void store(int nSample) {
+    @Override
+    void store() {
         storedLogP = logP;
+        super.store();
     }
 
-    public void restore(int nSample) {
+    @Override
+    void restore() {
         logP = storedLogP;
+        super.restore();
     }
-
-	public void prepare(State state) {}
 
     /** Loggable interface implementation follows **/
 	public void init(PrintStream out) throws Exception {

@@ -27,9 +27,9 @@ package beast.evolution.sitemodel;
 
 
 
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Cacheable;
 import beast.core.Plugin;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
@@ -46,10 +46,10 @@ import java.util.List;
  * *
  */
 
-@Description("Defines mutationrate " +
+@Description("Defines mutation rate " +
         "and gamma distributed rates across sites (optional) " +
         "and proportion of the sites invariant (also optional).")
-public class SiteModel extends Plugin implements Cacheable {
+public class SiteModel extends CalculationNode {
     public Input<RealParameter> muParameter = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)");
     public Input<Integer> gammaCategoryCount =
             new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
@@ -105,20 +105,17 @@ public class SiteModel extends Plugin implements Cacheable {
         return conditions;
     }
 
-    public boolean isDirty() {
-    	RealParameter tmp = muParameter.get(); 
-        if (tmp != null && tmp.isDirty()) {
+    protected boolean requiresRecalculation() {
+        if (muParameter.isDirty()) {
             ratesKnown = false;
         }
-    	tmp = shapeParameter.get(); 
-        if (tmp != null && tmp.isDirty()) {
+        if (muParameter.isDirty()) {
             ratesKnown = false;
         }
-    	tmp = invarParameter.get(); 
-        if (tmp != null && tmp.isDirty()) {
+        if (muParameter.isDirty()) {
             ratesKnown = false;
         }
-        return m_pSubstModel.get().isDirty() || !ratesKnown;
+        return m_pSubstModel.isDirty() || !ratesKnown;
     }
 
 

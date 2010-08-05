@@ -260,18 +260,18 @@ public class State extends Plugin {
      * 
      * This should be called by any runnable in its initAndValidate method.
      */
-    protected List<Cacheable> getCacheableOutputs(Plugin run) {
+    protected List<CalculationNode> getCalculationNodes(Plugin run) {
     	List<Plugin> plugins = new ArrayList<Plugin>();
     	getAllOutputPlugins(plugins, run);
     	//getAllPrecedingPlugins(plugins, run);
     	
-    	List<Cacheable> cacheables = new ArrayList<Cacheable>();
+    	List<CalculationNode> calculationNodes = new ArrayList<CalculationNode>();
     	for (Plugin plugin: plugins) {
-    		if (plugin instanceof Cacheable) {
-    			cacheables.add((Cacheable) plugin);
+    		if (plugin instanceof CalculationNode) {
+    			calculationNodes.add((CalculationNode) plugin);
     		}
     	}
-    	return cacheables;
+    	return calculationNodes;
     } // getCacheableOutputs
 
     /** get all Plugins on a path from the a StateNode to the run 

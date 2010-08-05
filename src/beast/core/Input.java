@@ -198,7 +198,25 @@ public class Input<T> {
 //	public T getUnsafe() {
 //        return value;
 //    }
-	
+
+    public boolean isDirty() {
+        T value = get();
+
+        if (value == null) {
+            return false;
+        }
+        
+        if (value instanceof StateNode) {
+            return ((StateNode)value).isDirty();
+        }
+
+        if (value instanceof CalculationNode) {
+            return ((CalculationNode)value).isDirty();
+        }
+
+        return false;
+    }
+    
     @SuppressWarnings("unchecked")
 	public T getStateNode() {
 		return (T) ((StateNode)value).getCurrent();
@@ -276,7 +294,6 @@ public class Input<T> {
             }
         }
     }
-
 
     /**
      * Determine class through introspection,

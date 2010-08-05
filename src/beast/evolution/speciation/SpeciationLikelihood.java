@@ -25,7 +25,6 @@
 
 package beast.evolution.speciation;
 
-import beast.core.Cacheable;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -45,7 +44,7 @@ import java.util.Random;
  * @version $Id: SpeciationLikelihood.java,v 1.10 2005/05/18 09:51:11 rambaut Exp $
  */
 @Description("A likelihood function for speciation processes.")
-public class SpeciationLikelihood extends beast.core.Distribution implements Cacheable {
+public class SpeciationLikelihood extends beast.core.Distribution {
 
 	public Input<Tree> m_tree = new Input<Tree>("tree", "species tree over which to calculate speciation likelihood", Validate.REQUIRED);
 	
@@ -95,39 +94,11 @@ public class SpeciationLikelihood extends beast.core.Distribution implements Cac
 		return 0;
 	}
 
-//    public final void makeDirty() {
-//    	m_bIsDirty = false;
-//    }
-//
-//
-//    /** flag to indicate internal state needs to be recalculated **/
-//    boolean m_bIsDirty = true;
-
     // ****************************************************************
     // Private and protected stuff
     // ****************************************************************
 
-//    private boolean storedLikelihoodKnown = false;
 
-    /******************************/
-    /** Cacheable implementation **/
-    /******************************/
-
-    /**
-     * Stores the precalculated state: likelihood
-     */
-	@Override
-    public void store(int nSample) {
-		super.store(nSample);
-    }
-
-    /**
-     * Restores the precalculated state: computed likelihood
-     */
-	@Override
-    public void restore(int nSample) {
-		super.restore(nSample);
-    }
 
     /*****************************************/
     /** Distribution implementation follows **/

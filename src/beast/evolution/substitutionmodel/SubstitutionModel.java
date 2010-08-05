@@ -46,21 +46,9 @@ public interface SubstitutionModel {
      */
     EigenDecomposition getEigenDecomposition();
 
-    /**
-     * @return true if state is changed such that
-     * the internal state of this substitution model
-     * needs to be recalculated. Set flag if
-     * recalculation is required.
-     */
-    boolean isDirty();
-
-    public abstract class Base extends Plugin implements SubstitutionModel, Cacheable {
+    public abstract class Base extends CalculationNode implements SubstitutionModel {
         public Input<Frequencies> frequencies =
                 new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
 
-
-        public boolean isDirty() {
-            return false;
-        }
     }
 }

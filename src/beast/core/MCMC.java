@@ -61,10 +61,10 @@ public class MCMC extends Runnable {
             new Input<List<Logger>>("log", "loggers for reporting progress of MCMC chain",
                     new ArrayList<Logger>(), Input.Validate.REQUIRED);
 
-    
+
     protected State state;
-    
-    List<Cacheable> m_cacheables;
+
+    List<CalculationNode> calculationNodes;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -80,7 +80,7 @@ public class MCMC extends Runnable {
         // state initialization
         this.state = m_startState.get();
         //this.state.calcInputsConnectedToState(this);
-        m_cacheables = this.state.getCacheableOutputs(this);
+        calculationNodes = this.state.getCalculationNodes(this);
 
         for (Logger log : m_loggers.get()) {
             log.init();
@@ -163,34 +163,42 @@ public class MCMC extends Runnable {
 
         boolean bDebug = true;
         state.setDirty(true);
+
+        checkCalculationNodesDirtiness();
+
         double fOldLogLikelihood = posterior.calculateLogP();
         //System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
-if (iSample==1021) {
-	int h = 3;
-	h++;
-}
+            if (iSample==1021) {
+                // todo ?
+                int h = 3;
+                h++;
+            }
             //State proposedState = state.copy();
-        	state.store(iSample);
+            state.store(iSample);
             state.stateNumber = iSample;
             //System.err.println(state.toString());
             Operator operator = operatorSet.selectOperator();
             double fLogHastingsRatio = operator.proposal();
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
                 //System.out.print(iSample +  " store ");
-                storeCachables(iSample);
-				//state.setDirty(true);
+                storeCalculationNodes();
+
+                //state.setDirty(true);
                 //System.out.print(operator.getName()+ "\n");
                 //System.err.println(state.toString());
+                checkCalculationNodesDirtiness();
 
                 double fNewLogLikelihood = posterior.calculateLogP();
                 //System.out.print("posterior: " + fNewLogLikelihood+ "\n");
+
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     fOldLogLikelihood = fNewLogLikelihood;
                     //state = proposedState;
                     state.setDirty(false);
+
                     if (iSample >= 0) {
                         operator.accept();
                     }
@@ -202,7 +210,7 @@ if (iSample==1021) {
                     }
                     state.restore();
                     state.setDirty(false);
-                    restoreCachables(iSample);
+                    restoreCalculationNodes();
                     //System.out.println("restore ");
                 }
             } else {
@@ -217,7 +225,11 @@ if (iSample==1021) {
                 state.validate();
                 state.setDirty(true);
                 //System.err.println(state.toString());
+
+                checkCalculationNodesDirtiness();
+
                 double fLogLikelihood = posterior.calculateLogP();
+
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
                     throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
                 }
@@ -236,17 +248,27 @@ if (iSample==1021) {
         close();
     } // run;
 
-    public void restoreCachables(int nSample) {
-        for (Cacheable cacheable : m_cacheables) {
-            cacheable.restore(nSample);
+    public void checkCalculationNodesDirtiness() {
+        for (CalculationNode calculationNode : calculationNodes) {
+            calculationNode.resetDirtiness();
+        }
+        for (CalculationNode calculationNode : calculationNodes) {
+            calculationNode.checkDirtiness();
         }
     }
 
-    public void storeCachables(int nSample) {
-        for (Cacheable cacheable : m_cacheables) {
-            cacheable.store(nSample);
+    public void storeCalculationNodes() {
+        for (CalculationNode calculationNode : calculationNodes) {
+            calculationNode.store();
         }
     }
+
+    public void restoreCalculationNodes() {
+        for (CalculationNode calculationNode : calculationNodes) {
+            calculationNode.restore();
+        }
+    }
+
 
 } // class MCMC
 

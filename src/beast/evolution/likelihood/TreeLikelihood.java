@@ -234,7 +234,6 @@ public class TreeLikelihood extends Distribution {
      */
     @Override
     public double calculateLogP() throws Exception {
-        checkForDirt();
         Tree tree = m_tree.getStateNode();
         traverse(tree.getRoot());
         logP = 0.0;
@@ -348,15 +347,14 @@ public class TreeLikelihood extends Distribution {
     /**
      * check state for changed variables and update temp results if necessary *
      */
-    public void checkForDirt() {
+    protected boolean requiresRecalculation() {
         int hasDirt = Tree.IS_CLEAN;
-        //hasDirt = Tree.IS_FILTHY;
-        if (m_siteModel.isDirty()) {
+
+        if (m_pSiteModel.isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
-        if (m_branchRateModel != null && m_branchRateModel.isDirty()) {
-            //hasDirt |= Tree.IS_DIRTY;
-            hasDirt |= Tree.IS_CLEAN;
+        if (m_pBranchRateModel.isDirty()) {
+            hasDirt = Tree.IS_DIRTY;
         }
     	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
         // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);
@@ -364,9 +362,11 @@ public class TreeLikelihood extends Distribution {
         Tree tree = m_tree.getStateNode();
         //tree.syncTreeWithTraitsInState();
         checkNodesForDirt(tree.getRoot(), hasDirt);
-    } // checkForDirt
 
-    void checkNodesForDirt(Node node, int hasDirt) {
+        return hasDirt != Tree.IS_CLEAN;
+    }
+
+    private void checkNodesForDirt(Node node, int hasDirt) {
     	int iNodeNr = node.getNr();
         // Get the operational time of the branch
         double branchRate = 1.0;
@@ -399,15 +399,13 @@ public class TreeLikelihood extends Distribution {
     }
 
     @Override
-    public void store(int nSample) {
-        super.store(nSample);
+    protected void storeCalculations() {
         m_likelihoodCore.store();
         System.arraycopy(m_branchLengths, 0, m_StoredBranchLengths, 0, m_branchLengths.length);
     }
 
     @Override
-    public void restore(int nSample) {
-        super.restore(nSample);
+    protected void restoreCalculations() {
         m_likelihoodCore.restore();
         double [] tmp = m_branchLengths;
         m_branchLengths = m_StoredBranchLengths;

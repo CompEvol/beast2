@@ -40,6 +40,8 @@ public final class HKY extends SubstitutionModel.Base {
     public static final int STATE_COUNT = 4;
 
     private EigenDecomposition eigenDecomposition = null;
+    private EigenDecomposition storedEigenDecomposition = null;
+
     private boolean updateEigen = true;
     private boolean updateMatrix = true;
 
@@ -49,7 +51,7 @@ public final class HKY extends SubstitutionModel.Base {
 
     public void getTransitionProbabilities(double distance, double[] matrix) {
 
-        if (updateMatrix || isDirty()) {
+        if (updateMatrix) {
             setupMatrix();
         }
 
@@ -108,7 +110,7 @@ public final class HKY extends SubstitutionModel.Base {
             updateEigen = true;
         }
 
-        if (updateEigen || isDirty()) {
+        if (updateEigen) {
 
             double[] evec = eigenDecomposition.getEigenVectors();
             double[] ivec = eigenDecomposition.getInverseEigenVectors();
@@ -219,22 +221,30 @@ public final class HKY extends SubstitutionModel.Base {
     }
 
 
-    public boolean isDirty() {
-        if (frequencies.get().isDirty()) {
-            return true;
+    @Override
+    protected boolean requiresRecalculation() {
+        if (frequencies.isDirty()) {
+            updateMatrix = true;
+            updateEigen = true;
         }
-        if (kappa.get().isDirty()) {
-            return true;
+        if (kappa.isDirty()) {
+            updateMatrix = true;
+            updateEigen = true;
         }
-        return false;
+        return updateMatrix;
     }
 
-    public void store(int nSample) {
-        // could copy and restore eigenDecomp here but is it worth it?
+    @Override
+    protected void storeCalculations() {
+        if (eigenDecomposition != null) {
+            storedEigenDecomposition = eigenDecomposition.copy();
+        }
     }
 
-    public void restore(int nSample) {
-        updateMatrix = true;
-        updateEigen = true;
+    @Override
+    protected void restoreCalculations() {
+        if (storedEigenDecomposition != null) {
+            eigenDecomposition = storedEigenDecomposition;
+        }
     }
 }
