@@ -13,7 +13,7 @@ import beast.evolution.tree.Tree;
 @Description("Random Local Clock Model.")
 public class RandomLocalClockModel extends BranchRateModel.Base {
 
-    public Input<IntegerParameter> indicatorParamInput = 
+    public Input<IntegerParameter> indicatorParamInput =
             new Input<IntegerParameter>("indicators",
                     "the indicators associated with nodes in the tree for sampling of individual rate changes among branches.",
                     Input.Validate.REQUIRED);

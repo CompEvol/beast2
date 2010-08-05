@@ -35,7 +35,8 @@ import java.util.List;
 public class Sequence extends Plugin {
     public Input<Integer> m_nTotalCount = new Input<Integer>("totalcount", "number of lineages for this species");
     public Input<String> m_sTaxon = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
-    public Input<String> m_sData = new Input<String>("value", "sequence data, either encoded as a string or as comma separated list of integers." +
+    public Input<String> m_sData = new Input<String>("value",
+            "sequence data, either encoded as a string or as comma separated list of integers." +
             "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
 
     public Sequence() {

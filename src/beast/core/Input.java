@@ -238,6 +238,9 @@ public class Input<T> {
      * If this input is a List, instead of setting this value, the value is
      * added to the vector.
      * Otherwise, m_value is assigned to value.
+     * @param value
+     * @param plugin
+     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public void setValue(Object value, Plugin plugin) throws Exception {
@@ -317,7 +320,7 @@ public class Input<T> {
                                 System.exit(0);
                             }
                         }
-                        i = fields.length;
+                        break ; // i = fields.length;
                     }
                 }
             }

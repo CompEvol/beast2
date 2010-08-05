@@ -33,18 +33,25 @@ public class Operator extends Plugin {
 	public Input<Double> m_pWeight = new Input<Double>("weight","weight with which this operator is selected", Validate.REQUIRED);
 
 	/** override this for proposals,
-	 * returns log of hastingRatio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
+	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted
+     *
+     * @throws Exception
+     **/
 	public double proposal() throws Exception {
 		throw new Exception("proposal method not implemented");
 	}
 
-	/** weight determines the probability this proposal is chosen
+	/**
+     * @return the relative weight which determines the probability this proposal is chosen
 	 * from among all the available proposals
 	 */
 	public double getWeight() {
 		return m_pWeight.get();
 	}
-	public String getName() {return this.getClass().getName() + (getID()!=null?"_" +getID():"");}
+
+	public String getName() {
+        return this.getClass().getName() + (getID()!=null?"_" +getID():"");
+    }
 
 
 	/** keep statistics of how often this operator was used, accepted or rejected **/
@@ -67,7 +74,9 @@ public class Operator extends Plugin {
 		// must be overridden by operator implementation to have an effect
 	}
 
-	/** calculate change of value of a parameter for MCMC chain optimisation **/
+	/** @return  change of value of a parameter for MCMC chain optimisation
+     * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
+     **/
 	protected double calcDelta(double logAlpha) {
 
         final double target = getTargetAcceptanceProbability();
@@ -80,8 +89,11 @@ public class Operator extends Plugin {
         return 0;
 	} // calcDelta
 
-	/** target for automatic operator optimisation **/
-    public double getTargetAcceptanceProbability() {return 0.234;}
+	/** @return target for automatic operator optimisation
+     **/
+    public double getTargetAcceptanceProbability() {
+        return 0.234;
+    }
 
 	public String toString() {
 		String sName = getName();

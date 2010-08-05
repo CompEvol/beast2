@@ -89,7 +89,11 @@ abstract public class TreeOperator extends Operator {
 ////		m_fHeights[node.getNr()] += fDeltaLength;
 //	} // setNodeHeight
 
-	/** replace child with another node **/
+	/** replace child with another node
+     * @param node
+     * @param child
+     * @param replacement
+     **/
 	public void replace(Node node, Node child, Node replacement) {
 		if (node.m_left.getNr() == child.getNr()) {
 			node.m_left = replacement;

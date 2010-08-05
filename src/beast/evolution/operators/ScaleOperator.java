@@ -35,14 +35,21 @@ import beast.util.Randomizer;
 public class ScaleOperator extends Operator {
 
     public Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
-    public Input<RealParameter> m_pParameter = new Input<RealParameter>("parameter", "if specified, this parameter is scaled", Input.Validate.XOR, m_pTree);
 
-    public Input<Double> m_pScaleFactor = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", new Double(1.0));
+    public Input<RealParameter> m_pParameter = new Input<RealParameter>("parameter", "if specified, this parameter is scaled",
+            Input.Validate.XOR, m_pTree);
+
+    public Input<Double> m_pScaleFactor = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
     // shadows input
     double m_fScaleFactor;
-    public Input<Boolean> m_pScaleAll = new Input<Boolean>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected", new Boolean(false));
-    public Input<Boolean> m_pScaleAllIndependently = new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with a different factor, otherwise a single factor is used", new Boolean(false));
-    public Input<Integer> m_pDegreesOfFreedom = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used in ...", new Integer(1));
+    public Input<Boolean> m_pScaleAll =
+            new Input<Boolean>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
+                    false);
+    public Input<Boolean> m_pScaleAllIndependently =
+            new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
+                    "a different factor, otherwise a single factor is used", false);
+
+    public Input<Integer> m_pDegreesOfFreedom = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used in ...", 1);
 
     /** flag to indicate this scales trees as opposed to scaling a parameter **/
     boolean m_bIsTreeScaler = true;
@@ -201,7 +208,7 @@ public class ScaleOperator extends Operator {
      */
     @Override
     public void optimize(double logAlpha) {
-        Double fDelta = calcDelta(logAlpha);
+        double fDelta = calcDelta(logAlpha);
         //double fScaleFactor = m_pScaleFactor.get();
         fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
         m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);

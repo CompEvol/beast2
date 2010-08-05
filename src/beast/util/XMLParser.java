@@ -29,6 +29,7 @@ import beast.core.*;
 import beast.core.Runnable;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.parameter.BooleanParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
@@ -115,6 +116,7 @@ public class XMLParser {
     final static String OPERATOR_CLASS = Operator.class.getName();
     final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
     final static String INT_PARAMETER_CLASS = IntegerParameter.class.getName();
+    final static String BOOL_PARAMETER_CLASS = BooleanParameter.class.getName();
     final static String PLUGIN_CLASS = Plugin.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
@@ -132,6 +134,7 @@ public class XMLParser {
     final static String TREE_ELEMENT = "tree";
     final static String REAL_PARAMETER_ELEMENT = "parameter";
     final static String INT_PARAMETER_ELEMENT = "intParameter";
+    final static String BOOL_PARAMETER_ELEMENT = "boolParameter";
     final static String RUN_ELEMENT = "run";
 
 
@@ -173,6 +176,7 @@ public class XMLParser {
         m_sElement2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
         m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
         m_sElement2ClassMap.put(INT_PARAMETER_ELEMENT, INT_PARAMETER_CLASS);
+        m_sElement2ClassMap.put(BOOL_PARAMETER_ELEMENT, BOOL_PARAMETER_CLASS);
     }
 
     public Runnable parseFile(String sFileName) throws Exception {
@@ -187,8 +191,9 @@ public class XMLParser {
 
 
         parse();
-        if (m_runnable instanceof Runnable)
-            return (Runnable) m_runnable;
+        //assert m_runnable == null || m_runnable instanceof Runnable;
+        if ( m_runnable != null)
+            return m_runnable;
         else {
             throw new Exception("Run element does not point to a runnable object.");
         }
@@ -228,7 +233,7 @@ public class XMLParser {
         	throw new Exception("Need at least one child element");
         }
 
-        Plugin plugin = (Plugin) createObject(children.item(i), PLUGIN_CLASS, null);
+        Plugin plugin = createObject(children.item(i), PLUGIN_CLASS, null);
         return plugin;
     } // parseFragment
     
@@ -250,6 +255,7 @@ public class XMLParser {
 
     /**
      * parse BEAST file as DOM document
+     * @throws Exception
      */
     public void parse() throws Exception {
         // find top level beast element
@@ -274,6 +280,8 @@ public class XMLParser {
     /**
      * Traverse DOM beast.tree and grab all nodes that have an 'id' attribute
      * Throw exception when a duplicate id is encountered
+     * @param node
+     * @throws Exception
      */
     void initIDNodeMap(Node node) throws Exception {
         String sID = getID(node);
@@ -296,6 +304,7 @@ public class XMLParser {
      * <map name='snapprior'>snap.likelihood.SnAPPrior</map>
      * <map name='snaplikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
      *
+     * @param topNode
      * @throws XMLParserException
      */
     void parseNameSpaceAndMap(Node topNode) throws XMLParserException {
@@ -368,8 +377,6 @@ public class XMLParser {
         Node mcmc = nodes.item(0);
 
         m_runnable = (Runnable) createObject(mcmc, RUNNABLE_CLASS, null);
-
-
     } // parseMCMC
 
     @SuppressWarnings("unchecked")
@@ -431,7 +438,7 @@ public class XMLParser {
                 }
             }
             if (!bDone) {
-                throw new ClassNotFoundException();
+                throw new ClassNotFoundException(sSpecClass);
             }
             // hack required to make log-parsing easier
             if (o instanceof State) {
@@ -529,6 +536,7 @@ public class XMLParser {
                 try {
                     setInput(node, parent, "value", sContent);
                 } catch (Exception e) {
+                    //
                 }
             }
         }

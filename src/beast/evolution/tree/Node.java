@@ -58,7 +58,7 @@ public class Node extends Plugin {
 		}
 	}
 
-	/** length of branch in the beast.tree **/
+	/** @return length of branch in the beast.tree **/
 	public double getLength() {
 		if (isRoot()) {
 			return 0;
@@ -80,7 +80,7 @@ public class Node extends Plugin {
 	}
 
 
-	/** return parent node, or null if this is root **/
+	/** @return parent node, or null if this is root **/
 	public Node getParent() {
 		return m_Parent;
 	}
@@ -88,17 +88,17 @@ public class Node extends Plugin {
 		m_Parent = parent;
 	}
 
-	/** check if current node is root node **/
+	/** @return true if current node is root node **/
 	public boolean isRoot() {
 		return m_Parent == null;
 	}
 
-	/** check if current node is a leaf node **/
+	/** @return  true if current node is a leaf node **/
 	public boolean isLeaf() {
 		return m_left == null;
 	}
 
-	/** count number of nodes in beast.tree, starting with current node **/
+	/** @return count number of nodes in beast.tree, starting with current node **/
 	public int getNodeCount() {
 		if (isLeaf()) {
 			return 1;
@@ -107,8 +107,8 @@ public class Node extends Plugin {
 	}
 
 	 /**
-	 * print beast.tree in Newick format, without any length or meta data
-	 * information
+	 * @return beast.tree in Newick format, without any length or meta data
+	 * information.
 	 **/
 	public String toShortNewick() {
 		StringBuffer buf = new StringBuffer();
@@ -126,7 +126,7 @@ public class Node extends Plugin {
 //			}
 		}
 //		buf.append("["+m_iLabel+"]");
-		buf.append(":" + String.format("%3.3f",getLength()));
+         buf.append(":").append(String.format("%3.3f", getLength()));
 		for (int i = 0; i < m_bIsDirty; i++) {
 			buf.append("X");
 		}
@@ -134,7 +134,8 @@ public class Node extends Plugin {
 	}
 
 	/**
-	 * print beast.tree in long Newick format, with all length and meta data
+	 * @param sLabels
+     * @return  beast.tree in long Newick format, with all length and meta data
 	 * information
 	 **/
 	public String toNewick(List<String> sLabels) {
@@ -153,9 +154,10 @@ public class Node extends Plugin {
 			}
 		}
 		buf.append(getNewickMetaData());
-		buf.append(":" + getLength());
+        buf.append(":").append(getLength());
 		return buf.toString();
 	}
+
 	public String getNewickMetaData() {
 		if (m_sMetaData != null) {
 			return '[' + m_sMetaData + ']';
@@ -164,7 +166,8 @@ public class Node extends Plugin {
 	}
 
 	/**
-	 * print beast.tree in long Newick format, with all length and meta data
+	 * @param sLabels
+     * @return beast.tree in long Newick format, with all length and meta data
 	 * information, but with leafs labelled with their names
 	 **/
 	public String toString(List<String> sLabels) {
@@ -183,7 +186,7 @@ public class Node extends Plugin {
 			buf.append(m_sMetaData);
 			buf.append(']');
 		}
-		buf.append(":" + getLength());
+        buf.append(":").append(getLength());
 		return buf.toString();
 	}
 
@@ -193,7 +196,9 @@ public class Node extends Plugin {
 	
 	/**
 	 * sorts nodes in children according to lowest numbered label in subtree
-	 **/
+	 *
+     * @return
+     **/
 	public int sort() {
 		if (m_left != null) {
 			int iChild1 = m_left.sort();
@@ -213,7 +218,9 @@ public class Node extends Plugin {
 	/** during parsing, leaf nodes are numbered 0...m_nNrOfLabels-1
 	 * but internal nodes are left to zero. After labeling internal
 	 * nodes, m_iLabel uniquely identifies a node in a beast.tree.
-	 */
+     * @param iLabel
+     * @return
+     */
 	public int labelInternalNodes(int iLabel) {
 		if (isLeaf()) {
 			return iLabel;
@@ -225,7 +232,9 @@ public class Node extends Plugin {
 		return iLabel;
 	} // labelInternalNodes
 
-	/** create deep copy **/
+	/**
+     * @return (deep) copy of node
+     **/
 	public Node copy() {
 		Node node = new Node();
 		node.m_fHeight = m_fHeight;
@@ -268,7 +277,9 @@ public class Node extends Plugin {
 		return 0;
 	}
 
-	/** scale height of this node and all its descendants **/
+	/** scale height of this node and all its descendants
+     * @param fScale scale factor
+     **/
 	public void scale(double fScale) {
 		m_fHeight *= fScale;
 		m_bIsDirty |= Tree.IS_DIRTY;

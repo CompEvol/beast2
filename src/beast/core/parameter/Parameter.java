@@ -72,12 +72,12 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
 //    	Arrays.fill(m_bIsDirty, dirty);
 //    }
 
-    /** number of the id, to find it quickly in the list of parameters of the State **/
-    /**
+    /* number of the id, to find it quickly in the list of parameters of the State **/
+    /*
      * initialised by State.initAndValidate *
      */
 
-    /**
+    /*
      * various setters & getters *
      */
     public int getDimension() {
