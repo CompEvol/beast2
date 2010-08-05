@@ -41,7 +41,7 @@ public class CompoundDistribution extends Distribution {
     public Input<List<Distribution>> pDistributions =
             new Input<List<Distribution>>("distribution",
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
-                    new ArrayList<Distribution>(), Validate.REQUIRED);
+                    new ArrayList<Distribution>());
 
     /** Distribution implementation follows **/
     @Override
