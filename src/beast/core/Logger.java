@@ -55,8 +55,8 @@ public class Logger extends Plugin {
     /** Compound loggers get a sample number printed at the beginning of the line,
      * while tree loggers don't.
      */
-    final static int COMPOUND_LOGGER = 0, TREE_LOGGER = 2;
-    int m_mode = COMPOUND_LOGGER;
+    public final static int COMPOUND_LOGGER = 0, TREE_LOGGER = 2;
+    public int m_mode = COMPOUND_LOGGER;
     /** number of samples between logs **/
     int m_nEvery = 1;
     /** stream to log to */
@@ -108,6 +108,7 @@ public class Logger extends Plugin {
         } else {
             if (sFileName.contains("$(seed)")) {
                 sFileName = sFileName.replace("$(seed)", Randomizer.getSeed() + "");
+                m_pFileName.setValue(sFileName, this);
             }
             m_out = new PrintStream(sFileName);
         }

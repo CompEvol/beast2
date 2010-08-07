@@ -209,7 +209,7 @@ public class Tree extends StateNode implements Loggable {
      * @param out
      * @param nNodeCount
      */
-    void printTranslate(Node node, PrintStream out, int nNodeCount) {
+    protected void printTranslate(Node node, PrintStream out, int nNodeCount) {
         if (node.isLeaf()) {
             out.print("\t\t" + node.getNr() + " " + node.getID());
             if (node.getNr() < nNodeCount) {

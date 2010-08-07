@@ -504,7 +504,7 @@ public class MersenneTwisterFast implements Serializable {
 		return ((((long) (y >>> 6)) << 27) + (z >>> 5)) / (double) (1L << 53);
 	}
 
-	public final double nextGaussian() {
+	synchronized public final double nextGaussian() {
 		if (haveNextNextGaussian) {
 			haveNextNextGaussian = false;
 			return nextNextGaussian;
