@@ -2,7 +2,6 @@ package beast.evolution.branchratemodel;
 
 import beast.core.CalculationNode;
 import beast.core.Description;
-import beast.core.Plugin;
 import beast.evolution.tree.Node;
 
 /**

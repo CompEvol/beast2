@@ -27,6 +27,7 @@ package beast.evolution.tree;
 
 import beast.core.Description;
 import beast.core.Loggable;
+import beast.core.State;
 import beast.core.StateNode;
 
 import java.io.PrintStream;
@@ -209,7 +210,7 @@ public class Tree extends StateNode implements Loggable {
      * @param out
      * @param nNodeCount
      */
-    protected void printTranslate(Node node, PrintStream out, int nNodeCount) {
+    public static void printTranslate(Node node, PrintStream out, int nNodeCount) {
         if (node.isLeaf()) {
             out.print("\t\t" + node.getNr() + " " + node.getID());
             if (node.getNr() < nNodeCount) {
@@ -245,4 +246,5 @@ public class Tree extends StateNode implements Loggable {
     public void close(PrintStream out) {
         out.print("End;");
     }
+
 } // class Tree

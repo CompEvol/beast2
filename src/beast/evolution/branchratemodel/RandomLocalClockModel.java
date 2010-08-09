@@ -10,7 +10,7 @@ import beast.evolution.tree.Tree;
 /**
  * @author Alexei Drummond
  */
-@Description("Random Local Clock Model.")
+@Description("Random Local Clock Model, whatever that is....")
 public class RandomLocalClockModel extends BranchRateModel.Base {
 
     public Input<IntegerParameter> indicatorParamInput =
@@ -31,13 +31,17 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     @Override
     public void initAndValidate() throws Exception {
-        prepare();
-    }
+    	IntegerParameter indicators = indicatorParamInput.get();
+        indicators.setLower(0);
+        indicators.setUpper(1);
 
-    private void calculateUnscaledBranchRates(Tree tree) {
-        cubr(tree.getRoot(), 1.0);
-    }
+        unscaledBranchRates = new double[indicators.getDimension()];
+        
+        RealParameter rates = rateParamInput.get();
+        rates.setLower(0.0);
+        rates.setUpper(Double.MAX_VALUE);
 
+    }
 
     /**
      * This is a recursive function that does the work of
@@ -47,7 +51,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
      * @param node the node
      * @param rate the rate of the parent node
      */
-    private void cubr(Node node, double rate) {
+    private void calculateUnscaledBranchRates(Node node, double rate, IntegerParameter indicators, RealParameter rates) {
 
         int nodeNumber = node.getNr();
 
@@ -63,14 +67,22 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         unscaledBranchRates[nodeNumber] = rate;
 
         if (!node.isLeaf()) {
-            cubr(node.m_left, rate);
-            cubr(node.m_right, rate);
+        	calculateUnscaledBranchRates(node.m_left, rate, indicators, rates);
+        	calculateUnscaledBranchRates(node.m_right, rate, indicators, rates);
         }
     }
 
     private void recalculateScaleFactor() {
 
-        calculateUnscaledBranchRates(tree);
+        Tree tree = treeInput.get();
+    	IntegerParameter indicators = indicatorParamInput.get();
+        RealParameter rates = rateParamInput.get();
+//        System.err.println("xx" + tree.getRoot());
+//        System.err.println(indicators);
+//        System.err.println(rates);
+//        System.err.println("\n");
+        
+        calculateUnscaledBranchRates(tree.getRoot(), 1.0, indicators, rates);
 
         double timeTotal = 0.0;
         double branchTotal = 0.0;
@@ -90,32 +102,14 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
         scaleFactor = timeTotal / branchTotal;
 
+        RealParameter meanRate = meanRateInput.get();
         if (meanRate != null) scaleFactor *= meanRate.getValue();
     }
 
-    public void prepare() {
-
-        tree = treeInput.get();
-
-        indicators = indicatorParamInput.get();
-        indicators.setLower(0);
-        indicators.setUpper(1);
-
-        rates = rateParamInput.get();
-        rates.setLower(0.0);
-        rates.setUpper(Double.MAX_VALUE);
-
-        meanRate = meanRateInput.get();
-
-        unscaledBranchRates = new double[indicators.getDimension()];
-        recalculateScaleFactor();
-    }
-
-
+    @Override
     public double getRateForBranch(Node node) {
-
         if (recompute) {
-            prepare();
+            recalculateScaleFactor();
             recompute = false;
         }
 
@@ -125,7 +119,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     @Override
     protected boolean requiresRecalculation() {
     	recompute = false;
-
+    	
         if (treeInput.isDirty()) {
         	recompute = true;
         }
@@ -143,17 +137,8 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         return recompute;
     }
 
-
     double[] unscaledBranchRates;
     double scaleFactor;
-
     boolean recompute = true;
-
-    RealParameter meanRate; // can be null
-    RealParameter rates;
-    IntegerParameter indicators;
-    Tree tree;
     boolean ratesAreMultipliers = false;
-
-
 }

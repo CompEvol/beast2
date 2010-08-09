@@ -154,7 +154,7 @@ public class Plugin {
      * @throws IllegalArgumentException
      */
     @SuppressWarnings("rawtypes")
-    public Plugin[] listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    List<Plugin> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
         List<Plugin> sPlugins = new ArrayList<Plugin>();
         Field[] fields = getClass().getFields();
         for(Field field : fields) {
@@ -162,7 +162,7 @@ public class Plugin {
                 Input<?> input = (Input<?>) field.get(this);
                 if( input.get() != null ) {
                     if( input.get() instanceof List<?> ) {
-                        List vector = (List<?>) input.get();
+                        List<?> vector = (List<?>) input.get();
                         for(Object o : vector) {
                             if( o instanceof Plugin ) {
                                 sPlugins.add((Plugin) o);
@@ -174,7 +174,7 @@ public class Plugin {
                 }
             }
         }
-        return sPlugins.toArray(new Plugin[sPlugins.size()]);
+        return sPlugins;
     } // listActivePlugins
 
     public String getTipText(String sName) throws IllegalArgumentException, IllegalAccessException {

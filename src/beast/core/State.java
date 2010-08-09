@@ -112,6 +112,8 @@ public class State extends Plugin {
     	if (stateNode[nID] == storedStateNode[nID]) {
     		storedStateNode[nID] = stateNode[nID].copy();
     		storedStateNode[nID].m_state = this;
+    		stateNode[nID].setDirtyBase(true);
+    		storedStateNode[nID].setDirtyBase(false);
     	}
         return stateNode[nID];
     }

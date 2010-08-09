@@ -162,8 +162,8 @@ public class TreeLikelihood extends Distribution {
     public void initAndValidate() throws Exception {
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
-        	//m_likelihoodCore = new BeerLikelihoodCore4();
-            m_likelihoodCore = new BeerLikelihoodCoreCnG4();
+        	m_likelihoodCore = new BeerLikelihoodCore4();
+            //m_likelihoodCore = new BeerLikelihoodCoreCnG4();
         } else {
             //m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
             m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
@@ -171,7 +171,7 @@ public class TreeLikelihood extends Distribution {
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
         //probabilities = new double[stateCount * stateCount];
-        int nodeCount = m_tree.getStateNode().getNodeCount();
+        int nodeCount = m_tree.get().getNodeCount();
         m_likelihoodCore.initialize(
                 nodeCount,
                 m_data.get().getPatternCount(),
@@ -182,7 +182,7 @@ public class TreeLikelihood extends Distribution {
         int extNodeCount = nodeCount / 2 + 1;
         int intNodeCount = nodeCount / 2;
 
-        setStates(m_tree.getStateNode().getRoot(), m_data.get().getPatternCount());
+        setStates(m_tree.get().getRoot(), m_data.get().getPatternCount());
 
         for (int i = 0; i < intNodeCount; i++) {
             m_likelihoodCore.createNodePartials(extNodeCount + i);
@@ -234,14 +234,19 @@ public class TreeLikelihood extends Distribution {
      */
     @Override
     public double calculateLogP() throws Exception {
-        Tree tree = m_tree.getStateNode();
+        Tree tree = m_tree.get();
+        collectBranchLengths(tree.getRoot());
+
+//        System.err.println("=>" + tree.getRoot());
+//        System.err.println(Arrays.toString(m_branchLengths));
+        
         traverse(tree.getRoot());
         logP = 0.0;
         //double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
         for (int i = 0; i < m_data.get().getPatternCount(); i++) {
             logP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
         }
-        if (logP < -1.1e5 && !m_likelihoodCore.getUseScaling()) {
+        if (logP < -1e6 && !m_likelihoodCore.getUseScaling()) {
             System.err.println("Turning on scaling to prevent numeric instability");
             m_likelihoodCore.setUseScaling(true);
             Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
@@ -249,6 +254,25 @@ public class TreeLikelihood extends Distribution {
         }
         return logP;
     }
+
+    void collectBranchLengths(Node node) {
+    	int iNode = node.getNr();
+        // Get the operational time of the branch
+        double branchRate = node.getLength();
+//        System.err.print(branchRate + " ");
+        if (m_branchRateModel != null) {
+        	branchRate *= m_branchRateModel.getRateForBranch(node);
+        }
+        if (branchRate != m_StoredBranchLengths[iNode]) {
+        	//node.makeDirty(Tree.IS_DIRTY);
+        	m_bNodeIsDirty[iNode] |= Tree.IS_DIRTY; 
+        }
+        m_branchLengths[iNode] = branchRate;
+        if (!node.isLeaf()) {
+        	collectBranchLengths(node.m_left);
+        	collectBranchLengths(node.m_right);
+        }
+    } // collectBranchLengths
 
     /**
      * Traverse the beast.tree calculating partial likelihoods.
@@ -347,6 +371,7 @@ public class TreeLikelihood extends Distribution {
     /**
      * check state for changed variables and update temp results if necessary *
      */
+    @Override
     protected boolean requiresRecalculation() {
         int hasDirt = Tree.IS_CLEAN;
 
@@ -356,34 +381,21 @@ public class TreeLikelihood extends Distribution {
         if (m_pBranchRateModel.isDirty()) {
             hasDirt = Tree.IS_DIRTY;
         }
-    	//Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
-        // int hasDirt = (m_pSubstModel.get().isDirty(state) ? State.IS_DIRTY : State.IS_CLEAN);
-        //m_likelihoodCore.checkForDirt(state);
-        Tree tree = m_tree.getStateNode();
-        //tree.syncTreeWithTraitsInState();
+        Tree tree = m_tree.get();
         checkNodesForDirt(tree.getRoot(), hasDirt);
-
         return hasDirt != Tree.IS_CLEAN;
     }
 
     private void checkNodesForDirt(Node node, int hasDirt) {
-    	int iNodeNr = node.getNr();
-        // Get the operational time of the branch
-        double branchRate = 1.0;
-        if (m_branchRateModel != null) {
-        	branchRate = m_branchRateModel.getRateForBranch(node);
-        }
-        m_branchLengths[iNodeNr] = branchRate * node.getLength();//((*pParent).height - (*pNode).height);
-        if (m_branchLengths[iNodeNr] != m_StoredBranchLengths[iNodeNr]) {
-        	node.makeDirty(Tree.IS_DIRTY);
-        }
-        m_bNodeIsDirty[iNodeNr] = Math.max(node.isDirty(), hasDirt);
+    	int iNode = node.getNr();
+        m_bNodeIsDirty[iNode] = Math.max(node.isDirty(), hasDirt);
         if (!node.isLeaf()) {
             checkNodesForDirt(node.m_left, hasDirt);
             checkNodesForDirt(node.m_right, hasDirt);
         }
-    }
+    } // checkNodesForDirt
 
+        
     /**
      * @return a list of unique ids for the state nodes that form the argument
      */
@@ -399,14 +411,16 @@ public class TreeLikelihood extends Distribution {
     }
 
     @Override
-    protected void storeCalculations() {
+    protected void store() {
         m_likelihoodCore.store();
+        super.store();
         System.arraycopy(m_branchLengths, 0, m_StoredBranchLengths, 0, m_branchLengths.length);
     }
 
     @Override
-    protected void restoreCalculations() {
+    protected void restore() {
         m_likelihoodCore.restore();
+        super.restore();
         double [] tmp = m_branchLengths;
         m_branchLengths = m_StoredBranchLengths;
         m_StoredBranchLengths = tmp;

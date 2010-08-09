@@ -82,13 +82,13 @@ public abstract class Distribution extends CalculationNode implements Loggable {
     }
 
     @Override
-    void store() {
+	protected void store() {
         storedLogP = logP;
         super.store();
     }
 
     @Override
-    void restore() {
+    protected void restore() {
         logP = storedLogP;
         super.restore();
     }

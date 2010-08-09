@@ -164,16 +164,13 @@ public class MCMC extends Runnable {
         boolean bDebug = true;
         state.setDirty(true);
 
+        sortCalculationNodes();
         checkCalculationNodesDirtiness();
 
         double fOldLogLikelihood = posterior.calculateLogP();
         //System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
-            if (iSample==1021) {
-                // todo ?
-                int h = 3;
-                h++;
-            }
+            // code for debugging: set conditional break point
             //State proposedState = state.copy();
             state.store(iSample);
             state.stateNumber = iSample;
@@ -223,9 +220,10 @@ public class MCMC extends Runnable {
 
             if (bDebug) {
                 state.validate();
+                //state.store(iSample);
                 state.setDirty(true);
                 //System.err.println(state.toString());
-
+                //storeCalculationNodes();
                 checkCalculationNodesDirtiness();
 
                 double fLogLikelihood = posterior.calculateLogP();
@@ -270,5 +268,27 @@ public class MCMC extends Runnable {
     }
 
 
+    void sortCalculationNodes() {
+    	// sort calculation nodes such that if A is input of B, A < B in order
+    	try {
+	    	for (int i = 0; i < calculationNodes.size(); i++) {
+    			List<Plugin> inputs1 = calculationNodes.get(i).listActivePlugins();
+    			CalculationNode calclationNode1 = calculationNodes.get(i);
+	    		for (int j = calculationNodes.size()-1; j > i; j--) {
+	    			CalculationNode calclationNode2 = calculationNodes.get(j);
+	    			if (inputs1.contains(calclationNode2)) {
+	    				// swap i & j
+	    				calculationNodes.set(i, calclationNode2);
+	    				calculationNodes.set(j, calclationNode1);
+	    				i--;
+	    				j = i;
+	    			}
+	    		}
+	    	}
+    	} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    }
 } // class MCMC
 

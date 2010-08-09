@@ -103,12 +103,14 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     protected boolean requiresRecalculation() {
         recompute = false;
 
-//	    processed as trait on the tree
-//        if (categoryInput.get().isDirty()) {
-//       	    return true;
-//        }
         if (treeInput.isDirty()) {
             recompute = true;
+            return true;
+        }
+//	    processed as trait on the tree
+        if (categoryInput.isDirty()) {
+        	recompute = true;
+        	return false;
         }
         // rateDistInput cannot be dirty?!?
 //        if (rateDistInput.get().isDirty()) {

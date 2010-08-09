@@ -121,6 +121,7 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         if (isStochastic()) {
             values[0] = fValue;
             m_bIsDirty[0] = true;
+            // TODO: next line can be deleted, since it is already done in the State
             setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
@@ -129,6 +130,7 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         if (isStochastic()) {
             values[iParam] = fValue;
             m_bIsDirty[iParam] = true;
+            // TODO: next line can be deleted, since it is already done in the State
             setDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }

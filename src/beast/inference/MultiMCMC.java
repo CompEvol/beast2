@@ -25,6 +25,13 @@ public class MultiMCMC extends MCMC {
 	Thread [] m_threads;
 	/** keep track of time taken between logs to estimate speed **/
     long m_nStartLogTime;
+	/** tables of logs, one for each thread + one for the total**/
+	List<Double[]>[] m_logTables;
+	/** last line for which log is reported for all chains */
+	int m_nLastReported = 0;
+	/** pre-calculated sum of itmes and sum of itmes squared for all threads and all items */
+	double [][] m_fSums;
+	double [][] m_fSquaredSums;
 	
 	@Override
 	public void initAndValidate() throws Exception {
@@ -65,10 +72,6 @@ public class MultiMCMC extends MCMC {
 			}
 		}
 	}
-	/** tables of logs, one for each thread + one for the total**/
-	List<Double[]>[] m_logTables;
-	/** last line for which log is reported for all chains */
-	int m_nLastReported = 0;
 	
 	@SuppressWarnings("unchecked")
 	@Override 
@@ -170,7 +173,9 @@ public class MultiMCMC extends MCMC {
 					processLogLine(iThread, logLine);
 				} catch (Exception e) {
 					//ignore, probably a parse errors
-					
+					if (iThread == 0) {
+						System.out.println(sStr);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -208,8 +213,8 @@ public class MultiMCMC extends MCMC {
 //
 //  m = # threads
 //	n = # samples
-//	B = variance of first chain
-//	W = variance over all chains
+//	B = variance within chain
+//	W = variance among chains
 //	R=(m+1/m)(W(n-1)/n + B/n + B/(mn))/W - (n-1)/nm 
 //	=>
 //	R=(m+1/m)((n-1)/n + B/Wn + B/(Wmn)) - (n-1)/nm
@@ -225,8 +230,6 @@ public class MultiMCMC extends MCMC {
 	 * Exploit potential for efficiency by storing means and squared means
 	 * NB: when the start of the chain changes, this needs to be taken in account.
 	 */
-	double [][] fMeans;
-	double [][] fMeans2;
 	void calcGRStats(int nCurrentSample) {
 		int nLogItems = m_logTables[0].get(0).length;
 		int nThreads = m_chains.length;
@@ -235,9 +238,9 @@ public class MultiMCMC extends MCMC {
 		// the Gelman Rubin statistic for each log item 
 		double [] fR = new double [nLogItems];
 		if (nSamples > 5) {
-			if (fMeans == null) {
-				fMeans = new double[(nThreads+1)][nLogItems];
-				fMeans2 = new double[(nThreads+1)][nLogItems];
+			if (m_fSums == null) {
+				m_fSums = new double[(nThreads+1)][nLogItems];
+				m_fSquaredSums = new double[(nThreads+1)][nLogItems];
 			}
 
 			int nStartSample = nCurrentSample/10;
@@ -249,8 +252,8 @@ public class MultiMCMC extends MCMC {
 				for (int iThread2 = 0; iThread2 < nThreads; iThread2++) {
 					Double[] fLine = m_logTables[iThread2].get(iSample);
 					for (int iItem = 1; iItem < nLogItems; iItem++) {
-						fMeans[iThread2][iItem] -= fLine[iItem];
-						fMeans2[iThread2][iItem] -= fLine[iItem] * fLine[iItem];
+						m_fSums[iThread2][iItem] -= fLine[iItem];
+						m_fSquaredSums[iThread2][iItem] -= fLine[iItem] * fLine[iItem];
 					}
 				}
 				// sum to get totals
@@ -260,8 +263,8 @@ public class MultiMCMC extends MCMC {
 						fMean += m_logTables[iThread2].get(iSample)[iItem];
 					}
 					fMean /= nThreads;
-					fMeans[nThreads][iItem] -= fMean;
-					fMeans2[nThreads][iItem] -= fMean * fMean;
+					m_fSums[nThreads][iItem] -= fMean;
+					m_fSquaredSums[nThreads][iItem] -= fMean * fMean;
 				}
 			}
 
@@ -270,8 +273,8 @@ public class MultiMCMC extends MCMC {
 			for (int iThread2 = 0; iThread2 < nThreads; iThread2++) {
 				Double[] fLine = m_logTables[iThread2].get(iSample);
 				for (int iItem = 1; iItem < nLogItems; iItem++) {
-					fMeans[iThread2][iItem] += fLine[iItem];
-					fMeans2[iThread2][iItem] += fLine[iItem] * fLine[iItem];
+					m_fSums[iThread2][iItem] += fLine[iItem];
+					m_fSquaredSums[iThread2][iItem] += fLine[iItem] * fLine[iItem];
 				}
 			}
 			// sum to get totals
@@ -281,42 +284,16 @@ public class MultiMCMC extends MCMC {
 					fMean += m_logTables[iThread2].get(iSample)[iItem];
 				}
 				fMean /= nThreads;
-				fMeans[nThreads][iItem] += fMean;
-				fMeans2[nThreads][iItem] += fMean * fMean;
+				m_fSums[nThreads][iItem] += fMean;
+				m_fSquaredSums[nThreads][iItem] += fMean * fMean;
 			}
-			
-			
-//			fMeans = new double[(nThreads+1)][nLogItems];
-//			fMeans2 = new double[(nThreads+1)][nLogItems];
-//			// calc means and squared means
-//			for (int iSample = nStartSample; iSample < nCurrentSample; iSample++) {
-//				for (int iThread2 = 0; iThread2 < nThreads; iThread2++) {
-//					Double[] fLine = m_logTables[iThread2].get(iSample);
-//					for (int iItem = 1; iItem < nLogItems; iItem++) {
-//						fMeans[iThread2][iItem] += fLine[iItem];
-//						fMeans2[iThread2][iItem] += fLine[iItem] * fLine[iItem];
-//					}
-//				}
-//			}
-//			// sum to get totals
-//			for (int iSample = nStartSample; iSample < nCurrentSample; iSample++) {
-//				for (int iItem = 1; iItem < nLogItems; iItem++) {
-//					double fMean = 0;
-//					for (int iThread2 = 0; iThread2 < nThreads; iThread2++) {
-//						fMean += m_logTables[iThread2].get(iSample)[iItem];
-//					}
-//					fMean /= nThreads;
-//					fMeans[nThreads][iItem] += fMean;
-//					fMeans2[nThreads][iItem] += fMean * fMean;
-//				}
-//			}
 
 			// calculate variances for all (including total counts)
 			double [][] fVars = new double[(nThreads+1)][nLogItems];
 			for (int iThread2 = 0; iThread2 < nThreads + 1; iThread2++) {
 				for (int iItem = 1; iItem < nLogItems; iItem++) {
-					double fMean = fMeans[iThread2][iItem];
-					double fMean2 = fMeans2[iThread2][iItem];
+					double fMean = m_fSums[iThread2][iItem];
+					double fMean2 = m_fSquaredSums[iThread2][iItem];
 					fVars[iThread2][iItem] = (fMean2 - fMean * fMean);
 				}
 			}

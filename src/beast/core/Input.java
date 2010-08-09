@@ -188,16 +188,24 @@ public class Input<T> {
     	if (value instanceof StateNode) {
     		// TODO: rrb: the commented line seems a lot slower. Why???
     		//value=(T) ((StateNode)value).getCurrent();
-    		//new Exception().printStackTrace();
     		return (T) ((StateNode)value).getCurrent();
-//    		System.err.println("Do not call Input.get() on Input<StateNode>");
-//    		System.err.println("Use Input.getStateNode() instead.");
     	}
         return value;
     }
-//	public T getUnsafe() {
-//        return value;
-//    }
+
+    /**
+     * As get() but with this difference that the State can manage
+     * whether to make a copy and register the operator.
+     * 
+     * Only Operators should call this method.
+     * Also Operators should never call Input.get(), always Input.get(operator).
+     * @param operator
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+	public T get(Operator operator) {
+   		return (T) ((StateNode)value).getCurrentEditable(operator);
+    }
 
     public boolean isDirty() {
         T value = get();
@@ -223,24 +231,6 @@ public class Input<T> {
         }
 
         return false;
-    }
-    
-    @SuppressWarnings("unchecked")
-	public T getStateNode() {
-		return (T) ((StateNode)value).getCurrent();
-	}    
-    /**
-     * As get() but with this difference that the State can manage
-     * whether to make a copy and register the operator.
-     * 
-     * Only Operators should call this method.
-     * Also Operators should never call Input.get(), always Input.get(operator).
-     * @param operator
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-	public T get(Operator operator) {
-   		return (T) ((StateNode)value).getCurrentEditable(operator);
     }
 
     public Class<?> type() {

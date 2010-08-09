@@ -235,14 +235,14 @@ public final class HKY extends SubstitutionModel.Base {
     }
 
     @Override
-    protected void storeCalculations() {
+    protected void store() {
         if (eigenDecomposition != null) {
             storedEigenDecomposition = eigenDecomposition.copy();
         }
     }
 
     @Override
-    protected void restoreCalculations() {
+    protected void restore() {
         if (storedEigenDecomposition != null) {
             eigenDecomposition = storedEigenDecomposition;
         }

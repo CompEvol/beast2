@@ -40,6 +40,9 @@ public abstract class StateNode extends Plugin {
     public void setDirty(final boolean dirty) {
         this.dirty = dirty;
     }
+    public void setDirtyBase(final boolean dirty) {
+    	this.dirty = dirty;
+    }
 
     /**
      * @return true if this node is acting as a random variable, false if this node is fixed and effectively data.

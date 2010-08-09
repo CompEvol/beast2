@@ -1,7 +1,5 @@
 package beast.core;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This base class is for Plugins that perform calculations based on the State.
@@ -25,7 +23,6 @@ public abstract class CalculationNode extends Plugin {
 //        }
 
         if (hasCheckedDirtiness) return;
-
         if (hasDirtyInputs()) {
             isDirty = requiresRecalculation();
         }
@@ -35,7 +32,7 @@ public abstract class CalculationNode extends Plugin {
 
     private final boolean hasDirtyInputs() {
         try {
-            for (Input input : listInputs()) {
+            for (Input<?> input : listInputs()) {
                 if (input.isDirty()) return true;
             }
         } catch (IllegalAccessException e) {
@@ -49,13 +46,15 @@ public abstract class CalculationNode extends Plugin {
         hasCheckedDirtiness = false;    
     }
 
-    void store() {
-        storeCalculations();
-    }
-
-    void restore() {
-        restoreCalculations();
-    }
+// RRB: these methods confused me quite a lot, so I burried them and
+//      renamed (re)storeCalculations => (re)store  
+//    void store() {
+//        storeCalculations();
+//    }
+//
+//    void restore() {
+//        restoreCalculations();
+//    }
 
     //=================================================================
     // The API of CalculationNode. These 3 functions can be overridden
@@ -66,16 +65,16 @@ public abstract class CalculationNode extends Plugin {
      *
      * This is called prior to the proposal of a new state
      **/
-    protected void storeCalculations() {
-
+    protected void store() {
+    	isDirty = false;
     }
 
     /** reverse of storeCalculations
      *
      * This is called when a proposal is rejected
      **/
-    protected void restoreCalculations() {
-
+    protected void restore() {
+    	isDirty = false;
     }
 
     protected boolean requiresRecalculation() {

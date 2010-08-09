@@ -23,15 +23,19 @@ public class StrictClockModel extends BranchRateModel.Base {
         }
     }
 
+    @Override
     public double getRateForBranch(Node node) {
         return mu;
     }
 
-//    public void prepare(final State state) {
-//        if (muParameter.get() != null) {
-//            mu = state.getParameter(muParameter).getValue();
-//        }
-//    }
+    @Override
+    public boolean requiresRecalculation() {
+    	if (muParameter.isDirty()) {
+    		mu = muParameter.get().getValue();
+        	return true;
+    	}
+    	return false;
+    }
 
     private double mu = 1.0;
 }
