@@ -55,14 +55,9 @@ import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
 
-/**
- * A generic uniform sampler/operator for use with a multi-dimensional parameter.
- */
-@Description("A generic uniform sampler/operator for use with a multi-dimensional parameter.")
+@Description("Randomly selects true internal tree node (i.e. not the root) and move node height uniformly in interval " +
+		"restricted by the nodes parent and children.")
 public class Uniform extends TreeOperator {
-
-//	public Input<Tree> m_tree = new Input<Tree>("beast.tree","beast.tree on which a uniform operation is performed");
-
 
     @Override
     public void initAndValidate() {
@@ -70,10 +65,10 @@ public class Uniform extends TreeOperator {
 
     /**
      * change the parameter and return the hastings ratio.
-     */
+	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
     @Override
-    public double proposal() throws Exception {
-        Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
+    public double proposal() {
+        Tree tree = m_tree.get(this);
 
         // randomly select internal node
         int nNodeCount = tree.getNodeCount();
@@ -86,21 +81,6 @@ public class Uniform extends TreeOperator {
         double fLower = Math.max(node.m_left.getHeight(), node.m_right.getHeight());
         final double newValue = (Randomizer.nextDouble() * (fUpper - fLower)) + fLower;
         node.setHeight(newValue);
-
-
-//        // find how much the height can be shifted around
-//        final double fChildRoom = Math.max(-node.m_left.m_fLength, -node.m_right.m_fLength);
-//        final double fNodeRoom = node.m_fLength;
-//        final double fDeltaLength = (Randomizer.nextDouble() * (fNodeRoom - fChildRoom)) + fChildRoom;
-//
-//        // apply height shift
-//        if (node.isRoot()) {
-//        	node.setLength(0);
-//        } else {
-//        	node.addLength(-fDeltaLength);
-//        }
-//        node.m_left.addLength(fDeltaLength);
-//        node.m_right.addLength(fDeltaLength);
 
         return 0.0;
     }

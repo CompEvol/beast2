@@ -92,6 +92,7 @@ public class MCMC extends Runnable {
         for (Logger log : m_loggers.get()) {
             log.init();
         }
+        
     } // init
 
     public void log(int nSample) {
@@ -154,6 +155,9 @@ public class MCMC extends Runnable {
 
     @Override
     public void run() throws Exception {
+        if (m_bRestoreFromFile) {
+        	state.restoreFromFile();
+        }
         long tStart = System.currentTimeMillis();
         Distribution posterior = posteriorInput.get();
         state.setEverythingDirty(true);
@@ -175,7 +179,6 @@ public class MCMC extends Runnable {
         double fOldLogLikelihood = posterior.calculateLogP();
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
             state.store(iSample);
-            state.stateNumber = iSample;
 
             Operator operator = operatorSet.selectOperator();
             double fLogHastingsRatio = operator.proposal();
@@ -235,6 +238,9 @@ public class MCMC extends Runnable {
         long tEnd = System.currentTimeMillis();
         System.out.println("Total calculation time: " + (tEnd - tStart) / 1000.0 + " seconds");
         close();
+
+        System.err.println(state);
+        state.storeToFile();
     } // run;
 
 } // class MCMC

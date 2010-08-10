@@ -48,7 +48,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     private double[] relativeRates;
     private double[] storedRelativeRates;
 
-    private EigenSystem eigenSystem;
+    @SuppressWarnings("unused")
+	private EigenSystem eigenSystem;
     
     private EigenDecomposition eigenDecomposition;
     private EigenDecomposition storedEigenDecomposition;

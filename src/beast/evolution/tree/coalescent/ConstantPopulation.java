@@ -2,7 +2,6 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 
 import java.util.Collections;
@@ -50,11 +49,7 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
      * @return initial population size.
      */
     public double getN0() {
-//    	if (!isDirty) {
-//    		return N0;
-//    	}
     	N0 = popSizeParameter.get().getValue();
-//    	isDirty = false;
         return N0;
     }
 

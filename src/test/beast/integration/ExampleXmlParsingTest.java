@@ -18,63 +18,82 @@ public class ExampleXmlParsingTest extends TestCase {
 
 	@Test
 	public void test_XmlExamples() {
-		Randomizer.setSeed(127);
-		String sDir = System.getProperty("user.dir") + "/examples";
-		System.out.println("Test XML Examples in " + sDir);
-		File sExampleDir = new File(sDir);
-		String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".xml");
+		try {
+			Randomizer.setSeed(127);
+			String sDir = System.getProperty("user.dir") + "/examples";
+			System.out.println("Test XML Examples in " + sDir);
+			File sExampleDir = new File(sDir);
+			String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".xml");
+				}
+			});
+	
+			List<String> sFailedFiles = new ArrayList<String>();
+			for (String sFileName : sExampleFiles) {
+				System.out.println("Processing " + sFileName);
+				XMLParser parser = new XMLParser();
+				try {
+					parser.parseFile(sDir + "/" + sFileName);
+				} catch (Exception e) {
+					System.out.println("ExampleXmlParsing::Failed for " + sFileName
+							+ ": " + e.getMessage());
+					sFailedFiles.add(sFileName);
+				}
+				System.out.println("Done " + sFileName);
 			}
-		});
-
-		List<String> sFailedFiles = new ArrayList<String>();
-		for (String sFileName : sExampleFiles) {
-			XMLParser parser = new XMLParser();
-			try {
-				parser.parseFile(sDir + "/" + sFileName);
-			} catch (Exception e) {
-				System.out.println("ExampleXmlParsing::Failed for " + sFileName
-						+ ": " + e.getMessage());
-				sFailedFiles.add(sFileName);
+			if (sFailedFiles.size() > 0) {
+				System.out.println("\n\test_XmlExamples::Failed for : " + sFailedFiles.toString());
+			} else {
+				System.out.println("\n\test_XmlExamples::Success");
 			}
+			assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
+		} catch (Exception e) {
+			System.out.println("exception thrown ");
 		}
-		assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
 	} // test_XmlExamples
 
 	@Test
 	public void test_ThatXmlExamplesRun() {
-		Randomizer.setSeed(127);
-		String sDir = System.getProperty("user.dir") + "/examples";
-		System.out.println("Test XML Examples in " + sDir);
-		File sExampleDir = new File(sDir);
-		String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".xml");
-			}
-		});
-
-		List<String> sFailedFiles = new ArrayList<String>();
-		for (String sFileName : sExampleFiles) {
-			XMLParser parser = new XMLParser();
-			try {
-				beast.core.Runnable runable = parser.parseFile(sDir + "/" + sFileName);
-				if (runable instanceof MCMC) {
-					MCMC mcmc = (MCMC) runable;
-					mcmc.setInputValue("preBurnin", 0);
-					mcmc.setInputValue("chainLength", 1000);
-					mcmc.run();
+		try {
+			Randomizer.setSeed(127);
+			String sDir = System.getProperty("user.dir") + "/examples";
+			System.out.println("Test that XML Examples run in " + sDir);
+			File sExampleDir = new File(sDir);
+			String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".xml");
 				}
-			} catch (Exception e) {
-				System.out.println("ExampleXmlParsing::Failed for " + sFileName
-						+ ": " + e.getMessage());
-				sFailedFiles.add(sFileName);
+			});
+	
+			List<String> sFailedFiles = new ArrayList<String>();
+			for (String sFileName : sExampleFiles) {
+				System.out.println("Processing " + sFileName);
+				XMLParser parser = new XMLParser();
+				try {
+					beast.core.Runnable runable = parser.parseFile(sDir + "/" + sFileName);
+					if (runable instanceof MCMC) {
+						MCMC mcmc = (MCMC) runable;
+						mcmc.setInputValue("preBurnin", 0);
+						mcmc.setInputValue("chainLength", 1000);
+						mcmc.run();
+					}
+				} catch (Exception e) {
+					System.out.println("ExampleXmlParsing::Failed for " + sFileName
+							+ ": " + e.getMessage());
+					sFailedFiles.add(sFileName);
+				}
+				System.out.println("Done " + sFileName);
 			}
+			if (sFailedFiles.size() > 0) {
+				System.out.println("\n\test_ThatXmlExamplesRun::Failed for : " + sFailedFiles.toString());
+			} else {
+				System.out.println("SUCCESS!!!");
+			}
+			assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());;
 		}
-		if (sFailedFiles.size() > 0) {
-			System.out.println("\n\nExampleXmlParsing::Failed for : " + sFailedFiles.toString());
-		}
-		assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
 	} // test_ThatXmlExamplesRun
 	
 } // ExampleXmlParsingTest

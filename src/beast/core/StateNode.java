@@ -1,11 +1,15 @@
 package beast.core;
 
+import java.io.PrintStream;
+
+import org.w3c.dom.Node;
+
 /**
  * This interface represents a node of the state. Concrete classes include Parameters and Trees.
  *
  * @author Alexei Drummond
  */
-public abstract class StateNode extends Plugin {
+public abstract class StateNode extends Plugin  implements Loggable, Cloneable {
     /** 
      * Pointer to state, null if not part of a State.
      */
@@ -24,22 +28,25 @@ public abstract class StateNode extends Plugin {
      * one available.
      */
     public StateNode getCurrentEditable(Operator operator) {
-    	return m_state.getEditableStateNode(index, operator);
+    	return m_state.getEditableStateNode(this.index, operator);
     }
 
     /**
-     * @return a deep copy of this node in the state. This will generally be called only for stochastic nodes.
+     * @return a deep copy of this node in the state. 
+     * This will generally be called only for stochastic nodes.
      */
     public abstract StateNode copy();
     /** other := this **/
     public abstract void assignTo(StateNode other);
     /** this := other **/
-    // TODO: public abstract void assignFrom(StateNode other);
+    public abstract void assignFrom(StateNode other);
+    public abstract void toXML(PrintStream out);
+    public abstract void fromXML(Node node);
 
     
     /** getting/setting dirtyness state **/
     boolean somethingIsDirty() {
-        return somethingIsDirty;
+        return this.somethingIsDirty;
     }
     
     public void setSomethingIsDirty(final boolean isDirty) {
@@ -52,7 +59,7 @@ public abstract class StateNode extends Plugin {
      * @return true if this node is acting as a random variable, false if this node is fixed and effectively data.
      */
     public final boolean isStochastic() {
-        return isStochastic;
+        return this.isStochastic;
     }
 
     /**
@@ -63,6 +70,16 @@ public abstract class StateNode extends Plugin {
         this.isStochastic = isStochastic;
     }
 
+    /** Scale StateNode with amount fScale and return the number of
+     * degrees of freedom used in this operation. This number varies
+     * for the different types of StateNodes. For example, for real
+     * valued n-dimensional parameters, it is n, for a tree it is the
+     * number of internal nodes being scaled.
+     * 
+     * throws Exception when StateNode become not valid, e.g. has
+     * values outside bounds or negative branch lengths
+     */
+    abstract public int scale(double fScale) throws Exception;
 
     boolean isStochastic = true;
 

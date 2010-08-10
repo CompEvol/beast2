@@ -60,7 +60,7 @@ public class BitFlipOperator extends Operator {
      */
 
     @Override
-    public double proposal() throws Exception {
+    public double proposal() {
 
         final BooleanParameter p = parameter.get(this);
 

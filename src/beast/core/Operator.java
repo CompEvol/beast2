@@ -35,11 +35,8 @@ public abstract class Operator extends Plugin {
 	/** override this for proposals,
 	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted
      *
-     * @throws Exception
      **/
-	public double proposal() throws Exception {
-		throw new Exception("proposal method not implemented");
-	}
+	abstract public double proposal();
 
 	/**
      * @return the relative weight which determines the probability this proposal is chosen

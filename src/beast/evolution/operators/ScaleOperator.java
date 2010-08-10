@@ -56,31 +56,16 @@ public class ScaleOperator extends Operator {
     
     @Override
     public void initAndValidate() {
-        // todo : implement this properly
         m_fScaleFactor = m_pScaleFactor.get();
         m_bIsTreeScaler = (m_pTree.get() != null);
     }
 
 
-    double m_fLower = Double.NEGATIVE_INFINITY;
-    double m_fUpper = Double.POSITIVE_INFINITY;
-
-    double getLower() {
-        return m_fLower;
-    }
-
-    double getUpper() {
-        return m_fUpper;
-    }
-
-    public ScaleOperator() {
-    }
-
-    int m_iVar = -1;
-    int m_nTreeID = -1;
-
+    /** override this for proposals,
+	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
     @Override
-    public double proposal() throws Exception {
+    public double proposal() {
+    	try {
         //double fScaleFactor = m_pScaleFactor.get();
 
         double hastingsRatio = 1.0;
@@ -111,7 +96,7 @@ public class ScaleOperator extends Operator {
                 hastingsRatio -= Math.log(scaleOne);
 
                 if (value < param.getLower() || value > param.getUpper()) {
-                    throw new Exception("Error scaleOperator 101: proposed value outside boundaries");
+                    return Double.NEGATIVE_INFINITY;
                 }
 
                 param.setValue(i, value);
@@ -135,7 +120,8 @@ public class ScaleOperator extends Operator {
             for (int i = 0; i < dim; i++) {
                 if (param.getValue(i) < param.getLower() ||
                         param.getValue(i) > param.getUpper()) {
-                    throw new Exception("Error scaleOperator 102: proposed value outside boundaries");
+                    return Double.NEGATIVE_INFINITY;
+                    //throw new Exception("Error scaleOperator 102: proposed value outside boundaries");
                 }
             }
         } else {
@@ -184,7 +170,8 @@ public class ScaleOperator extends Operator {
             double oldValue = param.getValue(index);
 
             if (oldValue == 0) {
-                throw new Exception("Error scaleOperator 104: parameter has value 0 and cannot be scaled");
+                return Double.NEGATIVE_INFINITY;
+                //throw new Exception("Error scaleOperator 104: parameter has value 0 and cannot be scaled");
             }
             double newValue = scale * oldValue;
 
@@ -200,6 +187,10 @@ public class ScaleOperator extends Operator {
         }
         hastingsRatio = Math.exp(hastingsRatio);
         return Math.log(hastingsRatio);
+    	} catch (Exception e) {
+    		// whatever went wrong, we want to abort this operation...
+            return Double.NEGATIVE_INFINITY;
+		}
     }
 
 

@@ -85,10 +85,9 @@ public class SubtreeSlide extends TreeOperator {
     /**
      * Do a probabilistic subtree slide move.
      *
-     * @return the log-transformed hastings ratio
-     */
+	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
     @Override
-    public double proposal() throws Exception {
+    public double proposal() {
         Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
 
         //calculateHeightsFromLengths(beast.tree);
@@ -290,7 +289,7 @@ public class SubtreeSlide extends TreeOperator {
 //
 //        }
 
-        if (logq == Double.NEGATIVE_INFINITY) throw new Exception("invalid slide");
+//        if (logq == Double.NEGATIVE_INFINITY) throw new Exception("invalid slide");
 
 //        if (scaledDirichletBranches) {
 //            if (oldTreeHeight != beast.tree.getRoot().getHeight())
@@ -310,7 +309,7 @@ public class SubtreeSlide extends TreeOperator {
         }
     }
 
-    private int intersectingEdges(Node node, double height, List<Node> directChildren) throws Exception {
+    private int intersectingEdges(Node node, double height, List<Node> directChildren) { 
         final Node parent = node.getParent();
 
         if (parent.getHeight() < height) return 0;

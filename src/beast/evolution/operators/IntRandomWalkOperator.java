@@ -26,7 +26,7 @@ public class IntRandomWalkOperator extends Operator {
      * returns log of hastingRatio, or Double.NEGATIVE_INFINITY if proposal should not be accepted *
      */
     @Override
-    public double proposal() throws Exception {
+    public double proposal() {
 
         IntegerParameter param = parameterInput.get(this);//(IntegerParameter) state.getStateNode(parameterInput);
 

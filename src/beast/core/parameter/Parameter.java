@@ -32,7 +32,7 @@ import java.util.Arrays;
 
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
-public abstract class Parameter<T> extends StateNode implements Loggable {
+public abstract class Parameter<T> extends StateNode {
     public Input<java.lang.Integer> m_nDimension =
             new Input<java.lang.Integer>("dimension", "dimension of the paperameter(default 1)", 1);
 
@@ -74,17 +74,6 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
     	Arrays.fill(m_bIsDirty, isDirty);
 	}
 
-    //    @Override
-//    public void setDirty(final boolean dirty) {
-//    	super.setDirty(dirty);
-//    	Arrays.fill(m_bIsDirty, dirty);
-//    }
-
-    /* number of the id, to find it quickly in the list of parameters of the State **/
-    /*
-     * initialised by State.initAndValidate *
-     */
-
     /*
      * various setters & getters *
      */
@@ -125,26 +114,30 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         m_fUpper = fUpper;
     }
 
-    public void setValue(T fValue) throws Exception {
+    public void setValue(T fValue) {
         if (isStochastic()) {
             values[0] = fValue;
             m_bIsDirty[0] = true;
             // next line is superfluous, since it is already done in the State
             // setSomethingIsDirty(true);
-        } else throw new Exception("Can't set the value of a fixed parameter.");
+        } else {
+        	System.err.println("Can't set the value of a fixed parameter.");
+        	System.exit(1);
+        }
     }
 
-    public void setValue(int iParam, T fValue) throws Exception {
+    public void setValue(int iParam, T fValue) {
         if (isStochastic()) {
             values[iParam] = fValue;
             m_bIsDirty[iParam] = true;
             // next line is superfluous, since it is already done in the State
             // setSomethingIsDirty(true);
-        } else throw new Exception("Can't set the value of a fixed parameter.");
+        } else {
+	    	System.err.println("Can't set the value of a fixed parameter.");
+	        System.exit(1);
+	    }
     }
 
-    public void prepare() throws Exception {
-    }
 
     public String toString() {
         final StringBuffer buf = new StringBuffer();
@@ -155,6 +148,47 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
             buf.append(value).append(" ");
         }
         return buf.toString();
+    }
+
+
+    @Override
+    public Parameter<T> copy() {
+    	try {
+	        @SuppressWarnings("unchecked")
+			Parameter<T> copy = (Parameter<T>) this.clone();
+	        copy.values = values.clone();//new Boolean[values.length];
+	        copy.m_bIsDirty = new boolean[values.length];
+	        return copy;
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return null;
+    }
+
+    @Override
+    public void assignTo(StateNode other) {
+        @SuppressWarnings("unchecked")
+        Parameter<T> copy = (Parameter<T>) other;
+        copy.setID(getID());
+        copy.index = index;
+        copy.values = values.clone();
+        //System.arraycopy(values, 0, copy.values, 0, values.length);
+        copy.m_fLower = m_fLower;
+        copy.m_fUpper = m_fUpper;
+        copy.m_bIsDirty = new boolean[values.length];
+    }
+
+    @Override
+    public void assignFrom(StateNode other) {
+        @SuppressWarnings("unchecked")
+        Parameter<T> source = (Parameter<T>) other;
+        setID(source.getID());
+        //index = source.index;
+        values = source.values.clone();
+        //System.arraycopy(source.values, 0, values, 0, values.length);
+        m_fLower = source.m_fLower;
+        m_fUpper = source.m_fUpper;
+        m_bIsDirty = new boolean[source.values.length];
     }
 
     /**
@@ -173,7 +207,22 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         }
     }
 
+    @Override
     public void close(PrintStream out) {
         // nothing to do
     }
+
+    @Override
+    public void toXML(PrintStream out) {
+    	out.print("<parameter id='" + getID()+"'");
+    	out.print(" dimension='" + getDimension() +"'");
+    	out.print(" lower='" + getLower() +"'");
+    	out.print(" upper='" + getUpper() +"'>");
+    	for (int i = 0; i < values.length - 1; i++) {
+    		out.print(values[i] + ",");
+    	}
+		out.print(values[values.length-1]);
+    	out.print("</parameter>\n");
+    }
+
 } // class Parameter

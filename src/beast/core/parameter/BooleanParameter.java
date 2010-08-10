@@ -26,9 +26,11 @@ package beast.core.parameter;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.StateNode;
 
 import java.io.PrintStream;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * @author Joseph Heled
@@ -44,26 +46,13 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
 
     /**
      * Constructor for testing.
-     *
-     * @param value
-     * @param dimension
-     * @throws Exception
      */
     public BooleanParameter(Integer value, Integer dimension) throws Exception {
-
-        m_pValues.setValue(value, this);
-        m_nDimension.setValue(dimension, this);
-        initAndValidate();
+    	init(value, dimension);
     }
-
-
-//    public Boolean getValue() {
-//        return values[0];
-//    }
 
     @Override
     public void initAndValidate() throws Exception {
-
         values = new Boolean[m_nDimension.get()];
         for (int i = 0; i < values.length; i++) {
             values[i] = m_pValues.get();
@@ -71,38 +60,35 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
         super.initAndValidate();
     }
 
-    /**
-     * deep copy *
-     */
-    @Override
-    public Parameter<?> copy() {
-        Parameter<Boolean> copy = new BooleanParameter();
-        copy.setID(getID());
-        copy.index = index;
-        copy.values = new Boolean[values.length];
-        System.arraycopy(values, 0, copy.values, 0, values.length);
-        copy.m_bIsDirty = new boolean[values.length];
-        return copy;
-    }
 
-    @SuppressWarnings("unchecked")
+    // RRB: if you remove next line, please document properly!
     @Override
-    public void assignTo(StateNode other) {
-        Parameter<Boolean> copy = (Parameter<Boolean>) other;
-        copy.setID(getID());
-        copy.index = index;
-        copy.values = new Boolean[values.length];
-        System.arraycopy(values, 0, copy.values, 0, values.length);
-        copy.m_fLower = m_fLower;
-        copy.m_fUpper = m_fUpper;
-        copy.m_bIsDirty = new boolean[values.length];
-    }
-
     public void log(int nSample, PrintStream out) {
-        BooleanParameter var = (BooleanParameter) getCurrent();//state.getStateNode(m_sID);
+        BooleanParameter var = (BooleanParameter) getCurrent();
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
             out.print(var.getValue(iValue) + "\t");
         }
+    }
+
+	@Override
+	public int scale(double fScale) {
+		// nothing to do
+		return 0;
+	}
+
+	@Override
+    public void fromXML(Node node) {
+    	NamedNodeMap atts = node.getAttributes();
+    	setID(atts.getNamedItem("id").getNodeValue());
+//    	setLower(Boolean.parseBoolean(atts.getNamedItem("lower").getNodeValue()));
+//    	setUpper(Boolean.parseBoolean(atts.getNamedItem("upper").getNodeValue()));
+    	int nDimension = Integer.parseInt(atts.getNamedItem("dimension").getNodeValue());
+    	values = new Boolean[nDimension];
+    	String sValue = node.getTextContent();
+    	String [] sValues = sValue.split(",");
+    	for (int i = 0; i < sValues.length; i++) {
+    		values[i] = Boolean.parseBoolean(sValues[i]);
+    	}
     }
 }

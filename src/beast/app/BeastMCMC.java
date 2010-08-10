@@ -60,11 +60,15 @@ public class BeastMCMC {
 	 * @throws Exception **/
 	void parseArgs(String[] args) throws Exception {
 		int i = 0;
+		boolean bResume = false;
 		try {
 			while (i < args.length) {
 				int iOld = i;
 				if (i < args.length) {
 					if (args[i].equals("")) {
+						i += 1;
+					} else if (args[i].equals("-resume")) {
+						bResume = true;
 						i += 1;
 					} else if (args[i].equals("-seed")) {
 						m_nSeed = Integer.parseInt(args[i + 1]);
@@ -88,14 +92,21 @@ public class BeastMCMC {
 			throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
 		}
 		System.err.println("File: " + m_sFileName + " seed: " + m_nSeed + " threads: " + m_nThreads);
+		if (bResume) {
+			System.err.println("Resuming from file");
+		}
 		Randomizer.setSeed(m_nSeed);
 		m_runnable = new XMLParser().parseFile(m_sFileName);
+		if (bResume) {
+			m_runnable.restoreFromFile();
+		}
 	} // parseArgs
 
 	public static String getUsage() {
 		return 	"Usage: BeastMCMC [options] <Beast.xml>\n" +
 				"where <Beast.xml> the name of a file specifying a Beast run\n" +
 				"and the following options are allowed:\n" +
+				"-resume : read state that was stored at the end of the last run from file\n" +
 				"-seed <int> : sets random number seed (default 127)\n" +
 				"-threads <int> : sets number of threads (default 1)\n";
 	} // getUsage

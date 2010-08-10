@@ -24,8 +24,7 @@ public class HeapSort {
      * @param list    the list of comparable objects
      * @param indices an array of indices describing an ascending order of the comparable object in the list
      */
-    @SuppressWarnings("unchecked")
-	public static void sort(List<Comparable> list, int[] indices) {
+	public static void sort(@SuppressWarnings("rawtypes") List<Comparable> list, int[] indices) {
 
         // ensures we are starting with valid indices
         for (int i = 0; i < indices.length; i++) {
@@ -197,7 +196,7 @@ public class HeapSort {
      * @param upper   end index in array to heapify
      */
     @SuppressWarnings("unchecked")
-	private static void adjust(List<Comparable> list, int[] indices, int lower, int upper) {
+	private static void adjust(@SuppressWarnings("rawtypes") List<Comparable> list, int[] indices, int lower, int upper) {
 
         int j, k;
         int temp;
@@ -229,7 +228,7 @@ public class HeapSort {
      * @param upper upper index of heapify
      */
     @SuppressWarnings("unchecked")
-	private static void adjust(Comparable[] array, int lower, int upper) {
+	private static void adjust(@SuppressWarnings("rawtypes") Comparable[] array, int lower, int upper) {
 
         int j, k;
         Comparable<?> temp;
@@ -262,7 +261,7 @@ public class HeapSort {
      * @param upper      upper index of heapify
      */
     @SuppressWarnings("unchecked")
-	private static void adjust(Object[] array, Comparator comparator, int lower, int upper) {
+	private static void adjust(Object[] array, @SuppressWarnings("rawtypes") Comparator comparator, int lower, int upper) {
 
         int j, k;
         Object temp;

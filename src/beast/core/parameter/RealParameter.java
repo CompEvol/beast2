@@ -3,9 +3,11 @@ package beast.core.parameter;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.StateNode;
 
 import java.io.PrintStream;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * @author Alexei Drummond
@@ -23,31 +25,24 @@ public class RealParameter extends Parameter<Double> {
 
     /**
      * Constructor for testing.
-     *
-     * @param value
-     * @param lower
-     * @param upper
-     * @param dimension
-     * @throws Exception
      */
     public RealParameter(Double value, Double lower, Double upper, Integer dimension) throws Exception {
-
-        m_pValues.setValue(value, this);
-        lowerValueInput.setValue(lower, this);
-        upperValueInput.setValue(upper, this);
-        m_nDimension.setValue(dimension, this);
-        initAndValidate();
+    	init(value, lower, upper, dimension);
     }
 
-
-    public Double getValue() {
-        return values[0];
-    }
 
     @Override
     public void initAndValidate() throws Exception {
-        m_fLower = lowerValueInput.get();
-        m_fUpper = upperValueInput.get();
+    	if (lowerValueInput.get() != null) {
+    		m_fLower = lowerValueInput.get();
+    	} else {
+    		m_fLower = Double.NEGATIVE_INFINITY;
+    	}
+    	if (upperValueInput.get() != null) {
+    		m_fUpper = upperValueInput.get();
+    	} else {
+    		m_fUpper = Double.POSITIVE_INFINITY;
+    	}
 
         System.out.println("Lower = " + m_fLower);
         System.out.println("Upper = " + m_fUpper);
@@ -59,51 +54,40 @@ public class RealParameter extends Parameter<Double> {
         super.initAndValidate();
     }
 
-//    public void setValue(Double fValue) throws Exception {
-//
-//        if (fValue < getLower() || fValue > getUpper()) throw new IllegalArgumentException("new value outside bounds!");
-//
-//        if (isStochastic()) {
-//            values[0] = fValue;
-//            setDirty(true);
-//        } else throw new Exception("Can't set the value of a fixed parameter.");
-//    }
-
-
-    /**
-     * deep copy *
-     */
+    // RRB: if you remove next line, please document properly!
     @Override
-    public Parameter<?> copy() {
-        RealParameter copy = new RealParameter();
-        copy.setID(getID());
-        copy.index = index;
-        copy.values = new java.lang.Double[values.length];
-        System.arraycopy(values, 0, copy.values, 0, values.length);
-        copy.m_fLower = m_fLower;
-        copy.m_fUpper = m_fUpper;
-        copy.m_bIsDirty = new boolean[values.length];
-        return copy;
-    }
-
-    @Override
-    public void assignTo(StateNode other) {
-        RealParameter copy = (RealParameter) other;
-        copy.setID(getID());
-        copy.index = index;
-        copy.values = new java.lang.Double[values.length];
-        System.arraycopy(values, 0, copy.values, 0, values.length);
-        copy.m_fLower = m_fLower;
-        copy.m_fUpper = m_fUpper;
-        copy.m_bIsDirty = new boolean[values.length];
-    }
-
     public void log(int nSample, PrintStream out) {
-        RealParameter var = (RealParameter) getCurrent();//state.getStateNode(m_sID);
+        RealParameter var = (RealParameter) getCurrent();
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
             out.print(var.getValue(iValue) + "\t");
         }
+    }
+
+    @Override
+	public int scale(double fScale) throws Exception {
+    	for (int i = 0; i < values.length; i++) {
+    		values[i] *= fScale;
+    		if (values[i] < m_fLower || values[i] > m_fUpper) {
+    			throw new Exception("parameter scaled our of range");
+    		}
+    	}
+		return values.length;
+	}
+
+    @Override
+    public void fromXML(Node node) {
+    	NamedNodeMap atts = node.getAttributes();
+    	setID(atts.getNamedItem("id").getNodeValue());
+    	setLower(Double.parseDouble(atts.getNamedItem("lower").getNodeValue()));
+    	setUpper(Double.parseDouble(atts.getNamedItem("upper").getNodeValue()));
+    	int nDimension = Integer.parseInt(atts.getNamedItem("dimension").getNodeValue());
+    	values = new Double[nDimension];
+    	String sValue = node.getTextContent();
+    	String [] sValues = sValue.split(",");
+    	for (int i = 0; i < sValues.length; i++) {
+    		values[i] = Double.parseDouble(sValues[i]);
+    	}
     }
 }
 

@@ -72,18 +72,13 @@ public class WilsonBalding extends TreeOperator {
     /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
+    /** override this for proposals,
+	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
     @Override
-    public double proposal() throws Exception {
-        Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
-//		calculateHeightsFromLengths(beast.tree);
+    public double proposal() {
+        Tree tree = m_tree.get(this);
 
         double oldMinAge, newMinAge, newRange, oldRange, newAge, fHastingsRatio;
-
-        //Bchoose
-
-        //for (int n =0; n < beast.tree.getNodeCount(); n++) {
-        //	System.out.println(n + " " + ( (beast.tree.getNode(n) == null) ? "null" : beast.tree.getNode(n).getId()));
-        //}
 
         // choose a random node avoiding root
         final int nodeCount = tree.getNodeCount();
@@ -106,17 +101,12 @@ public class WilsonBalding extends TreeOperator {
         // disallow moves that change the root.
         if (j.isRoot() || iP.isRoot()) {
             return Double.NEGATIVE_INFINITY;
-            //throw new Exception("Root changes not allowed!");
         }
 
         if (jP.getNr() == iP.getNr() || j.getNr() == iP.getNr() || jP.getNr() == i.getNr())
             return Double.NEGATIVE_INFINITY;
-        //throw new Exception("move failed");
 
         final Node CiP = getOtherChild(iP, i);
-//        if (CiP.getNr() == j.getNr()) {
-//        	return Double.NEGATIVE_INFINITY;
-//        }
 
 
         Node PiP = CiP.getParent();
@@ -129,66 +119,42 @@ public class WilsonBalding extends TreeOperator {
         fHastingsRatio = newRange / Math.abs(oldRange);
 
         //update
-
         if (j.isRoot()) {
+            // 1. remove edges <iP, CiP>
+            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
 
             replace(iP, CiP, j);
             replace(PiP, iP, CiP);
-            // 1. remove edges <iP, CiP>
-            //beast.tree.removeChild(parent, CiP);
-            //beast.tree.removeChild(PiP, parent);
-
-            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
-            //beast.tree.addChild(parent, j);
-            //beast.tree.addChild(PiP, CiP);
 
             // iP is the new root
             iP.setParent(null);
             tree.setRoot(iP);
 
         } else if (iP.isRoot()) {
-            replace(jP, j, iP);
-            replace(iP, CiP, iP);
             // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
-            //beast.tree.removeChild(k, j);
-            //beast.tree.removeChild(parent, CiP);
-
             // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
-            //beast.tree.addChild(parent, j);
-            //beast.tree.addChild(k, parent);
 
-            //CiP is the new root
+        	replace(jP, j, iP);
+            replace(iP, CiP, iP);
+
+            // CiP is the new root
             CiP.setParent(null);
             tree.setRoot(CiP);
 
         } else {
-            // disconnect iP
+            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
+            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
+
+        	// disconnect iP
             replace(iP.getParent(), iP, CiP);
             // re-attach, first child node to iP
             replace(iP, CiP, j);
             // then parent node of j to iP
             replace(jP, j, iP);
-
-
-            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
-            //beast.tree.removeChild(k, j);
-            //beast.tree.removeChild(parent, CiP);
-            //beast.tree.removeChild(PiP, parent);
-
-            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
-            //beast.tree.addChild(parent, j);
-            //beast.tree.addChild(k, parent);
-            //beast.tree.addChild(PiP, CiP);
         }
 
         iP.setHeight(newAge);
 
-//        if (beast.tree.getExternalNodeCount() != tipCount) {
-//            int newCount = beast.tree.getExternalNodeCount();
-//            throw new RuntimeException("Lost some tips in modified SPR! (" +
-//                    tipCount + "-> " + newCount + ")");
-//        }
-//       	setLengthsFromHeights(beast.tree.getRoot());
         return Math.log(fHastingsRatio);
     }
 

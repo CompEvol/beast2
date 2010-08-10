@@ -26,15 +26,17 @@ package beast.evolution.tree;
 
 
 import beast.core.Description;
-import beast.core.Loggable;
 import beast.core.StateNode;
+import beast.util.TreeParser;
 
 import java.io.PrintStream;
+
+import org.w3c.dom.NamedNodeMap;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
-public class Tree extends StateNode implements Loggable {
+public class Tree extends StateNode {
 
 //    @SuppressWarnings("unchecked")
 //    public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
@@ -145,6 +147,20 @@ public class Tree extends StateNode implements Loggable {
         //tree.m_state = m_state;
     }
 
+    @Override
+    public void assignFrom(StateNode other) {
+        Tree tree = (Tree) other;
+        Node[] nodes = new Node[nodeCount];
+        listNodes(tree.root, nodes);
+        m_sID = tree.m_sID;
+        //index = index.tree;
+        root.assignFrom(nodes);
+        root = nodes[root.getNr()];
+        nodeCount = tree.nodeCount;
+//        tree.treeTraitsInput = treeTraitsInput;
+        //tree.m_state = m_state;
+    }
+
     /** convert tree to array representation **/
     void listNodes(Node node, Node[] nodes) {
         nodes[node.getNr()] = node;
@@ -248,5 +264,33 @@ public class Tree extends StateNode implements Loggable {
     public void close(PrintStream out) {
         out.print("End;");
     }
+
+	@Override
+	public int scale(double fScale) throws Exception {
+		root.scale(fScale);
+		return nodeCount/2;
+	}
+
+	@Override
+	public void toXML(PrintStream out) {
+		out.print("<tree id='" + getID() + "' nodeCount='"+ getNodeCount()+"'>");
+		out.print(root.toString());
+		out.print("</tree>\n");
+	}
+
+	@Override
+	public void fromXML(org.w3c.dom.Node node) {
+		String sNewick = node.getTextContent();
+    	NamedNodeMap atts = node.getAttributes();
+    	nodeCount = Integer.parseInt(atts.getNamedItem("nodeCount").getNodeValue());
+		TreeParser parser = new TreeParser();
+		try {
+			parser.m_nOffset.setValue(0, parser);
+			root = parser.parseNewick(sNewick);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 } // class Tree

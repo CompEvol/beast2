@@ -127,9 +127,9 @@ public class Node extends Plugin {
 		}
 //		buf.append("["+m_iLabel+"]");
          buf.append(":").append(String.format("%3.3f", getLength()));
-		for (int i = 0; i < m_bIsDirty; i++) {
-			buf.append("X");
-		}
+//		for (int i = 0; i < m_bIsDirty; i++) {
+//			buf.append("X");
+//		}
 		return buf.toString();
 	}
 
@@ -268,6 +268,22 @@ public class Node extends Plugin {
 		}
 	}
 	
+	public void assignFrom(Node [] nodes) {
+		Node node = nodes[getNr()];
+		m_fHeight = node.m_fHeight;
+		m_iLabel = node.m_iLabel;
+		m_sMetaData = node.m_sMetaData;
+		m_Parent = null;
+		m_sID = node.m_sID;
+		if (node.m_left != null) {
+			m_left = nodes[node.m_left.getNr()];
+			m_left.assignFrom(nodes);
+			m_right = nodes[node.m_right.getNr()];
+			m_right.assignFrom(nodes);
+			m_left.m_Parent = node;
+			m_right.m_Parent = node;
+		}
+	}
 	
 	public void setMetaData(String sPattern, Object fValue) {
 		m_bIsDirty = Tree.IS_DIRTY;
@@ -280,12 +296,15 @@ public class Node extends Plugin {
 	/** scale height of this node and all its descendants
      * @param fScale scale factor
      **/
-	public void scale(double fScale) {
+	public void scale(double fScale) throws Exception {
 		m_fHeight *= fScale;
 		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
 			m_left.scale(fScale);
 			m_right.scale(fScale);
+			if (m_fHeight < m_left.m_fHeight || m_fHeight < m_right.m_fHeight) {
+				throw new Exception("Scale gives negative branch length");
+			}
 		}
 	}
 

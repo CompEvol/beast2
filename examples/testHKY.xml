@@ -53,7 +53,7 @@
     </tree>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="5000000"> <!--autoOptimize="true"-->
+    <run spec="MCMC" id="mcmc" chainLength="10000000">
         <state storeEvery='100000'>
             <stateNode idref="hky.kappa"/>
             <stateNode idref="tree"/>

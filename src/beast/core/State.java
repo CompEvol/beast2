@@ -24,14 +24,23 @@
 */
 package beast.core;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import beast.core.Input;
-import beast.util.XMLProducer;
 
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of parameters and trees.")
@@ -89,21 +98,59 @@ public class State extends Plugin {
     	m_changedStateNodeCode = new BitSet(stateNode.length);
     	
     	if (m_nStoreEvery> 0 && nSample > 0 && nSample % m_nStoreEvery == 0) {
-    		try {
-    			PrintStream out = new PrintStream(STATE_STORAGE_FILE);
-    			XMLProducer xmlProducer = new XMLProducer();
-    			out.print("<beast version='2.0'>\n");
-    			for(StateNode node : stateNode) {
-    				out.print(xmlProducer.stateNodeToXML(node));
-    				out.print(node.toString());
-    			}
-    			out.print("</beast>\n");
-    			out.close();
-    		} catch (Exception e) {
-				e.printStackTrace();
-			}
+    		storeToFile();
     	}
     }
+
+    public void storeToFile() {
+		try {
+			PrintStream out = new PrintStream(STATE_STORAGE_FILE);
+			out.print("<itsabeastystatewerein version='2.0'>\n");
+			for(StateNode node : stateNode) {
+				node.toXML(out);
+			}
+			out.print("</itsabeastystatewerein>\n");
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+    public void restoreFromFile() {
+		try {
+			System.out.println("Restoring from file");
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        Document doc= factory.newDocumentBuilder().parse(new File(STATE_STORAGE_FILE));
+	        doc.normalize();
+	        NodeList nodes = doc.getElementsByTagName("*");
+	        Node topNode = nodes.item(0);
+	        NodeList children = topNode.getChildNodes();
+	        for (int iChild = 0; iChild < children.getLength(); iChild++) {
+	        	Node child = children.item(iChild);
+	        	if (child.getNodeType() == Node.ELEMENT_NODE) {
+	        		String sID = child.getAttributes().getNamedItem("id").getNodeValue();
+	        		int iStateNode = 0;
+	        		while (!stateNode[iStateNode].getID().equals(sID)) {
+	        			iStateNode ++;
+	        		}
+	        		StateNode stateNode2 = stateNode[iStateNode].copy();
+	        		stateNode2.fromXML(child);
+	        		stateNode[iStateNode].assignFrom(stateNode2);
+	        	}
+	        }
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+    }
+
     
     /** Restore a State. 
      * This assigns the state to the stored state 
@@ -114,9 +161,15 @@ public class State extends Plugin {
     	stateNode = tmp;
     }
 
+    /** return currently valid state node **/
     public StateNode getStateNode(int nID) {
         return stateNode[nID];
     }
+
+    /** Return StateNode that can be changed, but later restored
+     * if necessary. If there is no copy stored already, a copy is 
+     * made first, and the StateNode is marked as being dirty.
+     */
     protected StateNode getEditableStateNode(int nID, Operator operator) {
     	if (stateNode[nID] == storedStateNode[nID]) {
     		storedStateNode[nID] = stateNode[nID].copy();
@@ -128,9 +181,6 @@ public class State extends Plugin {
         return stateNode[nID];
     }
     
-    public int stateNumber = 0;
-
-
 
     /**
      * primitive operations on the list of parameters *
@@ -149,45 +199,6 @@ public class State extends Plugin {
         stateNode = h;
     }
 
-
-    public boolean isDirty(Input<? extends StateNode> p) {
-        return stateNode[p.get().index].somethingIsDirty();
-    }
-
-    public boolean isDirty(int nID) {
-        return stateNode[nID].somethingIsDirty();
-    }
-
-
-
-    /**
-     * multiply a value by a given amount *
-     */
-//    public void mulValue(double fValue, int m_nParamID) {
-//        ((Parameter) m_parameters[m_nParamID]).values[0] *= fValue;
-//        m_parameters[m_nParamID].m_bIsDirty = State.IS_DIRTY;
-//    }
-//
-//    public void mulValue(int iParam, double fValue, Parameter param) {
-//        param.values[iParam] *= fValue;
-//        param.m_bIsDirty = State.IS_DIRTY;
-//    }
-//
-//    public void mulValues(double fValue, Parameter param) {
-//        double[] values = param.values;
-//        for (int i = 0; i < values.length; i++) {
-//            values[i] *= fValue;
-//        }
-//        param.m_bIsDirty = State.IS_DIRTY;
-//    }
-//    public State copy() throws Exception {
-//        State copy = new State();
-//        copy.stateNode = new StateNode[stateNode.length];
-//        for (int i = 0; i < stateNode.length; i++) {
-//            copy.stateNode[i] = stateNode[i].copy();
-//        }
-//        return copy;
-//    }
 
     public String toString() {
     	if (stateNode == null) {
@@ -302,6 +313,7 @@ public class State extends Plugin {
 			System.exit(1);
 		}
     	m_map.put(m_changedStateNodeCode, calcNodes);
+    	//System.out.println("Map size is now " + m_map.size());
     	return calcNodes;
     } // getCurrentCalculationNodes
 
@@ -391,3 +403,19 @@ public class State extends Plugin {
     }
    
 } // class State
+
+
+/*
+todo:
+	State toXml fromXML
+	Traits
+	Tip heights
+
+
+done:
+	State - do the store, restore, requires calculation 
+	code review: naming booleans, indices
+	listPlugins => listActivePlugins
+	make StateNode scaleable
+	StateNode assignFrom
+*/

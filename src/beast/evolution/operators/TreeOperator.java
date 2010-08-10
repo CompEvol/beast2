@@ -52,43 +52,6 @@ abstract public class TreeOperator extends Operator {
     	}
     }
 
-
-//    double [] m_fHeights;
-//	public void calculateHeightsFromLengths(Tree beast.tree) {
-//		m_fHeights = new double[beast.tree.getNodeCount()];
-//		Node root = beast.tree.getRoot();
-//		calculateHeightsFromLengths(root);
-//	} // calculateHeightsFromLengths
-//
-//	void calculateHeightsFromLengths(Node node) {
-//		Node parent = node.getParent();
-//		if (m_fHeights[node.getNr()] != 0) {
-//			System.err.println("heights double properly initialized");
-//		}
-//		if (node.getLength() < 0) {
-//			System.err.println("negative length");
-//		}
-//		if (parent != null) {
-//			m_fHeights[node.getNr()] = m_fHeights[parent.getNr()] - node.m_fLength;
-//		}
-//		if (!node.isLeaf()) {
-//			calculateHeightsFromLengths(node.m_left);
-//			calculateHeightsFromLengths(node.m_right);
-//		}
-//	} // calculateHeightsFromLengths
-
-//	public void setNodeHeight(Node node, double fHeight) throws Exception {
-//		m_fHeights[node.getNr()] = fHeight;
-////		double fOldHeight = m_fHeights[node.getNr()];
-////		double fDeltaLength = fHeight - fOldHeight;
-////		node.addLength(-fDeltaLength);
-////		if (!node.isLeaf()) {
-////			node.m_left.addLength(fDeltaLength);
-////			node.m_right.addLength(fDeltaLength);
-////		}
-////		m_fHeights[node.getNr()] += fDeltaLength;
-//	} // setNodeHeight
-
 	/** replace child with another node
      * @param node
      * @param child
@@ -108,26 +71,4 @@ abstract public class TreeOperator extends Operator {
 //		replacement.setLength(m_fHeights[node.getNr()] - m_fHeights[replacement.getNr()]);
 	}
 
-//	void setLengthsFromHeights(Node node) {
-//		if (node.isRoot()) {
-//			node.m_fLength = 0;
-//		} else {
-//			double fLength = m_fHeights[node.getParent().getNr()] - m_fHeights[node.getNr()];
-//			if (Math.abs(node.m_fLength - fLength) > 1e-100) {
-//				node.setLength(fLength);
-//				if (fLength < 0) {
-//					int h = 3;
-//					h++;
-//				}
-//			}
-//		}
-//		if (!node.isLeaf()) {
-//			setLengthsFromHeights(node.m_left);
-//			setLengthsFromHeights(node.m_right);
-//		}
-//	} // setLengthFromHeights
-//
-//	double height(Node node) {
-//		return m_fHeights[node.getNr()];
-//	}
 }

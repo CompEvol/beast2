@@ -72,8 +72,10 @@ public class Exchange extends TreeOperator {
     public void initAndValidate() {
     }
 
+    /** override this for proposals,
+	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
     @Override
-    public double proposal() throws Exception {
+    public double proposal() {
         Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
 //		calculateHeightsFromLengths(beast.tree);
 
@@ -93,7 +95,7 @@ public class Exchange extends TreeOperator {
     /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
-    public double narrow(Tree tree) throws Exception {
+    public double narrow(Tree tree) {
         final int nNodes = tree.getNodeCount();
         final Node root = tree.getRoot();
 
@@ -129,7 +131,7 @@ public class Exchange extends TreeOperator {
     /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
-    public double wide(Tree tree) throws Exception {
+    public double wide(Tree tree) {
 
         final int nodeCount = tree.getNodeCount();
         final Node root = tree.getRoot();
@@ -163,7 +165,7 @@ public class Exchange extends TreeOperator {
     /* exchange sub-trees whose root are i and j */
 
     protected void exchangeNodes(Node i, Node j,
-                                 Node iP, Node jP) throws Exception {
+                                 Node iP, Node jP) {
         // precondition iP -> i & jP -> j
         replace(iP, i, j);
         replace(jP, j, i);

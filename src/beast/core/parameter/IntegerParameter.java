@@ -3,9 +3,11 @@ package beast.core.parameter;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.StateNode;
 
 import java.io.PrintStream;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 
 /**
@@ -24,31 +26,23 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
 
     /**
      * Constructor for testing.
-     *
-     * @param value
-     * @param lower
-     * @param upper
-     * @param dimension
-     * @throws Exception
      */
     public IntegerParameter(Integer value, Integer lower, Integer upper, Integer dimension) throws Exception {
-
-        m_pValues.setValue(value, this);
-        lowerValueInput.setValue(lower, this);
-        upperValueInput.setValue(upper, this);
-        m_nDimension.setValue(dimension, this);
-        initAndValidate();
-    }
-
-
-    public Integer getValue() {
-        return values[0];
+    	init(value, lower, upper, dimension);
     }
 
     @Override
     public void initAndValidate() throws Exception {
-        m_fLower = lowerValueInput.get();
-        m_fUpper = upperValueInput.get();
+    	if (lowerValueInput.get() != null) {
+    		m_fLower = lowerValueInput.get();
+    	} else {
+    		m_fLower = Integer.MIN_VALUE;
+    	}
+    	if (upperValueInput.get() != null) {
+    		m_fUpper = upperValueInput.get();
+    	} else {
+    		m_fUpper = Integer.MAX_VALUE;
+    	}
         values = new Integer[m_nDimension.get()];
         for (int i = 0; i < values.length; i++) {
             values[i] = m_pValues.get();
@@ -56,52 +50,35 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         super.initAndValidate();
     }
 
-    /**
-     * deep copy *
-     */
+
     @Override
-    public Parameter<?> copy() {
-        Parameter<Integer> copy = new IntegerParameter();
-        copy.setID(getID());
-        copy.index = index;
-        copy.values = new Integer[values.length];
-        System.arraycopy(values, 0, copy.values, 0, values.length);
-        copy.m_fLower = m_fLower;
-        copy.m_fUpper = m_fUpper;
-        copy.m_bIsDirty = new boolean[values.length];
-        return copy;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void assignTo(StateNode other) {
-        Parameter<Integer> copy = (Parameter<Integer>) other;
-        copy.setID(getID());
-        copy.index = index;
-        copy.values = new Integer[values.length];
-        System.arraycopy(values, 0, copy.values, 0, values.length);
-        copy.m_fLower = m_fLower;
-        copy.m_fUpper = m_fUpper;
-        copy.m_bIsDirty = new boolean[values.length];
-    }
-
-    @SuppressWarnings("unchecked")
-    public void assignFrom(StateNode other) {
-        Parameter<Integer> source = (Parameter<Integer>) other;
-        setID(source.getID());
-        //index = source.index;
-        values = new Integer[source.values.length];
-        System.arraycopy(source.values, 0, values, 0, values.length);
-        m_fLower = source.m_fLower;
-        m_fUpper = source.m_fUpper;
-        m_bIsDirty = new boolean[source.values.length];
-    }
-
     public void log(int nSample, PrintStream out) {
-        IntegerParameter var = (IntegerParameter) getCurrent();//state.getStateNode(m_sID);
+        IntegerParameter var = (IntegerParameter) getCurrent();
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
             out.print(var.getValue(iValue) + "\t");
         }
+    }
+
+
+	@Override
+	public int scale(double fScale) {
+		// nothing to do
+		return 0;
+	}
+
+    @Override
+    public void fromXML(Node node) {
+    	NamedNodeMap atts = node.getAttributes();
+    	setID(atts.getNamedItem("id").getNodeValue());
+    	setLower(Integer.parseInt(atts.getNamedItem("lower").getNodeValue()));
+    	setUpper(Integer.parseInt(atts.getNamedItem("upper").getNodeValue()));
+    	int nDimension = Integer.parseInt(atts.getNamedItem("dimension").getNodeValue());
+    	values = new Integer[nDimension];
+    	String sValue = node.getTextContent();
+    	String [] sValues = sValue.split(",");
+    	for (int i = 0; i < sValues.length; i++) {
+    		values[i] = Integer.parseInt(sValues[i]);
+    	}
     }
 }

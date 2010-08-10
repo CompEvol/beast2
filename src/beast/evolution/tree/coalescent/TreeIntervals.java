@@ -265,7 +265,8 @@ public class TreeIntervals implements IntervalList {
     /**
      * Recalculates all the intervals for the given beast.tree.
      */
-    private void calculateIntervals() {
+    @SuppressWarnings("unchecked")
+	private void calculateIntervals() {
 
         int nodeCount = tree.getNodeCount();
 
