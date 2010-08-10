@@ -43,13 +43,14 @@ public class ExampleXmlParsingTest extends TestCase {
 				System.out.println("Done " + sFileName);
 			}
 			if (sFailedFiles.size() > 0) {
-				System.out.println("\n\test_XmlExamples::Failed for : " + sFailedFiles.toString());
+				System.out.println("\ntest_XmlExamples::Failed for : " + sFailedFiles.toString());
 			} else {
-				System.out.println("\n\test_XmlExamples::Success");
+				System.out.println("\ntest_XmlExamples::Success");
 			}
 			assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
 		} catch (Exception e) {
 			System.out.println("exception thrown ");
+			System.out.println(e.getMessage());;
 		}
 	} // test_XmlExamples
 
@@ -86,14 +87,15 @@ public class ExampleXmlParsingTest extends TestCase {
 				System.out.println("Done " + sFileName);
 			}
 			if (sFailedFiles.size() > 0) {
-				System.out.println("\n\test_ThatXmlExamplesRun::Failed for : " + sFailedFiles.toString());
+				System.out.println("\ntest_ThatXmlExamplesRun::Failed for : " + sFailedFiles.toString());
 			} else {
 				System.out.println("SUCCESS!!!");
 			}
 			assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
 		} catch (Exception e) {
+			System.out.println("exception thrown ");
 			System.out.println(e.getMessage());;
 		}
 	} // test_ThatXmlExamplesRun
-	
+
 } // ExampleXmlParsingTest

@@ -31,6 +31,14 @@ public class RealParameter extends Parameter<Double> {
     }
 
 
+    /** we need this here, because the base implementation (public T getValue()) fails
+     * for some reason
+     */
+    @Override
+    public Double getValue() {
+        return values[0];
+    }
+
     @Override
     public void initAndValidate() throws Exception {
     	if (lowerValueInput.get() != null) {

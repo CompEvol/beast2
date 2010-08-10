@@ -61,6 +61,14 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
     }
 
 
+    /** we need this here, because the base implementation (public T getValue()) fails
+     * for some reason
+     */
+    @Override
+    public Boolean getValue() {
+        return values[0];
+    }
+
     // RRB: if you remove next line, please document properly!
     @Override
     public void log(int nSample, PrintStream out) {

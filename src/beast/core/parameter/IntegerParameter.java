@@ -31,6 +31,14 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     	init(value, lower, upper, dimension);
     }
 
+    /** we need this here, because the base implementation (public T getValue()) fails
+     * for some reason
+     */
+    @Override
+    public Integer getValue() {
+        return values[0];
+    }
+
     @Override
     public void initAndValidate() throws Exception {
     	if (lowerValueInput.get() != null) {
