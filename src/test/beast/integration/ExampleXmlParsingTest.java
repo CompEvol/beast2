@@ -71,6 +71,9 @@ public class ExampleXmlParsingTest extends TestCase {
 				sFailedFiles.add(sFileName);
 			}
 		}
+		if (sFailedFiles.size() > 0) {
+			System.out.println("\n\nExampleXmlParsing::Failed for : " + sFailedFiles.toString());
+		}
 		assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
 	} // test_ThatXmlExamplesRun
 	

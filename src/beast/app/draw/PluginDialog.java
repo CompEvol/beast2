@@ -116,10 +116,10 @@ public class PluginDialog extends JDialog {
 		}
 		for (Input<?> input : inputs) {
 			try {
-		        if (input.type() == null) {
+		        if (input.getType() == null) {
 					input.determineClass(m_plugin);
 		        }
-				Class<?> inputClass = input.type();
+				Class<?> inputClass = input.getType();
 				
 				InputEditor inputEditor;
 				if (g_inputEditorMap.containsKey(inputClass)) {
@@ -272,7 +272,7 @@ public class PluginDialog extends JDialog {
 		/* collect all plugins in the system, that are not in the tabu list*/
 		List<String> sPlugins = new ArrayList<String>();
 		for (Plugin plugin : g_plugins.values()) {
-			if (input.type().isAssignableFrom(plugin.getClass())) {
+			if (input.getType().isAssignableFrom(plugin.getClass())) {
 				boolean bIsTabu = false;
 				if (sTabuList != null) {
 					for (String sTabu : sTabuList) {
@@ -287,7 +287,7 @@ public class PluginDialog extends JDialog {
 			}
 		}
 		/* add all plugin-classes of type assignable to the input */
-		for(String sClass: ClassDiscovery.find(input.type(), "beast")) {
+		for(String sClass: ClassDiscovery.find(input.getType(), "beast")) {
 			sPlugins.add("new " + sClass);
 		}
 		return sPlugins;

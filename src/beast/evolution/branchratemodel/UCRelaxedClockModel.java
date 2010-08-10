@@ -101,10 +101,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     protected boolean requiresRecalculation() {
-        recompute = false;
+    	recompute = false;
 
         if (treeInput.isDirty()) {
-            recompute = true;
+        	recompute = true;
             return true;
         }
 //	    processed as trait on the tree
@@ -124,9 +124,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     IntegerParameter categories;
     Tree tree;
 
-    private boolean recompute = true;
-
     private boolean normalize = false;
+    private boolean recompute = true;
     private double normalizeBranchRateTo = Double.NaN;
     private double[] rates;
     private double scaleFactor = 1.0;

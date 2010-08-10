@@ -26,6 +26,8 @@ package beast.core;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
 
 import beast.core.Input;
@@ -55,6 +57,11 @@ public class State extends Plugin {
         }
         
         m_nStoreEvery = m_storeEvery.get();
+        
+    	m_changedStateNodeCode = new BitSet(stateNode.length);
+        m_map = new HashMap<BitSet, List<CalculationNode>>();
+        // add the empty list for the case none of the StateNodes have changed
+    	m_map.put(m_changedStateNodeCode, new ArrayList<CalculationNode>());
     } // initAndValidate
 
     
@@ -79,6 +86,8 @@ public class State extends Plugin {
      **/
     public void store(int nSample) {
     	System.arraycopy(stateNode, 0, storedStateNode, 0, stateNode.length);
+    	m_changedStateNodeCode = new BitSet(stateNode.length);
+    	
     	if (m_nStoreEvery> 0 && nSample > 0 && nSample % m_nStoreEvery == 0) {
     		try {
     			PrintStream out = new PrintStream(STATE_STORAGE_FILE);
@@ -112,8 +121,9 @@ public class State extends Plugin {
     	if (stateNode[nID] == storedStateNode[nID]) {
     		storedStateNode[nID] = stateNode[nID].copy();
     		storedStateNode[nID].m_state = this;
-    		stateNode[nID].setDirtyBase(true);
-    		storedStateNode[nID].setDirtyBase(false);
+    		stateNode[nID].setSomethingIsDirty(true);
+    		storedStateNode[nID].setSomethingIsDirty(false);
+    		m_changedStateNodeCode.set(nID);
     	}
         return stateNode[nID];
     }
@@ -141,11 +151,11 @@ public class State extends Plugin {
 
 
     public boolean isDirty(Input<? extends StateNode> p) {
-        return stateNode[p.get().index].isDirty();
+        return stateNode[p.get().index].somethingIsDirty();
     }
 
     public boolean isDirty(int nID) {
-        return stateNode[nID].isDirty();
+        return stateNode[nID].somethingIsDirty();
     }
 
 
@@ -191,198 +201,193 @@ public class State extends Plugin {
         return buf.toString();
     }
 
-    /**
-     * Make sure that state is still consistent
-     * For debugging purposes only
-     *
-     * @throws Exception
-     */
-    public void validate() throws Exception {
-    }
 
     /**
      * set dirtiness to all parameters and trees *
      */
-    public void setDirty(boolean isDirty) {
+    public void setEverythingDirty(boolean isDirty) {
         for (StateNode node : stateNode) {
-            node.setDirty(isDirty);
+            node.setEverythingDirty(isDirty);
         }
     }
 
-
-
-    /** list of inputs connected to StateNodes in the state **/
-    //Input<?> [] m_inputs;
-    //Integer [] m_stateNodenr;
-    /** 
-     * Collect all inputs connected to a state node that can be reached from
-     * the run-plug-in via a path connecting plug-ins with inputs (except 
-     * operators and loggers).
-     * 
-     * This should be called by any runnable in its initAndValidate method.
+    /** Sets the m_posterior, needed to calculate paths of CalculationNode
+     * that need store/restore/requireCalculation checks.
+     * As a side effect, outputs for every plugin in the model are calculated.
+     * NB the output map only contains outputs on a path to the posterior Plugin!
+     * @throws Exception 
      */
-//    protected void calcInputsConnectedToState(Plugin run) {
-//    	List<Input<?>> inputsConnectedToState = new ArrayList<Input<?>>();
-//    	List<Integer> stateNodeNr = new ArrayList<Integer>();
-//
-//    	List<Plugin> plugins = new ArrayList<Plugin>();
-//    	getAllPrecedingPlugins(plugins, run);
-//    	for (Plugin plugin : plugins) {
-//    		// ignore operators
-//    		if (!(plugin instanceof Operator) && !(plugin instanceof Logger)) {
-//    		try {
-//	    		for (Input<?> input : plugin.listInputs()) {
-//	    			if (input.get() instanceof StateNode) {
-//	    				// check it is part of the state
-//	    				for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
-//	    					if (stateNode[iStateNode] == input.get()) {
-//	    						if (!inputsConnectedToState.contains(input)) {
-//	    							inputsConnectedToState.add(input);
-//	    							stateNodeNr.add(iStateNode);
-//	    						}
-//	    						break;
-//	    					}
-//	    				}
-//	    			}
-//	    		}
-//    		} catch (Exception e) {
-//    			// ignore
-//				System.err.println(e.getMessage());
-//			}
-//    		}
-//    	}
-//    	
-//    	m_inputs = inputsConnectedToState.toArray(new Input<?>[0]);
-//    	m_stateNodenr = stateNodeNr.toArray(new Integer[0]);
-//    } // calcInputsConnectedToState
-    
-    /** 
-     * Collect all Cacheables that are on a path from a StateNode to 
-     * the run Plugin.
-     * 
-     * This should be called by any runnable in its initAndValidate method.
-     */
-    protected List<CalculationNode> getCalculationNodes(Plugin run) {
-    	List<Plugin> plugins = new ArrayList<Plugin>();
-    	getAllOutputPlugins(plugins, run);
-    	//getAllPrecedingPlugins(plugins, run);
+    @SuppressWarnings("unchecked")
+	public void setPosterior(Plugin posterior) throws Exception {
+    	m_posterior = posterior;
     	
-    	List<CalculationNode> calculationNodes = new ArrayList<CalculationNode>();
-    	for (Plugin plugin: plugins) {
-    		if (plugin instanceof CalculationNode) {
-    			calculationNodes.add((CalculationNode) plugin);
-    		}
-    	}
-    	return calculationNodes;
-    } // getCacheableOutputs
-
-    /** get all Plugins on a path from the a StateNode to the run 
-     * Plugin connected through Plugin Inputs.
-     */
-	void getAllOutputPlugins(List<Plugin> plugins, Plugin run) {
-		// collect all plug-ins in the model
-    	List<Plugin> allPlugins = new ArrayList<Plugin>();
-    	getAllPrecedingPlugins(allPlugins, run);
-    	
-    	// start with all plug-ins connected to the state
-    	for (Plugin plugin : allPlugins) {
-    		try {
-	    		for (Input<?> input : plugin.listInputs()) {
-	    			if (input.get() instanceof StateNode) {
-	    				// check it is part of the state
-	    				for (int iStateNode= 0; iStateNode < stateNode.length; iStateNode++) {
-	    					if (stateNode[iStateNode] == input.get()) {
-	    						if (!plugins.contains(plugin)) {
-	    							plugins.add(plugin);
-	    						}
-	    						break;
-	    					}
-	    				}
-	    			}
-	    		}
-    		} catch (Exception e) {
-    			// ignore
-				System.err.println(e.getMessage());
+    	m_outputMap = new HashMap<Plugin, List<Plugin>>();
+    	m_outputMap.put(posterior, new ArrayList<Plugin>());
+		boolean bProgress = true;
+		List<Plugin> plugins = new ArrayList<Plugin>();
+		plugins.add(posterior);
+		while (bProgress) {
+			bProgress = false;
+			// loop over plugins, till no more plugins can be added
+			// efficiency is no issue here
+			for (int iPlugin = 0; iPlugin < plugins.size(); iPlugin++) {
+				Plugin plugin = plugins.get(iPlugin);
+				try {
+					for (Plugin inputPlugin : plugin.listActivePlugins()) {
+						if (!m_outputMap.containsKey(inputPlugin)) {
+							m_outputMap.put(inputPlugin, new ArrayList<Plugin>());
+							plugins.add(inputPlugin);
+							bProgress = true;
+						}
+						if (!m_outputMap.get(inputPlugin).contains(plugin)) {
+							m_outputMap.get(inputPlugin).add(plugin);
+							bProgress = true;
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-    	}
-    	
-    	// add plug-ins connected to plug-ins connected to the state, etc.
-    	boolean bProgress = false;
-    	do {
-    		bProgress = false;
-        	for (Plugin plugin : allPlugins) {
-        		if (plugin.getClass().getName().contains("Compound")) {
-        			int h = 34;
-        			h++;
-        		}
-        			
-        		try {
-    	    		for (Input<?> input : plugin.listInputs()) {
-    	    			if (input.get() instanceof Plugin) {
-    	    				Plugin inputPlugin = (Plugin) input.get();
-    	    				// check it is part of the state
-    	    				for (Plugin connectedPlugin : plugins) {
-    	    					if (connectedPlugin == inputPlugin) {
-    	    						if (!plugins.contains(plugin)) {
-    	    							plugins.add(plugin);
-    	    							bProgress = true;
-    	    						}
-    	    					}
-    	    				}
-    	    			} else if (input.get() instanceof List<?>) {
-        					for (Object o : (List<?>) input.get()) {
-        						if (o instanceof Plugin) {
-            	    				// check it is part of the state
-            	    				for (Plugin connectedPlugin : plugins) {
-            	    					if (connectedPlugin == (Plugin) o) {
-            	    						if (!plugins.contains(plugin)) {
-            	    							plugins.add(plugin);
-            	    							bProgress = true;
-            	    						}
-            	    					}
-            	    				}
-        						}
-        					}    	    				
-    	    			}
-
-    	    		}
-        		} catch (Exception e) {
-        			// ignore
-    				System.err.println(e.getMessage());
-    			}
-        	}
-    	} while (bProgress);
-	} // getAllOutputPlugins
-
-    
-    
-    /** Get all plug-ins that have a path via inputs to plugin (including plugin itself)
-     */
-	void getAllPrecedingPlugins(List<Plugin> plugins, Plugin plugin) {
-		if (!plugins.contains(plugin)) {
-			plugins.add(plugin);
 		}
-		try {
-			List<Input<?>> inputs = plugin.listInputs();
-    		for (Input<?> input : inputs) {
-    			if (input.get() != null) {
-    				if (input.get() instanceof Plugin) {
-    					// recurse
-    					getAllPrecedingPlugins(plugins, (Plugin) input.get());
-    				} else if (input.get() instanceof List<?>) {
-    					for (Object o : (List<?>) input.get()) {
-    						if (o instanceof Plugin) {
-    	    					// recurse
-    							getAllPrecedingPlugins(plugins, (Plugin) o);
+		m_stateNodeOutputs = new List[stateNode.length];
+		for (int i = 0; i < stateNode.length; i++) {
+			m_stateNodeOutputs[i] = new ArrayList<CalculationNode>();
+			if (m_outputMap.containsKey(stateNode[i])) {
+				for (Plugin plugin : m_outputMap.get(stateNode[i])) {
+					if (plugin instanceof CalculationNode) {
+						m_stateNodeOutputs[i].add((CalculationNode)plugin);
+					} else {
+						throw new Exception("DEVELOPER ERROR: output of StateNode should be a CalculationNode");
+					}
+				}
+			} else {
+				System.out.println("\nWARNING: StateNode ("+stateNode[i].getID()+") found that has no effect on posterior!\n");
+			}
+		}
+	} // setRunnable
+    
+    /** We need this information to calculate paths from a (set of) StateNodes 
+     * that are changed by an operator up to the m_posterior.
+     */
+    Plugin m_posterior = null;
+    /** maps a Plugin to a list of Outputs **/
+    HashMap<Plugin, List<Plugin>> m_outputMap;
+    /** same as m_outputMap, but only for StateNodes indexed by the StateNode number
+     * We need this since the StateNode change regularly.
+     */
+    private List<CalculationNode> [] m_stateNodeOutputs;
+    
+    /** Code that represents configuration of StateNodes that have changed.
+     * This is reset when the state is Stored, and every time a StateNode
+     * is requested by an operator, the code is updated.
+     */
+    private BitSet m_changedStateNodeCode;
+    
+    /** Maps the changed states node code to 
+     * the set of calculation nodes that is potentially affected by an operation **/
+    private HashMap<BitSet, List<CalculationNode>> m_map;
+    
+    /** return current set of calculation nodes based on the set of StateNodes that have changed **/ 
+    private List<CalculationNode> getCurrentCalculationNodes() {
+    	List<CalculationNode> calcNodes = m_map.get(m_changedStateNodeCode);
+    	if (calcNodes != null) {
+    		// the list is pre-calculated
+    		return calcNodes;
+    	}
+    	// we need to calculate the list of CalculationNodes now
+    	try {
+    		calcNodes = calculateCalcNodePath();
+    	} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+    	m_map.put(m_changedStateNodeCode, calcNodes);
+    	return calcNodes;
+    } // getCurrentCalculationNodes
+
+    
+    /** Collect all CalculationNodes on a path from any StateNode that is changed (as
+     * indicated by m_changedStateNodeCode) to the posterior. Return the list in
+     * partial order as determined by the Plugins input relations.
+     */
+    private List<CalculationNode> calculateCalcNodePath() throws Exception {
+    	List<CalculationNode> calcNodes = new ArrayList<CalculationNode>();
+    	for (int i = 0; i < stateNode.length; i++) {
+    		if (m_changedStateNodeCode.get(i)) {
+    			// go grab the path to the Runnable
+    			// first the outputs of the StateNodes that is changed
+    			boolean bProgress = false;
+    			for (CalculationNode node : m_stateNodeOutputs[i]) {
+    				if (!calcNodes.contains(node)) {
+    					calcNodes.add(node);
+    	    			bProgress = true;
+    				}
+    			}
+    			// next the path following the outputs
+    			while (bProgress) {
+    				bProgress = false;
+    				// loop over plugins, till no more plugins can be added
+    				// efficiency is no issue here
+    				for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
+    					CalculationNode node = calcNodes.get(iCalcNode);
+    					for (Plugin output : m_outputMap.get(node)) {
+    						if (output instanceof CalculationNode) {
+    							CalculationNode calcNode = (CalculationNode) output;
+    							if (!calcNodes.contains(calcNode)) {
+    								calcNodes.add(calcNode);
+    								bProgress = true;
+    							}
+    						} else {
+    							throw new Exception ("DEVELOPER ERROR: found a non-CalculatioNode on path between StateNode and Runnable");
     						}
     					}
     				}
     			}
     		}
-		} catch (Exception e) {
-			// ignore
-			System.err.println(e.getMessage());
-		}
-	} // getAllPrecedingPlugins
-	
+    	}
+    	
+    	// put calc nodes in partial order
+    	for (int i = 0; i < calcNodes.size(); i++) {
+    		CalculationNode node = calcNodes.get(i);
+    		List<Plugin> inputList = node.listActivePlugins();
+    		for (int j = calcNodes.size() - 1; j > i; j--) {
+        		if (inputList.contains(calcNodes.get(j))) {
+        			// swap
+            		CalculationNode node2 = calcNodes.get(j);
+            		calcNodes.set(j, node);
+            		calcNodes.set(i, node2);
+        			j = 0;
+        			i--;
+        		}
+    		}
+    	}
+    	
+    	return calcNodes;
+    } // calculateCalcNodePath
+    
+    
+    /** Visit all calculation nodes in partial order determined by the Plugin-input relations
+     * (i.e. if A is input of B then A < B)
+     */
+    public void checkCalculationNodesDirtiness() {
+        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+            calculationNode.checkDirtiness();
+        }
+    }
+
+    public void storeCalculationNodes() {
+        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+            calculationNode.store();
+        }
+    }
+
+    public void restoreCalculationNodes() {
+        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+            calculationNode.restore();
+        }
+    }
+   
 } // class State

@@ -68,11 +68,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     }
 
     public void store(int stateNumber) {
-
         storedUpdateMatrix = updateMatrix;
-
-//        System.arraycopy(relativeRates, 0, storedRelativeRates, 0, rateCount);
-
         storedEigenDecomposition = eigenDecomposition.copy();
     }
 

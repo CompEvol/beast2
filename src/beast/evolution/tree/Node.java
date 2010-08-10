@@ -289,4 +289,9 @@ public class Node extends Plugin {
 		}
 	}
 
+	@Override
+	public void initAndValidate() throws Exception {
+		// do nothing
+	}
+
 } // class Node

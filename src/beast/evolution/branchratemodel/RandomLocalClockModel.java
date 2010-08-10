@@ -77,10 +77,6 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         Tree tree = treeInput.get();
     	IntegerParameter indicators = indicatorParamInput.get();
         RealParameter rates = rateParamInput.get();
-//        System.err.println("xx" + tree.getRoot());
-//        System.err.println(indicators);
-//        System.err.println(rates);
-//        System.err.println("\n");
         
         calculateUnscaledBranchRates(tree.getRoot(), 1.0, indicators, rates);
 
@@ -137,8 +133,8 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         return recompute;
     }
 
+    private boolean recompute = true;
     double[] unscaledBranchRates;
     double scaleFactor;
-    boolean recompute = true;
     boolean ratesAreMultipliers = false;
 }

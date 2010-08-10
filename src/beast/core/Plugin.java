@@ -36,7 +36,7 @@ import java.util.List;
                 "you want to incorporate in a model.",
         isInheritable = false
 )
-public class Plugin {
+abstract public class Plugin {
 	
 	/* default constructor */
 	public Plugin() {}
@@ -70,12 +70,6 @@ public class Plugin {
         m_sID = sID;
     }
 
-
-//    public Plugin() {
-//        if (this instanceof Cacheable) {
-//            cacheables.add((Cacheable) this);
-//        }
-//    }
 
     /**
      * @return  description from @Description annotation
@@ -142,7 +136,6 @@ public class Plugin {
             }
         }
         return inputs;
-        //return sInputs.toArray(new Input[0]);
     } // listInputs
 
     /**
@@ -153,7 +146,6 @@ public class Plugin {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    @SuppressWarnings("rawtypes")
     List<Plugin> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
         List<Plugin> sPlugins = new ArrayList<Plugin>();
         Field[] fields = getClass().getFields();
@@ -193,19 +185,19 @@ public class Plugin {
 
     public boolean isPrimitive(String sName) throws Exception {
         Input<?> input = getInput(sName);
-        if (input.type() == null) {
+        if (input.getType() == null) {
             input.determineClass(this);
         }
-        if (input.type().isAssignableFrom(Integer.class)) {
+        if (input.getType().isAssignableFrom(Integer.class)) {
             return true;
         }
-        if (input.type().isAssignableFrom(Double.class)) {
+        if (input.getType().isAssignableFrom(Double.class)) {
             return true;
         }
-        if (input.type().isAssignableFrom(Boolean.class)) {
+        if (input.getType().isAssignableFrom(Boolean.class)) {
             return true;
         }
-        if (input.type().isAssignableFrom(String.class)) {
+        if (input.getType().isAssignableFrom(String.class)) {
             return true;
         }
         return false;
@@ -237,8 +229,15 @@ public class Plugin {
     /**
      * @throws Exception when plugin does not implement this method
      */
+    //abstract public void initAndValidate() throws Exception;
     public void initAndValidate() throws Exception {
-        // todo: AR - Why is this not an abstract method? Does Plugin need to be concrete?
+    // TODO: AR - Why is this not an abstract method? Does Plugin need to be concrete?
+    // RRB: can be abstract, but this breaks some of the DocMaker stuff.
+    // It only produces pages for Plugins that are not abstract. 
+    // This means the MCMC page does not point to Operator page any more since the latter does not exist.
+    // As a result, there is no place that lists all Operators, which is a bit of a shame.
+    // Perhaps DocMaker can be fixed to work around this, otherwise I see no issues making this abstract.
+    
         throw new Exception("Plugin.initAndValidate(): Every plugin should implement this method to assure the class behaves, " +
                 "even when inputs are not specified");
     }
@@ -253,21 +252,9 @@ public class Plugin {
         }
     }
 
-    public void addCondition(Input<? extends StateNode> stateNode) {
-        if (this instanceof StateNode) throw new RuntimeException();
-        if (stateNode.get() == null) return;
-
-        if (conditions == null) conditions = new ArrayList<String>();
-
-        conditions.add(stateNode.get().getID());
-    }
-
-    protected List<String> conditions = null;
 
     public String toString() {
     	return getID();
     }
-
-//    public static final Set<Cacheable> cacheables = new HashSet<Cacheable>();
 
 } // class Plugin

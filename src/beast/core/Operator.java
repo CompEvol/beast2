@@ -29,7 +29,7 @@ import beast.core.Input.Validate;
 
 
 @Description("Operation on state space.")
-public class Operator extends Plugin {
+public abstract class Operator extends Plugin {
 	public Input<Double> m_pWeight = new Input<Double>("weight","weight with which this operator is selected", Validate.REQUIRED);
 
 	/** override this for proposals,

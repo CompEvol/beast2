@@ -28,7 +28,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Distribution;
 import beast.core.State;
-import beast.core.Input.Validate;
 
 import java.util.ArrayList;
 import java.util.List;

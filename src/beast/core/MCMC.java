@@ -62,9 +62,16 @@ public class MCMC extends Runnable {
                     new ArrayList<Logger>(), Input.Validate.REQUIRED);
 
 
+    /** The state that takes care of managing StateNodes, 
+     * operations on StateNodes and propagates store/restore/requireRecalculation
+     * calls to the appropriate Plugins.
+     */
     protected State state;
-
-    List<CalculationNode> calculationNodes;
+    /**
+     * number of samples taken where calculation is checked against full
+     * recalculation of the posterior.
+     */
+    final protected int NR_OF_DEBUG_SAMPLES = 2000;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -77,22 +84,32 @@ public class MCMC extends Runnable {
             operatorSet.addOperator(op);
         }
 
-        // state initialization
+        // state initialisation
         this.state = m_startState.get();
-        //this.state.calcInputsConnectedToState(this);
-        calculationNodes = this.state.getCalculationNodes(this);
+        this.state.setPosterior(posteriorInput.get());
 
+        // initialises log so that log file headers are written, etc.
         for (Logger log : m_loggers.get()) {
             log.init();
         }
     } // init
 
-    /**
-     * number of samples taken where calculation is checked against full
-     * recalculation of the posterior.
-     */
-    final protected int NR_OF_DEBUG_SAMPLES = 2000;
+    public void log(int nSample) {
+        for (Logger log : m_loggers.get()) {
+            log.log(nSample);
+        }
+    } // log
 
+    public void close() {
+        for (Logger log : m_loggers.get()) {
+            log.close();
+        }
+    } // close
+
+    /* Class for a collection of Operators. The main usage is to
+     * be able to draw operators randomly proportionally to their
+     * weight.
+     */
     public class OperatorSet {
         List<Operator> m_operators = new ArrayList<Operator>();
         double m_fTotalWeight = 0;
@@ -127,19 +144,7 @@ public class MCMC extends Runnable {
         }
     } // class OperatorSet
 
-
-    public void log(int nSample) {
-        for (Logger log : m_loggers.get()) {
-            log.log(nSample);
-        }
-    } // log
-
-    public void close() {
-        for (Logger log : m_loggers.get()) {
-            log.close();
-        }
-    } // close
-
+    /** report operator statistics **/
     protected void showOperatorRates(PrintStream out) {
         out.println("Operator                                        #accept\t#reject\t#total\tacceptance rate");
         for (int i = 0; i < operatorSet.getNrOperators(); i++) {
@@ -147,10 +152,11 @@ public class MCMC extends Runnable {
         }
     }
 
+    @Override
     public void run() throws Exception {
         long tStart = System.currentTimeMillis();
         Distribution posterior = posteriorInput.get();
-        state.setDirty(true);
+        state.setEverythingDirty(true);
 
         int nBurnIn = m_oBurnIn.get();
         int nChainLength = m_oChainLength.get();
@@ -162,53 +168,42 @@ public class MCMC extends Runnable {
         double logAlpha = 0;
 
         boolean bDebug = true;
-        state.setDirty(true);
+        state.setEverythingDirty(true);
 
-        sortCalculationNodes();
-        checkCalculationNodesDirtiness();
+        state.checkCalculationNodesDirtiness();
 
         double fOldLogLikelihood = posterior.calculateLogP();
-        //System.err.println("Start likelihood: = " + fOldLogLikelihood);
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
-            // code for debugging: set conditional break point
-            //State proposedState = state.copy();
             state.store(iSample);
             state.stateNumber = iSample;
-            //System.err.println(state.toString());
+
             Operator operator = operatorSet.selectOperator();
             double fLogHastingsRatio = operator.proposal();
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
-                //System.out.print(iSample +  " store ");
-                storeCalculationNodes();
+            	state.storeCalculationNodes();
 
-                //state.setDirty(true);
                 //System.out.print(operator.getName()+ "\n");
-                //System.err.println(state.toString());
-                checkCalculationNodesDirtiness();
+                state.checkCalculationNodesDirtiness();
 
                 double fNewLogLikelihood = posterior.calculateLogP();
-                //System.out.print("posterior: " + fNewLogLikelihood+ "\n");
 
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     fOldLogLikelihood = fNewLogLikelihood;
-                    //state = proposedState;
-                    state.setDirty(false);
+                    state.setEverythingDirty(false);
 
                     if (iSample >= 0) {
                         operator.accept();
                     }
-                    //System.out.println("accept ");
                 } else {
                     // reject
                     if (iSample >= 0) {
                         operator.reject();
                     }
                     state.restore();
-                    state.setDirty(false);
-                    restoreCalculationNodes();
-                    //System.out.println("restore ");
+                    state.setEverythingDirty(false);
+                    state.restoreCalculationNodes();
                 }
             } else {
                 // operation failed
@@ -219,12 +214,9 @@ public class MCMC extends Runnable {
             log(iSample);
 
             if (bDebug) {
-                state.validate();
-                //state.store(iSample);
-                state.setDirty(true);
-                //System.err.println(state.toString());
-                //storeCalculationNodes();
-                checkCalculationNodesDirtiness();
+            	// do some sanity checking, in particular check that the posterior is correctly calculated
+                state.setEverythingDirty(true);
+                state.checkCalculationNodesDirtiness();
 
                 double fLogLikelihood = posterior.calculateLogP();
 
@@ -234,8 +226,7 @@ public class MCMC extends Runnable {
                 if (iSample > NR_OF_DEBUG_SAMPLES) {
                     bDebug = false;
                 }
-                //System.out.println("check passed");
-                state.setDirty(false);
+                state.setEverythingDirty(false);
             } else {
                 operator.optimize(logAlpha);
             }
@@ -246,49 +237,5 @@ public class MCMC extends Runnable {
         close();
     } // run;
 
-    public void checkCalculationNodesDirtiness() {
-        for (CalculationNode calculationNode : calculationNodes) {
-            calculationNode.resetDirtiness();
-        }
-        for (CalculationNode calculationNode : calculationNodes) {
-            calculationNode.checkDirtiness();
-        }
-    }
-
-    public void storeCalculationNodes() {
-        for (CalculationNode calculationNode : calculationNodes) {
-            calculationNode.store();
-        }
-    }
-
-    public void restoreCalculationNodes() {
-        for (CalculationNode calculationNode : calculationNodes) {
-            calculationNode.restore();
-        }
-    }
-
-
-    void sortCalculationNodes() {
-    	// sort calculation nodes such that if A is input of B, A < B in order
-    	try {
-	    	for (int i = 0; i < calculationNodes.size(); i++) {
-    			List<Plugin> inputs1 = calculationNodes.get(i).listActivePlugins();
-    			CalculationNode calclationNode1 = calculationNodes.get(i);
-	    		for (int j = calculationNodes.size()-1; j > i; j--) {
-	    			CalculationNode calclationNode2 = calculationNodes.get(j);
-	    			if (inputs1.contains(calclationNode2)) {
-	    				// swap i & j
-	    				calculationNodes.set(i, calclationNode2);
-	    				calculationNodes.set(j, calclationNode1);
-	    				i--;
-	    				j = i;
-	    			}
-	    		}
-	    	}
-    	} catch (Exception e) {
-			// TODO: handle exception
-		}
-    	
-    }
 } // class MCMC
 

@@ -410,11 +410,11 @@ public class DocMaker {
                     if (input.getName().equals(sName)) {
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
-                        if (input.type() != null) {
-                            return (input.type().isAssignableFrom(Plugin.class) ?"<a href='" + input.type().getName() + ".html'>":"") +
-                                input.type().getName() + 
+                        if (input.getType() != null) {
+                            return (input.getType().isAssignableFrom(Plugin.class) ?"<a href='" + input.getType().getName() + ".html'>":"") +
+                                input.getType().getName() + 
                             	(input.get() != null && input.get() instanceof List<?> ? "***" : "") + 
-                            	(input.type().isAssignableFrom(Plugin.class) ?"</a>" :"");
+                            	(input.getType().isAssignableFrom(Plugin.class) ?"</a>" :"");
                         }
                         if (input.get() != null && input.get() instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();

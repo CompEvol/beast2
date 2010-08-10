@@ -37,8 +37,7 @@ import java.util.List;
 @Description("Logs results of calculation processes.")
 public class Logger extends Plugin {
 
-    public Input<List<Plugin>> m_pLoggers =
-            new Input<List<Plugin>>("log",
+    public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",
                     "Element in a log. This can be any plug in that is Loggable.",
                     new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
     
@@ -46,8 +45,7 @@ public class Logger extends Plugin {
     public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
     public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
     		"If specified, XML will be produced for the model, commented out by # at the start of a line. " +
-    		"Alignments are suppressed. " +
-    		"This way, the log file documents itself. ");
+    		"Alignments are suppressed. This way, the log file documents itself. ");
 
     /** list of loggers, if any */
     Loggable m_loggers[];
@@ -57,14 +55,17 @@ public class Logger extends Plugin {
      */
     public final static int COMPOUND_LOGGER = 0, TREE_LOGGER = 2;
     public int m_mode = COMPOUND_LOGGER;
+    
     /** number of samples between logs **/
     int m_nEvery = 1;
+    
     /** stream to log to */
     PrintStream m_out;
 
     /** keep track of time taken between logs to estimate speed **/
     long m_nStartLogTime;
 
+    
     @Override
     public void initAndValidate() throws Exception {
         List<Plugin> loggers = m_pLoggers.get();
@@ -73,12 +74,6 @@ public class Logger extends Plugin {
             throw new Exception("Logger with nothing to log specified");
         }
 
-        // verify everything is loggable
-//        for (Plugin plugin : m_loggers) {
-//            if (!(plugin instanceof Loggable)) {
-//                throw new Exception("Object " + plugin.getClass().getName() + " " + plugin.getID() + " is not loggable");
-//            }
-//        }
         m_loggers = new Loggable[nLoggers];
         for(int k = 0; k < nLoggers; ++k) {
             m_loggers[k] = (Loggable)loggers.get(k);
@@ -97,9 +92,9 @@ public class Logger extends Plugin {
         m_nStartLogTime = System.currentTimeMillis();
     } // initAndValidate
 
+    
+    
     /** initialise log, open file (if necessary) and produce header of log
-     *
-     * @throws Exception
      **/
     public void init() throws Exception {
         String sFileName = m_pFileName.get();
@@ -124,14 +119,14 @@ public class Logger extends Plugin {
             m_out.print("Sample\t");
         }
         for(Loggable m_logger : m_loggers) {
-            //System.out.println("logger " + i);
             m_logger.init(m_out);
         }
         m_out.println();
     } // init
 
+
+    
     /** log the state for given sample nr
-     * @param nSample
      **/
     public void log(int nSample) {
         if ((nSample < 0) || (nSample % m_nEvery > 0)) {
@@ -155,6 +150,8 @@ public class Logger extends Plugin {
         m_out.println();
     } // log
 
+
+    
     /** stop logging, produce end of log message and close file (if necessary) **/
     public void close() {
         for(Loggable m_logger : m_loggers) {
@@ -162,10 +159,7 @@ public class Logger extends Plugin {
         }
 
         if( m_out != System.out )  {
-        // close all file, except stdout
-
-             //final String s = m_pFileName.get();
-             //if ( s != null && !s.equals("") ) {
+        	// close all file, except stdout
             m_out.close();
         }
     } // close

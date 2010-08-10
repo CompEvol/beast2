@@ -113,7 +113,7 @@ public class ListInputEditor extends InputEditor {
 				int iSelected = m_list.getSelectedIndex();
 				String sID = (String) m_listModel.get(iSelected);
 				Plugin plugin = PluginDialog.g_plugins.get(sID);
-				PluginDialog dlg = new PluginDialog(plugin, m_input.type());
+				PluginDialog dlg = new PluginDialog(plugin, m_input.getType());
 				dlg.setVisible(true);
 				if (dlg.getOK()){
 					((List<Plugin>)m_input.get()).set(iSelected, dlg.m_plugin);

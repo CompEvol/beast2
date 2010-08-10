@@ -27,7 +27,6 @@ package beast.evolution.tree;
 
 import beast.core.Description;
 import beast.core.Loggable;
-import beast.core.State;
 import beast.core.StateNode;
 
 import java.io.PrintStream;
@@ -53,9 +52,6 @@ public class Tree extends StateNode implements Loggable {
      * node representation of the beast.tree *
      */
     protected beast.evolution.tree.Node root;
-
-    // dead code
-    // private boolean isStochastic = true;
 
     /**
      * getters and setters
@@ -149,6 +145,7 @@ public class Tree extends StateNode implements Loggable {
         //tree.m_state = m_state;
     }
 
+    /** convert tree to array representation **/
     void listNodes(Node node, Node[] nodes) {
         nodes[node.getNr()] = node;
         if (!node.isLeaf()) {
@@ -158,7 +155,8 @@ public class Tree extends StateNode implements Loggable {
     }
     
     @Override
-    public void setDirty(boolean bDirty) {
+    public void setEverythingDirty(boolean bDirty) {
+    	setSomethingIsDirty(bDirty);
     	if ( !bDirty ) {
     		root.makeAllDirty(IS_CLEAN);
     	} else {
@@ -227,6 +225,7 @@ public class Tree extends StateNode implements Loggable {
     /**
      * Loggable implementation follows *
      */
+    @Override
     public void init(PrintStream out) throws Exception {
         out.println("#NEXUS\n");
         out.println("Begin trees");
@@ -236,6 +235,7 @@ public class Tree extends StateNode implements Loggable {
         out.print(";");
     }
 
+    @Override
     public void log(int nSample, PrintStream out) {
         Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
         out.print("tree STATE_" + nSample + " = ");
@@ -243,6 +243,8 @@ public class Tree extends StateNode implements Loggable {
         out.print(";");
     }
 
+    @Override
+    /** @see Loggable.close(PrintStream) **/
     public void close(PrintStream out) {
         out.print("End;");
     }

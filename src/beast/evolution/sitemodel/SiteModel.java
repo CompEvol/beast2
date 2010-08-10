@@ -30,13 +30,14 @@ package beast.evolution.sitemodel;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.StateNode;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -100,11 +101,23 @@ public class SiteModel extends CalculationNode {
         addCondition(shapeParameter);
     }
 
-
     public List<String> getConditions() {
         return conditions;
     }
 
+    // RRB: do we need this bit of undocumented code?
+    public void addCondition(Input<? extends StateNode> stateNode) {
+//        if (this instanceof StateNode) throw new RuntimeException();
+        if (stateNode.get() == null) return;
+
+        if (conditions == null) conditions = new ArrayList<String>();
+
+        conditions.add(stateNode.get().getID());
+    }
+
+    protected List<String> conditions = null;
+    
+    
     protected boolean requiresRecalculation() {
         if (muParameter.isDirty()) {
             ratesKnown = false;

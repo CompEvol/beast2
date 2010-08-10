@@ -25,7 +25,8 @@
 
 package beast.math.distributions;
 
-import beast.core.Plugin;
+
+import beast.core.CalculationNode;
 import beast.core.Description;
 
 /**
@@ -36,7 +37,7 @@ import beast.core.Description;
  */
 
 @Description("A parametric distribution plugin.")
-public abstract class ParametricDistribution extends Plugin  {
+public abstract class ParametricDistribution extends CalculationNode  {
 
     abstract public Distribution getDistribution();
 }

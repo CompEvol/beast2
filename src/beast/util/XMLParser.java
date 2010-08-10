@@ -567,7 +567,7 @@ public class XMLParser {
         	if (e.getMessage().contains("101")) {
             	String sType = "?";
             	try {
-            		sType = plugin.getInput(sName).type().getName().replaceAll(".*\\.","");
+            		sType = plugin.getInput(sName).getType().getName().replaceAll(".*\\.","");
             	} catch (Exception e2) {
     				// TODO: handle exception
     			}

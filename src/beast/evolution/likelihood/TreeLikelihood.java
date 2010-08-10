@@ -411,14 +411,14 @@ public class TreeLikelihood extends Distribution {
     }
 
     @Override
-    protected void store() {
+    public void store() {
         m_likelihoodCore.store();
         super.store();
         System.arraycopy(m_branchLengths, 0, m_StoredBranchLengths, 0, m_branchLengths.length);
     }
 
     @Override
-    protected void restore() {
+    public void restore() {
         m_likelihoodCore.restore();
         super.restore();
         double [] tmp = m_branchLengths;

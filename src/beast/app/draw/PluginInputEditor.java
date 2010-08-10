@@ -110,7 +110,7 @@ public class PluginInputEditor extends InputEditor {
 		m_editPluginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.type());
+				PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType());
 				dlg.setVisible(true);
 				if (dlg.getOK()) {
 					m_plugin = dlg.m_plugin;
@@ -124,7 +124,7 @@ public class PluginInputEditor extends InputEditor {
 	} // init
 	
 	String [] getAvailablePlugins() {
-		List<String> sPlugins = ClassDiscovery.find(m_input.type(), "beast");
+		List<String> sPlugins = ClassDiscovery.find(m_input.getType(), "beast");
 		return sPlugins.toArray(new String[0]);
 	} // getAvailablePlugins
 	

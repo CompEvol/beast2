@@ -24,8 +24,6 @@
 */
 package beast.core;
 
-//import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -112,10 +110,6 @@ public class Input<T> {
 
     /**
      * constructor for REQUIRED rules for array-inputs *
-     * @param sName
-     * @param sTipText
-     * @param startValue
-     * @param rule
      */
     public Input(String sName, String sTipText, T startValue, Validate rule) {
         name = sName;
@@ -130,9 +124,6 @@ public class Input<T> {
 
     /**
      * constructor for REQUIRED rules *
-     * @param sName
-     * @param sTipText
-     * @param rule
      */
     public Input(String sName, String sTipText, Validate rule) {
         name = sName;
@@ -146,10 +137,6 @@ public class Input<T> {
 
     /**
      * constructor for XOR rules *
-     * @param sName
-     * @param sTipText
-     * @param rule
-     * @param other
      */
     public Input(String sName, String sTipText, Validate rule, Input<?> other) {
         name = sName;
@@ -164,7 +151,7 @@ public class Input<T> {
         this.other.rule = rule;
     } // c'tor
 
-    /*
+    /**
      * various setters and getters
      */
     public String getName() {
@@ -173,6 +160,18 @@ public class Input<T> {
 
     public String getTipText() {
         return tipText;
+    }
+
+    public Class<?> getType() {
+        return theClass;
+    }
+
+    public Validate getRule() {
+        return rule;
+    }
+
+    public Input<?> getOther() {
+        return other;
     }
 
     /** Get the value of this input -- not to be called from operators!!! 
@@ -186,9 +185,19 @@ public class Input<T> {
     @SuppressWarnings("unchecked")
 	public T get() {
     	if (value instanceof StateNode) {
+    		// return current version of StateNode
     		// TODO: rrb: the commented line seems a lot slower. Why???
     		//value=(T) ((StateNode)value).getCurrent();
     		return (T) ((StateNode)value).getCurrent();
+    	}
+    	// TODO: is there a smarter way to test this is a list of StateNodes?
+    	if (value instanceof List && ((List<?>)value).size()>0 && ((List<?>)value).get(0) instanceof StateNode) {
+    		// if it is a list of StateNodes, make sure the current version is returned
+			List<StateNode> tmp = new ArrayList<StateNode>();
+			for (StateNode o : (List<StateNode>) value) {
+				tmp.add(o.getCurrent());
+			}
+			return (T) tmp;
     	}
         return value;
     }
@@ -207,6 +216,11 @@ public class Input<T> {
    		return (T) ((StateNode)value).getCurrentEditable(operator);
     }
 
+    /** Return the dirtiness state for this input.
+     * For a StateNode or list of StateNodes, report whether for any something is dirty,
+     * for a CalcationNode or list of CalculationNodes, report whether any is dirty.
+     * Otherwise, return false.
+     *  **/
     public boolean isDirty() {
         T value = get();
 
@@ -215,7 +229,7 @@ public class Input<T> {
         }
         
         if (value instanceof StateNode) {
-            return ((StateNode)value).isDirty();
+            return ((StateNode)value).somethingIsDirty();
         }
 
         if (value instanceof CalculationNode) {
@@ -226,23 +240,13 @@ public class Input<T> {
         	for (Object o : (List<?>) value) {
         		if (o instanceof CalculationNode && ((CalculationNode)o).isDirty()) {
         			return true;
+        		} else if (o instanceof StateNode && ((StateNode)o).somethingIsDirty()) {
+        			return true;
         		}
         	}
         }
 
         return false;
-    }
-
-    public Class<?> type() {
-        return theClass;
-    }
-
-    public Validate getRule() {
-        return rule;
-    }
-
-    public Input<?> getOther() {
-        return other;
     }
 
     /**
@@ -302,11 +306,6 @@ public class Input<T> {
      * @throws Exception
      */
     public void determineClass(Plugin plugin) throws Exception {
-    	determineClass(plugin, false);
-    }
-
-    public void determineClass(Plugin plugin, boolean bIsStateNode) throws Exception {
-    	
         try {
             Field[] fields = plugin.getClass().getFields();
             for (int i = 0; i < fields.length; i++) {
@@ -317,11 +316,6 @@ public class Input<T> {
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
                         if (value != null && value instanceof ArrayList<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
-
-//                            if (genericTypes2[0] instanceof sun.reflect.generics.reflectiveObjects.WildcardTypeImpl) {
-//                                WildcardTypeImpl wcti = (WildcardTypeImpl) genericTypes2[0];
-//                                theClass = wcti.getClass();
-//                            } else
                             theClass = (Class<?>) genericTypes2[0];
                         } else {
 
@@ -335,18 +329,13 @@ public class Input<T> {
                                 System.exit(0);
                             }
                         }
-                        break ; // i = fields.length;
+                        break ;
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        if (!bIsStateNode) {
-//        	if (StateNode.class.isAssignableFrom(theClass)) {
-//        		throw new Exception("Input should be an SNInput");
-//        	}
-//        }
     } // determineClass
 
     /**

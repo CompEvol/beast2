@@ -63,10 +63,18 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
      */
     protected boolean[] m_bIsDirty;
 
+    /** check whether the iParam-th element has changed **/
     public boolean isDirty(int iParam) {
         return m_bIsDirty[iParam];
     }
-//    @Override
+
+    @Override
+    public void setEverythingDirty(final boolean isDirty) {
+    	setSomethingIsDirty(isDirty);
+    	Arrays.fill(m_bIsDirty, isDirty);
+	}
+
+    //    @Override
 //    public void setDirty(final boolean dirty) {
 //    	super.setDirty(dirty);
 //    	Arrays.fill(m_bIsDirty, dirty);
@@ -121,8 +129,8 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         if (isStochastic()) {
             values[0] = fValue;
             m_bIsDirty[0] = true;
-            // TODO: next line can be deleted, since it is already done in the State
-            setDirty(true);
+            // next line is superfluous, since it is already done in the State
+            // setSomethingIsDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
 
@@ -130,8 +138,8 @@ public abstract class Parameter<T> extends StateNode implements Loggable {
         if (isStochastic()) {
             values[iParam] = fValue;
             m_bIsDirty[iParam] = true;
-            // TODO: next line can be deleted, since it is already done in the State
-            setDirty(true);
+            // next line is superfluous, since it is already done in the State
+            // setSomethingIsDirty(true);
         } else throw new Exception("Can't set the value of a fixed parameter.");
     }
 
