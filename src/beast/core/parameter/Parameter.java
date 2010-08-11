@@ -28,6 +28,11 @@ import beast.core.*;
 
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 
 @Description("A parameter represents a value in the state space that can be changed " +
@@ -138,12 +143,13 @@ public abstract class Parameter<T> extends StateNode {
 	    }
     }
 
-
+    /** Note that changing toString means fromXML needs to be changed as well,
+     * since it parses the output of toString back into a parameter.
+     */
     public String toString() {
         final StringBuffer buf = new StringBuffer();
-        buf.append(m_sID);
-        buf.append(": ");
-
+        buf.append(m_sID + "[" +  values.length +"] ");
+        buf.append("(" + m_fLower + "," + m_fUpper + "): ");
         for(T value : values) {
             buf.append(value).append(" ");
         }
@@ -195,7 +201,6 @@ public abstract class Parameter<T> extends StateNode {
      * Loggable interface implementation follows (partly) *
      */
 
-    //public void init(State state, PrintStream out) throws Exception {
     public void init(PrintStream out) throws Exception {
         final int nValues = getDimension();
         if (nValues == 1) {
@@ -213,16 +218,24 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     @Override
-    public void toXML(PrintStream out) {
-    	out.print("<parameter id='" + getID()+"'");
-    	out.print(" dimension='" + getDimension() +"'");
-    	out.print(" lower='" + getLower() +"'");
-    	out.print(" upper='" + getUpper() +"'>");
-    	for (int i = 0; i < values.length - 1; i++) {
-    		out.print(values[i] + ",");
-    	}
-		out.print(values[values.length-1]);
-    	out.print("</parameter>\n");
+    public void fromXML(Node node) {
+    	NamedNodeMap atts = node.getAttributes();
+    	setID(atts.getNamedItem("id").getNodeValue());
+    	String sStr = node.getTextContent();
+    	Pattern pattern = Pattern.compile(".*\\[(.*)\\].*\\((.*),(.*)\\): (.*) ");
+		Matcher matcher = pattern.matcher(sStr);
+		matcher.matches();
+		String sDimension = matcher.group(1);
+		String sLower = matcher.group(2);
+		String sUpper = matcher.group(3);
+		String sValuesAsString = matcher.group(4);
+    	String [] sValues = sValuesAsString.split(" ");
+		fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
     }
+    
+    /** Restore a parameter 
+     * This cannot be a template method since it requires
+     * creation of an array of T... **/
+    abstract void fromXML(int nDimension, String sLower, String sUpper, String [] sValues);
 
 } // class Parameter

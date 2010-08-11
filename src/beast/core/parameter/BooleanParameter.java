@@ -29,9 +29,6 @@ import beast.core.Input;
 
 import java.io.PrintStream;
 
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
 /**
  * @author Joseph Heled
  *
@@ -82,19 +79,13 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
 	@Override
 	public int scale(double fScale) {
 		// nothing to do
+		System.err.println("Attempt to scale Boolean parameter " + getID() + "  has no effect");
 		return 0;
 	}
 
 	@Override
-    public void fromXML(Node node) {
-    	NamedNodeMap atts = node.getAttributes();
-    	setID(atts.getNamedItem("id").getNodeValue());
-//    	setLower(Boolean.parseBoolean(atts.getNamedItem("lower").getNodeValue()));
-//    	setUpper(Boolean.parseBoolean(atts.getNamedItem("upper").getNodeValue()));
-    	int nDimension = Integer.parseInt(atts.getNamedItem("dimension").getNodeValue());
+    void fromXML(int nDimension, String sLower, String sUpper, String [] sValues) {
     	values = new Boolean[nDimension];
-    	String sValue = node.getTextContent();
-    	String [] sValues = sValue.split(",");
     	for (int i = 0; i < sValues.length; i++) {
     		values[i] = Boolean.parseBoolean(sValues[i]);
     	}

@@ -5,9 +5,13 @@ package beast.core;
 public abstract class Runnable extends Plugin {
     public void run() throws Exception {};
     
-    public void restoreFromFile() {
-    	m_bRestoreFromFile = true;
+    public void setStateFile(String sFileName, boolean bRestoreFromFile) {
+    	m_sStateFile = sFileName;
+    	m_bRestoreFromFile = bRestoreFromFile;
     }
+    
     /** flag to indicate that the State should be restored from File at the start of the analysis **/
-    boolean m_bRestoreFromFile = false;
+    protected boolean m_bRestoreFromFile = false;
+    /** name of the file store the state in **/
+    protected String m_sStateFile;
 }

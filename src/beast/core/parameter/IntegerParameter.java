@@ -1,13 +1,11 @@
 package beast.core.parameter;
 
 
+
 import beast.core.Description;
 import beast.core.Input;
 
 import java.io.PrintStream;
-
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 
 /**
@@ -72,19 +70,15 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
 	@Override
 	public int scale(double fScale) {
 		// nothing to do
+		System.err.println("Attempt to scale Integer parameter " + getID() + "  has no effect");
 		return 0;
 	}
 
-    @Override
-    public void fromXML(Node node) {
-    	NamedNodeMap atts = node.getAttributes();
-    	setID(atts.getNamedItem("id").getNodeValue());
-    	setLower(Integer.parseInt(atts.getNamedItem("lower").getNodeValue()));
-    	setUpper(Integer.parseInt(atts.getNamedItem("upper").getNodeValue()));
-    	int nDimension = Integer.parseInt(atts.getNamedItem("dimension").getNodeValue());
+	@Override
+    void fromXML(int nDimension, String sLower, String sUpper, String [] sValues) {
+    	setLower(Integer.parseInt(sLower));
+    	setUpper(Integer.parseInt(sUpper));
     	values = new Integer[nDimension];
-    	String sValue = node.getTextContent();
-    	String [] sValues = sValue.split(",");
     	for (int i = 0; i < sValues.length; i++) {
     		values[i] = Integer.parseInt(sValues[i]);
     	}

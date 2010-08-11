@@ -1,13 +1,12 @@
 package beast.core.parameter;
 
 
+
 import beast.core.Description;
 import beast.core.Input;
 
 import java.io.PrintStream;
 
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 /**
  * @author Alexei Drummond
@@ -31,8 +30,8 @@ public class RealParameter extends Parameter<Double> {
     }
 
 
-    /** we need this here, because the base implementation (public T getValue()) fails
-     * for some reason
+    /** RRB: we need this here, because the base implementation (public T getValue()) fails
+     * for some reason. Why?
      */
     @Override
     public Double getValue() {
@@ -51,9 +50,6 @@ public class RealParameter extends Parameter<Double> {
     	} else {
     		m_fUpper = Double.POSITIVE_INFINITY;
     	}
-
-        System.out.println("Lower = " + m_fLower);
-        System.out.println("Upper = " + m_fUpper);
 
         values = new java.lang.Double[m_nDimension.get()];
         for (int i = 0; i < values.length; i++) {
@@ -83,16 +79,12 @@ public class RealParameter extends Parameter<Double> {
 		return values.length;
 	}
 
+
     @Override
-    public void fromXML(Node node) {
-    	NamedNodeMap atts = node.getAttributes();
-    	setID(atts.getNamedItem("id").getNodeValue());
-    	setLower(Double.parseDouble(atts.getNamedItem("lower").getNodeValue()));
-    	setUpper(Double.parseDouble(atts.getNamedItem("upper").getNodeValue()));
-    	int nDimension = Integer.parseInt(atts.getNamedItem("dimension").getNodeValue());
+    void fromXML(int nDimension, String sLower, String sUpper, String [] sValues) {
+    	setLower(Double.parseDouble(sLower));
+    	setUpper(Double.parseDouble(sUpper));
     	values = new Double[nDimension];
-    	String sValue = node.getTextContent();
-    	String [] sValues = sValue.split(",");
     	for (int i = 0; i < sValues.length; i++) {
     		values[i] = Double.parseDouble(sValues[i]);
     	}

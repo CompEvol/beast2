@@ -25,27 +25,52 @@
 package beast.evolution.tree;
 
 
+
 import beast.core.Description;
+import beast.core.Input;
 import beast.core.StateNode;
 import beast.util.TreeParser;
 
 import java.io.PrintStream;
-
-import org.w3c.dom.NamedNodeMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
 public class Tree extends StateNode {
-
-//    @SuppressWarnings("unchecked")
-//    public Input<List<Parameter>> treeTraitsInput = new Input<List<Parameter>>("trait", "Traits on this tree, i.e. properties associated with nodes like population size, date, location, etc.", new ArrayList<Parameter>());
-
+	
+	public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
 
     @Override
     public void initAndValidate() throws Exception {
+    	if (m_trait.get() != null) {
+    		adjustTreeToNodeHeights(root);
+    	}
     }
 
+	/** process m_nodeDates, moving taxon heights to match the m_nodeHeights if necessary.
+     * If this leads to internal branch lengths becoming negative, the internal nodes are
+     * moved as well.
+     */
+	protected void adjustTreeToNodeHeights(Node node) {
+		if (node.isLeaf()) {
+			node.setMetaData(m_trait.get().getTraitName(), m_trait.get().getValue(node.getNr()));
+		} else {
+			adjustTreeToNodeHeights(node.m_left);
+			adjustTreeToNodeHeights(node.m_right);
+			if (node.m_fHeight < node.m_left.getHeight()) {
+				node.m_fHeight = node.m_left.getHeight() + 0.000001;
+			}
+			if (node.m_fHeight < node.m_right.getHeight()) {
+				node.m_fHeight = node.m_right.getHeight() + 0.000001;
+			}
+		}
+	}
+
+    
+    
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
     int nodeCount = -1;
@@ -184,57 +209,33 @@ public class Tree extends StateNode {
         return root.toString();
     }
 
-//    /**
-//     * synchronise tree nodes with its traits stored in an array *
-//     */
-//    public void syncTreeWithTraitsInState() {
-//        boolean bSyncNeeded = false;
-//        for (Parameter<?> p : treeTraitsInput.get()) {
-//            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
-//            p = (Parameter<?>) p.getCurrent();
-//            if (p.isDirty()) {
-//                bSyncNeeded = true;
-//            }
-//        }
-//        if (bSyncNeeded) {
-//            syncTreeWithTraits(getRoot());
-//        }
-//    } // syncTreeWithTraitsInState
-//
-//    void syncTreeWithTraits(Node node) {
-//        for (Parameter<?> p : treeTraitsInput.get()) {
-//            //p = (Parameter<?>) m_state.getStateNode(p.getIndex(m_state));
-//            p = (Parameter<?>) p.getCurrent();
-//            int iNode = Math.abs(node.getNr());
-//            if (p.isDirty(iNode)) {
-//                node.setMetaData(p.getID(), p.getValue(iNode));
-//            }
-//        }
-//        if (!node.isLeaf()) {
-//            syncTreeWithTraits(node.m_left);
-//            syncTreeWithTraits(node.m_right);
-//        }
-//    } // syncTreeWithTraits
 
     /* Loggable interface implementation follows */
 
     /**
      * print translate block for NEXUS beast.tree file
-     * @param node
-     * @param out
-     * @param nNodeCount
      */
     public static void printTranslate(Node node, PrintStream out, int nNodeCount) {
+    	List<String> translateLines = new ArrayList<String>();
+        printTranslate(node, translateLines, nNodeCount);
+        Collections.sort(translateLines);
+        for (String sLine : translateLines) {
+        	out.println(sLine);
+        }
+    }
+
+    /** need this helper so that we can sort list of entries **/ 
+    static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
         if (node.isLeaf()) {
-            out.print("\t\t" + node.getNr() + " " + node.getID());
+        	String sNr = node.getNr() +"";
+        	String sLine = "\t\t" + "    ".substring(sNr.length()) + sNr + " " + node.getID();
             if (node.getNr() < nNodeCount) {
-                out.println(",");
-            } else {
-                out.println();
+            	sLine += ",";
             }
+            translateLines.add(sLine);
         } else {
-            printTranslate(node.m_left, out, nNodeCount);
-            printTranslate(node.m_right, out, nNodeCount);
+            printTranslate(node.m_left, translateLines, nNodeCount);
+            printTranslate(node.m_right, translateLines, nNodeCount);
         }
     }
 
@@ -272,21 +273,12 @@ public class Tree extends StateNode {
 	}
 
 	@Override
-	public void toXML(PrintStream out) {
-		out.print("<tree id='" + getID() + "' nodeCount='"+ getNodeCount()+"'>");
-		out.print(root.toString());
-		out.print("</tree>\n");
-	}
-
-	@Override
 	public void fromXML(org.w3c.dom.Node node) {
 		String sNewick = node.getTextContent();
-    	NamedNodeMap atts = node.getAttributes();
-    	nodeCount = Integer.parseInt(atts.getNamedItem("nodeCount").getNodeValue());
 		TreeParser parser = new TreeParser();
 		try {
 			parser.m_nOffset.setValue(0, parser);
-			root = parser.parseNewick(sNewick);
+			setRoot(parser.parseNewick(sNewick));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

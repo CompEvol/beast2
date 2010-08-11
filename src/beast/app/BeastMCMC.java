@@ -97,9 +97,7 @@ public class BeastMCMC {
 		}
 		Randomizer.setSeed(m_nSeed);
 		m_runnable = new XMLParser().parseFile(m_sFileName);
-		if (bResume) {
-			m_runnable.restoreFromFile();
-		}
+		m_runnable.setStateFile(m_sFileName+".state", bResume);
 	} // parseArgs
 
 	public static String getUsage() {

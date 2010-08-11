@@ -69,7 +69,6 @@ public class ClusterTree extends Tree {
 
 	@Override
 	public void initAndValidate() throws Exception {
-		super.initAndValidate();
 		String sType = m_sClusterType.get().toLowerCase();
 		if (sType.equals(M_SINGLE)) {m_nLinkType = SINGLE;}
 		else if (sType.equals(M_COMPLETE)) {m_nLinkType = COMPLETE;}
@@ -87,6 +86,7 @@ public class ClusterTree extends Tree {
 		Node root = buildClusterer();
 		setRoot(root);
 		root.labelInternalNodes((getNodeCount()+1)/2);
+		super.initAndValidate();
 	}
 
 	Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {

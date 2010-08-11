@@ -41,6 +41,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import beast.core.Input;
+//import beast.util.XMLProducer;
 
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of parameters and trees.")
@@ -49,7 +50,7 @@ public class State extends Plugin {
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
     public Input<Integer> m_storeEvery = new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
     		"resume computation later on", -1);
-    final static String STATE_STORAGE_FILE = "state.backup.xml";
+    String m_sStateFileName = "state.backup.xml";
     
     @Override
     public void initAndValidate() {
@@ -104,12 +105,13 @@ public class State extends Plugin {
 
     public void storeToFile() {
 		try {
-			PrintStream out = new PrintStream(STATE_STORAGE_FILE);
+			PrintStream out = new PrintStream(m_sStateFileName);
 			out.print("<itsabeastystatewerein version='2.0'>\n");
 			for(StateNode node : stateNode) {
 				node.toXML(out);
 			}
 			out.print("</itsabeastystatewerein>\n");
+			//out.print(new XMLProducer().toXML(this));
 			out.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -120,7 +122,7 @@ public class State extends Plugin {
 		try {
 			System.out.println("Restoring from file");
 	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	        Document doc= factory.newDocumentBuilder().parse(new File(STATE_STORAGE_FILE));
+	        Document doc= factory.newDocumentBuilder().parse(new File(m_sStateFileName));
 	        doc.normalize();
 	        NodeList nodes = doc.getElementsByTagName("*");
 	        Node topNode = nodes.item(0);
@@ -407,12 +409,14 @@ public class State extends Plugin {
 
 /*
 todo:
-	State toXml fromXML
 	Traits
 	Tip heights
-
-
+	clade proportions on MultiMCMC
+	reinstate SNAPP
+	multi dim start values for parameters
+	
 done:
+	State toXml fromXML
 	State - do the store, restore, requires calculation 
 	code review: naming booleans, indices
 	listPlugins => listActivePlugins

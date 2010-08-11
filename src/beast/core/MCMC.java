@@ -155,6 +155,7 @@ public class MCMC extends Runnable {
 
     @Override
     public void run() throws Exception {
+    	state.m_sStateFileName = m_sStateFile;
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
         }
@@ -210,6 +211,7 @@ public class MCMC extends Runnable {
                 }
             } else {
                 // operation failed
+                state.restore();
                 if (iSample > 0) {
                     operator.reject();
                 }

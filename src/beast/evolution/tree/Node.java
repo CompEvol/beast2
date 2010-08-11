@@ -286,7 +286,12 @@ public class Node extends Plugin {
 	}
 	
 	public void setMetaData(String sPattern, Object fValue) {
-		m_bIsDirty = Tree.IS_DIRTY;
+		if (sPattern.equals(TraitSet.DATE_TRAIT) || 
+				sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) || 
+				sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+			m_fHeight = (Double) fValue;
+		}
+		m_bIsDirty |= Tree.IS_DIRTY;
 	}
 	
 	public double getMetaData(String sPattern) {
@@ -297,9 +302,9 @@ public class Node extends Plugin {
      * @param fScale scale factor
      **/
 	public void scale(double fScale) throws Exception {
-		m_fHeight *= fScale;
 		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
+			m_fHeight *= fScale;
 			m_left.scale(fScale);
 			m_right.scale(fScale);
 			if (m_fHeight < m_left.m_fHeight || m_fHeight < m_right.m_fHeight) {

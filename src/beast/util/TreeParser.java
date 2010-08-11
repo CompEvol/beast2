@@ -62,12 +62,12 @@ public class TreeParser extends Tree {
     public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", new Integer(1));
     public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under wich node heights (derived from lengths) are set to zero. Default=0.", new Double(0));
 
+
     /**
      * assure the class behaves properly, even when inputs are not specified *
      */
     @Override
     public void initAndValidate() throws Exception {
-        super.initAndValidate();
         if (m_oData.get() != null) {
             m_sLabels = m_oData.get().m_sTaxaNames;
         } else {
@@ -75,19 +75,19 @@ public class TreeParser extends Tree {
             m_bIsLabelledNewick = false;
         }
         setRoot(parseNewick(m_oNewick.get()));
+
+        super.initAndValidate();
     } // init
 
     public TreeParser() {
     }
 
     public TreeParser(String newick) throws Exception {
-
-        //m_oData.setValue(alignment, this);
         m_oNewick.setValue(newick, this);
         initAndValidate();
     }
 
-    Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         return (Node) Class.forName(m_oNodeType.get()).newInstance();
         //return new NodeData();
     }

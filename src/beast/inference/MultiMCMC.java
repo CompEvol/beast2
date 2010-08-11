@@ -75,11 +75,14 @@ public class MultiMCMC extends MCMC {
 	
 	@SuppressWarnings("unchecked")
 	@Override 
-	public void run() {
+	public void run() throws Exception {
 		// start threads with individual chains here.
 		m_threads = new Thread[m_chains.length];
 		int k = 0;
 		for (final MCMC mcmc : m_chains) {
+			mcmc.setStateFile(m_sStateFile + "." +k, m_bRestoreFromFile);
+			// need this to keep regression testing time reasonable
+			mcmc.m_oChainLength.setValue(m_oChainLength.get(), this);
 			m_threads[k] = new Thread() {
 				public void run() {
 					try {
