@@ -2,6 +2,7 @@ package beast.inference;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -9,7 +10,9 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Logger;
 import beast.core.MCMC;
+import beast.evolution.tree.Node;
 import beast.util.Randomizer;
+import beast.util.TreeParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 
@@ -32,6 +35,11 @@ public class MultiMCMC extends MCMC {
 	/** pre-calculated sum of itmes and sum of itmes squared for all threads and all items */
 	double [][] m_fSums;
 	double [][] m_fSquaredSums;
+	
+	/** for each thread, counts the number of trees read from the log **/
+	int [] m_nTrees;
+	/** for each thread, keeps track of the frequency of clades **/
+	HashMap<String, Integer> [] m_cladeMaps;
 	
 	@Override
 	public void initAndValidate() throws Exception {
@@ -100,6 +108,11 @@ public class MultiMCMC extends MCMC {
 		for (int i = 0; i < m_threads.length+1; i++) {
 			m_logTables[i] = new ArrayList<Double[]>();
 		}
+		m_nTrees = new int[m_threads.length];
+		m_cladeMaps = new HashMap[m_threads.length];
+		for (int i = 0; i < m_threads.length; i++) {
+			m_cladeMaps[i] = new HashMap<String, Integer>();
+		}
 		for (int iThread = 0; iThread < m_chains.length; iThread++) {
 			new LogWatcherThread(iThread).start();
 		}
@@ -125,12 +138,19 @@ public class MultiMCMC extends MCMC {
 		@Override
 		public void run() {
 			try {
-				// find first log file that is not a tree logger
+				// find first compound log file and first tree logger file
 				String sFile = null;
+				String sTreeFile = null;
 				int j = 0;
-				while (sFile == null) {
+				while (sFile == null || sTreeFile == null) {
 					if (m_chains[m_iThread].m_loggers.get().get(j).m_mode == Logger.COMPOUND_LOGGER) {
-						sFile = m_chains[m_iThread].m_loggers.get().get(j).m_pFileName.get();
+						if (sFile == null) {
+							sFile = m_chains[m_iThread].m_loggers.get().get(j).m_pFileName.get();
+						}
+					} else {
+						if (sTreeFile == null) {
+							sTreeFile = m_chains[m_iThread].m_loggers.get().get(j).m_pFileName.get();
+						}
 					}
 					j++;
 				}
@@ -138,8 +158,14 @@ public class MultiMCMC extends MCMC {
 				// wait a seconds, the log file should be available
 				sleep(1000);
 				BufferedReader fin = null;
+				BufferedReader fin2 = null;
 				// keep polling the log file every second
 				while (true) {
+					if (fin2 != null) {
+						readTreeLogLines(m_iThread, fin2);
+					} else {
+						fin2 = new BufferedReader(new FileReader(sTreeFile));
+					}
 					if (fin != null) {
 						readLogLines(m_iThread, fin);
 					} else {
@@ -186,6 +212,76 @@ public class MultiMCMC extends MCMC {
 		}
 	} // readLogLines
 	
+	/** read lines from the log file till no more lines are available **/
+	void readTreeLogLines(int iThread, BufferedReader fin) {
+		try {
+			while(true) {
+				String sStr = null;
+				do {
+					sStr = fin.readLine();
+					if (sStr == null) {
+						return;
+					}
+				} while (!sStr.matches("tree STATE.*")); // ignore non-tree lines
+				sStr = sStr.substring(sStr.indexOf("("));
+				Node tree = new TreeParser().parseNewick(sStr);
+				List<String> sClades = new ArrayList<String>();
+				traverse(tree, sClades);
+				HashMap<String, Integer> cladeMap = m_cladeMaps[iThread];
+				for (String sClade : sClades) {
+					if (cladeMap.containsKey(sClade)) {
+						cladeMap.put(sClade, cladeMap.get(sClade) + 1);
+					} else {
+						cladeMap.put(sClade, 1);
+					}
+				}
+				m_nTrees[iThread]++;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	} // readLogLines
+
+	/** get clades from tree and store them in a list in String format **/
+	int [] traverse(Node node, List<String> sClades) {
+		int [] clade = null;
+		if (node.isLeaf()) {
+			clade = new int[1];
+			clade[0] = node.getNr();
+		} else {
+			int [] leftClade = traverse(node.m_left, sClades);
+			int [] rightClade = traverse(node.m_right, sClades);
+			
+			// merge clade with rightClade
+			clade = new int[leftClade.length + rightClade.length];
+			int i = 0, iLeft = 0, iRight = 0;
+			while (i < clade.length) {
+				if (leftClade[iLeft] < rightClade[iRight]) {
+					clade[i] = leftClade[iLeft++];
+					if (iLeft == leftClade.length) {
+						while (iRight < rightClade.length) {
+							clade[++i] = rightClade[iRight++];
+						}
+					}
+				} else {
+					clade[i] = rightClade[iRight++]; 
+					if (iRight == rightClade.length) {
+						while (iLeft < leftClade.length) {
+							clade[++i] = leftClade[iLeft++];
+						}
+					}
+				}
+				i++;
+			}
+			String sClade = "";
+			for (i = 0; i < clade.length; i++) {
+				sClade += clade[i] + ",";
+			}
+			sClades.add(sClade);
+		}
+		return clade;
+	}
+	
 	/** Add log line to log table, and check whether other threads are up to date
 	 * enough to report on a sample. 
 	 */
@@ -196,6 +292,11 @@ public class MultiMCMC extends MCMC {
 		while (true) {
 			for (int iThread2 = 0; iThread2 < m_threads.length; iThread2++) {
 				if (m_logTables[iThread2].size() <= m_nLastReported) {
+					// not enough log lines processed yet
+					return;
+				}
+				if (m_nTrees[iThread2] < m_nLastReported) {
+					// not enough tree lines processed yet
 					return;
 				}
 			}
@@ -204,7 +305,28 @@ public class MultiMCMC extends MCMC {
 		}
 	}
 	
-
+	/** calculate maximum diffence of clade probabilities **/
+	/** can be done incrementally **/
+	void calcMaxCladeDifference() {
+		int nTotal = 0;
+		int nMax = 0;
+		HashMap<String, Integer> map1 = m_cladeMaps[0];
+		HashMap<String, Integer> map2 = m_cladeMaps[1];
+		for (String sClade : map1.keySet()) {
+			int i1 = map1.get(sClade);
+			int i2 = 0;
+			if (map2.containsKey(sClade)) {
+				i2 = map2.get(sClade);
+			}
+			nTotal += i1;
+			nMax = Math.max(nMax, Math.abs(i1 - i2));
+		}
+		String sStr = nMax / (double) nTotal + "";
+		if (sStr.length() > 5) {
+			sStr = sStr.substring(0, 5);
+		}
+		System.out.print(" " + nMax + "/" + nTotal + "=" + sStr);
+	} // calcMaxCladeDifference
 
 
 //	http://hosho.ees.hokudai.ac.jp/~kubo/Rdoc/library/coda/html/gelman.diag.html
@@ -342,6 +464,7 @@ public class MultiMCMC extends MCMC {
                         (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
                         (nSecondsPerMSamples % 60 + "s");
         System.out.print(sTimePerMSamples + "/Msamples");
+        calcMaxCladeDifference();
 		System.out.println();
 		System.out.flush();
 		
