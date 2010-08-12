@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import beast.core.Description;
 import beast.core.Input;
@@ -17,8 +18,12 @@ import beast.util.XMLParser;
 import beast.util.XMLProducer;
 
 @Description("Runs multiple MCMC chains in parallel and reports Rubin-Gelman statistic while running the chain " +
-		"for each item in the first log file. Note that log file names should have $(seed) in their name so " +
-		"that the first chain uses the actual seed in the file name and all subsequent chains add one to it.")
+		"for each item in the first log file as well as the maximum difference in clade probability for every " +
+		"pair of chains. " +
+		"" +
+		"Note that log file names should have $(seed) in their name so " +
+		"that the first chain uses the actual seed in the file name and all subsequent chains add one to it." +
+		"Furthermore, the log and tree log should have the same sample frequency.")
 public class MultiMCMC extends MCMC {
 	public Input<Integer> m_nrOfChains = new Input<Integer>("chains", " number of chains to run in parallel (default 2)", 2);
 	
@@ -37,10 +42,16 @@ public class MultiMCMC extends MCMC {
 	double [][] m_fSquaredSums;
 	
 	/** for each thread, counts the number of trees read from the log **/
-	int [] m_nTrees;
+	//int [] m_nTrees;
+	/** maximum difference of clade probabilities for chain 1 & 2 **/
+	Vector<Double> m_fMaxCladeProbDiffs;
 	/** for each thread, keeps track of the frequency of clades **/
 	HashMap<String, Integer> [] m_cladeMaps;
-	
+
+	/** index of log and tree log among the MCMC loggers**/
+	int m_iTreeLog = 0;
+	int m_iLog = 0;
+
 	@Override
 	public void initAndValidate() throws Exception {
 		m_chains = new MCMC[m_nrOfChains.get()];
@@ -63,6 +74,7 @@ public class MultiMCMC extends MCMC {
 		}
 		long nSeed = Randomizer.getSeed();
 		
+		// create new chains
 		XMLParser parser = new XMLParser();
 		for (int i = 0; i < m_chains.length; i++) {
 			String sXML2 = sXML;
@@ -79,7 +91,20 @@ public class MultiMCMC extends MCMC {
 				}
 			}
 		}
-	}
+	
+		// collect indices for tree log file names
+		while (m_chains[0].m_loggers.get().get(m_iTreeLog).m_mode != Logger.TREE_LOGGER) {
+			m_iTreeLog++;
+		}
+		while (m_chains[0].m_loggers.get().get(m_iLog).m_mode != Logger.COMPOUND_LOGGER) {
+			m_iLog++;
+		}
+		int nEveryLog = m_chains[0].m_loggers.get().get(m_iLog).m_pEvery.get();
+		int nEveryTree = m_chains[0].m_loggers.get().get(m_iTreeLog).m_pEvery.get();
+		if (nEveryLog != nEveryTree) {
+			throw new Exception("log frequencey and tree log frequencey should be the same.");
+		}
+	} // initAndValidate
 	
 	@SuppressWarnings("unchecked")
 	@Override 
@@ -108,14 +133,13 @@ public class MultiMCMC extends MCMC {
 		for (int i = 0; i < m_threads.length+1; i++) {
 			m_logTables[i] = new ArrayList<Double[]>();
 		}
-		m_nTrees = new int[m_threads.length];
+		//m_nTrees = new int[m_threads.length];
+		m_fMaxCladeProbDiffs = new Vector<Double>();
 		m_cladeMaps = new HashMap[m_threads.length];
 		for (int i = 0; i < m_threads.length; i++) {
 			m_cladeMaps[i] = new HashMap<String, Integer>();
 		}
-		for (int iThread = 0; iThread < m_chains.length; iThread++) {
-			new LogWatcherThread(iThread).start();
-		}
+		new LogWatcherThread().start();
 		// wait for the chains to finish
         m_nStartLogTime = System.currentTimeMillis();
 		for (Thread thread : m_threads) {
@@ -127,100 +151,139 @@ public class MultiMCMC extends MCMC {
 		}
 	} // run
 	
-	/** Represents class that tails a log
-	 * When a new line is added, this is processed and 
-	 * if all threads got equally far the Gelman Rubin statistic is printed. **/
+	/** Represents class that tails all logs files and tree log files.
+	 * When a new line is added, this is processed */ 
 	class LogWatcherThread extends Thread {
-		int m_iThread;
-		LogWatcherThread(int iThread) {
-			m_iThread = iThread;
-		}
 		@Override
 		public void run() {
 			try {
-				// find first compound log file and first tree logger file
-				String sFile = null;
-				String sTreeFile = null;
-				int j = 0;
-				while (sFile == null || sTreeFile == null) {
-					if (m_chains[m_iThread].m_loggers.get().get(j).m_mode == Logger.COMPOUND_LOGGER) {
-						if (sFile == null) {
-							sFile = m_chains[m_iThread].m_loggers.get().get(j).m_pFileName.get();
-						}
-					} else {
-						if (sTreeFile == null) {
-							sTreeFile = m_chains[m_iThread].m_loggers.get().get(j).m_pFileName.get();
-						}
-					}
-					j++;
-				}
-				
+				int nThreads = m_chains.length;
+				/* file handle pairs; two for each thread, 
+				 * even numbered files are for the log file, odd numbere for the tree file */
+				BufferedReader [] fin = new BufferedReader[nThreads*2];
+				int nFilesOpened = 0;
+
 				// wait a seconds, the log file should be available
 				sleep(1000);
-				BufferedReader fin = null;
-				BufferedReader fin2 = null;
-				// keep polling the log file every second
-				while (true) {
-					if (fin2 != null) {
-						readTreeLogLines(m_iThread, fin2);
-					} else {
-						fin2 = new BufferedReader(new FileReader(sTreeFile));
+				// open files
+				while (nFilesOpened < nThreads*2) {
+					for (int i = 0; i < nThreads*2; i++) {
+						if (fin[i] == null) {
+							String sFileName = m_chains[i/2].m_loggers.get().get(i%2==0?m_iLog:m_iTreeLog).m_pFileName.get(); 
+							fin[i] = new BufferedReader(new FileReader(sFileName));
+							if (fin[i] != null) {
+								nFilesOpened++;
+							}
+						}
 					}
-					if (fin != null) {
-						readLogLines(m_iThread, fin);
-					} else {
-						fin = new BufferedReader(new FileReader(sFile));
+					if (nFilesOpened < nThreads*2) {
+						sleep(1000);
 					}
-					// wait a second to see if there is more
-					sleep(1000);
 				}
-				
+
+				// keep polling the tree logs file every second
+				while (true) {
+					int nLinesRead = 0;
+					// grab a tree from every thread
+					while (nLinesRead < nThreads*2) {
+						boolean [] bDone = new boolean[nThreads*2];
+						for (int i = 0; i < nThreads*2; i++) {
+							if (!bDone[i]) {
+								boolean bLineRead = (i%2==0?readLogLines(i/2, fin[i]) : readTreeLogLines(i/2, fin[i]));
+								if (bLineRead) {
+									nLinesRead++;
+									bDone[i] = true;
+								}
+							}
+						}
+						if (nLinesRead< nThreads*2) {
+							// wait a second before seeing if there is more
+							sleep(1000);
+						}
+					}
+					
+					double fMaxCladeProbDiff = 0;
+					for (int i = 0; i < nThreads; i++) {
+						for (int k = 0; k < nThreads; k++) {
+							fMaxCladeProbDiff = Math.max(fMaxCladeProbDiff, calcMaxCladeDifference(i, k));
+						}
+					}
+					m_fMaxCladeProbDiffs.add(fMaxCladeProbDiff);
+					calcGRStats(m_nLastReported);
+					m_nLastReported++;				
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}	
 	} // class LogWatcherThread
-
-	/** read lines from the log file till no more lines are available **/
-	void readLogLines(int iThread, BufferedReader fin) {
+	
+	/** read a line from the log, return true if successfull */
+	boolean readLogLines(int iThread, BufferedReader fin) {
 		try {
-			while(true) {
-				String sStr = null;
-				do {
-					sStr = fin.readLine();
-					if (sStr == null) {
-						return;
-					}
-				} while (sStr.startsWith(("#"))); // ignore comment lines
-				int nItems = sStr.split("\\s+").length;
-				String [] sStrs = sStr.split("\\s+");
-				Double[] logLine = new Double[nItems];
-				try {
-					for (int i = 0; i < nItems; i++) {
-						logLine[i] = Double.parseDouble(sStrs[i]);
-					}
-					processLogLine(iThread, logLine);
-				} catch (Exception e) {
-					//ignore, probably a parse errors
-					if (iThread == 0) {
-						System.out.println(sStr);
-					}
+			String sStr = null;
+			String [] sStrs = null;;
+			do {
+				sStr = fin.readLine();
+				if (sStr == null) {
+					return false;
 				}
+				sStrs = sStr.split("\\s+");
+			} while (sStr.startsWith(("#")) || sStrs.length == 1); // ignore comment lines
+			int nItems = sStrs.length;
+			Double[] logLine = new Double[nItems];
+			try {
+				for (int i = 0; i < nItems; i++) {
+					logLine[i] = Double.parseDouble(sStrs[i]);
+				}
+				processLogLine(iThread, logLine);
+			} catch (Exception e) {
+				//ignore, probably a parse errors
+				if (iThread == 0) {
+					System.out.println(sStr);
+				}
+				return false;
 			}
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	} // readLogLines
-	
-	/** read lines from the log file till no more lines are available **/
-	void readTreeLogLines(int iThread, BufferedReader fin) {
+		return false;
+	} // readLogLine
+
+	/** Add log line to log table, and check whether other threads are up to date
+	 * enough to report on a sample. 
+	 */
+	synchronized void processLogLine(int iThread, Double[] logLine) {
+		m_logTables[iThread].add(logLine);
+
+//		// can we calculate the Gelman Rubin statistic yet?
+//		while (true) {
+//			for (int iThread2 = 0; iThread2 < m_threads.length; iThread2++) {
+//				if (m_logTables[iThread2].size() <= m_nLastReported) {
+//					// not enough log lines processed yet
+//					return;
+//				}
+//				if (m_fMaxCladeProbDiffs.size() <= m_nLastReported) {
+////				if (m_nTrees[iThread2] < m_nLastReported) {
+//					// not enough tree lines processed yet
+//					return;
+//				}
+//			}
+//			calcGRStats(m_nLastReported);
+//			m_nLastReported++;
+//		}
+	}
+
+	/** read a single tree from the tree log file, return true if successful **/
+	boolean readTreeLogLines(int iThread, BufferedReader fin) {
 		try {
-			while(true) {
+			//while(true) {
 				String sStr = null;
 				do {
 					sStr = fin.readLine();
 					if (sStr == null) {
-						return;
+						return false;
 					}
 				} while (!sStr.matches("tree STATE.*")); // ignore non-tree lines
 				sStr = sStr.substring(sStr.indexOf("("));
@@ -235,12 +298,14 @@ public class MultiMCMC extends MCMC {
 						cladeMap.put(sClade, 1);
 					}
 				}
-				m_nTrees[iThread]++;
-			}
+				//m_nTrees[iThread]++;
+				return true;
+			//}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	} // readLogLines
+		return false;
+	} // readTreeLogLine
 
 	/** get clades from tree and store them in a list in String format **/
 	int [] traverse(Node node, List<String> sClades) {
@@ -282,36 +347,19 @@ public class MultiMCMC extends MCMC {
 		return clade;
 	}
 	
-	/** Add log line to log table, and check whether other threads are up to date
-	 * enough to report on a sample. 
-	 */
-	synchronized void processLogLine(int iThread, Double[] logLine) {
-		m_logTables[iThread].add(logLine);
-
-		// can we calculate the Gelman Rubin statistic yet?
-		while (true) {
-			for (int iThread2 = 0; iThread2 < m_threads.length; iThread2++) {
-				if (m_logTables[iThread2].size() <= m_nLastReported) {
-					// not enough log lines processed yet
-					return;
-				}
-				if (m_nTrees[iThread2] < m_nLastReported) {
-					// not enough tree lines processed yet
-					return;
-				}
-			}
-			calcGRStats(m_nLastReported);
-			m_nLastReported++;
+	/** calculate maximum difference of clade probabilities 
+	 * of 2 threads. It uses only the clades in thread1, so
+	 * to it requires two calls to make sure no clades in thread2
+	 * are missed, i.e. use max(calcMaxCladeDifference(iThread1, iThread2), calcMaxCladeDifference(iThread2, iThread2)) **/
+	/** TODO: can be done incrementally?!? **/
+	double calcMaxCladeDifference(int iThread1, int iThread2) {
+		if (iThread1 == iThread2) {
+			return 0;
 		}
-	}
-	
-	/** calculate maximum diffence of clade probabilities **/
-	/** can be done incrementally **/
-	void calcMaxCladeDifference() {
 		int nTotal = 0;
 		int nMax = 0;
-		HashMap<String, Integer> map1 = m_cladeMaps[0];
-		HashMap<String, Integer> map2 = m_cladeMaps[1];
+		HashMap<String, Integer> map1 = m_cladeMaps[iThread1];
+		HashMap<String, Integer> map2 = m_cladeMaps[iThread2];
 		for (String sClade : map1.keySet()) {
 			int i1 = map1.get(sClade);
 			int i2 = 0;
@@ -321,13 +369,10 @@ public class MultiMCMC extends MCMC {
 			nTotal += i1;
 			nMax = Math.max(nMax, Math.abs(i1 - i2));
 		}
-		String sStr = nMax / (double) nTotal + "";
-		if (sStr.length() > 5) {
-			sStr = sStr.substring(0, 5);
-		}
-		System.out.print(" " + nMax + "/" + nTotal + "=" + sStr);
+		return nMax / (double) nTotal;
 	} // calcMaxCladeDifference
 
+	
 
 //	http://hosho.ees.hokudai.ac.jp/~kubo/Rdoc/library/coda/html/gelman.diag.html
 //	Brooks, SP. and Gelman, A. (1997) 
@@ -463,9 +508,14 @@ public class MultiMCMC extends MCMC {
                 (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
                         (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
                         (nSecondsPerMSamples % 60 + "s");
-        System.out.print(sTimePerMSamples + "/Msamples");
-        calcMaxCladeDifference();
-		System.out.println();
+        System.out.print(sTimePerMSamples + "/Msamples ");
+
+		String sStr = m_fMaxCladeProbDiffs.get(m_nLastReported) + "";
+		if (sStr.length() > 5) {
+			sStr = sStr.substring(0, 5);
+		}
+		System.out.print(sStr);
+        System.out.println();
 		System.out.flush();
 		
 	} // processLogLine
