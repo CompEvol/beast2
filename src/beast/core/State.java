@@ -98,7 +98,7 @@ public class State extends Plugin {
     	System.arraycopy(stateNode, 0, storedStateNode, 0, stateNode.length);
     	m_changedStateNodeCode = new BitSet(stateNode.length);
     	
-    	if (m_nStoreEvery> 0 && nSample > 0 && nSample % m_nStoreEvery == 0) {
+    	if (m_nStoreEvery> 0 && nSample % m_nStoreEvery == 0 && nSample > 0) {
     		storeToFile();
     	}
     }
@@ -221,6 +221,14 @@ public class State extends Plugin {
     public void setEverythingDirty(boolean isDirty) {
         for (StateNode node : stateNode) {
             node.setEverythingDirty(isDirty);
+        }
+        
+        if (isDirty) {
+        	// happens only during debugging
+        	m_changedStateNodeCode = new BitSet(stateNode.length);
+        	for (int i = 0; i < stateNode.length; i++) {
+        		m_changedStateNodeCode.set(i);
+        	}
         }
     }
 
@@ -381,19 +389,31 @@ public class State extends Plugin {
     
     
     /** Visit all calculation nodes in partial order determined by the Plugin-input relations
-     * (i.e. if A is input of B then A < B)
+     * (i.e. if A is input of B then A < B). There are 4 operations that can be propagated this
+     * way:
+     * 
+     * store() makes sure all calculation nodes store their internal state
+     * 
+     * checkDirtiness() makes all calculation nodes check whether they give a different answer 
+     * when interrogated by one of its outputs
+     * 
+     * accept() allows all calculation nodes to mark themselves as being clean without further
+     * calculation
+     * 
+     * restore() if a proposed state is not accepted, all calculation nodes need to restore 
+     * themselves
      */
-    public void checkCalculationNodesDirtiness() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
-            calculationNode.checkDirtiness();
-        }
-    }
-
     public void storeCalculationNodes() {
         List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
         for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
             calculationNode.store();
+        }
+    }
+
+    public void checkCalculationNodesDirtiness() {
+        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+            calculationNode.checkDirtiness();
         }
     }
 
@@ -403,7 +423,13 @@ public class State extends Plugin {
             calculationNode.restore();
         }
     }
-   
+  
+    public void acceptCalculationNodes() {
+	    List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+	    for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+	        calculationNode.accept();
+	    }
+    }
 } // class State
 
 

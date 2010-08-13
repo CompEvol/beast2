@@ -86,6 +86,9 @@ public abstract class CalculationNode extends Plugin {
     	isDirty = false;
     }
 
+    protected void accept() {
+    	isDirty = false;
+    }
     /** Default implementation inspects all input plugins
      * and checks if there is any dirt anywhere.
      * Derived classes can provide a more efficient implementation

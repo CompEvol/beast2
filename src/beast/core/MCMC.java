@@ -182,11 +182,10 @@ public class MCMC extends Runnable {
             state.store(iSample);
 
             Operator operator = operatorSet.selectOperator();
+            //System.err.print(operator.getName()+ ":");
             double fLogHastingsRatio = operator.proposal();
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
             	state.storeCalculationNodes();
-
-                //System.out.print(operator.getName()+ "\n");
                 state.checkCalculationNodesDirtiness();
 
                 double fNewLogLikelihood = posterior.calculateLogP();
@@ -195,7 +194,7 @@ public class MCMC extends Runnable {
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     fOldLogLikelihood = fNewLogLikelihood;
-                    state.setEverythingDirty(false);
+                    state.acceptCalculationNodes();
 
                     if (iSample >= 0) {
                         operator.accept();
@@ -206,9 +205,9 @@ public class MCMC extends Runnable {
                         operator.reject();
                     }
                     state.restore();
-                    state.setEverythingDirty(false);
                     state.restoreCalculationNodes();
                 }
+                state.setEverythingDirty(false);
             } else {
                 // operation failed
                 state.restore();
