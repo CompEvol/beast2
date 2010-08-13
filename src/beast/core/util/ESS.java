@@ -20,8 +20,14 @@ public class ESS extends Plugin implements Loggable {
 	public Input<Distribution> m_pDistribution =
             new Input<Distribution>("distribution","probability distribution to report ESS for", Validate.XOR, m_pParam);
 
-	Distribution m_distribution;
+	/** values from which the ESS is calculated **/
 	List<Double> m_trace;
+	/** sum of trace, excluding burn-in **/
+	double m_fSum = 0;
+	/** keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  **/
+    List<Double> m_fSquareLaggedSums;
+	/** shadow of distribution input (if any) **/
+	Distribution m_distribution;
 	
 	@Override
 	public void initAndValidate() {
@@ -29,6 +35,7 @@ public class ESS extends Plugin implements Loggable {
 			m_distribution = m_pDistribution.get();
 		}
 		m_trace = new ArrayList<Double>();
+		m_fSquareLaggedSums = new ArrayList<Double>();
 	}
 	
 	@Override
@@ -42,7 +49,7 @@ public class ESS extends Plugin implements Loggable {
 //  We determine the Effective Sample Size (ESS) based on the auto correlation (AC) between the sequence and the same
 //  sequence delayed by some amount.  For a highly correlated sequence the AC will be high for a small delay,
 //  and is expected to drop to around zero when the delay is large enough. The delay when the AC is zero is the ACT (auto
-//  correlation time), and the ESS is the number of samples ramining when keeping only one sample out of every ACT.
+//  correlation time), and the ESS is the number of samples remaining when keeping only one sample out of every ACT.
 //
 //  The (squared) auto correlation between two sequences is the covariance divided by the product of the individual
 //  variances. Since both sequences are essentially the same sequence we do not bother to scale.
@@ -50,7 +57,7 @@ public class ESS extends Plugin implements Loggable {
 //  The simplest criteria to use to find the point where the AC "gets" to zero is to take the first time it becomes
 //  negative. This is deemed too simple and instead we first find the approximate point - the first time where the sum of
 //  two consecutive values is negative, and then determine the ACT by assuming the AC - as a function of the delay - is
-//  roughly linear and so the ACT (the point on the X axis) is approximetly equal to twice the area under the curve divided
+//  roughly linear and so the ACT (the point on the X axis) is approximately equal to twice the area under the curve divided
 //  by the value at x=0 (the AC of the sequence). This is the reason for summing up twice the variances inside the loop - a
 //  basic numerical integration technique.
 
@@ -58,36 +65,46 @@ public class ESS extends Plugin implements Loggable {
 	public void log(final int nSample, PrintStream out) {
 		final Double fNewValue = (m_distribution == null? m_pParam.get().getValue() : m_distribution.getCurrentLogP());
 		m_trace.add(fNewValue);
+		m_fSum += fNewValue;
 		
         final int nTotalSamples = m_trace.size();
 
-        if (nTotalSamples < 5) {
-        	// don't bother if we only have 5 samples
-            out.print(0 + "\t");
-            return;
-        }
-
         // take 10% burn in
         final int iStart = nTotalSamples/10;
+        if (iStart != ((nTotalSamples-1)/10)) {
+        	// compensate for 10% burnin
+        	m_fSum -= m_trace.get((nTotalSamples-1)/10);
+        }
         final int nSamples = nTotalSamples - iStart;
         final int nMaxLag = Math.min(nSamples, MAX_LAG);
 
         // calculate mean
-        double fSum = 0;
-        for (int i = iStart; i < nTotalSamples; i++) {
-            fSum += m_trace.get(i);
+        final double fMean = m_fSum / nSamples;
+
+        if (iStart != ((nTotalSamples-1)/10)) {
+        	// compensate for 10% burnin
+        	int iTrace = ((nTotalSamples-1)/10);
+            for (int iLag = 0; iLag < m_fSquareLaggedSums.size(); iLag++) {
+                m_fSquareLaggedSums.set(iLag, m_fSquareLaggedSums.get(iLag) - m_trace.get(iTrace) * m_trace.get(iTrace + iLag));             
+            }        	
         }
-        final double fMean = fSum / nSamples;
+        
+        while (m_fSquareLaggedSums.size()< nMaxLag) {
+        	m_fSquareLaggedSums.add(0.0);
+        }
     
         // calculate auto correlation for selected lag times
         double[] fAutoCorrelation = new double[nMaxLag];
+        // fSum1 = \sum_{iStart ... nTotalSamples-iLag-1} trace
+    	double fSum1 = m_fSum;
+        // fSum1 = \sum_{iStart+iLag ... nTotalSamples-1} trace
+    	double fSum2 = m_fSum;
         for (int iLag = 0; iLag < nMaxLag; iLag++) {
-            for (int j = iStart; j < nTotalSamples - iLag; j++) {
-                final double del1 = m_trace.get(j) - fMean;
-                final double del2 = m_trace.get(j + iLag) - fMean;
-                fAutoCorrelation[iLag] += (del1 * del2);
-            }
+            m_fSquareLaggedSums.set(iLag, m_fSquareLaggedSums.get(iLag) + m_trace.get(nTotalSamples - iLag - 1) * m_trace.get(nTotalSamples - 1));             
+            fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - (fSum1 + fSum2) * fMean + fMean * fMean * (nSamples - iLag);
             fAutoCorrelation[iLag] /= ((double) (nSamples - iLag));
+        	fSum1 -= m_trace.get(nTotalSamples - 1 - iLag);
+        	fSum2 -= m_trace.get(iStart + iLag);
         }
 
         // calculate the magical variable 'varStat', RRB: what is this doing exactly?
@@ -97,7 +114,6 @@ public class ESS extends Plugin implements Loggable {
                 varStat = fAutoCorrelation[0];
             } else if (iLag % 2 == 0) {
                 // fancy stopping criterion :)
-            	// RRB: this gets me confused. I thought it would be a matter of just adding autocorelations...
                 if (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag] > 0) {
                     varStat += 2.0 * (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag]);
                 } else {
@@ -122,4 +138,4 @@ public class ESS extends Plugin implements Loggable {
 		// nothing to do
 	}
 
-}
+} // class ESS
