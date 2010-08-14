@@ -50,8 +50,8 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable {
     public abstract void fromXML(Node node);
 
     
-    /** getting/setting dirtyness state **/
-    boolean somethingIsDirty() {
+    /** getting/setting global dirtyness state for this StateNode**/
+    public boolean somethingIsDirty() {
         return this.somethingIsDirty;
     }
     

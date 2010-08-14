@@ -114,6 +114,8 @@ abstract public class LikelihoodCore {
     
     /** store current state **/
     abstract public void store();
+    /** reset current state to stored state, only used when switching from non-scaled to scaled or vice versa **/
+    abstract public void unstore();
     /** restore state **/
     abstract public void restore();
 }

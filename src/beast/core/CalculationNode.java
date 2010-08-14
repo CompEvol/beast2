@@ -9,13 +9,25 @@ public abstract class CalculationNode extends Plugin {
 
     // Package private because it shouldn't be called outside of the core package -
     // To check whether it is dirty, call isDirty on the specific Input.
-    final boolean isDirty() {
+    @SuppressWarnings("unused")
+	final private boolean isDirty() {
     	// RRB: the following fragment is superfluous, since we do a check dirtiness
     	// in partial order on all those Plugins that could possibly be affected by
     	// a change of a StateNode
         //if (!hasCheckedDirtiness) {
             //checkDirtiness();
         //}
+        return isDirty;
+    }
+	
+	// isDirty() made public to squeeze out a few cycles and save a few seconds in
+	// calculation time by calling this directly instead of calling isDirty() 
+	// on the associated input. 
+	// CalcalationNodes typically know whether an input is a CalculationNode or StateNode 
+	// and also know whether the input is Validate.REQUIRED, hence cannot be null.
+	// Further, for CalculationNodes, a shadow parameter can be kept so that a
+	// call to Input.get() can be saved.
+    final public boolean isDirtyCalculation() {
         return isDirty;
     }
 
@@ -101,7 +113,7 @@ public abstract class CalculationNode extends Plugin {
                 	return true;
                 }
 
-                if (plugin instanceof CalculationNode && ((CalculationNode)plugin).isDirty()) {
+                if (plugin instanceof CalculationNode && ((CalculationNode)plugin).isDirtyCalculation()) {
                     return true;
                 }
             }

@@ -119,7 +119,6 @@ sys	    0m0.164s  0m1.448s            0m1.328s 0m4.740s
 
 package beast.evolution.likelihood;
 
-
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -132,12 +131,13 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-@Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model.")
+@Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model using " +
+		"a variant of the 'peeling algorithm'. For details, see" +
+		"Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
 public class TreeLikelihood extends Distribution {
 
     public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree", Validate.REQUIRED);
@@ -148,6 +148,7 @@ public class TreeLikelihood extends Distribution {
 
     /** calculation engine **/
     LikelihoodCore m_likelihoodCore;
+    
     /** Plugin associated with inputs. Since none of the inputs are StateNodes, it
      * is safe to link to them only once, during initAndValidate.
      */
@@ -155,22 +156,44 @@ public class TreeLikelihood extends Distribution {
     SiteModel m_siteModel;
     BranchRateModel.Base m_branchRateModel;
 
+    /** flag to indicate the 
+    // when CLEAN=0, nothing needs to be recalculated for the node
+    // when DIRTY=1 indicates a node partial needs to be recalculated
+    // when GORED=2 indicates the indices for the node need to be recalculated
+    // (often not necessary while node partial recalculation is required)
+     */
+    int m_nHasDirt;
+
+    /** Lengths of the branches in the tree associated with each of the nodes
+     * in the tree through their node  numbers. By comparing whether the 
+     * current branch length differs from stored branch lengths, it is tested
+     * whether a node is dirty and needs to be recomputed (there may be other
+     * reasons as well...).
+     * These lengths take branch rate models in account.
+     */
     double [] m_branchLengths;
     double [] m_StoredBranchLengths;
     
+    /** memory allocation for likelihoods for each of the patterns **/
+    double[] m_fPatternLogLikelihoods;
+    /** memory allocation for the root partials **/
+    double[] m_fRootPartials;
+    /** memory allocation for probability tables obtained from the SiteModel **/
+    double[] m_fProbabilities;
+
     @Override
     public void initAndValidate() throws Exception {
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
-        	m_likelihoodCore = new BeerLikelihoodCore4();
-            //m_likelihoodCore = new BeerLikelihoodCoreCnG4();
+        	//m_likelihoodCore = new BeerLikelihoodCore4();
+            m_likelihoodCore = new BeerLikelihoodCoreCnG4();
+            //m_likelihoodCore = new BeerLikelihoodCoreJava4();
         } else {
             //m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
             m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
         }
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
-        //probabilities = new double[stateCount * stateCount];
         int nodeCount = m_tree.get().getNodeCount();
         m_likelihoodCore.initialize(
                 nodeCount,
@@ -183,17 +206,13 @@ public class TreeLikelihood extends Distribution {
         int intNodeCount = nodeCount / 2;
 
         setStates(m_tree.get().getRoot(), m_data.get().getPatternCount());
-
+        m_nHasDirt = Tree.IS_FILTHY;
         for (int i = 0; i < intNodeCount; i++) {
             m_likelihoodCore.createNodePartials(extNodeCount + i);
         }
         m_fPatternLogLikelihoods = new double[m_data.get().getPatternCount()];
         m_fRootPartials = new double[m_data.get().getPatternCount() * nStateCount];
         m_fProbabilities = new double[nStateCount * nStateCount];
-        m_bNodeIsDirty = new int[nodeCount];
-        for (int i = 0; i < nodeCount; i++) {
-            m_bNodeIsDirty[i] = Tree.IS_FILTHY;
-        }
         m_siteModel = m_pSiteModel.get();
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
         m_branchRateModel = m_pBranchRateModel.get();
@@ -208,14 +227,12 @@ public class TreeLikelihood extends Distribution {
 
     /**
      * This method samples the sequences based on the tree and site model.
-     *
-     * @param state the state
      */
     public void sample(State state, Random random) {
         throw new UnsupportedOperationException("Can't sample a fixed alignment!");
     }
 
-
+    /** set leaf states in likelihood core **/
     void setStates(Node node, int patternCount) {
         if (node.isLeaf()) {
             int i;
@@ -233,9 +250,7 @@ public class TreeLikelihood extends Distribution {
 
     /**
      * Calculate the log likelihood of the current state.
-     *
      * @return the log likelihood.
-     * @throws Exception
      */
     @Override
     public double calculateLogP() throws Exception {
@@ -251,31 +266,30 @@ public class TreeLikelihood extends Distribution {
         for (int i = 0; i < m_data.get().getPatternCount(); i++) {
             logP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
         }
-        if (logP < -1e6 && !m_likelihoodCore.getUseScaling()) {
+        if (logP < -1e10 && !m_likelihoodCore.getUseScaling()) {
             System.err.println("Turning on scaling to prevent numeric instability");
             m_likelihoodCore.setUseScaling(true);
-            Arrays.fill(m_bNodeIsDirty, Tree.IS_FILTHY);
+            m_likelihoodCore.unstore();
+            m_nHasDirt = Tree.IS_FILTHY;
             return calculateLogP();
         }
         return logP;
     }
 
     /**
-     * Traverse the beast.tree calculating partial likelihoods.
+     * Traverse the tree calculating partial likelihoods.
      * Assumes there is no branch rate model
      *
      * @return whether the partials for this node were recalculated.
-     * @throws Exception
      */
     int traverse(Node node) throws Exception {
 
-        int update = Tree.IS_CLEAN;
+        int update = (node.isDirty() | m_nHasDirt);
 
         int iNode = node.getNr();
 
-        if (!node.isRoot() && (m_bNodeIsDirty[iNode] != Tree.IS_CLEAN)) {
+        if (!node.isRoot() && (update != Tree.IS_CLEAN)) {
             double branchTime = node.getLength();
-//          m_branchLengths[iNode] = branchTime;
 
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
@@ -283,8 +297,6 @@ public class TreeLikelihood extends Distribution {
                 m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
             }
-
-            update = m_bNodeIsDirty[iNode];
         }
 
         // If the node is internal, update the partial likelihoods.
@@ -300,19 +312,14 @@ public class TreeLikelihood extends Distribution {
             // If either child node was updated then update this node too
             if (update1 != Tree.IS_CLEAN || update2 != Tree.IS_CLEAN) {
 
-                int childNum1 = child1.getNr();
-                int childNum2 = child2.getNr();
-
                 m_likelihoodCore.setNodePartialsForUpdate(iNode);
-                // TODO: CHECK THAT IS_DIRTY IS ALREADY SUFFICIENT FOR UPDATE
-                if (m_bNodeIsDirty[iNode] >= Tree.IS_FILTHY || update1 >= Tree.IS_FILTHY || update2 >= Tree.IS_FILTHY) {
+                update |= (update1|update2);
+                if (update >= Tree.IS_FILTHY) {
                     m_likelihoodCore.setNodeStatesForUpdate(iNode);
                 }
 
                 if (m_siteModel.integrateAcrossCategories()) {
-//cout << "cal partials " << childNum1 << " " << childNum2 << " " << nodeNum << " " <<
-//m_bNodeIsDirty[childNum1] << " " << m_bNodeIsDirty[childNum2] << " " << m_bNodeIsDirty[nodeNum] <<endl;
-                    m_likelihoodCore.calculatePartials(childNum1, childNum2, iNode);
+                    m_likelihoodCore.calculatePartials(child1.getNr(), child2.getNr(), iNode);
                 } else {
                     throw new Exception("Error TreeLikelihood 201: Site categories not supported");
                     //m_pLikelihoodCore->calculatePartials(childNum1, childNum2, nodeNum, siteCategories);
@@ -324,14 +331,12 @@ public class TreeLikelihood extends Distribution {
                     double[] frequencies = //m_pFreqs.get().
                             m_siteModel.getFrequencies();
 
-                    //getRootPartials(node.getNr());
                     double[] proportions = m_siteModel.getCategoryProportions();
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
                 }
 
-                update = Math.max(Math.max(update1, update2), m_bNodeIsDirty[iNode]);
             }
         }
         return update;
@@ -340,23 +345,22 @@ public class TreeLikelihood extends Distribution {
     /* Assumes there IS a branch rate model as opposed to traverse() */
     int traverseWithBRM(Node node) throws Exception {
 
-        int update = Tree.IS_CLEAN;
+        int update = (node.isDirty()| m_nHasDirt);
 
         int iNode = node.getNr();
 
-        double branchTime = node.getLength() * m_branchRateModel.getRateForBranch(node);;
+        double branchTime = node.getLength() * m_branchRateModel.getRateForBranch(node);
         m_branchLengths[iNode] = branchTime;
 
         // First update the transition probability matrix(ices) for this branch
-        if (!node.isRoot() && (m_bNodeIsDirty[iNode] != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[iNode])) {
+        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[iNode])) {
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
                 double branchLength = m_siteModel.getRateForCategory(i) * branchTime;
                 m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
             }
-
-            update = m_bNodeIsDirty[iNode];
+            update |= Tree.IS_DIRTY;
         }
 
         // If the node is internal, update the partial likelihoods.
@@ -376,8 +380,8 @@ public class TreeLikelihood extends Distribution {
                 int childNum2 = child2.getNr();
 
                 m_likelihoodCore.setNodePartialsForUpdate(iNode);
-                // TODO: CHECK THAT IS_DIRTY IS ALREADY SUFFICIENT FOR UPDATE
-                if (m_bNodeIsDirty[iNode] >= Tree.IS_FILTHY || update1 >= Tree.IS_FILTHY || update2 >= Tree.IS_FILTHY) {
+                update |= (update1|update2);
+                if (update >= Tree.IS_FILTHY) {
                     m_likelihoodCore.setNodeStatesForUpdate(iNode);
                 }
 
@@ -394,14 +398,12 @@ public class TreeLikelihood extends Distribution {
                     double[] frequencies = //m_pFreqs.get().
                             m_siteModel.getFrequencies();
 
-                    //getRootPartials(node.getNr());
                     double[] proportions = m_siteModel.getCategoryProportions();
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
                 }
 
-                update = Math.max(Math.max(update1, update2), m_bNodeIsDirty[iNode]);
             }
         }
         return update;
@@ -412,28 +414,18 @@ public class TreeLikelihood extends Distribution {
      */
     @Override
     protected boolean requiresRecalculation() {
-        int hasDirt = Tree.IS_CLEAN;
+        m_nHasDirt = Tree.IS_CLEAN;
 
-        if (m_pSiteModel.isDirty()) {
-            hasDirt = Tree.IS_DIRTY;
+        if (m_siteModel.isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_DIRTY;
+            return true;
         }
-        if (m_pBranchRateModel.isDirty()) {
-            hasDirt = Tree.IS_DIRTY;
+        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_FILTHY;
+            return true;
         }
-        Tree tree = m_tree.get();
-        checkNodesForDirt(tree.getRoot(), hasDirt);
-        return hasDirt != Tree.IS_CLEAN;
+        return m_tree.get().somethingIsDirty();
     }
-
-    private void checkNodesForDirt(Node node, int hasDirt) {
-    	int iNode = node.getNr();
-        m_bNodeIsDirty[iNode] = Math.max(node.isDirty(), hasDirt);
-        if (!node.isLeaf()) {
-            checkNodesForDirt(node.m_left, hasDirt);
-            checkNodesForDirt(node.m_right, hasDirt);
-        }
-    } // checkNodesForDirt
-
         
     /**
      * @return a list of unique ids for the state nodes that form the argument
@@ -465,17 +457,4 @@ public class TreeLikelihood extends Distribution {
         m_StoredBranchLengths = tmp;
     }
 
-    double[] m_fPatternLogLikelihoods;
-    double[] m_fRootPartials;
-    double[] m_fProbabilities;
-    // when CLEAN=0, nothing needs to be recalculated for the node
-    // when DIRTY=1 indicates a node partial needs to be recalculated
-    // when GORED=2 indicates the indices for the node need to be recalculated
-    // (often not necessary while node partial recalculation is required)
-    int[] m_bNodeIsDirty;
-
-//    @Override
-//    public String getCitation() {
-//        return "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376. ";
-//    }
 } // class TreeLikelihood

@@ -222,15 +222,19 @@ public final class HKY extends SubstitutionModel.Base {
 
     @Override
     protected boolean requiresRecalculation() {
-        if (frequencies.isDirty()) {
-            updateMatrix = true;
-            updateEigen = true;
-        }
-        if (kappa.isDirty()) {
-            updateMatrix = true;
-            updateEigen = true;
-        }
-        return updateMatrix;
+    	// we only get here if something is dirty
+        updateMatrix = true;
+        updateEigen = true;
+    	return true;
+//        if (frequencies.isDirty()) {
+//            updateMatrix = true;
+//            updateEigen = true;
+//        }
+//        if (kappa.isDirty()) {
+//            updateMatrix = true;
+//            updateEigen = true;
+//        }
+//        return updateMatrix;
     }
 
     @Override

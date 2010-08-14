@@ -30,7 +30,7 @@ public class StrictClockModel extends BranchRateModel.Base {
 
     @Override
     public boolean requiresRecalculation() {
-    	if (muParameter.isDirty()) {
+    	if (muParameter.get().somethingIsDirty()) {
     		mu = muParameter.get().getValue();
         	return true;
     	}

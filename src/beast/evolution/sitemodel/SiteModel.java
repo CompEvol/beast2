@@ -119,16 +119,19 @@ public class SiteModel extends CalculationNode {
     
     
     protected boolean requiresRecalculation() {
-        if (muParameter.isDirty()) {
-            ratesKnown = false;
-        }
-        if (muParameter.isDirty()) {
-            ratesKnown = false;
-        }
-        if (muParameter.isDirty()) {
-            ratesKnown = false;
-        }
-        return m_pSubstModel.isDirty() || !ratesKnown;
+    	// we only get here if something is dirty in its inputs
+    	ratesKnown = false;
+    	return true;
+//        if (muParameter.isDirty()) {
+//            ratesKnown = false;
+//        }
+//        if (muParameter.isDirty()) {
+//            ratesKnown = false;
+//        }
+//        if (muParameter.isDirty()) {
+//            ratesKnown = false;
+//        }
+//        return m_pSubstModel.isDirty() || !ratesKnown;
     }
 
 

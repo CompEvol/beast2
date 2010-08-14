@@ -57,7 +57,9 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     private boolean updateMatrix = true;
     private boolean storedUpdateMatrix = true;
 
+    @Override
     public void getTransitionProbabilities(double distance, double[] matrix) {
+    	// TODO: implement
     }
 
     public EigenDecomposition getEigenDecomposition() {
@@ -68,7 +70,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         return new DefaultEigenSystem(stateCount);
     }
 
-    public void store(int stateNumber) {
+    @Override
+    public void store() {
         storedUpdateMatrix = updateMatrix;
         storedEigenDecomposition = eigenDecomposition.copy();
     }
@@ -76,7 +79,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     /**
      * Restore the additional stored state
      */
-    public void restore(int stateNumber) {
+    @Override
+    public void restore() {
 
         updateMatrix = storedUpdateMatrix;
 
@@ -91,4 +95,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
     }
 
+    @Override
+    protected boolean requiresRecalculation() {
+    	// we only get here if something is dirty
+        updateMatrix = true;
+    	return true;
+    }
 }

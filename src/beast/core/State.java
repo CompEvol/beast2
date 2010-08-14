@@ -25,7 +25,6 @@
 package beast.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -33,15 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import beast.core.Input;
-//import beast.util.XMLProducer;
 
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of parameters and trees.")
@@ -50,7 +46,61 @@ public class State extends Plugin {
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
     public Input<Integer> m_storeEvery = new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
     		"resume computation later on", -1);
-    String m_sStateFileName = "state.backup.xml";
+    
+    /**
+     * The components of the state, for instance beast.tree & parameters.
+     * This represents the current state, but a copy is kept so that when
+     * an operation is applied to the State but the proposal is not accepted, 
+     * the state can be restored. This is currently implemented by having 
+     * Operators call getEditableStateNode() at which point the requested
+     * StateNode is copied.
+     */
+    public StateNode[] stateNode;
+
+    /** Copy of state nodes, for restoration if required **/
+    public StateNode[] storedStateNode;
+    
+    /** File naem use for storing the state, either periodically or at the end of an MCMC chain
+     * so that the chain can be resumed
+     */
+    private String m_sStateFileName = "state.backup.xml";
+    public void setStateFileName(String sFileName) {
+    	if (sFileName != null) {
+    		m_sStateFileName = sFileName;
+    	}
+    }
+    /** Interval for storing state to disk, if negative the state will not be stored periodically **/
+    int m_nStoreEvery;
+
+    /** The following members are involved in calculating the set of
+     * CalculatioNodes that need to be notified when an operation
+     * has been applied to the State. The Calculation nodes are then
+     * store/restore/accepted/check dirtiness in partial order.
+     */
+    
+    /** Maps a Plugin to a list of Outputs.
+     * This map only contains those plugins that have a path to the posterior **/
+    HashMap<Plugin, List<Plugin>> m_outputMap;
+    
+    /** Same as m_outputMap, but only for StateNodes indexed by the StateNode number
+     * We need this since the StateNode changes regularly, so unlike the output map
+     * for Plugins cannot be accessed by the current StateNode as key.
+     */
+    private List<CalculationNode> [] m_stateNodeOutputs;
+    
+    /** Code that represents configuration of StateNodes that have changed
+     * during an operation. Currently implemented as BitSet, but there are
+     * possibly more efficient implementations possible TODO: investigate.
+     * Every time an operation requests a StateNode, a bit for that StateNode
+     * is set.
+     * The code is reset when the state is stored, and every time a StateNode
+     * is requested by an operator, the code is updated.
+     */
+    private BitSet m_changedStateNodeCode;
+    
+    /** Maps the changed states node code to 
+     * the set of calculation nodes that is potentially affected by an operation **/
+    private HashMap<BitSet, List<CalculationNode>> m_map;
     
     @Override
     public void initAndValidate() {
@@ -73,21 +123,9 @@ public class State extends Plugin {
         // add the empty list for the case none of the StateNodes have changed
     	m_map.put(m_changedStateNodeCode, new ArrayList<CalculationNode>());
     } // initAndValidate
-
     
     
-    /**
-     * the components of the state, for instance beast.tree & parameters 
-     */
-    public StateNode[] stateNode;
-
-    /** copy of state nodes, for restoration if required **/
-    public StateNode[] storedStateNode;
-    
-    /** interval for storing state to disk **/
-    int m_nStoreEvery;
-    
-    /** Store a State.
+    /** Store a State before applying an operation proposal to the state.
      * This copies the state for possible later restoration
      * but does not affect any inputs, which are all still connected
      * to the original StateNodes 
@@ -102,7 +140,19 @@ public class State extends Plugin {
     		storeToFile();
     	}
     }
+    
+    /** Restore a State after rejecting the operation proposal. 
+     * This assigns the state to the stored state.
+     * NB this does not affect any Inputs connected to any stateNode. **/
+    public void restore() {
+    	StateNode [] tmp = storedStateNode;
+    	storedStateNode = stateNode;
+    	stateNode = tmp;
+    }
 
+    /** Print state to file. This is called either periodically or at the end
+     * of an MCMC chain, so that the state can be resumed later on.
+     */
     public void storeToFile() {
 		try {
 			PrintStream out = new PrintStream(m_sStateFileName);
@@ -118,6 +168,7 @@ public class State extends Plugin {
 		}
     }
 
+    /** restore a state from file for resuming an MCMC chain **/
     public void restoreFromFile() {
 		try {
 			System.out.println("Restoring from file");
@@ -140,27 +191,10 @@ public class State extends Plugin {
 	        		stateNode[iStateNode].assignFrom(stateNode2);
 	        	}
 	        }
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.exit(0);
 		}
-
-    }
-
-    
-    /** Restore a State. 
-     * This assigns the state to the stored state 
-     * but does not affect any Inputs connected to any stateNode. **/
-    public void restore() {
-    	StateNode [] tmp = storedStateNode;
-    	storedStateNode = stateNode;
-    	stateNode = tmp;
     }
 
     /** return currently valid state node **/
@@ -171,6 +205,9 @@ public class State extends Plugin {
     /** Return StateNode that can be changed, but later restored
      * if necessary. If there is no copy stored already, a copy is 
      * made first, and the StateNode is marked as being dirty.
+	 *
+     * NB This should only be called from an Operator that wants to
+     * change the particular StateNode.
      */
     protected StateNode getEditableStateNode(int nID, Operator operator) {
     	if (stateNode[nID] == storedStateNode[nID]) {
@@ -182,7 +219,6 @@ public class State extends Plugin {
     	}
         return stateNode[nID];
     }
-    
 
     /**
      * primitive operations on the list of parameters *
@@ -201,7 +237,7 @@ public class State extends Plugin {
         stateNode = h;
     }
 
-
+    @Override
     public String toString() {
     	if (stateNode == null) {
     		return "";
@@ -216,7 +252,10 @@ public class State extends Plugin {
 
 
     /**
-     * set dirtiness to all parameters and trees *
+     * Set dirtiness to all StateNode, this means that
+     * apart from marking all StateNode.someThingIsDirty as isDirty
+     * parameters mark all their dimension as isDirty and
+     * trees mark all their nodes as isDirty.
      */
     public void setEverythingDirty(boolean isDirty) {
         for (StateNode node : stateNode) {
@@ -232,15 +271,14 @@ public class State extends Plugin {
         }
     }
 
-    /** Sets the m_posterior, needed to calculate paths of CalculationNode
+    /** Sets the posterior, needed to calculate paths of CalculationNode
      * that need store/restore/requireCalculation checks.
      * As a side effect, outputs for every plugin in the model are calculated.
      * NB the output map only contains outputs on a path to the posterior Plugin!
-     * @throws Exception 
      */
     @SuppressWarnings("unchecked")
 	public void setPosterior(Plugin posterior) throws Exception {
-    	m_posterior = posterior;
+    	//m_posterior = posterior;
     	
     	m_outputMap = new HashMap<Plugin, List<Plugin>>();
     	m_outputMap.put(posterior, new ArrayList<Plugin>());
@@ -286,27 +324,6 @@ public class State extends Plugin {
 			}
 		}
 	} // setRunnable
-    
-    /** We need this information to calculate paths from a (set of) StateNodes 
-     * that are changed by an operator up to the m_posterior.
-     */
-    Plugin m_posterior = null;
-    /** maps a Plugin to a list of Outputs **/
-    HashMap<Plugin, List<Plugin>> m_outputMap;
-    /** same as m_outputMap, but only for StateNodes indexed by the StateNode number
-     * We need this since the StateNode change regularly.
-     */
-    private List<CalculationNode> [] m_stateNodeOutputs;
-    
-    /** Code that represents configuration of StateNodes that have changed.
-     * This is reset when the state is Stored, and every time a StateNode
-     * is requested by an operator, the code is updated.
-     */
-    private BitSet m_changedStateNodeCode;
-    
-    /** Maps the changed states node code to 
-     * the set of calculation nodes that is potentially affected by an operation **/
-    private HashMap<BitSet, List<CalculationNode>> m_map;
     
     /** return current set of calculation nodes based on the set of StateNodes that have changed **/ 
     private List<CalculationNode> getCurrentCalculationNodes() {
@@ -435,13 +452,13 @@ public class State extends Plugin {
 
 /*
 todo:
-	Traits
-	Tip heights
-	clade proportions on MultiMCMC
 	reinstate SNAPP
 	multi dim start values for parameters
 	
 done:
+	Traits
+	Tip heights
+	clade proportions on MultiMCMC
 	State toXml fromXML
 	State - do the store, restore, requires calculation 
 	code review: naming booleans, indices

@@ -114,23 +114,9 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     @Override
     protected boolean requiresRecalculation() {
-    	recompute = false;
-    	
-        if (treeInput.isDirty()) {
-        	recompute = true;
-        }
-
-        if (meanRateInput.isDirty()) {
-        	recompute = true;
-        }
-        if (rateParamInput.isDirty()) {
-        	recompute = true;
-        }
-        if (indicatorParamInput.isDirty()) {
-        	recompute = true;
-        }
-        
-        return recompute;
+    	// this is only called if any of its inputs is dirty, hence we need to recompute
+    	recompute = true;
+    	return true;
     }
 
     private boolean recompute = true;

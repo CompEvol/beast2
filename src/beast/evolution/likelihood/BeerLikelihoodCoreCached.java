@@ -959,6 +959,11 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
         System.arraycopy(m_iCurrentPartials, 0, m_iStoredPartials, 0, m_nNodes);
     }
 
+    public void unstore() {
+        System.arraycopy(m_iStoredMatrices, 0, m_iCurrentMatrices, 0, m_nNodes);
+        System.arraycopy(m_iStoredPartials, 0, m_iCurrentPartials, 0, m_nNodes);
+    }
+
     /**
      * Restore the stored state
      */

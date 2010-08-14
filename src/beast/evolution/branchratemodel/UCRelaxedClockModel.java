@@ -103,12 +103,12 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     protected boolean requiresRecalculation() {
     	recompute = false;
 
-        if (treeInput.isDirty()) {
+        if (treeInput.get().somethingIsDirty()) {
         	recompute = true;
             return true;
         }
 //	    processed as trait on the tree
-        if (categoryInput.isDirty()) {
+        if (categoryInput.get().somethingIsDirty()) {
         	recompute = true;
         	return false;
         }

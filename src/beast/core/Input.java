@@ -233,12 +233,12 @@ public class Input<T> {
         }
 
         if (value instanceof CalculationNode) {
-            return ((CalculationNode)value).isDirty();
+            return ((CalculationNode)value).isDirtyCalculation();
         }
 
         if (value instanceof List<?>) {
         	for (Object o : (List<?>) value) {
-        		if (o instanceof CalculationNode && ((CalculationNode)o).isDirty()) {
+        		if (o instanceof CalculationNode && ((CalculationNode)o).isDirtyCalculation()) {
         			return true;
         		} else if (o instanceof StateNode && ((StateNode)o).somethingIsDirty()) {
         			return true;
