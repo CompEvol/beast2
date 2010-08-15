@@ -42,12 +42,12 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     	if (lowerValueInput.get() != null) {
     		m_fLower = lowerValueInput.get();
     	} else {
-    		m_fLower = Integer.MIN_VALUE;
+    		m_fLower = Integer.MIN_VALUE+1;
     	}
     	if (upperValueInput.get() != null) {
     		m_fUpper = upperValueInput.get();
     	} else {
-    		m_fUpper = Integer.MAX_VALUE;
+    		m_fUpper = Integer.MAX_VALUE-1;
     	}
         values = new Integer[m_nDimension.get()];
         for (int i = 0; i < values.length; i++) {

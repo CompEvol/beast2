@@ -127,9 +127,9 @@ public class Node extends Plugin {
 		}
 //		buf.append("["+m_iLabel+"]");
          buf.append(":").append(String.format("%3.3f", getLength()));
-//		for (int i = 0; i < m_bIsDirty; i++) {
-//			buf.append("X");
-//		}
+		for (int i = 0; i < m_bIsDirty; i++) {
+			//buf.append("X");
+		}
 		return buf.toString();
 	}
 
@@ -268,8 +268,8 @@ public class Node extends Plugin {
 		}
 	}
 	
-	public void assignFrom(Node [] nodes) {
-		Node node = nodes[getNr()];
+	public void assignFrom(Node [] nodes, Node node) {
+//		Node node = nodes[getNr()];
 		m_fHeight = node.m_fHeight;
 		m_iLabel = node.m_iLabel;
 		m_sMetaData = node.m_sMetaData;
@@ -277,11 +277,11 @@ public class Node extends Plugin {
 		m_sID = node.m_sID;
 		if (node.m_left != null) {
 			m_left = nodes[node.m_left.getNr()];
-			m_left.assignFrom(nodes);
+			m_left.assignFrom(nodes, node.m_left);
 			m_right = nodes[node.m_right.getNr()];
-			m_right.assignFrom(nodes);
-			m_left.m_Parent = node;
-			m_right.m_Parent = node;
+			m_right.assignFrom(nodes, node.m_right);
+			m_left.m_Parent = this;
+			m_right.m_Parent = this;
 		}
 	}
 	

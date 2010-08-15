@@ -155,6 +155,10 @@ public class MCMC extends Runnable {
 
     @Override
     public void run() throws Exception {
+    	// set up state (again). Other plugins may have manipulated the
+    	// StateNodes, e.g. set up bounds or dimensions
+    	state.initAndValidate();
+    	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile);
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
@@ -219,6 +223,7 @@ public class MCMC extends Runnable {
 
             if (bDebug) {
             	// do some sanity checking, in particular check that the posterior is correctly calculated
+                state.store(-1);
                 state.setEverythingDirty(true);
                 state.checkCalculationNodesDirtiness();
 

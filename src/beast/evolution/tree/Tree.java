@@ -175,17 +175,55 @@ public class Tree extends StateNode {
     @Override
     public void assignFrom(StateNode other) {
         Tree tree = (Tree) other;
-        Node[] nodes = new Node[nodeCount];
-        listNodes(tree.root, nodes);
+        if (m_nodes == null) {
+        	m_nodes = new Node[nodeCount];
+        	listNodes(root, m_nodes);
+        }    	
         m_sID = tree.m_sID;
-        //index = index.tree;
-        root.assignFrom(nodes);
-        root = nodes[root.getNr()];
+        index = tree.index;
+        root = m_nodes[tree.root.getNr()];
+        root.assignFrom(m_nodes, tree.root);
+        root.m_Parent = null;
         nodeCount = tree.nodeCount;
-//        tree.treeTraitsInput = treeTraitsInput;
-        //tree.m_state = m_state;
+//      tree.treeTraitsInput = treeTraitsInput;
+        //m_state = tree.m_state;
     }
 
+    Node[] m_nodes = null;
+    @Override
+    public void assignFromFragile(StateNode other) {
+        Tree tree = (Tree) other;
+        if (m_nodes == null) {
+        	m_nodes = new Node[nodeCount];
+        	listNodes(root, m_nodes);
+        	if (tree.m_nodes == null) {
+        		tree.m_nodes = new Node[nodeCount];
+            	listNodes(tree.root, tree.m_nodes);
+        	}
+        }
+        root = m_nodes[tree.root.getNr()];
+        Node [] otherNodes = tree.m_nodes;
+        int iRoot = root.getNr();
+        assignFrom(0, iRoot, otherNodes);
+        root.m_fHeight = otherNodes[iRoot].m_fHeight;
+        root.m_Parent = null;
+    	root.m_left = m_nodes[otherNodes[iRoot].m_left.getNr()];
+    	root.m_right = m_nodes[otherNodes[iRoot].m_right.getNr()];
+        assignFrom(iRoot + 1, nodeCount, otherNodes);
+    }
+    
+    void assignFrom(int iStart, int iEnd, Node [] otherNodes) {
+        for (int i = iStart; i < iEnd; i++) {
+        	Node sink = m_nodes[i];
+        	Node src = otherNodes[i];
+        	sink.m_fHeight = src.m_fHeight;
+        	sink.m_Parent = m_nodes[src.m_Parent.getNr()];
+        	if (src.m_left != null) {
+        		sink.m_left = m_nodes[src.m_left.getNr()];
+        		sink.m_right = m_nodes[src.m_right.getNr()];
+        	}
+        }
+    }
     /** convert tree to array representation **/
     void listNodes(Node node, Node[] nodes) {
         nodes[node.getNr()] = node;

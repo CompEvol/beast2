@@ -56,6 +56,8 @@ public class State extends Plugin {
      * StateNode is copied.
      */
     public StateNode[] stateNode;
+    int m_nStateNode;
+    StateNode[] m_stateNodeMem;
 
     /** Copy of state nodes, for restoration if required **/
     public StateNode[] storedStateNode;
@@ -116,6 +118,13 @@ public class State extends Plugin {
         	stateNode[i].m_state = this;
         }
         
+        m_nStateNode = stateNode.length;
+        m_stateNodeMem = new StateNode[m_nStateNode*2];
+        for (int i = 0; i < m_nStateNode; i++) {
+        	m_stateNodeMem[i] = stateNode[i];
+        	m_stateNodeMem[m_nStateNode + i] = m_stateNodeMem[i].copy(); 
+        }
+
         m_nStoreEvery = m_storeEvery.get();
         
     	m_changedStateNodeCode = new BitSet(stateNode.length);
@@ -133,8 +142,8 @@ public class State extends Plugin {
      * Also, store the state to disk for resumption of analysis later on.
      **/
     public void store(int nSample) {
-    	System.arraycopy(stateNode, 0, storedStateNode, 0, stateNode.length);
-    	m_changedStateNodeCode = new BitSet(stateNode.length);
+    	System.arraycopy(stateNode, 0, storedStateNode, 0, m_nStateNode);
+    	m_changedStateNodeCode = new BitSet(m_nStateNode);
     	
     	if (m_nStoreEvery> 0 && nSample % m_nStoreEvery == 0 && nSample > 0) {
     		storeToFile();
@@ -188,7 +197,7 @@ public class State extends Plugin {
 	        		}
 	        		StateNode stateNode2 = stateNode[iStateNode].copy();
 	        		stateNode2.fromXML(child);
-	        		stateNode[iStateNode].assignFrom(stateNode2);
+	        		stateNode[iStateNode].assignFromFragile(stateNode2);
 	        	}
 	        }
 		} catch (Exception e) {
@@ -211,7 +220,14 @@ public class State extends Plugin {
      */
     protected StateNode getEditableStateNode(int nID, Operator operator) {
     	if (stateNode[nID] == storedStateNode[nID]) {
-    		storedStateNode[nID] = stateNode[nID].copy();
+    		if (stateNode[nID] == m_stateNodeMem[nID]) {
+    			storedStateNode[nID] = m_stateNodeMem[m_nStateNode + nID];
+    		} else {
+    			storedStateNode[nID] = m_stateNodeMem[nID];
+    		}
+    		storedStateNode[nID].assignFromFragile(stateNode[nID]);
+//    		storedStateNode[nID] = stateNode[nID].copy();
+
     		storedStateNode[nID].m_state = this;
     		stateNode[nID].setSomethingIsDirty(true);
     		storedStateNode[nID].setSomethingIsDirty(false);
@@ -220,22 +236,22 @@ public class State extends Plugin {
         return stateNode[nID];
     }
 
-    /**
-     * primitive operations on the list of parameters *
-     */
-    public void addStateNode(StateNode node) {
-        if (stateNode == null) {
-            stateNode = new StateNode[1];
-            stateNode[0] = node;
-            return;
-        } 
-        StateNode[] h = new StateNode[stateNode.length + 1];
-        for (int i = 0; i < h.length - 1; i++) {
-            h[i] = stateNode[i];
-        }
-        h[h.length - 1] = node;
-        stateNode = h;
-    }
+//    /**
+//     * primitive operations on the list of parameters *
+//     */
+//    public void addStateNode(StateNode node) {
+//        if (stateNode == null) {
+//            stateNode = new StateNode[1];
+//            stateNode[0] = node;
+//            return;
+//        } 
+//        StateNode[] h = new StateNode[stateNode.length + 1];
+//        for (int i = 0; i < h.length - 1; i++) {
+//            h[i] = stateNode[i];
+//        }
+//        h[h.length - 1] = node;
+//        stateNode = h;
+//    }
 
     @Override
     public String toString() {

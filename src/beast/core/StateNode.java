@@ -40,6 +40,11 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable {
     public abstract void assignTo(StateNode other);
     /** this := other **/
     public abstract void assignFrom(StateNode other);
+    /** As assignFrom, but only those parts are assigned that 
+     * are variable, for instance for parameters bounds and dimension
+     * do not need to be copied.
+     */
+    public abstract void assignFromFragile(StateNode other);
     /** for storing a state **/
     final public void toXML(PrintStream out) {
     	out.print("<statenode id='" + getID() +"'>");

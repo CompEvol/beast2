@@ -100,7 +100,11 @@ public class ESS extends Plugin implements Loggable {
         // fSum1 = \sum_{iStart+iLag ... nTotalSamples-1} trace
     	double fSum2 = m_fSum;
         for (int iLag = 0; iLag < nMaxLag; iLag++) {
-            m_fSquareLaggedSums.set(iLag, m_fSquareLaggedSums.get(iLag) + m_trace.get(nTotalSamples - iLag - 1) * m_trace.get(nTotalSamples - 1));             
+            m_fSquareLaggedSums.set(iLag, m_fSquareLaggedSums.get(iLag) + m_trace.get(nTotalSamples - iLag - 1) * m_trace.get(nTotalSamples - 1));
+            // The following line is the same approximation as in Tracer 
+            // (valid since fMean *(nSamples - iLag), fSum1, and fSum2 are approximately the same)
+            // though a more accurate estimate would be
+            // fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - fSum1 * fSum2
             fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - (fSum1 + fSum2) * fMean + fMean * fMean * (nSamples - iLag);
             fAutoCorrelation[iLag] /= ((double) (nSamples - iLag));
         	fSum1 -= m_trace.get(nTotalSamples - 1 - iLag);

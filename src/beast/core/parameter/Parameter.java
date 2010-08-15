@@ -189,12 +189,19 @@ public abstract class Parameter<T> extends StateNode {
         @SuppressWarnings("unchecked")
         Parameter<T> source = (Parameter<T>) other;
         setID(source.getID());
-        //index = source.index;
         values = source.values.clone();
-        //System.arraycopy(source.values, 0, values, 0, values.length);
+        System.arraycopy(source.values, 0, values, 0, values.length);
         m_fLower = source.m_fLower;
         m_fUpper = source.m_fUpper;
         m_bIsDirty = new boolean[source.values.length];
+    }
+
+    @Override
+    public void assignFromFragile(StateNode other) {
+        @SuppressWarnings("unchecked")
+        Parameter<T> source = (Parameter<T>) other;
+        System.arraycopy(source.values, 0, values, 0, values.length);
+        Arrays.fill(m_bIsDirty, false);
     }
 
     /**
