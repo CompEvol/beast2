@@ -1,85 +1,20 @@
 package beast.core;
 
 /**
- * This base class is for Plugins that perform calculations based on the State.
+ * A CalculationNode is a Plugin that perform calculations based on the State.
+ * CalculationNodes differ from  StateNodes in that they
+ * 1. Calculate something
+ * 2. can not be changed by Operators 
  *
  * @author Andrew Rambaut
  */
-public abstract class CalculationNode extends Plugin {
-
-    // Package private because it shouldn't be called outside of the core package -
-    // To check whether it is dirty, call isDirty on the specific Input.
-    @SuppressWarnings("unused")
-	final private boolean isDirty() {
-    	// RRB: the following fragment is superfluous, since we do a check dirtiness
-    	// in partial order on all those Plugins that could possibly be affected by
-    	// a change of a StateNode
-        //if (!hasCheckedDirtiness) {
-            //checkDirtiness();
-        //}
-        return isDirty;
-    }
-	
-	// isDirty() made public to squeeze out a few cycles and save a few seconds in
-	// calculation time by calling this directly instead of calling isDirty() 
-	// on the associated input. 
-	// CalcalationNodes typically know whether an input is a CalculationNode or StateNode 
-	// and also know whether the input is Validate.REQUIRED, hence cannot be null.
-	// Further, for CalculationNodes, a shadow parameter can be kept so that a
-	// call to Input.get() can be saved.
-    final public boolean isDirtyCalculation() {
-        return isDirty;
-    }
-
-    final void checkDirtiness() {
-//        if (!_STATE_IN_DIRTINESS_CHECKING_MODE) {
-//            throw Exception("Dirtyness should have been checked by now");
-//        }
-
-    	// RRB: the next line is dead, since it is guaranteed the 
-    	// calculation nodes are checked for dirtiness in partial order
-    	// of their inputs.
-        //if (hasCheckedDirtiness) return;
-    	
-        //if (hasDirtyInputs()) {
-            isDirty = requiresRecalculation();
-        //}
-
-        // RRB: not used any more
-        //hasCheckedDirtiness = true;
-    }
-
-    // RRB: dead code
-//    private final boolean hasDirtyInputs() {
-//        try {
-//            for (Input<?> input : listInputs()) {
-//                if (input.isDirty()) return true;
-//            }
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return false;
-//    }
-
-// RRB: hasCheckedDirtiness is never read, only set
-//    final void resetDirtiness() {
-//        hasCheckedDirtiness = false;    
-//    }
-
-// RRB: these methods confused me quite a lot, so I buried them and
-//      renamed (re)storeCalculations => (re)store  
-//    void store() {
-//        storeCalculations();
-//    }
-//
-//    void restore() {
-//        restoreCalculations();
-//    }
+@Description("Plugin that perform calculations based on the State.")
+public class CalculationNode extends Plugin {
 
     //=================================================================
-    // The API of CalculationNode. These 3 functions can be overridden
-    // to increase efficiency by cacheing internal calculations.
+    // The API of CalculationNode. These 3 functions (store/restore/requireCalculation)
+    // can be overridden to increase efficiency by caching internal calculations.
+	// General default implementations are provided.
     //=================================================================
 
     /** Store internal calculations
@@ -90,21 +25,28 @@ public abstract class CalculationNode extends Plugin {
     	isDirty = false;
     }
 
-    /** reverse of storeCalculations
-     *
-     * This is called when a proposal is rejected
-     **/
-    protected void restore() {
-    	isDirty = false;
+
+    /** Check whether internal calculations need to be updated
+     * 
+     * This is called after a proposal of a new state.
+     * A CalculationNode that needs a custom implementation should 
+     * override requiresRecalculation()
+     */
+    final void checkDirtiness() {
+        isDirty = requiresRecalculation();
     }
 
-    protected void accept() {
-    	isDirty = false;
-    }
-    /** Default implementation inspects all input plugins
+     /** 
+     * Default implementation inspects all input plugins
      * and checks if there is any dirt anywhere.
      * Derived classes can provide a more efficient implementation
-     * by checking which part of the StateNode or Plugin has changed.
+     * by checking which part of any input StateNode or Plugin has changed.
+     * 
+     * Note this default implementation is relative expensive since it uses 
+     * introspection, so overrides should be preferred.
+     *
+     * @return whether the API for the particular Plugin returns different
+     * answers than before the operation was applied. 
      */
     protected boolean requiresRecalculation() {
         try {
@@ -124,16 +66,38 @@ public abstract class CalculationNode extends Plugin {
         return false;
     }
 
+    /** Restore internal calculations
+     *
+     * This is called when a proposal is rejected
+     **/
+    protected void restore() {
+    	isDirty = false;
+    }
+
+    /** Accept internal state and mark internal calculations as current
+    *
+    * This is called when a proposal is accepted
+    **/
+    final void accept() {
+    	isDirty = false;
+    }
+
+    /**
+	* CalcalationNodes typically know whether an input is a CalculationNode or StateNode 
+	* and also know whether the input is Validate.REQUIRED, hence cannot be null.
+	* Further, for CalculationNodes, a shadow parameter can be kept so that a
+	* call to Input.get() can be saved.
+	* Made public to squeeze out a few cycles and save a few seconds in
+	* calculation time by calling this directly instead of calling isDirty() 
+	* on the associated input.
+	*/
+    final public boolean isDirtyCalculation() {
+        return isDirty;
+    }
+
     /**
      * flag to indicate whether this node will be updating its calculations
      */
     private boolean isDirty = true;
 
-    /**
-     * flag to indicate whether dirtiness has been checked
-     */
-    //private boolean hasCheckedDirtiness = false;
-    
-    
-
-}
+} // class CalculationNode

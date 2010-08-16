@@ -120,27 +120,27 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     public void setValue(T fValue) {
-        if (isStochastic()) {
+//        if (isStochastic()) {
             values[0] = fValue;
             m_bIsDirty[0] = true;
             // next line is superfluous, since it is already done in the State
             // setSomethingIsDirty(true);
-        } else {
-        	System.err.println("Can't set the value of a fixed parameter.");
-        	System.exit(1);
-        }
+//        } else {
+//        	System.err.println("Can't set the value of a fixed parameter.");
+//        	System.exit(1);
+//        }
     }
 
     public void setValue(int iParam, T fValue) {
-        if (isStochastic()) {
+//        if (isStochastic()) {
             values[iParam] = fValue;
             m_bIsDirty[iParam] = true;
             // next line is superfluous, since it is already done in the State
             // setSomethingIsDirty(true);
-        } else {
-	    	System.err.println("Can't set the value of a fixed parameter.");
-	        System.exit(1);
-	    }
+//        } else {
+//	    	System.err.println("Can't set the value of a fixed parameter.");
+//	        System.exit(1);
+//	    }
     }
 
     /** Note that changing toString means fromXML needs to be changed as well,

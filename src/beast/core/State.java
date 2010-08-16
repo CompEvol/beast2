@@ -40,7 +40,9 @@ import org.w3c.dom.NodeList;
 import beast.core.Input;
 
 @Description("The state represents the current point in the state space, and " +
-        "maintains values of a set of parameters and trees.")
+        "maintains values of a set of StateNodes, such as parameters and trees. " +
+        "Furthermore, the state manages which parts of the model need to be stored/restored " +
+        "and notified that recalculation is appropriate.")
 public class State extends Plugin {
 
     public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
@@ -48,31 +50,31 @@ public class State extends Plugin {
     		"resume computation later on", -1);
     
     /**
-     * The components of the state, for instance beast.tree & parameters.
+     * The components of the state, for instance tree & parameters.
      * This represents the current state, but a copy is kept so that when
      * an operation is applied to the State but the proposal is not accepted, 
      * the state can be restored. This is currently implemented by having 
      * Operators call getEditableStateNode() at which point the requested
      * StateNode is copied.
      */
+    // Public so it can be interrogated. No point in creating a getter...
     public StateNode[] stateNode;
-    int m_nStateNode;
-    StateNode[] m_stateNodeMem;
 
     /** Copy of state nodes, for restoration if required **/
-    public StateNode[] storedStateNode;
+    private StateNode[] storedStateNode;
     
+    /** number of state nodes **/
+    private int m_nStateNode;
+    /** pointers to memory allocated to stateNodes and storedStateNodes **/
+    private StateNode[] m_stateNodeMem;
+
     /** File naem use for storing the state, either periodically or at the end of an MCMC chain
      * so that the chain can be resumed
      */
     private String m_sStateFileName = "state.backup.xml";
-    public void setStateFileName(String sFileName) {
-    	if (sFileName != null) {
-    		m_sStateFileName = sFileName;
-    	}
-    }
+
     /** Interval for storing state to disk, if negative the state will not be stored periodically **/
-    int m_nStoreEvery;
+    private int m_nStoreEvery;
 
     /** The following members are involved in calculating the set of
      * CalculatioNodes that need to be notified when an operation
@@ -82,7 +84,7 @@ public class State extends Plugin {
     
     /** Maps a Plugin to a list of Outputs.
      * This map only contains those plugins that have a path to the posterior **/
-    HashMap<Plugin, List<Plugin>> m_outputMap;
+    private HashMap<Plugin, List<Plugin>> m_outputMap;
     
     /** Same as m_outputMap, but only for StateNodes indexed by the StateNode number
      * We need this since the StateNode changes regularly, so unlike the output map
@@ -92,7 +94,9 @@ public class State extends Plugin {
     
     /** Code that represents configuration of StateNodes that have changed
      * during an operation. Currently implemented as BitSet, but there are
-     * possibly more efficient implementations possible TODO: investigate.
+     * possibly more efficient implementations possible.
+     * TODO: investigate.
+     *  
      * Every time an operation requests a StateNode, a bit for that StateNode
      * is set.
      * The code is reset when the state is stored, and every time a StateNode
@@ -119,14 +123,17 @@ public class State extends Plugin {
         }
         
         m_nStateNode = stateNode.length;
+        // allocate memory for StateNodes and a copy.
         m_stateNodeMem = new StateNode[m_nStateNode*2];
         for (int i = 0; i < m_nStateNode; i++) {
         	m_stateNodeMem[i] = stateNode[i];
         	m_stateNodeMem[m_nStateNode + i] = m_stateNodeMem[i].copy(); 
         }
-
+        
+        // grab the interval for storing the state to file
         m_nStoreEvery = m_storeEvery.get();
         
+        // set up datastructure for encoding which StateNodes change by an operation
     	m_changedStateNodeCode = new BitSet(stateNode.length);
         m_map = new HashMap<BitSet, List<CalculationNode>>();
         // add the empty list for the case none of the StateNodes have changed
@@ -134,6 +141,39 @@ public class State extends Plugin {
     } // initAndValidate
     
     
+    /** return currently valid state node. This is typically called from a
+     * CalculationNode for inspecting the value of a StateNode, not for
+     * changing it. To change a StateNode, say from an Operator,  
+     * getEditableStateNode() should be called. **/
+    public StateNode getStateNode(int nID) {
+        return stateNode[nID];
+    }
+
+    /** Return StateNode that can be changed, but later restored
+     * if necessary. If there is no copy stored already, a copy is 
+     * made first, and the StateNode is marked as being dirty.
+	 *
+     * NB This should only be called from an Operator that wants to
+     * change the particular StateNode through the Input.get(Operator) 
+     * method on the input associated with this StateNode.
+     */
+    protected StateNode getEditableStateNode(int nID, Operator operator) {
+    	if (stateNode[nID] == storedStateNode[nID]) {
+    		if (stateNode[nID] == m_stateNodeMem[nID]) {
+    			storedStateNode[nID] = m_stateNodeMem[m_nStateNode + nID];
+    		} else {
+    			storedStateNode[nID] = m_stateNodeMem[nID];
+    		}
+    		storedStateNode[nID].assignFromFragile(stateNode[nID]);
+
+    		storedStateNode[nID].m_state = this;
+    		stateNode[nID].setSomethingIsDirty(true);
+    		storedStateNode[nID].setSomethingIsDirty(false);
+    		m_changedStateNodeCode.set(nID);
+    	}
+        return stateNode[nID];
+    }
+
     /** Store a State before applying an operation proposal to the state.
      * This copies the state for possible later restoration
      * but does not affect any inputs, which are all still connected
@@ -159,6 +199,56 @@ public class State extends Plugin {
     	stateNode = tmp;
     }
 
+    /** Visit all calculation nodes in partial order determined by the Plugin-input relations
+     * (i.e. if A is input of B then A < B). There are 4 operations that can be propagated this
+     * way:
+     * 
+     * store() makes sure all calculation nodes store their internal state
+     * 
+     * checkDirtiness() makes all calculation nodes check whether they give a different answer 
+     * when interrogated by one of its outputs
+     * 
+     * accept() allows all calculation nodes to mark themselves as being clean without further
+     * calculation
+     * 
+     * restore() if a proposed state is not accepted, all calculation nodes need to restore 
+     * themselves
+     */
+    public void storeCalculationNodes() {
+        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+            calculationNode.store();
+        }
+    }
+
+    public void checkCalculationNodesDirtiness() {
+        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+            calculationNode.checkDirtiness();
+        }
+    }
+
+    public void restoreCalculationNodes() {
+        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+            calculationNode.restore();
+        }
+    }
+  
+    public void acceptCalculationNodes() {
+	    List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+	    for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+	        calculationNode.accept();
+	    }
+    }
+
+    /** set name of state file, used when storing/restoring the state to disk **/
+    public void setStateFileName(String sFileName) {
+    	if (sFileName != null) {
+    		m_sStateFileName = sFileName;
+    	}
+    }
+    
     /** Print state to file. This is called either periodically or at the end
      * of an MCMC chain, so that the state can be resumed later on.
      */
@@ -206,53 +296,6 @@ public class State extends Plugin {
 		}
     }
 
-    /** return currently valid state node **/
-    public StateNode getStateNode(int nID) {
-        return stateNode[nID];
-    }
-
-    /** Return StateNode that can be changed, but later restored
-     * if necessary. If there is no copy stored already, a copy is 
-     * made first, and the StateNode is marked as being dirty.
-	 *
-     * NB This should only be called from an Operator that wants to
-     * change the particular StateNode.
-     */
-    protected StateNode getEditableStateNode(int nID, Operator operator) {
-    	if (stateNode[nID] == storedStateNode[nID]) {
-    		if (stateNode[nID] == m_stateNodeMem[nID]) {
-    			storedStateNode[nID] = m_stateNodeMem[m_nStateNode + nID];
-    		} else {
-    			storedStateNode[nID] = m_stateNodeMem[nID];
-    		}
-    		storedStateNode[nID].assignFromFragile(stateNode[nID]);
-//    		storedStateNode[nID] = stateNode[nID].copy();
-
-    		storedStateNode[nID].m_state = this;
-    		stateNode[nID].setSomethingIsDirty(true);
-    		storedStateNode[nID].setSomethingIsDirty(false);
-    		m_changedStateNodeCode.set(nID);
-    	}
-        return stateNode[nID];
-    }
-
-//    /**
-//     * primitive operations on the list of parameters *
-//     */
-//    public void addStateNode(StateNode node) {
-//        if (stateNode == null) {
-//            stateNode = new StateNode[1];
-//            stateNode[0] = node;
-//            return;
-//        } 
-//        StateNode[] h = new StateNode[stateNode.length + 1];
-//        for (int i = 0; i < h.length - 1; i++) {
-//            h[i] = stateNode[i];
-//        }
-//        h[h.length - 1] = node;
-//        stateNode = h;
-//    }
-
     @Override
     public String toString() {
     	if (stateNode == null) {
@@ -279,7 +322,7 @@ public class State extends Plugin {
         }
         
         if (isDirty) {
-        	// happens only during debugging
+        	// happens only during debugging and start of MCMC chain
         	m_changedStateNodeCode = new BitSet(stateNode.length);
         	for (int i = 0; i < stateNode.length; i++) {
         		m_changedStateNodeCode.set(i);
@@ -294,8 +337,12 @@ public class State extends Plugin {
      */
     @SuppressWarnings("unchecked")
 	public void setPosterior(Plugin posterior) throws Exception {
-    	//m_posterior = posterior;
-    	
+    	// first, calculate output map that maps Plugins on a path
+    	// to the posterior to the list of output Plugins. Strictly
+    	// speaking, this is a bit of overkill, since only 
+    	// CalculationNodes need to be taken in account, but for
+    	// debugging purposes (developer forgot to derive from CalculationNode)
+    	// we keep track of the lot.
     	m_outputMap = new HashMap<Plugin, List<Plugin>>();
     	m_outputMap.put(posterior, new ArrayList<Plugin>());
 		boolean bProgress = true;
@@ -303,7 +350,7 @@ public class State extends Plugin {
 		plugins.add(posterior);
 		while (bProgress) {
 			bProgress = false;
-			// loop over plugins, till no more plugins can be added
+			// loop over plug-ins, till no more plug-ins can be added
 			// efficiency is no issue here
 			for (int iPlugin = 0; iPlugin < plugins.size(); iPlugin++) {
 				Plugin plugin = plugins.get(iPlugin);
@@ -324,6 +371,9 @@ public class State extends Plugin {
 				}
 			}
 		}
+		// Set of array of StateNode outputs. Since the StateNodes have a potential
+		// to be changing objects (when store/restore is applied) it is necessary
+		// to use another method to find the outputs, an array in this case.
 		m_stateNodeOutputs = new List[stateNode.length];
 		for (int i = 0; i < stateNode.length; i++) {
 			m_stateNodeOutputs[i] = new ArrayList<CalculationNode>();
@@ -339,7 +389,7 @@ public class State extends Plugin {
 				System.out.println("\nWARNING: StateNode ("+stateNode[i].getID()+") found that has no effect on posterior!\n");
 			}
 		}
-	} // setRunnable
+	} // setPosterior
     
     /** return current set of calculation nodes based on the set of StateNodes that have changed **/ 
     private List<CalculationNode> getCurrentCalculationNodes() {
@@ -356,7 +406,6 @@ public class State extends Plugin {
 			System.exit(1);
 		}
     	m_map.put(m_changedStateNodeCode, calcNodes);
-    	//System.out.println("Map size is now " + m_map.size());
     	return calcNodes;
     } // getCurrentCalculationNodes
 
@@ -420,65 +469,4 @@ public class State extends Plugin {
     	return calcNodes;
     } // calculateCalcNodePath
     
-    
-    /** Visit all calculation nodes in partial order determined by the Plugin-input relations
-     * (i.e. if A is input of B then A < B). There are 4 operations that can be propagated this
-     * way:
-     * 
-     * store() makes sure all calculation nodes store their internal state
-     * 
-     * checkDirtiness() makes all calculation nodes check whether they give a different answer 
-     * when interrogated by one of its outputs
-     * 
-     * accept() allows all calculation nodes to mark themselves as being clean without further
-     * calculation
-     * 
-     * restore() if a proposed state is not accepted, all calculation nodes need to restore 
-     * themselves
-     */
-    public void storeCalculationNodes() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
-            calculationNode.store();
-        }
-    }
-
-    public void checkCalculationNodesDirtiness() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
-            calculationNode.checkDirtiness();
-        }
-    }
-
-    public void restoreCalculationNodes() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
-            calculationNode.restore();
-        }
-    }
-  
-    public void acceptCalculationNodes() {
-	    List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-	    for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
-	        calculationNode.accept();
-	    }
-    }
 } // class State
-
-
-/*
-todo:
-	reinstate SNAPP
-	multi dim start values for parameters
-	
-done:
-	Traits
-	Tip heights
-	clade proportions on MultiMCMC
-	State toXml fromXML
-	State - do the store, restore, requires calculation 
-	code review: naming booleans, indices
-	listPlugins => listActivePlugins
-	make StateNode scaleable
-	StateNode assignFrom
-*/

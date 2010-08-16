@@ -194,8 +194,15 @@ public class Input<T> {
     	if (value instanceof List && ((List<?>)value).size()>0 && ((List<?>)value).get(0) instanceof StateNode) {
     		// if it is a list of StateNodes, make sure the current version is returned
 			List<StateNode> tmp = new ArrayList<StateNode>();
-			for (StateNode o : (List<StateNode>) value) {
-				tmp.add(o.getCurrent());
+			for (Object o : (List<?>) value) {
+				// need to check every element, since the first element
+				// may be a StateNode (e.g. for logging), but the rest
+				// may not.
+				if (o instanceof StateNode) {
+					tmp.add(((StateNode)o).getCurrent());
+				} else {
+					return value;
+				}
 			}
 			return (T) tmp;
     	}

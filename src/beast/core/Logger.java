@@ -34,7 +34,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-@Description("Logs results of calculation processes.")
+@Description("Logs results of a calculation processes on regular intervals.")
 public class Logger extends Plugin {
 
     public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",

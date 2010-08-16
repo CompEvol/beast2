@@ -55,11 +55,14 @@ public class MCMC extends Runnable {
             new Input<List<Operator>>("operator", "operator for generating proposals in MCMC state space",
                     new ArrayList<Operator>(), Input.Validate.REQUIRED);
 
-    public OperatorSet operatorSet = new OperatorSet();
-
     public Input<List<Logger>> m_loggers =
             new Input<List<Logger>>("log", "loggers for reporting progress of MCMC chain",
                     new ArrayList<Logger>(), Input.Validate.REQUIRED);
+
+    /** Alternative representation of operatorsInput that allows random selection
+     * of operators and calculation of statistics.
+     */
+    public OperatorSet operatorSet = new OperatorSet();
 
 
     /** The state that takes care of managing StateNodes, 
@@ -67,6 +70,7 @@ public class MCMC extends Runnable {
      * calls to the appropriate Plugins.
      */
     protected State state;
+    
     /**
      * number of samples taken where calculation is checked against full
      * recalculation of the posterior.
@@ -130,28 +134,21 @@ public class MCMC extends Runnable {
             }
         }
 
-        public int getNrOperators() {
-            return m_operators.size();
-        }
-
-        public Operator getOperator(int iOperator) {
-            return m_operators.get(iOperator);
-        }
-
-
+        /** randomly select an operator with probability proportional to the weight of the operator **/
         public Operator selectOperator() {
             int iOperator = Randomizer.randomChoice(m_fCumulativeProbs);
             return m_operators.get(iOperator);
         }
+
+        /** report operator statistics **/
+        public void showOperatorRates(PrintStream out) {
+            out.println("Operator                                        #accept\t#reject\t#total\tacceptance rate");
+            for (int i = 0; i < m_operators.size(); i++) {
+                out.println(m_operators.get(i));
+            }
+        }
     } // class OperatorSet
 
-    /** report operator statistics **/
-    protected void showOperatorRates(PrintStream out) {
-        out.println("Operator                                        #accept\t#reject\t#total\tacceptance rate");
-        for (int i = 0; i < operatorSet.getNrOperators(); i++) {
-            out.println(operatorSet.getOperator(i));
-        }
-    }
 
     @Override
     public void run() throws Exception {
@@ -164,14 +161,14 @@ public class MCMC extends Runnable {
         	state.restoreFromFile();
         }
         long tStart = System.currentTimeMillis();
-        Distribution posterior = posteriorInput.get();
-        state.setEverythingDirty(true);
-
-        int nBurnIn = m_oBurnIn.get();
-        int nChainLength = m_oChainLength.get();
 
         System.err.println("Start state:");
         System.err.println(state.toString());
+
+        state.setEverythingDirty(true);
+        Distribution posterior = posteriorInput.get();
+        int nBurnIn = m_oBurnIn.get();
+        int nChainLength = m_oChainLength.get();
 
         // do the sampling
         double logAlpha = 0;
@@ -182,6 +179,7 @@ public class MCMC extends Runnable {
         state.checkCalculationNodesDirtiness();
 
         double fOldLogLikelihood = posterior.calculateLogP();
+        // main MCMC loop 
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
             state.store(iSample);
 
@@ -240,7 +238,7 @@ public class MCMC extends Runnable {
                 operator.optimize(logAlpha);
             }
         }
-        showOperatorRates(System.out);
+        operatorSet.showOperatorRates(System.out);
         long tEnd = System.currentTimeMillis();
         System.out.println("Total calculation time: " + (tEnd - tStart) / 1000.0 + " seconds");
         close();
