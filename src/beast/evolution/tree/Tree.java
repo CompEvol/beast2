@@ -294,6 +294,7 @@ public class Tree extends StateNode {
     public void log(int nSample, PrintStream out) {
         Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
         out.print("tree STATE_" + nSample + " = ");
+		tree.getRoot().sort();
         out.print(tree.getRoot().toString());
         out.print(";");
     }
@@ -323,4 +324,13 @@ public class Tree extends StateNode {
 		}
 	}
 
+	@Override public int getDimension() {return nodeCount;}
+    @Override public double getArrayValue() {return (double) root.m_fHeight;}
+    @Override public double getArrayValue(int iValue) {
+        if (m_nodes == null) {
+        	m_nodes = new Node[nodeCount];
+        	listNodes(root, m_nodes);
+        }
+    	return (double) m_nodes[iValue].m_fHeight;
+    }
 } // class Tree

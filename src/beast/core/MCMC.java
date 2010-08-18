@@ -75,6 +75,7 @@ public class MCMC extends Runnable {
      * number of samples taken where calculation is checked against full
      * recalculation of the posterior.
      */
+    //final protected int NR_OF_DEBUG_SAMPLES = 0;
     final protected int NR_OF_DEBUG_SAMPLES = 2000;
 
     @Override
@@ -175,16 +176,16 @@ public class MCMC extends Runnable {
 
         boolean bDebug = true;
         state.setEverythingDirty(true);
-
         state.checkCalculationNodesDirtiness();
-
         double fOldLogLikelihood = posterior.calculateLogP();
+        System.err.println("Start likelihood: " + fOldLogLikelihood);
+
         // main MCMC loop 
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
             state.store(iSample);
 
             Operator operator = operatorSet.selectOperator();
-            //System.err.print(operator.getName()+ ":");
+            //System.out.println(operator.getName()+ ":");
             double fLogHastingsRatio = operator.proposal();
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
             	state.storeCalculationNodes();
@@ -219,8 +220,8 @@ public class MCMC extends Runnable {
             }
             log(iSample);
 
-            if (bDebug) {
-            	// do some sanity checking, in particular check that the posterior is correctly calculated
+            if (bDebug && iSample % 2 == 0) {
+            	// check that the posterior is correctly calculated
                 state.store(-1);
                 state.setEverythingDirty(true);
                 state.checkCalculationNodesDirtiness();
@@ -243,6 +244,7 @@ public class MCMC extends Runnable {
         System.out.println("Total calculation time: " + (tEnd - tStart) / 1000.0 + " seconds");
         close();
 
+        System.err.println("End likelihood: " + fOldLogLikelihood);
         System.err.println(state);
         state.storeToFile();
     } // run;

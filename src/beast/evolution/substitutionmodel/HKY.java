@@ -246,6 +246,8 @@ public final class HKY extends SubstitutionModel.Base {
 
     @Override
     protected void restore() {
+        updateMatrix = true;
+        updateEigen = true;
         if (storedEigenDecomposition != null) {
             eigenDecomposition = storedEigenDecomposition;
         }

@@ -30,6 +30,10 @@ import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +53,15 @@ public class Logger extends Plugin {
 
     /** list of loggers, if any */
     Loggable m_loggers[];
-
+    public final static int FILE_ONLY_NEW = 0, FILE_OVERWRITE = 1, FILE_APPEND = 2;
+    public static int FILE_MODE = FILE_ONLY_NEW;
     /** Compound loggers get a sample number printed at the beginning of the line,
      * while tree loggers don't.
      */
     public final static int COMPOUND_LOGGER = 0, TREE_LOGGER = 2;
     public int m_mode = COMPOUND_LOGGER;
+    /** offset for the sample number, which is non-zero when a chain is resumed **/
+    int m_nSampleOffset = 0;
     
     /** number of samples between logs **/
     int m_nEvery = 1;
@@ -97,34 +104,107 @@ public class Logger extends Plugin {
     /** initialise log, open file (if necessary) and produce header of log
      **/
     public void init() throws Exception {
+    	boolean bNeedsHeader = openLogFile();
+    	if (bNeedsHeader) {
+	        if (m_pModelPlugin.get() != null) {
+	        	// print model at top of log
+	        	String sXML = new XMLProducer().modelToXML(m_pModelPlugin.get());
+	        	sXML = "#" + sXML.replaceAll("\\n", "\n#");
+	        	m_out.println("\n#model:\n#");
+	        	m_out.println(sXML);
+	        	m_out.println("#");
+	        }
+	        if (m_mode == COMPOUND_LOGGER) {
+	            m_out.print("Sample\t");
+	        }
+	        for(Loggable m_logger : m_loggers) {
+	            m_logger.init(m_out);
+	        }
+	        m_out.println();
+    	}
+    } // init
+
+    boolean openLogFile() throws Exception {
         String sFileName = m_pFileName.get();
         if (sFileName == null || sFileName.length() == 0) {
             m_out = System.out;
+            return true;
         } else {
             if (sFileName.contains("$(seed)")) {
                 sFileName = sFileName.replace("$(seed)", Randomizer.getSeed() + "");
                 m_pFileName.setValue(sFileName, this);
             }
-            m_out = new PrintStream(sFileName);
+            switch (FILE_MODE) {
+            case FILE_ONLY_NEW :// only open file if the file does not already exists
+            {
+            	File file = new File(sFileName);
+            	if (file.exists()) {
+            		throw new Exception("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
+            	}
+                m_out = new PrintStream(sFileName);
+                System.out.println("Writing file " + sFileName);
+                return true;
+            }
+            case FILE_OVERWRITE :// (over)write log file
+            {
+            	String sMsg = "Writing";
+            	if (new File(sFileName).exists()) {
+            		sMsg = "Warning: Overwriting";
+            	}
+                m_out = new PrintStream(sFileName);
+                System.out.println(sMsg + " file " + sFileName);
+                return true;
+            }
+            case FILE_APPEND :// append log file, pick up SampleOffset by reading existing log
+            {
+            	File file = new File(sFileName);
+            	if (file.exists()) {
+	                if (m_mode == COMPOUND_LOGGER) {
+	                	// first find the sample nr offset
+	            		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+	            		String sStr = null;
+	            		while (fin.ready()) {
+	            			sStr = fin.readLine();
+	            		}
+	            		fin.close();
+	            		m_nSampleOffset = Integer.parseInt(sStr.split("\\s")[0]);
+	                	// open the file for appending
+	                	FileOutputStream out2 = new FileOutputStream(sFileName, true);
+	                    m_out = new PrintStream(out2);
+	                } else {
+	                	// it is a tree logger, we need to get rid of the last line!
+	            		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+	            		StringBuffer buf = new StringBuffer();
+	            		String sStrLast = null;
+	            		String sStr = null;
+	            		while (fin.ready()) {
+	            			sStrLast = sStr;
+	            			buf.append(sStrLast);
+	            			buf.append('\n');
+	            			sStr = fin.readLine();
+	            		}
+	            		fin.close();
+	            		// determine number of the last sample
+	            		sStr = sStrLast.split("\\s+")[1];
+	            		m_nSampleOffset = Integer.parseInt(sStr.substring(6));
+	                	// open the file and write back all but the last line
+	                	FileOutputStream out2 = new FileOutputStream(sFileName);
+	                    m_out = new PrintStream(out2);
+	                    m_out.print(buf.toString());
+	                }
+                    System.out.println("Appending file " + sFileName);
+                    return false;
+            	} else {
+                    m_out = new PrintStream(sFileName);
+                    System.out.println("Writing file " + sFileName);
+                    return true;
+            	}
+            }
+            default:
+            	throw new Exception("DEVELOPER ERROR: unknown file mode for logger " + FILE_MODE);
+            }
         }
-        if (m_pModelPlugin.get() != null) {
-        	// print model at top of log
-        	String sXML = new XMLProducer().modelToXML(m_pModelPlugin.get());
-        	sXML = "#" + sXML.replaceAll("\\n", "\n#");
-        	m_out.println("\n#model:\n#");
-        	m_out.println(sXML);
-        	m_out.println("#");
-        }
-        if (m_mode == COMPOUND_LOGGER) {
-            m_out.print("Sample\t");
-        }
-        for(Loggable m_logger : m_loggers) {
-            m_logger.init(m_out);
-        }
-        m_out.println();
-    } // init
-
-
+    } // openLogFile
     
     /** log the state for given sample nr
      **/
@@ -132,8 +212,15 @@ public class Logger extends Plugin {
         if ((nSample < 0) || (nSample % m_nEvery > 0)) {
             return;
         }
+        if (m_nSampleOffset > 0) {
+        	if (nSample == 0) {
+        		// don't need to duplicate the last line in the log
+        		return;
+        	}
+        	nSample += m_nSampleOffset;
+        }
         if (m_mode == COMPOUND_LOGGER) {
-            m_out.print(nSample + "\t");
+            m_out.print((nSample)+ "\t");
         }
         for(Loggable m_logger : m_loggers) {
             m_logger.log(nSample, m_out);

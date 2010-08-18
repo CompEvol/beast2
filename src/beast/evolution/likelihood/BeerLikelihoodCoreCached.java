@@ -680,10 +680,10 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
         m_fScalingFactors = null;
     }
 
-    public void setUseScaling(boolean bUseScaling) {
-        this.m_bUseScaling = bUseScaling;
+    public void setUseScaling(double fScale) {
+        this.m_bUseScaling = (fScale != 1.0);
 
-        if (bUseScaling) {
+        if (m_bUseScaling) {
             m_fScalingFactors = new double[2][m_nNodes][m_nPatterns];
         }
     }
@@ -977,4 +977,9 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
         m_iCurrentPartials = m_iStoredPartials;
         m_iStoredPartials = iTmp2;
     }
+
+//	@Override
+//	LikelihoodCore feelsGood() {
+//		return null;
+//	}
 } // class BeerLikelihoodCore

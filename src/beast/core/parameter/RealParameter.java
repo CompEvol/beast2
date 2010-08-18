@@ -38,6 +38,9 @@ public class RealParameter extends Parameter<Double> {
         return values[0];
     }
 
+    @Override public double getArrayValue() {return (double) values[0];}
+    @Override public double getArrayValue(int iValue) {return (double) values[iValue];};
+
     @Override
     public void initAndValidate() throws Exception {
     	if (lowerValueInput.get() != null) {
@@ -89,6 +92,8 @@ public class RealParameter extends Parameter<Double> {
     		values[i] = Double.parseDouble(sValues[i]);
     	}
     }
+
+
 }
 
 

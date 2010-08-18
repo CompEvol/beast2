@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import beast.core.Logger;
 import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
@@ -16,6 +17,7 @@ public class ResumeTest  extends TestCase {
 	@Test
 	public void test_ThatXmlExamplesRun() throws Exception {
 		Randomizer.setSeed(127);
+		Logger.FILE_MODE = Logger.FILE_OVERWRITE;
 		String sDir = System.getProperty("user.dir") + "/examples";
 		String sFileName = sDir + "/" + XML_FILE;
 
@@ -32,6 +34,7 @@ public class ResumeTest  extends TestCase {
 		System.out.println("Done " + sFileName);
 
 		System.out.println("Resuming " + sFileName);
+		Logger.FILE_MODE = Logger.FILE_APPEND;
 		parser = new XMLParser();
 		runable = parser.parseFile(sFileName);
 		runable.setStateFile("tmp.state", true);

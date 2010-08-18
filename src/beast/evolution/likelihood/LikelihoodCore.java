@@ -91,7 +91,7 @@ abstract public class LikelihoodCore {
 	 * numeric issues (underflow).
 	 */
 	boolean m_bUseScaling = false;
-	abstract public void setUseScaling(boolean bUseScaling);
+	abstract public void setUseScaling(double fScale);
 	public boolean getUseScaling() {return m_bUseScaling;}
 	/** return the cumulative scaling effect. Should be zero if no scaling is used **/
     abstract public double getLogScalingFactor(int iPattern);
@@ -118,4 +118,6 @@ abstract public class LikelihoodCore {
     abstract public void unstore();
     /** restore state **/
     abstract public void restore();
+//    /** do internal diagnosics, and suggest an alternative core if appropriate **/ 
+//    abstract LikelihoodCore feelsGood();
 }

@@ -112,7 +112,11 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable {
      * values outside bounds or negative branch lengths
      */
     abstract public int scale(double fScale) throws Exception;
-
+    
+    
+    abstract public int getDimension();
+    abstract public double getArrayValue();
+    abstract public double getArrayValue(int iValue);
 
     /** 
      * Pointer to state, null if not part of a State.

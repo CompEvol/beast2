@@ -126,7 +126,8 @@ public class Node extends Plugin {
 //			}
 		}
 //		buf.append("["+m_iLabel+"]");
-         buf.append(":").append(String.format("%3.3f", getLength()));
+        //buf.append(":").append(String.format("%7.7f", getLength()));
+        buf.append(":").append(getLength());
 		for (int i = 0; i < m_bIsDirty; i++) {
 			//buf.append("X");
 		}

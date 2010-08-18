@@ -1,5 +1,5 @@
 <!-- Build BEAST 2. It is also used by Hudson BEAST_2 project. JUnit test is available for this build. -->
-<project basedir="." default="build_all_BEAST" name="BUILD_BEAST_2">
+<project basedir="." default="build_jar_all_BEAST" name="BUILD_BEAST_2">
 	<description>
 	    Build BEAST 2. 
             Also used by Hudson BEAST_2 project. 
@@ -32,16 +32,15 @@
 	</target>
 
 	<!-- clean previous build, and then compile Java source code, and Juint test -->
-	<!--target name="build_all_BEAST" depends="clean,compile-all,junit"-->
 	<target name="build_all_BEAST" depends="clean,compile-all,junit"
         description="Clean and Build all run-time stuff">
 	</target>
 
 	<!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
-	<!--target name="build_jar_all_BEAST" depends="clean,compile-all,junit,dist_all_BEAST"-->
-	<target name="build_jar_all_BEAST" depends="clean,compile-all,dist_all_BEAST"
+	<target name="build_jar_all_BEAST" depends="clean,compile-all,junit,dist_all_BEAST"
         description="Clean and Build all run-time stuff">
 	</target>
+
 
 	<!-- No JUnit Test, clean previous build, compile Java source code, and make the beast.jar and beauti.jar -->
 	<target name="build_jar_all_BEAST_NoJUnitTest" depends="clean,compile-all,dist_all_BEAST"
@@ -98,7 +97,7 @@
 	<!-- JUnit test -->
 	<target name="junit">
 		<mkdir dir="${report}" />
-		<junit printsummary="yes">
+		<junit printsummary="yes"> <!--showoutput='yes'-->
 			<classpath>
 				<path refid="classpath" />
 				<path location="${build}" />

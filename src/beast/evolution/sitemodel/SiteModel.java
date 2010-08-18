@@ -152,7 +152,8 @@ public class SiteModel extends CalculationNode {
     }
 
     public double getRateForCategory(int category) {
-        synchronized (this) {
+        //synchronized (this) 
+        {
             if (!ratesKnown) {
                 calculateCategoryRates();
             }
@@ -165,7 +166,8 @@ public class SiteModel extends CalculationNode {
     }
 
     public double[] getCategoryRates() {
-        synchronized (this) {
+        //synchronized (this) 
+        {
             if (!ratesKnown) {
                 calculateCategoryRates();
             }
@@ -207,7 +209,8 @@ public class SiteModel extends CalculationNode {
      * @return the proportion.
      */
     public double getProportionForCategory(int category) {
-        synchronized (this) {
+        //synchronized (this) 
+        {
             if (!ratesKnown) {
                 calculateCategoryRates();
             }
@@ -222,7 +225,8 @@ public class SiteModel extends CalculationNode {
      * @return an array of the proportion.
      */
     public double[] getCategoryProportions() {
-        synchronized (this) {
+        //synchronized (this) 
+    	{
             if (!ratesKnown) {
                 calculateCategoryRates();
             }

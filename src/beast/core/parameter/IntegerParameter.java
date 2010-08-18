@@ -36,6 +36,8 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     public Integer getValue() {
         return values[0];
     }
+    @Override public double getArrayValue() {return (double) values[0];}
+    @Override public double getArrayValue(int iValue) {return (double) values[iValue];};
 
     @Override
     public void initAndValidate() throws Exception {

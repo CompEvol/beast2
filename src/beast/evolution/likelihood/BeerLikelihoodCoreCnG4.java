@@ -49,6 +49,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 		super(4);
 	} // c'tor
 
+	
 	void calcSSP(int state1, int state2, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials3, int w, int v) {
 			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
 			v++;
@@ -281,4 +282,9 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 			//u++;
 			//return u;
 	}
+	
+//	@Override
+//	LikelihoodCore getAlternativeCore() {
+//    	return new BeerLikelihoodCoreJava4();
+//    }
 } // class BeerLikelihoodCore

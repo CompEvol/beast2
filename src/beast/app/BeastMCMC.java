@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import beast.core.Logger;
 import beast.core.Runnable;
 
 import beast.util.Randomizer;
@@ -70,6 +71,13 @@ public class BeastMCMC {
 					} else if (args[i].equals("-resume")) {
 						bResume = true;
 						i += 1;
+					} else if (args[i].equals("-overwrite")) {
+						Logger.FILE_MODE = Logger.FILE_OVERWRITE;
+						i += 1;
+					} else if (args[i].equals("-append")) {
+						bResume = true;
+						Logger.FILE_MODE = Logger.FILE_APPEND;
+						i += 1;
 					} else if (args[i].equals("-seed")) {
 						m_nSeed = Integer.parseInt(args[i + 1]);
 						i += 2;
@@ -105,6 +113,8 @@ public class BeastMCMC {
 				"where <Beast.xml> the name of a file specifying a Beast run\n" +
 				"and the following options are allowed:\n" +
 				"-resume : read state that was stored at the end of the last run from file\n" +
+				"-overwrite : overwrite existing log files (if any). By default, existing files will not be overwritten.\n" +
+				"-append : resume and append log file\n" +
 				"-seed <int> : sets random number seed (default 127)\n" +
 				"-threads <int> : sets number of threads (default 1)\n";
 	} // getUsage

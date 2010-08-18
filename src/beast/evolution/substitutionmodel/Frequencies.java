@@ -31,18 +31,28 @@ import beast.core.Plugin;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 
-@Description("Calculates empirical frequencies of characters in sequence data")
+@Description("Represents character frequencies typically used as distribution of the root of the tree. " +
+		"Calculates empirical frequencies of characters in sequence data, or simply assumes a uniform " +
+		"distribution if the estimate flag is set to false.")
 public class Frequencies extends Plugin {
 	public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated", Validate.REQUIRED);
+	public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distributin over characters (false)", true);
 
 	@Override
 	public void initAndValidate() throws Exception {
 		if (m_data.get() == null) {
 			throw new Exception("data input is not specified");
 		}
-		calcFrequencies();
-
-        checkFrequencies();
+		if (m_bEstimate.get()) {
+			calcFrequencies();
+			checkFrequencies();
+		} else {
+			int nStates = m_data.get().getMaxStateCount();
+			m_fFreqs = new double[nStates];
+			for (int i = 0; i < nStates; i++) {
+				m_fFreqs[i] = 1.0/nStates;
+			}
+		}
 	}
 
 	double [] m_fFreqs;

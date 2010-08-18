@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import beast.core.Logger;
 import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
@@ -20,6 +21,7 @@ public class ExampleXmlParsingTest extends TestCase {
 	public void test_XmlExamples() {
 		try {
 			Randomizer.setSeed(127);
+			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
 			String sDir = System.getProperty("user.dir") + "/examples";
 			System.out.println("Test XML Examples in " + sDir);
 			File sExampleDir = new File(sDir);
@@ -58,6 +60,7 @@ public class ExampleXmlParsingTest extends TestCase {
 	public void test_ThatXmlExamplesRun() {
 		try {
 			Randomizer.setSeed(127);
+			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
 			String sDir = System.getProperty("user.dir") + "/examples";
 			System.out.println("Test that XML Examples run in " + sDir);
 			File sExampleDir = new File(sDir);

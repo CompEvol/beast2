@@ -118,6 +118,12 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     	recompute = true;
     	return true;
     }
+    
+    @Override
+    protected void restore() {
+    	recompute = true;
+    	super.restore();
+    }
 
     private boolean recompute = true;
     double[] unscaledBranchRates;

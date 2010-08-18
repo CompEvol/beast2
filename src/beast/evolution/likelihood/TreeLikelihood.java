@@ -183,22 +183,43 @@ public class TreeLikelihood extends Distribution {
 
     @Override
     public void initAndValidate() throws Exception {
+        int nodeCount = m_tree.get().getNodeCount();
+        m_siteModel = m_pSiteModel.get();
+        m_substitutionModel = m_siteModel.m_pSubstModel.get();
+        m_branchRateModel = m_pBranchRateModel.get();
+        if (m_branchRateModel != null) {
+        	m_branchLengths = new double[nodeCount];
+        	m_StoredBranchLengths = new double[nodeCount];
+        } else {
+        	m_branchLengths = new double[0];
+        	m_StoredBranchLengths = new double[0];
+        }
+
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
         	//m_likelihoodCore = new BeerLikelihoodCore4();
-            m_likelihoodCore = new BeerLikelihoodCoreCnG4();
+        	m_likelihoodCore = new BeerLikelihoodCoreCnG4();
             //m_likelihoodCore = new BeerLikelihoodCoreJava4();
         } else {
             //m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
             m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
         }
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
+        initCore();
+        
+        
+        m_fPatternLogLikelihoods = new double[m_data.get().getPatternCount()];
+        m_fRootPartials = new double[m_data.get().getPatternCount() * nStateCount];
+        m_fProbabilities = new double[nStateCount * nStateCount];
+    }
 
+    
+    void initCore() {
         int nodeCount = m_tree.get().getNodeCount();
         m_likelihoodCore.initialize(
                 nodeCount,
                 m_data.get().getPatternCount(),
-                1,
+                m_siteModel.getCategoryCount(),
                 true
         );
 
@@ -210,21 +231,8 @@ public class TreeLikelihood extends Distribution {
         for (int i = 0; i < intNodeCount; i++) {
             m_likelihoodCore.createNodePartials(extNodeCount + i);
         }
-        m_fPatternLogLikelihoods = new double[m_data.get().getPatternCount()];
-        m_fRootPartials = new double[m_data.get().getPatternCount() * nStateCount];
-        m_fProbabilities = new double[nStateCount * nStateCount];
-        m_siteModel = m_pSiteModel.get();
-        m_substitutionModel = m_siteModel.m_pSubstModel.get();
-        m_branchRateModel = m_pBranchRateModel.get();
-        if (m_branchRateModel != null) {
-        	m_branchLengths = new double[nodeCount];
-        	m_StoredBranchLengths = new double[nodeCount];
-        } else {
-        	m_branchLengths = new double[0];
-        	m_StoredBranchLengths = new double[0];
-        }
     }
-
+    
     /**
      * This method samples the sequences based on the tree and site model.
      */
@@ -252,6 +260,10 @@ public class TreeLikelihood extends Distribution {
      * Calculate the log likelihood of the current state.
      * @return the log likelihood.
      */
+    double m_fScale = 1.01;
+    int m_nScale = 0;
+    int X = 100;
+//    int m_nCalls = 0;
     @Override
     public double calculateLogP() throws Exception {
         Tree tree = m_tree.get();
@@ -266,12 +278,53 @@ public class TreeLikelihood extends Distribution {
         for (int i = 0; i < m_data.get().getPatternCount(); i++) {
             logP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
         }
-        if (logP < -1e10 && !m_likelihoodCore.getUseScaling()) {
-            System.err.println("Turning on scaling to prevent numeric instability");
-            m_likelihoodCore.setUseScaling(true);
+//        m_nCalls++;
+//        if (m_nCalls == 2000) {
+//        	LikelihoodCore core = m_likelihoodCore.feelsGood();
+//        	if (core != null) {
+//        		// switch core to default core
+//        		System.err.println("Switching core to " + core.getClass().getName());
+//        		m_likelihoodCore = core;
+//        		initCore();
+//        	}
+//        }
+        
+        m_nScale++;
+        if (logP > 0 || (m_likelihoodCore.getUseScaling() && m_nScale > X)) {
+            System.err.println("Switch off scaling");
+            m_likelihoodCore.setUseScaling(1.0);
             m_likelihoodCore.unstore();
             m_nHasDirt = Tree.IS_FILTHY;
-            return calculateLogP();
+            X *= 2;
+            if (m_branchRateModel == null) {
+            	traverse(tree.getRoot());
+            } else {
+            	traverseWithBRM(tree.getRoot());
+            }
+            logP = 0.0;
+            //double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
+            for (int i = 0; i < m_data.get().getPatternCount(); i++) {
+                logP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
+            }
+            return logP;
+        } else if (logP == Double.NEGATIVE_INFINITY && m_fScale < 10) { // && !m_likelihoodCore.getUseScaling()) {
+        	m_nScale = 0;
+        	m_fScale *= 1.01;
+            System.err.println("Turning on scaling to prevent numeric instability " + m_fScale);
+            m_likelihoodCore.setUseScaling(m_fScale);
+            m_likelihoodCore.unstore();
+            m_nHasDirt = Tree.IS_FILTHY;
+            if (m_branchRateModel == null) {
+            	traverse(tree.getRoot());
+            } else {
+            	traverseWithBRM(tree.getRoot());
+            }
+            logP = 0.0;
+            //double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
+            for (int i = 0; i < m_data.get().getPatternCount(); i++) {
+                logP += m_fPatternLogLikelihoods[i] * m_data.get().getPatternWeight(i);
+            }
+            return logP;
         }
         return logP;
     }
