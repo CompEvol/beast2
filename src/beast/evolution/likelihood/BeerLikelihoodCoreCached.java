@@ -777,7 +777,11 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	        m_fMatrices[m_iCurrentMatrices[iNode]][iNode][iMatrixIndex * m_nMatrixSize+m_nStates*(m_nStates+1)+i]=1.0;
     	}
     }
-
+    @Override
+    public void setPaddedNodeMatrices(int iNode, double[] fMatrix) {
+    	double [] fMatrix2 = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+    	System.arraycopy(fMatrix, 0, fMatrix2, 0, fMatrix.length);
+    }
     /**
      * Gets probability matrix for a node
      */

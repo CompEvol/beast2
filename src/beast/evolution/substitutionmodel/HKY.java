@@ -48,6 +48,7 @@ public final class HKY extends SubstitutionModel.Base {
     public void initAndValidate() throws Exception {
     }
 
+    @Override
     public void getTransitionProbabilities(double distance, double[] matrix) {
 
         if (updateMatrix) {
@@ -87,6 +88,46 @@ public final class HKY extends SubstitutionModel.Base {
         matrix[15] = freqT + t1Taa + (tab2T * bbY);
     }
 
+//    @Override
+//    public void getPaddedTransitionProbabilities(double distance, double[] matrix) {
+//
+//        if (updateMatrix) {
+//            setupMatrix();
+//        }
+//
+//        final double xx = beta * distance;
+//        final double bbR = Math.exp(xx * A_R);
+//        final double bbY = Math.exp(xx * A_Y);
+//
+//        final double aa = Math.exp(xx);
+//        final double oneminusa = 1 - aa;
+//
+//        final double t1Aaa = (tab1A * aa);
+//        matrix[0] = freqA + t1Aaa + (tab2A * bbR);
+//
+//        matrix[1] = freqC * oneminusa;
+//        final double t1Gaa = (tab1G * aa);
+//        matrix[2] = freqG + t1Gaa - (tab3G * bbR);
+//        matrix[3] = freqT * oneminusa;
+//
+//        matrix[4+1] = freqA * oneminusa;
+//        final double t1Caa = (tab1C * aa);
+//        matrix[5+1] = freqC + t1Caa + (tab2C * bbY);
+//        matrix[6+1] = freqG * oneminusa;
+//        final double t1Taa = (tab1T * aa);
+//        matrix[7+1] = freqT + t1Taa - (tab3T * bbY);
+//
+//        matrix[8+2] = freqA + t1Aaa - (tab3A * bbR);
+//        matrix[9+2] = matrix[1];
+//        matrix[10+2] = freqG + t1Gaa + (tab2G * bbR);
+//        matrix[11+2] = matrix[3];
+//
+//        matrix[12+3] = matrix[4+1];
+//        matrix[13+3] = freqC + t1Caa - (tab3C * bbY);
+//        matrix[14+3] = matrix[6+1];
+//        matrix[15+3] = freqT + t1Taa + (tab2T * bbY);
+//    }
+    
     public EigenDecomposition getEigenDecomposition() {
 
         if (eigenDecomposition == null) {

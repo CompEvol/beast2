@@ -131,6 +131,7 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -180,6 +181,8 @@ public class TreeLikelihood extends Distribution {
     double[] m_fRootPartials;
     /** memory allocation for probability tables obtained from the SiteModel **/
     double[] m_fProbabilities;
+    double[] m_fProbabilities2;
+    int m_nMatrixSize;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -200,6 +203,7 @@ public class TreeLikelihood extends Distribution {
         	//m_likelihoodCore = new BeerLikelihoodCore4();
         	m_likelihoodCore = new BeerLikelihoodCoreCnG4();
             //m_likelihoodCore = new BeerLikelihoodCoreJava4();
+        	//m_likelihoodCore = new BeerLikelihoodCoreNative(4);
         } else {
             //m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
             m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
@@ -210,7 +214,11 @@ public class TreeLikelihood extends Distribution {
         
         m_fPatternLogLikelihoods = new double[m_data.get().getPatternCount()];
         m_fRootPartials = new double[m_data.get().getPatternCount() * nStateCount];
-        m_fProbabilities = new double[nStateCount * nStateCount];
+        m_nMatrixSize = (nStateCount +1)* (nStateCount+1);
+        m_fProbabilities = new double[(nStateCount +1)* (nStateCount+1)];
+        Arrays.fill(m_fProbabilities, 1.0);
+        m_fProbabilities2 = new double[m_nMatrixSize * m_siteModel.getCategoryCount()];
+        Arrays.fill(m_fProbabilities2, 1.0);
     }
 
     
@@ -349,7 +357,10 @@ public class TreeLikelihood extends Distribution {
                 double branchLength = m_siteModel.getRateForCategory(i) * branchTime;
                 m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
+                //m_substitutionModel.getPaddedTransitionProbabilities(branchLength, m_fProbabilities);
+                //System.arraycopy(m_fProbabilities, 0, m_fProbabilities2, i * m_nMatrixSize, m_nMatrixSize);
             }
+            //m_likelihoodCore.setPaddedNodeMatrices(iNode, m_fProbabilities2);
         }
 
         // If the node is internal, update the partial likelihoods.
@@ -412,7 +423,10 @@ public class TreeLikelihood extends Distribution {
                 double branchLength = m_siteModel.getRateForCategory(i) * branchTime;
                 m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
+//                m_substitutionModel.getPaddedTransitionProbabilities(branchLength, m_fProbabilities);
+//                System.arraycopy(m_fProbabilities, 0, m_fProbabilities2, i * m_nMatrixSize, m_nMatrixSize);
             }
+//            m_likelihoodCore.setPaddedNodeMatrices(iNode, m_fProbabilities2);
             update |= Tree.IS_DIRTY;
         }
 

@@ -51,84 +51,129 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 
 	
 	void calcSSP(int state1, int state2, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials3, int w, int v) {
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
-			v++;
-			w += m_nStates+1;
+		if (state1 < 4) {
+			if (state2 < 4) {
+				pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+				v++;	w += 4;
+				pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+				v++;	w += 4;
+				pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+				v++;	w += 4;
+				pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+				//v++;	w += 4;
+			} else {
+			// child 2 has a gap or unknown state so don't use it
+				pfPartials3[v] = pfMatrices1[w + state1];
+				v++;	w += 4;
+				pfPartials3[v] = pfMatrices1[w + state1];
+				v++;	w += 4;
+				pfPartials3[v] = pfMatrices1[w + state1];
+				v++;	w += 4;
+				pfPartials3[v] = pfMatrices1[w + state1];
+				//v++;	w += 4;
+			}
+		} else if (state2 < 4) {
+			// child 2 has a gap or unknown state so don't use it
+			pfPartials3[v] = pfMatrices2[w + state2];
+			v++;	w += 4;
+			pfPartials3[v] = pfMatrices2[w + state2];
+			v++;	w += 4;
+			pfPartials3[v] = pfMatrices2[w + state2];
+			v++;	w += 4;
+			pfPartials3[v] = pfMatrices2[w + state2];
+			//v++;	w += 4;
 
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+		} else {
+			// both children have a gap or unknown state so set partials to 1
+			pfPartials3[v] = 1.0;
 			v++;
-			w += m_nStates+1;
-
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+			pfPartials3[v] = 1.0;
 			v++;
-			w += m_nStates+1;
-
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+			pfPartials3[v] = 1.0;
+			v++;
+			pfPartials3[v] = 1.0;
 			//v++;
-			w += m_nStates+1;
-			//return v;
+		}
+
+		
+//		pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+//			v++;
+//			w += m_nStates+1;
+//
+//			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+//			v++;
+//			w += m_nStates+1;
+//
+//			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+//			v++;
+//			w += m_nStates+1;
+//
+//			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+//			//v++;
+//			w += m_nStates+1;
+//			//return v;
 	}
 	
-	void calcSPP(int state1, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v, int u) {
+	void calcSPP(int state1, double [] fMatrices1, double [] fMatrices2, double [] fPartials2, double [] fPartials3, int w, int v, int u) {
 		double tmp, sum;
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+		sum = 0.0;
+		if (state1 < 4) {
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = fMatrices1[w + state1] * sum;	u++;
 
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+			w += 4;
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = fMatrices1[w + state1] * sum;	u++;
 
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+			w += 4;
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = fMatrices1[w + state1] * sum;	u++;
 
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			//u++;
-			
-		//v += m_nStates;
-		//return u;
+			w += 4;
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = fMatrices1[w + state1] * sum;//	u++;
+		} else {
+			// Child 1 has a gap or unknown state so don't use it
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = sum;	u++;
+
+			w += 4;
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = sum;	u++;
+
+			w += 4;
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = sum;	u++;
+
+			w += 4;
+			sum =	fMatrices2[w] * fPartials2[v];
+			sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+			sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+			sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+			fPartials3[u] = sum;//	u++;
+			//v += 4;
+		}
 	}
 
 	void calcPPP(double [] pfMatrices1, double [] pfPartials1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v1, int v2, int u) {
@@ -147,7 +192,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 
@@ -165,7 +210,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 			
@@ -183,7 +228,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 
@@ -201,7 +246,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			//u++;
 			//return u;
@@ -223,7 +268,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 
@@ -241,7 +286,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 			
@@ -259,7 +304,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 
@@ -277,7 +322,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 				sum1 += pfMatrices1[w] * pfPartials1[v + 3];
 				sum2 += pfMatrices2[w] * pfPartials2[v + 3];
 				w++;
-			w++;
+//			w++;
 			pfPartials3[u] = sum1 * sum2;
 			//u++;
 			//return u;

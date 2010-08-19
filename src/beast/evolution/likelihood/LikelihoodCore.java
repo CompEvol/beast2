@@ -65,7 +65,7 @@ abstract public class LikelihoodCore {
     //abstract public void setCurrentNodePartials(int iNode, double[] fPartials);
 
     /** reserve memory for states for node with number iNode **/
-	abstract public void createNodeStates(int iNode);
+	//abstract public void createNodeStates(int iNode);
 
 	/** assign values of states for node with number iNode **/
 	abstract public void setNodeStates(int iNode, int[] iStates);
@@ -77,6 +77,9 @@ abstract public class LikelihoodCore {
 	
     /** assign values of states for probability transition matrix for node with number iNode **/
 	abstract public void setNodeMatrix(int iNode, int iMatrixIndex, double[] fMatrix);
+    /** assign values of states for probability transition matrices 
+     * padded with 1s for dealing with unknown characters for node with number iNode **/
+	abstract public void setPaddedNodeMatrices(int iNode, double[] fMatrix);
 
 
     

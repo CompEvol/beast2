@@ -737,16 +737,23 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
      * Sets probability matrix for a node
      */
     public void setNodeMatrix(int iNode, int iMatrixIndex, double[] fMatrix) {
-    	for (int i = 0; i < m_nStates; i++) {
-	        System.arraycopy(fMatrix, i*m_nStates, m_fMatrices[m_iCurrentMatrices[iNode]][iNode],
-	                iMatrixIndex * m_nMatrixSize+i*(m_nStates+1), m_nStates);
-	        m_fMatrices[m_iCurrentMatrices[iNode]][iNode][iMatrixIndex * m_nMatrixSize+i*(m_nStates+1)+m_nStates]=1.0;
-    	}
-    	for (int i = 0; i < m_nStates+1; i++) {
-	        m_fMatrices[m_iCurrentMatrices[iNode]][iNode][iMatrixIndex * m_nMatrixSize+m_nStates*(m_nStates+1)+i]=1.0;
-    	}
+    	double [] fMatrix2 = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+    	System.arraycopy(fMatrix, 0, fMatrix2, iMatrixIndex * m_nMatrixSize, fMatrix.length);
+//    	double [] fMatrix2 = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+//    	for (int i = 0; i < m_nStates; i++) {
+//	        System.arraycopy(fMatrix, i*m_nStates, fMatrix2,
+//	                iMatrixIndex * m_nMatrixSize+i*(m_nStates+1), m_nStates);
+//	        fMatrix2[iMatrixIndex * m_nMatrixSize+i*(m_nStates+1)+m_nStates]=1.0;
+//    	}
+//    	for (int i = 0; i < m_nStates+1; i++) {
+//    		fMatrix2[iMatrixIndex * m_nMatrixSize+m_nStates*(m_nStates+1)+i]=1.0;
+//    	}
     }
-
+    @Override
+    public void setPaddedNodeMatrices(int iNode, double[] fMatrix) {
+    	double [] fMatrix2 = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+    	System.arraycopy(fMatrix, 0, fMatrix2, 0, fMatrix.length);
+    }
     /**
      * Gets probability matrix for a node
      */

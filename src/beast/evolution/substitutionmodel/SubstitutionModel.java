@@ -38,6 +38,7 @@ public interface SubstitutionModel {
      * @param matrix        an array to store the matrix
      */
     void getTransitionProbabilities(double substitutions, double[] matrix);
+    //void getPaddedTransitionProbabilities(double substitutions, double[] matrix);
 
     /**
      * This function returns the Eigen decomposition of the instantaneous rate matrix if available.
