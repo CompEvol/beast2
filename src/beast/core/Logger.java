@@ -61,7 +61,7 @@ public class Logger extends Plugin {
     public final static int COMPOUND_LOGGER = 0, TREE_LOGGER = 2;
     public int m_mode = COMPOUND_LOGGER;
     /** offset for the sample number, which is non-zero when a chain is resumed **/
-    int m_nSampleOffset = 0;
+    static int m_nSampleOffset = 0;
     
     /** number of samples between logs **/
     int m_nEvery = 1;
@@ -232,6 +232,9 @@ public class Logger extends Plugin {
                     (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
                             (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
                             (nSecondsPerMSamples % 60 + "s");
+//            if (nSecondsPerMSamples < 600) {
+//            	sTimePerMSamples += (nLogTime - m_nStartLogTime) % 1000; 
+//            }
             m_out.print(sTimePerMSamples + "/Msamples");
         }
         m_out.println();
