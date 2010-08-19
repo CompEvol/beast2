@@ -42,26 +42,38 @@ import java.util.*;
 import java.util.List;
 
 /**
- * The Document class is the Document part in the doc-view pattern of 
+ * The Document class is the Document part in the doc-view pattern of
  * the Beast ModelBuilder application.
  */
 public class Document {
-    
-    /** list of PluginShapes, InputShapes and connecting Arrows **/
+
+    /**
+     * list of PluginShapes, InputShapes and connecting Arrows *
+     */
     public List<Shape> m_objects = new ArrayList<Shape>();
     public List<Shape> m_tmpobjects;
 
-    /** undo/redo related stuff **/
+    /**
+     * undo/redo related stuff *
+     */
     List<UndoAction> m_undoStack = new ArrayList<UndoAction>();
     int m_nCurrentEditAction = -1;
-    
-    
+
+
     //int m_nSavedPointer = -1;
     public boolean m_bIsSaved = true;
-    public void isSaved() {m_bIsSaved = true;}
-    void iSChanged() {m_bIsSaved = false;}
 
-    /** list of class names for plug-ins to choose from **/
+    public void isSaved() {
+        m_bIsSaved = true;
+    }
+
+    void iSChanged() {
+        m_bIsSaved = false;
+    }
+
+    /**
+     * list of class names for plug-ins to choose from *
+     */
     String[] m_sPlugInNames;
 
 
@@ -87,24 +99,28 @@ public class Document {
 //        m_objects = arrows;
 //    }
 
-    /** adjust position of inputs to fit with the associated plug in **/
+    /**
+     * adjust position of inputs to fit with the associated plug in *
+     */
     void adjustInputs() {
-    	for (Shape shape : m_objects) {
-    		if (shape instanceof PluginShape) {
-    			((PluginShape) shape).adjustInputs();
-    		}
-    	}
+        for (Shape shape : m_objects) {
+            if (shape instanceof PluginShape) {
+                ((PluginShape) shape).adjustInputs();
+            }
+        }
     }
 
-    /** adjust position of tail and head of arrows to the 
-     * Plug in and input shapes they are attached to 
-     * **/
+    /**
+     * adjust position of tail and head of arrows to the
+     * Plug in and input shapes they are attached to
+     * *
+     */
     void adjustArrows() {
 //        adjustArrows(m_objects);
 //    }
 //
 //    void adjustArrows(List<Shape> objects) {
-    	for (Shape shape : m_objects) {
+        for (Shape shape : m_objects) {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 arrow.adjustCoordinates();
@@ -113,7 +129,7 @@ public class Document {
     } // adjustArrows
 
     void readjustArrows(List<Shape> objects) {
-    	for (Shape shape : m_objects) {
+        for (Shape shape : m_objects) {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 arrow.m_sHeadID = arrow.m_headShape.getID();
@@ -124,7 +140,9 @@ public class Document {
         }
     } // readjustArrows
 
-    /** edit actions on shapes **/
+    /**
+     * edit actions on shapes *
+     */
     public void moveShape(int nX, int nY, int nToX, int nToY, int nPosition) {
         boolean bNeedsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
@@ -153,7 +171,7 @@ public class Document {
             addUndoAction(new UndoAction(nPositions, UndoAction.MOVE_ACTION));
         }
     } // moveShape
-    
+
     public void movePoint(int nPoint, int nX, int nY, int nToX, int nToY, int nPosition) {
         boolean bNeedsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
@@ -171,11 +189,11 @@ public class Document {
     } // movePoint
 
     boolean containsID(String sID, List<Shape> objects, List<String> tabulist) {
-    	for (Shape shape : m_objects) {
-    		if (shape.getID()==null) {
-    			int h = 3;
-    			h++;
-    		}
+        for (Shape shape : m_objects) {
+            if (shape.getID() == null) {
+                int h = 3;
+                h++;
+            }
             if (shape.getID().equals(sID)) {
                 return true;
             }
@@ -189,7 +207,7 @@ public class Document {
         if (tabulist == null) {
             return false;
         }
-        for (String sTabuID :  tabulist) {
+        for (String sTabuID : tabulist) {
             if (sTabuID.equals(sID)) {
                 return true;
             }
@@ -206,19 +224,20 @@ public class Document {
         }
         return sID;
     }
+
     void setPluginID(PluginShape shape) {
-    	if (shape.m_plugin.getID() != null && shape.m_plugin.getID().length() > 0) {
-    		return;
-    	}
-		Plugin plugin = shape.m_plugin;
-		String sBase = plugin.getClass().getName().replaceAll(".*\\.", "");
-		int nID = 0;
-        while (containsID(sBase + nID, m_objects, null)) {
-        	nID++;
+        if (shape.m_plugin.getID() != null && shape.m_plugin.getID().length() > 0) {
+            return;
         }
-        plugin.setID(sBase+nID);
+        Plugin plugin = shape.m_plugin;
+        String sBase = plugin.getClass().getName().replaceAll(".*\\.", "");
+        int nID = 0;
+        while (containsID(sBase + nID, m_objects, null)) {
+            nID++;
+        }
+        plugin.setID(sBase + nID);
     }
-    
+
     Shape getShapeByID(String sID) {
         for (Shape shape : m_objects) {
             if (shape.getID().equals(sID)) {
@@ -230,57 +249,57 @@ public class Document {
 
     public void addNewShape(Shape shape) {
         if (shape.getID() == null ||
-        	shape.getID().equals("") ||
-        	containsID(shape.getID(), m_objects, null)) {
-        	if (shape instanceof Arrow) {
-        		((Arrow)shape).setID(getNewID(null));
-        	}
-        	if (shape instanceof PluginShape) {
-        		setPluginID((PluginShape) shape);
-        	}
+                shape.getID().equals("") ||
+                containsID(shape.getID(), m_objects, null)) {
+            if (shape instanceof Arrow) {
+                ((Arrow) shape).setID(getNewID(null));
+            }
+            if (shape instanceof PluginShape) {
+                setPluginID((PluginShape) shape);
+            }
         }
         m_objects.add(shape);
         if (shape instanceof PluginShape) {
-        	List<Integer> iObjects = new ArrayList<Integer>();
-        	iObjects.add(m_objects.size() - 1);
-        	checkForOtherPluginShapes(iObjects, (PluginShape) shape);
-        	if (iObjects.size() == 1) {
-        		addUndoAction(new PluginAction(m_objects.size() - 1, UndoAction.ADD_PLUGIN_ACTION));
-        	} else {
-        		addUndoAction(new MultiObjectAction(iObjects, UndoAction.ADD_GROUP_ACTION));
-        	}
+            List<Integer> iObjects = new ArrayList<Integer>();
+            iObjects.add(m_objects.size() - 1);
+            checkForOtherPluginShapes(iObjects, (PluginShape) shape);
+            if (iObjects.size() == 1) {
+                addUndoAction(new PluginAction(m_objects.size() - 1, UndoAction.ADD_PLUGIN_ACTION));
+            } else {
+                addUndoAction(new MultiObjectAction(iObjects, UndoAction.ADD_GROUP_ACTION));
+            }
         } else if (shape instanceof Arrow) {
-        	addUndoAction(new ArrowAction(m_objects.size() - 1, UndoAction.ADD_ARROW_ACTION));
+            addUndoAction(new ArrowAction(m_objects.size() - 1, UndoAction.ADD_ARROW_ACTION));
         }
     } // addNewShape
 
-	void checkForOtherPluginShapes(List<Integer> iObjects, PluginShape shape) {
-    	// check whether we need to create any input plugins
-    	try {
-    		List<Input<?>> inputs = ((PluginShape) shape).m_plugin.listInputs();
-    		for (Input<?> input : inputs) {
-    			if (input.get() instanceof Plugin) {
-    				Plugin plugin = (Plugin) input.get();
-    				PluginShape pluginShape = new PluginShape(plugin, this);
-    				pluginShape.m_x = Math.max(shape.m_x - DX, 0);
-    				pluginShape.m_y = shape.m_y;
-    				pluginShape.m_w = 100;
-    				pluginShape.m_h = 80;
-    		        setPluginID(pluginShape);
-    		        m_objects.add(pluginShape);
-    	        	iObjects.add(m_objects.size() - 1);
-    	        	Arrow arrow = new Arrow(pluginShape, (PluginShape) shape, input.getName());
-    		        m_objects.add(arrow);
-    	        	iObjects.add(m_objects.size() - 1);
-    	        	// recurse
-    	        	checkForOtherPluginShapes(iObjects, pluginShape);
-    			}
-    		}
-    	} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}    
-    
+    void checkForOtherPluginShapes(List<Integer> iObjects, PluginShape shape) {
+        // check whether we need to create any input plugins
+        try {
+            List<Input<?>> inputs = ((PluginShape) shape).m_plugin.listInputs();
+            for (Input<?> input : inputs) {
+                if (input.get() instanceof Plugin) {
+                    Plugin plugin = (Plugin) input.get();
+                    PluginShape pluginShape = new PluginShape(plugin, this);
+                    pluginShape.m_x = Math.max(shape.m_x - DX, 0);
+                    pluginShape.m_y = shape.m_y;
+                    pluginShape.m_w = 100;
+                    pluginShape.m_h = 80;
+                    setPluginID(pluginShape);
+                    m_objects.add(pluginShape);
+                    iObjects.add(m_objects.size() - 1);
+                    Arrow arrow = new Arrow(pluginShape, (PluginShape) shape, input.getName());
+                    m_objects.add(arrow);
+                    iObjects.add(m_objects.size() - 1);
+                    // recurse
+                    checkForOtherPluginShapes(iObjects, pluginShape);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     List<Integer> getConnectedArrows(List<String> sIDs, List<Integer> selection) {
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = (Shape) m_objects.get(i);
@@ -299,7 +318,7 @@ public class Document {
     }
 
     List<String> getIncomingArrows(List<String> sIDs) {
-    	List<String> selection = new ArrayList<String>();
+        List<String> selection = new ArrayList<String>();
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = (Shape) m_objects.get(i);
             if (shape instanceof Arrow) {
@@ -315,9 +334,9 @@ public class Document {
         }
         return selection;
     }
-    
+
     List<String> getOutgoingArrows(List<String> sIDs) {
-    	List<String> selection = new ArrayList<String>();
+        List<String> selection = new ArrayList<String>();
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = (Shape) m_objects.get(i);
             if (shape instanceof Arrow) {
@@ -347,15 +366,15 @@ public class Document {
     } // deleteShape
 
     void ensureUniqueID(Shape shape, List<String> tabulist) {
-        if (shape.getID() == null || 
-        	shape.getID().equals("") ||
-        	containsID(shape.getID(), m_objects, tabulist)) {
-        	if (shape instanceof Arrow) {
-        		((Arrow)shape).setID(getNewID(tabulist));
-        	}
-        	if (shape instanceof PluginShape) {
-        		setPluginID((PluginShape) shape);
-        	}
+        if (shape.getID() == null ||
+                shape.getID().equals("") ||
+                containsID(shape.getID(), m_objects, tabulist)) {
+            if (shape instanceof Arrow) {
+                ((Arrow) shape).setID(getNewID(tabulist));
+            }
+            if (shape instanceof PluginShape) {
+                setPluginID((PluginShape) shape);
+            }
         }
         tabulist.add(shape.getID());
     } // ensureUniqueID
@@ -367,35 +386,37 @@ public class Document {
         }
         List<Integer> nPositions = new ArrayList<Integer>();
         for (Shape shape : shapes) {
-        	if (shape instanceof Arrow) {
-        		((Arrow)shape).setID(getNewID(null));
-        	}
-        	if (shape instanceof PluginShape) {
-        		((PluginShape) shape).m_plugin.setID(null);
-        		setPluginID((PluginShape) shape);
-            	// ensure the new shape does not overlap exactly with an existing shape
-            	int nOffset = 0;
-        		boolean bMatch = false;
-            	do {
-            		 bMatch = false;
-            		for (Shape shape2 : m_objects) {
-            			if (shape2.m_x == shape.m_x+nOffset && shape2.m_y == shape.m_y+nOffset && 
-            					shape2.m_w == shape.m_w && shape2.m_h == shape.m_h) {
-            				bMatch = true;
-            				nOffset += 10;
-            			}
-            		}
-            	} while (bMatch);
-            	shape.m_x += nOffset;
-            	shape.m_y += nOffset;
-        	}
-        	m_objects.add(shape);
-        	nPositions.add(m_objects.size()-1);
+            if (shape instanceof Arrow) {
+                ((Arrow) shape).setID(getNewID(null));
+            }
+            if (shape instanceof PluginShape) {
+                ((PluginShape) shape).m_plugin.setID(null);
+                setPluginID((PluginShape) shape);
+                // ensure the new shape does not overlap exactly with an existing shape
+                int nOffset = 0;
+                boolean bMatch = false;
+                do {
+                    bMatch = false;
+                    for (Shape shape2 : m_objects) {
+                        if (shape2.m_x == shape.m_x + nOffset && shape2.m_y == shape.m_y + nOffset &&
+                                shape2.m_w == shape.m_w && shape2.m_h == shape.m_h) {
+                            bMatch = true;
+                            nOffset += 10;
+                        }
+                    }
+                } while (bMatch);
+                shape.m_x += nOffset;
+                shape.m_y += nOffset;
+            }
+            m_objects.add(shape);
+            nPositions.add(m_objects.size() - 1);
         }
         addUndoAction(new MultiObjectAction(nPositions, UndoAction.ADD_GROUP_ACTION));
     } // pasteShape
 
-    /** move all plug ins connected with selection **/
+    /**
+     * move all plug ins connected with selection *
+     */
     public void collapse(Selection selection) {
 //        // don't group arrows
 //        for (int i = selection.m_Selection.size() - 1; i >= 0; i--) {
@@ -425,37 +446,42 @@ public class Document {
 //        adjustArrows();
     } // collapse
 
-    
-    /** Find inputs to collapse, i.e. PlugInShapes connected to
-     * any input of a given PluginShape. 
-     * Shape IDs are recorded in selection. **/
+
+    /**
+     * Find inputs to collapse, i.e. PlugInShapes connected to
+     * any input of a given PluginShape.
+     * Shape IDs are recorded in selection. *
+     */
     void findAffectedShapes(Shape shape, List<Integer> selection) {
-    	if (shape instanceof InputShape) {
-    		findInputs((InputShape)shape, selection);
-    	} else {
-    		for (InputShape ellipse : ((PluginShape)shape).m_inputs) {
-        		findInputs(ellipse, selection);
-    		}
-    	}
+        if (shape instanceof InputShape) {
+            findInputs((InputShape) shape, selection);
+        } else {
+            for (InputShape ellipse : ((PluginShape) shape).m_inputs) {
+                findInputs(ellipse, selection);
+            }
+        }
     }
-    /** Find inputs to collapse, i.e. PlugInShapes connected to
-     * given InputShape. Shape IDs are recorded in selection. **/
-	void findInputs(InputShape ellipse, List<Integer> selection) {
-		for (Shape shape : m_objects) {
-			if (shape instanceof Arrow) {
-				Arrow arrow = (Arrow) shape;
-				if (arrow.m_sHeadID.equals(ellipse.getID())) {
-					String sTailID = arrow.m_sTailID;
-					for (int i = 0; i < m_objects.size(); i++) {
-						if (m_objects.get(i).getID().equals(sTailID)) {
-							selection.add(i);
-						}
-					}					
-				}
-			}
-		}
-	}
-    
+
+    /**
+     * Find inputs to collapse, i.e. PlugInShapes connected to
+     * given InputShape. Shape IDs are recorded in selection. *
+     */
+    void findInputs(InputShape ellipse, List<Integer> selection) {
+        for (Shape shape : m_objects) {
+            if (shape instanceof Arrow) {
+                Arrow arrow = (Arrow) shape;
+                if (arrow.m_sHeadID.equals(ellipse.getID())) {
+                    String sTailID = arrow.m_sTailID;
+                    for (int i = 0; i < m_objects.size(); i++) {
+                        if (m_objects.get(i).getID().equals(sTailID)) {
+                            selection.add(i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 //    public void ungroup(Selection selection) {
 //        UngroupAction action = new UngroupAction(selection);
 //        addUndoAction(action);
@@ -471,7 +497,7 @@ public class Document {
         if (selection.isSingleSelection()) {
             addUndoAction(new UndoAction(selection.getSingleSelection(), UndoAction.FILL_COLOR_ACTION));
         } else {
-        	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+            addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         }
         for (int i = 0; i < selection.m_Selection.size(); i++) {
             int iSelection = ((Integer) selection.m_Selection.get(i)).intValue();
@@ -484,7 +510,7 @@ public class Document {
         if (selection.isSingleSelection()) {
             addUndoAction(new UndoAction(selection.getSingleSelection(), UndoAction.PEN_COLOR_ACTION));
         } else {
-        	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+            addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         }
         for (int i = 0; i < selection.m_Selection.size(); i++) {
             int iSelection = ((Integer) selection.m_Selection.get(i)).intValue();
@@ -540,7 +566,7 @@ public class Document {
     public void setID(String sID, int iObject) {
         addUndoAction(new UndoAction(iObject, UndoAction.SET_LABEL_ACTION));
         Shape shape = (Shape) m_objects.get(iObject);
-        ((PluginShape)shape).m_plugin.setID(sID);
+        ((PluginShape) shape).m_plugin.setID(sID);
     }
 
     public void toggleFilled(int iObject) {
@@ -550,34 +576,44 @@ public class Document {
     }
 
     void setInputValue(PluginShape pluginShape, String sInput, String sValue) throws Exception {
-    	addUndoAction(new SetInputAction(pluginShape, sInput, sValue));
-    	//pluginShape.m_plugin.setInputValue(sInput, sValue);
-	}
+        addUndoAction(new SetInputAction(pluginShape, sInput, sValue));
+        //pluginShape.m_plugin.setInputValue(sInput, sValue);
+    }
 
-	/** action representing assignment of value to a primitive input **/
+    /**
+     * action representing assignment of value to a primitive input *
+     */
     class SetInputAction extends UndoAction {
-    	PluginShape m_pluginShape;
-    	String m_sInput;
-    	String m_sValue;
-    	SetInputAction(PluginShape pluginShape, String sInput, String sValue) {
-    		m_pluginShape = pluginShape;
-    		m_sInput = sInput;
-    		m_sValue = sValue;
-    		doit();
-    	}
-    	void redo() {doit();}
-    	void undo() {doit();}
-    	void doit() {
-    		try {
-    			String sValue = m_pluginShape.m_plugin.getInput(m_sInput).get().toString();
-    			m_pluginShape.m_plugin.setInputValue(m_sInput, m_sValue);
-    			m_sValue = sValue;
-    		} catch (Exception e) {
-    			e.printStackTrace();
-			}
-    	}
+        PluginShape m_pluginShape;
+        String m_sInput;
+        String m_sValue;
+
+        SetInputAction(PluginShape pluginShape, String sInput, String sValue) {
+            m_pluginShape = pluginShape;
+            m_sInput = sInput;
+            m_sValue = sValue;
+            doit();
+        }
+
+        void redo() {
+            doit();
+        }
+
+        void undo() {
+            doit();
+        }
+
+        void doit() {
+            try {
+                String sValue = m_pluginShape.m_plugin.getInput(m_sInput).get().toString();
+                m_pluginShape.m_plugin.setInputValue(m_sInput, m_sValue);
+                m_sValue = sValue;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     } // class SetInputAction
-    
+
     public void toFront(Selection selection) {
         if (selection.m_Selection.size() == 0) {
             return;
@@ -675,7 +711,7 @@ public class Document {
      */
     public void alignLeft(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
 
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
@@ -699,7 +735,7 @@ public class Document {
      */
     public void alignRight(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMaxX = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -723,7 +759,7 @@ public class Document {
      */
     public void alignTop(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -746,7 +782,7 @@ public class Document {
      */
     public void alignBottom(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMaxY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
@@ -770,7 +806,7 @@ public class Document {
      */
     public void centreHorizontal(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         int nMaxY = -1;
@@ -799,7 +835,7 @@ public class Document {
      */
     public void centreVertical(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
         int nMaxX = -1;
@@ -828,7 +864,7 @@ public class Document {
      */
     public void spaceHorizontal(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinX = -1;
         int nMaxX = -1;
@@ -855,7 +891,7 @@ public class Document {
      */
     public void spaceVertical(Selection selection) {
         // update undo stack
-    	addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
+        addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
         int nMinY = -1;
         int nMaxY = -1;
@@ -876,7 +912,6 @@ public class Document {
     } // spaceVertical
 
 
-    
     public class UndoAction {
         final static int UNDO_ACTION = 0;
         final static int MOVE_ACTION = 1;
@@ -896,49 +931,54 @@ public class Document {
 
         String m_sXML;
         List<Integer> m_nPositions;
-        
+
         /* single selection undo actions **/
+
         public UndoAction(int nSelection, int nActionType) {
-        	if (!(m_objects.get(nSelection) instanceof PluginShape)) {
-        		return;
-        	}
-        	m_nActionType = nActionType;
-        	m_nPositions = new ArrayList<Integer>();
-        	m_nPositions.add(nSelection);
-        	init();
+            if (!(m_objects.get(nSelection) instanceof PluginShape)) {
+                return;
+            }
+            m_nActionType = nActionType;
+            m_nPositions = new ArrayList<Integer>();
+            m_nPositions.add(nSelection);
+            init();
         }
         /* multiple selection undo actions **/
+
         public UndoAction(List<Integer> selection, int nActionType) {
-        	m_nActionType = nActionType;
+            m_nActionType = nActionType;
             m_nPositions = new ArrayList<Integer>();
             for (int i = 0; i < selection.size(); i++) {
-            	if (m_objects.get(selection.get(i)) instanceof PluginShape) {
-            		m_nPositions.add(new Integer(((Integer) selection.get(i)).intValue()));
-            	}
+                if (m_objects.get(selection.get(i)) instanceof PluginShape) {
+                    m_nPositions.add(new Integer(((Integer) selection.get(i)).intValue()));
+                }
             }
             init();
         }
-        
+
         /* undo actions that don't need a selection **/
-        public UndoAction() {}
-        
+
+        public UndoAction() {
+        }
+
         boolean isSingleSelection(int nPosition) {
-        	return (m_nPositions.size() == 1 && m_nPositions.get(0) == nPosition);
+            return (m_nPositions.size() == 1 && m_nPositions.get(0) == nPosition);
         }
 
         boolean isSelection(List<Integer> nPositions) {
-        	int nMatches = 0;
-    		for (Integer i : nPositions) {
-    			if (m_objects.get(i) instanceof PluginShape) {
-	    			if (m_nPositions.contains(i)) {
-	    				nMatches++;
-	    			} else {
-	    				return false;
-	    			}
-    			}
-    		}
-        	return nMatches == m_nPositions.size();
+            int nMatches = 0;
+            for (Integer i : nPositions) {
+                if (m_objects.get(i) instanceof PluginShape) {
+                    if (m_nPositions.contains(i)) {
+                        nMatches++;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            return nMatches == m_nPositions.size();
         }
+
         void init() {
             m_sXML = "<doc>";
             for (int i = 0; i < m_nPositions.size(); i++) {
@@ -956,7 +996,7 @@ public class Document {
         void redo() {
             doit();
         }
-        
+
         void doit() {
             String sXML = "<doc>";
             for (int i = 0; i < m_nPositions.size(); i++) {
@@ -970,29 +1010,30 @@ public class Document {
                 int iShape = ((Integer) m_nPositions.get(i)).intValue();
                 Shape originalShape = m_objects.get(iShape);
                 Shape shape = (Shape) shapes.get(i);
-               	((PluginShape) shape).m_plugin = ((PluginShape) originalShape).m_plugin;
+                ((PluginShape) shape).m_plugin = ((PluginShape) originalShape).m_plugin;
                 originalShape.assignFrom(shape);
             }
-           	m_sXML = sXML;
+            m_sXML = sXML;
         }
     } // class UndoAction
-    
-    /** action representing addition/deletion of a single plugin.
+
+    /**
+     * action representing addition/deletion of a single plugin.
      * This does not take connecting arrows in account.
      * Use MultiObjectAction to add/delete plugin with its connecting arrows.
      */
     class PluginAction extends UndoAction {
         public PluginAction(int nPosition, int nActionType) {
-        	// assumes pluginShape + all its inputs has just been added
+            // assumes pluginShape + all its inputs has just been added
             m_nActionType = nActionType;
             PluginShape pluginShape = (PluginShape) m_objects.get(nPosition);
             m_nPositions = new ArrayList<Integer>();
-        	m_nPositions.add(nPosition);
-        	nPosition--;
-            while (nPosition >= 0 && 
-            		m_objects.get(nPosition) instanceof InputShape && 
-            		((InputShape)m_objects.get(nPosition)).getPluginShape() == pluginShape) {
-           		m_nPositions.add(0, nPosition--);
+            m_nPositions.add(nPosition);
+            nPosition--;
+            while (nPosition >= 0 &&
+                    m_objects.get(nPosition) instanceof InputShape &&
+                    ((InputShape) m_objects.get(nPosition)).getPluginShape() == pluginShape) {
+                m_nPositions.add(0, nPosition--);
             }
             // creat XML
             init();
@@ -1000,61 +1041,80 @@ public class Document {
 
         @Override
         void undo() {
-        	switch (m_nActionType) {
-        		case ADD_PLUGIN_ACTION: removePlugin(); return;
-        		case DEL_PLUGIN_ACTION: addPlugin(); return;
-        	}
-        	System.err.println("Error 101: action type not set properly");
+            switch (m_nActionType) {
+                case ADD_PLUGIN_ACTION:
+                    removePlugin();
+                    return;
+                case DEL_PLUGIN_ACTION:
+                    addPlugin();
+                    return;
+            }
+            System.err.println("Error 101: action type not set properly");
         }
-        
+
         @Override
         void redo() {
-        	switch (m_nActionType) {
-    		case ADD_PLUGIN_ACTION: addPlugin(); return;
-    		case DEL_PLUGIN_ACTION: removePlugin(); return;
-    	}
-    	System.err.println("Error 102: action type not set properly");
+            switch (m_nActionType) {
+                case ADD_PLUGIN_ACTION:
+                    addPlugin();
+                    return;
+                case DEL_PLUGIN_ACTION:
+                    removePlugin();
+                    return;
+            }
+            System.err.println("Error 102: action type not set properly");
         }
 
         void removePlugin() {
-        	for (int i = m_nPositions.size() - 1; i >= 0; i--) {
-        		m_objects.remove((int) m_nPositions.get(i));
-        	}
+            for (int i = m_nPositions.size() - 1; i >= 0; i--) {
+                m_objects.remove((int) m_nPositions.get(i));
+            }
         }
 
         void addPlugin() {
-        	List<Shape> shapes = XML2Shapes(m_sXML, true);
-        	for (int i = 0; i < m_nPositions.size(); i++) {
-        		m_objects.add(m_nPositions.get(i), shapes.get(i));
-        	}
+            List<Shape> shapes = XML2Shapes(m_sXML, true);
+            for (int i = 0; i < m_nPositions.size(); i++) {
+                m_objects.add(m_nPositions.get(i), shapes.get(i));
+            }
         }
     } // class AddPluginAction
-    
 
-    /** action representing addition/deletion of a single arrow. */
+
+    /**
+     * action representing addition/deletion of a single arrow.
+     */
     class ArrowAction extends UndoAction {
         public ArrowAction(int nPosition, int nArrowAction) {
-        	m_nActionType = nArrowAction;
-        	m_nPositions = new ArrayList<Integer>();
-        	m_nPositions.add(nPosition);
-        	init();
+            m_nActionType = nArrowAction;
+            m_nPositions = new ArrayList<Integer>();
+            m_nPositions.add(nPosition);
+            init();
         }
 
         @Override
         void undo() {
-        	switch (m_nActionType) {
-    			case ADD_ARROW_ACTION: removeArrow(); return;
-    			case DEL_ARROW_ACTION:addArrow(); return;
-        	}
-        	System.err.println("Error 103: action type not set properly");
+            switch (m_nActionType) {
+                case ADD_ARROW_ACTION:
+                    removeArrow();
+                    return;
+                case DEL_ARROW_ACTION:
+                    addArrow();
+                    return;
+            }
+            System.err.println("Error 103: action type not set properly");
         }
+
         @Override
         void redo() {
-        	switch (m_nActionType) {
-				case ADD_ARROW_ACTION: addArrow(); return;
-				case DEL_ARROW_ACTION: removeArrow(); return;
-        	}
-        	System.err.println("Error 104: action type not set properly");
+            switch (m_nActionType) {
+                case ADD_ARROW_ACTION:
+                    addArrow();
+                    return;
+                case DEL_ARROW_ACTION:
+                    removeArrow();
+                    return;
+            }
+            System.err.println("Error 104: action type not set properly");
         }
 
         void removeArrow() {
@@ -1063,16 +1123,16 @@ public class Document {
             // unconnect plug-in and input
             Input<?> input = arrow.m_headShape.m_input;
             if (input instanceof List<?>) {
-            	((List<?>)input.get()).remove(arrow.m_tailShape.m_plugin);
+                ((List<?>) input.get()).remove(arrow.m_tailShape.m_plugin);
             } else {
-            	try {
-            		input.setValue(null, arrow.m_headShape.getPlugin());
-            	} catch (Exception e) {
-					e.printStackTrace();
-				}
+                try {
+                    input.setValue(null, arrow.m_headShape.getPlugin());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
-        
+
         void addArrow() {
             List<Shape> shapes = XML2Shapes(m_sXML, true);
             Arrow arrow = (Arrow) shapes.get(0);
@@ -1081,75 +1141,78 @@ public class Document {
             arrow.m_tailShape = getPluginShapeWithLabel(arrow.m_sTailID);
             arrow.m_headShape = getInputShapeWithID(arrow.m_sHeadID);
             try {
-            	arrow.m_headShape.m_input.setValue(arrow.m_tailShape.m_plugin, arrow.m_headShape.getPlugin());
+                arrow.m_headShape.m_input.setValue(arrow.m_tailShape.m_plugin, arrow.m_headShape.getPlugin());
             } catch (Exception e) {
-				e.printStackTrace();
-			}
+                e.printStackTrace();
+            }
         }
     } // class ArrowAction
 
-    /** action representing addition or deletion of multiple plugins/arrows */
+    /**
+     * action representing addition or deletion of multiple plugins/arrows
+     */
     class MultiObjectAction extends UndoAction {
-    	List<UndoAction> m_actions;
-    	
-    	MultiObjectAction(List<Integer> nPositions, int nActionType) {
-    		m_nActionType = nActionType;
-    		m_actions = new ArrayList<UndoAction>();
-    		// remove duplicates, if any
-    		Collections.sort(nPositions);
-    		for (int i = 1; i < nPositions.size(); i++) {
-    			if ((int) nPositions.get(i) == (int) nPositions.get(i-1)) {
-    				nPositions.remove(i);
-    				i--;
-    			}
-    		}
-    		// split in plugins and arrows
-    		List<Integer> iArrows = new ArrayList<Integer>();
-    		List<Integer> iPluginsShapes = new ArrayList<Integer>();
-			for (int i : nPositions) {
-				Shape shape = m_objects.get(i);
-				if (shape instanceof PluginShape) {
-					iPluginsShapes.add(i);
-				} else if (shape instanceof Arrow) {
-					iArrows.add(i);
-				}
-			}
-			// create appropriate set of undo actions
-    		switch (nActionType) {
-    		case ADD_GROUP_ACTION:
-    			for (int i : iPluginsShapes) {
-					m_actions.add(new PluginAction(i, ADD_PLUGIN_ACTION));
-    			}
-    			for (int i : iArrows) {
-   					m_actions.add(new ArrowAction(i, ADD_ARROW_ACTION));
-   				}
-    			break;
-    		case DEL_GROUP_ACTION:
-    			for (int i : iArrows) {
-   					m_actions.add(new ArrowAction(i, DEL_ARROW_ACTION));
-   				}
-    			for (int i : iPluginsShapes) {
-					m_actions.add(new PluginAction(i, DEL_PLUGIN_ACTION));
-    			}
-    			break;
-   			default:
-   				System.err.println("Error 105: unrecognized action type");
-    		}
-    	}
-    	
-    	
-    	@Override
-    	void undo() {
-    		for (int i = m_actions.size()-1; i >= 0; i--) {
-    			m_actions.get(i).undo();
-    		}
-    	}
-    	@Override
-    	void redo() {
-    		for (int i = 0; i < m_actions.size(); i++) {
-    			m_actions.get(i).redo();
-    		}
-    	}
+        List<UndoAction> m_actions;
+
+        MultiObjectAction(List<Integer> nPositions, int nActionType) {
+            m_nActionType = nActionType;
+            m_actions = new ArrayList<UndoAction>();
+            // remove duplicates, if any
+            Collections.sort(nPositions);
+            for (int i = 1; i < nPositions.size(); i++) {
+                if ((int) nPositions.get(i) == (int) nPositions.get(i - 1)) {
+                    nPositions.remove(i);
+                    i--;
+                }
+            }
+            // split in plugins and arrows
+            List<Integer> iArrows = new ArrayList<Integer>();
+            List<Integer> iPluginsShapes = new ArrayList<Integer>();
+            for (int i : nPositions) {
+                Shape shape = m_objects.get(i);
+                if (shape instanceof PluginShape) {
+                    iPluginsShapes.add(i);
+                } else if (shape instanceof Arrow) {
+                    iArrows.add(i);
+                }
+            }
+            // create appropriate set of undo actions
+            switch (nActionType) {
+                case ADD_GROUP_ACTION:
+                    for (int i : iPluginsShapes) {
+                        m_actions.add(new PluginAction(i, ADD_PLUGIN_ACTION));
+                    }
+                    for (int i : iArrows) {
+                        m_actions.add(new ArrowAction(i, ADD_ARROW_ACTION));
+                    }
+                    break;
+                case DEL_GROUP_ACTION:
+                    for (int i : iArrows) {
+                        m_actions.add(new ArrowAction(i, DEL_ARROW_ACTION));
+                    }
+                    for (int i : iPluginsShapes) {
+                        m_actions.add(new PluginAction(i, DEL_PLUGIN_ACTION));
+                    }
+                    break;
+                default:
+                    System.err.println("Error 105: unrecognized action type");
+            }
+        }
+
+
+        @Override
+        void undo() {
+            for (int i = m_actions.size() - 1; i >= 0; i--) {
+                m_actions.get(i).undo();
+            }
+        }
+
+        @Override
+        void redo() {
+            for (int i = 0; i < m_actions.size(); i++) {
+                m_actions.get(i).redo();
+            }
+        }
     } // class MultiObjectAction
 
     class ReorderAction extends UndoAction {
@@ -1251,6 +1314,7 @@ public class Document {
         }
         return null;
     }
+
     InputShape getInputShapeWithID(String sLabel) {
         for (Shape shape : m_objects) {
             if (shape instanceof InputShape) {
@@ -1292,61 +1356,60 @@ public class Document {
                     }
                 } else if (o instanceof Plugin) {
                     addInput(shape, o, nDepth + 1, input_.getName());
-                // } else {
-                	// it is a primitive type
+                    // } else {
+                    // it is a primitive type
                 }
             }
         }
     }
-    
 
 
     public void loadFile(String sFileName) {
-    	m_objects.clear();
+        m_objects.clear();
         XMLParser parser = new XMLParser();
         try {
-        	//sFileName;
-			StringBuilder sXML = new StringBuilder();
-		    String NL = System.getProperty("line.separator");
-		    Scanner scanner = new Scanner(new File(sFileName));
-		    try {
-		      while (scanner.hasNextLine()){
-		        sXML.append(scanner.nextLine() + NL);
-		      }
-		    }
-		    finally{
-		      scanner.close();
-		    }
+            //sFileName;
+            StringBuilder sXML = new StringBuilder();
+            String NL = System.getProperty("line.separator");
+            Scanner scanner = new Scanner(new File(sFileName));
+            try {
+                while (scanner.hasNextLine()) {
+                    sXML.append(scanner.nextLine() + NL);
+                }
+            }
+            finally {
+                scanner.close();
+            }
             Plugin plugin0 = parser.parseBareFragment(sXML.toString(), false);
-            
+
             if (plugin0 instanceof PluginSet) {
-            	List<Plugin> set = ((PluginSet) plugin0).m_plugins.get();
-            	if (set == null) {
-            		return;
-            	}
-            	for (Plugin plugin : set) {
+                List<Plugin> set = ((PluginSet) plugin0).m_plugins.get();
+                if (set == null) {
+                    return;
+                }
+                for (Plugin plugin : set) {
                     PluginShape shape = new PluginShape(plugin, this);
                     shape.m_plugin = plugin;
                     setPluginID(shape);
                     m_objects.add(shape);
                     process(shape, 1);
-    	            shape.m_x = DX;
-    	            shape.m_w = 100;
-    	            Random random = new Random();
-    	            shape.m_y = random.nextInt(800);
-    	            shape.m_h = 50;
-            	}
+                    shape.m_x = DX;
+                    shape.m_w = 100;
+                    Random random = new Random();
+                    shape.m_y = random.nextInt(800);
+                    shape.m_h = 50;
+                }
             } else {
-            PluginShape shape = new PluginShape(plugin0, this);
-	            shape.m_plugin = plugin0;
+                PluginShape shape = new PluginShape(plugin0, this);
+                shape.m_plugin = plugin0;
                 setPluginID(shape);
-	            m_objects.add(shape);
-	            process(shape, 1);
-	            shape.m_x = DX;
-	            shape.m_w = 100;
-	            Random random = new Random();
-	            shape.m_y = random.nextInt(800);
-	            shape.m_h = 50;
+                m_objects.add(shape);
+                process(shape, 1);
+                shape.m_x = DX;
+                shape.m_w = 100;
+                Random random = new Random();
+                shape.m_y = random.nextInt(800);
+                shape.m_h = 50;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1355,7 +1418,7 @@ public class Document {
         // clear undo stack after all items have been
         // added since the stack is affected by parsing...
         clearUndoStack();
-        
+
         recalcArrows();
         layout();
         adjustArrows();
@@ -1386,7 +1449,9 @@ public class Document {
     final static String INPUT_SHAPE_ELEMENT = "inputshape";
     final static String ARROW_ELEMENT = "arrow";
 
-    /** parse XDL xml format **/
+    /**
+     * parse XDL xml format *
+     */
     static Shape parseNode(Node node, Document doc, boolean bReconstructPlugins) {
         Shape shape = null;
         if (node.getNodeName().equals(INPUT_SHAPE_ELEMENT) && bReconstructPlugins) {
@@ -1398,7 +1463,7 @@ public class Document {
         }
         return shape;
     } // parseNode
-    
+
     public String toXML() {
         XMLProducer xmlProducer = new XMLProducer();
         PluginSet pluginSet = calcPluginSet();
@@ -1408,52 +1473,58 @@ public class Document {
         return xmlProducer.toXML(pluginSet);
     } // toXML
 
-    
-    /** collect all objects and put all top-level plugins in a PluginSet */
-    PluginSet calcPluginSet() {
-    	// collect all plug-ins
-    	Collection<Plugin> plugins = getPlugins();
-    	// calc outputs
-		HashMap<Plugin, List<Plugin>> outputs = PluginDialog.getOutputs(plugins); 
-    	// put all plugins with no ouputs in the PluginSet
-    	PluginSet pluginSet = new PluginSet();
-		for (Plugin plugin : outputs.keySet()) {
-			if (outputs.get(plugin).size() == 0) {
-				try {
-					pluginSet.setInputValue("plugin", plugin);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-    	return pluginSet;
-    } // calcPluginSet
-    
-    /** convert m_objects in set of plugins **/
-    Collection<Plugin> getPlugins() {
-    	Collection<Plugin> plugins = new HashSet<Plugin>();
-    	for (Shape shape : m_objects) {
-    		if (shape instanceof PluginShape) {
-    			plugins.add(((PluginShape)shape).m_plugin);
-    		}
-    	}
-    	return plugins;
-	}
 
-    /** return true if source is ascendant of target **/
+    /**
+     * collect all objects and put all top-level plugins in a PluginSet
+     */
+    PluginSet calcPluginSet() {
+        // collect all plug-ins
+        Collection<Plugin> plugins = getPlugins();
+        // calc outputs
+        HashMap<Plugin, List<Plugin>> outputs = PluginPanel.getOutputs(plugins);
+        // put all plugins with no ouputs in the PluginSet
+        PluginSet pluginSet = new PluginSet();
+        for (Plugin plugin : outputs.keySet()) {
+            if (outputs.get(plugin).size() == 0) {
+                try {
+                    pluginSet.setInputValue("plugin", plugin);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return pluginSet;
+    } // calcPluginSet
+
+    /**
+     * convert m_objects in set of plugins *
+     */
+    Collection<Plugin> getPlugins() {
+        Collection<Plugin> plugins = new HashSet<Plugin>();
+        for (Shape shape : m_objects) {
+            if (shape instanceof PluginShape) {
+                plugins.add(((PluginShape) shape).m_plugin);
+            }
+        }
+        return plugins;
+    }
+
+    /**
+     * return true if source is ascendant of target *
+     */
     boolean isAscendant(Plugin source, Plugin target) {
         Collection<Plugin> plugins = getPlugins();
-    	List<Plugin> ascendants = PluginDialog.listAscendants(target, plugins);
-    	return ascendants.contains(source);
+        List<Plugin> ascendants = PluginPanel.listAscendants(target, plugins);
+        return ascendants.contains(source);
     }
-    
+
     Shape findObjectWithID(String sID) {
         if (m_tmpobjects != null) {
-	        for (int i = 0; i < m_tmpobjects.size(); i++) {
-	            if (m_tmpobjects.get(i).getID().equals(sID)) {
-	                return m_tmpobjects.get(i);
-	            }
-	        }
+            for (int i = 0; i < m_tmpobjects.size(); i++) {
+                if (m_tmpobjects.get(i).getID().equals(sID)) {
+                    return m_tmpobjects.get(i);
+                }
+            }
         }
         for (int i = 0; i < m_objects.size(); i++) {
             if (m_objects.get(i).getID().equals(sID)) {
@@ -1464,80 +1535,84 @@ public class Document {
     }
 
 
-    /** simple layout algorithm for placing PluginShapes **/
+    /**
+     * simple layout algorithm for placing PluginShapes *
+     */
     void layout() {
-    	// first construct input map for ease of navigation
-    	HashMap<PluginShape,List<PluginShape>> inputMap = new HashMap<PluginShape, List<PluginShape>>();
-    	HashMap<PluginShape,List<PluginShape>> outputMap = new HashMap<PluginShape, List<PluginShape>>();
+        // first construct input map for ease of navigation
+        HashMap<PluginShape, List<PluginShape>> inputMap = new HashMap<PluginShape, List<PluginShape>>();
+        HashMap<PluginShape, List<PluginShape>> outputMap = new HashMap<PluginShape, List<PluginShape>>();
         for (Shape shape : m_objects) {
             if (shape instanceof PluginShape && shape.m_bNeedsDrawing) {
-            	inputMap.put((PluginShape)shape, new ArrayList<PluginShape>());
-            	outputMap.put((PluginShape)shape, new ArrayList<PluginShape>());
+                inputMap.put((PluginShape) shape, new ArrayList<PluginShape>());
+                outputMap.put((PluginShape) shape, new ArrayList<PluginShape>());
             }
         }
         for (Shape shape : m_objects) {
-        	if (shape instanceof Arrow && shape.m_bNeedsDrawing) {
-        		Shape headShape = ((Arrow) shape).m_headShape;
-        		PluginShape pluginShape = ((InputShape) headShape).m_pluginShape;
-        		PluginShape inputShape = ((Arrow) shape).m_tailShape;
-        		inputMap.get(pluginShape).add(inputShape);
-        		outputMap.get(inputShape).add(pluginShape);
-        	}
+            if (shape instanceof Arrow && shape.m_bNeedsDrawing) {
+                Shape headShape = ((Arrow) shape).m_headShape;
+                PluginShape pluginShape = ((InputShape) headShape).m_pluginShape;
+                PluginShape inputShape = ((Arrow) shape).m_tailShape;
+                inputMap.get(pluginShape).add(inputShape);
+                outputMap.get(inputShape).add(pluginShape);
+            }
         }
         // reset all x-coords to minimal x-value
         for (Shape shape : inputMap.keySet()) {
-           	shape.m_x = DX;
+            shape.m_x = DX;
         }
         // move inputs rightward till they exceed x-coord of their inputs
         boolean bProgress = true;
         while (bProgress) {
-        	bProgress = false;
+            bProgress = false;
             for (Shape shape : inputMap.keySet()) {
-            	int nMaxInputX = -DX;
-            	for (Shape input : inputMap.get(shape)) {
-            		nMaxInputX = Math.max(nMaxInputX, input.m_x);
-            	}
-            	if (shape.m_x < nMaxInputX + DX) {
-            		shape.m_x = nMaxInputX + DX;
-            		bProgress = true;
-            	}
+                int nMaxInputX = -DX;
+                for (Shape input : inputMap.get(shape)) {
+                    nMaxInputX = Math.max(nMaxInputX, input.m_x);
+                }
+                if (shape.m_x < nMaxInputX + DX) {
+                    shape.m_x = nMaxInputX + DX;
+                    bProgress = true;
+                }
             }
         }
         // move inputs rightward till they are stopped by their outputs
         bProgress = true;
         while (bProgress) {
-        	bProgress = false;
+            bProgress = false;
             for (Shape shape : outputMap.keySet()) {
-            	int nMinOutputX = Integer.MAX_VALUE;
-            	for (Shape input : outputMap.get(shape)) {
-            		nMinOutputX = Math.min(nMinOutputX, input.m_x);
-            	}
-            	if (nMinOutputX < Integer.MAX_VALUE && shape.m_x < nMinOutputX - DX) {
-            		shape.m_x = nMinOutputX - DX;
-            		bProgress = true;
-            	}
+                int nMinOutputX = Integer.MAX_VALUE;
+                for (Shape input : outputMap.get(shape)) {
+                    nMinOutputX = Math.min(nMinOutputX, input.m_x);
+                }
+                if (nMinOutputX < Integer.MAX_VALUE && shape.m_x < nMinOutputX - DX) {
+                    shape.m_x = nMinOutputX - DX;
+                    bProgress = true;
+                }
             }
         }
-        
-        
+
+
         layoutAdjustY(inputMap);
         // relax a bit
         System.err.print("Relax...");
         for (int i = 0; i < 250; i++) {
-        	relax(false);
+            relax(false);
         }
         System.err.println("Done");
         layoutAdjustY(inputMap);
 
         adjustInputs();
     }
-    
-    /** Adjust y-coordinate of PluginShapes so they don't overlap
-     * and are close to their inputs. Helper method for layout() **/
-    void layoutAdjustY(HashMap<PluginShape,List<PluginShape>> inputMap) {
+
+    /**
+     * Adjust y-coordinate of PluginShapes so they don't overlap
+     * and are close to their inputs. Helper method for layout() *
+     */
+    void layoutAdjustY(HashMap<PluginShape, List<PluginShape>> inputMap) {
         // next, optimise top down order
         boolean bProgress = true;
-        int iX = DX; 
+        int iX = DX;
         while (bProgress) {
             List<PluginShape> shapes = new ArrayList<PluginShape>();
             // find shapes with same x-coordinate
@@ -1551,20 +1626,20 @@ public class Document {
             // set y-coordinate as mean of inputs
             // if there are no inputs, order them top to bottom at DY intervals
             for (PluginShape shape : shapes) {
-            	List<PluginShape> inputs = inputMap.get(shape);
-            	if (inputs.size() == 0) {
-            		shape.m_y = k * DY;
-            	} else {
-            		shape.m_y = 0;
-            		for (Shape input : inputs) {
-            			shape.m_y += input.m_y;
-            		}
-            		shape.m_y /= inputs.size();
-            	}
-            	while (ycoordMap.containsKey(shape.m_y)) {
-            		shape.m_y++;
-            	}
-            	ycoordMap.put(shape.m_y, shape);
+                List<PluginShape> inputs = inputMap.get(shape);
+                if (inputs.size() == 0) {
+                    shape.m_y = k * DY;
+                } else {
+                    shape.m_y = 0;
+                    for (Shape input : inputs) {
+                        shape.m_y += input.m_y;
+                    }
+                    shape.m_y /= inputs.size();
+                }
+                while (ycoordMap.containsKey(shape.m_y)) {
+                    shape.m_y++;
+                }
+                ycoordMap.put(shape.m_y, shape);
                 k++;
             }
             // ensure shapes are sufficiently far apart - at least DY between them
@@ -1574,28 +1649,30 @@ public class Document {
             Collections.sort(yCoords);
             int dY = 0;
             for (Integer i : yCoords) {
-            	PluginShape shape = ycoordMap.get(i);
-            	if (shape.m_y < nPrevY + DY) {
-            		dY = nPrevY + DY - shape.m_y;
-            		shape.m_y = nPrevY + DY;
-            	}
-            	nPrevY = shape.m_y;
+                PluginShape shape = ycoordMap.get(i);
+                if (shape.m_y < nPrevY + DY) {
+                    dY = nPrevY + DY - shape.m_y;
+                    shape.m_y = nPrevY + DY;
+                }
+                nPrevY = shape.m_y;
             }
             // upwards correction
             if (dY > 0) {
-            	dY /= shapes.size();
+                dY /= shapes.size();
                 for (PluginShape shape : shapes) {
-                	shape.m_y -= dY;
+                    shape.m_y -= dY;
                 }
             }
-            
-            
+
+
             bProgress = (shapes.size() > 0);
             iX += DX;
         }
     } // layoutAdjustY
 
-    /** apply spring model algorithm to the placement of plug-in shapes **/
+    /**
+     * apply spring model algorithm to the placement of plug-in shapes *
+     */
     public void relax(boolean bAllowXToMove) {
         List<Shape> objects = new ArrayList<Shape>();
         for (Shape shape : m_objects) {
@@ -1712,82 +1789,85 @@ public class Document {
     } // relax
 
 
-    /** sanity check: make sure there are no cycles and there is a Runnable 
+    /**
+     * sanity check: make sure there are no cycles and there is a Runnable
      * plug in that is not an input of another plug in
      */
     final static int STATUS_OK = 0, STATUS_CYCLE = 1, STATUS_NOT_RUNNABLE = 2,
-    STATUS_EMPTY_MODEL = 3, STATUS_ORPHANS_IN_MODEL = 4
-    ;
+            STATUS_EMPTY_MODEL = 3, STATUS_ORPHANS_IN_MODEL = 4;
+
     int isValidModel() {
-    	PluginSet pluginSet = calcPluginSet();
-    	if (pluginSet.m_plugins.get().size() == 0) {
-    		return STATUS_EMPTY_MODEL;
-    	}
-    	if (pluginSet.m_plugins.get().size() > 1) {
-    		return STATUS_ORPHANS_IN_MODEL;
-    	}
-    	boolean hasRunable = false;
-    	for (Plugin plugin: pluginSet.m_plugins.get()) {
-    		if (plugin instanceof Runnable) {
-    			hasRunable = true;
-    		}
-    	}
-    	if (!hasRunable) {
-    		return STATUS_NOT_RUNNABLE;
-    	}
-    	return STATUS_OK;
+        PluginSet pluginSet = calcPluginSet();
+        if (pluginSet.m_plugins.get().size() == 0) {
+            return STATUS_EMPTY_MODEL;
+        }
+        if (pluginSet.m_plugins.get().size() > 1) {
+            return STATUS_ORPHANS_IN_MODEL;
+        }
+        boolean hasRunable = false;
+        for (Plugin plugin : pluginSet.m_plugins.get()) {
+            if (plugin instanceof Runnable) {
+                hasRunable = true;
+            }
+        }
+        if (!hasRunable) {
+            return STATUS_NOT_RUNNABLE;
+        }
+        return STATUS_OK;
     } // isValidModel
 
-    /** remove all arrows, then add based on the plugin inputs **/
+    /**
+     * remove all arrows, then add based on the plugin inputs *
+     */
     void recalcArrows() {
-    	// remove all arrows
-    	for (int i = m_objects.size()-1; i >=0; i--) {
-    		Shape shape = m_objects.get(i);
-    		if (shape instanceof Arrow) {
-    			m_objects.remove(i);
-    		}
-    	}
-    	// build map for quick resolution of PluginShapes
-    	HashMap<Plugin, PluginShape> map = new HashMap<Plugin, PluginShape>();
-    	for (Shape shape : m_objects) {
-    		if (shape instanceof PluginShape) {
-    			map.put(((PluginShape) shape).m_plugin, (PluginShape)shape);
-    		}
-    	}
-    	// re-insert arrows, if any
-    	for (int i = m_objects.size()-1; i >=0; i--) {
-    		Shape shape = m_objects.get(i);
-    		if (shape instanceof PluginShape) {
-    			PluginShape headShape = ((PluginShape) shape);
-    			Plugin plugin = headShape.m_plugin;
-    			try {
-    			List<Input<?>> inputs = plugin.listInputs();
-	    			for (Input<?> input : inputs) {
-	    				if (input.get() != null) {
-	    					if (input.get() instanceof Plugin) {
-	    						PluginShape tailShape = map.get((Plugin)input.get());
-	    						Arrow arrow = new Arrow(tailShape, headShape, input.getName());
-	    						arrow.setID(getNewID(null));
-	    						m_objects.add(arrow);
-	    					}
-	    					if (input.get() instanceof List<?>) {
-	    						for (Object o : (List<?>) input.get()) {
-	    							if (o != null && o instanceof Plugin) {
-	    								PluginShape tailShape = map.get((Plugin)o);
-	    	    						Arrow arrow = new Arrow(tailShape, headShape, input.getName());
-	    	    						arrow.setID(getNewID(null));
-	    	    						m_objects.add(arrow);
-	    							}
-	    						}
-	    					}
-	    				}
-	    			}
-    			} catch (Exception e) {
-    				e.printStackTrace();
-    			}
-    		}
-    	}
+        // remove all arrows
+        for (int i = m_objects.size() - 1; i >= 0; i--) {
+            Shape shape = m_objects.get(i);
+            if (shape instanceof Arrow) {
+                m_objects.remove(i);
+            }
+        }
+        // build map for quick resolution of PluginShapes
+        HashMap<Plugin, PluginShape> map = new HashMap<Plugin, PluginShape>();
+        for (Shape shape : m_objects) {
+            if (shape instanceof PluginShape) {
+                map.put(((PluginShape) shape).m_plugin, (PluginShape) shape);
+            }
+        }
+        // re-insert arrows, if any
+        for (int i = m_objects.size() - 1; i >= 0; i--) {
+            Shape shape = m_objects.get(i);
+            if (shape instanceof PluginShape) {
+                PluginShape headShape = ((PluginShape) shape);
+                Plugin plugin = headShape.m_plugin;
+                try {
+                    List<Input<?>> inputs = plugin.listInputs();
+                    for (Input<?> input : inputs) {
+                        if (input.get() != null) {
+                            if (input.get() instanceof Plugin) {
+                                PluginShape tailShape = map.get((Plugin) input.get());
+                                Arrow arrow = new Arrow(tailShape, headShape, input.getName());
+                                arrow.setID(getNewID(null));
+                                m_objects.add(arrow);
+                            }
+                            if (input.get() instanceof List<?>) {
+                                for (Object o : (List<?>) input.get()) {
+                                    if (o != null && o instanceof Plugin) {
+                                        PluginShape tailShape = map.get((Plugin) o);
+                                        Arrow arrow = new Arrow(tailShape, headShape, input.getName());
+                                        arrow.setID(getNewID(null));
+                                        m_objects.add(arrow);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         //moveArrowsToBack();
     } // recalcArrows
-    
+
 } // class Document
