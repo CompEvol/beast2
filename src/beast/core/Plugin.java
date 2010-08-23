@@ -146,7 +146,7 @@ abstract public class Plugin {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    List<Plugin> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    public List<Plugin> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
         List<Plugin> sPlugins = new ArrayList<Plugin>();
         Field[] fields = getClass().getFields();
         for(Field field : fields) {
