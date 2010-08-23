@@ -29,7 +29,7 @@ public class PluginPanel extends JPanel {
     /**
      * plug in to be edited *
      */
-    Plugin m_plugin;
+    public Plugin m_plugin;
     /**
      * (super) class of plug-in, this determines the super-class
      * that is allowable if the plugin class is changed.

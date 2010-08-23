@@ -29,7 +29,7 @@ public class PluginDialog extends JDialog {
 
     private boolean m_bOK = false;
 
-    PluginPanel panel;
+    public PluginPanel panel;
 
     /**
      * map that identifies the InputEditor to use for a particular type of Input *
