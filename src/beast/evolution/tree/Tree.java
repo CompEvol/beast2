@@ -172,17 +172,22 @@ public class Tree extends StateNode {
         //tree.m_state = m_state;
     }
 
-    @Override
-    public void assignFrom(StateNode other) {
-        Tree tree = (Tree) other;
+    public Node [] getNodesAsArray() {
         if (m_nodes == null) {
         	m_nodes = new Node[nodeCount];
         	listNodes(root, m_nodes);
         }    	
+        return m_nodes;
+    }
+    
+    @Override
+    public void assignFrom(StateNode other) {
+        Tree tree = (Tree) other;
+        Node [] nodes = getNodesAsArray();
         m_sID = tree.m_sID;
         index = tree.index;
-        root = m_nodes[tree.root.getNr()];
-        root.assignFrom(m_nodes, tree.root);
+        root = nodes[tree.root.getNr()];
+        root.assignFrom(nodes, tree.root);
         root.m_Parent = null;
         nodeCount = tree.nodeCount;
 //      tree.treeTraitsInput = treeTraitsInput;
