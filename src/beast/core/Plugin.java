@@ -255,6 +255,6 @@ abstract public class Plugin {
 
     public String toString() {
     	return getID();
-    }
-
+    } // toString
+    
 } // class Plugin

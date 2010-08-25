@@ -72,8 +72,10 @@
 
         <distribution spec="CompoundDistribution" id="posterior">
             <distribution id="coalescent" spec="Coalescent">
-                <tree idref="tree"/>
-                <populationModel spec="ConstantPopulation">
+                <treeIntervals spec='TreeIntervals' id='TreeIntervals'>
+                     <tree idref="tree"/>
+                </treeIntervals>
+                <populationModel spec="ConstantPopulation" id='ConstantPopulation'>
                     <parameter name="popSize" idref="popSize"/>
                 </populationModel>
             </distribution>

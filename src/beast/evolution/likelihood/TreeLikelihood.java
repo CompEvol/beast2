@@ -201,7 +201,8 @@ public class TreeLikelihood extends Distribution {
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
         	//m_likelihoodCore = new BeerLikelihoodCore4();
-        	m_likelihoodCore = new BeerLikelihoodCoreCnG4();
+        	//m_likelihoodCore = new BeerLikelihoodCoreCnG4();
+        	m_likelihoodCore = new BeerLikelihoodCoreCnG(4);
             //m_likelihoodCore = new BeerLikelihoodCoreJava4();
         	//m_likelihoodCore = new BeerLikelihoodCoreNative(4);
         } else {

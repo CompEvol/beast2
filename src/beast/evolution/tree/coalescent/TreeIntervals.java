@@ -1,5 +1,9 @@
 package beast.evolution.tree.coalescent;
 
+import beast.core.CalculationNode;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.HeapSort;
@@ -40,27 +44,54 @@ import java.util.List;
  * @author Alexei Drummond
  * @version $Id: TreeIntervals.java,v 1.9 2005/05/24 20:25:56 rambaut Exp $
  */
-public class TreeIntervals implements IntervalList {
-
-    /**
-     * Parameterless constructor.
-     */
-    public TreeIntervals() {
-    }
-
-
-    public TreeIntervals(Tree tree) {
-        setTree(tree);
-    }
-
-
-    /**
-     * @param tree the beast.tree for which intervals are obtained
-     */
-    public void setTree(Tree tree) {
-        this.tree = tree;
+@Description("Extracts the intervals from a tree.")
+public class TreeIntervals extends CalculationNode implements IntervalList {
+	public Input<Tree> m_tree = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
+	
+	@Override
+	public void initAndValidate() {
         intervalsKnown = false;
+	}
+	
+	@Override
+    protected boolean requiresRecalculation() {
+		// we only get here if the tree is dirty, which is a StateNode
+		// since the StateNode can only become dirty through an operation, 
+		// we need to recalculate tree intervals
+		intervalsKnown = false;
+		return true;
+	}	
+
+	@Override
+    protected void restore() {
+		intervalsKnown = false;
+    	super.restore();
     }
+
+	@Override
+    protected void store() {
+    	super.store();
+    }
+
+//    /**
+//     * Parameterless constructor.
+//     */
+//    public TreeIntervals() {
+//    }
+//
+//
+//    public TreeIntervals(Tree tree) {
+//        setTree(tree);
+//    }
+//
+//
+//    /**
+//     * @param tree the beast.tree for which intervals are obtained
+//     */
+//    public void setTree(Tree tree) {
+//        this.tree = tree;
+//        intervalsKnown = false;
+//    }
 
     /**
      * Specifies that the intervals are unknown (i.e., the beast.tree has changed).
@@ -82,7 +113,7 @@ public class TreeIntervals implements IntervalList {
 
     public int getSampleCount() {
         // Assumes a binary tree!
-        return (tree.getNodeCount() - 1) / 2;
+        return (m_tree.get().getNodeCount() - 1) / 2;
     }
 
     /**
@@ -267,6 +298,7 @@ public class TreeIntervals implements IntervalList {
      */
     @SuppressWarnings("unchecked")
 	private void calculateIntervals() {
+    	Tree tree = m_tree.get();
 
         int nodeCount = tree.getNodeCount();
 
@@ -396,9 +428,9 @@ public class TreeIntervals implements IntervalList {
     }
 
     /**
-     * The beast.tree.
+     * The beast.tree. RRB: not a good idea to keep a copy around, since it chagnes all the time.
      */
-    private Tree tree = null;
+//    private Tree tree = null;
 
     /**
      * The widths of the intervals.

@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 public class ExampleXmlParsingTest extends TestCase {
 
 	@Test
-	public void test_XmlExamples() {
+	public void test_ThatXmlExamplesParse() {
 		try {
 			Randomizer.setSeed(127);
 			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
@@ -45,9 +45,9 @@ public class ExampleXmlParsingTest extends TestCase {
 				System.out.println("Done " + sFileName);
 			}
 			if (sFailedFiles.size() > 0) {
-				System.out.println("\ntest_XmlExamples::Failed for : " + sFailedFiles.toString());
+				System.out.println("\ntest_ThatXmlExamplesParse::Failed for : " + sFailedFiles.toString());
 			} else {
-				System.out.println("\ntest_XmlExamples::Success");
+				System.out.println("\ntest_ThatXmlExamplesParse::Success");
 			}
 			assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
 		} catch (Exception e) {
@@ -59,7 +59,6 @@ public class ExampleXmlParsingTest extends TestCase {
 	@Test
 	public void test_ThatXmlExamplesRun() {
 		try {
-			Randomizer.setSeed(127);
 			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
 			String sDir = System.getProperty("user.dir") + "/examples";
 			System.out.println("Test that XML Examples run in " + sDir);
@@ -71,7 +70,10 @@ public class ExampleXmlParsingTest extends TestCase {
 			});
 	
 			List<String> sFailedFiles = new ArrayList<String>();
+			int nSeed = 127;
 			for (String sFileName : sExampleFiles) {
+				Randomizer.setSeed(nSeed);
+				nSeed += 10; // need more than one to prevent trouble with multiMCMC logs
 				System.out.println("Processing " + sFileName);
 				XMLParser parser = new XMLParser();
 				try {

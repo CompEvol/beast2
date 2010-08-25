@@ -2,6 +2,7 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
@@ -23,7 +24,8 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
                     "Also note that if you are dealing with a diploid population " +
                     "N0 will be out by a factor of 2.");
     public Input<IntegerParameter> groupSizeParamInput = new Input<IntegerParameter>("groupSizes", "the group sizes parameter");
-    public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
+    //public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
+    public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals", "The intervals of teh tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
 
     RealParameter popSizes;
     IntegerParameter groupSizes;
@@ -49,16 +51,16 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     }
 
     public void initAndValidate() throws Exception {
-
+    	intervals = m_treeIntervals.get();
         prepare();
     }
 
     public void prepare() {
         super.prepare();
-        popSizes = popSizeParamInput.get();//state.getParameter(popSizeParamInput);
-        groupSizes = groupSizeParamInput.get();//(IntegerParameter) state.getStateNode(groupSizeParamInput);
-        tree = treeInput.get();//(Tree) state.getStateNode(treeInput);
-        intervals = new TreeIntervals(tree);
+        popSizes = popSizeParamInput.get();
+        groupSizes = groupSizeParamInput.get();
+//        tree = treeInput.get();
+//        intervals = new TreeIntervals(tree);
 
         cumulativeGroupSizes = new int[groupSizes.getDimension()];
 

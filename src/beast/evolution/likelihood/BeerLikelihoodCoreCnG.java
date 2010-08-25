@@ -109,10 +109,35 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 	}
 
 	void calcSSP(int state1, int state2, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials3, int w, int v) {
-		for (int i = 0; i < m_nStates; i++) {
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
-			v++;
-			w += m_nStates+1;
+		if (state1 < m_nStates) {
+			if (state2 < m_nStates) {
+				for (int i = 0; i < m_nStates; i++) {
+					pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
+					v++;
+					w += m_nStates;
+				}
+			} else {
+				for (int i = 0; i < m_nStates; i++) {
+					pfPartials3[v] = pfMatrices1[w + state1];
+					v++;
+					w += m_nStates;
+				}
+			}
+		} else {
+			if (state2 < m_nStates) {
+				for (int i = 0; i < m_nStates; i++) {
+					pfPartials3[v] = pfMatrices2[w + state1];
+					v++;
+					w += m_nStates;
+				}
+			} else {
+				for (int i = 0; i < m_nStates; i++) {
+					pfPartials3[v] = 1;
+					v++;
+					//w += m_nStates+1;
+				}
+			}
+				
 		}
 		//return v;
 	}
@@ -148,19 +173,34 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 	}
 	
 	void calcSPP(int state1, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v, int u) {
-		double tmp, sum;
-		for (int i = 0; i < m_nStates; i++) {
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-			for (int j = 0; j < m_nStates; j++) {
-				sum += pfMatrices2[w] * pfPartials2[v + j];
-				w++;
+		if (state1 < m_nStates) {
+			double tmp, sum;
+			for (int i = 0; i < m_nStates; i++) {
+				tmp = pfMatrices1[w + state1];
+				sum = 0.0;
+				for (int j = 0; j < m_nStates; j++) {
+					sum += pfMatrices2[w] * pfPartials2[v + j];
+					w++;
+				}
+				//w++;
+				pfPartials3[u] = tmp * sum;
+				u++;
 			}
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+		} else {
+			double sum;
+			for (int i = 0; i < m_nStates; i++) {
+				sum = 0.0;
+				for (int j = 0; j < m_nStates; j++) {
+					sum += pfMatrices2[w] * pfPartials2[v + j];
+					w++;
+				}
+				//w++;
+				pfPartials3[u] = sum;
+				u++;
+			}
 		}
 		//return u;
+			
 	}
 
 	void calcAllMatrixPPP(int nNrOfID, int [] pStates1, int [] pStates2, double [] pfMatrices1, double [] pfPartials1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3) {
@@ -209,7 +249,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 				sum2 += pfMatrices2[w] * pfPartials2[v2 + j];
 				w++;
 			}
-			w++;
+			//w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 		}
@@ -226,7 +266,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 				sum2 += pfMatrices2[w] * pfPartials2[v + j];
 				w++;
 			}
-			w++;
+			//w++;
 			pfPartials3[u] = sum1 * sum2;
 			u++;
 		}

@@ -4,7 +4,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Distribution;
 import beast.core.State;
-import beast.evolution.tree.Tree;
 import beast.math.Binomial;
 
 import java.util.Collections;
@@ -18,19 +17,22 @@ import java.util.Random;
 @Description("Calculates the probability of a beast.tree conditional on a population size function.")
 public class Coalescent extends Distribution {
 
-    public Input<Tree> tree = new Input<Tree>("tree", "A phylogenetic beast tree");
+//    public Input<Tree> tree = new Input<Tree>("tree", "A phylogenetic beast tree");
+    public Input<TreeIntervals> treeIntervals = new Input<TreeIntervals>("treeIntervals", "Intervals for a phylogenetic beast tree");
     public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model");
 
+    TreeIntervals intervals;
+	@Override
+	public void initAndValidate() {
+		intervals = treeIntervals.get();
+	}
 
+    
     /**
      * do the actual calculation *
      */
     @Override
     public double calculateLogP() throws Exception {
-
-        Tree stateTree = tree.get();
-
-        TreeIntervals intervals = new TreeIntervals(stateTree);
 
         logP = calculateLogLikelihood(intervals, popSize.get());
 
@@ -47,7 +49,7 @@ public class Coalescent extends Distribution {
      * @return a list of unique ids for the state nodes that form the argument
      */
     public List<String> getArguments() {
-        return Collections.singletonList(tree.get().getID());
+        return Collections.singletonList(treeIntervals.get().getID());
     }
 
     /**
