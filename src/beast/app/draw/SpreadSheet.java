@@ -6,13 +6,19 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,15 +28,23 @@ import java.util.regex.Pattern;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
+import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.MouseInputAdapter;
@@ -48,8 +62,9 @@ import beast.core.StateNode;
 import beast.util.XMLParser;
 
 /** panel that shows a beast model as a spreadsheet **/
+@SuppressWarnings("serial")
 public class SpreadSheet extends JPanel {
-	private static final long serialVersionUID = 1L;
+	
 
 	/** list of available Plugin objects **/
 	List<Plugin> m_plugins;
@@ -79,6 +94,9 @@ public class SpreadSheet extends JPanel {
 	String m_sOldValue;
 	/** current directory for opening files **/
 	String m_sDir = System.getProperty("user.dir");
+	/** list of borders to choose from **/
+	Border [] m_borders;
+	Icon [] m_borderIcons;
 	
     /** nr of rows and columns in the spreadsheet **/
 	static int MAX_ROW = 255;
@@ -94,8 +112,6 @@ public class SpreadSheet extends JPanel {
 			headers[i] = (i >= 26 ? abc.charAt(i / 26 - 1) : ' ') + "" + abc.charAt(i % 26) + "";
 		}
 		m_table = new JTable(m_rows, headers) {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				System.err.println("tableChanged");
@@ -115,7 +131,6 @@ public class SpreadSheet extends JPanel {
 				} else {
 					m_objects[iRow][iCol] = m_rows[iRow][iCol]; 
 				}
-
 			}
 			@Override
 			public void editingCanceled(ChangeEvent e) {
@@ -176,7 +191,7 @@ public class SpreadSheet extends JPanel {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				edit();
+					edit();
 			}
 		});
 		
@@ -200,6 +215,8 @@ public class SpreadSheet extends JPanel {
 		});
 
 		m_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		m_table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		m_table.setCellSelectionEnabled(true);
 		m_table.setDefaultRenderer(Object.class, new ColoredTableCellRenderer());
 		JScrollPane scrollPane = new JScrollPane(m_table);
 
@@ -225,6 +242,50 @@ public class SpreadSheet extends JPanel {
 		RowHeightListener heightLtr = new RowHeightListener();
 		m_rowHeaderTable.addMouseListener(heightLtr);
 		m_rowHeaderTable.addMouseMotionListener(heightLtr);
+
+		
+		m_borders = new Border[30];
+		int k = 0;
+		m_borders[k++] = new LinesBorder(0, 0, 0, 0);
+		m_borders[k++] = new LinesBorder(1, 1, 1, 1);
+		m_borders[k++] = new LinesBorder(1, 1, 1, 0);
+		m_borders[k++] = new LinesBorder(1, 1, 0, 1);
+		m_borders[k++] = new LinesBorder(1, 0, 1, 1);
+		m_borders[k++] = new LinesBorder(0, 1, 1, 1);
+		m_borders[k++] = new LinesBorder(1, 0, 1, 0);
+		m_borders[k++] = new LinesBorder(0, 1, 0, 1);
+		m_borders[k++] = new LinesBorder(1, 1, 0, 0);
+		m_borders[k++] = new LinesBorder(1, 0, 0, 1);
+		m_borders[k++] = new LinesBorder(0, 0, 1, 1);
+		m_borders[k++] = new LinesBorder(0, 1, 1, 0);
+		m_borders[k++] = new LinesBorder(1, 0, 0, 0);
+		m_borders[k++] = new LinesBorder(0, 1, 0, 0);
+		m_borders[k++] = new LinesBorder(0, 0, 1, 0);
+		m_borders[k++] = new LinesBorder(0, 0, 0, 1);
+		m_borders[k++] = new LinesBorder(2, 2, 2, 2);
+		m_borders[k++] = new LinesBorder(2, 2, 2, 0);
+		m_borders[k++] = new LinesBorder(2, 2, 0, 2);
+		m_borders[k++] = new LinesBorder(2, 0, 2, 2);
+		m_borders[k++] = new LinesBorder(0, 2, 2, 2);
+		m_borders[k++] = new LinesBorder(0, 2, 0, 2);
+		m_borders[k++] = new LinesBorder(2, 2, 0, 0);
+		m_borders[k++] = new LinesBorder(2, 0, 0, 2);
+		m_borders[k++] = new LinesBorder(0, 0, 2, 2);
+		m_borders[k++] = new LinesBorder(0, 2, 2, 0);
+		m_borders[k++] = new LinesBorder(2, 0, 0, 0);
+		m_borders[k++] = new LinesBorder(0, 2, 0, 0);
+		m_borders[k++] = new LinesBorder(0, 0, 2, 0);
+		m_borders[k++] = new LinesBorder(0, 0, 0, 2);
+		m_borderIcons = new Icon[m_borders.length];
+		for (int i = 0; i < m_borders.length; i++) {
+			BufferedImage image = new BufferedImage(20, 20, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = image.createGraphics();
+			g.clearRect(0, 0, 20, 20);
+			g.setColor(Color.white);
+			g.fillRect(0, 0, 20, 20);
+			m_borders[i].paintBorder(null, g, 1, 1, 18, 18);
+			m_borderIcons[i] = new ImageIcon(image);
+		}
 
 		this.setLayout(new BorderLayout());
 		this.add(scrollPane, BorderLayout.CENTER);
@@ -267,7 +328,7 @@ public class SpreadSheet extends JPanel {
 	JToolBar createToolBar() {
 		JToolBar toolBar = new JToolBar();
 		toolBar.add(new MyAction("Load", "Load Graph", "open", "ctrl O") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
 	            JFileChooser fc = new JFileChooser(m_sDir);
@@ -295,7 +356,7 @@ public class SpreadSheet extends JPanel {
 	        }
 		});
 		toolBar.add(new MyAction("New", "New", "new", "ctrl N") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
 	    		m_pluginLocation = new HashMap<Plugin, Integer>();
@@ -305,165 +366,214 @@ public class SpreadSheet extends JPanel {
 		});
 		toolBar.addSeparator();
 		toolBar.add(new MyAction("Background", "Background color", "color", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
-	        	int iRow = m_table.getSelectedRow();
-	        	int iCol = m_table.getSelectedColumn();
-	        	if (iRow < 0 || iCol < 0) {
-	        		return;
-	        	}
-	        	Color initialColor = Color.white;
-	        	if (m_cellFormat[iRow][iCol] != null) {
-	        		initialColor = m_cellFormat[iRow][iCol].m_bgColor;
-	        	}
-	            Color color = JColorChooser.showDialog(null, "Select Background color", initialColor);
-	            if (color != null) {
-		        	if (m_cellFormat[iRow][iCol] == null) {
-		        		m_cellFormat[iRow][iCol] = new CellFormat();
-		        	}
-		        	m_cellFormat[iRow][iCol].m_bgColor = color;
-	            }
+				setColor(true);
 	        }
 		});
 		toolBar.add(new MyAction("Color", "Text color", "tcolor", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
-	        	int iRow = m_table.getSelectedRow();
-	        	int iCol = m_table.getSelectedColumn();
-	        	if (iRow < 0 || iCol < 0) {
-	        		return;
-	        	}
-	        	Color initialColor = Color.white;
-	        	if (m_cellFormat[iRow][iCol] != null) {
-	        		initialColor = m_cellFormat[iRow][iCol].m_fgColor;
-	        	}
-	            Color color = JColorChooser.showDialog(null, "Select Text color", initialColor);
-	            if (color != null) {
-		        	if (m_cellFormat[iRow][iCol] == null) {
-		        		m_cellFormat[iRow][iCol] = new CellFormat();
-		        	}
-		        	m_cellFormat[iRow][iCol].m_fgColor = color;
-	            }
+				setColor(false);
 	        }
 		});
 		toolBar.addSeparator();
 		toolBar.add(new MyAction("Bold", "Toggle boldness of text", "bold", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
-	        	toggleFontProperty(Font.BOLD);
+	        	toggleFontProperty(null,Font.BOLD,0);
 	        }
 		});
 		toolBar.add(new MyAction("Italic", "Toggle italicness of text", "italic", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
-	        	toggleFontProperty(Font.ITALIC);
+	        	toggleFontProperty(null,Font.ITALIC,0);
 	        }
 		});
 		toolBar.add(new MyAction("Bigger", "Increase size of font", "bigger", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
-	        	toggleFontProperty(-1);
+	        	toggleFontProperty(null, -1, 1);
 	        }
 		});
 		toolBar.add(new MyAction("Smaller", "Decrease size of font", "smaller", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
-	        	toggleFontProperty(-3);
+	        	toggleFontProperty(null, -1, 3);
 	        }
 		});
-		toolBar.add(new MyAction("Font", "Set font", "font", "") {
-			private static final long serialVersionUID = 1L;
-
-			public void actionPerformed(ActionEvent ae) {
-	        	setFont();
-	        }
-		});
+		
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		JComboBox combo = new JComboBox(env.getAvailableFontFamilyNames());
+	    combo.addActionListener(new ActionListener() {
+	           public void actionPerformed(ActionEvent e) {
+	        	   toggleFontProperty((String)((JComboBox)e.getSource(  )).getSelectedItem(), -1, -1);
+	           }
+	    });
+	    toolBar.add(combo);
+		combo.setMaximumSize(new Dimension(350, 20));
+		
 		toolBar.addSeparator();
 		toolBar.add(new MyAction("Left", "Align left", "left", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
 	        	setAlignemnt(SwingConstants.LEFT);
 	        }
 		});
 		toolBar.add(new MyAction("Right", "Align right", "right", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
 	        	setAlignemnt(SwingConstants.RIGHT);
 	        }
 		});
 		toolBar.add(new MyAction("Center", "Align center", "center", "") {
-			private static final long serialVersionUID = 1L;
+			
 
 			public void actionPerformed(ActionEvent ae) {
 	        	setAlignemnt(SwingConstants.CENTER);
 	        }
 		});
+		toolBar.addSeparator();
+		
+		
+		
+		JComboBox combo2 = new JComboBox(m_borderIcons);
+		combo2.setRenderer(new DefaultListCellRenderer() {
+			@Override
+			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+					boolean cellHasFocus) {
+				    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+					// Get icon to use for the list item value
+					Icon icon = m_borderIcons[Math.max(index, 0)];
+					 
+					// Set icon to display for value
+			        label.setIcon(icon);
+			        return label;				
+			}
+		});
+		combo2.setMaximumSize(new Dimension(40, 20));
+	    combo2.addActionListener(new ActionListener() {
+	           public void actionPerformed(ActionEvent e) {
+	        	   int i = ((JComboBox)e.getSource()).getSelectedIndex();
+	        	   System.err.println("Selected " + i);
+	        	   setBorderProperty(i);
+	           }
+	    });
+	    toolBar.add(combo2);
+		
 		return toolBar;
 	} // createToolBar
 
-	void setAlignemnt(int nAlignment) {
-    	int iRow = m_table.getSelectedRow();
-    	int iCol = m_table.getSelectedColumn();
-    	if (iRow < 0 || iCol < 0) {
+	void setBorderProperty(int iBorder) {
+		// Get the min and max ranges of selected cells 
+		int iRowStart = m_table.getSelectedRow(); 
+		int iRowEnd = m_table.getSelectionModel().getMaxSelectionIndex(); 
+		int iColStart = m_table.getSelectedColumn(); 
+		int iColEnd = m_table.getColumnModel().getSelectionModel().getMaxSelectionIndex(); 
+		// Check each cell in the range 
+		for (int iRow = iRowStart; iRow <= iRowEnd; iRow++) { 
+			for (int iCol = iColStart; iCol <= iColEnd; iCol++) { 
+				if (m_table.isCellSelected(iRow, iCol)) {  
+					if (m_cellFormat[iRow][iCol] == null) {
+						m_cellFormat[iRow][iCol] = new CellFormat();
+					}
+					m_cellFormat[iRow][iCol].m_border = m_borders[iBorder];
+				}
+			}
+		}
+		m_table.repaint();
+	}
+	/** choose colour for foreground or background of selected cells **/
+	void setColor(boolean bForeground) {
+		// Get the min and max ranges of selected cells 
+		int iRowStart = m_table.getSelectedRow(); 
+		int iColStart = m_table.getSelectedColumn(); 
+    	if (iRowStart < 0 || iColStart < 0) {
     		return;
     	}
-       	if (m_cellFormat[iRow][iCol] == null) {
-       		m_cellFormat[iRow][iCol] = new CellFormat();
-       	}
-       	m_cellFormat[iRow][iCol].m_alignment = nAlignment;
+    	Color initialColor = Color.white;
+    	if (m_cellFormat[iRowStart][iColStart] != null) {
+    		initialColor = (bForeground?m_cellFormat[iRowStart][iColStart].m_fgColor : m_cellFormat[iRowStart][iColStart].m_bgColor);
+    	}
+        Color color = JColorChooser.showDialog(null, "Select Text color", initialColor);
+        if (color != null) {
+		
+	    	int iRowEnd = m_table.getSelectionModel().getMaxSelectionIndex(); 
+			int iColEnd = m_table.getColumnModel().getSelectionModel().getMaxSelectionIndex(); 
+			// Check each cell in the range 
+			for (int iRow = iRowStart; iRow <= iRowEnd; iRow++) { 
+				for (int iCol = iColStart; iCol <= iColEnd; iCol++) { 
+					if (m_table.isCellSelected(iRow, iCol)) {  
+						if (m_cellFormat[iRow][iCol] == null) {
+							m_cellFormat[iRow][iCol] = new CellFormat();
+						}
+						if (bForeground) {
+							m_cellFormat[iRow][iCol].m_bgColor = color;
+						} else {
+							m_cellFormat[iRow][iCol].m_fgColor = color;
+						}
+					}
+				}
+			}
+        }
+		m_table.repaint();
+	}
+	
+	/** set alignment of selected cells **/
+	void setAlignemnt(int nAlignment) {
+		// Get the min and max ranges of selected cells 
+		int iRowStart = m_table.getSelectedRow(); 
+		int iRowEnd = m_table.getSelectionModel().getMaxSelectionIndex(); 
+		int iColStart = m_table.getSelectedColumn(); 
+		int iColEnd = m_table.getColumnModel().getSelectionModel().getMaxSelectionIndex(); 
+		// Check each cell in the range 
+		for (int iRow = iRowStart; iRow <= iRowEnd; iRow++) { 
+			for (int iCol = iColStart; iCol <= iColEnd; iCol++) { 
+				if (m_table.isCellSelected(iRow, iCol)) {  
+					if (m_cellFormat[iRow][iCol] == null) {
+						m_cellFormat[iRow][iCol] = new CellFormat();
+					}
+					m_cellFormat[iRow][iCol].m_alignment = nAlignment;
+				}
+			}
+		}
+		m_table.repaint();
 	} // setAlignment
 
-	void setFont() {
-    	int iRow = m_table.getSelectedRow();
-    	int iCol = m_table.getSelectedColumn();
-    	if (iRow < 0 || iCol < 0) {
-    		return;
-    	}
-    	Font initialFont = null;
-    	if (m_cellFormat[iRow][iCol] != null) {
-    		initialFont = m_cellFormat[iRow][iCol].m_font;
-    	}
-	    JFontChooser fontChooser = new JFontChooser();
-	    fontChooser.setFont(initialFont);
-	    int result = fontChooser.showDialog(null);
-	    if (result == JFontChooser.OK_OPTION)
-	    {
-	       	if (m_cellFormat[iRow][iCol] == null) {
-	       		m_cellFormat[iRow][iCol] = new CellFormat();
-	       	}
-	       	m_cellFormat[iRow][iCol].m_font = fontChooser.getSelectedFont();
-	    }
-	    m_table.repaint();
-	} // setFont
-
-	void toggleFontProperty(int nStyle) {
-		int iRow = m_table.getSelectedRow();
-		int iCol = m_table.getSelectedColumn();
-		if (iRow < 0 || iCol < 0) {
-			return;
+	/** set font properties of selected cells **/
+	void toggleFontProperty(String sFontName, int nFontStyle, int nFontSize) {
+		// Get the min and max ranges of selected cells 
+		int iRowStart = m_table.getSelectedRow(); 
+		int iRowEnd = m_table.getSelectionModel().getMaxSelectionIndex(); 
+		int iColStart = m_table.getSelectedColumn(); 
+		int iColEnd = m_table.getColumnModel().getSelectionModel().getMaxSelectionIndex(); 
+		// Check each cell in the range 
+		for (int iRow = iRowStart; iRow <= iRowEnd; iRow++) { 
+			for (int iCol = iColStart; iCol <= iColEnd; iCol++) { 
+				if (m_table.isCellSelected(iRow, iCol)) {  
+			       	if (m_cellFormat[iRow][iCol] == null) {
+			       		m_cellFormat[iRow][iCol] = new CellFormat();
+			       	}
+			   		if (m_cellFormat[iRow][iCol].m_font == null) {
+			   	       	Font font = m_table.getFont(); 
+			   			m_cellFormat[iRow][iCol].m_font = new Font(font.getName(), font.getStyle(), font.getSize());
+			   		}
+			       	Font font = m_cellFormat[iRow][iCol].m_font;
+			       	String sFont = (sFontName == null ? font.getFamily() : sFontName);
+			       	int nStyle = (nFontStyle > 0 ? (font.getStyle() ^ nFontStyle) : font.getStyle());
+			       	int nSize = (nFontSize > 0 ? Math.max(2, font.getSize() + 2 - nFontSize): font.getSize());
+			   		m_cellFormat[iRow][iCol].m_font = new Font(sFont, nStyle, nSize);
+				}
+			}
 		}
-       	if (m_cellFormat[iRow][iCol] == null) {
-       		m_cellFormat[iRow][iCol] = new CellFormat();
-       	}
-   		if (m_cellFormat[iRow][iCol].m_font == null) {
-   	       	Font font = m_table.getFont(); 
-   			m_cellFormat[iRow][iCol].m_font = new Font(font.getName(), font.getStyle(), font.getSize());
-   		}
-       	Font font = m_cellFormat[iRow][iCol].m_font; 
-       	if (nStyle > 0) {
-       		m_cellFormat[iRow][iCol].m_font = new Font(font.getName(), font.getStyle()^nStyle, font.getSize());
-       	} else {
-       		// change font size
-       		m_cellFormat[iRow][iCol].m_font = new Font(font.getName(), font.getStyle(), font.getSize() + 2 + nStyle);
-       	}
 	    m_table.repaint();
 	} // toggleFontProperty
 	
@@ -490,26 +600,8 @@ public class SpreadSheet extends JPanel {
 			m_rows[iRow][iCol] = "="+((FormulaCell)o).m_sFormula;
 			m_table.repaint();
 		}
-
+		m_table.editCellAt(iRow, iCol);
 	} // edit
-
-	void setCurrentValue(Object o) {
-		int iRow = m_table.getSelectedRow();
-		int iCol = m_table.getSelectedColumn();
-		if (iRow == -1 || iCol == -1) {
-			return;
-		}
-		m_objects[iRow][iCol] = o;
-		if (o instanceof Plugin) {
-			m_rows[iRow][iCol] = toString((Plugin) o);
-		} else if (o instanceof String && ((String)o).startsWith("=")) {
-			m_objects[iRow][iCol] = new FormulaCell((String)o);
-			m_rows[iRow][iCol] = ((FormulaCell)m_objects[iRow][iCol]).toString();
-		} else {
-			m_rows[iRow][iCol] = (String) o;
-		}
-		m_table.repaint();
-	} // setCurrentValue
 
 	void readXML(String sFile) throws Exception {
 		XMLParser parser = new XMLParser();
@@ -674,7 +766,11 @@ public class SpreadSheet extends JPanel {
 			} else if (o instanceof StateNode) {
 				return ((StateNode)o).getArrayValue();
 			} else if (o instanceof Distribution) {
-				return ((Distribution)o).getCurrentLogP();
+				try {
+					return ((Distribution)o).calculateLogP();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (o instanceof String) {
 				return Double.parseDouble((String) o);
 			}
@@ -708,8 +804,8 @@ public class SpreadSheet extends JPanel {
 		void parse(String sFormula) throws Exception {
 			m_sTokens = new ArrayList<String>();
 			m_nTokens = new ArrayList<Integer>();
-	    	Pattern pattern = Pattern.compile("([^\\$]*)\\$([A-Z0-9]*)(.*)");
-	    	Pattern cellPattern = Pattern.compile("([A-Z]+)([0-9]+)");
+	    	Pattern pattern = Pattern.compile("([^\\$]*)\\$([a-zA-Z0-9]*)(.*)");
+	    	Pattern cellPattern = Pattern.compile("([a-zA-Z]+)([0-9]+)");
 			while (sFormula.length() > 0) {
 				Matcher matcher = pattern.matcher(sFormula);
 				if (matcher.matches()) {
@@ -721,7 +817,7 @@ public class SpreadSheet extends JPanel {
 					String sCellRef = matcher.group(2);
 					Matcher cellMatcher = cellPattern.matcher(sCellRef);
 					if (cellMatcher.matches()) {
-						String sCol = cellMatcher.group(1);
+						String sCol = cellMatcher.group(1).toUpperCase();
 						String sRow = cellMatcher.group(2);
 						int nCellReff = sCol.charAt(0) - 'A'; 
 						for (int i = 1;i < sCol.length(); i++) {
@@ -747,7 +843,7 @@ public class SpreadSheet extends JPanel {
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
+		
 
 		public Component getTableCellRendererComponent (JTable table, Object value, boolean bSelected, boolean bFocused, int iRow, int iCol) {
 
@@ -757,24 +853,157 @@ public class SpreadSheet extends JPanel {
 	            setBackground(m_cellFormat[iRow][iCol].m_bgColor);
 	            setForeground(m_cellFormat[iRow][iCol].m_fgColor);
 	            setHorizontalAlignment(m_cellFormat[iRow][iCol].m_alignment);
-	            setBorder(m_cellFormat[iRow][iCol].m_border);
 			} else {
 	            setBackground(null);
 	            setForeground(null);
 	            setHorizontalAlignment(SwingConstants.LEFT);
-	            setBorder(null);
 			}
 
 	        super.getTableCellRendererComponent(table, value, bSelected, bFocused, iRow, iCol);
 
 	        if (m_cellFormat[iRow][iCol] != null) {
 	            setFont(m_cellFormat[iRow][iCol].m_font);
+	            setBorder(m_cellFormat[iRow][iCol].m_border);
 			} else {
 	            setFont(null);
+	            setBorder(null);
 			}
 	        return this;
 	    }
 	} // class ColoredTableCellRenderer
+	
+
+	/**
+	 * @version 1.0 03/09/99
+	 */
+	public class LinesBorder extends AbstractBorder implements SwingConstants { 
+	  protected int northThickness;
+	  protected int southThickness;
+	  protected int eastThickness;
+	  protected int westThickness;  
+	  protected Color m_color;
+	  
+	  public LinesBorder(int nNorth, int nEast, int nSouth, int nWest) {
+		  northThickness = nNorth;
+		  eastThickness = nEast;
+		  southThickness = nSouth;
+		  westThickness = nWest;
+		  setColor(Color.black);
+	  }
+	  
+	  public LinesBorder(Color color) {
+	    this(color, 1);
+	  }
+
+	  public LinesBorder(Color color, int thickness)  {
+	    setColor(color);
+	    setThickness(thickness);
+	  }
+
+	  public LinesBorder(Color color, Insets insets)  {
+	    setColor(color);
+	    setThickness(insets);
+	  }
+
+	  public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+	    Color oldColor = g.getColor();
+	    
+	    g.setColor(m_color);
+	    for (int i = 0; i < northThickness; i++)  {
+	      g.drawLine(x, y+i, x+width-1, y+i);
+	    }
+//	    g.setColor(southColor);
+	    for (int i = 0; i < southThickness; i++)  {
+	      g.drawLine(x, y+height-i-1, x+width-1, y+height-i-1);
+	    }
+//	    g.setColor(eastColor);
+	    for (int i = 0; i < westThickness; i++)  {
+	      g.drawLine(x+i, y, x+i, y+height-1);
+	    }
+//	    g.setColor(westColor);
+	    for (int i = 0; i < eastThickness; i++)  {
+	      g.drawLine(x+width-i-1, y, x+width-i-1, y+height-1);
+	    }
+	 
+	    g.setColor(oldColor);
+	  }
+
+	  public Insets getBorderInsets(Component c)       {
+	    return new Insets(northThickness, westThickness, southThickness, eastThickness);
+	  }
+	 
+	  public Insets getBorderInsets(Component c, Insets insets) {
+	    return new Insets(northThickness, westThickness, southThickness, eastThickness);    
+	  }
+	 
+	  public boolean isBorderOpaque() { return true; }
+	    
+	  public void setColor(Color c) {
+		  m_color = c;
+	  }
+	  
+//	  public void setColor(Color c, int direction) {
+//	    switch (direction) {
+//	      case NORTH: northColor = c; break;
+//	      case SOUTH: southColor = c; break;
+//	      case EAST:  eastColor  = c; break;
+//	      case WEST:  westColor  = c; break;
+//	      default: 
+//	    }
+//	  }
+	    
+	  public void setThickness(int n) {
+	    northThickness = n;
+	    southThickness = n;
+	    eastThickness  = n;
+	    westThickness  = n;
+	  }
+	    
+	  public void setThickness(Insets insets) {
+	    northThickness = insets.top;
+	    southThickness = insets.bottom;
+	    eastThickness  = insets.right;
+	    westThickness  = insets.left;
+	  }
+	  
+	  public void setThickness(int n, int direction) {
+	    switch (direction) {
+	      case NORTH: northThickness = n; break;
+	      case SOUTH: southThickness = n; break;
+	      case EAST:  eastThickness  = n; break;
+	      case WEST:  westThickness  = n; break;
+	      default: 
+	    }
+	  }
+	 
+	  public void append(LinesBorder b, boolean isReplace) {
+	    if (isReplace) {
+	      northThickness = b.northThickness;
+	      southThickness = b.southThickness;
+	      eastThickness  = b.eastThickness;
+	      westThickness  = b.westThickness;
+	    } else {
+	      northThickness = Math.max(northThickness ,b.northThickness);
+	      southThickness = Math.max(southThickness ,b.southThickness);
+	      eastThickness  = Math.max(eastThickness  ,b.eastThickness);
+	      westThickness  = Math.max(westThickness  ,b.westThickness);
+	    }
+	  }
+
+	  public void append(Insets insets, boolean isReplace) {
+	    if (isReplace) {
+	      northThickness = insets.top;
+	      southThickness = insets.bottom;
+	      eastThickness  = insets.right;
+	      westThickness  = insets.left;
+	    } else {
+	      northThickness = Math.max(northThickness ,insets.top);
+	      southThickness = Math.max(southThickness ,insets.bottom);
+	      eastThickness  = Math.max(eastThickness  ,insets.right);
+	      westThickness  = Math.max(westThickness  ,insets.left);
+	    }
+	  }
+	}
 	
 	/**
 	 * Rudimentary test of this panel, takes a Beast II xml file as argument and
