@@ -51,7 +51,7 @@ public class XMLParserException extends Exception {
 
 	// format message and resolve parent
 	public String getMessage() {
-		String sMsg = "\nError " + m_nErrorNr + " parsing the xml input file\n\n" + m_sMsg + super.getMessage();;
+		String sMsg = "\nError " + m_nErrorNr + " parsing the xml input file\n\n" + m_sMsg + super.getMessage();
 		if (m_node==null) {
 			return "NULL NODE\n" + sMsg;
 		}

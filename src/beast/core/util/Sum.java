@@ -33,7 +33,7 @@ public class Sum extends CalculationNode implements Valuable {
 	/** do the actual work, and reset flag **/
 	void compute() {
 		m_fSum = 0;
-		Valuable v = m_value.get();
+		final Valuable v = m_value.get();
 		for (int i = 0; i < v.getDimension(); i++) {
 			m_fSum += v.getArrayValue(i);
 		}
@@ -43,7 +43,7 @@ public class Sum extends CalculationNode implements Valuable {
 	@Override
 	public double getArrayValue(int iDim) {
 		if (iDim == 1) {return getArrayValue();}
-		return 0;
+		return Double.NaN;
 	}
 	@Override
 	public void store() {

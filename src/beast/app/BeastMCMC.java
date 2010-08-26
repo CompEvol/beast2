@@ -58,7 +58,9 @@ public class BeastMCMC {
 
 
 	/** parse command line arguments, and load file if specified
-	 * @throws Exception **/
+	 * @param args  command line arguments
+     * @throws Exception when can't parse something
+     **/
 	void parseArgs(String[] args) throws Exception {
 		int i = 0;
 		boolean bResume = false;
@@ -119,7 +121,10 @@ public class BeastMCMC {
 				"-threads <int> : sets number of threads (default 1)\n";
 	} // getUsage
 
-	/** open file dialog for prompting the user to specify an xml script file to process **/
+	/** open file dialog for prompting the user to specify an xml script file to process
+     *
+     * @return selected file name
+     */
 	String getFileNameByDialog() {
 		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.addChoosableFileFilter(new FileFilter() {
@@ -127,7 +132,7 @@ public class BeastMCMC {
 				if (f.isDirectory()) {
 					return true;
 				}
-				String name = f.getName().toLowerCase();
+				final String name = f.getName().toLowerCase();
 				if (name.endsWith(".xml")) {
 					return true;
 				}

@@ -45,8 +45,10 @@ import beast.core.Input;
         "and notified that recalculation is appropriate.")
 public class State extends Plugin {
 
-    public Input<List<StateNode>> stateNodeInput = new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
-    public Input<Integer> m_storeEvery = new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
+    public Input<List<StateNode>> stateNodeInput = 
+            new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
+    public Input<Integer> m_storeEvery = 
+            new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
     		"resume computation later on", -1);
     
     /**
@@ -118,8 +120,8 @@ public class State extends Plugin {
             stateNode[i].index = i;
         }
         // make itself known
-        for (int i = 0; i < stateNode.length; i++) {
-        	stateNode[i].m_state = this;
+        for(StateNode state : stateNode) {
+            state.m_state = this;
         }
         
         m_nStateNode = stateNode.length;
@@ -180,6 +182,8 @@ public class State extends Plugin {
      * to the original StateNodes 
      * 
      * Also, store the state to disk for resumption of analysis later on.
+     *
+     * @param nSample chain state number
      **/
     public void store(int nSample) {
     	System.arraycopy(stateNode, 0, storedStateNode, 0, m_nStateNode);

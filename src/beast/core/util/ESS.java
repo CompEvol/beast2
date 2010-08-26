@@ -114,15 +114,14 @@ public class ESS extends Plugin implements Loggable {
         	fSum2 -= m_trace.get(iStart + iLag);
         }
 
-        // calculate the magical variable 'varStat', RRB: what is this doing exactly?
-        double varStat = 0.0;
+        double integralOfACFunctionTimes2 = 0.0;
         for (int iLag = 0; iLag < nMaxLag; iLag++) {
             if (iLag == 0) {
-                varStat = fAutoCorrelation[0];
+                integralOfACFunctionTimes2 = fAutoCorrelation[0];
             } else if (iLag % 2 == 0) {
-                // fancy stopping criterion :)
+                // fancy stopping criterion - see main comment
                 if (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag] > 0) {
-                    varStat += 2.0 * (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag]);
+                    integralOfACFunctionTimes2 += 2.0 * (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag]);
                 } else {
                     // stop
                     break;
@@ -131,7 +130,7 @@ public class ESS extends Plugin implements Loggable {
         }
 
         // auto correlation time
-        final double fACT = varStat / fAutoCorrelation[0];
+        final double fACT = integralOfACFunctionTimes2 / fAutoCorrelation[0];
 
         // effective sample size
         final double fESS = nSamples / fACT;

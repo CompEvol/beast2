@@ -43,8 +43,11 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
 
     /**
      * Constructor for testing.
+     * @param value
+     * @param dimension
+     * @throws Exception
      */
-    public BooleanParameter(Integer value, Integer dimension) throws Exception {
+    public BooleanParameter(Boolean value, Integer dimension) throws Exception {
     	init(value, dimension);
     }
 
@@ -74,7 +77,8 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
         BooleanParameter var = (BooleanParameter) getCurrent();
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
-            out.print(var.getValue(iValue) + "\t");
+            // Output 0/1 for tracer
+            out.print((var.getValue(iValue) ? '1' : '0') + "\t");
         }
     }
 

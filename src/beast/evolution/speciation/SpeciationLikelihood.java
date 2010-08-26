@@ -116,8 +116,7 @@ public class SpeciationLikelihood extends beast.core.Distribution {
 	}
 
 	@Override
-	public void sample(State state, Random random) {
-		// TODO Auto-generated method stub
-		
+	public void sample(State state, Random random) {  
+        throw new UnsupportedOperationException("This should eventually sample a tree conditional on provided speciation model.");
 	}
 }
