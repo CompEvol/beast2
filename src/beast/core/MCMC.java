@@ -56,7 +56,7 @@ public class MCMC extends Runnable {
                     new ArrayList<Operator>(), Input.Validate.REQUIRED);
 
     public Input<List<Logger>> m_loggers =
-            new Input<List<Logger>>("log", "loggers for reporting progress of MCMC chain",
+            new Input<List<Logger>>("logger", "loggers for reporting progress of MCMC chain",
                     new ArrayList<Logger>(), Input.Validate.REQUIRED);
 
     /** Alternative representation of operatorsInput that allows random selection

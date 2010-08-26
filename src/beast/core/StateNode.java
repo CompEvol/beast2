@@ -13,7 +13,7 @@ import org.w3c.dom.Node;
  * @author Alexei Drummond
  */
 @Description("A node that can be part of the state.")
-public abstract class StateNode extends Plugin  implements Loggable, Cloneable {
+public abstract class StateNode extends Plugin  implements Loggable, Cloneable, Valuable {
 
 	/** Return this StateNode if it is not in the State.
      * If it is in the State, return the version that is currently valid 
@@ -114,9 +114,9 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable {
     abstract public int scale(double fScale) throws Exception;
     
     
-    abstract public int getDimension();
-    abstract public double getArrayValue();
-    abstract public double getArrayValue(int iValue);
+//    abstract public int getDimension();
+//    abstract public double getArrayValue();
+//    abstract public double getArrayValue(int iValue);
 
     /** 
      * Pointer to state, null if not part of a State.

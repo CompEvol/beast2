@@ -14,9 +14,9 @@
             <input name="parameter" idref="indicators"/>
         </operator>
 
-        <log logEvery="10" fileName="bitflip.log">
-            <boolParameter idref="indicators" name='log'/>
-        </log>
+        <logger logEvery="10" fileName="bitflip.log">
+            <log idref="indicators"/>
+        </logger>
     </run>
 
 </beast>

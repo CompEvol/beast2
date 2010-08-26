@@ -9,7 +9,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -21,6 +20,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,6 +33,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,18 +41,22 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
+import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.TableModelEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
 
 import beast.core.Distribution;
@@ -60,6 +65,14 @@ import beast.core.Logger;
 import beast.core.Plugin;
 import beast.core.StateNode;
 import beast.util.XMLParser;
+
+// Wishlist:
+// TODO handle cancel editing event => implement custom CellRenderers
+// TODO implement custom editors
+// TODO create new Plugin on right click
+// TODO save/saveAs
+// TODO cut/copy/paste/delete
+// TODO undo/redo
 
 /** panel that shows a beast model as a spreadsheet **/
 @SuppressWarnings("serial")
@@ -76,7 +89,7 @@ public class SpreadSheet extends JPanel {
 	/** objects associated with the spread sheet cells **/
 	Object[][] m_objects;
 	/** string representation of objects **/
-	String[][] m_rows;
+	//String[][] m_rows;
 	/** rendering style for cell **/
 	CellFormat [][] m_cellFormat;
 	class CellFormat {
@@ -91,7 +104,7 @@ public class SpreadSheet extends JPanel {
 	/** row labels on the left of the spreadsheet **/
 	JTable m_rowHeaderTable;
 	/** for managing cancelled edits **/
-	String m_sOldValue;
+	//String m_sOldValue;
 	/** current directory for opening files **/
 	String m_sDir = System.getProperty("user.dir");
 	/** list of borders to choose from **/
@@ -103,7 +116,7 @@ public class SpreadSheet extends JPanel {
 	int MAX_COL = 32;
 
 	SpreadSheet() {
-		m_rows = new String[MAX_ROW][MAX_COL];
+		//m_rows = new String[MAX_ROW][MAX_COL];
 		m_objects = new Object[MAX_ROW][MAX_COL];
 		m_cellFormat = new CellFormat[MAX_ROW][MAX_COL];
 		String[] headers = new String[MAX_COL];
@@ -111,7 +124,7 @@ public class SpreadSheet extends JPanel {
 		for (int i = 0; i < MAX_COL; i++) {
 			headers[i] = (i >= 26 ? abc.charAt(i / 26 - 1) : ' ') + "" + abc.charAt(i % 26) + "";
 		}
-		m_table = new JTable(m_rows, headers) {
+		m_table = new JTable(m_objects, headers) {
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				System.err.println("tableChanged");
@@ -121,16 +134,20 @@ public class SpreadSheet extends JPanel {
 				if (iRow < 0 || iCol < 0) {
 					return;
 				}
-				if (m_objects[iRow][iCol] instanceof Plugin) {
-					m_rows[iRow][iCol] = SpreadSheet.toString((Plugin) m_objects[iRow][iCol]);
-				} else if (m_rows[iRow][iCol] == null) {
-					return;
-				} else if (m_rows[iRow][iCol].startsWith("=")) {
-					m_objects[iRow][iCol] = new FormulaCell(m_rows[iRow][iCol]);
-					m_rows[iRow][iCol] = ((FormulaCell)m_objects[iRow][iCol]).toString();
-				} else {
-					m_objects[iRow][iCol] = m_rows[iRow][iCol]; 
-				}
+				System.err.println(m_objects[iRow][iCol].getClass().getName());
+				System.err.println(m_objects[iRow][iCol].toString());
+				
+				
+//				if (m_objects[iRow][iCol] instanceof Plugin) {
+//					m_rows[iRow][iCol] = SpreadSheet.toString((Plugin) m_objects[iRow][iCol]);
+//				} else if (m_rows[iRow][iCol] == null) {
+//					return;
+//				} else if (m_rows[iRow][iCol].startsWith("=")) {
+//					m_objects[iRow][iCol] = new FormulaCell(m_rows[iRow][iCol]);
+//					m_rows[iRow][iCol] = ((FormulaCell)m_objects[iRow][iCol]).toString();
+//				} else {
+//					m_objects[iRow][iCol] = m_rows[iRow][iCol]; 
+//				}
 			}
 			@Override
 			public void editingCanceled(ChangeEvent e) {
@@ -140,7 +157,7 @@ public class SpreadSheet extends JPanel {
 				if (iRow < 0 || iCol < 0) {
 					return;
 				}
-				m_rows[iRow][iCol] = m_sOldValue;
+				//m_rows[iRow][iCol] = m_sOldValue;
 				repaint();
 			}
 			@Override
@@ -217,7 +234,67 @@ public class SpreadSheet extends JPanel {
 		m_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		m_table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		m_table.setCellSelectionEnabled(true);
-		m_table.setDefaultRenderer(Object.class, new ColoredTableCellRenderer());
+		m_table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
+		m_table.setDefaultEditor(Object.class, new TableCellEditor() {
+			JComponent component = new JTextField();
+			int m_iRow, m_iCol;
+			@Override
+			public boolean stopCellEditing() {
+				Object o = m_objects[m_iRow][m_iCol];
+				System.err.println("stopCellEditing " + o.getClass().getName() + " " + o);
+				return true;
+			}
+			
+			@Override
+			public boolean shouldSelectCell(EventObject anEvent) {
+				System.err.println("shouldSelectCell");
+				return false;
+			}
+			
+			@Override
+			public void removeCellEditorListener(CellEditorListener l) {
+				System.err.println("removeCellEditorListener");
+			}
+			
+			@Override
+			public boolean isCellEditable(EventObject anEvent) {
+				System.err.println("isCellEditable");
+				return true;
+			}
+			
+			@Override
+			public Object getCellEditorValue() {
+				System.err.println("getCellEditorValue");
+				return null;
+			}
+			
+			@Override
+			public void cancelCellEditing() {
+				System.err.println("cancelCellEditing");
+			}
+			
+			@Override
+			public void addCellEditorListener(CellEditorListener l) {
+				System.err.println("addCellEditorListener");
+			}
+			
+			@Override
+			public Component getTableCellEditorComponent(JTable table, Object value,
+					boolean isSelected, int row, int column) {
+				m_iRow = row;
+				m_iCol = column;
+				if (value == null) {
+					((JTextField)component).setText("");
+				} else if (value instanceof Plugin) {
+					((JTextField)component).setText((SpreadSheet.toString((Plugin)value)));
+				} else if (value instanceof FormulaCell) {
+					((JTextField)component).setText("=" + ((FormulaCell)value).m_sFormula);
+				} else if (value instanceof String) {
+					((JTextField)component).setText((String)value);
+				}
+				return component; 
+			}
+		});
 		JScrollPane scrollPane = new JScrollPane(m_table);
 
 		m_table.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -246,36 +323,36 @@ public class SpreadSheet extends JPanel {
 		
 		m_borders = new Border[30];
 		int k = 0;
-		m_borders[k++] = new LinesBorder(0, 0, 0, 0);
-		m_borders[k++] = new LinesBorder(1, 1, 1, 1);
-		m_borders[k++] = new LinesBorder(1, 1, 1, 0);
-		m_borders[k++] = new LinesBorder(1, 1, 0, 1);
-		m_borders[k++] = new LinesBorder(1, 0, 1, 1);
-		m_borders[k++] = new LinesBorder(0, 1, 1, 1);
-		m_borders[k++] = new LinesBorder(1, 0, 1, 0);
-		m_borders[k++] = new LinesBorder(0, 1, 0, 1);
-		m_borders[k++] = new LinesBorder(1, 1, 0, 0);
-		m_borders[k++] = new LinesBorder(1, 0, 0, 1);
-		m_borders[k++] = new LinesBorder(0, 0, 1, 1);
-		m_borders[k++] = new LinesBorder(0, 1, 1, 0);
-		m_borders[k++] = new LinesBorder(1, 0, 0, 0);
-		m_borders[k++] = new LinesBorder(0, 1, 0, 0);
-		m_borders[k++] = new LinesBorder(0, 0, 1, 0);
-		m_borders[k++] = new LinesBorder(0, 0, 0, 1);
-		m_borders[k++] = new LinesBorder(2, 2, 2, 2);
-		m_borders[k++] = new LinesBorder(2, 2, 2, 0);
-		m_borders[k++] = new LinesBorder(2, 2, 0, 2);
-		m_borders[k++] = new LinesBorder(2, 0, 2, 2);
-		m_borders[k++] = new LinesBorder(0, 2, 2, 2);
-		m_borders[k++] = new LinesBorder(0, 2, 0, 2);
-		m_borders[k++] = new LinesBorder(2, 2, 0, 0);
-		m_borders[k++] = new LinesBorder(2, 0, 0, 2);
-		m_borders[k++] = new LinesBorder(0, 0, 2, 2);
-		m_borders[k++] = new LinesBorder(0, 2, 2, 0);
-		m_borders[k++] = new LinesBorder(2, 0, 0, 0);
-		m_borders[k++] = new LinesBorder(0, 2, 0, 0);
-		m_borders[k++] = new LinesBorder(0, 0, 2, 0);
-		m_borders[k++] = new LinesBorder(0, 0, 0, 2);
+		m_borders[k++] = new CellBorder(0, 0, 0, 0);
+		m_borders[k++] = new CellBorder(1, 1, 1, 1);
+		m_borders[k++] = new CellBorder(1, 1, 1, 0);
+		m_borders[k++] = new CellBorder(1, 1, 0, 1);
+		m_borders[k++] = new CellBorder(1, 0, 1, 1);
+		m_borders[k++] = new CellBorder(0, 1, 1, 1);
+		m_borders[k++] = new CellBorder(1, 0, 1, 0);
+		m_borders[k++] = new CellBorder(0, 1, 0, 1);
+		m_borders[k++] = new CellBorder(1, 1, 0, 0);
+		m_borders[k++] = new CellBorder(1, 0, 0, 1);
+		m_borders[k++] = new CellBorder(0, 0, 1, 1);
+		m_borders[k++] = new CellBorder(0, 1, 1, 0);
+		m_borders[k++] = new CellBorder(1, 0, 0, 0);
+		m_borders[k++] = new CellBorder(0, 1, 0, 0);
+		m_borders[k++] = new CellBorder(0, 0, 1, 0);
+		m_borders[k++] = new CellBorder(0, 0, 0, 1);
+		m_borders[k++] = new CellBorder(2, 2, 2, 2);
+		m_borders[k++] = new CellBorder(2, 2, 2, 0);
+		m_borders[k++] = new CellBorder(2, 2, 0, 2);
+		m_borders[k++] = new CellBorder(2, 0, 2, 2);
+		m_borders[k++] = new CellBorder(0, 2, 2, 2);
+		m_borders[k++] = new CellBorder(0, 2, 0, 2);
+		m_borders[k++] = new CellBorder(2, 2, 0, 0);
+		m_borders[k++] = new CellBorder(2, 0, 0, 2);
+		m_borders[k++] = new CellBorder(0, 0, 2, 2);
+		m_borders[k++] = new CellBorder(0, 2, 2, 0);
+		m_borders[k++] = new CellBorder(2, 0, 0, 0);
+		m_borders[k++] = new CellBorder(0, 2, 0, 0);
+		m_borders[k++] = new CellBorder(0, 0, 2, 0);
+		m_borders[k++] = new CellBorder(0, 0, 0, 2);
 		m_borderIcons = new Icon[m_borders.length];
 		for (int i = 0; i < m_borders.length; i++) {
 			BufferedImage image = new BufferedImage(20, 20, BufferedImage.TYPE_INT_RGB);
@@ -296,7 +373,7 @@ public class SpreadSheet extends JPanel {
 	void init() {
 		for (int i = 0; i < MAX_ROW; i++) {
     		for (int j = 0; j < MAX_COL; j++) {
-    			m_rows[i][j] = null;
+    			//m_rows[i][j] = null;
     			m_objects[i][j] = null;
     			m_cellFormat[i][j] = null;
     		}
@@ -305,21 +382,21 @@ public class SpreadSheet extends JPanel {
 		m_pluginLocation = new HashMap<Plugin, Integer>();
 		for (int i = 0; i < m_plugins.size(); i++) {
 			Plugin plugin = m_plugins.get(i);
-			m_rows[i][0] = plugin.getID();
-			m_objects[i][1] = m_rows[i][0];
-			if (m_rows[i][0] == null || m_rows[i][0].equals("")) {
-				m_rows[i][0] = plugin.getClass().getName().substring(plugin.getClass().getName().lastIndexOf('.') + 1);
+			String sID = plugin.getID();
+			if (sID == null || sID.equals("")) {
+				sID = plugin.getClass().getName().substring(plugin.getClass().getName().lastIndexOf('.') + 1);
 			}
+			m_objects[i][0] = sID;
 			m_objects[i][1] = plugin;
 			m_pluginLocation.put(plugin, i + MAX_ROW);
 			if (plugin instanceof StateNode || plugin instanceof Distribution) {
 				m_objects[i][2] = new FormulaCell("=$B"+(i+1));
-				m_rows[i][2] = ((FormulaCell)m_objects[i][2]).toString();
+				//m_rows[i][2] = ((FormulaCell)m_objects[i][2]).toString();
 			}
 		}
 		for (int i = 0; i < m_plugins.size(); i++) {
 			Plugin plugin = m_plugins.get(i);
-			m_rows[i][1] = toString(plugin);// .toString();
+			//m_rows[i][1] = toString(plugin);// .toString();
 		}
 		m_table.repaint();
 	} // init
@@ -579,12 +656,13 @@ public class SpreadSheet extends JPanel {
 	
 	/** edit a cell using the appropriate editor **/
 	void edit() {
+		if (true) return;
 		int iCol = m_table.getSelectedColumn();
 		int iRow = m_table.getSelectedRow();
 		if (iCol < 0 || iRow < 0) {
 			return;
 		}
-		m_sOldValue = m_rows[iRow][iCol];
+		//m_sOldValue = m_rows[iRow][iCol];
 		Object o = m_objects[iRow][iCol];
 		if (o instanceof Plugin) {
 			Plugin plugin = (Plugin) o;
@@ -592,12 +670,12 @@ public class SpreadSheet extends JPanel {
 			dlg.setVisible(true);
 			if (dlg.getOK()) {
 				plugin = dlg.panel.m_plugin;
-				m_rows[iRow][iCol] = toString(plugin);
+				//m_rows[iRow][iCol] = toString(plugin);
 				m_objects[iRow][iCol] = plugin;
 				m_table.repaint();
 			}
 		} else 	if (o instanceof FormulaCell) {
-			m_rows[iRow][iCol] = "="+((FormulaCell)o).m_sFormula;
+			//m_rows[iRow][iCol] = "="+((FormulaCell)o).m_sFormula;
 			m_table.repaint();
 		}
 		m_table.editCellAt(iRow, iCol);
@@ -839,32 +917,46 @@ public class SpreadSheet extends JPanel {
 		} // parse
 	} // class FormulaCell
 
-	class ColoredTableCellRenderer extends DefaultTableCellRenderer {
-		/**
-		 * 
-		 */
-		
+	class MyTableCellRenderer extends DefaultTableCellRenderer {
 
 		public Component getTableCellRendererComponent (JTable table, Object value, boolean bSelected, boolean bFocused, int iRow, int iCol) {
 
 			setEnabled(table == null || table.isEnabled()); // see question above
 
 	        if (m_cellFormat[iRow][iCol] != null) {
-	            setBackground(m_cellFormat[iRow][iCol].m_bgColor);
 	            setForeground(m_cellFormat[iRow][iCol].m_fgColor);
 	            setHorizontalAlignment(m_cellFormat[iRow][iCol].m_alignment);
 			} else {
-	            setBackground(null);
 	            setForeground(null);
 	            setHorizontalAlignment(SwingConstants.LEFT);
 			}
 
-	        super.getTableCellRendererComponent(table, value, bSelected, bFocused, iRow, iCol);
+	        if (value instanceof Plugin) {
+	        	setText(SpreadSheet.toString((Plugin) value));
+	        } else {
+	        	super.getTableCellRendererComponent(table, value, bSelected, bFocused, iRow, iCol);
+	        }
 
 	        if (m_cellFormat[iRow][iCol] != null) {
+	        	if (bSelected) {
+	        		if (m_cellFormat[iRow][iCol].m_bgColor != null) {
+	        		Color c1 = m_cellFormat[iRow][iCol].m_bgColor;
+	        		Color c2 = Color.LIGHT_GRAY;
+	        			setBackground(new Color((c1.getRed() + c2.getRed())/2, (c1.getGreen() + c2.getGreen())/2, (c1.getBlue() + c2.getBlue())/2));
+	        		} else {
+		        		setBackground(Color.LIGHT_GRAY);
+	        		}
+	        	} else {
+	        		setBackground(m_cellFormat[iRow][iCol].m_bgColor);
+	        	}
 	            setFont(m_cellFormat[iRow][iCol].m_font);
 	            setBorder(m_cellFormat[iRow][iCol].m_border);
 			} else {
+	        	if (bSelected) {
+	        		setBackground(Color.LIGHT_GRAY);
+	        	} else {
+	        		setBackground(null);
+	        	}
 	            setFont(null);
 	            setBorder(null);
 			}
@@ -873,137 +965,41 @@ public class SpreadSheet extends JPanel {
 	} // class ColoredTableCellRenderer
 	
 
-	/**
-	 * @version 1.0 03/09/99
-	 */
-	public class LinesBorder extends AbstractBorder implements SwingConstants { 
-	  protected int northThickness;
-	  protected int southThickness;
-	  protected int eastThickness;
-	  protected int westThickness;  
-	  protected Color m_color;
+	public class CellBorder extends AbstractBorder implements SwingConstants { 
+		protected int m_nNorthThickness;
+		protected int m_nSouthThickness;
+		protected int m_nEastThickness;
+		protected int m_nWestThickness;  
+		protected Color m_color;
 	  
-	  public LinesBorder(int nNorth, int nEast, int nSouth, int nWest) {
-		  northThickness = nNorth;
-		  eastThickness = nEast;
-		  southThickness = nSouth;
-		  westThickness = nWest;
-		  setColor(Color.black);
-	  }
-	  
-	  public LinesBorder(Color color) {
-	    this(color, 1);
-	  }
+	    public CellBorder(int nNorth, int nEast, int nSouth, int nWest) {
+		    m_nNorthThickness = nNorth;
+		    m_nEastThickness = nEast;
+		    m_nSouthThickness = nSouth;
+		    m_nWestThickness = nWest;
+		    m_color = Color.black;
+	    }
 
-	  public LinesBorder(Color color, int thickness)  {
-	    setColor(color);
-	    setThickness(thickness);
-	  }
-
-	  public LinesBorder(Color color, Insets insets)  {
-	    setColor(color);
-	    setThickness(insets);
-	  }
-
-	  public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-	    Color oldColor = g.getColor();
+	    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+	    	Color oldColor = g.getColor();
 	    
-	    g.setColor(m_color);
-	    for (int i = 0; i < northThickness; i++)  {
-	      g.drawLine(x, y+i, x+width-1, y+i);
-	    }
-//	    g.setColor(southColor);
-	    for (int i = 0; i < southThickness; i++)  {
-	      g.drawLine(x, y+height-i-1, x+width-1, y+height-i-1);
-	    }
-//	    g.setColor(eastColor);
-	    for (int i = 0; i < westThickness; i++)  {
-	      g.drawLine(x+i, y, x+i, y+height-1);
-	    }
-//	    g.setColor(westColor);
-	    for (int i = 0; i < eastThickness; i++)  {
-	      g.drawLine(x+width-i-1, y, x+width-i-1, y+height-1);
-	    }
+	    	g.setColor(m_color);
+	    	for (int i = 0; i < m_nNorthThickness; i++)  {
+	    		g.drawLine(x, y+i, x+width-1, y+i);
+	    	}
+	    	for (int i = 0; i < m_nSouthThickness; i++)  {
+	    		g.drawLine(x, y+height-i-1, x+width-1, y+height-i-1);
+	    	}
+	    	for (int i = 0; i < m_nWestThickness; i++)  {
+	    		g.drawLine(x+i, y, x+i, y+height-1);
+	    	}
+	    	for (int i = 0; i < m_nEastThickness; i++)  {
+	    		g.drawLine(x+width-i-1, y, x+width-i-1, y+height-1);
+	    	}
 	 
-	    g.setColor(oldColor);
-	  }
-
-	  public Insets getBorderInsets(Component c)       {
-	    return new Insets(northThickness, westThickness, southThickness, eastThickness);
-	  }
-	 
-	  public Insets getBorderInsets(Component c, Insets insets) {
-	    return new Insets(northThickness, westThickness, southThickness, eastThickness);    
-	  }
-	 
-	  public boolean isBorderOpaque() { return true; }
-	    
-	  public void setColor(Color c) {
-		  m_color = c;
-	  }
-	  
-//	  public void setColor(Color c, int direction) {
-//	    switch (direction) {
-//	      case NORTH: northColor = c; break;
-//	      case SOUTH: southColor = c; break;
-//	      case EAST:  eastColor  = c; break;
-//	      case WEST:  westColor  = c; break;
-//	      default: 
-//	    }
-//	  }
-	    
-	  public void setThickness(int n) {
-	    northThickness = n;
-	    southThickness = n;
-	    eastThickness  = n;
-	    westThickness  = n;
-	  }
-	    
-	  public void setThickness(Insets insets) {
-	    northThickness = insets.top;
-	    southThickness = insets.bottom;
-	    eastThickness  = insets.right;
-	    westThickness  = insets.left;
-	  }
-	  
-	  public void setThickness(int n, int direction) {
-	    switch (direction) {
-	      case NORTH: northThickness = n; break;
-	      case SOUTH: southThickness = n; break;
-	      case EAST:  eastThickness  = n; break;
-	      case WEST:  westThickness  = n; break;
-	      default: 
+	    	g.setColor(oldColor);
 	    }
-	  }
-	 
-	  public void append(LinesBorder b, boolean isReplace) {
-	    if (isReplace) {
-	      northThickness = b.northThickness;
-	      southThickness = b.southThickness;
-	      eastThickness  = b.eastThickness;
-	      westThickness  = b.westThickness;
-	    } else {
-	      northThickness = Math.max(northThickness ,b.northThickness);
-	      southThickness = Math.max(southThickness ,b.southThickness);
-	      eastThickness  = Math.max(eastThickness  ,b.eastThickness);
-	      westThickness  = Math.max(westThickness  ,b.westThickness);
-	    }
-	  }
-
-	  public void append(Insets insets, boolean isReplace) {
-	    if (isReplace) {
-	      northThickness = insets.top;
-	      southThickness = insets.bottom;
-	      eastThickness  = insets.right;
-	      westThickness  = insets.left;
-	    } else {
-	      northThickness = Math.max(northThickness ,insets.top);
-	      southThickness = Math.max(southThickness ,insets.bottom);
-	      eastThickness  = Math.max(eastThickness  ,insets.right);
-	      westThickness  = Math.max(westThickness  ,insets.left);
-	    }
-	  }
-	}
+	} // class CellBorder
 	
 	/**
 	 * Rudimentary test of this panel, takes a Beast II xml file as argument and

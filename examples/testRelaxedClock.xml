@@ -94,6 +94,7 @@
         <operator id="categoriesRandomWalk" spec="IntUniformOperator" weight="1">
             <input name="parameter" idref="rateCategories"/>
         </operator>
+
         <operator id='SScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <parameter idref="S"/>
         </operator>
@@ -123,35 +124,35 @@
             <tree idref="tree"/>
         </operator>
 
-        <log logEvery="10000">
+        <logger logEvery="10000">
 	    <model idref='posterior'/>
-            <probabilityDistribution idref="coalescent" name='log'/>
-            <probabilityDistribution idref="likelihood" name='log'/>
+            <log idref="coalescent"/>
+            <log idref="likelihood"/>
             <log spec='beast.evolution.tree.TreeHeightLogger'>
                 <tree idref='tree'/>
             </log>
-            <parameter idref="popSize" name='log'/>
-            <parameter idref="hky.kappa" name='log'/>
-            <parameter idref="S" name='log'/>
-            <intParameter idref="rateCategories" name='log'/>
-            <probabilityDistribution idref="posterior" name='log'/>
-        </log>
-        <log logEvery="10000" fileName="test.$(seed).log">
+            <log idref="popSize"/>
+            <log idref="hky.kappa"/>
+            <log idref="S"/>
+            <log idref="rateCategories"/>
+            <log idref="posterior"/>
+        </logger>
+        <logger logEvery="10000" fileName="test.$(seed).log">
 	    <model idref='posterior'/>
-            <probabilityDistribution idref="coalescent" name='log'/>
-            <probabilityDistribution idref="likelihood" name='log'/>
+            <log idref="coalescent"/>
+            <log idref="likelihood"/>
             <log spec='beast.evolution.tree.TreeHeightLogger'>
                 <tree idref='tree'/>
             </log>
-            <parameter idref="popSize" name='log'/>
-            <parameter idref="hky.kappa" name='log'/>
-            <parameter idref="S" name='log'/>
-            <intParameter idref="rateCategories" name='log'/>
-            <probabilityDistribution idref="posterior" name='log'/>
-        </log>
-        <log logEvery="10000" fileName="test.$(seed).trees">
-            <tree idref="tree" name='log'/>
-        </log>
+            <log idref="popSize"/>
+            <log idref="hky.kappa"/>
+            <log idref="S"/>
+            <log idref="rateCategories"/>
+            <log idref="posterior"/>
+        </logger>
+        <logger logEvery="10000" fileName="test.$(seed).trees">
+            <log idref="tree"/>
+        </logger>
     </run>
 
 </beast>

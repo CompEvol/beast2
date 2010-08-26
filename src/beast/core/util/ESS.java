@@ -5,20 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beast.core.Description;
-import beast.core.Distribution;
+//import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.Valuable;
 import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.Plugin;
-import beast.core.parameter.RealParameter;
+//import beast.core.parameter.RealParameter;
 
 @Description("Report effective sample size of a parameter or log values from a distribution. " +
 		"This uses the same criterion as Tracer and assumes 10% burn in.")
 public class ESS extends Plugin implements Loggable {
-	public Input<RealParameter> m_pParam =
-            new Input<RealParameter>("parameter","real valued parameter to report ESS for");
-	public Input<Distribution> m_pDistribution =
-            new Input<Distribution>("distribution","probability distribution to report ESS for", Validate.XOR, m_pParam);
+	public Input<Valuable> m_pParam =
+            new Input<Valuable>("arg","value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
+//	public Input<Distribution> m_pDistribution =
+//            new Input<Distribution>("distribution","probability distribution to report ESS for", Validate.XOR, m_pParam);
 
 	/** values from which the ESS is calculated **/
 	List<Double> m_trace;
@@ -26,21 +27,22 @@ public class ESS extends Plugin implements Loggable {
 	double m_fSum = 0;
 	/** keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  **/
     List<Double> m_fSquareLaggedSums;
-	/** shadow of distribution input (if any) **/
-	Distribution m_distribution;
+//	/** shadow of distribution input (if any) **/
+//	Distribution m_distribution;
 	
 	@Override
 	public void initAndValidate() {
-		if (m_pParam.get() == null) {
-			m_distribution = m_pDistribution.get();
-		}
+//		if (m_pParam.get() == null) {
+//			m_distribution = m_pDistribution.get();
+//		}
 		m_trace = new ArrayList<Double>();
 		m_fSquareLaggedSums = new ArrayList<Double>();
 	}
 	
 	@Override
 	public void init(PrintStream out) throws Exception {
-		final String sID = (m_distribution == null? m_pParam.get().getID() : m_distribution.getID());
+//		final String sID = (m_distribution == null? m_pParam.get().getID() : m_distribution.getID());
+		final String sID = ((Plugin) m_pParam.get()).getID();
 		out.print("ESS("+sID+")\t");
 	}
 
@@ -63,7 +65,8 @@ public class ESS extends Plugin implements Loggable {
 
     @Override
 	public void log(final int nSample, PrintStream out) {
-		final Double fNewValue = (m_distribution == null? m_pParam.get().getValue() : m_distribution.getCurrentLogP());
+//		final Double fNewValue = (m_distribution == null? m_pParam.get().getValue() : m_distribution.getCurrentLogP());
+		final Double fNewValue = m_pParam.get().getArrayValue();
 		m_trace.add(fNewValue);
 		m_fSum += fNewValue;
 		

@@ -8,6 +8,33 @@ XSL script for converting Beast version 1 files to Beast 2.0 XML files
 <xsl:template match='/'>
     <beast version='2.0' namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
         <xsl:apply-templates  select='//alignment[not(name(@*)="idref")]'/>
+
+    <input spec='HKY' id='hky'>
+        <kappa idref='hky.kappa'/>
+        <frequencies id='freqs' spec='Frequencies'>
+            <data idref='alignment'/>
+        </frequencies>
+    </input>
+
+    <input spec='SiteModel' id="siteModel">
+        <frequencies idref='freqs'/>
+        <substModel idref='hky'/>
+    </input>
+
+    <input spec='TreeLikelihood' id="treeLikelihood">
+        <data idref="alignment"/>
+        <tree idref="tree"/>
+        <siteModel idref="siteModel"/>
+    </input>
+
+    <parameter id="hky.kappa" value="1.0" lower="0.0"/>
+
+    <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+        <taxa idref='alignment'/>
+    </tree>
+
+
+
         <xsl:apply-templates  select='//mcmc'/>
     </beast>
 </xsl:template>
@@ -38,10 +65,13 @@ XSL script for converting Beast version 1 files to Beast 2.0 XML files
         <state>
             <xsl:for-each select='//operators/*/*|//log//*'>
                 <xsl:if test='string-length(concat(@idref,@id))&gt;0'>
-                    <statNode idref='{@id}{@idref}'/>
+                    <stateNode idref='{@id}{@idref}'/>
                 </xsl:if>
             </xsl:for-each>
         </state>
+
+        <distribution id='likelihood' idref="treeLikelihood"/>
+
         <xsl:apply-templates select='//operators[not(name(@*)="idref")]/*' mode='operator'/>
         <xsl:apply-templates select='log|logTree'/>
     </run>

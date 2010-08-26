@@ -206,6 +206,7 @@ public class Tree extends StateNode {
             	listNodes(tree.root, tree.m_nodes);
         	}
         }
+        
         root = m_nodes[tree.root.getNr()];
         Node [] otherNodes = tree.m_nodes;
         int iRoot = root.getNr();
@@ -214,6 +215,7 @@ public class Tree extends StateNode {
         root.m_Parent = null;
     	root.m_left = m_nodes[otherNodes[iRoot].m_left.getNr()];
     	root.m_right = m_nodes[otherNodes[iRoot].m_right.getNr()];
+//    	root.assignFromFragile(otherNodes[iRoot]);
         assignFrom(iRoot + 1, nodeCount, otherNodes);
     }
     
@@ -227,6 +229,7 @@ public class Tree extends StateNode {
         		sink.m_left = m_nodes[src.m_left.getNr()];
         		sink.m_right = m_nodes[src.m_right.getNr()];
         	}
+//        	sink.assignFromFragile(src);
         }
     }
     /** convert tree to array representation **/
@@ -328,7 +331,6 @@ public class Tree extends StateNode {
 			e.printStackTrace();
 		}
 	}
-
 	@Override public int getDimension() {return nodeCount;}
     @Override public double getArrayValue() {return (double) root.m_fHeight;}
     @Override public double getArrayValue(int iValue) {

@@ -53,7 +53,7 @@ import java.util.HashMap;
  * Reserved elements (present in element2class map)
  * <probabilityDistribution>
  * <operator>
- * <log>
+ * <logger>
  * <data>
  * <sequence>
  * <state>
@@ -131,7 +131,7 @@ public class XMLParser {
     final static String DISTRIBUTION_ELEMENT = "distribution";
     final static String OPERATOR_ELEMENT = "operator";
     final static String INPUT_ELEMENT = "input";
-    final static String LOG_ELEMENT = "log";
+    final static String LOG_ELEMENT = "logger";
     final static String DATA_ELEMENT = "data";
     final static String SEQUENCE_ELEMENT = "sequence";
     final static String STATE_ELEMENT = "state";

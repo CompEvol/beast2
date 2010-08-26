@@ -83,28 +83,28 @@
             <tree idref="tree"/>
         </operator>
 
-        <log logEvery="10000">
-	    <model idref='likelihood'/>
-            <distribution name='log' idref="likelihood"/>
+        <logger logEvery="10000">
+	        <model idref='likelihood'/>
+            <log idref="likelihood"/>
 	    <ESS spec='ESS' name='log'>
-	            <distribution idref="likelihood"/>
+	            <arg idref="likelihood"/>
 	    </ESS>
-            <parameter name='log' idref="hky.kappa"/>
+            <log idref="hky.kappa"/>
 	    <ESS spec='ESS' name='log'>
-	            <parameter idref="hky.kappa"/>
+	            <arg idref="hky.kappa"/>
 	    </ESS>
-        </log>
-        <log logEvery="10000" fileName="test.$(seed).log">
+        </logger>
+        <logger logEvery="10000" fileName="test.$(seed).log">
 	    <model idref='likelihood'/>
-            <distribution name='log' idref="likelihood"/>
-            <parameter name='log' idref="hky.kappa"/>
+            <log idref="likelihood"/>
+            <log idref="hky.kappa"/>
             <log spec='beast.evolution.tree.TreeHeightLogger'>
                 <tree idref='tree'/>
             </log>
-        </log>
-        <log logEvery="10000" fileName="test.$(seed).trees">
-            <tree name='log' idref="tree"/>
-        </log>
+        </logger>
+        <logger logEvery="10000" fileName="test.$(seed).trees">
+            <log idref="tree"/>
+        </logger>
 
     </run>
 

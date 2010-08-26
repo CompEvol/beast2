@@ -49,10 +49,10 @@
             <parameter idref="birthRate"/>
         </operator>
 
-	<log>
-		<distribution name='log' idref='yule.prior'/>
-		<distribution name='log' idref='yulelike.prior'/>
-	</log>
+	<logger>
+		<log idref='yule.prior'/>
+		<log idref='yulelike.prior'/>
+	</logger>
     </run>
 
 </beast>

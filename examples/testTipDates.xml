@@ -155,17 +155,17 @@
             <tree idref="tree"/>
         </operator>
 
-        <log logEvery="10000">
-            <distribution name='log' idref="likelihood"/>
-            <parameter name='log' idref="hky.kappa"/>
-        </log>
-        <log logEvery="10000" fileName="test.$(seed).log">
-            <distribution name='log' idref="likelihood"/>
-            <parameter name='log' idref="hky.kappa"/>
-        </log>
-        <log logEvery="10000" fileName="test.$(seed).trees">
-            <tree name='log' idref="tree"/>
-        </log>
+        <logger logEvery="10000">
+            <log idref="likelihood"/>
+            <log idref="hky.kappa"/>
+        </logger>
+        <logger logEvery="10000" fileName="test.$(seed).log">
+            <log idref="likelihood"/>
+            <log idref="hky.kappa"/>
+        </logger>
+        <logger logEvery="10000" fileName="test.$(seed).trees">
+            <log idref="tree"/>
+        </logger>
 
     </run>
 </beast>

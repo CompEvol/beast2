@@ -14,7 +14,10 @@ import java.util.Random;
  * @author Alexei Drummond
  */
 
-@Description("Calculates the probability of a beast.tree conditional on a population size function.")
+@Description("Calculates the probability of a beast.tree conditional on a population size function. " +
+	"Note that this does not take the number of possible tree interval/tree topology combinations " +
+	"in account, in other words, the constant required for making this a proper distribution that integrates " +
+	"to unity is not calculated (partly, because we don't know how for sequentially samples data).")
 public class Coalescent extends Distribution {
 
 //    public Input<Tree> tree = new Input<Tree>("tree", "A phylogenetic beast tree");
