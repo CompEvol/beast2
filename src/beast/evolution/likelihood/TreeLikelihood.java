@@ -186,6 +186,7 @@ public class TreeLikelihood extends Distribution {
 
     @Override
     public void initAndValidate() throws Exception {
+    	// TODO: check that alignment has same taxa as trees
         int nodeCount = m_tree.get().getNodeCount();
         m_siteModel = m_pSiteModel.get();
         m_substitutionModel = m_siteModel.m_pSubstModel.get();

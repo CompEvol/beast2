@@ -13,8 +13,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -38,6 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -56,7 +55,6 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 
 
 import beast.core.Distribution;
@@ -64,12 +62,10 @@ import beast.core.Input;
 import beast.core.Logger;
 import beast.core.Plugin;
 import beast.core.StateNode;
+import beast.util.ClassDiscovery;
 import beast.util.XMLParser;
 
 // Wishlist:
-// TODO handle cancel editing event => implement custom CellRenderers
-// TODO implement custom editors
-// TODO create new Plugin on right click
 // TODO save/saveAs
 // TODO cut/copy/paste/delete
 // TODO undo/redo
@@ -88,8 +84,6 @@ public class SpreadSheet extends JPanel {
 	static HashMap<Plugin, Integer> m_pluginLocation;
 	/** objects associated with the spread sheet cells **/
 	Object[][] m_objects;
-	/** string representation of objects **/
-	//String[][] m_rows;
 	/** rendering style for cell **/
 	CellFormat [][] m_cellFormat;
 	class CellFormat {
@@ -103,8 +97,6 @@ public class SpreadSheet extends JPanel {
 	JTable m_table;
 	/** row labels on the left of the spreadsheet **/
 	JTable m_rowHeaderTable;
-	/** for managing cancelled edits **/
-	//String m_sOldValue;
 	/** current directory for opening files **/
 	String m_sDir = System.getProperty("user.dir");
 	/** list of borders to choose from **/
@@ -114,9 +106,11 @@ public class SpreadSheet extends JPanel {
     /** nr of rows and columns in the spreadsheet **/
 	static int MAX_ROW = 255;
 	int MAX_COL = 32;
-
+	String [] m_sPlugInNames;
+	
 	SpreadSheet() {
-		//m_rows = new String[MAX_ROW][MAX_COL];
+        List<String> sPlugInNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+        m_sPlugInNames = sPlugInNames.toArray(new String[0]);
 		m_objects = new Object[MAX_ROW][MAX_COL];
 		m_cellFormat = new CellFormat[MAX_ROW][MAX_COL];
 		String[] headers = new String[MAX_COL];
@@ -136,18 +130,6 @@ public class SpreadSheet extends JPanel {
 				}
 				System.err.println(m_objects[iRow][iCol].getClass().getName());
 				System.err.println(m_objects[iRow][iCol].toString());
-				
-				
-//				if (m_objects[iRow][iCol] instanceof Plugin) {
-//					m_rows[iRow][iCol] = SpreadSheet.toString((Plugin) m_objects[iRow][iCol]);
-//				} else if (m_rows[iRow][iCol] == null) {
-//					return;
-//				} else if (m_rows[iRow][iCol].startsWith("=")) {
-//					m_objects[iRow][iCol] = new FormulaCell(m_rows[iRow][iCol]);
-//					m_rows[iRow][iCol] = ((FormulaCell)m_objects[iRow][iCol]).toString();
-//				} else {
-//					m_objects[iRow][iCol] = m_rows[iRow][iCol]; 
-//				}
 			}
 			@Override
 			public void editingCanceled(ChangeEvent e) {
@@ -157,7 +139,6 @@ public class SpreadSheet extends JPanel {
 				if (iRow < 0 || iCol < 0) {
 					return;
 				}
-				//m_rows[iRow][iCol] = m_sOldValue;
 				repaint();
 			}
 			@Override
@@ -182,15 +163,6 @@ public class SpreadSheet extends JPanel {
 					return null;
 				}
 			}
-			 
-			// public TableCellRenderer getCellRenderer(int row, int column) {
-			// // if (m_rows[row][column] instanceof Plugin) {
-			// // return m_pluginRenderer;
-			// // }
-			// // else...
-			// return super.getCellRenderer(row, column);
-			// }
-
 		};
 
 		m_table.addMouseListener(new MouseListener() {
@@ -208,28 +180,44 @@ public class SpreadSheet extends JPanel {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-					edit();
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					int iRow = m_table.rowAtPoint(e.getPoint());
+					int iCol = m_table.columnAtPoint(e.getPoint());
+					if (iRow < 0 || iCol < 0) {
+						return;
+					}
+					selectCell(iRow, iCol);
+                    String sClassName = (String) JOptionPane.showInputDialog(m_table.getParent(), "Select a constant",
+                            "select", JOptionPane.PLAIN_MESSAGE,  null, m_sPlugInNames, null);
+                    if (sClassName != null) {
+                    	try {
+                    		m_objects[iRow][iCol] = (beast.core.Plugin) Class.forName(sClassName).newInstance();
+                    	} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+                    	m_table.editCellAt(iRow, iCol);
+                    }
+
+				}
 			}
 		});
 		
-		m_table.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-				edit();
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == 113) {
-					edit();
-				}
-				//System.err.println(e.getKeyCode());
-			}
-		});
+//		m_table.addKeyListener(new KeyListener() {
+//			@Override
+//			public void keyTyped(KeyEvent e) {
+//			}
+//
+//			@Override
+//			public void keyReleased(KeyEvent e) {
+//			}
+//
+//			@Override
+//			public void keyPressed(KeyEvent e) {
+//				if (e.getKeyCode() == 113) {
+//				}
+//				//System.err.println(e.getKeyCode());
+//			}
+//		});
 
 		m_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		m_table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -241,7 +229,18 @@ public class SpreadSheet extends JPanel {
 			@Override
 			public boolean stopCellEditing() {
 				Object o = m_objects[m_iRow][m_iCol];
-				System.err.println("stopCellEditing " + o.getClass().getName() + " " + o);
+				System.err.println("stopCellEditing "+ (o==null? "null":o.getClass().getName() + " " + o) + "  => " + ((JTextField)component).getText());
+				String sText = ((JTextField)component).getText();
+				if (m_objects[m_iRow][m_iCol] == null || !(m_objects[m_iRow][m_iCol] instanceof Plugin)) {
+					if (sText.startsWith("=")) {
+						m_objects[m_iRow][m_iCol] = new FormulaCell(sText);
+					} else {
+						m_objects[m_iRow][m_iCol] = sText;
+					}
+				} else {
+					// it is a Plugin
+				}
+				m_table.removeEditor();
 				return true;
 			}
 			
@@ -283,10 +282,22 @@ public class SpreadSheet extends JPanel {
 					boolean isSelected, int row, int column) {
 				m_iRow = row;
 				m_iCol = column;
+				
+				selectCell(m_iRow, m_iCol);
 				if (value == null) {
 					((JTextField)component).setText("");
 				} else if (value instanceof Plugin) {
-					((JTextField)component).setText((SpreadSheet.toString((Plugin)value)));
+					Plugin plugin = (Plugin) value;
+					PluginDialog dlg = new PluginDialog(plugin, plugin.getClass());
+					dlg.setVisible(true);
+					if (dlg.getOK()) {
+						plugin = dlg.panel.m_plugin;
+						m_objects[m_iRow][m_iCol] = plugin;
+						m_table.repaint();
+					}
+					return null;
+				
+				
 				} else if (value instanceof FormulaCell) {
 					((JTextField)component).setText("=" + ((FormulaCell)value).m_sFormula);
 				} else if (value instanceof String) {
@@ -373,12 +384,10 @@ public class SpreadSheet extends JPanel {
 	void init() {
 		for (int i = 0; i < MAX_ROW; i++) {
     		for (int j = 0; j < MAX_COL; j++) {
-    			//m_rows[i][j] = null;
     			m_objects[i][j] = null;
     			m_cellFormat[i][j] = null;
     		}
 		}
-		// m_pluginRenderer = new PluginRenderer();
 		m_pluginLocation = new HashMap<Plugin, Integer>();
 		for (int i = 0; i < m_plugins.size(); i++) {
 			Plugin plugin = m_plugins.get(i);
@@ -391,12 +400,10 @@ public class SpreadSheet extends JPanel {
 			m_pluginLocation.put(plugin, i + MAX_ROW);
 			if (plugin instanceof StateNode || plugin instanceof Distribution) {
 				m_objects[i][2] = new FormulaCell("=$B"+(i+1));
-				//m_rows[i][2] = ((FormulaCell)m_objects[i][2]).toString();
 			}
 		}
 		for (int i = 0; i < m_plugins.size(); i++) {
 			Plugin plugin = m_plugins.get(i);
-			//m_rows[i][1] = toString(plugin);// .toString();
 		}
 		m_table.repaint();
 	} // init
@@ -528,11 +535,7 @@ public class SpreadSheet extends JPanel {
 			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 					boolean cellHasFocus) {
 				    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-					// Get icon to use for the list item value
-					Icon icon = m_borderIcons[Math.max(index, 0)];
-					 
-					// Set icon to display for value
-			        label.setIcon(icon);
+			        label.setIcon(m_borderIcons[Math.max(index, 0)]);
 			        return label;				
 			}
 		});
@@ -653,33 +656,6 @@ public class SpreadSheet extends JPanel {
 		}
 	    m_table.repaint();
 	} // toggleFontProperty
-	
-	/** edit a cell using the appropriate editor **/
-	void edit() {
-		if (true) return;
-		int iCol = m_table.getSelectedColumn();
-		int iRow = m_table.getSelectedRow();
-		if (iCol < 0 || iRow < 0) {
-			return;
-		}
-		//m_sOldValue = m_rows[iRow][iCol];
-		Object o = m_objects[iRow][iCol];
-		if (o instanceof Plugin) {
-			Plugin plugin = (Plugin) o;
-			PluginDialog dlg = new PluginDialog(plugin, plugin.getClass());
-			dlg.setVisible(true);
-			if (dlg.getOK()) {
-				plugin = dlg.panel.m_plugin;
-				//m_rows[iRow][iCol] = toString(plugin);
-				m_objects[iRow][iCol] = plugin;
-				m_table.repaint();
-			}
-		} else 	if (o instanceof FormulaCell) {
-			//m_rows[iRow][iCol] = "="+((FormulaCell)o).m_sFormula;
-			m_table.repaint();
-		}
-		m_table.editCellAt(iRow, iCol);
-	} // edit
 
 	void readXML(String sFile) throws Exception {
 		XMLParser parser = new XMLParser();
@@ -859,7 +835,7 @@ public class SpreadSheet extends JPanel {
 			String sFormula = "with (Math) {";
 			for (int i = 0; i < m_nTokens.size(); i++) {
 				if (m_nTokens.get(i) >= 0) {
-					sFormula += getCellRef(m_nTokens.get(i));
+					sFormula += "(" + getCellRef(m_nTokens.get(i)) + ")";
 				} else {
 					sFormula += m_sTokens.get(i);
 				}
@@ -1000,6 +976,12 @@ public class SpreadSheet extends JPanel {
 	    	g.setColor(oldColor);
 	    }
 	} // class CellBorder
+
+	void selectCell(int iRow, int iCol) {
+		m_table.clearSelection();
+		m_table.addRowSelectionInterval(iRow, iRow);
+		m_table.addColumnSelectionInterval(iCol, iCol);
+	}
 	
 	/**
 	 * Rudimentary test of this panel, takes a Beast II xml file as argument and
