@@ -39,7 +39,9 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * in the state has changed. StateNode implementations like Parameters and Trees
      * have their own internal flag to represent which part of a StateNode (e.g.
      * an element in an array, or a node in a tree) has changed.
-     * **/
+     *
+     * @return true when not perfectly clean
+     **/
     public boolean somethingIsDirty() {
         return this.somethingIsDirty;
     }
@@ -47,10 +49,10 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     public void setSomethingIsDirty(final boolean isDirty) {
     	this.somethingIsDirty = isDirty;
     }
-    /** mark every internal element of a StateNode as isDirty.
+    /** mark every internal element of a StateNode as dirty or clean, depending on isDirty.
      * So both the global flag for this StateNode (somethingIsDirty) should be set as
      * well as all the local flags.
-     * @param isDirty
+     * @param isDirty dirtyness state
      */
     abstract public void setEverythingDirty(final boolean isDirty);
 
@@ -60,28 +62,35 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      */
     public abstract StateNode copy();
     
-    /** other := this 
-     * Assign all values of this to other **/
+    /** @param other := this
+     ** Assign all values of this to other
+     **/
     public abstract void assignTo(StateNode other);
     
-    /** this := other 
-    * Assign all values of other to this **/
+    /** @param other <- this
+     ** Assign all values of other to this
+     **/
     public abstract void assignFrom(StateNode other);
     
     /** As assignFrom, but only those parts are assigned that 
      * are variable, for instance for parameters bounds and dimension
      * do not need to be copied.
+     * @param other  <- this
      */
     public abstract void assignFromFragile(StateNode other);
 
-    /** for storing a state **/
+    /** for storing a state
+     **  @param out store where
+     **/
     final public void toXML(PrintStream out) {
     	out.print("<statenode id='" + getID() +"'>");
     	out.print(toString());
     	out.print("</statenode>\n");
     }
     
-    /** for restoring a state that was stored using toXML() above. **/
+    /** for restoring a state that was stored using toXML() above.
+     ** @param node  store into
+     **/
     public abstract void fromXML(Node node);
 
     

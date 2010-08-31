@@ -1,5 +1,3 @@
-package beast.evolution.tree.coalescent;
-
 /*
  * IntervalList.java
  *
@@ -24,6 +22,8 @@ package beast.evolution.tree.coalescent;
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
+
+package beast.evolution.tree.coalescent;
 
 
 /**
@@ -52,8 +52,8 @@ public interface IntervalList {
     double getInterval(int i);
 
     /**
-     * Required for s-coalescents, where new lineages are added as
-     * earlier samples are come across.
+     * Required for serial-coalescent, where new lineages are added as
+     * earlier samples come across.
      *
      * @param i the index of the interval
      * @return the number of uncoalesced lineages within this interval.
@@ -99,7 +99,7 @@ public interface IntervalList {
          * @param t         the time that you are counting the number of lineages
          * @return the number of lineages at time t.
          */
-        public static int getLineageCount(IntervalList intervals, double t) {
+        public static int getLineageCount(final IntervalList intervals, double t) {
 
             int i = 0;
             while (i < intervals.getIntervalCount() && t > intervals.getInterval(i)) {
@@ -114,16 +114,16 @@ public interface IntervalList {
          * @param intervals the intervals for which the delta parameter is calculated.
          * @return the delta parameter of Pybus et al (Node spread statistic)
          */
-        public static double getDelta(IntervalList intervals) {
+        public static double getDelta(final IntervalList intervals) {
 
             // Assumes ultrametric beast.tree!
             if (!intervals.isCoalescentOnly()) {
                 throw new IllegalArgumentException("Assumes ultrametric beast.tree!");
             }
 
-            int n = intervals.getIntervalCount();
+            final int n = intervals.getIntervalCount();
 
-            int numTips = n + 1;
+            final int numTips = n + 1;
 
             double transTreeDepth = 0.0;
             double cumInts = 0.0;
@@ -132,7 +132,7 @@ public interface IntervalList {
             // transform intervals
             for (int j = 0; j < n; j++) { // move from tips to root
 
-                double transInt = intervals.getInterval(j) *
+                final double transInt = intervals.getInterval(j) *
                         beast.math.Binomial.choose2(intervals.getLineageCount(j)); // coalescent version
                 //intLenCopy[j] = getInterval(j)*getLineageCount(j); // birth-death version
 
@@ -145,11 +145,11 @@ public interface IntervalList {
                 transTreeDepth += transInt;
             }
 
-            double halfTreeDepth = transTreeDepth / 2.0;
+            final double halfTreeDepth = transTreeDepth / 2.0;
 
             sum *= (1.0 / (numTips - 2.0));
-            double top = halfTreeDepth - sum;
-            double bottom = transTreeDepth * Math.sqrt((1.0 / (12.0 * (numTips - 2.0))));
+            final double top = halfTreeDepth - sum;
+            final double bottom = transTreeDepth * Math.sqrt((1.0 / (12.0 * (numTips - 2.0))));
 
             return (top / bottom);
         }

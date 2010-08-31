@@ -47,8 +47,8 @@ public class MCMC extends Runnable {
     public Input<State> m_startState =
             new Input<State>("state", "elements of the state space", new State(), Input.Validate.REQUIRED);
 
-    public Input<Distribution> posteriorInput =
-            new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)",
+    public Input<Density> posteriorInput =
+            new Input<Density>("distribution", "probability distribution to sample over (e.g. a posterior)",
                     Input.Validate.REQUIRED);
 
     public Input<List<Operator>> operatorsInput =
@@ -144,8 +144,8 @@ public class MCMC extends Runnable {
         /** report operator statistics **/
         public void showOperatorRates(PrintStream out) {
             out.println("Operator                                        #accept\t#reject\t#total\tacceptance rate");
-            for (int i = 0; i < m_operators.size(); i++) {
-                out.println(m_operators.get(i));
+            for(Operator m_operator : m_operators) {
+                out.println(m_operator);
             }
         }
     } // class OperatorSet
@@ -167,7 +167,7 @@ public class MCMC extends Runnable {
         System.err.println(state.toString());
 
         state.setEverythingDirty(true);
-        Distribution posterior = posteriorInput.get();
+        Density posterior = posteriorInput.get();
         int nBurnIn = m_oBurnIn.get();
         int nChainLength = m_oChainLength.get();
 

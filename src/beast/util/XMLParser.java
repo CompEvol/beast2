@@ -111,7 +111,7 @@ public class XMLParser {
     final static String DATA_CLASS = Alignment.class.getName();
     final static String SEQUENCE_CLASS = Sequence.class.getName();
     final static String STATE_CLASS = State.class.getName();
-    final static String LIKELIHOOD_CLASS = Distribution.class.getName();
+    final static String LIKELIHOOD_CLASS = Density.class.getName();
     final static String LOG_CLASS = Logger.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
     final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();

@@ -7,7 +7,7 @@ import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.math.distributions.ParametricDistribution;
+import beast.densities.ParametricDistribution;
 
 /**
  * @author Alexei Drummond

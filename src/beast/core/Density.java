@@ -1,5 +1,5 @@
 /*
-* File Distribution.java
+* File Density.java
 *
 * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
@@ -30,7 +30,7 @@ import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
         "a log probability for instance for running an MCMC chain.")
-public abstract class Distribution extends CalculationNode implements Loggable, Valuable {
+public abstract class Density extends CalculationNode implements Loggable, Valuable {
 
     /**
      * current and stored log probability/log likelihood/log distribution *

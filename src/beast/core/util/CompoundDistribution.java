@@ -26,7 +26,7 @@ package beast.core.util;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Distribution;
+import beast.core.Density;
 import beast.core.State;
 
 import java.util.ArrayList;
@@ -36,17 +36,17 @@ import java.util.Random;
 @Description("Takes a collection of distributions, typically a number of likelihoods " +
         "and priors and combines them into the compound of these distributions " +
         "typically interpreted as the posterior.")
-public class CompoundDistribution extends Distribution {
-    public Input<List<Distribution>> pDistributions =
-            new Input<List<Distribution>>("distribution",
+public class CompoundDistribution extends Density {
+    public Input<List<Density>> pDistributions =
+            new Input<List<Density>>("distribution",
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
-                    new ArrayList<Distribution>());
+                    new ArrayList<Density>());
 
     /** Distribution implementation follows **/
     @Override
     public double calculateLogP() throws Exception {
         logP = 0;
-        for(Distribution dists : pDistributions.get()) {
+        for(Density dists : pDistributions.get()) {
             logP += dists.calculateLogP();
         }
         return logP;
@@ -54,7 +54,7 @@ public class CompoundDistribution extends Distribution {
 
     @Override
     public void sample(State state, Random random) {
-        for(Distribution distribution : pDistributions.get()) {
+        for(Density distribution : pDistributions.get()) {
             distribution.sample(state, random);
         }
     }
@@ -62,7 +62,7 @@ public class CompoundDistribution extends Distribution {
     @Override
     public List<String> getArguments() {
         List<String> arguments = new ArrayList<String>();
-        for(Distribution distribution : pDistributions.get()) {
+        for(Density distribution : pDistributions.get()) {
             arguments.addAll(distribution.getArguments());
         }
         return arguments;
@@ -71,7 +71,7 @@ public class CompoundDistribution extends Distribution {
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<String>();
-        for(Distribution distribution : pDistributions.get()) {
+        for(Density distribution : pDistributions.get()) {
             conditions.addAll(distribution.getConditions());
         }
         return conditions;

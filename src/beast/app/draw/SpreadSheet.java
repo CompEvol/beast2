@@ -57,11 +57,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 
 
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.Logger;
-import beast.core.Plugin;
-import beast.core.StateNode;
+import beast.core.Density;
+import beast.core.*;
 import beast.util.ClassDiscovery;
 import beast.util.XMLParser;
 
@@ -398,7 +395,7 @@ public class SpreadSheet extends JPanel {
 			m_objects[i][0] = sID;
 			m_objects[i][1] = plugin;
 			m_pluginLocation.put(plugin, i + MAX_ROW);
-			if (plugin instanceof StateNode || plugin instanceof Distribution) {
+			if (plugin instanceof StateNode || plugin instanceof Density ) {
 				m_objects[i][2] = new FormulaCell("=$B"+(i+1));
 			}
 		}
@@ -819,9 +816,9 @@ public class SpreadSheet extends JPanel {
 				return ((FormulaCell)o).value();
 			} else if (o instanceof StateNode) {
 				return ((StateNode)o).getArrayValue();
-			} else if (o instanceof Distribution) {
+			} else if (o instanceof Density ) {
 				try {
-					return ((Distribution)o).calculateLogP();
+					return ((Density)o).calculateLogP();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

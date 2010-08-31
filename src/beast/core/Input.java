@@ -378,7 +378,7 @@ public class Input<T> {
         if (theClass.isAssignableFrom(sValue.getClass())) {
             value = (T) sValue;
         } else {
-            throw new Exception("Input 103: type mismatch");
+            throw new Exception("Input 103: type mismatch for value " + sValue);
         }
     } // setStringValue
 

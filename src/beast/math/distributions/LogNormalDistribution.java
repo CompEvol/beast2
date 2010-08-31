@@ -26,9 +26,9 @@
 package beast.math.distributions;
 
 
-import org.apache.commons.math.distribution.NormalDistributionImpl;
 import org.apache.commons.math.MathException;
-import org.apache.commons.math.analysis.UnivariateRealFunction;
+import org.apache.commons.math.distribution.NormalDistributionImpl;
+
 /**
  * log normal distribution (pdf, cdf, quantile)
  *
@@ -93,15 +93,9 @@ public class LogNormalDistribution implements Distribution {
         return mode(M, S);
     }
 
-    public final UnivariateRealFunction getProbabilityDensityFunction() {
-        return pdfFunction;
+    public final org.apache.commons.math.distribution.Distribution getProbabilityDensity() {
+        return new LogNormalDistImpl(M, S);
     }
-
-    private final UnivariateRealFunction pdfFunction = new UnivariateRealFunction() {
-        public final double value(double x) {
-            return pdf(x);
-        }
-    };
 
     /**
      * probability density function
@@ -112,7 +106,6 @@ public class LogNormalDistribution implements Distribution {
      * @return pdf at x
      */
     public static double pdf(double x, double M, double S) {
-
         normal.setMean(M);
         normal.setMean(S);
         return normal.density(Math.log(x)) / x;
@@ -145,7 +138,7 @@ public class LogNormalDistribution implements Distribution {
         try {
             return normal.cumulativeProbability(Math.log(x));
         } catch (MathException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
             return Double.NaN;
         }
         //return NormalDistribution.cdf(Math.log(x), M, S);
@@ -160,12 +153,10 @@ public class LogNormalDistribution implements Distribution {
      * @return icdf at z
      */
     public static double quantile(double z, double M, double S) {
-
-
         try {
             return Math.exp(normal.inverseCumulativeProbability(z));
         } catch (MathException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
             return Double.NaN;
         }
     }

@@ -1,0 +1,35 @@
+<beast version='2.0'
+       namespace='beast.densities:beast.core:beast.evolution.operators:beast.core.parameter'>
+
+  <parameter spec='IntegerParameter' name='k' id='k' dimension="1" value="0" lower="0"/>
+
+  <run spec="MCMC" id="mcmc" chainLength="100">
+    <state>
+      <input name='stateNode' idref='k'/>
+    </state>
+    
+    <!-- <input name="distribution" spec="Poisson" lambda="0.69314718055994529"/> -->
+    <distribution spec="Prior" id="posterior">
+      <input name="x" idref="k"/>
+      <input name="density" spec="Poisson">
+	<input spec='RealParameter' name='lambda' value="0.69314718055994529"/>
+      </input>
+    </distribution>
+    
+    <operator id="walk" spec="IntRandomWalkOperator" windowSize="2" weight="1">
+      <input name="parameter" idref="k"/>
+    </operator>
+
+    <logger logEvery="1">
+      <log idref="k"/>
+      <log idref="posterior"/>
+    </logger>
+
+    <logger logEvery="10" fileName="poisson.log">
+      <log idref="k"/>
+      <log idref="posterior"/>
+    </logger>
+  </run>
+
+</beast>
+

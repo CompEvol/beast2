@@ -43,7 +43,8 @@ public class ScaleOperator extends Operator {
     // shadows input
     double m_fScaleFactor;
     public Input<Boolean> m_pScaleAll =
-            new Input<Boolean>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
+            new Input<Boolean>("scaleAll",
+                    "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
                     false);
     public Input<Boolean> m_pScaleAllIndependently =
             new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
@@ -53,7 +54,7 @@ public class ScaleOperator extends Operator {
 
     /** flag to indicate this scales trees as opposed to scaling a parameter **/
     boolean m_bIsTreeScaler = true;
-    
+
     @Override
     public void initAndValidate() {
         m_fScaleFactor = m_pScaleFactor.get();
@@ -69,29 +70,29 @@ public class ScaleOperator extends Operator {
         //double fScaleFactor = m_pScaleFactor.get();
 
         double hastingsRatio = 1.0;
-        double d = Randomizer.nextDouble();
-        double scale = (m_fScaleFactor + (d * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
+        final double d = Randomizer.nextDouble();
+        final double scale = (m_fScaleFactor + (d * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
         
         if (m_bIsTreeScaler) {
-        	Tree tree = m_pTree.get(this); 
+        	final Tree tree = m_pTree.get(this);
             // scale the beast.tree
         	tree.getRoot().scale(scale);
             return Math.log(hastingsRatio);
         }
-        boolean bScaleAll = m_pScaleAll.get();
-        int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
-        boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
+        final boolean bScaleAll = m_pScaleAll.get();
+        final int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
+        final boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
 
-        RealParameter param = m_pParameter.get(this);
-        int dim = param.getDimension();
+        final RealParameter param = m_pParameter.get(this);
+        final int dim = param.getDimension();
 
         if (bScaleAllIndependently) {
             // update all dimensions independently.
             hastingsRatio = 0;
             for (int i = 0; i < dim; i++) {
 
-                double scaleOne = (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
-                double value = scaleOne * param.getValue(i);
+                final double scaleOne = (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
+                final double value = scaleOne * param.getValue(i);
 
                 hastingsRatio -= Math.log(scaleOne);
 
@@ -111,15 +112,14 @@ public class ScaleOperator extends Operator {
             else
                 hastingsRatio = (dim - 2) * Math.log(scale);
 
-            // Must first set all parameters first and check for boundries later for the operator to work
+            // Must first set all parameters first and check for boundaries later for the operator to work
             // correctly with dependent parameters such as beast.tree node heights.
             for (int i = 0; i < dim; i++) {
                 param.setValue(i, param.getValue(i) * scale);
             }
 
             for (int i = 0; i < dim; i++) {
-                if (param.getValue(i) < param.getLower() ||
-                        param.getValue(i) > param.getUpper()) {
+                if (param.getValue(i) < param.getLower() || param.getValue(i) > param.getUpper()) {
                     return Double.NEGATIVE_INFINITY;
                     //throw new Exception("Error scaleOperator 102: proposed value outside boundaries");
                 }
@@ -128,7 +128,7 @@ public class ScaleOperator extends Operator {
             hastingsRatio = -Math.log(scale);
 
             // which bit to scale
-            int index;
+            final int index;
             /*
             if (indicator != null) {
                 int idim = indicator.getDimension();
@@ -167,13 +167,13 @@ public class ScaleOperator extends Operator {
             index = Randomizer.nextInt(dim);
 //            }
 
-            double oldValue = param.getValue(index);
+            final double oldValue = param.getValue(index);
 
             if (oldValue == 0) {
                 return Double.NEGATIVE_INFINITY;
                 //throw new Exception("Error scaleOperator 104: parameter has value 0 and cannot be scaled");
             }
-            double newValue = scale * oldValue;
+            final double newValue = scale * oldValue;
 
             if (param.getLower() != null && newValue < param.getLower() || param.getUpper() != null && newValue > param.getUpper()) {
                 // reject out of bounds scales
@@ -193,12 +193,11 @@ public class ScaleOperator extends Operator {
 		}
     }
 
-
     /**
      * automatic parameter tuning *
      */
     @Override
-    public void optimize(double logAlpha) {
+    public void optimize(final double logAlpha) {
         double fDelta = calcDelta(logAlpha);
         //double fScaleFactor = m_pScaleFactor.get();
         fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
