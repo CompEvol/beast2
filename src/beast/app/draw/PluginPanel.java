@@ -17,9 +17,9 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Dialog for editing Plugins.
+ * Panel for editing Plugins.
  * <p/>
- * This dynamically creates a dialog consisting of
+ * This dynamically creates a Panel consisting of
  * InputEditors associated with the inputs of a Plugin.
  * *
  */
@@ -279,11 +279,13 @@ public class PluginPanel extends JPanel {
             bProgress = false;
             for (int i = 0; i < ascendants.size(); i++) {
                 Plugin ascendant = ascendants.get(i);
-                for (Plugin parent2 : outputs.get(ascendant)) {
-                    if (!ascendants.contains(parent2)) {
-                        ascendants.add(parent2);
-                        bProgress = true;
-                    }
+                if (outputs.containsKey(ascendant)) {
+	                for (Plugin parent2 : outputs.get(ascendant)) {
+	                    if (!ascendants.contains(parent2)) {
+	                        ascendants.add(parent2);
+	                        bProgress = true;
+	                    }
+	                }
                 }
             }
         }

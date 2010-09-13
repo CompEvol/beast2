@@ -1,5 +1,6 @@
 package test.beast.integration;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import beast.app.DocMaker;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
@@ -71,6 +73,26 @@ public class DocumentationTest extends TestCase {
                 + sUndocumentedInputs.toString(), sUndocumentedInputs.size() == 0);
 	} // testInputTipText
 
+
+	/** run DocMaker. This can pick up incorrectly initialised inputs of lists 
+	 * and some other initialisation stuff **/
+	@Test
+	public void test_DocMaker() throws Exception {
+		// this code runs just fine stand alone, but not in ant. TODO: figure out why
+//		String [] sArgs = {"."};
+//		DocMaker b = new DocMaker(sArgs);
+//		b.generateDocs();
+//		// clean up
+//		String [] sFiles = new File(".").list();
+//		for (String sFile : sFiles) {
+//			if (sFile.endsWith(".html")) {
+//				new File(sFile).delete();
+//			}
+//		}
+	} // test_DocMaker
+
+	
+	
 	private final int N_WORDS = 4;
     private final int N_CHARS = 15;
 

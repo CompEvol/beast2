@@ -6,19 +6,18 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.Frequencies;
+import beast.evolution.substitutionmodel.GeneralSubstitutionModel;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 
 /** This test mimics the testLikelihood.xml file from Beast 1, which compares Beast 1 results to PAUP results. 
  * So, it these tests succeed, then Beast II calculates the same for these simple models as Beast 1 and PAUP.
- * TODO: add tests for GTR model
  * **/
 public class TreeLikelihoodTest extends TestCase {
 	final static double PRECISION = 1e-8;
@@ -52,14 +51,14 @@ public class TreeLikelihoodTest extends TestCase {
 		freqs.init(data, false);
 
 		HKY hky = new HKY();
-		RealParameter kappa = new RealParameter(1.0, 0.0, 1000.0, 1);
-		hky.init(kappa, freqs);
+		hky.init("1.0", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
-		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
+//		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
+//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
+//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+		siteModel.init("1.0", 1, null, null, hky, freqs);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -79,14 +78,14 @@ public class TreeLikelihoodTest extends TestCase {
 		freqs.init(data, false);
 
 		HKY hky = new HKY();
-		RealParameter kappa = new RealParameter(27.402591, 0.0, 1000.0, 1);
-		hky.init(kappa, freqs);
+		hky.init("27.402591", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
-		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
+//		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
+//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
+//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+		siteModel.init("1.0", 1, null, null, hky, freqs);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -106,14 +105,14 @@ public class TreeLikelihoodTest extends TestCase {
 		freqs.init(data);
 
 		HKY hky = new HKY();
-		RealParameter kappa = new RealParameter(29.739445, 0.0, 1000.0, 1);
-		hky.init(kappa, freqs);
+		hky.init("29.739445", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
-		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
+//		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
+//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
+//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+		siteModel.init("1.0", 1, null, null, hky, freqs);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -134,14 +133,14 @@ public class TreeLikelihoodTest extends TestCase {
 		freqs.init(data);
 
 		HKY hky = new HKY();
-		RealParameter kappa = new RealParameter(38.82974, 0.0, 1000.0, 1);
-		hky.init(kappa, freqs);
+		hky.init("38.82974", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
-		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-		siteModel.init(fMu, 4, nShape, fInvarProportion, hky, freqs);
+//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
+//		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
+//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
+//		siteModel.init(fMu, 4, nShape, fInvarProportion, hky, freqs);
+		siteModel.init("1.0", 4, "0.137064", "0.0", hky, freqs);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -161,14 +160,14 @@ public class TreeLikelihoodTest extends TestCase {
 		freqs.init(data);
 
 		HKY hky = new HKY();
-		RealParameter kappa = new RealParameter(38.564672, 0.0, 1000.0, 1);
-		hky.init(kappa, freqs);
+		hky.init("38.564672", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
-		RealParameter fInvarProportion = new RealParameter(0.701211, 0.0, 1000.0, 1);
-		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
+//		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
+//		RealParameter fInvarProportion = new RealParameter(0.701211, 0.0, 1000.0, 1);
+//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
+		siteModel.init("1.0", 1, "0.137064", "0.701211", hky, freqs);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -188,14 +187,13 @@ public class TreeLikelihoodTest extends TestCase {
 		freqs.init(data);
 
 		HKY hky = new HKY();
-		RealParameter kappa = new RealParameter(39.464538, 0.0, 1000.0, 1);
-		hky.init(kappa, freqs);
+		hky.init("39.464538", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-		RealParameter nShape = new RealParameter(0.587649, 0.0, 1000.0, 1);
-		RealParameter fInvarProportion = new RealParameter(0.486548, 0.0, 1000.0, 1);
-		siteModel.init(fMu, 4, nShape, fInvarProportion, hky, freqs);
+//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
+//		RealParameter nShape = new RealParameter(0.587649, 0.0, 1000.0, 1);
+//		RealParameter fInvarProportion = new RealParameter(0.486548, 0.0, 1000.0, 1);
+		siteModel.init("1.0", 4, "0.587649", "0.486548", hky, freqs);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -204,4 +202,98 @@ public class TreeLikelihoodTest extends TestCase {
 		fLogP = likelihood.calculateLogP();
 		assertEquals(fLogP, -1789.639227747059, PRECISION);
 	}
+
+
+	@Test
+	public void testGTRLikelihood() throws Exception {
+		// Set up GTR model: no gamma categories, no proportion invariant 	
+		Alignment data = getAlignment();
+		Tree tree = getTree(data);
+		
+		Frequencies freqs = new Frequencies();
+		freqs.init(data);
+
+		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
+		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+
+		SiteModel siteModel = new SiteModel();
+		siteModel.init("1.0", 1, null, null, gsm, freqs);
+
+		TreeLikelihood likelihood = new TreeLikelihood();
+		likelihood.init(data, tree, siteModel);
+
+		double fLogP = 0;
+		fLogP = likelihood.calculateLogP();
+		assertEquals(fLogP, -1969.145839307625, PRECISION);
+	}
+
+	@Test
+	public void testGTRILikelihood() throws Exception {
+		// Set up GTR model: prop invariant = 0.5
+		Alignment data = getAlignment();
+		Tree tree = getTree(data);
+		
+		Frequencies freqs = new Frequencies();
+		freqs.init(data);
+
+		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
+		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+
+		SiteModel siteModel = new SiteModel();
+		siteModel.init("1.0", 1, null, "0.5", gsm, freqs);
+
+		TreeLikelihood likelihood = new TreeLikelihood();
+		likelihood.init(data, tree, siteModel);
+
+		double fLogP = 0;
+		fLogP = likelihood.calculateLogP();
+		assertEquals(fLogP, -1948.8417455357564, PRECISION);
+	}
+	
+	@Test
+	public void testGTRGLikelihood() throws Exception {
+		// Set up GTR model: 4 gamma categories, gamma shape = 0.5
+		Alignment data = getAlignment();
+		Tree tree = getTree(data);
+		
+		Frequencies freqs = new Frequencies();
+		freqs.init(data);
+
+		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
+		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+
+		SiteModel siteModel = new SiteModel();
+		siteModel.init("1.0", 4, "0.5", null, gsm, freqs);
+
+		TreeLikelihood likelihood = new TreeLikelihood();
+		likelihood.init(data, tree, siteModel);
+
+		double fLogP = 0;
+		fLogP = likelihood.calculateLogP();
+		assertEquals(fLogP, -1949.0360143622, PRECISION);
+	}
+	
+	@Test
+	public void testGTRGILikelihood() throws Exception {
+		// Set up GTR model: 4 gamma categories, gamma shape = 0.5, prop invariant = 0.5
+		Alignment data = getAlignment();
+		Tree tree = getTree(data);
+		
+		Frequencies freqs = new Frequencies();
+		freqs.init(data);
+
+		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
+		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+
+		SiteModel siteModel = new SiteModel();
+		siteModel.init("1.0", 4, "0.5", "0.5", gsm, freqs);
+
+		TreeLikelihood likelihood = new TreeLikelihood();
+		likelihood.init(data, tree, siteModel);
+
+		double fLogP = 0;
+		fLogP = likelihood.calculateLogP();
+		assertEquals(fLogP, -1947.5829396144961, PRECISION);
+	}
+
 } // class TestTreeLikelihood

@@ -202,8 +202,8 @@ public class TreeLikelihood extends Distribution {
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
         	//m_likelihoodCore = new BeerLikelihoodCore4();
-        	//m_likelihoodCore = new BeerLikelihoodCoreCnG4();
-        	m_likelihoodCore = new BeerLikelihoodCoreCnG(4);
+        	m_likelihoodCore = new BeerLikelihoodCoreCnG4();
+        	//m_likelihoodCore = new BeerLikelihoodCoreCnG(4);
             //m_likelihoodCore = new BeerLikelihoodCoreJava4();
         	//m_likelihoodCore = new BeerLikelihoodCoreNative(4);
         } else {
@@ -485,12 +485,12 @@ public class TreeLikelihood extends Distribution {
     protected boolean requiresRecalculation() {
         m_nHasDirt = Tree.IS_CLEAN;
 
-        if (m_siteModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_DIRTY;
-            return true;
-        }
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
+            return true;
+        }
+        if (m_siteModel.isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_DIRTY;
             return true;
         }
         return m_tree.get().somethingIsDirty();

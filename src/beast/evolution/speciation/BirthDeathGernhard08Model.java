@@ -26,6 +26,8 @@
 package beast.evolution.speciation;
 
 
+import java.util.Arrays;
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -50,9 +52,16 @@ import static org.apache.commons.math.special.Gamma.logGamma;
 		DOI="doi:10.1016/j.jtbi.2008.04.005")// (http://dx.doi.org/10.1016/j.jtbi.2008.04.005)
 
 public class BirthDeathGernhard08Model extends YuleModel {
-	public Input<RealParameter> relativeDeathRateParameter = new Input<RealParameter>("relativeDeathRate", "relative death rate parameter, mu/lambda in birth death model");
-    public Input<RealParameter> sampleProbability = new Input<RealParameter>("sampleProbability", "sample probability, rho in birth/death model");
-    public Input<String> m_pType = new Input<String>("type", "tree type, should be one of unscaled, timesonly, oriented and labeled (default unscaled)", new String("unscaled"));
+	
+	final static String [] TYPES = {"unscaled", "timesonly", "oriented", "labeled"};
+	
+	public Input<RealParameter> relativeDeathRateParameter =
+            new Input<RealParameter>("relativeDeathRate", "relative death rate parameter, mu/lambda in birth death model");
+    public Input<RealParameter> sampleProbability =
+            new Input<RealParameter>("sampleProbability", "sample probability, rho in birth/death model");
+    public Input<String> m_pType =
+            new Input<String>("type", "tree type, should be one of " + Arrays.toString(TYPES)+" (default unscaled)",
+                    "unscaled", TYPES);
     
     @Override
     public void initAndValidate() throws Exception {

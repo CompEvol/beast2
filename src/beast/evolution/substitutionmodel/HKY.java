@@ -127,7 +127,8 @@ public final class HKY extends SubstitutionModel.Base {
 //        matrix[14+3] = matrix[6+1];
 //        matrix[15+3] = freqT + t1Taa + (tab2T * bbY);
 //    }
-    
+
+    @Override
     public EigenDecomposition getEigenDecomposition() {
 
         if (eigenDecomposition == null) {

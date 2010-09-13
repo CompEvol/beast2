@@ -38,6 +38,7 @@ import org.w3c.dom.Node;
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
 public abstract class Parameter<T> extends StateNode {
+    public Input<String> m_pValues = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.");
     public Input<java.lang.Integer> m_nDimension =
             new Input<java.lang.Integer>("dimension", "dimension of the paperameter(default 1)", 1);
 
@@ -68,7 +69,9 @@ public abstract class Parameter<T> extends StateNode {
      */
     protected boolean[] m_bIsDirty;
 
-    /** check whether the iParam-th element has changed **/
+    /** @return true if the iParam-th element has changed
+     *  @param iParam dimention to check
+     **/
     public boolean isDirty(int iParam) {
         return m_bIsDirty[iParam];
     }
@@ -148,8 +151,8 @@ public abstract class Parameter<T> extends StateNode {
      */
     public String toString() {
         final StringBuffer buf = new StringBuffer();
-        buf.append(m_sID + "[" +  values.length +"] ");
-        buf.append("(" + m_fLower + "," + m_fUpper + "): ");
+        buf.append(m_sID).append("[").append(values.length).append("] ");
+        buf.append("(").append(m_fLower).append(",").append(m_fUpper).append("): ");
         for(T value : values) {
             buf.append(value).append(" ");
         }
@@ -240,9 +243,15 @@ public abstract class Parameter<T> extends StateNode {
 		fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
     }
     
-    /** Restore a parameter 
+    /** Restore a saved parameter from string representation. 
      * This cannot be a template method since it requires
-     * creation of an array of T... **/
+     * creation of an array of T...
+     *
+     * @param nDimension  parameter dimention
+     * @param sLower      lower bound
+     * @param sUpper      upper bound
+     * @param sValues     values
+     **/
     abstract void fromXML(int nDimension, String sLower, String sUpper, String [] sValues);
 
 } // class Parameter

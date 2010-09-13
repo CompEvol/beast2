@@ -107,8 +107,11 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      *                            return each coalescense as a separate event.
      */
     public void setMultifurcationLimit(double multifurcationLimit) {
-        this.multifurcationLimit = multifurcationLimit;
-        intervalsKnown = false;
+        // invalidate only if changing anything
+        if( this.multifurcationLimit != multifurcationLimit) {
+          this.multifurcationLimit = multifurcationLimit;
+          intervalsKnown = false;
+        }
     }
 
     public int getSampleCount() {
@@ -300,7 +303,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 	private void calculateIntervals() {
     	Tree tree = m_tree.get();
 
-        int nodeCount = tree.getNodeCount();
+        final int nodeCount = tree.getNodeCount();
 
         double[] times = new double[nodeCount];
         int[] childCounts = new int[nodeCount];

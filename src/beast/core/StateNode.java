@@ -15,7 +15,7 @@ import org.w3c.dom.Node;
 @Description("A node that can be part of the state.")
 public abstract class StateNode extends Plugin  implements Loggable, Cloneable, Valuable {
 
-	/** Return this StateNode if it is not in the State.
+	/** @return this StateNode if it is not in the State.
      * If it is in the State, return the version that is currently valid 
      * (i.e. not the stored one). 
      */
@@ -25,9 +25,10 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     	}
     	return m_state.getStateNode(index);
     }
-    /** return StateNode for an operation to do its magic on.
+    /** @return StateNode for an operation to do its magic on.
      * The State will make a copy first, if there is not already
      * one available.
+     * @param operator explain here why operator is useful
      */
     public StateNode getCurrentEditable(Operator operator) {
     	return m_state.getEditableStateNode(this.index, operator);
@@ -102,14 +103,16 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
 //
 //    boolean isStochastic = true;
 
-    /** Scale StateNode with amount fScale and return the number of
-     * degrees of freedom used in this operation. This number varies
+    /** Scale StateNode with amount fScale and
+     * @return the number of degrees of freedom used in this operation. This number varies
      * for the different types of StateNodes. For example, for real
      * valued n-dimensional parameters, it is n, for a tree it is the
      * number of internal nodes being scaled.
      * 
-     * throws Exception when StateNode become not valid, e.g. has
-     * values outside bounds or negative branch lengths
+     * @throws Exception when StateNode become not valid, e.g. has
+     * values outside bounds or negative branch lengths.
+     *
+     * @param fScale scaling factor
      */
     abstract public int scale(double fScale) throws Exception;
     

@@ -47,15 +47,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         return logP;
     }
 
-    /**
-     * This method modifies the portion of the provided state that corresponds to the
-     * probability distributions arguments, by drawing new values conditional on the
-     * parameters conditioned on
-     *
-     * @param state the state
-     * @param random  random number generator
-     */
-    public abstract void sample(State state, Random random);
+    /* The plugin implements f( arguments | conditionals) */
 
     /**
      * @return a list of unique ids for the state nodes that form the argument
@@ -66,6 +58,16 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      * @return a list of unique ids for the state nodes that make up the conditions
      */
     public abstract List<String> getConditions();
+
+    /**
+     * This method draws new values for the arguments conditional on the current value(s) of the conditionals.
+     *
+     * The new values are overwrite the argument values in the provided state.
+     *
+     * @param state the state
+     * @param random  random number generator
+     */
+    public abstract void sample(State state, Random random);
 
     /**
      * get result from last known calculation *

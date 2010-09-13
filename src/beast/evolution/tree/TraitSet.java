@@ -3,6 +3,7 @@ package beast.evolution.tree;
 //import java.text.SimpleDateFormat;
 //import java.util.Date;
 
+import java.util.Arrays;
 import java.util.List;
 
 import beast.core.Description;
@@ -19,10 +20,12 @@ import beast.evolution.alignment.Alignment;
 		"recognizes 'date', 'date-forward' and 'date-backward' as a trait, but by creating custom Node classes " +
 		"other traits can be supported as well.")
 public class TraitSet extends Plugin {
+	final static String [] UNITS =  {"year", "month", "day"};
+	
 	public Input<String> m_sTraitName = new Input<String>("traitname", "name of the trait, used as meta data name for the tree. " +
 			"Special traitnames that are recognized are '"+DATE_TRAIT+"','"+DATE_FORWARD_TRAIT+"' and '"+ DATE_BACKWARD_TRAIT+"'.", Validate.REQUIRED);
 	public Input<String> m_sUnits = new Input<String>("units", "name of the units in which values are posed, " +
-			"used for conversion to a real value. For a date-trait, this can be 'year', 'month' or 'day'", Validate.REQUIRED);
+			"used for conversion to a real value. This can be " + Arrays.toString(UNITS) + " (default 'year')", "year", UNITS);
 	public Input<String> m_traits = new Input<String>("value","traits encoded as taxon=value pairs separated by commas", Validate.REQUIRED);
 	public Input<Alignment> m_taxa = new Input<Alignment>("taxa","contains list of taxa to map traits to", Validate.REQUIRED);
 

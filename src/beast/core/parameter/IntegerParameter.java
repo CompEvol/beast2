@@ -15,7 +15,7 @@ import java.io.PrintStream;
 @Description("An integer-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
 public class IntegerParameter extends Parameter<java.lang.Integer> {
-    public Input<Integer> m_pValues = new Input<Integer>("value", "start value for this parameter");
+//    public Input<Integer> m_pValues = new Input<Integer>("value", "start value for this parameter");
     public Input<Integer> lowerValueInput = new Input<Integer>("lower", "lower value for this parameter");
     public Input<Integer> upperValueInput = new Input<Integer>("upper", "upper value for this parameter");
 
@@ -25,8 +25,8 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     /**
      * Constructor for testing.
      */
-    public IntegerParameter(Integer value, Integer lower, Integer upper, Integer dimension) throws Exception {
-    	init(value, lower, upper, dimension);
+    public IntegerParameter(String value, Integer lower, Integer upper, Integer dimension) throws Exception {
+    	init(lower, upper, value, dimension);
     }
 
     /** we need this here, because the base implementation (public T getValue()) fails
@@ -51,9 +51,16 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     	} else {
     		m_fUpper = Integer.MAX_VALUE-1;
     	}
-        values = new Integer[m_nDimension.get()];
+    	String sValue = m_pValues.get();
+    	// remove start and end spaces
+    	sValue = sValue.replaceAll("^\\s+", "");
+    	sValue = sValue.replaceAll("\\s+$", "");
+    	// split into space-separated bits
+    	String [] sValues = sValue.split("\\s+");
+    	int nDimension = Math.max(m_nDimension.get(), sValues.length);
+        values = new java.lang.Integer[nDimension];
         for (int i = 0; i < values.length; i++) {
-            values[i] = m_pValues.get();
+            values[i] = new Integer(sValues[i % sValues.length]);
         }
         super.initAndValidate();
     }

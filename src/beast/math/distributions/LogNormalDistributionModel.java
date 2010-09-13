@@ -42,5 +42,17 @@ public class LogNormalDistributionModel extends ParametricDistribution {
         return logNormal;
     }
 
+    @Override
+    public boolean requiresRecalculation() {
+    	return true;
+    }
+    @Override
+    public void store() {
+    	super.store();
+    }
+    @Override
+    public void restore() {
+    	super.restore();
+    }
     LogNormalDistribution logNormal = new LogNormalDistribution(0, 1);
 }

@@ -28,7 +28,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import beast.core.parameter.BooleanParameter;
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
 
 /**
  * Represents input of a Plugin class.
@@ -71,6 +76,12 @@ public class Input<T> {
      */
     Input<?> other;
     public T defaultValue;
+    /**
+     * Possible values for enumerations, e.g. if
+     * an input can be any of "constant", "linear", "quadratic"
+     * this array contains these values. Used for validation and user interfaces. 
+     */
+    public T [] possibleValues;
 
     /**
      * constructors *
@@ -117,7 +128,8 @@ public class Input<T> {
         value = startValue;
         defaultValue = startValue;
         if (rule != Validate.REQUIRED) {
-            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor");
+            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
+            + " (" + sName + ")");
         }
         this.rule = rule;
     } // c'tor
@@ -130,7 +142,8 @@ public class Input<T> {
         tipText = sTipText;
         value = null;
         if (rule != Validate.REQUIRED) {
-            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor");
+            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
+             + " (" + sName + ")");
         }
         this.rule = rule;
     } // c'tor
@@ -151,6 +164,23 @@ public class Input<T> {
         this.other.rule = rule;
     } // c'tor
 
+
+    /**
+     * constructor for enumeration.
+     * Typical usage is with an array of possible String values, say ["constant","exponential","lognormal"]
+     * Furthermore, a default value is required (should we have another constructor that could leave
+     * the value optional? When providing a 'no-input' entry in the list and setting that as the default,
+     * that should cover that situation.)
+     */
+    public Input(String sName, String sTipText, T startValue, T [] sPossibleValues) {
+        name = sName;
+        tipText = sTipText;
+        value =  startValue;
+        defaultValue =  startValue;
+        possibleValues = sPossibleValues;
+    } // c'tor
+    
+    
     /**
      * various setters and getters
      */
@@ -282,14 +312,17 @@ public class Input<T> {
             setStringValue((String) value);
         } else if (this.value != null && this.value instanceof List<?>) {
             if (theClass.isAssignableFrom(value.getClass())) {
-                // don't insert duplicates
                 @SuppressWarnings("rawtypes")
 				List vector = (List) this.value;
-                for (Object o : vector) {
-                    if (o.equals(value)) {
-                        return;
-                    }
-                }
+//              // don't insert duplicates
+                // RRB: DO insert duplicates: this way CompoundValuable can be set up to 
+                // contain rate matrices with dependent variables/parameters.
+                // There does not seem to be an example where a duplicate insertion is a problem...
+//                for (Object o : vector) {
+//                    if (o.equals(value)) {
+//                        return;
+//                    }
+//                }
                 vector.add(value);
             } else {
                 throw new Exception("Input 101: type mismatch");
@@ -351,7 +384,7 @@ public class Input<T> {
      * @param sValue  value representation
      * @throws Exception when all conversions fail
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void setStringValue(String sValue) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=String
         if (theClass.equals(Integer.class)) {
@@ -372,6 +405,28 @@ public class Input<T> {
                return;
             }
         }
+        if (theClass.equals(RealParameter.class) || theClass.equals(Valuable.class)) {
+            RealParameter param = new RealParameter(sValue, 0.0, 0.0, 1);
+            param.initAndValidate();
+        	if (value != null && value instanceof List) {
+        		((List) value).add(param);
+        	} else {
+        		value = (T) param;
+        	}
+            return;
+        }
+        if (theClass.equals(IntegerParameter.class)) {
+        	IntegerParameter param = new IntegerParameter(sValue, 0, 0, 1);
+            param.initAndValidate();
+       		value = (T) param;
+            return;
+        }
+        if (theClass.equals(BooleanParameter.class)) {
+        	BooleanParameter param = new BooleanParameter(sValue, 1);
+            param.initAndValidate();
+       		value = (T) param;
+            return;
+        }
         // settle for a string
         if (theClass.isAssignableFrom(sValue.getClass())) {
             value = (T) sValue;
@@ -385,6 +440,19 @@ public class Input<T> {
      * @throws Exception when validation fails. why not return a string?
      */
     public void validate() throws Exception {
+    	if (possibleValues != null) {
+    		// it is an enumeration, check the value is in the list
+    		boolean bFound = false;
+    		for (T value : possibleValues) {
+    			if (value.equals(this.value)) {
+    				bFound = true;
+    			}
+    		}
+    		if (!bFound) {
+    			throw new Exception("Expected one of " + Arrays.toString(possibleValues) +" but got " + this.value);
+    		}
+    	}
+    	
         switch (rule) {
             case OPTIONAL:
                 // noting to do

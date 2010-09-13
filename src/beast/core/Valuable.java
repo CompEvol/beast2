@@ -7,15 +7,17 @@ package beast.core;
  *  **/
 public interface Valuable {
 
-	/** dimension of the Valuable **/
+	/** @return dimension of the Valuable **/
 	public int getDimension();
 	
-	/** Return main value. For a 1 dimensional Valuable, this is the only 
+	/** @return main value. For a 1 dimensional Valuable, this is the only
 	 * value, but for a Tree this can be the root height, while the individual
 	 * values obtained from getValue(iDim) return the node heights. 
 	 */
 	public double getArrayValue();
 	
-	/** return iDim'th value (if any) */ 
+	/** @return iDim'th value (if any)
+     * @param iDim requested dimention
+     */ 
 	public double getArrayValue(int iDim);
 }

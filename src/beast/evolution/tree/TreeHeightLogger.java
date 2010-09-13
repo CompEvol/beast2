@@ -19,13 +19,13 @@ public class TreeHeightLogger extends Plugin implements Loggable {
 
 	@Override
 	public void init(PrintStream out) throws Exception {
-		Tree tree = m_tree.get();
+		final Tree tree = m_tree.get();
 		out.print(tree.getID() + ".height\t");
 	}
 
 	@Override
 	public void log(int nSample, PrintStream out) {
-		Tree tree = m_tree.get();
+		final Tree tree = m_tree.get();
 		out.print(tree.getRoot().getHeight() + "\t");
 	}
 

@@ -474,7 +474,10 @@ public class XMLParser {
                 if (sName == null) {
                     sName = "value";
                 }
-                setInput(node, parent, sName, node.getTextContent());
+                String sText = node.getTextContent();
+                if (sText.length() > 0) {
+                	setInput(node, parent, sName, sText);
+                }
                 return null;
             } else {
                 throw new XMLParserException(node, "Expected object to be instance of Plugin", 108);
@@ -549,7 +552,7 @@ public class XMLParser {
 
         if (nChildElements == 0) {
             String sContent = node.getTextContent();
-            if (sContent != null && sContent.length() > 0) {
+            if (sContent != null && sContent.length() > 0 && sContent.replaceAll("\\s", "").length() > 0) {
                 try {
                     setInput(node, parent, "value", sContent);
                 } catch (Exception e) {
@@ -585,7 +588,7 @@ public class XMLParser {
     void setInput(Node node, Plugin plugin, String sName, String sValue) throws XMLParserException {
         try {
 
-            plugin.setInputValue(sName, sValue);
+        	plugin.setInputValue(sName, sValue);
             return;
         } catch (Exception e) {
             throw new XMLParserException(node, e.getMessage(), 124);
@@ -600,62 +603,6 @@ public class XMLParser {
         }
     }
 
-//	/*****************************************************/
-//	void parseLog(Plugin parent, Node log) throws Exception  {
-//			if (log.getNodeType() == Node.ELEMENT_NODE &&
-//					log.getNodeName().equals("log")) {
-//				int nEvery = getAttributeAsInt(log, "logEvery");
-//				beast.core.Logger pLogger;
-//				String sFile = getAttribute(log, "fileName");
-//				if (sFile != null) {
-//					if (sFile.indexOf("$(seed)") >= 0) {
-//						int k = sFile.indexOf("$(seed)");
-//						sFile = sFile.substring(0,k) + Randomizer.getSeed() + sFile.substring(k+7);
-//					}
-//					pLogger = new beast.core.Logger(sFile, nEvery);
-//				} else {
-//					pLogger = new beast.core.Logger(nEvery);
-//				}
-//				register(log, pLogger);
-//				NodeList loggers = log.getChildNodes();
-//				setInput(log, parent, "log", pLogger);
-//				for (int j = 0; j < loggers.getLength(); j++) {
-//					Node logger = loggers.item(j);
-//					if (logger.getNodeType() == Node.ELEMENT_NODE) {
-//						String sName = logger.getNodeName();
-//						beast.core.Logger newLogger = null;
-//						if (sName.equals(PARAMETER_ELEMENT)) {
-//							String sIDRef = getIDRef(logger);
-//							int iVar = state.getStateNodeIndex(sIDRef);
-//							newLogger = pLogger.new VarLogger(iVar);
-//							pLogger.addLogger(newLogger);
-//						} else if (sName.equals(TREE_ELEMENT)) {
-//							String sIDRef = getIDRef(logger);
-//							int iID = state.getTreeIndex(sIDRef);
-//							newLogger = pLogger.new TreeLogger(iID);
-//							pLogger.addLogger(newLogger);
-//						} else if (sName.equals(PROBABILITY_ELEMENT)) {
-//							String sIDRef = getIDRef(logger);
-//							Likelihood likelihood = null;
-//							if (!m_sIDMap.containsKey(sIDRef)) {
-//								if (!m_sIDNodeMap.containsKey(sIDRef)) {
-//									throw new XMLParserException(logger, "Cannot resolve IDRef " + sIDRef, 166);
-//								}
-//								likelihood = (Likelihood) createObject(m_sIDNodeMap.get(sIDRef), LIKELIHOOD_CLASS, parent);
-//							} else {
-//								likelihood = (Likelihood) m_sIDMap.get(sIDRef);
-//							}
-//							newLogger = pLogger.new LikelihoodLogger(likelihood, sIDRef);
-//							pLogger.addLogger(newLogger);
-//						} else {
-//							// it is a plugin of some sort
-//							newLogger = (beast.core.Logger) createObject(logger, LOG_CLASS, pLogger);
-//							pLogger.addLogger(newLogger);
-//						}
-//					}
-//				}
-//			}
-//	} // parseLog
 
     public static String getID(Node node) { // throws Exception {
         return getAttribute(node, "id");

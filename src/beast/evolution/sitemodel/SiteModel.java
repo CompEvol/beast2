@@ -118,6 +118,7 @@ public class SiteModel extends CalculationNode {
     protected List<String> conditions = null;
     
     
+    @Override
     protected boolean requiresRecalculation() {
     	// we only get here if something is dirty in its inputs
     	ratesKnown = false;
@@ -287,11 +288,13 @@ public class SiteModel extends CalculationNode {
     }
 
 
-    public void store(int nSample) {
+    @Override
+    public void store() {
         //m_pSubstModel.get().store(nSample);
     } // no additional state needs storing
 
-    public void restore(int nSample) {
+    @Override
+    public void restore() {
         //m_pSubstModel.get().restore(nSample);
         ratesKnown = false;
     }

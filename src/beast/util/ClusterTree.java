@@ -26,6 +26,7 @@
 package beast.util;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.List;
@@ -48,19 +49,20 @@ import beast.evolution.tree.Tree;
 		"<br/>o Ward and " +
 		"<br/>o adjusted complete link")
 public class ClusterTree extends Tree {
+	final static String M_SINGLE = "single";
+	final static String M_AVERAGE = "average";
+	final static String M_COMPLETE = "complete";
+	final static String M_UPGMA = "upgma";
+	final static String M_MEAN = "mean";
+	final static String M_CENTROID = "centroid";
+	final static String M_WARD = "ward";
+	final static String M_ADJCOMPLETE = "adjcomplete";
+	final static String M_NEIGHBORJOINING = "neighborjoining";
+
+	final static String [] TYPES = {M_SINGLE, M_AVERAGE,	M_COMPLETE,	M_UPGMA,	M_MEAN,	M_CENTROID,	M_WARD,	M_ADJCOMPLETE,	M_NEIGHBORJOINING };
 
 	public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
-			"Should be one of " + 
-			M_SINGLE + ", " +
-			M_AVERAGE + ", " +
-			M_COMPLETE + ", " +
-			M_UPGMA + ", " +
-			M_MEAN + ", " +
-			M_CENTROID + ", " +
-			M_WARD + ", " +
-			M_ADJCOMPLETE + ", or " +
-			M_NEIGHBORJOINING + "."
-			);
+			"Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE +")", M_AVERAGE, TYPES);
 	public Input<Alignment> m_pData = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
 	public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
 
@@ -94,15 +96,6 @@ public class ClusterTree extends Tree {
 		//return new NodeData();
 	}
 
-	final static String M_SINGLE = "single";
-	final static String M_AVERAGE = "average";
-	final static String M_COMPLETE = "complete";
-	final static String M_UPGMA = "upgma";
-	final static String M_MEAN = "mean";
-	final static String M_CENTROID = "centroid";
-	final static String M_WARD = "ward";
-	final static String M_ADJCOMPLETE = "adjcomplete";
-	final static String M_NEIGHBORJOINING = "neighborjoining";
 	/** the various link types */
 	final static int SINGLE = 0;
 	final static int COMPLETE = 1;

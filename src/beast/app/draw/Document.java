@@ -306,7 +306,7 @@ public class Document {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 for (int j = 0; j < sIDs.size(); j++) {
-                    if (arrow.m_sHeadID.equals(sIDs.get(j)) || arrow.m_sTailID.equals(sIDs.get(j))) {
+                    if (arrow.m_sHeadID.startsWith(sIDs.get(j)) || arrow.m_sTailID.equals(sIDs.get(j))) {
                         if (!selection.contains(new Integer(i))) {
                             selection.add(new Integer(i));
                         }
@@ -1158,7 +1158,12 @@ public class Document {
             m_nActionType = nActionType;
             m_actions = new ArrayList<UndoAction>();
             // remove duplicates, if any
-            Collections.sort(nPositions);
+            Collections.sort(nPositions, new Comparator<Integer>() {
+				@Override
+				public int compare(Integer o1, Integer o2) {
+					return (o2  - o1);
+				}
+			});
             for (int i = 1; i < nPositions.size(); i++) {
                 if ((int) nPositions.get(i) == (int) nPositions.get(i - 1)) {
                     nPositions.remove(i);

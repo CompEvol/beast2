@@ -238,4 +238,7 @@ public class Arrow extends Shape {
 	public void setID(String sID) {
 		m_sID = sID;
 	}
+	public String toString() {
+		return m_sTailID + "-->" + m_sHeadID;
+	}
 } // class Arrow

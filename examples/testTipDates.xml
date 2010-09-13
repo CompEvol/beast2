@@ -99,7 +99,7 @@
     <parameter id="hky.kappa" value="1.0" lower="0.0"/>
 
     <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
-	<trait spec='beast.evolution.tree.TraitSet' traitname='date' units='years'
+	<trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
 		value='
 		D4Brazi82  = 1982,
 		D4ElSal83  = 1983,

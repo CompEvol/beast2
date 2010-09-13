@@ -46,17 +46,15 @@ public class CompoundDistribution extends Distribution {
     @Override
     public double calculateLogP() throws Exception {
         logP = 0;
-        for (int i = 0; i < pDistributions.get().size(); i++) {
-            double f = pDistributions.get().get(i).calculateLogP();
-            logP += f;
+        for(Distribution dists : pDistributions.get()) {
+            logP += dists.calculateLogP();
         }
         return logP;
     }
 
     @Override
     public void sample(State state, Random random) {
-        final List<Distribution> distributions = pDistributions.get();
-        for(Distribution distribution : distributions) {
+        for(Distribution distribution : pDistributions.get()) {
             distribution.sample(state, random);
         }
     }
@@ -64,8 +62,7 @@ public class CompoundDistribution extends Distribution {
     @Override
     public List<String> getArguments() {
         List<String> arguments = new ArrayList<String>();
-        final List<Distribution> distributions = pDistributions.get();
-        for(Distribution distribution : distributions) {
+        for(Distribution distribution : pDistributions.get()) {
             arguments.addAll(distribution.getArguments());
         }
         return arguments;
@@ -74,8 +71,7 @@ public class CompoundDistribution extends Distribution {
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<String>();
-        final List<Distribution> distributions = pDistributions.get();
-        for(Distribution distribution : distributions) {
+        for(Distribution distribution : pDistributions.get()) {
             conditions.addAll(distribution.getConditions());
         }
         return conditions;

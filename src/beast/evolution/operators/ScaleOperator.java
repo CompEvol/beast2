@@ -75,8 +75,8 @@ public class ScaleOperator extends Operator {
         if (m_bIsTreeScaler) {
         	Tree tree = m_pTree.get(this); 
             // scale the beast.tree
-        	tree.getRoot().scale(scale);
-            return Math.log(hastingsRatio);
+        	int nInternalNodes = tree.scale(scale);
+            return Math.log(scale) * (nInternalNodes - 2);
         }
         boolean bScaleAll = m_pScaleAll.get();
         int nDegreesOfFreedom = m_pDegreesOfFreedom.get();

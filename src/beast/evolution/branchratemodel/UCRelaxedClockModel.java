@@ -107,19 +107,29 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	recompute = true;
             return true;
         }
-//	    processed as trait on the tree
+        // rateDistInput cannot be dirty?!?
+        if (rateDistInput.get().isDirtyCalculation()) {
+        	recompute = true;
+        	return true;
+        }
+        // processed as trait on the tree, so don't mark as dirty
         if (categoryInput.get().somethingIsDirty()) {
         	recompute = true;
         	return false;
         }
-        // rateDistInput cannot be dirty?!?
-//        if (rateDistInput.get().isDirty()) {
-//        	m_bIsDirty = true;
-//        	return true;
-//        }
         return recompute;
     }
 
+    @Override
+    public void store() {
+    	super.store();
+    }
+    @Override
+    public void restore() {
+    	super.restore();
+    	recompute = true;
+    }
+    
     ParametricDistribution distribution;
     IntegerParameter categories;
     Tree tree;

@@ -15,6 +15,15 @@ import javax.swing.JTextField;
 import beast.core.Input;
 import beast.core.Plugin;
 
+/** Base class for editors that provide a GUI for manipulating an Input for a Plugin.
+ * The idea is that for every type of Input there will be a dedicated editor, e.g.
+ * for a String Input, there will be an edit field, for a Boolean Input, there will 
+ * be a checkbox in the editor.
+ * 
+ * The default just provides an edit field and uses toString() on Input to get its value.
+ * To change the behaviour, override
+    public void init(Input<?> input, Plugin plugin) {
+ **/ 
 public abstract class InputEditor extends Box {
 	final static String NO_VALUE = "<none>";
 	private static final long serialVersionUID = 1L;
@@ -46,6 +55,7 @@ public abstract class InputEditor extends Box {
 
 		addInputLabel();
 		m_entry = new JTextField();
+		m_entry.setMinimumSize(new Dimension(100,16));
 		if (input.get()!= null) {
 			m_entry.setText(input.get().toString());
 		}
