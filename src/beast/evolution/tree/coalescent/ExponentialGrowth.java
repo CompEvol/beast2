@@ -149,40 +149,40 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
         return Collections.singletonList(popSizeParameter.get().getID());
     }
 
-//    public int getNumArguments() {
-//        return 2;
-//    }
-//
-//    public String getArgumentName(int n) {
-//        if (n == 0) return "N0";
-//        else return "r";
-//    }
-//
-//    public double getArgument(int n) {
-//        if (n == 0) return getN0();
-//        else return r;
-//    }
-//
-//    public void setArgument(int n, double value) {
-//        if (n == 0) setN0(value);
-//        else r = value;
-//    }
-//
-//    public double getLowerBound(int n) {
-//        if (n == 0) return 0.0;
-//        else return Double.NEGATIVE_INFINITY;
-//    }
-//
-//    public double getUpperBound(int n) {
-//        return Double.POSITIVE_INFINITY;
-//    }
-//
-//    public PopulationFunction getCopy() {
-//        ExponentialGrowth eg = new ExponentialGrowth();
-//        eg.setN0(N0);
-//        eg.r = r;
-//        return eg;
-//    }
+    public int getNumArguments() {
+        return 2;
+    }
+
+    public String getArgumentName(int n) {
+        if (n == 0) return "N0";
+        else return "r";
+    }
+
+    public double getArgument(int n) {
+        if (n == 0) return getN0();
+        else return r;
+    }
+
+    public void setArgument(int n, double value) {
+        if (n == 0) setN0(value);
+        else r = value;
+    }
+
+    public double getLowerBound(int n) {
+        if (n == 0) return 0.0;
+        else return Double.NEGATIVE_INFINITY;
+    }
+
+    public double getUpperBound(int n) {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    public PopulationFunction getCopy() {
+        ExponentialGrowth eg = new ExponentialGrowth();
+        eg.setN0(N0);
+        eg.r = r;
+        return eg;
+    }
 
 //    public void prepare(State state) {
 //        if (popSizeParameter.get() != null) {

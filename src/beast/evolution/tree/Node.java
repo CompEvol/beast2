@@ -46,10 +46,10 @@ public class Node extends Plugin {
 	public String m_sMetaData;
 
 	public int getNr() {return m_iLabel;}
-	public void setNr(final int iLabel) {m_iLabel = iLabel;}
+	public void setNr(int iLabel) {m_iLabel = iLabel;}
 
 	public double getHeight() {return m_fHeight;}
-	public void setHeight(final double fHeight) {
+	public void setHeight(double fHeight) {
 		m_fHeight = fHeight;
 		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
@@ -68,10 +68,10 @@ public class Node extends Plugin {
 	}
 
 	public int isDirty() {return m_bIsDirty;}
-	public void makeDirty(final int nDirty) {
+	public void makeDirty(int nDirty) {
 		m_bIsDirty |= nDirty;
 	}
-	public void makeAllDirty(final int nDirty) {
+	public void makeAllDirty(int nDirty) {
 		m_bIsDirty = nDirty;
 		if (!isLeaf()) {
 			m_left.makeAllDirty(nDirty);
@@ -84,7 +84,7 @@ public class Node extends Plugin {
 	public Node getParent() {
 		return m_Parent;
 	}
-	public void setParent(final Node parent) {
+	public void setParent(Node parent) {
 		m_Parent = parent;
 	}
 
@@ -111,7 +111,7 @@ public class Node extends Plugin {
 	 * information.
 	 **/
 	public String toShortNewick() {
-		final StringBuffer buf = new StringBuffer();
+		StringBuffer buf = new StringBuffer();
 		if (m_left != null) {
 			buf.append("(");
 			buf.append(m_left.toShortNewick());
@@ -139,8 +139,8 @@ public class Node extends Plugin {
      * @return  beast.tree in long Newick format, with all length and meta data
 	 * information
 	 **/
-	public String toNewick(final List<String> sLabels) {
-		final StringBuffer buf = new StringBuffer();
+	public String toNewick(List<String> sLabels) {
+		StringBuffer buf = new StringBuffer();
 		if (m_left != null) {
 			buf.append("(");
 			buf.append(m_left.toNewick(sLabels));
@@ -171,8 +171,8 @@ public class Node extends Plugin {
      * @return beast.tree in long Newick format, with all length and meta data
 	 * information, but with leafs labelled with their names
 	 **/
-	public String toString(final List<String> sLabels) {
-		final StringBuffer buf = new StringBuffer();
+	public String toString(List<String> sLabels) {
+		StringBuffer buf = new StringBuffer();
 		if (m_left != null) {
 			buf.append("(");
 			buf.append(m_left.toString(sLabels));
@@ -202,10 +202,10 @@ public class Node extends Plugin {
      **/
 	public int sort() {
 		if (m_left != null) {
-			final int iChild1 = m_left.sort();
-			final int iChild2 = m_right.sort();
+			int iChild1 = m_left.sort();
+			int iChild2 = m_right.sort();
 			if (iChild1 > iChild2) {
-				final Node tmp = m_left;
+				Node tmp = m_left;
 				m_left = m_right;
 				m_right = tmp;
 				return iChild2;
@@ -237,7 +237,7 @@ public class Node extends Plugin {
      * @return (deep) copy of node
      **/
 	public Node copy() {
-		final Node node = new Node();
+		Node node = new Node();
 		node.m_fHeight = m_fHeight;
 		node.m_iLabel = m_iLabel;
 		node.m_sMetaData = m_sMetaData;
@@ -252,8 +252,8 @@ public class Node extends Plugin {
 		return node;
 	} // copy
 
-	public void assignTo(final Node [] nodes) {
-		final Node node = nodes[getNr()];
+	public void assignTo(Node [] nodes) {
+		Node node = nodes[getNr()];
 		node.m_fHeight = m_fHeight;
 		node.m_iLabel = m_iLabel;
 		node.m_sMetaData = m_sMetaData;
@@ -269,7 +269,7 @@ public class Node extends Plugin {
 		}
 	}
 	
-	public void assignFrom(final Node [] nodes, final Node node) {
+	public void assignFrom(Node [] nodes, Node node) {
 //		Node node = nodes[getNr()];
 		m_fHeight = node.m_fHeight;
 		m_iLabel = node.m_iLabel;
@@ -286,7 +286,7 @@ public class Node extends Plugin {
 		}
 	}
 	
-	public void setMetaData(final String sPattern, final Object fValue) {
+	public void setMetaData(String sPattern, Object fValue) {
 		if (sPattern.equals(TraitSet.DATE_TRAIT) || 
 				sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) || 
 				sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
@@ -295,14 +295,14 @@ public class Node extends Plugin {
 		m_bIsDirty |= Tree.IS_DIRTY;
 	}
 	
-	public double getMetaData(final String sPattern) {
+	public double getMetaData(String sPattern) {
 		return 0;
 	}
 
 	/** scale height of this node and all its descendants
      * @param fScale scale factor
      **/
-	public void scale(final double fScale) throws Exception {
+	public void scale(double fScale) throws Exception {
 		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
 			m_fHeight *= fScale;

@@ -145,32 +145,32 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     public double getInverseIntensity(double x) {
         throw new UnsupportedOperationException();
     }
-//
-//    public int getNumArguments() {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public String getArgumentName(int n) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public double getArgument(int n) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public void setArgument(int n, double value) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public double getLowerBound(int n) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public double getUpperBound(int n) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    public PopulationFunction getCopy() {
-//        throw new UnsupportedOperationException();
-//    }
+
+    public int getNumArguments() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getArgumentName(int n) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getArgument(int n) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setArgument(int n, double value) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getLowerBound(int n) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getUpperBound(int n) {
+        throw new UnsupportedOperationException();
+    }
+
+    public PopulationFunction getCopy() {
+        throw new UnsupportedOperationException();
+    }
 }

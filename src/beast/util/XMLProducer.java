@@ -252,7 +252,7 @@ public class XMLProducer extends XMLParser {
         if (plugin instanceof State) {
             sElementName = XMLParser.STATE_ELEMENT;
         }
-        if (plugin instanceof Density ) {
+        if (plugin instanceof Distribution) {
             sElementName = XMLParser.DISTRIBUTION_ELEMENT;
         }
         if (plugin instanceof Logger) {

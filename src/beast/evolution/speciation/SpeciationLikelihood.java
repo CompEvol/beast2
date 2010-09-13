@@ -28,7 +28,6 @@ package beast.evolution.speciation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
-import beast.core.Density;
 import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -45,7 +44,7 @@ import java.util.Random;
  * @version $Id: SpeciationLikelihood.java,v 1.10 2005/05/18 09:51:11 rambaut Exp $
  */
 @Description("A likelihood function for speciation processes.")
-public class SpeciationLikelihood extends Density {
+public class SpeciationLikelihood extends beast.core.Distribution {
 
 	public Input<Tree> m_tree = new Input<Tree>("tree", "species tree over which to calculate speciation likelihood", Validate.REQUIRED);
 	
@@ -117,7 +116,8 @@ public class SpeciationLikelihood extends Density {
 	}
 
 	@Override
-	public void sample(State state, Random random) {  
-        throw new UnsupportedOperationException("This should eventually sample a tree conditional on provided speciation model.");
+	public void sample(State state, Random random) {
+		// TODO Auto-generated method stub
+		
 	}
 }

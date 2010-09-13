@@ -23,24 +23,21 @@
  * Boston, MA  02110-1301  USA
  */
 
-package beast.densities;
+package beast.math.distributions;
 
 
 import beast.core.CalculationNode;
 import beast.core.Description;
-import beast.math.distributions.Distribution;
 
 /**
- * A base for plugins implementing a parametric distribution.
- *
- * (beast.math.distributions.Distribution)
+ * A class that describes a parametric distribution
  *
  * @author Alexei Drummond
  * @version $Id: ParametricDistributionModel.java,v 1.4 2005/05/24 20:25:59 rambaut Exp $
  */
 
 @Description("A parametric distribution plugin.")
-public abstract class ParametricDistribution extends CalculationNode {
+public abstract class ParametricDistribution extends CalculationNode  {
 
     abstract public Distribution getDistribution();
 }

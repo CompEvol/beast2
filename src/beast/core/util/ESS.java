@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beast.core.Description;
-//import beast.core.Density;
+//import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Valuable;
 import beast.core.Input.Validate;
@@ -18,8 +18,8 @@ import beast.core.Plugin;
 public class ESS extends Plugin implements Loggable {
 	public Input<Valuable> m_pParam =
             new Input<Valuable>("arg","value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
-//	public Input<Density> m_pDistribution =
-//            new Input<Density>("distribution","probability distribution to report ESS for", Validate.XOR, m_pParam);
+//	public Input<Distribution> m_pDistribution =
+//            new Input<Distribution>("distribution","probability distribution to report ESS for", Validate.XOR, m_pParam);
 
 	/** values from which the ESS is calculated **/
 	List<Double> m_trace;
@@ -28,7 +28,7 @@ public class ESS extends Plugin implements Loggable {
 	/** keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  **/
     List<Double> m_fSquareLaggedSums;
 //	/** shadow of distribution input (if any) **/
-//	Density m_distribution;
+//	Distribution m_distribution;
 	
 	@Override
 	public void initAndValidate() {
@@ -114,14 +114,15 @@ public class ESS extends Plugin implements Loggable {
         	fSum2 -= m_trace.get(iStart + iLag);
         }
 
-        double integralOfACFunctionTimes2 = 0.0;
+        // calculate the magical variable 'varStat', RRB: what is this doing exactly?
+        double varStat = 0.0;
         for (int iLag = 0; iLag < nMaxLag; iLag++) {
             if (iLag == 0) {
-                integralOfACFunctionTimes2 = fAutoCorrelation[0];
+                varStat = fAutoCorrelation[0];
             } else if (iLag % 2 == 0) {
-                // fancy stopping criterion - see main comment
+                // fancy stopping criterion :)
                 if (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag] > 0) {
-                    integralOfACFunctionTimes2 += 2.0 * (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag]);
+                    varStat += 2.0 * (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag]);
                 } else {
                     // stop
                     break;
@@ -130,7 +131,7 @@ public class ESS extends Plugin implements Loggable {
         }
 
         // auto correlation time
-        final double fACT = integralOfACFunctionTimes2 / fAutoCorrelation[0];
+        final double fACT = varStat / fAutoCorrelation[0];
 
         // effective sample size
         final double fESS = nSamples / fACT;

@@ -15,7 +15,7 @@ import org.w3c.dom.Node;
 @Description("A node that can be part of the state.")
 public abstract class StateNode extends Plugin  implements Loggable, Cloneable, Valuable {
 
-	/** @return this StateNode if it is not in the State.
+	/** Return this StateNode if it is not in the State.
      * If it is in the State, return the version that is currently valid 
      * (i.e. not the stored one). 
      */
@@ -25,10 +25,9 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     	}
     	return m_state.getStateNode(index);
     }
-    /** @return StateNode for an operation to do its magic on.
+    /** return StateNode for an operation to do its magic on.
      * The State will make a copy first, if there is not already
      * one available.
-     * @param operator explain here why operator is useful
      */
     public StateNode getCurrentEditable(Operator operator) {
     	return m_state.getEditableStateNode(this.index, operator);
@@ -39,9 +38,7 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * in the state has changed. StateNode implementations like Parameters and Trees
      * have their own internal flag to represent which part of a StateNode (e.g.
      * an element in an array, or a node in a tree) has changed.
-     *
-     * @return true when not perfectly clean
-     **/
+     * **/
     public boolean somethingIsDirty() {
         return this.somethingIsDirty;
     }
@@ -49,10 +46,10 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     public void setSomethingIsDirty(final boolean isDirty) {
     	this.somethingIsDirty = isDirty;
     }
-    /** mark every internal element of a StateNode as dirty or clean, depending on isDirty.
+    /** mark every internal element of a StateNode as isDirty.
      * So both the global flag for this StateNode (somethingIsDirty) should be set as
      * well as all the local flags.
-     * @param isDirty dirtyness state
+     * @param isDirty
      */
     abstract public void setEverythingDirty(final boolean isDirty);
 
@@ -62,35 +59,28 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      */
     public abstract StateNode copy();
     
-    /** @param other := this
-     ** Assign all values of this to other
-     **/
+    /** other := this 
+     * Assign all values of this to other **/
     public abstract void assignTo(StateNode other);
     
-    /** @param other <- this
-     ** Assign all values of other to this
-     **/
+    /** this := other 
+    * Assign all values of other to this **/
     public abstract void assignFrom(StateNode other);
     
     /** As assignFrom, but only those parts are assigned that 
      * are variable, for instance for parameters bounds and dimension
      * do not need to be copied.
-     * @param other  <- this
      */
     public abstract void assignFromFragile(StateNode other);
 
-    /** for storing a state
-     **  @param out store where
-     **/
+    /** for storing a state **/
     final public void toXML(PrintStream out) {
     	out.print("<statenode id='" + getID() +"'>");
     	out.print(toString());
     	out.print("</statenode>\n");
     }
     
-    /** for restoring a state that was stored using toXML() above.
-     ** @param node  store into
-     **/
+    /** for restoring a state that was stored using toXML() above. **/
     public abstract void fromXML(Node node);
 
     
@@ -112,16 +102,14 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
 //
 //    boolean isStochastic = true;
 
-    /** Scale StateNode with amount fScale and
-     * @return the number of degrees of freedom used in this operation. This number varies
+    /** Scale StateNode with amount fScale and return the number of
+     * degrees of freedom used in this operation. This number varies
      * for the different types of StateNodes. For example, for real
      * valued n-dimensional parameters, it is n, for a tree it is the
      * number of internal nodes being scaled.
      * 
-     * @throws Exception when StateNode become not valid, e.g. has
-     * values outside bounds or negative branch lengths.
-     *
-     * @param fScale scaling factor
+     * throws Exception when StateNode become not valid, e.g. has
+     * values outside bounds or negative branch lengths
      */
     abstract public int scale(double fScale) throws Exception;
     

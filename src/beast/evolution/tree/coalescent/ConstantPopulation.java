@@ -93,35 +93,35 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
 
     //
 
-//    public int getNumArguments() {
-//        return 1;
-//    }
-//
-//    public String getArgumentName(int n) {
-//        return "N0";
-//    }
-//
-//    public double getArgument(int n) {
-//        return getN0();
-//    }
-//
-//    public void setArgument(int n, double value) {
-//        setN0(value);
-//    }
-//
-//    public double getLowerBound(int n) {
-//        return 0.0;
-//    }
-//
-//    public double getUpperBound(int n) {
-//        return Double.POSITIVE_INFINITY;
-//    }
-//
-//    public PopulationFunction getCopy() {
-//        ConstantPopulation cp = new ConstantPopulation();
-//        cp.setN0(N0);
-//        return cp;
-//    }
+    public int getNumArguments() {
+        return 1;
+    }
+
+    public String getArgumentName(int n) {
+        return "N0";
+    }
+
+    public double getArgument(int n) {
+        return getN0();
+    }
+
+    public void setArgument(int n, double value) {
+        setN0(value);
+    }
+
+    public double getLowerBound(int n) {
+        return 0.0;
+    }
+
+    public double getUpperBound(int n) {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    public PopulationFunction getCopy() {
+        ConstantPopulation cp = new ConstantPopulation();
+        cp.setN0(N0);
+        return cp;
+    }
 
 //    public void prepare(State state) {
 //        if (popSizeParameter.get() != null) {

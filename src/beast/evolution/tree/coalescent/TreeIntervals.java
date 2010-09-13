@@ -1,3 +1,17 @@
+package beast.evolution.tree.coalescent;
+
+import beast.core.CalculationNode;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
+import beast.util.HeapSort;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /*
  * TreeIntervals.java
  *
@@ -23,30 +37,14 @@
  * Boston, MA  02110-1301  USA
  */
 
-package beast.evolution.tree.coalescent;
-
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.util.HeapSort;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Extracts the intervals from a beast.tree.
- *
- * Note that 'intervals' here means not only inter-coalescent lengths, but the event types associated with them.
  *
  * @author Andrew Rambaut
  * @author Alexei Drummond
  * @version $Id: TreeIntervals.java,v 1.9 2005/05/24 20:25:56 rambaut Exp $
  */
-@Description("Extracts the inter-coalescent intervals from a tree.")
+@Description("Extracts the intervals from a tree.")
 public class TreeIntervals extends CalculationNode implements IntervalList {
 	public Input<Tree> m_tree = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
 	
@@ -95,39 +93,31 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 //        intervalsKnown = false;
 //    }
 
-//    /**
-//     * Specifies that the intervals are unknown (i.e., the beast.tree has changed).
-//     */
-//    public void setIntervalsUnknown() {
-//        intervalsKnown = false;
-//    }
+    /**
+     * Specifies that the intervals are unknown (i.e., the beast.tree has changed).
+     */
+    public void setIntervalsUnknown() {
+        intervalsKnown = false;
+    }
 
     /**
      * Sets the limit for which adjacent events are merged.
      *
      * @param multifurcationLimit A value of 0 means merge addition of leafs (terminal nodes) when possible but
-     *                            return each coalescence as a separate event.
+     *                            return each coalescense as a separate event.
      */
     public void setMultifurcationLimit(double multifurcationLimit) {
-        // invalidate only if changing anything
-        if( this.multifurcationLimit != multifurcationLimit) {
-          this.multifurcationLimit = multifurcationLimit;
-          intervalsKnown = false;
-        }
+        this.multifurcationLimit = multifurcationLimit;
+        intervalsKnown = false;
     }
 
-    /**
-     * @return The number of intervals ending in an actual coalescent.
-     *
-     * A tree with n taxa have n-1 internal nodes, so 2*n-1 in total and n-1 intervals.
-     */
     public int getSampleCount() {
         // Assumes a binary tree!
         return (m_tree.get().getNodeCount() - 1) / 2;
     }
 
     /**
-     * @return the number of intervals
+     * get number of intervals
      */
     public int getIntervalCount() {
         if (!intervalsKnown) {
@@ -137,20 +127,19 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     }
 
     /**
-     *  @return  the interval length.
+     * Gets an interval.
      */
     public double getInterval(int i) {
         if (!intervalsKnown) {
             calculateIntervals();
         }
-        assert (i >= 0 && i < intervalCount);
+        if (i < 0 || i >= intervalCount) throw new IllegalArgumentException();
         return intervals[i];
     }
 
     /**
      * Defensive implementation creates copy
      *
-     * @param inters
      * @return
      */
     public double[] getIntervals(double[] inters) {
@@ -199,11 +188,11 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * @param interval the index of the interval
      * @return a list of the nodes representing the lineages in the ith interval.
      */
-    public final List<Node> getLineages(final int interval) {
+    public final List<Node> getLineages(int interval) {
 
         if (lineages[interval] == null) {
 
-            final List<Node> lines = new ArrayList<Node>();
+            List<Node> lines = new ArrayList<Node>();
             for (int i = 0; i <= interval; i++) {
                 if (lineagesAdded[i] != null) lines.addAll(lineagesAdded[i]);
                 if (lineagesRemoved[i] != null) lines.removeAll(lineagesRemoved[i]);
@@ -217,7 +206,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     /**
      * Returns the number coalescent events in an interval
      */
-    public int getCoalescentEvents(final int i) {
+    public int getCoalescentEvents(int i) {
         if (!intervalsKnown) {
             calculateIntervals();
         }
@@ -237,14 +226,14 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
             calculateIntervals();
         }
         if (i >= intervalCount) throw new IllegalArgumentException();
-        final int numEvents = getCoalescentEvents(i);
+        int numEvents = getCoalescentEvents(i);
 
         if (numEvents > 0) return IntervalType.COALESCENT;
         else if (numEvents < 0) return IntervalType.SAMPLE;
         else return IntervalType.NOTHING;
     }
 
-    public Node getCoalescentNode(final int interval) {
+    public Node getCoalescentNode(int interval) {
         if (getIntervalType(interval) == IntervalType.COALESCENT) {
             if (lineagesRemoved[interval] != null) {
                 if (lineagesRemoved[interval].size() == 1) {
@@ -309,16 +298,16 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      */
     @SuppressWarnings("unchecked")
 	private void calculateIntervals() {
-    	final Tree tree = m_tree.get();
+    	Tree tree = m_tree.get();
 
-        final int nodeCount = tree.getNodeCount();
+        int nodeCount = tree.getNodeCount();
 
-        final double[] times = new double[nodeCount];
-        final int[] childCounts = new int[nodeCount];
+        double[] times = new double[nodeCount];
+        int[] childCounts = new int[nodeCount];
 
         collectTimes(tree, times, childCounts);
 
-        final int[] indices = new int[nodeCount];
+        int[] indices = new int[nodeCount];
 
         HeapSort.sort(times, indices);
 
@@ -340,7 +329,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
             int lineagesRemoved = 0;
             int lineagesAdded = 0;
 
-            final double finish = times[indices[nodeNo]];
+            double finish = times[indices[nodeNo]];
             double next;
 
             do {
@@ -359,7 +348,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
                     //assert childCounts[indices[nodeNo]] == beast.tree.getChildCount(parent);
                     //for (int j = 0; j < lineagesRemoved + 1; j++) {
                     for (int j = 0; j < childCount; j++) {
-                        final Node child = j == 0 ? parent.m_left : parent.m_right;
+                        Node child = j == 0 ? parent.m_left : parent.m_right;
                         removeLineage(intervalCount, child);
                     }
 
@@ -404,12 +393,12 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         intervalsKnown = true;
     }
 
-    private void addLineage(final int interval, final Node node) {
+    private void addLineage(int interval, Node node) {
         if (lineagesAdded[interval] == null) lineagesAdded[interval] = new ArrayList<Node>();
         lineagesAdded[interval].add(node);
     }
 
-    private void removeLineage(final int interval, final Node node) {
+    private void removeLineage(int interval, Node node) {
         if (lineagesRemoved[interval] == null) lineagesRemoved[interval] = new ArrayList<Node>();
         lineagesRemoved[interval].add(node);
     }
@@ -429,10 +418,10 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * @param times       the times of the nodes in the beast.tree
      * @param childCounts the number of children of each node
      */
-    private static void collectTimes(final Tree tree, final double[] times, final int[] childCounts) {
+    private static void collectTimes(Tree tree, double[] times, int[] childCounts) {
 
         for (int i = 0; i < tree.getNodeCount(); i++) {
-            final Node node = tree.getNode(i);
+            Node node = tree.getNode(i);
             times[i] = node.getHeight();
             childCounts[i] = node.isLeaf() ? 0 : 2;
         }

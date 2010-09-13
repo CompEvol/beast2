@@ -52,7 +52,7 @@ public class ExampleXmlParsingTest extends TestCase {
 			assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
 		} catch (Exception e) {
 			System.out.println("exception thrown ");
-			System.out.println(e.getMessage());
+			System.out.println(e.getMessage());;
 		}
 	} // test_XmlExamples
 

@@ -1,5 +1,5 @@
 /*
-* File Alignment.java
+* File Data.java
 *
 * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
@@ -40,16 +40,13 @@ import java.util.List;
 @Description("Class representing alignment data")
 public class Alignment extends Plugin {
 
-    public Input<List<Sequence>> m_pSequences =
-            new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>());
+    public Input<List<Sequence>> m_pSequences = new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
     public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
-    public Input<String> m_sDataType = new Input<String>("dataType", "data type (nucleotide, integerdata, etc)");
+    public Input<String> m_sDataType = new Input<String>("dataType", "data type (nucleotide, integerdata, etc)", Validate.REQUIRED);
 
     public List<String> m_sTaxaNames = new ArrayList<String>();
     public List<Integer> m_nStateCounts = new ArrayList<Integer>();
     public List<List<Integer>> m_counts = new ArrayList<List<Integer>>();
-
-    static final String NUCLEOTIDE = "nucleotide";
 
     public Alignment() {
     }
@@ -84,9 +81,7 @@ public class Alignment extends Plugin {
 
     @Override
     public void initAndValidate() throws Exception {
-        if( m_sDataType == null ) {
-            throw new Exception("Input 'dataType' must be specifie");
-        }
+
         // grab data from child sequences
         for (Sequence seq : m_pSequences.get()) {
             m_counts.add(seq.getSequence(getMap()));
@@ -116,7 +111,7 @@ public class Alignment extends Plugin {
      * length of the string, so a '-' with map "ACGT" is encoded as 4.*
      */
     String getMap() {
-        if (m_sDataType.get().equals(NUCLEOTIDE)) {
+        if (m_sDataType.get().equals("nucleotide")) {
             return "ACGT";
         }
         if (m_sDataType.get().equals("binary")) {

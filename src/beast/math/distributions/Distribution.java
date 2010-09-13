@@ -1,5 +1,5 @@
 /*
-* Density.java
+* Distribution.java
 *
 * Copyright (C) 2002-2006 Alexei Drummond and Andrew Rambaut
 *
@@ -25,6 +25,8 @@
 
 package beast.math.distributions;
 
+import org.apache.commons.math.analysis.UnivariateRealFunction;
+
 /**
  * an interface for a distribution.
  *
@@ -33,9 +35,6 @@ package beast.math.distributions;
  * @version $Id: Distribution.java,v 1.7 2005/05/24 20:26:00 rambaut Exp $
  */
 public interface Distribution {
-    static final double SQRT_2 = Math.sqrt(2.0);
-    static final double SQRT_2PI = Math.sqrt(2.0 * Math.PI);
-
     /**
      * probability density function of the distribution
      *
@@ -85,5 +84,6 @@ public interface Distribution {
     /**
      * @return a probability density function representing this distribution
      */
-    org.apache.commons.math.distribution.Distribution getProbabilityDensity();
+    public UnivariateRealFunction getProbabilityDensityFunction();
+
 }

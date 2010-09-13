@@ -44,7 +44,7 @@
 
     <input spec='UCRelaxedClockModel' id="branchRates">
         <!--<parameter name='mutationRate'>1.0</parameter>-->
-        <input id='lognormal' name='distribution' spec="beast.densities.LogNormal">
+        <input id='lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
             <parameter name='M' id='M' value="1"/>
             <parameter name='S' id='S' value="0.5" lower="0" upper="5"/>
         </input>

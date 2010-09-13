@@ -117,8 +117,7 @@ public class Input<T> {
         value = startValue;
         defaultValue = startValue;
         if (rule != Validate.REQUIRED) {
-            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
-            + " (" + sName + ")");
+            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor");
         }
         this.rule = rule;
     } // c'tor
@@ -131,8 +130,7 @@ public class Input<T> {
         tipText = sTipText;
         value = null;
         if (rule != Validate.REQUIRED) {
-            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
-             + " (" + sName + ")");
+            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor");
         }
         this.rule = rule;
     } // c'tor
@@ -378,7 +376,7 @@ public class Input<T> {
         if (theClass.isAssignableFrom(sValue.getClass())) {
             value = (T) sValue;
         } else {
-            throw new Exception("Input 103: type mismatch for value " + sValue);
+            throw new Exception("Input 103: type mismatch");
         }
     } // setStringValue
 

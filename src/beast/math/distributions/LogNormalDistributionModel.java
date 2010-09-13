@@ -1,23 +1,17 @@
-package beast.densities;
+package beast.math.distributions;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import beast.math.distributions.Distribution;
-import beast.math.distributions.LogNormalDistribution;
 
 /**
  * @author Alexei Drummond
  */
 @Description("A log-normal distribution with mean and variance parameters.")
-public class LogNormal extends ParametricDistribution {
+public class LogNormalDistributionModel extends ParametricDistribution {
 
-    public Input<RealParameter> MParameter =
-            new Input<RealParameter>("M", "M parameter of lognormal distribution. " +
-                    "Equal to the mean of the log-transformed distribution.");
-    public Input<RealParameter> SParameter =
-            new Input<RealParameter>("S", "S parameter of lognormal distribution. " +
-                    "Equal to the standard deviation of the log-transformed distribution.");
+    public Input<RealParameter> MParameter = new Input<RealParameter>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
+    public Input<RealParameter> SParameter = new Input<RealParameter>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
 
     public void initAndValidate() throws Exception {
 

@@ -207,8 +207,6 @@ public class Logger extends Plugin {
     } // openLogFile
     
     /** log the state for given sample nr
-     **
-     ** @param nSample
      **/
     public void log(int nSample) {
         if ((nSample < 0) || (nSample % m_nEvery > 0)) {

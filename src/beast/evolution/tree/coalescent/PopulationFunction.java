@@ -31,6 +31,8 @@ public interface PopulationFunction extends UnivariateRealFunction {
      */
     double getPopSize(double t);
 
+    double getLogPopSize(double t);
+
     /**
      * @param t time
      * @return value of demographic intensity function at time t (= integral 1/N(x) dx from 0 to t).
@@ -53,51 +55,46 @@ public interface PopulationFunction extends UnivariateRealFunction {
      */
     double getIntegral(double start, double finish);
 
-    /** Interface is not used anywhere and was not implemented for skyline anyway
-     * For now it is commented out. We can easily reinstate the code if a use arises,
-     * but then we need to implement for all cases ...
-     **/
-//
-//    /**
-//     * @return the number of arguments for this function.
-//     */
-//    int getNumArguments();
-//
-//    /**
-//     * @param n the index of argument to retrieve the name of
-//     * @return the name of the n'th argument of this function.
-//     */
-//    String getArgumentName(int n);
-//
-//    /**
-//     * @param n the argument index
-//     * @return the value of the n'th argument of this function.
-//     */
-//    double getArgument(int n);
-//
-//    /**
-//     * @param n     the argument index
-//     * @param value the value to set for the n'th argument
-//     *              Sets the value of the nth argument of this function.
-//     */
-//    void setArgument(int n, double value);
-//
-//    /**
-//     * @param n the argument index
-//     * @return the lower bound of the nth argument of this function.
-//     */
-//    double getLowerBound(int n);
-//
-//    /**
-//     * @param n the argument index
-//     * @return the upper bound of the nth argument of this function.
-//     */
-//    double getUpperBound(int n);
-//
-//    /**
-//     * @return a copy of this function.
-//     */
-//    PopulationFunction getCopy();
+    /**
+     * @return the number of arguments for this function.
+     */
+    int getNumArguments();
+
+    /**
+     * @param n the index of argument to retrieve the name of
+     * @return the name of the n'th argument of this function.
+     */
+    String getArgumentName(int n);
+
+    /**
+     * @param n the argument index
+     * @return the value of the n'th argument of this function.
+     */
+    double getArgument(int n);
+
+    /**
+     * @param n     the argument index
+     * @param value the value to set for the n'th argument
+     *              Sets the value of the nth argument of this function.
+     */
+    void setArgument(int n, double value);
+
+    /**
+     * @param n the argument index
+     * @return the lower bound of the nth argument of this function.
+     */
+    double getLowerBound(int n);
+
+    /**
+     * @param n the argument index
+     * @return the upper bound of the nth argument of this function.
+     */
+    double getUpperBound(int n);
+
+    /**
+     * @return a copy of this function.
+     */
+    PopulationFunction getCopy();
 
     /**
      * A threshold for underflow on calculation of likelihood of internode intervals.
@@ -120,10 +117,22 @@ public interface PopulationFunction extends UnivariateRealFunction {
          */
         public Abstract() {
         }
+        //public void init(Object ... objects) throws Exception {super(objects);}
 
         // general functions
         public void initAndValidate() throws Exception {
             prepare();
+        }
+
+
+        /**
+         * Default implementation
+         *
+         * @param t the time
+         * @return log(demographic(t))
+         */
+        public double getLogPopSize(double t) {
+            return Math.log(getPopSize(t));
         }
 
         public double getThreshold() {
@@ -168,13 +177,13 @@ public interface PopulationFunction extends UnivariateRealFunction {
         // Cacheable IMPLEMENTATION
         // **************************************************************
 
-//        public void store(final int sample) {
-//            // empty - may be overridden
-//        }
-//
-//        public void restore(final int sample) {
-//            // empty - may be overridden
-//        }
+        public void store(final int sample) {
+            // empty - may be overridden
+        }
+
+        public void restore(final int sample) {
+            // empty - may be overridden
+        }
 
         public void prepare() {
             // empty - may be overridden
@@ -234,12 +243,12 @@ public interface PopulationFunction extends UnivariateRealFunction {
          */
         public static void testConsistency(PopulationFunction populationFunction, int steps, double maxTime) {
 
-            final double delta = maxTime / (double) steps;
+            double delta = maxTime / (double) steps;
 
             for (int i = 0; i <= steps; i++) {
-                final double time = (double) i * delta;
-                final double intensity = populationFunction.getIntensity(time);
-                final double newTime = populationFunction.getInverseIntensity(intensity);
+                double time = (double) i * delta;
+                double intensity = populationFunction.getIntensity(time);
+                double newTime = populationFunction.getInverseIntensity(intensity);
 
                 if (Math.abs(time - newTime) > 1e-12) {
                     throw new RuntimeException(
@@ -249,4 +258,6 @@ public interface PopulationFunction extends UnivariateRealFunction {
             }
         }
     }
+
+
 }

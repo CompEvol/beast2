@@ -38,8 +38,8 @@ public class RealParameter extends Parameter<Double> {
         return values[0];
     }
 
-    @Override public double getArrayValue() {return values[0];}
-    @Override public double getArrayValue(int iValue) {return values[iValue];};
+    @Override public double getArrayValue() {return (double) values[0];}
+    @Override public double getArrayValue(int iValue) {return (double) values[iValue];};
 
     @Override
     public void initAndValidate() throws Exception {

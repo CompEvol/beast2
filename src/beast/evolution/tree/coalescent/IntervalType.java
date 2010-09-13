@@ -1,3 +1,5 @@
+package beast.evolution.tree.coalescent;
+
 /*
  * IntervalType.java
  *
@@ -22,8 +24,6 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
-
-package beast.evolution.tree.coalescent;
 
 /**
  * Specifies the interval types.
@@ -63,7 +63,7 @@ public enum IntervalType {
      *
      * @param name the name of the interval type
      */
-    private IntervalType(final String name) {
+    private IntervalType(String name) {
         this.name = name;
     }
 

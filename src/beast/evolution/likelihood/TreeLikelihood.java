@@ -120,7 +120,7 @@ sys	    0m0.164s  0m1.448s            0m1.328s 0m4.740s
 package beast.evolution.likelihood;
 
 import beast.core.Description;
-import beast.core.Density;
+import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.Input.Validate;
@@ -139,7 +139,7 @@ import java.util.Random;
 @Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model using " +
 		"a variant of the 'peeling algorithm'. For details, see" +
 		"Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
-public class TreeLikelihood extends Density {
+public class TreeLikelihood extends Distribution {
 
     public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree", Validate.REQUIRED);
     public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);

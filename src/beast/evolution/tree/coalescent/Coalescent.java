@@ -2,7 +2,7 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Density;
+import beast.core.Distribution;
 import beast.core.State;
 import beast.math.Binomial;
 
@@ -18,7 +18,7 @@ import java.util.Random;
 	"Note that this does not take the number of possible tree interval/tree topology combinations " +
 	"in account, in other words, the constant required for making this a proper distribution that integrates " +
 	"to unity is not calculated (partly, because we don't know how for sequentially samples data).")
-public class Coalescent extends Density {
+public class Coalescent extends Distribution {
 
 //    public Input<Tree> tree = new Input<Tree>("tree", "A phylogenetic beast tree");
     public Input<TreeIntervals> treeIntervals = new Input<TreeIntervals>("treeIntervals", "Intervals for a phylogenetic beast tree");

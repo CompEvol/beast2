@@ -1,5 +1,5 @@
 /*
-* File Density.java
+* File Distribution.java
 *
 * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
@@ -30,7 +30,7 @@ import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
         "a log probability for instance for running an MCMC chain.")
-public abstract class Density extends CalculationNode implements Loggable, Valuable {
+public abstract class Distribution extends CalculationNode implements Loggable, Valuable {
 
     /**
      * current and stored log probability/log likelihood/log distribution *
@@ -47,7 +47,15 @@ public abstract class Density extends CalculationNode implements Loggable, Valua
         return logP;
     }
 
-    /* The plugin implements f( arguments | conditionals) */
+    /**
+     * This method modifies the portion of the provided state that corresponds to the
+     * probability distributions arguments, by drawing new values conditional on the
+     * parameters conditioned on
+     *
+     * @param state the state
+     * @param random  random number generator
+     */
+    public abstract void sample(State state, Random random);
 
     /**
      * @return a list of unique ids for the state nodes that form the argument
@@ -58,16 +66,6 @@ public abstract class Density extends CalculationNode implements Loggable, Valua
      * @return a list of unique ids for the state nodes that make up the conditions
      */
     public abstract List<String> getConditions();
-
-    /**
-     * This method draws new values for the arguments conditional on the current value(s) of the conditionals.
-     *
-     * The new values are overwrite the argument values in the provided state.
-     *
-     * @param state the state
-     * @param random  random number generator
-     */
-    public abstract void sample(State state, Random random);
 
     /**
      * get result from last known calculation *

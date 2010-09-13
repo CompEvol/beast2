@@ -36,15 +36,17 @@ package beast.math;
  */
 public class MachineAccuracy
 {
+	//
+	// Public stuff
+	//
+
 	/** machine accuracy constant */
 	public static double EPSILON = 2.220446049250313E-16;
 	
 	public static double SQRT_EPSILON = 1.4901161193847656E-8;
 	public static double SQRT_SQRT_EPSILON = 1.220703125E-4;
 
-	/** compute EPSILON from scratch
-     ** @return EPSILON, the smallest number which makes a diffrence when added to 1. 
-     **/
+	/** compute EPSILON from scratch */
 	public static double computeEpsilon()
 	{
 		double eps = 1.0;
@@ -59,10 +61,8 @@ public class MachineAccuracy
 	}
 
 	/**
-     * @return true if the relative difference between the two parameters
+	 * @return true if the relative difference between the two parameters
 	 * is smaller than SQRT_EPSILON.
-     * @param a numbers to compare
-     * @param b numbers to compare
 	 */
 	public static boolean same(double a, double b) {
 		return Math.abs((a/b)-1.0) <= SQRT_EPSILON;
