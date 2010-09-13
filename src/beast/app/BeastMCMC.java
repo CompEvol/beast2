@@ -27,6 +27,8 @@ package beast.app;
 
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +39,7 @@ import javax.swing.filechooser.FileFilter;
 import beast.core.Logger;
 import beast.core.Runnable;
 
+import beast.util.ClassloaderUtil;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLParserException;
@@ -55,7 +58,8 @@ public class BeastMCMC {
 	String m_sFileName = "";//"examples/testCoalescent.xml";
 	/** MCMC object to execute **/
 	Runnable m_runnable;
-
+	/** External jar loader path. This takes the form of directories separated by colons. **/
+	static String m_sJarPath = (System.getenv("beastlib") != null ? System.getenv("beastlib") : "beastlib");
 
 	/** parse command line arguments, and load file if specified
 	 * @throws Exception **/
@@ -84,6 +88,9 @@ public class BeastMCMC {
 					} else if (args[i].equals("-threads")) {
 						m_nThreads = Integer.parseInt(args[i + 1]);
 						i += 2;
+					} else if (args[i].equals("-beastlib")) {
+						m_sJarPath = args[i + 1];
+						i += 2;
 					}
 					if (i == iOld) {
 						if (i == args.length-1) {
@@ -103,11 +110,30 @@ public class BeastMCMC {
 		if (bResume) {
 			System.err.println("Resuming from file");
 		}
+		loadExternalJars();
+		// parse xml
 		Randomizer.setSeed(m_nSeed);
 		m_runnable = new XMLParser().parseFile(m_sFileName);
 		m_runnable.setStateFile(m_sFileName+".state", bResume);
 	} // parseArgs
 
+	// load external jars first
+	public static void loadExternalJars() throws Exception {
+		String [] sJarDirs = m_sJarPath.split(":");
+		for (String sJarDir : sJarDirs) {
+			File jarDir = new File(sJarDir);
+			if (jarDir.isDirectory()) {
+				for (String sFile : jarDir.list()) {
+					if (sFile.endsWith(".jar")) {
+						@SuppressWarnings("deprecation")
+						URL url = new File(jarDir.getAbsolutePath() + "/" + sFile).toURL();
+						ClassloaderUtil.addURL(url);
+					}
+				}
+			}
+		}
+	} //loadExternalJars
+	
 	public static String getUsage() {
 		return 	"Usage: BeastMCMC [options] <Beast.xml>\n" +
 				"where <Beast.xml> the name of a file specifying a Beast run\n" +
@@ -116,7 +142,8 @@ public class BeastMCMC {
 				"-overwrite : overwrite existing log files (if any). By default, existing files will not be overwritten.\n" +
 				"-append : resume and append log file\n" +
 				"-seed <int> : sets random number seed (default 127)\n" +
-				"-threads <int> : sets number of threads (default 1)\n";
+				"-threads <int> : sets number of threads (default 1)\n" +
+				"-beastlib <path> : Colon separated list of directories. All jar files in the path are loaded. (default 'beastlib')";
 	} // getUsage
 
 	/** open file dialog for prompting the user to specify an xml script file to process **/

@@ -477,6 +477,7 @@ public class DocMaker {
     public static void main(String[] args) {
         try {
             System.err.println("Producing documentation...");
+            BeastMCMC.loadExternalJars();
             DocMaker b = new DocMaker(args);
             b.generateDocs();
             System.err.println("Done!!!");

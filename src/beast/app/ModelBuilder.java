@@ -45,6 +45,11 @@ public class ModelBuilder extends JPanel {
 
     public static void main(String args[]) {
         Randomizer.setSeed(127);
+        try {
+        	BeastMCMC.loadExternalJars();
+        } catch (Exception e) {
+            e.printStackTrace();// ignore
+        }
         JFrame f = new JFrame("Model Builder");
         beast.app.draw.ModelBuilder drawTest = new beast.app.draw.ModelBuilder();
         drawTest.init();

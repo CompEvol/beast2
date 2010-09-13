@@ -24,6 +24,7 @@
  */
 package beast.app.draw;
 
+import beast.app.BeastMCMC;
 import beast.core.Plugin;
 import beast.evolution.alignment.Sequence;
 import beast.util.Randomizer;
@@ -1996,6 +1997,11 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
     public static void main(String args[]) {
         Randomizer.setSeed(127);
+        try {
+        	BeastMCMC.loadExternalJars();
+        } catch (Exception e) {
+			e.printStackTrace();
+		}
         JFrame f = new JFrame("Model Builder");
         ModelBuilder drawTest = new ModelBuilder();
         drawTest.init();
