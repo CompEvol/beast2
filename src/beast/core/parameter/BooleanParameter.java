@@ -40,6 +40,10 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
 
     public BooleanParameter() {}
 
+    /** Constructor used by Input.setValue(String) **/
+    public BooleanParameter(String sValue) throws Exception {
+    	init(sValue, 1);
+    }
     /**
      * Constructor for testing.
      * @param value

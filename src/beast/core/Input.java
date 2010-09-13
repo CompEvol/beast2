@@ -24,6 +24,7 @@
 */
 package beast.core;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -386,7 +387,7 @@ public class Input<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void setStringValue(String sValue) throws Exception {
-        // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=String
+        // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (theClass.equals(Integer.class)) {
             value = (T) new Integer(sValue);
             return;
@@ -405,33 +406,30 @@ public class Input<T> {
                return;
             }
         }
-        if (theClass.equals(RealParameter.class) || theClass.equals(Valuable.class)) {
-            RealParameter param = new RealParameter(sValue, 0.0, 0.0, 1);
-            param.initAndValidate();
-        	if (value != null && value instanceof List) {
-        		((List) value).add(param);
-        	} else {
-        		value = (T) param;
-        	}
-            return;
+        if (theClass.equals(Valuable.class)) {
+    	    RealParameter param = new RealParameter(sValue, 0.0, 0.0, 1);
+    	    param.initAndValidate();
+    	    if (value != null && value instanceof List) {
+    		    ((List) value).add(param);
+    	    } else {
+    		    value = (T) param;
+    	    }
+    	    return;
         }
-        if (theClass.equals(IntegerParameter.class)) {
-        	IntegerParameter param = new IntegerParameter(sValue, 0, 0, 1);
-            param.initAndValidate();
-       		value = (T) param;
-            return;
-        }
-        if (theClass.equals(BooleanParameter.class)) {
-        	BooleanParameter param = new BooleanParameter(sValue, 1);
-            param.initAndValidate();
-       		value = (T) param;
-            return;
-        }
-        // settle for a string
-        if (theClass.isAssignableFrom(sValue.getClass())) {
-            value = (T) sValue;
-        } else {
-            throw new Exception("Input 103: type mismatch");
+        
+        // call a string constructor of theClass
+        try {
+	        Constructor ctor = theClass.getDeclaredConstructor(String.class);
+	        ctor.setAccessible(true);
+	        Object o = ctor.newInstance(sValue);
+	    	if (value != null && value instanceof List) {
+	    		((List) value).add(o);
+	    	} else {
+	    		value = (T) o;
+	    	}
+        } catch (Exception e) {
+        	  throw new Exception("Input 103: type mismatch, cannot initialize input '"+getName()+ 
+        			  "' with value '"+sValue+"' because " + e.getMessage());
         }
     } // setStringValue
 

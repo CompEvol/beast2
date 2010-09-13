@@ -6,6 +6,7 @@ import beast.core.Description;
 import beast.core.Input;
 
 import java.io.PrintStream;
+import java.util.List;
 
 
 /**
@@ -21,6 +22,10 @@ public class RealParameter extends Parameter<Double> {
     public RealParameter() {
     }
 
+    /** Constructor used by Input.setValue(String) **/
+    public RealParameter(String sValue) throws Exception {
+    	init(0.0, 0.0, sValue, 1);
+    }
     /**
      * Constructor for testing.
      */

@@ -22,6 +22,10 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     public IntegerParameter() {
     }
 
+    /** Constructor used by Input.setValue(String) **/
+    public IntegerParameter(String sValue) throws Exception {
+    	init(0, 0, sValue, 1);
+    }
     /**
      * Constructor for testing.
      */

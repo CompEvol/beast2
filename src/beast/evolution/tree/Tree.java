@@ -50,6 +50,15 @@ public class Tree extends StateNode {
     	}
     }
 
+    
+    public Tree() {}
+    
+    /** Constructor used by Input.setValue(String) **/
+    public Tree(String sNewick) throws Exception {
+    	TreeParser parser = new TreeParser();
+    	setRoot(parser.parseNewick(sNewick));
+    }
+    
 	/** process m_nodeDates, moving taxon heights to match the m_nodeHeights if necessary.
      * If this leads to internal branch lengths becoming negative, the internal nodes are
      * moved as well.
