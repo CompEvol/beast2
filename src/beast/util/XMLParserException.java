@@ -57,7 +57,7 @@ public class XMLParserException extends Exception {
 		}
 		String sPath = "";
 		Node node = m_node;
-		while (node.getNodeType() == Node.ELEMENT_NODE) {
+		while (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
 			String sID;
 			sID = getAttribute(node, "id");
 			if (sID != null) {

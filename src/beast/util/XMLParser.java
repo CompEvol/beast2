@@ -34,7 +34,10 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
+
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -62,9 +65,25 @@ import java.util.HashMap;
  * <beast version='2.0' namespace='x.y.z:'>
  * <map name='elementName'>x.y.z.Class</map>
  * <run>
+ * <plate>
  * <p/>
  * Reserved attributes:
  * <input id='myId' idRef='otherId' name='inputName' spec='x.y.z.MyClass'/>
+ * <p/>
+ * Reserved attribute formats:
+ * shortcut for idref inputs
+ * <input xyz='@ref'/>
+ * ==
+ * <input>
+ * 		<input name='xyz' idref='ref'/>
+ * </input> 
+ * <p>
+ * plate notations
+ * <plate var='n' range='1,2,3'><xyz id='id$(n)'/></plate>
+ * ==
+ * <xyz id='id1'/>
+ * <xyz id='id2'/>
+ * <xyz id='id3'/>
  * <p/>
  * Resolving class:
  * 1. specified in spec attribute
@@ -140,6 +159,8 @@ public class XMLParser {
 //    final static String INT_PARAMETER_ELEMENT = "intParameter";
 //    final static String BOOL_PARAMETER_ELEMENT = "boolParameter";
     final static String RUN_ELEMENT = "run";
+    final static String PLATE_ELEMENT = "plate";
+    
 
 
     Runnable m_runnable;
@@ -189,6 +210,8 @@ public class XMLParser {
         //factory.setValidating(true);
         m_doc = factory.newDocumentBuilder().parse(new File(sFileName));
         m_doc.normalize();
+        processPlates();
+        
         m_sIDMap = new HashMap<String, Plugin>();
         m_LikelihoodMap = new HashMap<String, Integer[]>();
         m_sIDNodeMap = new HashMap<String, Node>();
@@ -203,6 +226,57 @@ public class XMLParser {
         }
     } // parseFile
 
+    /** Expand plates in XML by duplicating the containing XML and replacing
+     * the plate variable with the appropriate value. 
+     */
+    void processPlates() {
+        // process plate elements
+        NodeList nodes = m_doc.getElementsByTagName(PLATE_ELEMENT);
+        // instead of processing all plates, process them one by one,
+        // then check recursively for new plates that could have been
+        // created when they are nested
+        if (nodes.getLength() > 0) {
+        	Node node = nodes.item(0);
+        	String sVar = node.getAttributes().getNamedItem("var").getNodeValue();
+        	String sRange = node.getAttributes().getNamedItem("range").getNodeValue();
+        	String [] sValues = sRange.split(",");
+        	for (String sValue : sValues) {
+        		// copy children
+        		NodeList children = node.getChildNodes();
+        		for (int iChild = 0; iChild < children.getLength(); iChild++) {
+        			Node child = children.item(iChild);
+        			Node newChild = child.cloneNode(true);
+        			replace(newChild, sVar, sValue);
+        			node.getParentNode().appendChild(newChild);
+        		}
+        	}
+        	node.getParentNode().removeChild(node);
+        	processPlates();
+        }
+    } // processPlates
+    
+	void replace(Node node, String sVar, String sValue) {
+		if (node.getNodeType() == Node.ELEMENT_NODE) {
+			Element element = (Element) node;
+			NamedNodeMap atts = element.getAttributes();
+			for (int i = 0; i < atts.getLength(); i++) { 
+				Attr attr = (Attr)atts.item(i);
+				if (attr.getValue().indexOf("$("+sVar+")") > -1) {
+					String sAtt = attr.getValue();
+					sAtt = sAtt.replaceAll("\\$\\("+sVar+"\\)", sValue);
+					attr.setNodeValue(sAtt);
+				}
+			}
+		}
+		
+		// process children
+		NodeList children = node.getChildNodes();
+		for (int iChild = 0; iChild < children.getLength(); iChild++) {
+			Node child = children.item(iChild);
+			replace(child, sVar, sValue);
+		}
+	} // replace
+    
     /** Parse an XML fragment representing a Plug-in
      * Only the last child element of the top level <beast> element is considered.
      */
@@ -517,7 +591,19 @@ public class XMLParser {
                         sName.equals("spec") ||
                         sName.equals("name"))) {
                     String sValue = atts.item(i).getNodeValue();
-                    setInput(node, parent, sName, sValue);
+                    if (sValue.startsWith("@")) {
+                    	String sIDRef = sValue.substring(1);
+                    	Element element = m_doc.createElement("input");
+                    	element.setAttribute("idref", sIDRef);
+                    	// add child in case things go belly up, and an XMLParserException is thrown
+                    	node.appendChild(element);
+                    	Plugin plugin = createObject(element, PLUGIN_CLASS, parent);
+                    	// it is save to remove the elment now
+                    	node.removeChild(element);
+                    	setInput(node, parent, sName, plugin);
+                    } else {
+                    	setInput(node, parent, sName, sValue);
+                    }
                 }
             }
         }
