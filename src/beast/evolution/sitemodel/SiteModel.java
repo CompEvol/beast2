@@ -25,13 +25,11 @@
 package beast.evolution.sitemodel;
 
 
-
-
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.StateNode;
 import beast.core.Input.Validate;
+import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.HKY;
@@ -61,7 +59,7 @@ public class SiteModel extends CalculationNode {
     public Input<SubstitutionModel> m_pSubstModel =
             new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
     public Input<Frequencies> m_pFreqs =
-            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
+            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.OPTIONAL);
 
 
     @Override
@@ -106,6 +104,7 @@ public class SiteModel extends CalculationNode {
     }
 
     // RRB: do we need this bit of undocumented code?
+
     public void addCondition(Input<? extends StateNode> stateNode) {
 //        if (this instanceof StateNode) throw new RuntimeException();
         if (stateNode.get() == null) return;
@@ -116,13 +115,13 @@ public class SiteModel extends CalculationNode {
     }
 
     protected List<String> conditions = null;
-    
-    
+
+
     @Override
     protected boolean requiresRecalculation() {
-    	// we only get here if something is dirty in its inputs
-    	ratesKnown = false;
-    	return true;
+        // we only get here if something is dirty in its inputs
+        ratesKnown = false;
+        return true;
 //        if (muParameter.isDirty()) {
 //            ratesKnown = false;
 //        }
@@ -160,7 +159,7 @@ public class SiteModel extends CalculationNode {
             }
         }
 
-    	RealParameter tmp = muParameter.get(); 
+        RealParameter tmp = muParameter.get();
         final double mu = (tmp != null) ? tmp.getValue() : 1.0;
 
         return categoryRates[category] * mu;
@@ -174,7 +173,7 @@ public class SiteModel extends CalculationNode {
             }
         }
 
-    	RealParameter tmp = muParameter.get(); 
+        RealParameter tmp = muParameter.get();
         final double mu = (tmp != null) ? tmp.getValue() : 1.0;
 
         final double[] rates = new double[categoryRates.length];
@@ -227,7 +226,7 @@ public class SiteModel extends CalculationNode {
      */
     public double[] getCategoryProportions() {
         //synchronized (this) 
-    	{
+        {
             if (!ratesKnown) {
                 calculateCategoryRates();
             }
