@@ -59,7 +59,7 @@ public class SiteModel extends CalculationNode {
     public Input<SubstitutionModel> m_pSubstModel =
             new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
     public Input<Frequencies> m_pFreqs =
-            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.OPTIONAL);
+            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
 
 
     @Override
