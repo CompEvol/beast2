@@ -83,6 +83,10 @@ public class DocMaker {
     public DocMaker(String[] args) {
     	this();
         if (args.length > 0) {
+        	if (args[0].equals("-javadoc")) {
+        		makeJavaDoc();
+        		System.exit(0);
+        	}
             m_sDir = args[0];
         }
     } // c'tor
@@ -102,7 +106,7 @@ public class DocMaker {
         	try {
 	            Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
 	            String sDescription = getInheritableDescription(plugin.getClass());
-	            System.err.println(sPlugin + " => " + sDescription);
+	            //System.err.println(sPlugin + " => " + sDescription);
 	            m_descriptions.put(sPlugin, sDescription);
 	            String[] sImplementations = getImplementations(plugin);
 	            m_isa.put(sPlugin, sImplementations);
@@ -118,6 +122,24 @@ public class DocMaker {
         }
     } // c'tor
 
+    
+    /** print @Description and Input.description info so that it can 
+     * be inserted in the code before creating Javadoc documentation
+     * for the Beast II SDK.
+     */
+	void makeJavaDoc() {
+        for (String sPlugin : m_sPluginNames) {
+    		try {
+    			Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+    			System.out.println(sPlugin + ":@description:" + plugin.getDescription());
+    			for (Input<?> input : plugin.listInputs()) {
+    				System.out.println(sPlugin + ":" + input.getName() + ":" + input.getTipText());
+    			}
+    		} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
+	}
     
     /**
      * create CSS style sheet for all pages *
@@ -338,7 +360,6 @@ public class DocMaker {
 
         // show descriptions of all plug-ins implemented by this plug in...
         buf.append("<p>" + m_descriptions.get(sPlugin) + "</p>\n");
-
 
         // show citation (if any)
         Citation citation = plugin.getCitation();

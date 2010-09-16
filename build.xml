@@ -11,6 +11,7 @@
 	<property name="src" location="src" />
 	<property name="build" location="build" />
 	<property name="lib" location="lib" />
+	<property name="doc" location="doc" />
 	<property name="dist" location="${build}/dist" />
 
 	<property name="main_class_BEAST" value="beast.app.BeastMCMC" />
@@ -26,9 +27,7 @@
 	</target>
 
 	<target name="clean">
-<!--
 		<delete dir="${build}" />
--->		
 	</target>
 
 	<!-- clean previous build, and then compile Java source code, and Juint test -->
@@ -121,4 +120,55 @@
 		</junitreport>
 		<echo message="JUnit test report finished." />
 	</target>
+
+    <target name="javadoc" description="Create Javadocs for Beast II" depends='docPreProcess'>
+        <mkdir dir="beast2/javadoc/"/>
+        <javadoc 
+            destdir="beast2/javadoc/">
+            <fileset dir="src2/" includes="beast/core/**/*.java" />
+            <fileset dir="src2/" includes="beast/util/**/*.java" />
+            <fileset dir="src2/" includes="beast/math/**/*.java" />
+            <fileset dir="src2/" includes="beast/evolution/**/*.java" />
+        </javadoc>
+    </target>
+
+    <!-- run perl script that extracts @Description and Input.description info for javadoc -->
+    <target name="docPreProcess">
+        <exec executable="perl" dir="${basedir}">
+            <arg value="scripts/doc.pl"/>
+        </exec>
+    </target>
+
+
+    <!-- zip up everything that goes in the SDK -->
+    <target name="sdk" description="Create Beast II SDK" depends="dist_all_BEAST,javadoc">
+		<!-- Put the SDK in ${dist} into the beastsdk.zip file -->
+        <copy file="doc/README" tofile="beast2/README"/>
+        <copy file="doc/LICENSE" tofile="beast2/LICENSE"/>
+        <copy file="doc/slides/sdk.pdf" tofile="beast2/Beast.II.Getting.Started.pdf"/>
+        <copy file="${dist}/beast.jar" tofile="beast2/beast.jar"/>
+        <delete file="${dist}/beastsdk.zip"/> 
+
+		<jar jarfile="${dist}/beastsdk.zip">
+			<fileset dir="">
+				<include name="beast2/README" />
+				<include name="beast2/LICENSE" />
+				<include name="beast2/Beast.II.Getting.Started.pdf" />
+				<include name="beast2/javadoc/**/*.*" />
+				<include name="beast2/beast.jar" />
+			</fileset>
+		</jar>
+
+        <!-- clean up -->
+        <delete file="beast2/README"/> 
+        <delete file="beast2/LICENSE"/> 
+        <delete file="beast2/beast.jar"/> 
+        <delete includeemptydirs="true">
+            <fileset dir="beast2/javadoc/" includes="**/*"/>
+        </delete>
+        <delete dir="beast2/javadoc"/> 
+        <delete dir="beast2"/> 
+    </target>
+
 </project>
+
