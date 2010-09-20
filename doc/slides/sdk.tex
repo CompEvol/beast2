@@ -3,6 +3,8 @@
 \usepackage{pgf}
 \usepackage{listings}
 \setlength{\parindent}{0pt}
+\newtheorem{figcaption}[figure]{Figure}
+
 
 \title{Beast II SDK: version 0.1}
 
@@ -46,18 +48,113 @@ locations, either set the {\tt beastlib} environment variable to the directory (
 directories where the various directories are separated by a colon, just like in Java
 class paths) where the jar file should be picked up.
 
+
+\section{Example\label{sec.example}}
+
+%\begin{figure*}[h]
+\includegraphics[width=\textwidth]{example1.png}
+\figcaption{\label{fig.jc}Example of a model specifying Jukes Cantors substriution model (JC).
+It shows Plugins represented by rocket shapes connected to other Plugins through inputs 
+(the thrusters of the rocket).}\rm\\\hskip10pt
+%\end{figure*}
+
+Figure \ref{fig.jc} show (part of) a model, representing an nucleotide sequence analysis 
+using the Jukes Cantor substitution model. The 'rockets' represent plugins, and their
+thrusters the inputs. Models can be build up by connecting plugins through these inputs
+with other plugins. For example, in Figure \ref{fig.jc}, the Tree has an Alignment
+as input, and both Tree and Alignment are inputs to the TreeLikelihood. The TreeLikelihood
+calculates the likelihood of the sequence for a given tree. To do this, the TreeLikelihood
+also needs at least a SiteModel as input, and potentially also a BranchRateModel (not
+necessary in this example). The SiteModel specifies everything related to the transition
+probabilities for a site from one node to another in the Tree, such as the number of
+gamma categories, proportion of invariant sites and substitution model. In Figure \ref{fig.jc},
+Jukes Cantor substitution model is used. In this Section,  we extend this with the 
+HKY substitution model and show how this model interacts with the operators,
+state, loggers and other bits and pieces in the model.
+
+
+%\begin{figure*}[h]
+\includegraphics[width=\textwidth]{example2.png}
+\figcaption{\label{fig.hky}Example of a model specifying a HKY substitution model.}\rm\\\hskip10pt
+%\end{figure*}
+
+To define the HKY substitution model, first we need to find out what its inputs should be.
+The kappa parameter of the HKY model represents a variable that can be estimated.
+Plugins in the calculation model (i.e. the part of the model that performs the posterior
+calculation) are divided in StateNodes and CalculationNodes. StateNodes are classes
+an operator can change, while CalculationNodes are classes that change the internal
+state based on Inputs. 
+The HKY model is a CalculationNode, since it internally stores an eigenvalue 
+matrix that is calculated based on kappa. Kappa can be changed by an operator and does
+not calculate antying itself, so the kappa parameter is a StateNode.
+
+The other bit of information required for the HKY model it the character frequencies.
+These can be calculated from the alignment.%, so Frequencies is a CalculationNode. <- NOT CORRECT
+Compare Figure \ref{fig.hky} with Figure \ref{fig.jc} to see how the HKY model differs
+from the JC model.
+See Section \ref{sec.start} for implementation details for plugin classes like HKY.
+
+
+%\begin{figure*}[h]
+\includegraphics[width=\textwidth]{example3.png}
+\figcaption{\label{fig.hky2}Adding operators.}\rm\\\hskip10pt
+%\end{figure*}
+
+In an MCMC framework, operators propose a move in the state space, and these are
+then accepted or rejected based on how good the moves are and luck. Figure \ref{fig.hky2}
+shows the HKY model extended with seven operators: six for changing the tree and
+one for changing the kappa parameter.
+
+
+%\begin{figure*}[h]
+\includegraphics[width=\textwidth]{example4.png}
+\figcaption{\label{fig.hky3}Adding the state.}\rm\\\hskip10pt
+%\end{figure*}
+
+
+The operators work on the tree and the kappa parameter. Any StateNode that an operator
+can work on must be part of the State. Appart from the State being a collection of
+StateNodes, the State performs introspection on the model and controls the order in
+which Plugins are notified of changes and which of them should store or restore their
+internal state. For example, if an operator changes the Tree, the HKY model does not
+need to be bothered with updating its internal state or storing that internal state
+since it never needs to be restored based on the tree change alone.
+
+%\begin{figure*}[h]
+\includegraphics[width=\textwidth]{example5.png}
+\figcaption{\label{fig.hky4}Adding the loggers.}\rm\\\hskip10pt
+%\end{figure*}
+
+For the MCMC analysis to be any useful, we need to log results. Loggers take care of
+this task. Loggers can log anything that is Loggable, such as parameters and trees,
+but it is easy enough to write a custom logger and add it to the list of inputs of
+a Logger. Typically, one logger logs to standard output, one to a log file with
+parameter values (a tab delimited file that can be analysed with Tracer) and one
+log file with trees in Newick format.
+
+
+%\begin{figure*}[h]
+\includegraphics[width=\textwidth]{example6.png}
+\figcaption{\label{fig.hky5}Adding the sequences. This is a complete model description
+that can be executed in Beast II.}\rm\\\hskip10pt
+%\end{figure*}
+
+
+
+Finally, the alignment consist of a list of sequences. Each sequence object containing
+the actual sequence and taxon information. This completes the model, shown in Figure 
+\ref{fig.hky5} and this model can be executed by Beast II.
+
+
+
+
+
 \section{Getting started\label{sec.start}}
 
 
 \subsection{Beast II Philosophy}
 
 Everything is a plug-in!
-
-\begin{figure}
-\includegraphics[width=\textwidth]{hkymodel.png}
-\caption{\label{fig.hky}Example of a model, showing Plugins connected to
-other Plugins through inputs.}
-\end{figure}
 
 Plug-ins provide...
 \begin{itemize}
@@ -473,7 +570,6 @@ of a type that is concrete, and apart from {\tt List<T>} no template class shoul
 \subsubsection{Store/restore do not call {\tt super.store()}/{\tt super.restore()}.}
 
 Obviously, not calling store/restore on super classes may result in unexpected behavior.
-
 
 
 \end{document}
