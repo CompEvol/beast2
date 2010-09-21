@@ -58,8 +58,8 @@ public class SiteModel extends CalculationNode {
             new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
     public Input<SubstitutionModel> m_pSubstModel =
             new Input<SubstitutionModel>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
-    public Input<Frequencies> m_pFreqs =
-            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
+//    public Input<Frequencies> m_pFreqs =
+//            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
 
 
     @Override
@@ -189,7 +189,7 @@ public class SiteModel extends CalculationNode {
     }
 
     public double[] getFrequencies() {
-        return m_pFreqs.get().getFreqs();
+        return m_pSubstModel.get().getFrequencies();
     }
 
     /**

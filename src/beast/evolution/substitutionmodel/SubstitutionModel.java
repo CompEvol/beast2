@@ -38,6 +38,9 @@ public interface SubstitutionModel {
      * @param matrix        an array to store the matrix
      */
     void getTransitionProbabilities(double substitutions, double[] matrix);
+    
+    /** return frequencies for root distribution **/
+    double [] getFrequencies();
 
     /**
      * This function returns the Eigen decomposition of the instantaneous rate matrix if available.
@@ -50,5 +53,9 @@ public interface SubstitutionModel {
         public Input<Frequencies> frequencies =
                 new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
 
+        @Override
+    	public double[] getFrequencies() {
+    		return frequencies.get().getFreqs();
+    	}
     }
 }

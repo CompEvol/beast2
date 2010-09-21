@@ -37,7 +37,6 @@
     <!-- site model                                                              -->
     <input spec='SiteModel' id="siteModel">
         <!--<parameter name='mutationRate'>1.0</parameter>-->
-        <input idref='freqs' name='frequencies'/>
         <input name='substModel' idref='hky'/>
     </input>
 

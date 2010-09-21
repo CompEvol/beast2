@@ -86,7 +86,6 @@
 
     <!-- site model                                                              -->
     <input spec='SiteModel' id="siteModel">
-        <input idref='freqs' name='frequencies'/>
         <input name='substModel' idref='hky'/>
     </input>
 

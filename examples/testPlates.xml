@@ -64,7 +64,7 @@
         </input>
 
         <!-- site model                                                              -->
-        <input spec='SiteModel' id="siteModel$(n)" frequencies='@freqs$(n)' substModel='@hky$(n)'/>
+        <input spec='SiteModel' id="siteModel$(n)" substModel='@hky$(n)'/>
 
         <input spec='TreeLikelihood' id="treeLikelihood$(n)"
             data="@alignment$(n)"

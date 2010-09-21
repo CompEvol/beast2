@@ -214,7 +214,7 @@
 <frequencies idref="freqs"/>
 <substModel idref="hky"/>
 </input>
-<input spec="TreeLikelihood" id="treeLikelihood">
+<input spec="TreeLikelihood2" id="treeLikelihood">
 <data idref="alignment"/>
 <tree idref="tree"/>
 <siteModel idref="siteModel"/>
@@ -256,22 +256,22 @@
 <operator spec="WilsonBalding" weight="1">
 <tree idref="tree"/>
 </operator>
-<log logEvery="10000">
+<logger logEvery="10000">
 <model idref="likelihood"/>
 <distribution name="log" idref="likelihood"/>
 <parameter name="log" idref="hky.kappa"/>
-</log>
-<log logEvery="10000" fileName="testM1044.$(seed).log">
+</logger>
+<logger logEvery="10000" fileName="testM1044.$(seed).log">
 <model idref="likelihood"/>
 <distribution name="log" idref="likelihood"/>
 <parameter name="log" idref="hky.kappa"/>
 <log spec="beast.evolution.tree.TreeHeightLogger">
 <tree idref="tree"/>
 </log>
-</log>
-<log logEvery="10000" fileName="testM1044.$(seed).trees">
+</logger>
+<logger logEvery="10000" fileName="testM1044.$(seed).trees">
 <tree name="log" idref="tree"/>
-</log>
+</logger>
 </run>
 </beast>
 
