@@ -58,7 +58,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
 //		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, null, null, hky, freqs);
+		siteModel.init("1.0", 1, null, null, hky);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -85,7 +85,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
 //		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, null, null, hky, freqs);
+		siteModel.init("1.0", 1, null, null, hky);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -112,7 +112,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
 //		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, null, null, hky, freqs);
+		siteModel.init("1.0", 1, null, null, hky);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -140,7 +140,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
 //		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
 //		siteModel.init(fMu, 4, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 4, "0.137064", "0.0", hky, freqs);
+		siteModel.init("1.0", 4, "0.137064", "0.0", hky);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -167,7 +167,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
 //		RealParameter fInvarProportion = new RealParameter(0.701211, 0.0, 1000.0, 1);
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, "0.137064", "0.701211", hky, freqs);
+		siteModel.init("1.0", 1, "0.137064", "0.701211", hky);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -193,7 +193,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
 //		RealParameter nShape = new RealParameter(0.587649, 0.0, 1000.0, 1);
 //		RealParameter fInvarProportion = new RealParameter(0.486548, 0.0, 1000.0, 1);
-		siteModel.init("1.0", 4, "0.587649", "0.486548", hky, freqs);
+		siteModel.init("1.0", 4, "0.587649", "0.486548", hky);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -217,7 +217,7 @@ public class TreeLikelihoodTest extends TestCase {
 		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 1, null, null, gsm, freqs);
+		siteModel.init("1.0", 1, null, null, gsm);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -240,7 +240,7 @@ public class TreeLikelihoodTest extends TestCase {
 		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 1, null, "0.5", gsm, freqs);
+		siteModel.init("1.0", 1, null, "0.5", gsm);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -263,7 +263,7 @@ public class TreeLikelihoodTest extends TestCase {
 		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 4, "0.5", null, gsm, freqs);
+		siteModel.init("1.0", 4, "0.5", null, gsm);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
@@ -286,7 +286,7 @@ public class TreeLikelihoodTest extends TestCase {
 		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 4, "0.5", "0.5", gsm, freqs);
+		siteModel.init("1.0", 4, "0.5", "0.5", gsm);
 
 		TreeLikelihood likelihood = new TreeLikelihood();
 		likelihood.init(data, tree, siteModel);
