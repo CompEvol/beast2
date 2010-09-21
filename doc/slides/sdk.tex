@@ -579,6 +579,21 @@ of a type that is concrete, and apart from {\tt List<T>} no template class shoul
 
 Obviously, not calling store/restore on super classes may result in unexpected behavior.
 
+\subsubsection{Input rule of base class is not what you want.}
+
+If an Input is REQUIRED for a base class you want to override, but for the derived
+class this Input should be OPTIONAL, set the Input to OPTIONAL in the constructor.
+E.g. for a SNPSequence that derives from Sequence, but for which m\_sData is optional,
+add a constructor
+
+{\color{blue}\begin{lstlisting}[language=java]
+	public SNPSequence() {
+		m_sData.setRule(Validate.OPTIONAL);
+	}
+\end{lstlisting}}
+Note that the constructor needs to be public, to prevent IllegalAccessExceptions
+on construction by e.g. the XMLParser.
+
 
 \end{document}
 

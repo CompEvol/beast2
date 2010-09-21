@@ -199,6 +199,10 @@ public class Input<T> {
         return rule;
     }
 
+    public void setRule(Validate rule) {
+        this.rule = rule;
+    }
+
     public Input<?> getOther() {
         return other;
     }
