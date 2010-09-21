@@ -8,6 +8,36 @@ use Cwd;
 mkdir("src2");
 
 
+@list = `find src/|grep java|grep beast|grep -v "\.svn"|grep -v test|egrep -v BeerLikelihoodCore.+.java`;
+print $#list;
+
+# grab Description info for abstract classes
+foreach $sFile (@list) {
+    chomp($sFile);
+    print "Processing $sFile\n";
+    $sClass = $sFile;
+    $sClass =~ s/src.//;
+    $sClass =~ s/.java$//;
+    $sClass =~ s/\//./g;
+    open(FIN,$sFile) or die "Cannot open file $sFile for reading";
+    while ($s = <FIN>) {
+        if ($s =~ /^\s*\@Description/) {
+            # extract Description text
+            $d = $s;
+            $d =~ s/.*\@Description\s*\(\s*"(.*)".*/$1/;
+            while (($s !~ /\bpublic.+class\b/) && ($s !~ /\bpublic.+interface\b/) && ($s = <FIN>)) {
+                if (($s !~ /\bpublic.+class\b/) && ($s !~ /\bpublic.+interface\b/)) {
+                    $s =~ s/\s*"(.*)".*/$1/;
+                    $d .= $s;
+                }
+            }
+            $map{"$sClass \@description"} = $d;
+        }
+    }
+    close FIN;
+}
+
+
 # grab description and input info from DocMaker
 open (FIN,"java -cp build:lib/commons-math-2.0.jar beast.app.DocMaker -javadoc |");
 while ($s = <FIN>) {
@@ -16,9 +46,7 @@ while ($s = <FIN>) {
 }
 
 
-
-@list = `find src/|grep java|grep beast|grep -v "\.svn"|grep -v test|egrep -v BeerLikelihoodCore.+.java`;
-print $#list;
+# process files: copy each Java class from src to src2
 foreach $sFile (@list) {
     chomp($sFile);
     print "Processing $sFile\n";

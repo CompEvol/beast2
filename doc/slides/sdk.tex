@@ -113,7 +113,7 @@ one for changing the kappa parameter.
 
 
 The operators work on the tree and the kappa parameter. Any StateNode that an operator
-can work on must be part of the State. Appart from the State being a collection of
+can work on must be part of the State. Apart from the State being a collection of
 StateNodes, the State performs introspection on the model and controls the order in
 which Plugins are notified of changes and which of them should store or restore their
 internal state. For example, if an operator changes the Tree, the HKY model does not
@@ -407,6 +407,14 @@ When retrieving a {\tt StateNode} to operate on, use {\tt Input.get(this)} inste
 
 The latter will {\em not} notify the {\tt State} and changes can be lost or not
 propagate through at all.
+
+\subsubsection{Loggable\label{ssec.logger}}
+
+To create custom loggers, implement the {\tt Loggable} interface, which has three methods:\\
+o init(), for generating header information and called only at the start of the log,\\
+o exit(), for any closing statements, e.g. 'End;' in a Nexus tree file, and\\
+o log(), for periodically logging relevant information.
+
 
 
 \subsection{Evolution library\label{ssec.evo}}

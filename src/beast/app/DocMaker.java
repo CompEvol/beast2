@@ -104,9 +104,10 @@ public class DocMaker {
         }
         for (String sPlugin : m_sPluginNames) {
         	try {
-	            Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+        		Class _class = Class.forName(sPlugin);
+	            Plugin plugin = (Plugin) _class.newInstance();
 	            String sDescription = getInheritableDescription(plugin.getClass());
-	            //System.err.println(sPlugin + " => " + sDescription);
+	            System.err.println(sPlugin + " => " + sDescription);
 	            m_descriptions.put(sPlugin, sDescription);
 	            String[] sImplementations = getImplementations(plugin);
 	            m_isa.put(sPlugin, sImplementations);

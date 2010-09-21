@@ -10,9 +10,9 @@ import beast.core.StateNode;
 import beast.core.Input.Validate;
 import beast.util.Randomizer;
 
-@Description("This element represents an operator that scales two parameters in different directions. "
-		+ "Each operation involves selecting a scale uniformly at random between scaleFactor and 1/scaleFactor. "
-		+ "The up parameter is multiplied by this scale and the down parameter is divided by this scale.")
+@Description("This element represents an operator that scales two parameters in different directions. " +
+		"Each operation involves selecting a scale uniformly at random between scaleFactor and 1/scaleFactor. " +
+		"The up parameter is multiplied by this scale and the down parameter is divided by this scale.")
 public class UpDownOperator extends Operator {
 
 	public Input<Double> m_scaleFactor = new Input<Double>("scalefactor",

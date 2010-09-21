@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import org.w3c.dom.Node;
 
 /**
- * This interface represents a node of the state. Concrete classes include Parameters and Trees.
+ * This class represents a node of the state. Concrete classes include Parameters and Trees.
  * StateNodes differ from CalculationNodes in that they
  * 1. Do not calculate anything, with the exception of initialisation time
  * 2. can be changed by Operators 
@@ -15,7 +15,7 @@ import org.w3c.dom.Node;
 @Description("A node that can be part of the state.")
 public abstract class StateNode extends Plugin  implements Loggable, Cloneable, Valuable {
 
-	/** @return this StateNode if it is not in the State.
+	/** Returns this StateNode if it is not in the State.
      * If it is in the State, return the version that is currently valid 
      * (i.e. not the stored one). 
      */
@@ -25,7 +25,7 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     	}
     	return m_state.getStateNode(index);
     }
-    /** @return StateNode for an operation to do its magic on.
+    /** Return StateNode for an operation to do its magic on.
      * The State will make a copy first, if there is not already
      * one available.
      * @param operator explain here why operator is useful

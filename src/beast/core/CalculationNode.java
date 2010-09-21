@@ -8,7 +8,7 @@ package beast.core;
  *
  * @author Andrew Rambaut
  */
-@Description("Plugin that perform calculations based on the State.")
+@Description("Plugin that performs calculations based on the State.")
 public class CalculationNode extends Plugin {
 
     //=================================================================

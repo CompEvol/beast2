@@ -60,8 +60,7 @@ import beast.util.Randomizer;
  * KNOWN BUGS: WIDE operator cannot be used on trees with 4 or less tips!
  */
 
-@Description(
-        "Implements branch exchange operations. There is a NARROW and WIDE variety. " +
+@Description("Implements branch exchange operations. There is a NARROW and WIDE variety. " +
                 "The narrow exchange is very similar to a rooted-beast.tree nearest-neighbour " +
                 "interchange but with the restriction that node height must remain consistent.")
 public class Exchange extends TreeOperator {

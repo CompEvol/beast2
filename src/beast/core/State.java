@@ -39,6 +39,13 @@ import org.w3c.dom.NodeList;
 
 import beast.core.Input;
 
+/**"The state represents the current point in the state space, and " +
+        "maintains values of a set of StateNodes, such as parameters and trees. " +
+        "Furthermore, the state manages which parts of the model need to be stored/restored " +
+        "and notified that recalculation is appropriate."**/
+
+
+
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of StateNodes, such as parameters and trees. " +
         "Furthermore, the state manages which parts of the model need to be stored/restored " +
@@ -411,6 +418,7 @@ public class State extends Plugin {
 			e.printStackTrace();
 			System.exit(1);
 		}
+
     	m_map.put(m_changedStateNodeCode, calcNodes);
     	
     	System.out.print(m_changedStateNodeCode + ":");

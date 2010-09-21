@@ -37,7 +37,7 @@ public class Sequence extends Plugin {
     public Input<String> m_sTaxon = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
     public Input<String> m_sData = new Input<String>("value",
             "sequence data, either encoded as a string or as comma separated list of integers." +
-            "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
+            "In either case, whitespace is ignored.");//, Input.Validate.REQUIRED);
 
     public Sequence() {
     }
@@ -61,7 +61,7 @@ public class Sequence extends Plugin {
     } // initAndValidate
 
 
-    List<Integer> getSequence(String sDataMap) throws Exception {
+    public List<Integer> getSequence(String sDataMap) throws Exception {
         List<Integer> sequence;
         sequence = new ArrayList<Integer>();
         String sData = m_sData.get();

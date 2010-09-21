@@ -6,6 +6,8 @@ import java.io.PrintStream;
  * @author Andrew Rambaut
  * @version $Id$
  */
+
+/** interface for items that can be logged through a Logger **/
 public interface Loggable {
 
     /** write header information, e.g. labels of a parameter,
