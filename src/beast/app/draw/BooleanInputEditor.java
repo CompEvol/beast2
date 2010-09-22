@@ -21,7 +21,7 @@ public class BooleanInputEditor extends InputEditor {
 	
 	/** create input editor containing a check box **/
 	@Override
-	public void init(Input<?> input, Plugin plugin) {
+	public void init(Input<?> input, Plugin plugin, boolean bExpand) {
 		m_plugin = plugin;
 		m_input = input;
 		m_entry = new JCheckBox(input.getName());

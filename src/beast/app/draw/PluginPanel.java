@@ -102,42 +102,9 @@ public class PluginPanel extends JPanel {
         mainBox.add(pluginBox);
         mainBox.add(Box.createVerticalStrut(5));
 
-        /* add individual inputs **/
-        List<Input<?>> inputs = null;
-        try {
-            inputs = plugin.listInputs();
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        for (Input<?> input : inputs) {
-            try {
-                if (input.getType() == null) {
-                    input.determineClass(m_plugin);
-                }
-                Class<?> inputClass = input.getType();
-
-                InputEditor inputEditor;
-                if (g_inputEditorMap.containsKey(inputClass)) {
-                    String sInputEditor = g_inputEditorMap.get(inputClass);
-                    inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
-
-                } else if (List.class.isAssignableFrom(inputClass) ||
-                        (input.get() != null && input.get() instanceof List<?>)) {
-                    inputEditor = new ListInputEditor();
-                } else {
-                    // assume it is a general Plugin, so create a Plugin class
-                    inputEditor = new PluginInputEditor();
-                }
-                inputEditor.init(input, m_plugin);
-                inputEditor.setBorder(new EtchedBorder());
-                mainBox.add(inputEditor);
-                mainBox.add(Box.createVerticalStrut(5));
-            } catch (Exception e) {
-                // ignore
-                System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
-                        "input " + input.getName() + " could not be added.");
-            }
-        }
+        
+        addInputs(mainBox, plugin);
+        
 
         mainBox.add(Box.createVerticalStrut(5));
 
@@ -156,6 +123,49 @@ public class PluginPanel extends JPanel {
         return m_bOK;
     }
 
+    /** add all inputs of a plugin to a box **/
+    public static void addInputs(Box box, Plugin plugin) {
+        /* add individual inputs **/
+        List<Input<?>> inputs = null;
+        try {
+            inputs = plugin.listInputs();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        for (Input<?> input : inputs) {
+            try {
+                if (input.getType() == null) {
+                    input.determineClass(plugin);
+                }
+                Class<?> inputClass = input.getType();
+
+                InputEditor inputEditor;
+                if (g_inputEditorMap.containsKey(inputClass)) {
+                    String sInputEditor = g_inputEditorMap.get(inputClass);
+                    inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
+                } else if (inputClass.isEnum()) {
+                    inputEditor = new EnumInputEditor();
+                } else if (List.class.isAssignableFrom(inputClass) ||
+                        (input.get() != null && input.get() instanceof List<?>)) {
+                    inputEditor = new ListInputEditor();
+                } else {
+                    // assume it is a general Plugin, so create a Plugin class
+                    inputEditor = new PluginInputEditor();
+                }
+            	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
+                inputEditor.init(input, plugin, InputEditor.m_inlinePlugins.contains(sFullInputName));
+                inputEditor.setBorder(new EtchedBorder());
+				inputEditor.setVisible(true);
+                box.add(inputEditor);
+                box.add(Box.createVerticalStrut(5));
+            } catch (Exception e) {
+                // ignore
+                System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
+                        "input " + input.getName() + " could not be added.");
+            }
+        }
+    }    
+    
     /**
      * create box for manipulating the plugin, or ask for help *
      */

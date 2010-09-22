@@ -1,10 +1,15 @@
 package beast.app.draw;
 
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,6 +31,28 @@ import beast.core.Plugin;
  **/ 
 public abstract class InputEditor extends Box {
 	final static String NO_VALUE = "<none>";
+	/** list of inputs for which the input editor should be expanded inline in a dialog 
+	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
+	 */
+	static Set<String> m_inlinePlugins;
+	
+	static {
+		// load m_inlinePlugins from properties file
+		Properties props = new Properties();
+		try {
+			String sPropFile = "beast/app/draw/" + "inputeditor.properties";
+			InputStream in = InputEditor.class.getClassLoader().getResourceAsStream(sPropFile);
+			props.load(in);
+			String sInlinePlugins = props.getProperty("inlinePlugins");
+			m_inlinePlugins = new HashSet<String>();
+			for (String sInlinePlugin: sInlinePlugins.split("\\s+")) {
+				m_inlinePlugins.add(sInlinePlugin);
+			}
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + " " + e.getMessage());
+		}
+	}
+	
 	private static final long serialVersionUID = 1L;
 	/** the input to be edited **/
 	Input<?> m_input;
@@ -49,7 +76,7 @@ public abstract class InputEditor extends Box {
 	abstract public Class<?> type();
 	
 	/** construct an editor consisting of a label and input entry **/
-	public void init(Input<?> input, Plugin plugin) {
+	public void init(Input<?> input, Plugin plugin, boolean bExpand) {
 		m_input = input;
 		m_plugin = plugin;
 
