@@ -16,7 +16,7 @@
  */
 package org.apache.commons.math;
 
-import org.apache.commons.math.linear.ArrayRealVector;
+//import org.apache.commons.math.linear.ArrayRealVector;
 
 /**
  * Exception thrown when an error occurs evaluating a function.
@@ -56,10 +56,10 @@ public class FunctionEvaluationException extends MathException  {
      * @param argument  the failing function argument
      * @since 2.0
      */
-    public FunctionEvaluationException(double[] argument) {
-        super(FAILED_EVALUATION_MESSAGE, new ArrayRealVector(argument));
-        this.argument = argument.clone();
-    }
+//    public FunctionEvaluationException(double[] argument) {
+//        super(FAILED_EVALUATION_MESSAGE, new ArrayRealVector(argument));
+//        this.argument = argument.clone();
+//    }
 
     /**
      * Constructs an exception with specified formatted detail message.
