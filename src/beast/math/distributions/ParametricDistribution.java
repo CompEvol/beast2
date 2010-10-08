@@ -26,8 +26,13 @@
 package beast.math.distributions;
 
 
+import org.apache.commons.math.MathException;
+import org.apache.commons.math.distribution.ContinuousDistribution;
+import org.apache.commons.math.distribution.IntegerDistribution;
+
 import beast.core.CalculationNode;
 import beast.core.Description;
+import beast.core.Valuable;
 
 /**
  * A class that describes a parametric distribution
@@ -36,8 +41,92 @@ import beast.core.Description;
  * @version $Id: ParametricDistributionModel.java,v 1.4 2005/05/24 20:25:59 rambaut Exp $
  */
 
-@Description("A parametric distribution plugin.")
-public abstract class ParametricDistribution extends CalculationNode  {
+@Description("A class that describes a parametric distribution, that is, a distribution that takes some " +
+		"parameters/valuables as inputs and can produce (cummulative) densities and inverse " +
+		"cummulative densities.")
+public abstract class ParametricDistribution extends CalculationNode implements ContinuousDistribution {
 
-    abstract public Distribution getDistribution();
+    abstract public org.apache.commons.math.distribution.Distribution getDistribution();
+
+    /** Calculate log probability of a valuable x for this distribution.
+	 * If x is multidimensional, the components of x are assumed to be independent,
+	 * so the sum of log probabilities of all elements of x is returned as the prior.
+	**/
+    public double calcLogP(Valuable x) throws Exception {
+		double fLogP = 0;
+		for (int i = 0; i < x.getDimension(); i++) {
+			double fX = x.getArrayValue(i);
+			fLogP += Math.log(density(fX));
+		}
+		return fLogP;
+    }
+    
+    /**
+     * For this distribution, X, this method returns x such that P(X &lt; x) = p.
+     * @param p the cumulative probability.
+     * @return x.
+     * @throws MathException if the inverse cumulative probability can not be
+     *            computed due to convergence or other numerical errors.
+     */
+    @Override
+    public double inverseCumulativeProbability(double p) throws MathException {
+    	org.apache.commons.math.distribution.Distribution dist = getDistribution();
+    	if (dist instanceof ContinuousDistribution) {
+    		return ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
+    	} else if (dist instanceof IntegerDistribution) {
+    		((IntegerDistribution)dist).cumulativeProbability(p);
+    	}
+   		return 0.0;
+    }
+    
+    /**
+     * Return the probability density for a particular point.
+     * @param x  The point at which the density should be computed.
+     * @return  The pdf at point x.
+     */    
+    @Override
+    public double density(double x) {
+    	org.apache.commons.math.distribution.Distribution dist = getDistribution();
+    	if (dist instanceof ContinuousDistribution) {
+    		return ((ContinuousDistribution) dist).density(x);
+    	} else if (dist instanceof IntegerDistribution) {
+    		((IntegerDistribution)dist).probability(x);
+    	}
+   		return 0.0;
+    }
+
+    /**
+     * For a random variable X whose values are distributed according
+     * to this distribution, this method returns P(X &le; x).  In other words,
+     * this method represents the  (cumulative) distribution function, or
+     * CDF, for this distribution.
+     *
+     * @param x the value at which the distribution function is evaluated.
+     * @return the probability that a random variable with this
+     * distribution takes a value less than or equal to <code>x</code>
+     * @throws MathException if the cumulative probability can not be
+     * computed due to convergence or other numerical errors.
+     */
+    @Override
+    public double cumulativeProbability(double x) throws MathException {
+    	return getDistribution().cumulativeProbability(x);
+    }
+
+    /**
+     * For a random variable X whose values are distributed according
+     * to this distribution, this method returns P(x0 &le; X &le; x1).
+     *
+     * @param x0 the (inclusive) lower bound
+     * @param x1 the (inclusive) upper bound
+     * @return the probability that a random variable with this distribution
+     * will take a value between <code>x0</code> and <code>x1</code>,
+     * including the endpoints
+     * @throws MathException if the cumulative probability can not be
+     * computed due to convergence or other numerical errors.
+     * @throws IllegalArgumentException if <code>x0 > x1</code>
+     */
+    @Override
+    public double cumulativeProbability(double x0, double x1) throws MathException {
+    	return getDistribution().cumulativeProbability(x0, x1);
+    }
 }

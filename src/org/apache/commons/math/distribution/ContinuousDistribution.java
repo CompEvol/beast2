@@ -22,7 +22,7 @@ import org.apache.commons.math.MathException;
  * <p>Base interface for continuous distributions.</p>
  *
  * <p>Note: this interface will be extended in version 3.0 to include
- * <br/><code>public double density(double x)</code><br/>
+ * <br/><code>public double density(double x)</code><br/> RRB: already added this.
  * that is, from version 3.0 forward, continuous distributions <strong>must</strong>
  * include implementations of probability density functions. As of version
  * 2.1, all continuous distribution implementations included in commons-math
@@ -40,4 +40,11 @@ public interface ContinuousDistribution extends Distribution {
      *            computed due to convergence or other numerical errors.
      */
     double inverseCumulativeProbability(double p) throws MathException;
+    
+    /**
+     * Return the probability density for a particular point.
+     * @param x  The point at which the density should be computed.
+     * @return  The pdf at point x.
+     */    
+    double density(double x);
 }

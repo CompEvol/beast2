@@ -1,6 +1,8 @@
 package beast.evolution.branchratemodel;
 
 
+import org.apache.commons.math.MathException;
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -34,7 +36,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
         rates = new double[categories.getDimension()];
         for (int i = 0; i < rates.length; i++) {
-            rates[i] = distribution.getDistribution().quantile((i + 0.5) / rates.length);
+            rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
         }
     }
 
@@ -92,8 +94,15 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         tree = treeInput.get();
 
         rates = new double[categories.getDimension()];
-        for (int i = 0; i < rates.length; i++) {
-            rates[i] = distribution.getDistribution().quantile((i + 0.5) / rates.length);
+        try {
+	        for (int i = 0; i < rates.length; i++) {
+	            rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+	        }
+        } catch (Exception e) {
+        	// Exception due to distribution not having  inverseCumulativeProbability implemented.
+        	// This should already been caught at initAndValidate()
+        	e.printStackTrace();
+        	System.exit(0);
         }
 
         if (normalize) computeFactor();
