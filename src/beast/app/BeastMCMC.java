@@ -28,7 +28,6 @@ package beast.app;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -74,6 +73,7 @@ public class BeastMCMC {
 						i += 1;
 					} else if (args[i].equals("-resume")) {
 						bResume = true;
+						Logger.FILE_MODE = Logger.FILE_APPEND;
 						i += 1;
 					} else if (args[i].equals("-overwrite")) {
 						Logger.FILE_MODE = Logger.FILE_OVERWRITE;

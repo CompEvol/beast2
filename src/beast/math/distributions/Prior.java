@@ -13,7 +13,7 @@ import beast.core.Input.Validate;
 @Description("Produces prior (log) probability of value x." +
 		"If x is multidimensional, the components of x are assumed to be independent, " +
 		"so the sum of log probabilities of all elements of x is returned as the prior.")
-abstract public class Prior extends Distribution {
+public class Prior extends Distribution {
 	public Input<Valuable> m_x = new Input<Valuable>("x","point at which the density is calculated", Validate.REQUIRED); 
 	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distribution","distribution used to calculate prior, e.g. normal, beta, gamma.", Validate.REQUIRED); 
 

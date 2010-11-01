@@ -196,7 +196,7 @@ public class State extends Plugin {
      **/
     public void store(int nSample) {
     	System.arraycopy(stateNode, 0, storedStateNode, 0, m_nStateNode);
-    	m_changedStateNodeCode = new BitSet(m_nStateNode);
+    	m_changedStateNodeCode.clear();// = new BitSet(m_nStateNode);
     	
     	if (m_nStoreEvery> 0 && nSample % m_nStoreEvery == 0 && nSample > 0) {
     		storeToFile();

@@ -350,6 +350,14 @@ public class DocMaker {
 
         // show all implementation of this plug-in
         String[] sImplementations = m_isa.get(sPlugin);
+        if (sImplementations == null) {
+        	// this class is not documented, perhaps outside ClassDiscover path?
+        	buf.append("No documentation available for " + sPlugin + ". Perhaps it is not in the ClassDiscovery path\n");
+            buf.append("</body>\n");
+            buf.append("</html>\n");
+        	return buf.toString();
+        }
+        
         if (sImplementations.length > 0) {
             buf.append("<table border='1px'>\n");
             buf.append("<thead><tr><td>implemented by the following</td></tr></thead>\n");

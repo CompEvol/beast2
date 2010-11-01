@@ -39,8 +39,13 @@ import java.util.List;
 
 @Description("Class representing alignment data")
 public class Alignment extends Plugin {
+    static final String NUCLEOTIDE = "nucleotide";
+    static final String BINARY = "binary";
+    static final String TWOSTATECOVARION = "twoStateCovarion";
+    static final String INTEGERDATA = "integerdata";
+    static final String AMINOACID = "aminoacid";
     /** currently supported types **/
-	String[] TYPES = {"nucleotide","binary","twoStateCovarion","integerdata"};
+	String[] TYPES = {NUCLEOTIDE,BINARY,TWOSTATECOVARION,INTEGERDATA,AMINOACID};
 	
     public Input<List<Sequence>> m_pSequences =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
@@ -51,7 +56,6 @@ public class Alignment extends Plugin {
     public List<Integer> m_nStateCounts = new ArrayList<Integer>();
     public List<List<Integer>> m_counts = new ArrayList<List<Integer>>();
 
-    static final String NUCLEOTIDE = "nucleotide";
 
     public Alignment() {
     }
@@ -121,10 +125,13 @@ public class Alignment extends Plugin {
         if (m_sDataType.get().equals(NUCLEOTIDE)) {
             return "ACGT";
         }
-        if (m_sDataType.get().equals("binary")) {
+        if (m_sDataType.get().equals(BINARY)) {
             return "01";
         }
-        if (m_sDataType.get().equals("twoStateCovarion")) {
+        if (m_sDataType.get().equals(AMINOACID)) {
+            return "arndcqeghilkmfpstwyv";
+        }
+        if (m_sDataType.get().equals(TWOSTATECOVARION)) {
             return "abcd";
         }
         return null;

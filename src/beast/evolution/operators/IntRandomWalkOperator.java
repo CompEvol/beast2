@@ -37,6 +37,10 @@ public class IntRandomWalkOperator extends Operator {
         if (newValue < param.getLower() || newValue > param.getUpper()) {
         	return Double.NEGATIVE_INFINITY;
         }
+        if (newValue == value) {
+        	// this saves calculating the posterior
+        	return Double.NEGATIVE_INFINITY;
+        }
 
         param.setValue(i, newValue);
 

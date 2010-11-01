@@ -72,7 +72,7 @@ import java.util.jar.JarFile;
  * @see StringCompare
  */
 public class ClassDiscovery {
-  public final static String[] IMPLEMENTATION_DIR = {"beast"};
+  public final static String[] IMPLEMENTATION_DIR = {"beast","snap"};
 
   /** whether to output some debug information. */
   public final static boolean VERBOSE = false;
