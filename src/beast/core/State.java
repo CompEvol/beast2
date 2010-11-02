@@ -336,7 +336,7 @@ public class State extends Plugin {
         
         if (isDirty) {
         	// happens only during debugging and start of MCMC chain
-        	m_changedStateNodeCode = new BitSet(stateNode.length);
+        	m_changedStateNodeCode.clear();// = new BitSet(stateNode.length);
         	for (int i = 0; i < stateNode.length; i++) {
         		m_changedStateNodeCode.set(i);
         	}

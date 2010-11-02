@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -139,7 +140,17 @@ public class Logger extends Plugin {
             {
             	File file = new File(sFileName);
             	if (file.exists()) {
-            		throw new Exception("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
+            	    // Check with user what to do next
+            	    System.out.println("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
+            	    System.out.println("Overwrite (Y/N)?:");
+            	    System.out.flush(); 
+            	    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+            	    String sMsg = stdin.readLine();
+            	    if (!sMsg.toLowerCase().equals("y")) {
+            	    	System.out.println("Exiting now.");
+            	    	System.exit(0);
+            	    }
+            		//throw new Exception("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
             	}
                 m_out = new PrintStream(sFileName);
                 System.out.println("Writing file " + sFileName);

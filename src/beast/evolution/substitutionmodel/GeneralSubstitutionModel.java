@@ -55,17 +55,19 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         }
         eigenSystem = new DefaultEigenSystem(m_nStates);
         m_rateMatrix = new double[m_nStates][m_nStates];
+        relativeRates = new double[m_rates.get().getDimension()];
+        storedRelativeRates = new double[m_rates.get().getDimension()];
     } // initAndValidate
 
-    private double[] relativeRates;
-    private double[] storedRelativeRates;
+    protected double[] relativeRates;
+    protected double[] storedRelativeRates;
 
 	private EigenSystem eigenSystem;
     
     private EigenDecomposition eigenDecomposition;
     private EigenDecomposition storedEigenDecomposition;
 
-    private boolean updateMatrix = true;
+    protected boolean updateMatrix = true;
     private boolean storedUpdateMatrix = true;
 
     @Override
@@ -77,6 +79,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         // two different likelihood threads - AJD
         synchronized (this) {
             if (updateMatrix) {
+            	setupRelativeRates();
             	setupRateMatrix();
             	eigenDecomposition = eigenSystem.decomposeMatrix(m_rateMatrix);
             	updateMatrix = false;
@@ -114,17 +117,24 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         }
     } // getTransitionProbabilities
 
-    /** sets up rate matrix **/
-    public void setupRateMatrix() {
+    
+    protected void setupRelativeRates() {
     	Valuable rates = m_rates.get();
+    	for (int i = 0; i < rates.getDimension(); i++) {
+    		relativeRates[i] = rates.getArrayValue(i);
+    	}
+    }
+
+    /** sets up rate matrix **/
+    protected void setupRateMatrix() {
     	double [] fFreqs = frequencies.get().getFreqs();
 	    for (int i = 0; i < m_nStates; i++) {
 	    	m_rateMatrix[i][i] = 0;
 		    for (int j = 0; j < i; j++) {
-		    	m_rateMatrix[i][j] = rates.getArrayValue(i * (m_nStates -1) + j);
+		    	m_rateMatrix[i][j] = relativeRates[i * (m_nStates -1) + j];
 		    }
 		    for (int j = i+1; j < m_nStates; j++) {
-		    	m_rateMatrix[i][j] = rates.getArrayValue(i * (m_nStates -1) + j-1);
+		    	m_rateMatrix[i][j] = relativeRates[i * (m_nStates -1) + j-1];
 		    }
 	    }
 	    // bring in frequencies
@@ -153,7 +163,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
             	m_rateMatrix[i][j] = m_rateMatrix[i][j] / fSubst;
             }
         }        
-	} // setupRelativeRates
+	} // setupRateMatrix
 
     
     @Override
