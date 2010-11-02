@@ -61,6 +61,7 @@ public class TreeParser extends Tree {
     public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
     public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", new Integer(1));
     public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under wich node heights (derived from lengths) are set to zero. Default=0.", new Double(0));
+    public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
 
 
     /**
@@ -116,7 +117,9 @@ public class TreeParser extends Tree {
             }
         } else {
             processMetadata(node.m_left);
-            processMetadata(node.m_right);
+            if (node.m_right != null) {
+            	processMetadata(node.m_right);
+            }
         }
     }
 
@@ -132,6 +135,9 @@ public class TreeParser extends Tree {
             return node.getHeight();
         } else {
             double fLeft = convertLengthToHeight(node.m_left, fHeight - fLength);
+            if (node.m_right == null) {
+            	return fLeft;
+            }
             double fRight = convertLengthToHeight(node.m_right, fHeight - fLength);
             return Math.min(fLeft, fRight);
         }
@@ -146,7 +152,9 @@ public class TreeParser extends Tree {
         }
         if (!node.isLeaf()) {
             offset(node.m_left, fDelta);
-            offset(node.m_right, fDelta);
+            if (node.m_right != null) {
+            	offset(node.m_right, fDelta);
+            }
         }
     }
 
@@ -257,8 +265,20 @@ public class TreeParser extends Tree {
                     break;
                     case BRACE_CLOSE: {
                         if (isFirstChild.lastElement()) {
-                            // don't know how to process single child nodes
-                            throw new Exception("Node with single child found.");
+        					if (m_bAllowSingleChild.get()) {
+        						// process single child nodes
+        						Node left = stack.lastElement();
+        						stack.remove(stack.size()-1);
+        						isFirstChild.remove(isFirstChild.size()-1);
+        						Node parent = stack.lastElement();
+        						parent.m_left = left;
+        						parent.m_right = null;
+        						left.setParent(parent);
+        						break;
+        					} else {
+        						// don't know how to process single child nodes
+        						throw new Exception("Node with single child found.");
+        					}
                         }
                         // process multi(i.e. more than 2)-child nodes by pairwise merging.
                         while (isFirstChild.get(isFirstChild.size() - 2) == false) {

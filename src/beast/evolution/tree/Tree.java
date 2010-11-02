@@ -83,6 +83,8 @@ public class Tree extends StateNode {
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
     int nodeCount = -1;
+    int internalNodeCount = -1;
+    int leafNodeCount = -1;
 
     /**
      * node representation of the beast.tree *
@@ -95,7 +97,22 @@ public class Tree extends StateNode {
      * @return the number of nodes in the beast.tree
      */
     public int getNodeCount() {
+    	if (nodeCount < 0) {
+    		nodeCount = this.root.getNodeCount();
+    	}
         return nodeCount;
+    }
+    public int getInternalNodeCount() {
+    	if (internalNodeCount < 0) {
+    		internalNodeCount = root.getInternalNodeCount();
+    	}
+        return internalNodeCount;
+    }
+    public int getLeafNodeCount() {
+    	if (leafNodeCount < 0) {
+    		leafNodeCount = root.getLeafNodeCount();
+    	}
+        return leafNodeCount;
     }
 
     public Node getRoot() {
@@ -146,7 +163,9 @@ public class Tree extends StateNode {
         node.setMetaData(sPattern, fT[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
             setMetaData(node.m_left, fT, sPattern);
-            setMetaData(node.m_right, fT, sPattern);
+            if (node.m_right != null) {
+            	setMetaData(node.m_right, fT, sPattern);
+            }
         }
     }
 
@@ -162,6 +181,8 @@ public class Tree extends StateNode {
         tree.index = index;
         tree.root = root.copy();
         tree.nodeCount = nodeCount;
+        tree.internalNodeCount = internalNodeCount;
+        tree.leafNodeCount = leafNodeCount;
 //        tree.treeTraitsInput = treeTraitsInput;
 //        tree.m_state = m_state;
         return tree;
@@ -177,6 +198,8 @@ public class Tree extends StateNode {
         root.assignTo(nodes);
         tree.root = nodes[root.getNr()];
         tree.nodeCount = nodeCount;
+        tree.internalNodeCount = internalNodeCount;
+        tree.leafNodeCount = leafNodeCount;
 //        tree.treeTraitsInput = treeTraitsInput;
         //tree.m_state = m_state;
     }
@@ -199,6 +222,8 @@ public class Tree extends StateNode {
         root.assignFrom(nodes, tree.root);
         root.m_Parent = null;
         nodeCount = tree.nodeCount;
+        internalNodeCount = tree.internalNodeCount;
+        leafNodeCount = tree.leafNodeCount;
 //      tree.treeTraitsInput = treeTraitsInput;
         //m_state = tree.m_state;
     }
@@ -223,7 +248,11 @@ public class Tree extends StateNode {
         root.m_fHeight = otherNodes[iRoot].m_fHeight;
         root.m_Parent = null;
     	root.m_left = m_nodes[otherNodes[iRoot].m_left.getNr()];
-    	root.m_right = m_nodes[otherNodes[iRoot].m_right.getNr()];
+    	if (otherNodes[iRoot].m_right != null) {
+    		root.m_right = m_nodes[otherNodes[iRoot].m_right.getNr()];
+    	} else {
+    		root.m_right = null;
+    	}
 //    	root.assignFromFragile(otherNodes[iRoot]);
         assignFrom(iRoot + 1, nodeCount, otherNodes);
     }
@@ -236,7 +265,11 @@ public class Tree extends StateNode {
         	sink.m_Parent = m_nodes[src.m_Parent.getNr()];
         	if (src.m_left != null) {
         		sink.m_left = m_nodes[src.m_left.getNr()];
-        		sink.m_right = m_nodes[src.m_right.getNr()];
+        		if (src.m_right != null) {
+        			sink.m_right = m_nodes[src.m_right.getNr()];
+        		} else {
+        			sink.m_right = null;
+        		}
         	}
 //        	sink.assignFromFragile(src);
         }
@@ -246,7 +279,9 @@ public class Tree extends StateNode {
         nodes[node.getNr()] = node;
         if (!node.isLeaf()) {
             listNodes(node.m_left, nodes);
-            listNodes(node.m_right, nodes);
+            if (node.m_right != null) {
+            	listNodes(node.m_right, nodes);
+            }
         }
     }
     
@@ -290,7 +325,9 @@ public class Tree extends StateNode {
             translateLines.add(sLine);
         } else {
             printTranslate(node.m_left, translateLines, nNodeCount);
-            printTranslate(node.m_right, translateLines, nNodeCount);
+            if (node.m_right != null) {
+            	printTranslate(node.m_right, translateLines, nNodeCount);
+            }
         }
     }
 
@@ -325,7 +362,7 @@ public class Tree extends StateNode {
 	@Override
 	public int scale(double fScale) throws Exception {
 		root.scale(fScale);
-		return nodeCount/2;
+		return getInternalNodeCount();
 	}
 
 	@Override
@@ -340,7 +377,7 @@ public class Tree extends StateNode {
 			e.printStackTrace();
 		}
 	}
-	@Override public int getDimension() {return nodeCount;}
+	@Override public int getDimension() {return getNodeCount();}
     @Override public double getArrayValue() {return (double) root.m_fHeight;}
     @Override public double getArrayValue(int iValue) {
         if (m_nodes == null) {

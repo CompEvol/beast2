@@ -54,7 +54,9 @@ public class Node extends Plugin {
 		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
 			m_left.m_bIsDirty |= Tree.IS_DIRTY;
-			m_right.m_bIsDirty |= Tree.IS_DIRTY;
+			if (m_right != null) {
+				m_right.m_bIsDirty |= Tree.IS_DIRTY;
+			}
 		}
 	}
 
@@ -75,7 +77,9 @@ public class Node extends Plugin {
 		m_bIsDirty = nDirty;
 		if (!isLeaf()) {
 			m_left.makeAllDirty(nDirty);
-			m_right.makeAllDirty(nDirty);
+			if (m_right != null) {
+				m_right.makeAllDirty(nDirty);
+			}
 		}
 	}
 
@@ -103,7 +107,31 @@ public class Node extends Plugin {
 		if (isLeaf()) {
 			return 1;
 		}
-		return 1 + m_left.getNodeCount() + m_right.getNodeCount();
+		if (m_right != null) {
+			return 1 + m_left.getNodeCount() + m_right.getNodeCount();
+		} else {
+			return 1 + m_left.getNodeCount();
+		}
+	}
+	public int getLeafNodeCount() {
+		if (isLeaf()) {
+			return 1;
+		}
+		int nCount = m_left.getLeafNodeCount();
+		if (m_right != null) {
+			nCount +=  m_right.getLeafNodeCount();
+		}
+		return nCount;
+	}
+	public int getInternalNodeCount() {
+		if (isLeaf()) {
+			return 0;
+		}
+		int nCount = 1 + m_left.getInternalNodeCount();
+		if (m_right != null) {
+			nCount +=  m_right.getInternalNodeCount();
+		}
+		return nCount;
 	}
 
 	 /**
@@ -115,8 +143,10 @@ public class Node extends Plugin {
 		if (m_left != null) {
 			buf.append("(");
 			buf.append(m_left.toShortNewick());
-			buf.append(',');
-			buf.append(m_right.toShortNewick());
+			if (m_right != null) {
+				buf.append(',');
+				buf.append(m_right.toShortNewick());
+			}
 			buf.append(")");
 		} else {
 //			if (m_sID != null) {
@@ -144,8 +174,10 @@ public class Node extends Plugin {
 		if (m_left != null) {
 			buf.append("(");
 			buf.append(m_left.toNewick(sLabels));
-			buf.append(',');
-			buf.append(m_right.toNewick(sLabels));
+			if (m_right != null) {
+				buf.append(',');
+				buf.append(m_right.toNewick(sLabels));
+			}
 			buf.append(")");
 		} else {
 			if (sLabels == null) {
@@ -176,8 +208,10 @@ public class Node extends Plugin {
 		if (m_left != null) {
 			buf.append("(");
 			buf.append(m_left.toString(sLabels));
-			buf.append(',');
-			buf.append(m_right.toString(sLabels));
+			if (m_right != null) {
+				buf.append(',');
+				buf.append(m_right.toString(sLabels));
+			}
 			buf.append(")");
 		} else {
 			buf.append(sLabels.get(m_iLabel));
@@ -203,12 +237,14 @@ public class Node extends Plugin {
 	public int sort() {
 		if (m_left != null) {
 			int iChild1 = m_left.sort();
-			int iChild2 = m_right.sort();
-			if (iChild1 > iChild2) {
-				Node tmp = m_left;
-				m_left = m_right;
-				m_right = tmp;
-				return iChild2;
+			if (m_right != null) {
+				int iChild2 = m_right.sort();
+				if (iChild1 > iChild2) {
+					Node tmp = m_left;
+					m_left = m_right;
+					m_right = tmp;
+					return iChild2;
+				}
 			}
 			return iChild1;
 		}
@@ -227,7 +263,9 @@ public class Node extends Plugin {
 			return iLabel;
 		} else {
 			iLabel = m_left.labelInternalNodes(iLabel);
-			iLabel = m_right.labelInternalNodes(iLabel);
+			if (m_right != null) {
+				iLabel = m_right.labelInternalNodes(iLabel);
+			}
 			m_iLabel = iLabel++;
 		}
 		return iLabel;
@@ -245,9 +283,11 @@ public class Node extends Plugin {
 		node.m_sID = m_sID;
 		if (m_left != null) {
 			node.m_left = m_left.copy();
-			node.m_right = m_right.copy();
 			node.m_left.m_Parent = node;
-			node.m_right.m_Parent = node;
+			if (m_right != null) {
+				node.m_right = m_right.copy();
+				node.m_right.m_Parent = node;
+			}
 		}
 		return node;
 	} // copy
@@ -262,10 +302,12 @@ public class Node extends Plugin {
 		if (m_left != null) {
 			node.m_left = nodes[m_left.getNr()];
 			m_left.assignTo(nodes);
-			node.m_right = nodes[m_right.getNr()];
-			m_right.assignTo(nodes);
 			node.m_left.m_Parent = node;
-			node.m_right.m_Parent = node;
+			if (m_right != null) {
+				node.m_right = nodes[m_right.getNr()];
+				m_right.assignTo(nodes);
+				node.m_right.m_Parent = node;
+			}
 		}
 	}
 	
@@ -279,10 +321,12 @@ public class Node extends Plugin {
 		if (node.m_left != null) {
 			m_left = nodes[node.m_left.getNr()];
 			m_left.assignFrom(nodes, node.m_left);
-			m_right = nodes[node.m_right.getNr()];
-			m_right.assignFrom(nodes, node.m_right);
 			m_left.m_Parent = this;
-			m_right.m_Parent = this;
+			if (m_right != null) {
+				m_right = nodes[node.m_right.getNr()];
+				m_right.assignFrom(nodes, node.m_right);
+				m_right.m_Parent = this;
+			}
 		}
 	}
 	
@@ -307,7 +351,9 @@ public class Node extends Plugin {
 		if (!isLeaf()) {
 			m_fHeight *= fScale;
 			m_left.scale(fScale);
-			m_right.scale(fScale);
+			if (m_right != null) {
+				m_right.scale(fScale);
+			}
 			if (m_fHeight < m_left.m_fHeight || m_fHeight < m_right.m_fHeight) {
 				throw new Exception("Scale gives negative branch length");
 			}
