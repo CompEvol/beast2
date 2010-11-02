@@ -9,8 +9,8 @@ import beast.core.parameter.RealParameter;
 @Description("Covarion model for binary data")
 public class TwoStateCovarion extends GeneralSubstitutionModel {
 
-	public Input<RealParameter> m_alpha = new Input<RealParameter>("alpha","alpha parameter ....", Validate.REQUIRED);
-	public Input<RealParameter> m_switchingParameter = new Input<RealParameter>("switchingParameter","switchingParameter parameter ....", Validate.REQUIRED);
+	public Input<RealParameter> m_alpha = new Input<RealParameter>("alpha","alpha parameter, the muatation rate between state zero and one", Validate.REQUIRED);
+	public Input<RealParameter> m_switchingParameter = new Input<RealParameter>("switchingParameter","switchingParameter parameter, the rate between stable 0,1 and unstable 0,1 states", Validate.REQUIRED);
 	
 	/** we don't need the m_rates input for TwoStateCovarion **/
 	public TwoStateCovarion() {

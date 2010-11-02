@@ -8,7 +8,7 @@ import beast.core.parameter.RealParameter;
 @Description("Mutation Death substitution model, can be used as Stochastic Dollo model.")
 public class MutationDeathModel extends SubstitutionModel.Base {
 
-    public Input<RealParameter> delParameter = new Input<RealParameter>("deathprob", "probability of death", Validate.REQUIRED);
+    public Input<RealParameter> delParameter = new Input<RealParameter>("deathprob", "rate of death, used to calculate death probability", Validate.REQUIRED);
     public Input<RealParameter> mutationRate = new Input<RealParameter>("mu", "mutation rate, default 1");
     
     protected double[] trMatrix;
