@@ -58,7 +58,8 @@ public class ClusterTree extends Tree {
 	final static String M_WARD = "ward";
 	final static String M_ADJCOMPLETE = "adjcomplete";
 	final static String M_NEIGHBORJOINING = "neighborjoining";
-
+	double EPSILON = 1e-20;
+	
 	final static String [] TYPES = {M_SINGLE, M_AVERAGE,	M_COMPLETE,	M_UPGMA,	M_MEAN,	M_CENTROID,	M_WARD,	M_ADJCOMPLETE,	M_NEIGHBORJOINING };
 
 	public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
@@ -127,6 +128,12 @@ public class ClusterTree extends Tree {
 		double m_fHeight = 0;
 
 		void setHeight(double fHeight1, double fHeight2) {
+			if (fHeight1 < EPSILON) {
+				fHeight1 = EPSILON;
+			}
+			if (fHeight2 < EPSILON) {
+				fHeight2 = EPSILON;
+			}
 			m_fHeight = fHeight1;
 			if (m_left == null) {
 				m_fLeftLength = fHeight1;
@@ -140,6 +147,12 @@ public class ClusterTree extends Tree {
 			}
 		}
 		void setLength(double fLength1, double fLength2) {
+			if (fLength1 < EPSILON) {
+				fLength1 = EPSILON;
+			}
+			if (fLength2 < EPSILON) {
+				fLength2 = EPSILON;
+			}
 			m_fLeftLength = fLength1;
 			m_fRightLength = fLength2;
 			m_fHeight = fLength1;

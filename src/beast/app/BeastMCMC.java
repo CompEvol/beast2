@@ -71,6 +71,9 @@ public class BeastMCMC {
 				if (i < args.length) {
 					if (args[i].equals("")) {
 						i += 1;
+					} else if (args[i].equals("-batch")) {
+						Logger.FILE_MODE = Logger.FILE_ONLY_NEW_OR_EXIT;
+						i += 1;
 					} else if (args[i].equals("-resume")) {
 						bResume = true;
 						Logger.FILE_MODE = Logger.FILE_APPEND;

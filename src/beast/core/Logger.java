@@ -54,7 +54,7 @@ public class Logger extends Plugin {
 
     /** list of loggers, if any */
     Loggable m_loggers[];
-    public final static int FILE_ONLY_NEW = 0, FILE_OVERWRITE = 1, FILE_APPEND = 2;
+    public final static int FILE_ONLY_NEW = 0, FILE_OVERWRITE = 1, FILE_APPEND = 2, FILE_ONLY_NEW_OR_EXIT = 3;
     public static int FILE_MODE = FILE_ONLY_NEW;
     /** Compound loggers get a sample number printed at the beginning of the line,
      * while tree loggers don't.
@@ -137,9 +137,14 @@ public class Logger extends Plugin {
             }
             switch (FILE_MODE) {
             case FILE_ONLY_NEW :// only open file if the file does not already exists
+            case FILE_ONLY_NEW_OR_EXIT:
             {
             	File file = new File(sFileName);
             	if (file.exists()) {
+            		if (FILE_MODE == FILE_ONLY_NEW_OR_EXIT) {
+                	    System.out.println("Trying to write file " + sFileName + " but the file already exists. Exiting now.");
+                		System.exit(0);
+            		}
             	    // Check with user what to do next
             	    System.out.println("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
             	    System.out.println("Overwrite (Y/N)?:");
@@ -150,7 +155,6 @@ public class Logger extends Plugin {
             	    	System.out.println("Exiting now.");
             	    	System.exit(0);
             	    }
-            		//throw new Exception("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
             	}
                 m_out = new PrintStream(sFileName);
                 System.out.println("Writing file " + sFileName);
