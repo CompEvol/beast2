@@ -158,8 +158,11 @@ public class MCMC extends Runnable {
     	state.initAndValidate();
     	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile);
+        int nBurnIn = m_oBurnIn.get();
+        int nChainLength = m_oChainLength.get();
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
+        	nBurnIn = 0;
         }
         long tStart = System.currentTimeMillis();
 
@@ -168,8 +171,6 @@ public class MCMC extends Runnable {
 
         state.setEverythingDirty(true);
         Distribution posterior = posteriorInput.get();
-        int nBurnIn = m_oBurnIn.get();
-        int nChainLength = m_oChainLength.get();
 
         // do the sampling
         double logAlpha = 0;
@@ -224,7 +225,7 @@ public class MCMC extends Runnable {
             }
             log(iSample);
 
-            if (bDebug && iSample % 3 == 0) {
+            if (bDebug && iSample % 2 == 0) {
             	//System.out.print("*");
             	// check that the posterior is correctly calculated
                 state.store(-1);

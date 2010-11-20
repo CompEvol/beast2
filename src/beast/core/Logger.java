@@ -182,7 +182,11 @@ public class Logger extends Plugin {
 	            			sStr = fin.readLine();
 	            		}
 	            		fin.close();
-	            		m_nSampleOffset = Integer.parseInt(sStr.split("\\s")[0]);
+	            		int nSampleOffset = Integer.parseInt(sStr.split("\\s")[0]);
+	            		if (m_nSampleOffset > 0 && nSampleOffset != m_nSampleOffset) {
+	            			throw new Exception("Error 400: Cannot resume: log files do not end in same sample number");
+	            		}
+	            		m_nSampleOffset = nSampleOffset;
 	                	// open the file for appending
 	                	FileOutputStream out2 = new FileOutputStream(sFileName, true);
 	                    m_out = new PrintStream(out2);
@@ -199,9 +203,16 @@ public class Logger extends Plugin {
 	            			sStr = fin.readLine();
 	            		}
 	            		fin.close();
+	            		if (!sStr.equals("End;")) {
+	            			sStrLast = sStr;
+	            		}
 	            		// determine number of the last sample
 	            		sStr = sStrLast.split("\\s+")[1];
-	            		m_nSampleOffset = Integer.parseInt(sStr.substring(6));
+	            		int nSampleOffset = Integer.parseInt(sStr.substring(6));
+	            		if (m_nSampleOffset > 0 && nSampleOffset != m_nSampleOffset) {
+	            			throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
+	            		}
+	            		m_nSampleOffset = nSampleOffset;
 	                	// open the file and write back all but the last line
 	                	FileOutputStream out2 = new FileOutputStream(sFileName);
 	                    m_out = new PrintStream(out2);
