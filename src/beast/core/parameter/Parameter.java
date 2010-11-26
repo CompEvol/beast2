@@ -68,12 +68,18 @@ public abstract class Parameter<T> extends StateNode {
      * isDirty flags for individual elements in high dimensional parameters
      */
     protected boolean[] m_bIsDirty;
+    /** last element to be changed **/
+    protected int m_nLastDirty;
 
     /** @return true if the iParam-th element has changed
      *  @param iParam dimention to check
      **/
     public boolean isDirty(int iParam) {
         return m_bIsDirty[iParam];
+    }
+    /** returns index of entry that was changed last **/
+    public int getLastDirty() {
+    	return m_nLastDirty;
     }
 
     @Override
@@ -126,6 +132,7 @@ public abstract class Parameter<T> extends StateNode {
 //        if (isStochastic()) {
             values[0] = fValue;
             m_bIsDirty[0] = true;
+            m_nLastDirty = 0;
             // next line is superfluous, since it is already done in the State
             // setSomethingIsDirty(true);
 //        } else {
@@ -138,6 +145,8 @@ public abstract class Parameter<T> extends StateNode {
 //        if (isStochastic()) {
             values[iParam] = fValue;
             m_bIsDirty[iParam] = true;
+            m_nLastDirty = iParam;
+
             // next line is superfluous, since it is already done in the State
             // setSomethingIsDirty(true);
 //        } else {

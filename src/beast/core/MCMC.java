@@ -93,11 +93,6 @@ public class MCMC extends Runnable {
         this.state = m_startState.get();
         this.state.setPosterior(posteriorInput.get());
 
-        // initialises log so that log file headers are written, etc.
-        for (Logger log : m_loggers.get()) {
-            log.init();
-        }
-        
     } // init
 
     public void log(int nSample) {
@@ -153,6 +148,10 @@ public class MCMC extends Runnable {
 
     @Override
     public void run() throws Exception {
+        // initialises log so that log file headers are written, etc.
+        for (Logger log : m_loggers.get()) {
+            log.init();
+        }
     	// set up state (again). Other plugins may have manipulated the
     	// StateNodes, e.g. set up bounds or dimensions
     	state.initAndValidate();

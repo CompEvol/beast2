@@ -205,6 +205,8 @@ public class Logger extends Plugin {
 	            		fin.close();
 	            		if (!sStr.equals("End;")) {
 	            			sStrLast = sStr;
+	            			buf.append(sStr);
+	            			buf.append('\n');
 	            		}
 	            		// determine number of the last sample
 	            		sStr = sStrLast.split("\\s+")[1];
@@ -255,7 +257,7 @@ public class Logger extends Plugin {
         }
         if (m_out == System.out) {
             long nLogTime = System.currentTimeMillis();
-            int nSecondsPerMSamples = (int) ((nLogTime - m_nStartLogTime) * 1000.0 / (nSample + 1.0));
+            int nSecondsPerMSamples = (int) ((nLogTime - m_nStartLogTime) * 1000.0 / (nSample - m_nSampleOffset + 1.0));
             String sTimePerMSamples =
                     (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
                             (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +

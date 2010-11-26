@@ -32,6 +32,9 @@ public class NexusParser {
 				}
 				if (sStr.toLowerCase().matches("^\\s*begin\\s+data;\\s*$")) {
 					m_alignment = parseDataBlock(fin);
+					sFileName = sFileName.replaceAll(".*[\\/]", "");
+					sFileName = sFileName.replaceAll("\\..*", "");
+					m_alignment.setID(sFileName);
 				} else if (sStr.toLowerCase().matches("^\\s*begin\\s+calibration;\\s*$")) {
 					m_traitSet = parseCalibrationsBlock(fin);
 				}

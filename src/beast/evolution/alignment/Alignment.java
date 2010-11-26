@@ -51,6 +51,7 @@ public class Alignment extends Plugin {
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
     public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
     public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
+    //public Input<String> m_sName = new Input<String>("name", "name of the alignment");
 
     public List<String> m_sTaxaNames = new ArrayList<String>();
     public List<Integer> m_nStateCounts = new ArrayList<Integer>();

@@ -46,7 +46,9 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -225,6 +227,48 @@ public class XMLParser {
             throw new Exception("Run element does not point to a runnable object.");
         }
     } // parseFile
+
+    /** extract all elements (runnable or not) from an XML fragment.
+     * Useful for retrieving all non-runnable elements when a template
+     * is instantiated by Beauti **/
+    public List<Plugin> parseTemplate(String sXML) throws Exception {
+        // parse the XML file into a DOM document
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        //factory.setValidating(true);
+        m_doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        m_doc.normalize();
+        processPlates();
+        
+        m_sIDMap = new HashMap<String, Plugin>();
+        m_LikelihoodMap = new HashMap<String, Integer[]>();
+        m_sIDNodeMap = new HashMap<String, Node>();
+
+        List<Plugin> plugins = new ArrayList<Plugin>();
+        
+        // find top level beast element
+        NodeList nodes = m_doc.getElementsByTagName("*");
+        if (nodes == null || nodes.getLength() == 0) {
+            throw new Exception("Expected top level beast element in XML");
+        }
+        Node topNode = nodes.item(0);
+        initIDNodeMap(topNode);
+        parseNameSpaceAndMap(topNode);
+        
+        NodeList children = topNode.getChildNodes();
+//        int i = 0;
+//        while (i < children.getLength() && children.item(i).getNodeType() != Node.ELEMENT_NODE) {
+//        	i++;
+//        }
+//        children = children.item(i).getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+            	Node child = children.item(i);
+            	System.err.println(child.getNodeName());
+        		plugins.add(createObject(child, PLUGIN_CLASS, null));
+        	}
+        }
+        return plugins;
+    } // parseTemplate
 
     /** Expand plates in XML by duplicating the containing XML and replacing
      * the plate variable with the appropriate value. 

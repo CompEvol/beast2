@@ -114,15 +114,16 @@ public class XMLProducer extends XMLParser {
     @SuppressWarnings("rawtypes")
 	public String modelToXML(Plugin plugin) {
         try {
-            StringBuffer buf = new StringBuffer();
-            //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
-            m_bDone = new HashSet<Plugin>();
-            m_bInputsDone = new HashSet<Input>();
-            m_sIDs = new HashSet<String>();
-            m_nIndent = 0;
-            pluginToXML(plugin, buf, null, false);
-            //buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
-            String sXML = cleanUpXML(buf.toString(), m_sSupressAlignmentXSL);
+//            StringBuffer buf = new StringBuffer();
+//            //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
+//            m_bDone = new HashSet<Plugin>();
+//            m_bInputsDone = new HashSet<Input>();
+//            m_sIDs = new HashSet<String>();
+//            m_nIndent = 0;
+//            pluginToXML(plugin, buf, null, false);
+//            //buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
+            String sXML0 = toRawXML(plugin);
+            String sXML = cleanUpXML(sXML0, m_sSupressAlignmentXSL);
             String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
             sXML = findPlates(sXML2);
             sXML = sXML.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>", "");
@@ -134,6 +135,24 @@ public class XMLProducer extends XMLParser {
         }
     } // toXML
 
+    /** like modelToXML, but without the cleanup **/
+	public String toRawXML(Plugin plugin) {
+        try {
+		    StringBuffer buf = new StringBuffer();
+		    m_bDone = new HashSet<Plugin>();
+		    m_bInputsDone = new HashSet<Input>();
+		    m_sIDs = new HashSet<String>();
+		    m_nIndent = 0;
+		    pluginToXML(plugin, buf, null, false);
+		    return buf.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    } // toRawXML
+
+    
+    
     public String stateNodeToXML(Plugin plugin) {
         try {
             StringBuffer buf = new StringBuffer();

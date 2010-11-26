@@ -44,7 +44,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
     protected int m_nPatterns;
     protected int m_nPartialsSize;
     protected int m_nMatrixSize;
-    protected int m_nMatrixCount;
+    protected int m_nMatrices;
 
     /** flag to indicate whether to integrate over site categories (as defined by the SiteModel) */
     protected boolean m_bIntegrateCategories;
@@ -100,9 +100,9 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 	void calcAllMatrixSSP(int nNrOfID, int [] pStates1, int [] pStates2, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials3) {
 		int v = 0;
 		for (int i = 0; i < nNrOfID; i ++) {
-			for (int l = 0; l < m_nMatrixCount; l++) {
+			for (int l = 0; l < m_nMatrices; l++) {
 				int w = l * m_nMatrixSize;
-				v = m_nStates * (i*m_nMatrixCount + l);
+				v = m_nStates * (i*m_nMatrices + l);
 				calcSSP(pStates1[i], pStates2[i], pfMatrices1, pfMatrices2, pfPartials3, w, v);
 			}
 		}
@@ -145,10 +145,10 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 	void calcAllMatrixSPP(int nNrOfID, int [] pStates1, int [] pStates2, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3) {
 		int u = 0;
 		for (int i = 0; i < nNrOfID; i ++) {
-		for (int l = 0; l < m_nMatrixCount; l++) {
+		for (int l = 0; l < m_nMatrices; l++) {
             int w = l * m_nMatrixSize;
-			int v = (l  + pStates2[i] * m_nMatrixCount) * m_nStates;
-				u = m_nStates * (i * m_nMatrixCount + l);
+			int v = (l  + pStates2[i] * m_nMatrices) * m_nStates;
+				u = m_nStates * (i * m_nMatrices + l);
 				calcSPP(pStates1[i], pfMatrices1, pfMatrices2, pfPartials2, pfPartials3, w, v, u);
 			}
 		}
@@ -160,7 +160,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 		for (int i = 0; i < m_nPatterns; i ++) {
 			int w = 0;
 			//v =  i*m_nMatrixCount * m_nStates;
-			for (int l = 0; l < m_nMatrixCount; l++) {
+			for (int l = 0; l < m_nMatrices; l++) {
 				//int v = (l  + i * m_nMatrixCount) * m_nStates;
 				//u = m_nStates * i * m_nMatrixCount;
 				calcSPP(pStates1[i], pfMatrices1, pfMatrices2, pfPartials2, pfPartials3, w, v, u);
@@ -207,10 +207,10 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 		int u = 0;
 		for (int i = 0; i < nNrOfID; i ++) {
 			int w = 0;
-			for (int l = 0; l < m_nMatrixCount; l++) {
+			for (int l = 0; l < m_nMatrices; l++) {
 				//int w = l * m_nMatrixSize;
-				int v1 = (l + pStates1[i] * m_nMatrixCount) * m_nStates;
-				int v2 = (l + pStates2[i] * m_nMatrixCount) * m_nStates;
+				int v1 = (l + pStates1[i] * m_nMatrices) * m_nStates;
+				int v2 = (l + pStates2[i] * m_nMatrices) * m_nStates;
 				//u = m_nStates * i * m_nMatrixCount;
 				calcPPP(pfMatrices1, pfPartials1, pfMatrices2, pfPartials2, pfPartials3, w, v1, v2, u);
 				w += m_nMatrixSize;
@@ -225,7 +225,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 		int v = 0;
 		for (int i = 0; i < m_nPatterns; i++) {
 			int w = 0;
-			for (int l = 0; l < m_nMatrixCount; l++) {
+			for (int l = 0; l < m_nMatrices; l++) {
 				//int w = l * m_nMatrixSize;
 				//int v = (l + i * m_nMatrixCount) * m_nStates;
 				//int v2 = (l + i * m_nMatrixCount) * m_nStates;
@@ -526,21 +526,24 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 	 * @param fProportions the proportions of sites in each category
 	 * @param fOutPartials an array into which the partials will go
 	 */
-    public void integratePartials(int iNode, double[] fProportions, double[] fOutPartials) {
-
+	@Override
+    public void processStack() {
     	for (int iJob = 0; iJob < m_nTopOfStack; iJob++) {
 	  		processNodeFromStack(iJob);
 	  	}
 
     	m_nTopOfStack = 0;
-    	
+    }
+
+    public void integratePartials(int iNode, double[] fProportions, double[] fOutPartials) {
+    	processStack();
     	
 		double[] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
 		int [] nID = m_nID[m_iCurrentStates[iNode]][iNode];
 		int u = 0;
 		int v = 0;
 		for (int k = 0; k < m_nPatterns; k++) {
-			v = 0*m_nStates + nID[k]*m_nStates * m_nMatrixCount;
+			v = 0*m_nStates + nID[k]*m_nStates * m_nMatrices;
 			for (int i = 0; i < m_nStates; i++) {
 				fOutPartials[u] = fInPartials[v] * fProportions[0];
 				u++;
@@ -549,10 +552,10 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 		}
 
 
-		for (int l = 1; l < m_nMatrixCount; l++) {
+		for (int l = 1; l < m_nMatrices; l++) {
 			u=0;
 			for (int k = 0; k < m_nPatterns; k++) {
-				v = l*m_nStates + nID[k]*m_nStates * m_nMatrixCount;
+				v = l*m_nStates + nID[k]*m_nStates * m_nMatrices;
 				for (int i = 0; i < m_nStates; i++) {
 					fOutPartials[u] += fInPartials[v] * fProportions[l];
 					u++;
@@ -608,7 +611,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 
         this.m_nNodes = nNodeCount;
         this.m_nPatterns = nPatternCount;
-        this.m_nMatrixCount = nMatrixCount;
+        this.m_nMatrices = nMatrixCount;
 
         this.m_bIntegrateCategories = bIntegrateCategories;
 
@@ -675,7 +678,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
     public void finalize() throws java.lang.Throwable  {
         m_nNodes = 0;
         m_nPatterns = 0;
-        m_nMatrixCount = 0;
+        m_nMatrices = 0;
 
         m_fPartials = null;
         m_iCurrentPartials = null;
@@ -716,8 +719,8 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
         }
         //if (fPartials.length < m_nPartialsSize) {
             for (int k = 0; k < m_nPatterns; k++) {
-            	for (int l = 0; l < m_nMatrixCount; l++) {
-    				int u = l*m_nStates + k*m_nStates * m_nMatrixCount;
+            	for (int l = 0; l < m_nMatrices; l++) {
+    				int u = l*m_nStates + k*m_nStates * m_nMatrices;
     				int v = k*m_nStates;
             		for (int i = 0; i < m_nStates; i++) {
             			m_fPartials[0][iNode][u] = fPartials[v];
@@ -828,8 +831,8 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
         //    System.arraycopy(fPartials, 0, this.m_fPartials[m_iCurrentPartialsIndices[iNode]][iNode], 0, fPartials.length);
         //}
         for (int k = 0; k < m_nPatterns; k++) {
-        	for (int l = 0; l < m_nMatrixCount; l++) {
-				int u = l*m_nStates + k*m_nStates * m_nMatrixCount;
+        	for (int l = 0; l < m_nMatrices; l++) {
+				int u = l*m_nStates + k*m_nStates * m_nMatrices;
 				int v = k*m_nStates;
         		for (int i = 0; i < m_nStates; i++) {
         			m_fPartials[m_iCurrentPartials[iNode]][iNode][u] = fPartials[v];
@@ -905,7 +908,7 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
      */
     protected void scalePartials(int iNode) {
     	double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
-    	int k = m_nNrOfID[m_iCurrentStates[iNode]][iNode] * m_nMatrixCount * m_nStates;
+    	int k = m_nNrOfID[m_iCurrentStates[iNode]][iNode] * m_nMatrices * m_nStates;
     	for (int v = 0; v < k; v++) {
     		fPartials[v] *= SCALE;
     	}
@@ -1048,4 +1051,114 @@ public class BeerLikelihoodCoreCnG extends LikelihoodCore {
 //    LikelihoodCore getAlternativeCore() {
 //    	return new BeerLikelihoodCoreJava(m_nStates);
 //    }
+
+
+
+	@Override
+    public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials) {
+		int u = 0;
+		double [] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+		for (int k = 0; k < m_nPatterns; k++) {
+			for (int l = 0; l < m_nMatrices; l++) {
+				for (int i = 0; i < m_nStates; i++) {
+					fPseudoPartials[u] = fInPartials[u] * fFrequencies[i];
+					u++;
+				}
+			}
+		}
+    }
+	@Override
+    public void calcNodePsuedoRootPartials(double[] fInPseudoPartials, int iNode, double [] fOutPseudoPartials) {
+		double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+		int [] nID = m_nID[m_iCurrentStates[iNode]][iNode];
+		
+		int u = 0;
+		for (int k = 0; k < m_nPatterns; k++) {
+			int n = nID[k] * m_nMatrices * m_nStates;
+			for (int l = 0; l < m_nMatrices; l++) {
+				for (int i = 0; i < m_nStates; i++) {
+					fOutPseudoPartials[u] = fInPseudoPartials[u] * fPartials[n];
+					u++;
+					n++;
+				}
+			}
+		}
+	}
+    
+	@Override
+    public void calcPsuedoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials) {
+		int v = 0;
+		int u = 0;
+		double [] fMatrices = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+		for (int k = 0; k < m_nPatterns; k++) {
+			for (int l = 0; l < m_nMatrices; l++) {
+				for (int i = 0; i < m_nStates; i++) {
+					int w = l * m_nMatrixSize;
+					double fSum = 0;
+					for (int j = 0; j < m_nStates; j++) {
+					      fSum += fParentPseudoPartials[u+j] * fMatrices[w];
+					      w++;
+					}
+					fPseudoPartials[v] = fSum;
+					v++;
+				}
+				u += m_nStates;
+			}
+		}
+    }
+
+
+    @Override
+    void integratePartialsP(double [] fInPartials, double [] fProportions, double [] m_fRootPartials) {
+		int u = 0;
+		int v = 0;
+		for (int k = 0; k < m_nPatterns; k++) {
+			v = 0*m_nStates + k*m_nStates * m_nMatrices;
+			for (int i = 0; i < m_nStates; i++) {
+				m_fRootPartials[u] = fInPartials[v] * fProportions[0];
+				u++;
+				v++;
+			}
+		}
+		
+		for (int l = 1; l < m_nMatrices; l++) {
+			u = 0;
+			v = 0;
+			for (int k = 0; k < m_nPatterns; k++) {
+				v = l*m_nStates + k*m_nStates * m_nMatrices;
+				for (int i = 0; i < m_nStates; i++) {
+					m_fRootPartials[u] = fInPartials[v] * fProportions[0];
+					u++;
+					v++;
+				}
+			}
+		}
+    } // integratePartials
+
+	/**
+	 * Calculates pattern log likelihoods at a node.
+	 * @param fPartials the partials used to calculate the likelihoods
+	 * @param fFrequencies an array of state frequencies
+	 * @param fOutLogLikelihoods an array into which the likelihoods will go
+	 */
+    @Override
+	public void calculateLogLikelihoodsP(double[] fPartials,double[] fOutLogLikelihoods)
+	{
+        int v = 0;
+		for (int k = 0; k < m_nPatterns; k++) {
+            double sum = 0.0;
+			for (int i = 0; i < m_nStates; i++) {
+				sum += fPartials[v];
+				v++;
+			}
+            fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
+		}
+	}
+
+	@Override
+	protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 } // class BeerLikelihoodCoreMixed

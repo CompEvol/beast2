@@ -337,7 +337,7 @@ public class Tree extends StateNode {
     @Override
     public void init(PrintStream out) throws Exception {
         out.println("#NEXUS\n");
-        out.println("Begin trees");
+        out.println("Begin trees;");
         Node node = getRoot();
         out.println("\tTranslate");
         printTranslate(node, out, getNodeCount() / 2);

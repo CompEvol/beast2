@@ -114,6 +114,13 @@ abstract public class LikelihoodCore {
 	abstract public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods);
 	
     
+    public void processStack() {}
+	abstract protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials);
+    abstract public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials);
+    abstract public void calcNodePsuedoRootPartials(double[] fInPseudoPartials, int iNode, double [] fOutPseudoPartials);
+    abstract public void calcPsuedoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials);
+    abstract void integratePartialsP(double [] fInPartials, double [] fProportions, double [] m_fRootPartials);
+    abstract void calculateLogLikelihoodsP(double[] fPartials,double[] fOutLogLikelihoods);
     
     /** store current state **/
     abstract public void store();
