@@ -223,10 +223,6 @@ public class MCMC extends Runnable {
                 //System.out.print(" direct reject");
             }
             log(iSample);
-
-            if (iSample % 10000 == 0) {
-            	System.err.println(state);
-            }
             
             if (bDebug && iSample % 3 == 0) { // || iSample % 10000 == 0) {
             	//System.out.print("*");
