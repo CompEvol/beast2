@@ -43,12 +43,12 @@ public class UpDownOperator extends Operator {
 
 		try {
 			for (StateNode up : m_up.get()) {
-				up = up.getCurrent();
+				up = up.getCurrentEditable(this);
 				goingUp += up.scale(scale);
 			}
 
 			for (StateNode down : m_down.get()) {
-				down = down.getCurrent();
+				down = down.getCurrentEditable(this);
 				goingDown += down.scale(1.0 / scale);
 			}
 		} catch (Exception e) {

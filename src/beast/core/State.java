@@ -395,7 +395,7 @@ public class State extends Plugin {
 					if (plugin instanceof CalculationNode) {
 						m_stateNodeOutputs[i].add((CalculationNode)plugin);
 					} else {
-						throw new Exception("DEVELOPER ERROR: output of StateNode should be a CalculationNode");
+						throw new Exception("DEVELOPER ERROR: output of StateNode should be a CalculationNode, but " + plugin.getClass().getName() + " is not.");
 					}
 				}
 			} else {

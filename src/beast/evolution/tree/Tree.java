@@ -40,11 +40,19 @@ import java.util.List;
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
 public class Tree extends StateNode {
-	
+	public Input<Tree> m_initial = new Input<Tree>("initial","tree to start with");
 	public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
 
     @Override
     public void initAndValidate() throws Exception {
+    	if (m_initial.get() != null) {
+    		Tree other = m_initial.get();
+            root = other.root.copy();
+            nodeCount = other.nodeCount;
+            internalNodeCount = other.internalNodeCount;
+            leafNodeCount = other.leafNodeCount;
+    	}
+    	
     	if (m_trait.get() != null) {
     		adjustTreeToNodeHeights(root);
     	}
@@ -121,7 +129,7 @@ public class Tree extends StateNode {
 
     public void setRoot(Node root) {
         this.root = root;
-        nodeCount = this.root.getNodeCount();
+       	nodeCount = this.root.getNodeCount();
     }
 
     public Node getNode(int iNodeNr) {
@@ -155,7 +163,9 @@ public class Tree extends StateNode {
         fT[Math.abs(node.getNr())] = node.getMetaData(sPattern);
         if (!node.isLeaf()) {
             getMetaData(node.m_left, fT, sPattern);
-            getMetaData(node.m_right, fT, sPattern);
+            if (node.m_right != null) {
+            	getMetaData(node.m_right, fT, sPattern);
+            }
         }
     }
 
@@ -206,7 +216,7 @@ public class Tree extends StateNode {
 
     public Node [] getNodesAsArray() {
         if (m_nodes == null) {
-        	m_nodes = new Node[nodeCount];
+        	m_nodes = new Node[getNodeCount()];
         	listNodes(root, m_nodes);
         }    	
         return m_nodes;
@@ -349,7 +359,7 @@ public class Tree extends StateNode {
         Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
         out.print("tree STATE_" + nSample + " = ");
 		tree.getRoot().sort();
-        out.print(tree.getRoot().toString());
+        out.print(tree.getRoot().toShortNewick(false));
         out.print(";");
     }
 

@@ -76,7 +76,7 @@ public class MCMC extends Runnable {
      * recalculation of the posterior.
      */
     //final protected int NR_OF_DEBUG_SAMPLES = 0;
-    final protected int NR_OF_DEBUG_SAMPLES = 2000;
+    final protected int NR_OF_DEBUG_SAMPLES = 20000;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -224,7 +224,11 @@ public class MCMC extends Runnable {
             }
             log(iSample);
 
-            if (bDebug && iSample % 2 == 0) {
+            if (iSample % 10000 == 0) {
+            	System.err.println(state);
+            }
+            
+            if (bDebug && iSample % 3 == 0) { // || iSample % 10000 == 0) {
             	//System.out.print("*");
             	// check that the posterior is correctly calculated
                 state.store(-1);
@@ -233,8 +237,8 @@ public class MCMC extends Runnable {
 
                 double fLogLikelihood = posterior.calculateLogP();
 
-                if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
-                    throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
+                if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
+                    throw new Exception("At sample "+ iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
                 }
                 if (iSample > NR_OF_DEBUG_SAMPLES * 3) {
                     bDebug = false;

@@ -47,6 +47,9 @@ public class TraitSet extends Plugin {
 
     @Override
     public void initAndValidate() throws Exception {
+        if (m_traits.get().matches("^\\s*$")) {
+        	return;
+        }
 
         // first, determine taxon numbers associated with traits
         // The Taxon number is the index in the alignment, and
@@ -113,6 +116,9 @@ public class TraitSet extends Plugin {
     }
 
     public double getValue(int iTaxonNr) {
+    	if (m_fValues == null) {
+    		return 0;
+    	}
         return m_fValues[iTaxonNr];
     }
 

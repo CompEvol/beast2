@@ -61,4 +61,9 @@ public class MutationDeathModel extends SubstitutionModel.Base {
         matrix[stateCount * stateCount - 1] = 1.0;
     } // getTransitionProbabilities
 	
+	@Override
+	protected boolean requiresRecalculation() {
+	   	// we only get here if delParameter or mutationRate is dirty
+	   	return true;
+	}
 } // class MutationDeathModel

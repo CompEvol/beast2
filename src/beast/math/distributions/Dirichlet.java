@@ -47,6 +47,10 @@ public class Dirichlet extends ParametricDistribution {
 		public double density(double x) {
 			return Double.NaN;
 		}
+		@Override
+		public double logDensity(double x) {
+			return Double.NaN;
+		}
 	} // class OneOnXImpl
 	
 	

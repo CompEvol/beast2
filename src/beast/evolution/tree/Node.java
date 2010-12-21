@@ -138,14 +138,17 @@ public class Node extends Plugin {
 	 * @return beast.tree in Newick format, without any length or meta data
 	 * information.
 	 **/
-	public String toShortNewick() {
+	public String toShortNewick(boolean bPrintInternalNodeLabels) {
 		StringBuffer buf = new StringBuffer();
 		if (m_left != null) {
+			if (bPrintInternalNodeLabels) {
+				buf.append(m_iLabel + ":");
+			}
 			buf.append("(");
-			buf.append(m_left.toShortNewick());
+			buf.append(m_left.toShortNewick(bPrintInternalNodeLabels));
 			if (m_right != null) {
 				buf.append(',');
-				buf.append(m_right.toShortNewick());
+				buf.append(m_right.toShortNewick(bPrintInternalNodeLabels));
 			}
 			buf.append(")");
 		} else {
@@ -157,6 +160,7 @@ public class Node extends Plugin {
 		}
 //		buf.append("["+m_iLabel+"]");
         //buf.append(":").append(String.format("%7.7f", getLength()));
+		buf.append(getNewickMetaData());
         buf.append(":").append(getLength());
 		for (int i = 0; i < m_bIsDirty; i++) {
 			//buf.append("X");
@@ -226,7 +230,7 @@ public class Node extends Plugin {
 	}
 
 	public String toString() {
-		return toShortNewick();
+		return toShortNewick(true);
 	}
 	
 	/**

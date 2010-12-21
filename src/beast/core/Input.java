@@ -333,14 +333,14 @@ public class Input<T> {
 //                }
                 vector.add(value);
             } else {
-                throw new Exception("Input 101: type mismatch");
+                throw new Exception("Input 101: type mismatch for input " + getName());
             }
 
         } else {
             if (theClass.isAssignableFrom(value.getClass())) {
                 this.value = (T) value;
             } else {
-                throw new Exception("Input 102: type mismatch");
+                throw new Exception("Input 102: type mismatch for input " + getName());
             }
         }
     }

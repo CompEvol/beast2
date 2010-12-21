@@ -1,16 +1,20 @@
 package beast.evolution.tree;
 
 
+import java.io.PrintStream;
+
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.Loggable;
 import beast.core.Plugin;
 import beast.core.Valuable;
 import beast.evolution.alignment.Alignment;
 
 @Description("Calculates the time of the most recent common ancestor (MRCA) for a set of taxa. " +
 		"This is useful for adding prior information on sets of taxa to the analysis.")
-public class MRCATime extends Plugin implements Valuable {
+public class MRCATime extends CalculationNode implements Valuable, Loggable {
 	public Input<String> m_taxa = new Input<String>("taxa","comma separated list of taxa", Validate.REQUIRED);
 	public Input<Alignment> m_data = new Input<Alignment>("data","alignment containing the complete list of taxa to choose from", Validate.REQUIRED);
 	public Input<Tree> m_tree = new Input<Tree>("tree","tree for which the MRCA time is calculated", Validate.REQUIRED);
@@ -88,6 +92,20 @@ public class MRCATime extends Plugin implements Valuable {
 	@Override
 	public double getArrayValue(int iDim) {
 		return getArrayValue();
+	}
+
+	@Override
+	public void init(PrintStream out) throws Exception {
+		out.print("mrcatime("+m_taxa.get()+")\t");
+	}
+
+	@Override
+	public void log(int nSample, PrintStream out) {
+		out.print(getArrayValue()+"\t");
+	}
+
+	@Override
+	public void close(PrintStream out) {
 	}
 
 } // class MRCATime

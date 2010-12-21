@@ -44,6 +44,10 @@ public class OneOnX extends ParametricDistribution {
 		public double density(double x) {
 			return 1/x;
 		}
+		@Override
+		public double logDensity(double x) {
+			return -Math.log(x);
+		}
 	} // class OneOnXImpl
 	
 

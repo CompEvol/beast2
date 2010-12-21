@@ -34,18 +34,37 @@ import beast.evolution.alignment.Alignment;
         "Calculates empirical frequencies of characters in sequence data, or simply assumes a uniform " +
         "distribution if the estimate flag is set to false.")
 public class Frequencies extends Plugin {
-    public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated", Validate.REQUIRED);
+    public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
+    public Input<String> m_fixed = new Input<String>("frequencies", "Fixed set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
     public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
 
     @Override
     public void initAndValidate() throws Exception {
-        if (m_data.get() == null) {
-            throw new Exception("data input is not specified");
-        }
-        if (m_bEstimate.get()) {
+    	if (m_fixed.get() != null) {
+        	// if user specified, parse frequencies from space delimited string
+    		String [] sValues = m_fixed.get().split("\\s+");
+            m_fFreqs = new double[sValues.length];
+    		for (int i = 0; i < sValues.length; i++) {
+    			m_fFreqs[i] = Double.parseDouble(sValues[i]);
+    		}
+    		// sanity check
+    		double fSum = 0;
+    		for (int i = 0; i < sValues.length; i++) {
+    			fSum += m_fFreqs[i];
+    		}
+    		if (Math.abs(fSum-1.0)>1e-6) {
+    			throw new Exception("Frequencies do not add up to 1");
+    		}
+    		return;
+    	}
+
+    	// if not user specified, either estimate from data or set as fixed
+    	if (m_bEstimate.get()) {
+    		// estimate
             calcFrequencies();
             checkFrequencies();
         } else {
+    		// fixed
             int nStates = m_data.get().getMaxStateCount();
             m_fFreqs = new double[nStates];
             for (int i = 0; i < nStates; i++) {

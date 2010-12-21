@@ -264,7 +264,9 @@ public class XMLParser {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
             	Node child = children.item(i);
             	System.err.println(child.getNodeName());
-        		plugins.add(createObject(child, PLUGIN_CLASS, null));
+            	if (!child.getNodeName().equals(MAP_ELEMENT)) {
+            		plugins.add(createObject(child, PLUGIN_CLASS, null));
+            	}
         	}
         }
         return plugins;
@@ -330,6 +332,8 @@ public class XMLParser {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         m_doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
         m_doc.normalize();
+        processPlates();
+        
         m_sIDMap = new HashMap<String, Plugin>();
         m_LikelihoodMap = new HashMap<String, Integer[]>();
         m_sIDNodeMap = new HashMap<String, Node>();
@@ -519,6 +523,7 @@ public class XMLParser {
     Plugin createObject(Node node, String sClass, Plugin parent) throws Exception {
         // try the IDMap first
         String sID = getID(node);
+        
         if (sID != null) {
             if (m_sIDMap.containsKey(sID)) {
                 Plugin plugin = m_sIDMap.get(sID);

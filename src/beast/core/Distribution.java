@@ -36,7 +36,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      * current and stored log probability/log likelihood/log distribution *
      */
     protected double logP = 0;
-    private double storedLogP = 0;
+    protected double storedLogP = 0;
 
     /**
      * @return the normalised probability (density) for this distribution

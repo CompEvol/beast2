@@ -223,7 +223,14 @@ abstract public class Plugin {
                 }
             }
         }
-        throw new Exception("This plugin (" + this.getID() + ") has no input with name " + sName);
+        
+        
+        String sInputNames = " "; // <- space here to prevent error in .substring below
+        for (Input input : listInputs()) {
+        	sInputNames += input.getName() + ",";
+        }
+        throw new Exception("This plugin (" + (this.getID()==null? this.getClass().getName(): this.getID()) + ") has no input with name " + sName +". " +
+        		"Choose one of these inputs:"+ sInputNames.substring(0, sInputNames.length()-1));
     } // getInput
 
     /**

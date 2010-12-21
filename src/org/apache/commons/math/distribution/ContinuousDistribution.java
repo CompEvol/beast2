@@ -47,4 +47,5 @@ public interface ContinuousDistribution extends Distribution {
      * @return  The pdf at point x.
      */    
     double density(double x);
+    double logDensity(double x);// {return Math.log(density(x));
 }

@@ -456,6 +456,10 @@ public class XMLProducer extends XMLParser {
      */
     @SuppressWarnings("rawtypes")
     void pluginToXML(Plugin plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
+if (plugin instanceof RealParameter) {
+	int h =3 ;
+	h++;
+}
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
         if (plugin instanceof Alignment) {

@@ -78,8 +78,14 @@ public class InverseGamma extends ParametricDistribution {
 
 		@Override
 		public double density(double fX) {
-            double fLogP = -(m_fAlpha + 1.0) * Math.log(fX) - (m_fBeta / fX) + C;
+            double fLogP = logDensity(fX);
 			return Math.exp(fLogP);
+		}
+		
+		@Override
+		public double logDensity(double fX) {
+            double fLogP = -(m_fAlpha + 1.0) * Math.log(fX) - (m_fBeta / fX) + C;
+			return fLogP;
 		}
 	} // class OneOnXImpl
 	

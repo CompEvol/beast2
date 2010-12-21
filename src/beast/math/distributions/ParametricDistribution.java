@@ -32,6 +32,7 @@ import org.apache.commons.math.distribution.IntegerDistribution;
 
 import beast.core.CalculationNode;
 import beast.core.Description;
+import beast.core.Input;
 import beast.core.Valuable;
 
 /**
@@ -45,6 +46,7 @@ import beast.core.Valuable;
 		"parameters/valuables as inputs and can produce (cummulative) densities and inverse " +
 		"cummulative densities.")
 public abstract class ParametricDistribution extends CalculationNode implements ContinuousDistribution {
+	public Input<Double> m_offset = new Input<Double>("offset","offset of origin (defaults to 0)", 0.0); 
 
     abstract public org.apache.commons.math.distribution.Distribution getDistribution();
 
@@ -53,10 +55,12 @@ public abstract class ParametricDistribution extends CalculationNode implements 
 	 * so the sum of log probabilities of all elements of x is returned as the prior.
 	**/
     public double calcLogP(Valuable x) throws Exception {
+		double fOffset = m_offset.get();
 		double fLogP = 0;
 		for (int i = 0; i < x.getDimension(); i++) {
-			double fX = x.getArrayValue(i);
-			fLogP += Math.log(density(fX));
+			double fX = x.getArrayValue(i) - fOffset;
+			//fLogP += Math.log(density(fX));
+			fLogP += logDensity(fX);
 		}
 		return fLogP;
     }
@@ -88,9 +92,22 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     public double density(double x) {
     	org.apache.commons.math.distribution.Distribution dist = getDistribution();
     	if (dist instanceof ContinuousDistribution) {
-    		return ((ContinuousDistribution) dist).density(x);
+    		double f = ((ContinuousDistribution) dist).density(x);
+    		return f;
     	} else if (dist instanceof IntegerDistribution) {
-    		((IntegerDistribution)dist).probability(x);
+    		return Math.log(((IntegerDistribution)dist).probability(x));
+    	}
+   		return 0.0;
+    }
+
+    @Override
+    public double logDensity(double x) {
+    	org.apache.commons.math.distribution.Distribution dist = getDistribution();
+    	if (dist instanceof ContinuousDistribution) {
+    		double f = ((ContinuousDistribution) dist).logDensity(x);
+    		return f;
+    	} else if (dist instanceof IntegerDistribution) {
+    		return Math.log(((IntegerDistribution)dist).probability(x));
     	}
    		return 0.0;
     }

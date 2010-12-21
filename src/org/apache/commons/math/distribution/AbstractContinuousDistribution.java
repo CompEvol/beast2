@@ -65,6 +65,9 @@ public abstract class AbstractContinuousDistribution
                 "This distribution does not have a density function implemented");
     }
 
+    @Override
+    public double logDensity(double x) {return Math.log(density(x));}
+
     /**
      * For this distribution, X, this method returns the critical point x, such
      * that P(X &lt; x) = <code>p</code>.

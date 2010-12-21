@@ -26,6 +26,7 @@ package beast.core;
 
 
 import beast.core.Input.Validate;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
@@ -37,10 +38,16 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Description("Logs results of a calculation processes on regular intervals.")
 public class Logger extends Plugin {
+    static final String COMPOUND_MODE = "compound";
+    static final String TREE_MODE = "tree";
+    static final String AUTOMATIC_DETECT_MODE = "autodetect";
+    /** currently supported modes **/
+	String[] MODES = {AUTOMATIC_DETECT_MODE, COMPOUND_MODE, TREE_MODE};
 
     public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",
                     "Element in a log. This can be any plug in that is Loggable.",
@@ -51,7 +58,9 @@ public class Logger extends Plugin {
     public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
     		"If specified, XML will be produced for the model, commented out by # at the start of a line. " +
     		"Alignments are suppressed. This way, the log file documents itself. ");
-
+    public Input<String> m_sMode = new Input<String>("mode", "logging mode, one of " + Arrays.toString(MODES), AUTOMATIC_DETECT_MODE, MODES);
+    
+    
     /** list of loggers, if any */
     Loggable m_loggers[];
     public final static int FILE_ONLY_NEW = 0, FILE_OVERWRITE = 1, FILE_APPEND = 2, FILE_ONLY_NEW_OR_EXIT = 3;
@@ -88,9 +97,18 @@ public class Logger extends Plugin {
         }
 
         // determine logging mode
-        m_mode = COMPOUND_LOGGER;
-        if ( nLoggers==1 && m_loggers[0] instanceof Tree) {
-            m_mode = TREE_LOGGER;
+        String sMode = m_sMode.get();
+        if (sMode.equals(AUTOMATIC_DETECT_MODE)) {
+        	m_mode = COMPOUND_LOGGER;
+        	if ( nLoggers==1 && m_loggers[0] instanceof Tree) {
+        		m_mode = TREE_LOGGER;
+        	}
+        } else if (sMode.equals(TREE_MODE)) {
+        	m_mode = TREE_LOGGER;
+        } else if (sMode.equals(TREE_MODE)) {
+        	m_mode = COMPOUND_LOGGER;
+        } else {
+        	throw new Exception("Mode '" + sMode +"' is not supported. Choose one of " + Arrays.toString(MODES));
         }
 
         if (m_pEvery.get() != null) {
@@ -191,7 +209,7 @@ public class Logger extends Plugin {
 	                	FileOutputStream out2 = new FileOutputStream(sFileName, true);
 	                    m_out = new PrintStream(out2);
 	                } else {
-	                	// it is a tree logger, we need to get rid of the last line!
+	                	// it is a tree logger, we may need to get rid of the last line!
 	            		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
 	            		StringBuffer buf = new StringBuffer();
 	            		String sStrLast = null;

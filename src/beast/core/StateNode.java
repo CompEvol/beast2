@@ -14,7 +14,10 @@ import org.w3c.dom.Node;
  */
 @Description("A node that can be part of the state.")
 public abstract class StateNode extends Plugin  implements Loggable, Cloneable, Valuable {
-
+	/** Flag to indicate the StateNode is not constant.
+	 * This is particularly useful for Beauti **/
+	public Input<Boolean> m_bIsEstimated = new Input<Boolean>("estimate", "whether to estimate this item or keep constant to its initial value", true); 
+	
 	/** Returns this StateNode if it is not in the State.
      * If it is in the State, return the version that is currently valid 
      * (i.e. not the stored one). 

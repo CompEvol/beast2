@@ -31,6 +31,7 @@ import beast.core.State;
 import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreePrior;
 
 import java.util.List;
 import java.util.Random;
@@ -44,9 +45,7 @@ import java.util.Random;
  * @version $Id: SpeciationLikelihood.java,v 1.10 2005/05/18 09:51:11 rambaut Exp $
  */
 @Description("A likelihood function for speciation processes.")
-public class SpeciationLikelihood extends beast.core.Distribution {
-
-	public Input<Tree> m_tree = new Input<Tree>("tree", "species tree over which to calculate speciation likelihood", Validate.REQUIRED);
+public class SpeciationLikelihood extends TreePrior {
 	
 //	@Override
 //	public void initAndValidate(State state) throws Exception {

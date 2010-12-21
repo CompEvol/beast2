@@ -30,7 +30,7 @@ public class NexusParser {
 				if (sStr == null) {
 					return;
 				}
-				if (sStr.toLowerCase().matches("^\\s*begin\\s+data;\\s*$")) {
+				if (sStr.toLowerCase().matches("^\\s*begin\\s+data;\\s*$") || sStr.toLowerCase().matches("^\\s*begin\\s+characters;\\s*$")) {
 					m_alignment = parseDataBlock(fin);
 					sFileName = sFileName.replaceAll(".*[\\/]", "");
 					sFileName = sFileName.replaceAll("\\..*", "");
@@ -212,10 +212,10 @@ public class NexusParser {
 			NexusParser parser = new NexusParser();
 			parser.parseFile(args[0]);
 			String sXML = new XMLProducer().toXML(parser.m_alignment);
-			System.err.println(sXML);
+			System.out.println(sXML);
 			if (parser.m_traitSet != null) {
 				sXML = new XMLProducer().toXML(parser.m_traitSet);
-				System.err.println(sXML);
+				System.out.println(sXML);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

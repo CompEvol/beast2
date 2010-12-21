@@ -16,11 +16,13 @@ import beast.core.parameter.RealParameter;
 public class LogNormalDistributionModel extends ParametricDistribution {
     public Input<RealParameter> MParameter = new Input<RealParameter>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
     public Input<RealParameter> SParameter = new Input<RealParameter>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
+    public Input<Boolean> m_bMeanInRealSpaceInput = new Input<Boolean>("meanInRealSpace", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
 
+    boolean m_bMeanInRealSpace ;
     LogNormalImpl m_dist = new LogNormalImpl(0, 1);
     
     public void initAndValidate() throws Exception {
-
+    	m_bMeanInRealSpace = m_bMeanInRealSpaceInput.get();
         if (MParameter.get() != null) {
             if (MParameter.get().getLower() == null) {
                 MParameter.get().setLower(Double.NEGATIVE_INFINITY);
@@ -45,15 +47,18 @@ public class LogNormalDistributionModel extends ParametricDistribution {
 	void refresh() {
 		double fMean;
 		double fSigma;
+		if (SParameter.get() == null) {
+			fSigma = 1;
+		} else {
+			fSigma = SParameter.get().getValue();
+		}
 		if (MParameter.get() == null) {
 			fMean = 0;
 		} else {
 			fMean = MParameter.get().getValue();
 		}
-		if (SParameter.get() == null) {
-			fSigma = 1;
-		} else {
-			fSigma = SParameter.get().getValue();
+		if (m_bMeanInRealSpace) {
+			fMean = Math.log(fMean) - (0.5 * fSigma * fSigma);
 		}
 		m_dist.setMeanAndStdDev(fMean, fSigma);
 	}
@@ -95,6 +100,10 @@ public class LogNormalDistributionModel extends ParametricDistribution {
 		@Override
 		public double density(double fX) {
 	        return m_normal.density(Math.log(fX)) / fX;
+		}
+		@Override
+		public double logDensity(double fX) {
+	        return m_normal.logDensity(Math.log(fX)) - Math.log(fX);
 		}
 	} // class LogNormalImpl
     

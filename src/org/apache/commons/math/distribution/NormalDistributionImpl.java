@@ -162,9 +162,17 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      * @return The pdf at point x.
      * @since 2.1
      */
+    @Override
     public double density(double x) {
         double x0 = x - mean;
         return Math.exp(-x0 * x0 / (2 * standardDeviation * standardDeviation)) / (standardDeviation * SQRT2PI);
+    }
+    @Override
+    public double logDensity(double x) {
+        double a = 1.0 / (Math.sqrt(2.0 * Math.PI) * standardDeviation);
+        double b = -(x - mean) * (x - mean) / (2.0 * standardDeviation * standardDeviation);
+
+        return Math.log(a) + b;
     }
 
     /**

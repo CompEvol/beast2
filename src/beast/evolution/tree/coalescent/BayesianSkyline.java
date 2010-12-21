@@ -32,7 +32,10 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     Tree tree;
     TreeIntervals intervals;
     double[] coalescentTimes;
+    
+    
     int[] cumulativeGroupSizes;
+    boolean m_bIsPrepared = false;
 
 
     public BayesianSkyline() {
@@ -51,6 +54,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     }
 
     public void initAndValidate() throws Exception {
+    	// todo: make sure that the sum of groupsizes == number of coalescent events
     	intervals = m_treeIntervals.get();
         prepare();
     }
@@ -73,8 +77,23 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         coalescentTimes = intervals.getCoalescentTimes(coalescentTimes);
 
         assert (intervals.getSampleCount() == intervalCount);
+        m_bIsPrepared = true;
     }
 
+    @Override
+    protected boolean requiresRecalculation() {
+    	m_bIsPrepared = false;
+    	return true;
+    }
+    @Override
+    protected void store() {
+    	m_bIsPrepared = false;
+    }
+    @Override
+    protected void restore() {
+    	m_bIsPrepared = false;
+    }
+    
     public List<String> getParameterIds() {
 
         List<String> paramIDs = new ArrayList<String>();
@@ -91,6 +110,11 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
      * @return
      */
     public double getPopSize(double t) {
+    	
+    	if (!m_bIsPrepared) {
+    		prepare();
+    	}
+
         if (t > coalescentTimes[coalescentTimes.length - 1]) return popSizes.getValue(popSizes.getDimension() - 1);
 
         int epoch = Arrays.binarySearch(coalescentTimes, t);
@@ -103,6 +127,9 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         if (groupIndex < 0) {
             groupIndex = -groupIndex - 1;
         }
+        if (groupIndex >= popSizes.getDimension()) {
+        	groupIndex = popSizes.getDimension() - 1;
+        }
 
         return popSizes.getValue(groupIndex);
     }
@@ -114,9 +141,17 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
      * @return
      */
     public double getIntensity(double t) {
+    	if (!m_bIsPrepared) {
+    		prepare();
+    	}
 
         int index = 0;
         int groupIndex = 0;
+        
+        t -= 1e-100;
+        if (t > coalescentTimes[coalescentTimes.length-1]) {
+        	t = coalescentTimes[coalescentTimes.length-1];
+        }
 
         if (t < coalescentTimes[0]) {
             return t / popSizes.getValue(0);
@@ -124,15 +159,16 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
 
             double intensity = coalescentTimes[0] / popSizes.getValue(0);
             index += 1;
-            if (cumulativeGroupSizes[groupIndex] >= index) {
+            if (index >= cumulativeGroupSizes[groupIndex]) {
                 groupIndex += 1;
             }
+
             while (t > coalescentTimes[index]) {
 
                 intensity += (coalescentTimes[index] - coalescentTimes[index - 1]) / popSizes.getValue(groupIndex);
 
                 index += 1;
-                if (cumulativeGroupSizes[groupIndex] >= index) {
+                if (index >= cumulativeGroupSizes[groupIndex]) {
                     groupIndex += 1;
                 }
             }

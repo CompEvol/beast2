@@ -29,7 +29,9 @@ import beast.util.Randomizer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
 import java.awt.*;
+import java.net.URL;
 
 
 /**
@@ -60,10 +62,13 @@ public class ModelBuilder extends JPanel {
         f.add(drawTest.g_panel, BorderLayout.CENTER);
 
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        java.net.URL tempURL = ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
+//        java.net.URL tempURL = ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
         try {
-            f.setIconImage(ImageIO.read(tempURL));
+            URL url = (URL)ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
+            ImageIcon icon = new ImageIcon(url);
+            f.setIconImage(icon.getImage());
         } catch (Exception e) {
+        	System.err.println("error loading icon");
             e.printStackTrace();
             // ignore
         }

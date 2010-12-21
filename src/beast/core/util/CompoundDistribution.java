@@ -48,6 +48,9 @@ public class CompoundDistribution extends Distribution {
         logP = 0;
         for(Distribution dists : pDistributions.get()) {
             logP += dists.calculateLogP();
+            if (Double.isInfinite(logP) || Double.isNaN(logP)) {
+            	return logP;
+            }
         }
         return logP;
     }

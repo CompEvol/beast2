@@ -2,6 +2,7 @@ package beast.evolution.speciation;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -16,7 +17,7 @@ import beast.evolution.tree.Tree;
 @Description("Pure birth model (i.e. no deaths)")	 
 public class YuleModel extends SpeciationLikelihood {
     public Input<RealParameter> birthDiffRateParameter = 
-            new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model");
+            new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
     public Input<Boolean> m_pConditionlOnRoot =
             new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
 

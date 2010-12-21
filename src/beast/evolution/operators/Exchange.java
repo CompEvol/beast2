@@ -109,12 +109,13 @@ public class Exchange extends TreeOperator {
         Node iUncle = iGrandParent.m_left;
         if (iUncle.getNr() == iParent.getNr()) {
             iUncle = iGrandParent.m_right;
+            assert(iUncle.getNr() != iParent.getNr());
         }
         assert iUncle == getOtherChild(iGrandParent, iParent);
 
         assert i.getHeight() <= iGrandParent.getHeight();
 
-        if (iUncle.getHeight() < iParent.getHeight()) {
+        if (i.getHeight() < iUncle.getHeight() && iUncle.getHeight() < iParent.getHeight()) {
             exchangeNodes(i, iUncle, iParent, iGrandParent);
 
             // exchangeNodes generates the events
@@ -151,7 +152,10 @@ public class Exchange extends TreeOperator {
 
         if ((iP != jP) && (i != jP) && (j != iP)
                 && (j.getHeight() < iP.getHeight())
-                && (i.getHeight() < jP.getHeight())) {
+                && (i.getHeight() < jP.getHeight())
+                && ((iP.getHeight() < jP.getHeight() && i.getHeight() < j.getHeight()) ||
+                	(iP.getHeight() > jP.getHeight() && i.getHeight() > j.getHeight()))
+        		) {
             exchangeNodes(i, j, iP, jP);
             // System.out.println("tries = " + tries+1);
             return 0;

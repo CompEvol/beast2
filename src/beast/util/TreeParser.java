@@ -59,7 +59,7 @@ public class TreeParser extends Tree {
     public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
     public Input<String> m_oNewick = new Input<String>("newick", "initial beast.tree represented in newick format");
     public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
-    public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", new Integer(1));
+    public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=0", new Integer(1));
     public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under wich node heights (derived from lengths) are set to zero. Default=0.", new Double(0));
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
 
@@ -75,7 +75,14 @@ public class TreeParser extends Tree {
             m_sLabels = null;
             m_bIsLabelledNewick = false;
         }
-        setRoot(parseNewick(m_oNewick.get()));
+        String sNewick = m_oNewick.get();
+        if (sNewick == null || sNewick.equals("")) {
+        	// can happen while initalising Beauti
+        	Node dummy = new Node();
+        	setRoot(dummy);
+        } else {
+        	setRoot(parseNewick(m_oNewick.get()));
+        }
 
         super.initAndValidate();
     } // init
