@@ -84,6 +84,12 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     	out.print("</statenode>\n");
     }
     
+    final public String toXML() {
+    	return "<statenode id='" + getID() +"'>" +
+    		toString() +
+    		"</statenode>\n";
+    }
+    
     /** for restoring a state that was stored using toXML() above. **/
     public abstract void fromXML(Node node);
 

@@ -24,8 +24,10 @@
 */
 package beast.core;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -268,18 +270,54 @@ public class State extends Plugin {
     public void storeToFile() {
 		try {
 			PrintStream out = new PrintStream(m_sStateFileName);
-			out.print("<itsabeastystatewerein version='2.0'>\n");
-			for(StateNode node : stateNode) {
-				node.toXML(out);
-			}
-			out.print("</itsabeastystatewerein>\n");
+			out.print(toXML());
 			//out.print(new XMLProducer().toXML(this));
 			out.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
     }
+    
+    /** convert state to XML string,
+     * The state can be reconstructed using the fromXML() method **/
+    public String toXML() {
+    	StringBuffer buf = new StringBuffer();
+		buf.append("<itsabeastystatewerein version='2.0'>\n");
+		for(StateNode node : stateNode) {
+			buf.append(node.toXML());
+		}
+		buf.append("</itsabeastystatewerein>\n");
+		return buf.toString();
+    }
 
+    /* Restore state from an XML fragment **/
+    public void fromXML(String sXML) {
+		try {
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        Document doc= factory.newDocumentBuilder().parse(new ByteArrayInputStream(sXML.getBytes()));
+	        doc.normalize();
+	        NodeList nodes = doc.getElementsByTagName("*");
+	        Node topNode = nodes.item(0);
+	        NodeList children = topNode.getChildNodes();
+	        for (int iChild = 0; iChild < children.getLength(); iChild++) {
+	        	Node child = children.item(iChild);
+	        	if (child.getNodeType() == Node.ELEMENT_NODE) {
+	        		String sID = child.getAttributes().getNamedItem("id").getNodeValue();
+	        		int iStateNode = 0;
+	        		while (!stateNode[iStateNode].getID().equals(sID)) {
+	        			iStateNode ++;
+	        		}
+	        		StateNode stateNode2 = stateNode[iStateNode].copy();
+	        		stateNode2.fromXML(child);
+	        		stateNode[iStateNode].assignFromFragile(stateNode2);
+	        	}
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+    }
+    
     /** restore a state from file for resuming an MCMC chain **/
     public void restoreFromFile() {
 		try {

@@ -33,7 +33,7 @@ import beast.core.parameter.RealParameter;
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
 @Citation("Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. " +
         "Journal of Molecular Evolution 22:160-174.")
-public final class HKY extends SubstitutionModel.Base {
+public class HKY extends SubstitutionModel.Base {
     public Input<RealParameter> kappa = new Input<RealParameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
     public static final int STATE_COUNT = 4;
@@ -42,7 +42,7 @@ public final class HKY extends SubstitutionModel.Base {
     private EigenDecomposition storedEigenDecomposition = null;
 
     private boolean updateEigen = true;
-    private boolean updateMatrix = true;
+    protected boolean updateMatrix = true;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -207,18 +207,18 @@ public final class HKY extends SubstitutionModel.Base {
     /**
      * Used for precalculations
      */
-    private double freqA;
-    private double freqC;
-    private double freqG;
-    private double freqT;
+    protected double freqA;
+    protected double freqC;
+    protected double freqG;
+    protected double freqT;
 
-    private double beta, A_R, A_Y;
-    private double tab1A, tab2A, tab3A;
-    private double tab1C, tab2C, tab3C;
-    private double tab1G, tab2G, tab3G;
-    private double tab1T, tab2T, tab3T;
+    protected double beta, A_R, A_Y;
+    protected double tab1A, tab2A, tab3A;
+    protected double tab1C, tab2C, tab3C;
+    protected double tab1G, tab2G, tab3G;
+    protected double tab1T, tab2T, tab3T;
 
-    private void setupMatrix() {
+    protected void setupMatrix() {
 
         double[] freqs = frequencies.get().getFreqs();
         freqA = freqs[0];

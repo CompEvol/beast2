@@ -2,6 +2,10 @@ package beast.util;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -139,6 +143,8 @@ public class NexusParser {
 		} while (!sStr.toLowerCase().contains("matrix"));
 
 		// read character data
+		Map<String, String> seqMap = new HashMap<String, String>();
+		List<String> sTaxa = new ArrayList<String>();
 		while (true) {
 			sStr = nextLine(fin);
 			if (sStr.contains(";")) {
@@ -149,6 +155,17 @@ public class NexusParser {
 			sTaxon = sTaxon.replaceAll("'", "");
 			System.err.println(sTaxon);
 			String sData = sStrs[sStrs.length - 1];
+			
+			if (seqMap.containsKey(sTaxon)) {
+				seqMap.put(sTaxon, seqMap.get(sTaxon) + sData);
+			} else {
+				seqMap.put(sTaxon, sData);
+				sTaxa.add(sTaxon);
+			}
+		}
+		for (String sTaxon : sTaxa) {
+			String sData = seqMap.get(sTaxon);
+			
 			if (sData.length() != nChar) {
 				throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length());
 			}
@@ -156,6 +173,7 @@ public class NexusParser {
 			sData = sData.replace(sGap.charAt(0),'_');
 			Sequence sequence = new Sequence();
 			sequence.init(nTotalCount, sTaxon, sData);
+			sequence.setID(sTaxon);
 			alignment.m_pSequences.setValue(sequence, alignment);
 		}
 		alignment.initAndValidate();
