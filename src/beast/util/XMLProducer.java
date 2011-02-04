@@ -399,7 +399,49 @@ public class XMLProducer extends XMLParser {
 
 
 	/** script to reduce elements of the form <name idref='xyz'/> to name='@xyz' attributes **/
-	String m_sIDRefReplacementXSL = "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns='http://www.w3.org/TR/xhtml1/strict'>\n"+
+	String m_sIDRefReplacementXSL =
+		"<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns='http://www.w3.org/TR/xhtml1/strict'>\n" +
+		"\n" +
+		"<xsl:output method='xml' indent='yes'/>\n" +
+		"\n" +
+		"<xsl:template match='beast'>\n" +
+		"  <xsl:copy>\n" +
+		"    <xsl:apply-templates select='@*|node()'/>\n" +
+		"  </xsl:copy>\n" +
+		"</xsl:template>\n" +
+		"\n" +
+		"<xsl:template match='node()'>\n" +
+		"    <xsl:choose>\n" +
+		"    <xsl:when test='count(@idref)=1 and count(@name)=1 and count(@*)=2'>\n" +
+		"        <xsl:element name='{@name}'>\n" +
+		"            <xsl:attribute name='idref'>\n" +
+		"                <xsl:value-of select='@idref'/>\n" +
+		"            </xsl:attribute>\n" +
+		"        </xsl:element>\n" +
+		"    </xsl:when>\n" +
+		"    <xsl:when test='not(count(@idref)=1 and count(@*)=1)'>\n" +
+		"        <xsl:copy>\n" +
+		"           <xsl:apply-templates select='@*'/>\n" +
+		"		    <xsl:for-each select='*'>\n" +
+		"                <xsl:if test='count(@idref)=1 and count(@*)=1'>\n" +
+		"                    <xsl:attribute name='{name()}'>@<xsl:value-of select='@idref'/></xsl:attribute>\n" +
+		"                </xsl:if>\n" +
+		"		    </xsl:for-each>\n" +
+		"           <xsl:apply-templates/>\n" +
+		"        </xsl:copy>\n" +
+		"    </xsl:when>\n" +
+		"    </xsl:choose>\n" +
+		"</xsl:template>\n" +
+		"\n" +
+		"<xsl:template match='@*'>\n" +
+		"  <xsl:copy>\n" +
+		"    <xsl:apply-templates select='@*|node()'/>\n" +
+		"  </xsl:copy>\n" +
+		"</xsl:template>\n" +
+		"\n" +
+		"</xsl:stylesheet>";
+	
+	String s = "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns='http://www.w3.org/TR/xhtml1/strict'>\n"+
 	    	"\n"+
     		"<xsl:output method='xml' indent='yes'/>\n"+
 			"\n"+

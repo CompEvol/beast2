@@ -9,6 +9,7 @@ import beast.core.Plugin;
 public class Taxon extends Plugin {
 //	public Input<String> m_sName = new Input<String>("name","name of the taxon", Validate.REQUIRED);
 
+	
 	@Override
 	public void initAndValidate() {
 		

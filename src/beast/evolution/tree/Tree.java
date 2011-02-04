@@ -257,7 +257,11 @@ public class Tree extends StateNode {
         assignFrom(0, iRoot, otherNodes);
         root.m_fHeight = otherNodes[iRoot].m_fHeight;
         root.m_Parent = null;
-    	root.m_left = m_nodes[otherNodes[iRoot].m_left.getNr()];
+    	if (otherNodes[iRoot].m_left != null) {
+    		root.m_left = m_nodes[otherNodes[iRoot].m_left.getNr()];
+    	} else {
+    		root.m_left = null;
+    	}
     	if (otherNodes[iRoot].m_right != null) {
     		root.m_right = m_nodes[otherNodes[iRoot].m_right.getNr()];
     	} else {

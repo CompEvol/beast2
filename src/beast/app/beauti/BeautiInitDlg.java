@@ -14,18 +14,20 @@ import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.InputEditor;
-import beast.app.draw.ModelBuilder;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.ValidateListener;
 import beast.core.Input;
@@ -137,12 +139,14 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		System.out.println(usage());
 		System.exit(0);
 	}
+	
 	String usage() {
 		return "java Beauti [options]\n" +
 		"where options can be one of the following:\n" +
-		"-xml [template file]\n" +
+		"-template [template file]\n" +
 		"-nex [nexus data file]\n" +
 		"-xmldat [beast xml file]\n" +
+		"-xml [beast file]\n" +
 		"-out [output file name]\n" +
 		"-exitaction [writexml|usetemplate|usexml]\n";
 	}
@@ -176,19 +180,66 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 
 	} // init
 	
+	final static String g_create_new = "Create new specification";
+	final static String g_load_existing = "Load existing file";
 	
+    Box m_createNewBox;
+    Box m_loadExistingBox;
+
     Box createCentralPanel() throws Exception {
         Box centralBox = Box.createVerticalBox();
-        JLabel label = new JLabel("<html>To get started, first select one of more sequences and " +
-        		"a standard analysis, or select an existing Beast II specification.</html>");
-        centralBox.add(Box.createGlue());
-        centralBox.add(label);
-        centralBox.add(Box.createGlue());
-        centralBox.add(new JSeparator(JSeparator.HORIZONTAL));
+        m_createNewBox = Box.createVerticalBox();
+        m_loadExistingBox = Box.createVerticalBox();
+
+        
+        Box radioBox = Box.createVerticalBox();
+        // Create the radio buttons.
+        JRadioButton firstButton = new JRadioButton(g_create_new);
+        //firstButton.setSelected(true);
+
+        JRadioButton secondButton = new JRadioButton(g_load_existing);
+
+        // Group the radio buttons.
+        ButtonGroup group = new ButtonGroup();
+        group.add(firstButton);
+        group.add(secondButton);
+
+        // Register a listener for the radio buttons.
+        firstButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+        	    System.out.println(g_create_new + " pressed.");
+                m_createNewBox.setVisible(true);
+                m_loadExistingBox.setVisible(false);
+            }
+        });
+        secondButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+        	    System.out.println(g_load_existing + " pressed.");
+                m_createNewBox.setVisible(false);
+                m_loadExistingBox.setVisible(true);
+            }
+        });
+        radioBox.add(firstButton);
+        radioBox.add(secondButton);
+        radioBox.add(Box.createHorizontalGlue());
+        radioBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), 
+        		"How do you want to start:", 
+        		TitledBorder.LEFT, TitledBorder.DEFAULT_JUSTIFICATION));
+        centralBox.add(Box.createVerticalStrut(10));
+        centralBox.add(radioBox);
+        
+        
+        // GUI stuff for starting a new analysis
+        //JLabel label = new JLabel("<html>Select one of more sequences and " +
+        //		"a standard analysis.</html>");
+        //m_createNewBox.add(Box.createGlue());
+        //m_createNewBox.add(label);
+        //m_createNewBox.add(Box.createGlue());
+        //m_createNewBox.add(new JSeparator(JSeparator.HORIZONTAL));
         
         InputEditor sequenceInputEditor = PluginPanel.createInputEditor(m_doc.m_alignments, m_doc);
         sequenceInputEditor.addValidationListener(this);
-        centralBox.add(sequenceInputEditor);
+        m_createNewBox.add(sequenceInputEditor);
 
         String sStartText = (m_doc.m_mcmc.get() != null ? m_doc.m_mcmc.get().getID():
         		"<html>Select template</html>");
@@ -199,21 +250,23 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         inputEditor.init(m_doc.m_mcmc, m_doc, InputEditor.m_inlinePlugins.contains(sFullInputName));
         inputEditor.setBorder(new EtchedBorder());
 		inputEditor.setVisible(true);
-		centralBox.add(inputEditor);
-        centralBox.add(Box.createGlue());
+		m_createNewBox.add(inputEditor);
+		m_createNewBox.add(Box.createGlue());
         m_templateButton = inputEditor.m_button;
         if (m_sTemplateName != null) {
         	m_templateButton.setText(m_sTemplateName);
         }
         
-		centralBox.add(createStartWithTemplateButton());
-        centralBox.add(Box.createGlue());
+        m_createNewBox.add(Box.createGlue());
+        //m_createNewBox.add(new JSeparator(JSeparator.HORIZONTAL));
+        m_createNewBox.add(createStartWithTemplateButton());
         
         
         
         
         
-        centralBox.add(new JSeparator(JSeparator.HORIZONTAL));
+        // GUI stuff for loading a new analysis
+        //m_loadExistingBox.add(new JSeparator(JSeparator.HORIZONTAL));
         
         sStartText = (m_doc.m_mcmc.get() != null ? m_doc.m_mcmc.get().getID():
         	"<html>Select file</html>");
@@ -224,14 +277,21 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         inputEditor2.init(m_doc.m_mcmc, m_doc, InputEditor.m_inlinePlugins.contains(sFullInputName));
         inputEditor2.setBorder(new EtchedBorder());
 		inputEditor2.setVisible(true);
-		centralBox.add(inputEditor2);
+		m_loadExistingBox.add(inputEditor2);
         m_beastButton = inputEditor2.m_button;
         if (m_sXMLName != null) {
         	m_beastButton.setText(m_sXMLName);
         }
-
-        centralBox.add(createStartWithBeastButton());
-        centralBox.add(Box.createGlue());
+        
+        m_loadExistingBox.add(Box.createGlue());
+        //m_loadExistingBox.add(new JSeparator(JSeparator.HORIZONTAL));
+        m_loadExistingBox.add(createStartWithBeastButton());
+        
+        m_createNewBox.setVisible(false);
+        m_loadExistingBox.setVisible(false);
+        
+        centralBox.add(m_createNewBox);
+        centralBox.add(m_loadExistingBox);
 
         validate(State.IS_VALID);
         return centralBox;
@@ -330,8 +390,8 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 
 			addInputLabel(m_sLabel, m_sTipText);
 			m_button = new JButton(m_sButtonText);
-			m_button.setMinimumSize(new Dimension(100,16));
-			m_button.setPreferredSize(new Dimension(200,24));
+			//m_button.setMinimumSize(new Dimension(100,16));
+			//m_button.setPreferredSize(new Dimension(200,24));
 			if (input.get()!= null) {
 				m_button.setText(input.get().toString());
 			}
@@ -357,10 +417,13 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 			add(m_button);
 			addValidationLabel();
 			m_validateLabel.setVisible(false);
+			add(Box.createGlue());
 		} // init
 
-
-		
+		@Override
+		protected void checkValidation() {
+			// do nothing
+		}
     }
     
     public final static String ICONPATH = "beast/app/beauti/";

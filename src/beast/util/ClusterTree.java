@@ -266,6 +266,15 @@ public class ClusterTree extends Tree {
 	@SuppressWarnings("unchecked")
 	public Node buildClusterer() throws Exception {
 		int nTaxa = m_pData.get().getNrTaxa();
+		if (nTaxa == 1) {
+			// patalogical case
+			Node node = newNode();
+			node.setHeight(1);
+			node.setNr(0);
+			return node;
+		}
+		
+		
 		// use array of integer vectors to store cluster indices,
 		// starting with one cluster per instance
 		List<Integer> [] nClusterID = new ArrayList[nTaxa];

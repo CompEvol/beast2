@@ -324,7 +324,8 @@ public class XMLParser {
 	} // replace
     
     /** Parse an XML fragment representing a Plug-in
-     * Only the last child element of the top level <beast> element is considered.
+     * Only the run element or if that does not exist the last child element of 
+     * the top level <beast> element is considered.
      */
     public Plugin parseFragment(String sXML, boolean bInitialize) throws Exception {
     	m_bInitialize = bInitialize;
@@ -352,8 +353,14 @@ public class XMLParser {
         	throw new Exception("Need at least one child element");
         }
         int i = children.getLength()-1;
-        while (i >= 0 && children.item(i).getNodeType() != Node.ELEMENT_NODE) {
+        while (i >= 0 && (children.item(i).getNodeType() != Node.ELEMENT_NODE ||
+        		!children.item(i).getNodeName().equals("run"))) {
         	i--;
+        }
+        if (i < 0) {
+        	while (i >= 0 && children.item(i).getNodeType() != Node.ELEMENT_NODE) {
+        		i--;
+        	}
         }
         if (i < 0) {
         	throw new Exception("Need at least one child element");

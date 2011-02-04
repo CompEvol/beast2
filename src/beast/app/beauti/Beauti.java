@@ -2,12 +2,12 @@ package beast.app.beauti;
 
 
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -16,6 +16,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -118,6 +119,11 @@ public class Beauti extends JTabbedPane {
 		m_panels = new BeautiPanel[NR_OF_PANELS];
 		m_doc = doc;
 	}
+
+	
+	
+
+	
 	
 	void toggleVisible(int nPanelNr) {
 		if (m_bPaneIsVisible[nPanelNr]) {
@@ -389,6 +395,18 @@ public class Beauti extends JTabbedPane {
 	
 	public static void main(String[] args) {
 		try {
+		    // sets the default font for all Swing components.
+			javax.swing.plaf.FontUIResource f = new javax.swing.plaf.FontUIResource("Serif", Font.PLAIN, 14);
+		    java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
+		    while (keys.hasMoreElements()) {
+		      Object key = keys.nextElement();
+		      Object value = UIManager.get (key);
+		      if (value instanceof javax.swing.plaf.FontUIResource) {
+		        UIManager.put (key, f);
+		      }
+		    }   			
+			
+			
 			PluginPanel.init();
 	        BeautiInitDlg dlg = null;
 	        BeautiDoc doc = new BeautiDoc();

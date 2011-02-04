@@ -68,9 +68,17 @@ public class Sequence extends Plugin {
         // remove spaces
         sData = sData.replaceAll("\\s", "");
         if (sDataMap == null) {
-            String[] sStrs = sData.split(",");
-            for (String sStr : sStrs) {
-                sequence.add(Integer.parseInt(sStr));
+            if (sData.contains(",")) {
+            	// assume it is a comma separated string
+            	String[] sStrs = sData.split(",");
+            	for (String sStr : sStrs) {
+            		sequence.add(Integer.parseInt(sStr));
+            	}
+            } else {
+            	// assume it is a string where each character is a site
+            	for (byte c: sData.getBytes()) {
+            		sequence.add(Integer.parseInt((char)c+""));
+            	}
             }
         } else {
             for (int i = 0; i < sData.length(); i++) {

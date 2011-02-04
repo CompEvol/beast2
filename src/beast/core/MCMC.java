@@ -76,7 +76,7 @@ public class MCMC extends Runnable {
      * recalculation of the posterior.
      */
     //final protected int NR_OF_DEBUG_SAMPLES = 0;
-    final protected int NR_OF_DEBUG_SAMPLES = 20000;
+    final protected int NR_OF_DEBUG_SAMPLES = 2000;
 
     @Override
     public void initAndValidate() throws Exception {

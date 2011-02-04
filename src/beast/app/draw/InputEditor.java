@@ -13,7 +13,6 @@ import java.util.Set;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -44,16 +43,29 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		// load m_inlinePlugins from properties file
 		Properties props = new Properties();
 		try {
+			// load from default position in Beast
 			String sPropFile = "beast/app/draw/" + "inputeditor.properties";
 			InputStream in = InputEditor.class.getClassLoader().getResourceAsStream(sPropFile);
+			System.err.println("Loading " + sPropFile);
 			props.load(in);
 			String sInlinePlugins = props.getProperty("inlinePlugins");
+			String sSuppressPlugins = props.getProperty("suppressPlugins");
+			// load extra specs for other packages
+			sPropFile = "inputeditor.properties";
+			in = InputEditor.class.getClassLoader().getResourceAsStream(sPropFile);
+			if (in != null) {
+				System.err.println("Loading " + sPropFile);
+				props.load(in);
+				sInlinePlugins += " " + props.getProperty("inlinePlugins");
+				sSuppressPlugins += " " + props.getProperty("suppressPlugins");
+			}
+			System.err.println("inline="+sInlinePlugins);
+			System.err.println("suppress="+sSuppressPlugins);
 			m_inlinePlugins = new HashSet<String>();
 			for (String sInlinePlugin: sInlinePlugins.split("\\s+")) {
 				m_inlinePlugins.add(sInlinePlugin);
 			}
 			
-			String sSuppressPlugins = props.getProperty("suppressPlugins");
 			m_suppressPlugins = new HashSet<String>();
 			for (String sSuppressPlugin: sSuppressPlugins.split("\\s+")) {
 				m_suppressPlugins.add(sSuppressPlugin);
@@ -74,7 +86,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	JLabel m_inputLabel;
 	
 	/** flag to indicate label, edit and validate buttons/labels should be added **/
-	boolean m_bAddButtons = true;
+	protected boolean m_bAddButtons = true;
 	/** label that shows up when validation fails **/
 	protected SmallLabel m_validateLabel;
 	

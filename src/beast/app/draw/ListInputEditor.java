@@ -84,13 +84,24 @@ public class ListInputEditor extends InputEditor {
         m_addButton = new SmallButton("+", true);
         m_addButton.setToolTipText("Add item to the list");
         m_addButton.addActionListener(new ActionListener() {
-            // implements ActionListener
             public void actionPerformed(ActionEvent e) {
             	addItem();
             }
         });
         box.add(m_addButton);
         add(m_listBox);
+        if (!m_bExpertMode) {
+        	// if nothing can be added, make add button invisible
+            List<String> sTabuList = new ArrayList<String>();
+            for (int i = 0; i < m_labels.size(); i++) {
+                sTabuList.add(m_labels.get(i).getText());
+            }
+            List<String> sPlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, sTabuList);
+            if (sPlugins.size() == 0) {
+            	m_addButton.setVisible(false);
+            }
+        }
+        
         
 		m_validateLabel = new SmallLabel("x", new Color(200,0,0));
         if (m_bAddButtons) {
@@ -209,6 +220,7 @@ public class ListInputEditor extends InputEditor {
         PluginPanel.m_position.y -= 20;
         checkValidation();
         updateState();
+        doLayout();
         return o;
 	} // editItem
     
@@ -222,9 +234,10 @@ public class ListInputEditor extends InputEditor {
 		m_validateLabels.remove(i);
         checkValidation();
         updateState();
+        doLayout();
         repaint();
 	} // deleteItem
-	
+		
     /**
      * Select existing plug-in, or create a new one.
      * Suppress existing plug-ins with IDs from the tabu list.
@@ -280,6 +293,9 @@ public class ListInputEditor extends InputEditor {
 			}
     	}
 		checkValidation();
+		// this triggers properly re-layouting after an edit action
+        setVisible(false);
+        setVisible(true);
     } // updateState
 
 	@Override
