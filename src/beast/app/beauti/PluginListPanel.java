@@ -11,7 +11,9 @@ import java.awt.*;
  */
 public class PluginListPanel extends JPanel {
 
-    PluginDialog dialog;
+	private static final long serialVersionUID = 1L;
+	
+	PluginDialog dialog;
     JList pluginList;
 
     public PluginListPanel(Plugin[] plugins, PluginDialog dialog) {
@@ -26,7 +28,9 @@ public class PluginListPanel extends JPanel {
     }
 
     class PluginCellRenderer extends DefaultListCellRenderer {
-        public PluginCellRenderer() {
+		private static final long serialVersionUID = 1L;
+
+		public PluginCellRenderer() {
             setOpaque(true);
         }
 

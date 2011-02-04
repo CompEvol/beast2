@@ -42,7 +42,6 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -185,95 +184,6 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
 
 
-    public class ExtensionFileFilter extends FileFilter implements
-            FilenameFilter {
-
-        /**
-         * The text description of the types of files accepted
-         */
-        protected String m_Description;
-
-        /**
-         * The filename extensions of accepted files
-         */
-        protected String[] m_Extension;
-
-        /**
-         * Creates the ExtensionFileFilter
-         *
-         * @param extension   the extension of accepted files.
-         * @param description a text description of accepted files.
-         */
-        public ExtensionFileFilter(String extension, String description) {
-            m_Extension = new String[1];
-            m_Extension[0] = extension;
-            m_Description = description;
-        }
-
-        /**
-         * Creates an ExtensionFileFilter that accepts files that have any of
-         * the extensions contained in the supplied array.
-         *
-         * @param extensions  an array of acceptable file extensions (as Strings).
-         * @param description a text description of accepted files.
-         */
-        public ExtensionFileFilter(String[] extensions, String description) {
-            m_Extension = extensions;
-            m_Description = description;
-        }
-
-        /**
-         * Gets the description of accepted files.
-         *
-         * @return the description.
-         */
-        public String getDescription() {
-
-            return m_Description;
-        }
-
-        /**
-         * Returns a copy of the acceptable extensions.
-         *
-         * @return the accepted extensions
-         */
-        public String[] getExtensions() {
-            return (String[]) m_Extension.clone();
-        }
-
-        /**
-         * Returns true if the supplied file should be accepted (i.e.: if it has
-         * the required extension or is a directory).
-         *
-         * @param file the file of interest.
-         * @return true if the file is accepted by the filter.
-         */
-        public boolean accept(File file) {
-
-            String name = file.getName().toLowerCase();
-            if (file.isDirectory()) {
-                return true;
-            }
-            for (int i = 0; i < m_Extension.length; i++) {
-                if (name.endsWith(m_Extension[i])) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Returns true if the file in the given directory with the given name
-         * should be accepted.
-         *
-         * @param dir  the directory where the file resides.
-         * @param name the name of the file.
-         * @return true if the file is accepted.
-         */
-        public boolean accept(File dir, String name) {
-            return accept(new File(dir, name));
-        }
-    }
 
     ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
     ExtensionFileFilter ef2 = new ExtensionFileFilter(".gif", "GIF images");
@@ -1650,8 +1560,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             List<Plugin> plugins = new ArrayList<Plugin>();
                             for (Shape shape2 : m_doc.m_objects) {
                                 if (shape2 instanceof PluginShape) {
-                                    plugins
-                                            .add(((PluginShape) shape2).m_plugin);
+                                    plugins.add(((PluginShape) shape2).m_plugin);
                                 }
                             }
                             PluginDialog dlg = new PluginDialog(plugin, plugin.getClass(), plugins);
@@ -1659,15 +1568,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             if (dlg.getOK()) {
                                 // add newly created Plug-ins
                                 int nNewShapes = 0;
-                                if (plugins.size() < PluginPanel.g_plugins
-                                        .size()) {
-                                    for (Plugin plugin2 : PluginPanel.g_plugins
-                                            .values()) {
+                                if (plugins.size() < PluginPanel.g_plugins.size()) {
+                                    for (Plugin plugin2 : PluginPanel.g_plugins.values()) {
                                         if (!plugins.contains(plugin2)) {
                                             try {
                                                 nNewShapes++;
-                                                Shape shape2 = new PluginShape(
-                                                        plugin2, m_doc);
+                                                Shape shape2 = new PluginShape(plugin2, m_doc);
                                                 shape2.m_x = 10;
                                                 shape2.m_y = nNewShapes * 50;
                                                 shape2.m_w = 80;
@@ -1717,8 +1623,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 sFileName = sFileName.concat(FILE_EXT);
                             try {
                                 FileWriter outfile = new FileWriter(sFileName);
-                                outfile.write(new XMLProducer()
-                                        .modelToXML(plugin));
+                                outfile.write(new XMLProducer().modelToXML(plugin));
                                 outfile.close();
                             } catch (Exception e) {
                                 JOptionPane.showMessageDialog(null,

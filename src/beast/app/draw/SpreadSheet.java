@@ -346,7 +346,7 @@ public class SpreadSheet extends JPanel implements ClipboardOwner {
 					PluginDialog dlg = new PluginDialog(plugin, plugin.getClass());
 					dlg.setVisible(true);
 					if (dlg.getOK()) {
-						plugin = dlg.panel.m_plugin;
+						plugin = dlg.m_panel.m_plugin;
 						m_objects[m_iRow][m_iCol] = plugin;
 						m_table.repaint();
 					}

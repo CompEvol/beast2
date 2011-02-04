@@ -8,6 +8,9 @@ import beast.util.XMLProducer;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,39 +39,54 @@ public class PluginPanel extends JPanel {
      */
     Class<?> m_pluginClass;
     JLabel m_pluginButton;
+    JTextField m_identry;
+
     private boolean m_bOK = false;
     /* Set of plugins in the system.
       * These are the plugins that an input can be connected to **/
     static public Map<String, Plugin> g_plugins = null;
 
-    static Point m_position;
+    public static Point m_position;
 
     /**
      * map that identifies the InputEditor to use for a particular type of Input *
      */
     static HashMap<Class<?>, String> g_inputEditorMap;
+    static HashMap<Class<?>, String> g_listInputEditorMap;
 
     static {
+    	init();
+    } // finished registering input editors
+    
+    public static void init() {
         // register input editors
         g_inputEditorMap = new HashMap<Class<?>, String>();
-        List<String> sInputEditors = ClassDiscovery.find("beast.app.draw.InputEditor", "beast.app.draw");
-        for (String sInputEditor : sInputEditors) {
-            try {
-                Class<?> _class = Class.forName(sInputEditor);
-                InputEditor editor = (InputEditor) _class.newInstance();
-                Class<?> type = editor.type();
-                g_inputEditorMap.put(type, sInputEditor);
-            } catch (Exception e) {
-                // ignore
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+        g_listInputEditorMap = new HashMap<Class<?>, String>();
+        String[] PACKAGE_DIRS = {"beast.app.draw", "beast.app.beauti"};
+        for(String sPackage : PACKAGE_DIRS) {
+	        List<String> sInputEditors = ClassDiscovery.find("beast.app.draw.InputEditor", sPackage);
+	        for (String sInputEditor : sInputEditors) {
+	            try {
+	                Class<?> _class = Class.forName(sInputEditor);
+	                InputEditor editor = (InputEditor) _class.newInstance();
+	                Class<?> type = editor.type();
+	                g_inputEditorMap.put(type, sInputEditor);
+	                if (editor instanceof ListInputEditor) {
+		                Class<?> baseType = ((ListInputEditor)editor).baseType();
+		                g_listInputEditorMap.put(baseType, sInputEditor);
+	                }
+	            } catch (Exception e) {
+	                // ignore
+	                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	            }
+	        }
         }
         m_position = new Point(0, 0);
-    } // finished registering input editors
-
+        g_plugins = new HashMap<String, Plugin>();
+    }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins) {
-        g_plugins = new HashMap<String, Plugin>();
+        //g_plugins = new HashMap<String, Plugin>();
         for (Plugin plugin2 : plugins) {
             String sID = getID(plugin2);
             // ensure IDs are unique
@@ -78,17 +96,19 @@ public class PluginPanel extends JPanel {
             }
             g_plugins.put(getID(plugin2), plugin2);
         }
-        init(plugin, _pluginClass);
+        init(plugin, _pluginClass, true);
     }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass) {
-        if (g_plugins == null) {
-            initPlugins(plugin);
-        }
-        init(plugin, _pluginClass);
+    	this(plugin, _pluginClass, true);
     }
 
-    void init(Plugin plugin, Class<?> _pluginClass) {
+    public PluginPanel(Plugin plugin, Class<?> _pluginClass, boolean bShowHeader) {
+        initPlugins(plugin);
+        init(plugin, _pluginClass, bShowHeader);
+    }
+
+    void init(Plugin plugin, Class<?> _pluginClass, boolean showHeader) {
 
         //setModal(true);
         m_plugin = plugin;
@@ -97,10 +117,13 @@ public class PluginPanel extends JPanel {
 
         Box mainBox = Box.createVerticalBox();
         mainBox.add(Box.createVerticalStrut(5));
-        /* add plugin + help button at the top */
-        Box pluginBox = createPluginBox();
-        mainBox.add(pluginBox);
-        mainBox.add(Box.createVerticalStrut(5));
+
+        if (showHeader) {
+	        /* add plugin + help button at the top */
+	        Box pluginBox = createPluginBox();
+	        mainBox.add(pluginBox);
+	        mainBox.add(Box.createVerticalStrut(5));
+        }
 
         
         addInputs(mainBox, plugin);
@@ -134,37 +157,59 @@ public class PluginPanel extends JPanel {
         }
         for (Input<?> input : inputs) {
             try {
-                if (input.getType() == null) {
-                    input.determineClass(plugin);
-                }
-                Class<?> inputClass = input.getType();
-
-                InputEditor inputEditor;
-                if (g_inputEditorMap.containsKey(inputClass)) {
-                    String sInputEditor = g_inputEditorMap.get(inputClass);
-                    inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
-                } else if (inputClass.isEnum()) {
-                    inputEditor = new EnumInputEditor();
-                } else if (List.class.isAssignableFrom(inputClass) ||
-                        (input.get() != null && input.get() instanceof List<?>)) {
-                    inputEditor = new ListInputEditor();
-                } else {
-                    // assume it is a general Plugin, so create a Plugin class
-                    inputEditor = new PluginInputEditor();
-                }
             	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-                inputEditor.init(input, plugin, InputEditor.m_inlinePlugins.contains(sFullInputName));
-                inputEditor.setBorder(new EtchedBorder());
-				inputEditor.setVisible(true);
-                box.add(inputEditor);
-                box.add(Box.createVerticalStrut(5));
+            	if (!InputEditor.m_suppressPlugins.contains(sFullInputName)) {
+	            	InputEditor inputEditor = createInputEditor(input, plugin);
+					box.add(inputEditor);
+	                box.add(Box.createVerticalStrut(5));
+	                box.add(Box.createVerticalGlue());
+            	}
             } catch (Exception e) {
                 // ignore
                 System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
                         "input " + input.getName() + " could not be added.");
+                JOptionPane.showMessageDialog(null, "Could not add entry for " + input.getName());
             }
         }
-    }    
+    } // addInputs
+
+    public static InputEditor createInputEditor(Input<?> input, Plugin plugin) throws Exception {
+    	return createInputEditor(input, plugin, true, false);
+    }
+    
+    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, boolean bForceExpansion) throws Exception {
+        if (input.getType() == null) {
+            input.determineClass(plugin);
+        }
+        Class<?> inputClass = input.getType();
+
+        InputEditor inputEditor;
+    	if (List.class.isAssignableFrom(inputClass) ||
+                (input.get() != null && input.get() instanceof List<?>)) {
+	            if (g_listInputEditorMap.containsKey(inputClass)) {
+	                String sInputEditor = g_listInputEditorMap.get(inputClass);
+	                inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
+	            } else {
+		        	// otherwise, use generic list editor
+		        	inputEditor = new ListInputEditor();
+	            }
+        } else if (input.possibleValues != null) {
+            inputEditor = new EnumInputEditor();
+        } else if (g_inputEditorMap.containsKey(inputClass)) {
+            String sInputEditor = g_inputEditorMap.get(inputClass);
+            inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
+        } else if (inputClass.isEnum()) {
+            inputEditor = new EnumInputEditor();
+        } else {
+            // assume it is a general Plugin, so create a Plugin class
+            inputEditor = new PluginInputEditor();
+        }
+    	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
+        inputEditor.init(input, plugin, InputEditor.m_inlinePlugins.contains(sFullInputName) | bForceExpansion , bAddButtons);
+        inputEditor.setBorder(new EtchedBorder());
+		inputEditor.setVisible(true);
+		return inputEditor;
+    } // createInputEditor
     
     /**
      * create box for manipulating the plugin, or ask for help *
@@ -172,7 +217,7 @@ public class PluginPanel extends JPanel {
     Box createPluginBox() {
         Box box = Box.createHorizontalBox();
         JLabel icon = new JLabel();
-        URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "/beast.png");
+        URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beast.png");
         Icon _icon = new ImageIcon(url);
         icon.setIcon(_icon);
         box.add(icon);
@@ -183,6 +228,7 @@ public class PluginPanel extends JPanel {
 
         m_pluginButton = new JLabel(m_plugin.getID());
         m_pluginButton.setToolTipText(m_plugin.getID() + " is of type " + m_plugin.getClass().getName() + " Click to change.");
+
 //		m_pluginButton.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
@@ -213,6 +259,27 @@ public class PluginPanel extends JPanel {
         box.add(m_pluginButton);
 
 
+		m_identry = new JTextField();
+		m_identry.setMinimumSize(new Dimension(100,16));
+        m_identry.setText(m_plugin.getID()); 
+        
+		m_identry.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				processID();
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				processID();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				processID();
+			}
+		});
+        box.add(m_identry);
+        
+        
         SmallButton helpButton2 = new SmallButton("?", true);
         helpButton2.setToolTipText("Show help for this plugin");
         helpButton2.addActionListener(new ActionListener() {
@@ -240,7 +307,13 @@ public class PluginPanel extends JPanel {
         return vbox;
     } // createPluginBox
 
-    static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
+	void processID() {
+//		PluginPanel.g_plugins.remove(m_plugin.getID());
+//		m_plugin.setID(m_identry.getText());
+//		PluginPanel.g_plugins.put(m_plugin.getID(), m_plugin);
+	}
+
+	static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
         /* add ascendants to tabu list */
         if (sTabuList == null) {
             sTabuList = new ArrayList<String>();
@@ -268,8 +341,10 @@ public class PluginPanel extends JPanel {
             }
         }
         /* add all plugin-classes of type assignable to the input */
-        for (String sClass : ClassDiscovery.find(input.getType(), "beast")) {
-            sPlugins.add("new " + sClass);
+        if (InputEditor.m_bExpertMode) {
+	        for (String sClass : ClassDiscovery.find(input.getType(), "beast")) {
+	            sPlugins.add("new " + sClass);
+	        }
         }
         return sPlugins;
     } // getAvailablePlugins
@@ -317,12 +392,24 @@ public class PluginPanel extends JPanel {
                 for (Input<?> input2 : plugin.listInputs()) {
                     Object o = input2.get();
                     if (o != null && o instanceof Plugin) {
-                        outputs.get(o).add(plugin);
+                    	List<Plugin> list = outputs.get(o);
+//                    	if (list == null) {
+//                    		int h = 3;
+//                    		h++;
+//                    	} else {
+                    		list.add(plugin);
+//                    	}
                     }
                     if (o != null && o instanceof List<?>) {
                         for (Object o2 : (List<?>) o) {
                             if (o2 != null && o2 instanceof Plugin) {
-                                outputs.get(o2).add(plugin);
+                            	List<Plugin> list = outputs.get(o2); 
+                            	if (list == null) {
+                            		int h = 3;
+                            		h++;
+                            	} else {
+                            		list.add(plugin);
+                            	}
                             }
                         }
                     }
@@ -335,11 +422,11 @@ public class PluginPanel extends JPanel {
     } // getOutputs
 
     public void initPlugins(Plugin plugin) {
-        g_plugins = new HashMap<String, Plugin>();
+        //g_plugins = new HashMap<String, Plugin>();
         addPluginToMap(plugin);
     }
 
-    static void addPluginToMap(Plugin plugin) {
+    static public void addPluginToMap(Plugin plugin) {
         g_plugins.put(getID(plugin), plugin);
         try {
             for (Input<?> input : plugin.listInputs()) {

@@ -26,7 +26,8 @@ public class EnumInputEditor extends InputEditor {
      * o a combo box for selecting another value in the enumeration
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, boolean bExpand) {
+    public void init(Input<?> input, Plugin plugin, boolean bExpand, boolean bAddButtons) {
+		m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
 

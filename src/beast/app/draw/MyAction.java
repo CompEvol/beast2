@@ -12,7 +12,7 @@ import javax.swing.KeyStroke;
  * Base class used for definining actions with a name, tool tip text, possibly
  * an icon and accelerator key.
  */
-class MyAction extends AbstractAction {
+public class MyAction extends AbstractAction {
 	/**
 	 * for serialisation
 	 */

@@ -29,7 +29,7 @@ public class PluginDialog extends JDialog {
 
     private boolean m_bOK = false;
 
-    public PluginPanel panel;
+    public PluginPanel m_panel;
 
     /**
      * map that identifies the InputEditor to use for a particular type of Input *
@@ -37,7 +37,6 @@ public class PluginDialog extends JDialog {
 
 
     public PluginDialog(PluginPanel panel) {
-
         init(panel);
     }
 
@@ -52,7 +51,7 @@ public class PluginDialog extends JDialog {
     void init(PluginPanel panel) {
 
 
-        this.panel = panel;
+        this.m_panel = panel;
 
         setModal(true);
 
@@ -102,6 +101,12 @@ public class PluginDialog extends JDialog {
     public boolean getOK() {
         //PluginDialog.m_position.x -= 30;
         //PluginDialog.m_position.y -= 30;
+    	if (m_bOK) {
+    		String sOldID = m_panel.m_plugin.getID();
+			PluginPanel.g_plugins.remove(sOldID);
+			m_panel.m_plugin.setID(m_panel.m_identry.getText());
+			PluginPanel.g_plugins.put(m_panel.m_plugin.getID(), m_panel.m_plugin);
+    	}
         return m_bOK;
     }
 
@@ -146,7 +151,7 @@ public class PluginDialog extends JDialog {
         dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         dlg.setVisible(true);
         if (dlg.m_bOK) {
-            Plugin plugin = dlg.panel.m_plugin;
+            Plugin plugin = dlg.m_panel.m_plugin;
             String sXML = new XMLProducer().modelToXML(plugin);
             System.out.println(sXML);
         }
