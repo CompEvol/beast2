@@ -293,4 +293,28 @@ public class Alignment extends Plugin {
     } // calcPatterns
 
 
+
+    /**
+     * returns an array containing the non-ambiguous states that this state represents.
+     */
+    public boolean[] getStateSet(int state) {
+
+        boolean[] stateSet = new boolean[m_nMaxStateCount];
+        if (!isAmbiguousState(state)) {
+            for (int i = 0; i < m_nMaxStateCount; i++) {
+                stateSet[i] = false;
+            }
+
+            stateSet[state] = true;
+        } else {
+            for (int i = 0; i < m_nMaxStateCount; i++) {
+                stateSet[i] = true;
+            }
+        }
+        return stateSet;
+    }
+    boolean isAmbiguousState(int state) {
+    	return (state >=0 && state < m_nMaxStateCount);
+    }
+
 } // class Data

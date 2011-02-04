@@ -25,7 +25,7 @@
  */
 
 // TODO: unroll loops
- 
+
 // TODO: separate inner loops to small methods
 
 // TODO: remove all loops on matrices if matrixcount==1
@@ -328,7 +328,79 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 			//return u;
 	}
 	
-//	@Override
+	@Override
+    public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials) {
+		int u = 0;
+		double [] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+		for (int k = 0; k < m_nPatterns * m_nMatrices; k++) {
+			fPseudoPartials[u] = fInPartials[u] * fFrequencies[0];
+			fPseudoPartials[u+1] = fInPartials[u+1] * fFrequencies[1];
+			fPseudoPartials[u+2] = fInPartials[u+2] * fFrequencies[2];
+			fPseudoPartials[u+3] = fInPartials[u+3] * fFrequencies[3];
+			u+=4;
+		}
+    }
+
+	@Override
+    public void calcNodePsuedoRootPartials(double[] fInPseudoPartials, int iNode, double [] fOutPseudoPartials) {
+		double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+		int [] nID = m_nID[m_iCurrentStates[iNode]][iNode];
+		
+		int u = 0;
+		for (int k = 0; k < m_nPatterns; k++) {
+			int n = nID[k] * m_nMatrices * m_nStates;
+			for (int l = 0; l < m_nMatrices; l++) {
+				fOutPseudoPartials[u] = fInPseudoPartials[u] * fPartials[n];
+				fOutPseudoPartials[u+1] = fInPseudoPartials[u+1] * fPartials[n+1];
+				fOutPseudoPartials[u+2] = fInPseudoPartials[u+2] * fPartials[n+2];
+				fOutPseudoPartials[u+3] = fInPseudoPartials[u+3] * fPartials[n+3];
+				u += 4;
+				n += 4;
+			}
+		}
+	}
+    
+	@Override
+    public void calcPsuedoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials) {
+		int v = 0;
+		int u = 0;
+		double [] fMatrices = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+		for (int k = 0; k < m_nPatterns; k++) {
+			for (int l = 0; l < m_nMatrices; l++) {
+				int w = l * m_nMatrixSize;
+				for (int i = 0; i < m_nStates; i++) {
+					fPseudoPartials[v] = fParentPseudoPartials[u] * fMatrices[w] + 
+						fParentPseudoPartials[u+1] * fMatrices[w+1] +
+						fParentPseudoPartials[u+2] * fMatrices[w+2] +
+						fParentPseudoPartials[u+3] * fMatrices[w+3];
+					v++;
+				}
+				u += m_nStates;
+			}
+		}
+    }
+
+
+	/**
+	 * Calculates pattern log likelihoods at a node.
+	 * @param fPartials the partials used to calculate the likelihoods
+	 * @param fFrequencies an array of state frequencies
+	 * @param fOutLogLikelihoods an array into which the likelihoods will go
+	 */
+    @Override
+	public void calculateLogLikelihoodsP(double[] fPartials,double[] fOutLogLikelihoods)
+	{
+        int v = 0;
+		for (int k = 0; k < m_nPatterns; k++) {
+            double sum = fPartials[v] +
+            	fPartials[v + 1] +
+            	fPartials[v + 2] +
+            	fPartials[v + 3];
+            fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
+            v += 4;
+		}
+	}
+	//	@Override
 //	LikelihoodCore getAlternativeCore() {
 //    	return new BeerLikelihoodCoreJava4();
 //    }

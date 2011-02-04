@@ -35,8 +35,8 @@ import beast.evolution.alignment.Alignment;
         "distribution if the estimate flag is set to false.")
 public class Frequencies extends Plugin {
     public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
-    public Input<String> m_fixed = new Input<String>("frequencies", "Fixed set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
     public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
+    public Input<String> m_fixed = new Input<String>("frequencies", "Fixed set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
 
     @Override
     public void initAndValidate() throws Exception {

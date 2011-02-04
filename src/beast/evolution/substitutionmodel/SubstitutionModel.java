@@ -24,6 +24,7 @@
 */
 package beast.evolution.substitutionmodel;
 
+
 import beast.core.*;
 import beast.core.Input.Validate;
 
@@ -49,6 +50,11 @@ public interface SubstitutionModel {
      */
     EigenDecomposition getEigenDecomposition();
 
+    /**
+     * @return whether substitution model can return complex diagonalizations
+     */
+    boolean canReturnComplexDiagonalization();
+
     public abstract class Base extends CalculationNode implements SubstitutionModel {
         public Input<Frequencies> frequencies =
                 new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
@@ -57,5 +63,12 @@ public interface SubstitutionModel {
     	public double[] getFrequencies() {
     		return frequencies.get().getFreqs();
     	}
+
+        public boolean canReturnComplexDiagonalization() {
+            return false;
+        }
+
+    
+    
     }
 }

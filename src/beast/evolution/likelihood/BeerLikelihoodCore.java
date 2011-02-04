@@ -32,7 +32,7 @@
 
 
 package beast.evolution.likelihood;
- 
+
 import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -1158,6 +1158,42 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         m_iCurrentStates= m_iStoredStates;
         m_iStoredStates = iTmp3;
     }
+
+	@Override
+	protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double[] fPseudoPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calcNodePsuedoRootPartials(double[] fInPseudoPartials, int iNode, double[] fOutPseudoPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calcPsuedoRootPartials(double[] fParentPseudoPartials, int iNode, double[] fPseudoPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void integratePartialsP(double[] fInPartials, double[] fProportions, double[] m_fRootPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void calculateLogLikelihoodsP(double[] fPartials, double[] fOutLogLikelihoods) {
+		// TODO Auto-generated method stub
+		
+	}
 
 //    @Override
 //    LikelihoodCore feelsGood() {return null;}

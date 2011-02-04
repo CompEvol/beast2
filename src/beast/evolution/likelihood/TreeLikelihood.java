@@ -116,7 +116,7 @@ sys	    0m0.164s  0m1.448s            0m1.328s 0m4.740s
 
 *
 */
- 
+
 package beast.evolution.likelihood;
 
 import beast.core.Description;
@@ -146,6 +146,7 @@ public class TreeLikelihood extends Distribution {
     public Input<SiteModel> m_pSiteModel = new Input<SiteModel>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     public Input<BranchRateModel.Base> m_pBranchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
+    public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
 
     /** calculation engine **/
     LikelihoodCore m_likelihoodCore;
@@ -153,8 +154,8 @@ public class TreeLikelihood extends Distribution {
     /** Plugin associated with inputs. Since none of the inputs are StateNodes, it
      * is safe to link to them only once, during initAndValidate.
      */
-    SubstitutionModel m_substitutionModel;
-    SiteModel m_siteModel;
+    SubstitutionModel.Base m_substitutionModel;
+    protected SiteModel m_siteModel;
     BranchRateModel.Base m_branchRateModel;
 
     /** flag to indicate the 
@@ -207,8 +208,8 @@ public class TreeLikelihood extends Distribution {
             //m_likelihoodCore = new BeerLikelihoodCoreJava4();
         	//m_likelihoodCore = new BeerLikelihoodCoreNative(4);
         } else {
-            //m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
-            m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
+            m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
+            //m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
         }
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
         initCore();
@@ -357,6 +358,7 @@ public class TreeLikelihood extends Distribution {
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
                 double branchLength = m_siteModel.getRateForCategory(i) * branchTime;
+                
                 m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
                 //m_substitutionModel.getPaddedTransitionProbabilities(branchLength, m_fProbabilities);
@@ -512,14 +514,18 @@ public class TreeLikelihood extends Distribution {
 
     @Override
     public void store() {
-        m_likelihoodCore.store();
+    	if (m_likelihoodCore != null) {
+    		m_likelihoodCore.store();
+    	}
         super.store();
         System.arraycopy(m_branchLengths, 0, m_StoredBranchLengths, 0, m_branchLengths.length);
     }
 
     @Override
     public void restore() {
-        m_likelihoodCore.restore();
+    	if (m_likelihoodCore != null) {
+    		m_likelihoodCore.restore();
+    	}
         super.restore();
         double [] tmp = m_branchLengths;
         m_branchLengths = m_StoredBranchLengths;

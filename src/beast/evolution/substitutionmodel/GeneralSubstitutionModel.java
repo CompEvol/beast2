@@ -26,6 +26,7 @@
 */
 package beast.evolution.substitutionmodel;
 
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Valuable;
@@ -57,6 +58,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         m_rateMatrix = new double[m_nStates][m_nStates];
         relativeRates = new double[m_rates.get().getDimension()];
         storedRelativeRates = new double[m_rates.get().getDimension()];
+        //q = new double[m_nStates][m_nStates];
     } // initAndValidate
 
     protected double[] relativeRates;
@@ -64,6 +66,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
     protected EigenSystem eigenSystem;
     
+    //private double q[][];
     protected EigenDecomposition eigenDecomposition;
     private EigenDecomposition storedEigenDecomposition;
 
@@ -166,10 +169,6 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 	} // setupRateMatrix
 
     
-    @Override
-    public EigenDecomposition getEigenDecomposition() {
-        return null;
-    }
 
     @Override
     public void store() {
@@ -202,5 +201,25 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         updateMatrix = true;
     	return true;
     }
+
     
+    
+    /**
+     * This function returns the Eigen vectors.
+     *
+     * @return the array
+     */
+    @Override
+    public EigenDecomposition getEigenDecomposition() {
+        synchronized (this) {
+            if (updateMatrix) {
+            	setupRelativeRates();
+                setupRateMatrix();
+                eigenDecomposition = eigenSystem.decomposeMatrix(m_rateMatrix);
+                updateMatrix = false;
+            }
+        }
+        return eigenDecomposition;
+    }    
+
 } // class GeneralSubstitutionModel

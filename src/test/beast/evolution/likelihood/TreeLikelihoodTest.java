@@ -1,5 +1,6 @@
 package test.beast.evolution.likelihood;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,17 @@ import beast.util.TreeParser;
  * So, it these tests succeed, then Beast II calculates the same for these simple models as Beast 1 and PAUP.
  * **/
 public class TreeLikelihoodTest extends TestCase {
-	final static double PRECISION = 1e-8;
+	final static double PRECISION = 1e-7;
+	
+	public TreeLikelihoodTest() {
+		super();
+		System.setProperty("java.only", "true");
+	}
+	
+	protected TreeLikelihood newTreeLikelihood() {
+		return new TreeLikelihood();
+	}
+	
 	
 	Alignment getAlignment() throws Exception {
 		List<Sequence>  sequences = new ArrayList<Sequence>();
@@ -60,7 +71,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
 		siteModel.init("1.0", 1, null, null, hky);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -87,7 +98,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
 		siteModel.init("1.0", 1, null, null, hky);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -114,7 +125,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
 		siteModel.init("1.0", 1, null, null, hky);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -142,11 +153,12 @@ public class TreeLikelihoodTest extends TestCase {
 //		siteModel.init(fMu, 4, nShape, fInvarProportion, hky, freqs);
 		siteModel.init("1.0", 4, "0.137064", "0.0", hky);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
+		System.err.println(fLogP - -1789.7593576610134);
 		assertEquals(fLogP, -1789.7593576610134, PRECISION);
 	}
 
@@ -169,7 +181,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
 		siteModel.init("1.0", 1, "0.137064", "0.701211", hky);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -195,7 +207,7 @@ public class TreeLikelihoodTest extends TestCase {
 //		RealParameter fInvarProportion = new RealParameter(0.486548, 0.0, 1000.0, 1);
 		siteModel.init("1.0", 4, "0.587649", "0.486548", hky);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -219,7 +231,7 @@ public class TreeLikelihoodTest extends TestCase {
 		SiteModel siteModel = new SiteModel();
 		siteModel.init("1.0", 1, null, null, gsm);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -242,7 +254,7 @@ public class TreeLikelihoodTest extends TestCase {
 		SiteModel siteModel = new SiteModel();
 		siteModel.init("1.0", 1, null, "0.5", gsm);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -265,7 +277,7 @@ public class TreeLikelihoodTest extends TestCase {
 		SiteModel siteModel = new SiteModel();
 		siteModel.init("1.0", 4, "0.5", null, gsm);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -288,7 +300,7 @@ public class TreeLikelihoodTest extends TestCase {
 		SiteModel siteModel = new SiteModel();
 		siteModel.init("1.0", 4, "0.5", "0.5", gsm);
 
-		TreeLikelihood likelihood = new TreeLikelihood();
+		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.init(data, tree, siteModel);
 
 		double fLogP = 0;
@@ -296,4 +308,4 @@ public class TreeLikelihoodTest extends TestCase {
 		assertEquals(fLogP, -1947.5829396144961, PRECISION);
 	}
 
-} // class TestTreeLikelihood
+} // class TreeLikelihoodTest

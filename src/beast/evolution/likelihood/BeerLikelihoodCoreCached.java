@@ -31,7 +31,7 @@
 package beast.evolution.likelihood;
 
 import java.util.Arrays;
- 
+
 
 public class BeerLikelihoodCoreCached extends LikelihoodCore {
 	int u, v, w, v1, v2;
@@ -981,6 +981,42 @@ public class BeerLikelihoodCoreCached extends LikelihoodCore {
         m_iCurrentPartials = m_iStoredPartials;
         m_iStoredPartials = iTmp2;
     }
+
+	@Override
+	protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double[] fPseudoPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calcNodePsuedoRootPartials(double[] fInPseudoPartials, int iNode, double[] fOutPseudoPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void calcPsuedoRootPartials(double[] fParentPseudoPartials, int iNode, double[] fPseudoPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void integratePartialsP(double[] fInPartials, double[] fProportions, double[] m_fRootPartials) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void calculateLogLikelihoodsP(double[] fPartials, double[] fOutLogLikelihoods) {
+		// TODO Auto-generated method stub
+		
+	}
 
 //	@Override
 //	LikelihoodCore feelsGood() {
