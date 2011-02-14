@@ -358,6 +358,7 @@ public class XMLParser {
         	i--;
         }
         if (i < 0) {
+        	i = children.getLength()-1;
         	while (i >= 0 && children.item(i).getNodeType() != Node.ELEMENT_NODE) {
         		i--;
         	}

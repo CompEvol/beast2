@@ -408,9 +408,13 @@ public class Beauti extends JTabbedPane {
 			
 			
 			PluginPanel.init();
+			
+			InputEditor.m_bExpertMode = true;
 	        BeautiInitDlg dlg = null;
 	        BeautiDoc doc = new BeautiDoc();
 	        dlg = new BeautiInitDlg(args, doc);
+			InputEditor.m_bExpertMode = false;
+
 	        doc.initialize(dlg.m_endState, dlg.m_sXML, dlg.m_sTemplateXML, dlg.m_sOutputFileName);
 	        //dlg.setVisible(true);
 	

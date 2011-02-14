@@ -122,7 +122,7 @@ public class Alignment extends Plugin {
      * 'A' as 0, 'C' as 1, 'G' as 2 and 'T' as 3. Unknown characters are mapped to the
      * length of the string, so a '-' with map "ACGT" is encoded as 4.*
      */
-    String getMap() {
+    public String getMap() {
         if (m_sDataType.get().equals(NUCLEOTIDE)) {
             return "ACGT";
         }
