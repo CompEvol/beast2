@@ -25,19 +25,15 @@
 
 package beast.evolution.likelihood;
 
-
 import beagle.*;
 import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * BeagleTreeLikelihoodModel - implements a Likelihood Function for sequences on a tree.
@@ -239,23 +235,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 }
             }
 
-//            if (patternList instanceof AscertainedSitePatterns) {
-//                ascertainedSitePatterns = true;
-//            }
-
-//            this.partialsRestrictions = partialsRestrictions;
-//            hasRestrictedPartials = false;
-//            hasRestrictedPartials = (partialsRestrictions != null);
-//            if (hasRestrictedPartials) {
-//                numRestrictedPartials = partialsRestrictions.size();
-//                updateRestrictedNodePartials = true;
-//                partialsMap = new Parameter[treeModel.getNodeCount()];
-//                partials = new double[m_nStateCount * m_nPatternCount * categoryCount];
-//            } else {
-//                numRestrictedPartials = 0;
-//                updateRestrictedNodePartials = false;
-//            }
-
+            if (m_data.get() instanceof AscertainedAlignment) {
+                ascertainedSitePatterns = true;
+            }
                 
             double [] fPatternWeights = new double[m_nPatternCount];
             for (int i = 0; i < m_nPatternCount; i++) {
@@ -280,7 +262,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             updateSubstitutionModel = true;
             updateSiteModel = true;
 
-//        hasInitialized = true;
     }
 
     private static List<Integer> parseSystemPropertyIntegerArray(String propertyName) {
@@ -318,18 +299,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
         return order;
     }
-
-//    public TreeModel getTreeModel() {
-//        return treeModel;
-//    }
-//
-//    public SiteRateModel getSiteRateModel() {
-//        return siteRateModel;
-//    }
-//
-//    public BranchRateModel getBranchRateModel() {
-//        return branchRateModel;
-//    }
 
     protected int getScaleBufferCount() {
         return internalNodeCount + 1;
@@ -417,72 +386,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 //        beagle.getTipStates(tipIndex, states);
 //    }
 
-    // **************************************************************
-    // ModelListener IMPLEMENTATION
-    // **************************************************************
-
-    /**
-     * Handles model changed events from the submodels.
-     */
-//    protected void handleModelChangedEvent(Model model, Object object, int index) {
-//
-//        if (model == treeModel) {
-//            if (object instanceof TreeModel.TreeChangedEvent) {
-//
-//                if (((TreeModel.TreeChangedEvent) object).isNodeChanged()) {
-//                    // If a node event occurs the node and its two child nodes
-//                    // are flagged for updating (this will result in everything
-//                    // above being updated as well. Node events occur when a node
-//                    // is added to a branch, removed from a branch or its height or
-//                    // rate changes.
-//                    updateNodeAndChildren(((TreeModel.TreeChangedEvent) object).getNode());
-//                    updateRestrictedNodePartials = true;
-//
-//                } else if (((TreeModel.TreeChangedEvent) object).isTreeChanged()) {
-//                    // Full tree events result in a complete updating of the tree likelihood
-//                    // This event type is now used for EmpiricalTreeDistributions.
-////                    System.err.println("Full tree update event - these events currently aren't used\n" +
-////                            "so either this is in error or a new feature is using them so remove this message.");
-//                    updateAllNodes();
-//                    updateRestrictedNodePartials = true;
-//                } else {
-//                    // Other event types are ignored (probably trait changes).
-//                    //System.err.println("Another tree event has occured (possibly a trait change).");
-//                }
-//            }
-//
-//        } else if (model == branchRateModel) {
-//            if (index == -1) {
-//                if (COUNT_TOTAL_OPERATIONS)
-//                    totalRateUpdateAllCount++;
-//                updateAllNodes();
-//            } else {
-//                if (COUNT_TOTAL_OPERATIONS)
-//                    totalRateUpdateSingleCount++;
-//                updateNode(treeModel.getNode(index));
-//            }
-//
-//        } else if (model == branchSubstitutionModel) {
-//
-//            updateSubstitutionModel = true;
-//            updateAllNodes();
-//getEigenDecomposition
-//        } else if (model == siteRateModel) {
-//
-//            updateSiteModel = true;
-//            updateAllNodes();
-//
-//        } else {
-//
-//            throw new RuntimeException("Unknown componentChangedEvent");
-//        }
-//
-//        super.handleModelChangedEvent(model, object, index);
-//    }
-
-    // **************************************************************
-    // Model IMPLEMENTATION
-    // **************************************************************
 
     /**
      * check state for changed variables and update temp results if necessary *
@@ -546,7 +449,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         m_StoredBranchLengths = tmp;
     }
 
-//    int marcCount = 0;
     // **************************************************************
     // Likelihood IMPLEMENTATION
     // **************************************************************
@@ -572,8 +474,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
 
         if (operations == null) {
-            operations = new int[numRestrictedPartials + 1][internalNodeCount * Beagle.OPERATION_TUPLE_SIZE];
-            operationCount = new int[numRestrictedPartials + 1];
+            operations = new int[1][internalNodeCount * Beagle.OPERATION_TUPLE_SIZE];
+            operationCount = new int[1];
         }
 
         recomputeScaleFactors = false;
@@ -602,13 +504,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
         operationListCount = 0;
 
-        if (hasRestrictedPartials) {
-            for (int i = 0; i <= numRestrictedPartials; i++) {
-                operationCount[i] = 0;
-            }
-        } else {
-            operationCount[0] = 0;
-        }
+        operationCount[0] = 0;
 
         final Node root = m_tree.get().getRoot();
         traverse(root, null, true);
@@ -662,16 +558,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         do {
 
-            if (hasRestrictedPartials) {
-                for (int i = 0; i <= numRestrictedPartials; i++) {
-                    beagle.updatePartials(operations[i], operationCount[i], Beagle.NONE);
-                    if (i < numRestrictedPartials) {
-//                        restrictNodePartials(restrictedIndices[i]);
-                    }
-                }
-            } else {
-                beagle.updatePartials(operations[0], operationCount[0], Beagle.NONE);
-            }
+        	beagle.updatePartials(operations[0], operationCount[0], Beagle.NONE);
 
             int rootIndex = partialBufferHelper.getOffsetIndex(root.getNr());
 
@@ -704,12 +591,12 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
             logL = sumLogLikelihoods[0];
 
-//            if (ascertainedSitePatterns) {
-//                // Need to correct for ascertainedSitePatterns
-//                beagle.getSiteLogLikelihoods(patternLogLikelihoods);
-//                logL = getAscertainmentCorrectedLogLikelihood((AscertainedSitePatterns) patternList,
-//                        patternLogLikelihoods, patternWeights);
-//            }
+            if (ascertainedSitePatterns) {
+                // Need to correct for ascertainedSitePatterns
+                beagle.getSiteLogLikelihoods(patternLogLikelihoods);
+                logL = getAscertainmentCorrectedLogLikelihood((AscertainedAlignment) m_data.get(),
+                        patternLogLikelihoods, m_data.get().m_nWeight);
+            }
 
             if (Double.isNaN(logL) || Double.isInfinite(logL)) {
                 everUnderflowed = true;
@@ -724,13 +611,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                         branchUpdateCount[i] = 0;
                     }
 
-                    if (hasRestrictedPartials) {
-                        for (int i = 0; i <= numRestrictedPartials; i++) {
-                            operationCount[i] = 0;
-                        }
-                    } else {
-                        operationCount[0] = 0;
-                    }
+                    operationCount[0] = 0;
 
                     // traverse again but without flipping partials indices as we
                     // just want to overwrite the last attempt. We will flip the
@@ -778,52 +659,16 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         beagle.setPartials(partialBufferHelper.getOffsetIndex(number), partials);
     }
 
-//    private void restrictNodePartials(int nodeIndex) {
-//
-//        Parameter restrictionParameter = partialsMap[nodeIndex];
-//        if (restrictionParameter == null) {
-//            return;
-//        }
-//
-//        getPartials(nodeIndex, partials);
-//
-//        double[] restriction = restrictionParameter.getParameterValues();
-//        final int partialsLengthPerCategory = m_nStateCount * m_nPatternCount;
-//        if (restriction.length == partialsLengthPerCategory) {
-//            for (int i = 0; i < categoryCount; i++) {
-//                componentwiseMultiply(partials, partialsLengthPerCategory * i, restriction, 0, partialsLengthPerCategory);
-//            }
-//        } else {
-//            componentwiseMultiply(partials, 0, restriction, 0, partialsLengthPerCategory * categoryCount);
-//        }
-//
-//        setPartials(nodeIndex, partials);
-//    }
-//
-//    private void componentwiseMultiply(double[] a, final int offsetA, double[] b, final int offsetB, final int length) {
-//        for (int i = 0; i < length; i++) {
-//            a[offsetA + i] *= b[offsetB + i];
-//        }
-//    }
-//
-//    private void computeNodeToRestrictionMap() {
-//        Arrays.fill(partialsMap, null);
-//        for (Set<String> taxonNames : partialsRestrictions.keySet()) {
-//            NodeRef node = Tree.Utils.getCommonAncestorNode(treeModel, taxonNames);
-//            partialsMap[node.getNumber()] = partialsRestrictions.get(taxonNames);
-//        }
-//    }
-//
-//    private double getAscertainmentCorrectedLogLikelihood(AscertainedSitePatterns patternList,
-//                                                          double[] patternLogLikelihoods,
-//                                                          double[] patternWeights) {
-//        double logL = 0.0;
-//        double ascertainmentCorrection = patternList.getAscertainmentCorrection(patternLogLikelihoods);
-//        for (int i = 0; i < m_nPatternCount; i++) {
-//            logL += (patternLogLikelihoods[i] - ascertainmentCorrection) * patternWeights[i];
-//        }
-//        return logL;
-//    }
+    private double getAscertainmentCorrectedLogLikelihood(AscertainedAlignment patternList,
+                                                          double[] patternLogLikelihoods,
+                                                          int[] patternWeights) {
+        double logL = 0.0;
+        double ascertainmentCorrection = patternList.getAscertainmentCorrection(patternLogLikelihoods);
+        for (int i = 0; i < m_nPatternCount; i++) {
+            logL += (patternLogLikelihoods[i] - ascertainmentCorrection) * patternWeights[i];
+        }
+        return logL;
+    }
 
     /**
      * Traverse the tree calculating partial likelihoods.
@@ -936,17 +781,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
                 update |= (update1|update2);
 
-//                if (hasRestrictedPartials) {
-//                    // Test if this set of partials should be restricted
-//                    if (updateRestrictedNodePartials) {
-//                        // Recompute map
-//                        computeNodeToRestrictionMap();
-//                        updateRestrictedNodePartials = false;
-//                    }
-//                    if (partialsMap[nodeNum] != null) {
-//
-//                    }
-//                }
             }
         }
 
@@ -968,14 +802,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private int[][] operations;
     private int operationListCount;
     private int[] operationCount;
-    private static final boolean hasRestrictedPartials = false;
-
-    private final int numRestrictedPartials = 0;
-//    private final Map<Set<String>, Parameter> partialsRestrictions;
-//    private Parameter[] partialsMap;
-    private double[] partials;
-//    private boolean updateRestrictedNodePartials;
-//    private int[] restrictedIndices;
 
     protected BufferIndexHelper partialBufferHelper;
     private /*final*/ BufferIndexHelper eigenBufferHelper;
@@ -993,21 +819,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private boolean everUnderflowed = false;
     private int rescalingCount = 0;
     private int rescalingCountInner = 0;
-//    private int storedRescalingCount;
-
-//    /**
-//     * the branch-site model for these sites
-//     */
-//    protected final BranchSubstitutionModel branchSubstitutionModel;
-//
-//    /**
-//     * the site model for these sites
-//     */
-//    protected final SiteRateModel siteRateModel;
-//    /**
-//     * the branch rate model
-//     */
-//    protected final BranchRateModel branchRateModel;
 
     /**
      * the pattern likelihoods
@@ -1051,7 +862,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      * Flag to specify if site patterns are acertained
      */
 
-//    private boolean ascertainedSitePatterns = false;
+    private boolean ascertainedSitePatterns = false;
 
     protected class BufferIndexHelper {
         /**

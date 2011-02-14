@@ -11,7 +11,7 @@ package beagle;
  * This interface mirrors the beagle.h API but it for a single instance only.
  * It is intended to be used by JNI wrappers of the BEAGLE library and for
  * Java implementations for testing purposes. BeagleFactory handles the creation
- * of specific istances.
+ * of specific instances.
  *
  * @author Andrew Rambaut
  * @author Marc A. Suchard

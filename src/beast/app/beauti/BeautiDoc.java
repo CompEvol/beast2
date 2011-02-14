@@ -29,8 +29,8 @@ import beast.util.XMLProducer;
 
 @Description("Beauti document in doc-view pattern, not useful in models")
 public class BeautiDoc extends Plugin {
-	public Input<List<Alignment>> m_alignments = new Input<List<Alignment>>("alignment", "list of alignments", new ArrayList<Alignment>(), Validate.REQUIRED);
-	public Input<List<TreeLikelihood>> m_likelihoods = new Input<List<TreeLikelihood>>("treelikelihood", "tree likelihood", new ArrayList<TreeLikelihood>());
+	public Input<List<Alignment>> m_alignments = new Input<List<Alignment>>("alignment", "list of alignments or partitions", new ArrayList<Alignment>(), Validate.REQUIRED);
+	public Input<List<TreeLikelihood>> m_likelihoods = new Input<List<TreeLikelihood>>("treelikelihood", "list of tree likelihoods, at least one per alignment", new ArrayList<TreeLikelihood>());
 	
 //	public Input<Plugin> m_taxonset = new Input<Plugin>("taxonset", "specifies set of taxa"); 
 //	public Input<List<TraitSet>> m_tipdates = new Input<List<TraitSet>>("tipdates", "specify dates of taxa", new ArrayList<TraitSet>()); 
