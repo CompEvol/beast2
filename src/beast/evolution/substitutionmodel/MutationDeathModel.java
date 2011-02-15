@@ -4,6 +4,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
 
 @Description("Mutation Death substitution model, can be used as Stochastic Dollo model.")
 public class MutationDeathModel extends SubstitutionModel.Base {
@@ -27,7 +28,9 @@ public class MutationDeathModel extends SubstitutionModel.Base {
 	}
 
 	@Override
-    public void getTransitionProbabilities(double distance, double[] matrix) {
+    //public void getTransitionProbabilities(double distance, double[] matrix) {
+    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
+      	double distance = (fStartTime - fEndTime) * fRate;
         int i, j;
         // assuming that expected number of changes in CTMCModel is 1 per unit time
         // we are contributing s*deathRate number of changes per unit of time

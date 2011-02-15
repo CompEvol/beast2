@@ -165,17 +165,17 @@ public class SequenceSimulator extends beast.core.Runnable {
     void getTransitionProbabilities(Tree tree, Node node, int rateCategory, double[] probs) {
 
         Node parent = node.getParent();
-
-        final double branchRate = (m_branchRateModel == null ? 1.0 : m_branchRateModel.getRateForBranch(node));
-
+        double branchRate = (m_branchRateModel == null ? 1.0 : m_branchRateModel.getRateForBranch(node));
+        branchRate *= m_siteModel.getRateForCategory(rateCategory);
+        
         // Get the operational time of the branch
-        final double branchTime = branchRate * (parent.getHeight() - node.getHeight());
+        //final double branchTime = branchRate * (parent.getHeight() - node.getHeight());
 
-        if (branchTime < 0.0) {
-            throw new RuntimeException("Negative branch length: " + branchTime);
-        }
+        //if (branchTime < 0.0) {
+        //    throw new RuntimeException("Negative branch length: " + branchTime);
+        //}
 
-        double branchLength = m_siteModel.getRateForCategory(rateCategory) * branchTime;
+        //double branchLength = m_siteModel.getRateForCategory(rateCategory) * branchTime;
 
 //        // TODO Hack until SiteRateModel issue is resolved
 //        if (m_siteModel.getSubstitutionModel() instanceof SubstitutionEpochModel) {
@@ -183,7 +183,9 @@ public class SequenceSimulator extends beast.core.Runnable {
 //                    tree.getNodeHeight(parent),branchLength, probs);
 //            return;
 //        }
-        m_siteModel.getSubstitutionModel().getTransitionProbabilities(branchLength, probs);
+        //m_siteModel.getSubstitutionModel().getTransitionProbabilities(branchLength, probs);
+        m_siteModel.getSubstitutionModel().getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), branchRate, probs);
+        
     } // getTransitionProbabilities
 
 

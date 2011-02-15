@@ -27,25 +27,37 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.*;
 import beast.core.Input.Validate;
+import beast.evolution.tree.Node;
 
 
 @Description("Specifies transition probability matrix for a given distance")
 public interface SubstitutionModel {
 
-    /**
+	/**
      * get the complete transition probability matrix for the given distance
-     *
-     * @param substitutions the expected number of substitutions
+     * determined as (fStartTime-fEndTime)*fRate
+	 * @param node tree node for which to calculate the probabilities
+	 * @param fStartTime
+	 * @param fEndTime      we assume start time is larger than end time
+	 * @param fRate         rate, includes gamma rates and branch rates
      * @param matrix        an array to store the matrix
+	 */
+	void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix);
+
+    /** 
+     * @return instantaneous rate matrix Q, where Q is flattened into an array
      */
-    void getTransitionProbabilities(double substitutions, double[] matrix);
+    double [] getRateMatrix();
     
     /** return frequencies for root distribution **/
     double [] getFrequencies();
 
     /**
      * This function returns the Eigen decomposition of the instantaneous rate matrix if available.
-     *
+     * Such Eigen decomposition may not be available because the substitution model changes over time,
+     * for example, when one HKY model applies for some time t less than threshold time T while a GTR
+     * model applies when t >= T.
+     *  
      * @return the EigenDecomposition, null if not available
      */
     EigenDecomposition getEigenDecomposition();
@@ -68,6 +80,9 @@ public interface SubstitutionModel {
             return false;
         }
 
+        public double [] getRateMatrix() {
+        	return null;
+        }
     
     
     }

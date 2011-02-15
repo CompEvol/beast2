@@ -170,8 +170,8 @@ public class Alignment extends Plugin {
         return m_nMaxStateCount;
     }
 
-    public int getPatternIndex(int id) {
-        return m_nPatternIndex[id];
+    public int getPatternIndex(int iSite) {
+        return m_nPatternIndex[iSite];
     }
 
     public int getSiteCount() {
@@ -218,16 +218,14 @@ public class Alignment extends Plugin {
         int nPatterns = 1;
         int[] weights = new int[nSites];
         weights[0] = 1;
-        m_nPatternIndex = new int[nSites];
-        m_nPatternIndex[0] = 0;
         for (int i = 1; i < nSites; i++) {
             if (comparator.compare(nData[i - 1], nData[i]) != 0) {
                 nPatterns++;
                 nData[nPatterns - 1] = nData[i];
             }
             weights[nPatterns - 1]++;
-            m_nPatternIndex[i] = nPatterns - 1;
         }
+        
         // reserve memory for patterns
         m_nWeight = new int[nPatterns];
         m_nPatterns = new int[nPatterns][nTaxa];
@@ -236,46 +234,16 @@ public class Alignment extends Plugin {
             m_nPatterns[i] = nData[i];
         }
 
+        // find patterns for the sites
+        m_nPatternIndex = new int[nSites];
+        for (int i = 0; i < nSites; i++) {
+        	int [] sites = new int[nTaxa];
+            for (int j = 0; j < nTaxa; j++) {
+            	sites[j] = m_counts.get(j).get(i);
+            }
+            m_nPatternIndex[i] = Arrays.binarySearch(m_nPatterns, sites, comparator);
+        }
 
-//		// find unique patterns
-//		int nSites = m_counts.get(0).size();
-//		int [] weights = new int[nSites];
-//		for (int i = 0; i < weights.length; i++) {
-//			int j = 0;
-//			for (j = 0; j < i; j++) {
-//				if (isEqual(i,j)) {
-//					break;
-//				}
-//			}
-//			weights[j]++;
-//		}
-//		// count nr of patterns
-//		int nPatterns = 0;
-//		for (int i = 0; i < weights.length; i++) {
-//			if (weights[i]>0) {
-//				nPatterns++;
-//			}
-//		}
-//		// reserve memory for patterns
-//		m_nWeight = new int[nPatterns];
-//		m_nPatterns = new int[nPatterns][nTaxa];
-//		m_nPatternIndex = new int[nSites];
-//
-//		nPatterns = 0;
-//		int iSite = 0;
-//		// instantiate patterns
-//		for (int i = 0; i < nSites; i++) {
-//			if (weights[i]>0) {
-//				m_nWeight[nPatterns] = weights[i];
-//				for (int j = 0; j < nTaxa; j++) {
-//					m_nPatterns[nPatterns][j] = m_counts.get(j).get(i);
-//				}
-//				for (int k = 0; k < weights[i]; k++) {
-//					m_nPatternIndex[iSite++] = nPatterns;
-//				}
-//				nPatterns++;
-//			}
-//		}
         // determine maximum state count
         // Usually, the state count is equal for all sites,
         // though for SnAP analysis, this is typically not the case.

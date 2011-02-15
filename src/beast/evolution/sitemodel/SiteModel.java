@@ -198,9 +198,9 @@ public class SiteModel extends CalculationNode {
      * @param substitutions the expected number of substitutions
      * @param matrix        an array to store the matrix
      */
-    public void getTransitionProbabilities(double substitutions, double[] matrix) {
-        m_pSubstModel.get().getTransitionProbabilities(substitutions, matrix);
-    }
+//    public void getTransitionProbabilities(double substitutions, double[] matrix) {
+//        m_pSubstModel.get().getTransitionProbabilities(substitutions, matrix);
+//    }
 
     /**
      * Get the expected proportion of sites in this category.

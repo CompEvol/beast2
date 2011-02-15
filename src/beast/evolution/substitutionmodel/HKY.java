@@ -29,6 +29,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
 
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
 @Citation("Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. " +
@@ -49,7 +50,9 @@ public class HKY extends SubstitutionModel.Base {
     }
 
     @Override
-    public void getTransitionProbabilities(double distance, double[] matrix) {
+    //public void getTransitionProbabilities(double distance, double[] matrix) {
+    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
+      	double distance = (fStartTime - fEndTime) * fRate;
 
         if (updateMatrix) {
             setupMatrix();

@@ -78,23 +78,23 @@ public class BeagleFactory {
             }
         }
 
-//        if (stateCount == 4) {
-//            return new FourStateBeagleImpl(
-//                    tipCount,
-//                    partialsBufferCount,
-//                    compactBufferCount,
-//                    patternCount,
-//                    eigenBufferCount,
-//                    matrixBufferCount,
-//                    categoryCount,
-//                    scaleBufferCount
-//            );
-//        }
-
         if (!forceJava) {
             throw new RuntimeException("No acceptable BEAGLE library plugins found. " +
                     "Make sure that BEAGLE is properly installed or try changing resource requirements.");
         }
+
+//      if (stateCount == 4) {
+//      return new FourStateBeagleImpl(
+//              tipCount,
+//              partialsBufferCount,
+//              compactBufferCount,
+//              patternCount,
+//              eigenBufferCount,
+//              matrixBufferCount,
+//              categoryCount,
+//              scaleBufferCount
+//      );
+//  }
 
         return new GeneralBeagleImpl(tipCount,
                 partialsBufferCount,

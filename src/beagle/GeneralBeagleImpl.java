@@ -645,6 +645,7 @@ public class GeneralBeagleImpl implements Beagle {
 
         u = 0;
         outSumLogLikelihood[0] = 0.0;
+        double [] patternLogLikelihood = new double[patternCount];
         for (int k = 0; k < patternCount; k++) {
 
             double sum = 0.0;
@@ -653,8 +654,8 @@ public class GeneralBeagleImpl implements Beagle {
                 sum += stateFrequencies[stateFrequenciesIndices[0]][i] * tmpPartials[u];
                 u++;
             }
-
-            outSumLogLikelihood[0] += Math.log(sum) * patternWeights[k];
+            patternLogLikelihood[k] = Math.log(sum);
+            outSumLogLikelihood[0] += patternLogLikelihood[k] * patternWeights[k];
         }
 
         if (SCALING) {

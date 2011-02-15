@@ -31,6 +31,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Valuable;
 import beast.core.Input.Validate;
+import beast.evolution.tree.Node;
 
 @Description("Specifies transition probability matrix with no restrictions on the rates other " +
         "than that one of the is equal to one and the others are specified relative to " +
@@ -74,7 +75,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     private boolean storedUpdateMatrix = true;
 
     @Override
-    public void getTransitionProbabilities(double distance, double[] matrix) {
+    //public void getTransitionProbabilities(, double[] matrix) {
+    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
+    	double distance = (fStartTime - fEndTime) * fRate;
+    	
         int i, j, k;
         double temp;
 

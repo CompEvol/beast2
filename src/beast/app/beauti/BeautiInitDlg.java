@@ -22,7 +22,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
-import javax.swing.JSeparator;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
