@@ -271,7 +271,7 @@ public class BeautiDoc extends Plugin {
 		PluginPanel.addPluginToMap(m_mcmc.get());
 
 		for (Plugin plugin : PluginPanel.g_plugins.values()) {
-			for (Input input : plugin.listInputs()) {
+			for (@SuppressWarnings("rawtypes") Input input : plugin.listInputs()) {
 				if (input.getType() ==  TaxonSet.class && input.get() instanceof List) {
 					m_taxonset = input;
 				}

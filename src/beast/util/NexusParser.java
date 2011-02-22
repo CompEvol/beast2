@@ -127,8 +127,8 @@ public class NexusParser {
 					alignment.m_sDataType.setValue("nucleotide", alignment);
 					nTotalCount = 4;
 				}
-				if (sDataType.toLowerCase().equals("protein")) {
-					alignment.m_sDataType.setValue("protein", alignment);
+				if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
+					alignment.m_sDataType.setValue("aminoacid", alignment);
 					nTotalCount = 20;
 				}
 				String sMissingChar = getAttValue("missing", sStr);
@@ -167,7 +167,7 @@ public class NexusParser {
 			String sData = seqMap.get(sTaxon);
 			
 			if (sData.length() != nChar) {
-				throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length());
+				throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
 			}
 			sData = sData.replace(sMissing.charAt(0),'?');
 			sData = sData.replace(sGap.charAt(0),'_');

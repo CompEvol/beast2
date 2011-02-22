@@ -1,9 +1,11 @@
 package test.beast.math.distributions;
 
+
 import org.junit.Test;
 
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.LogNormalDistributionModel;
+import beast.util.XMLParser;
 
 import junit.framework.TestCase;
 
@@ -34,20 +36,46 @@ public class LogNormalDistributionModelTest extends TestCase {
         }
 	}
 
+
 	@Test
 	public void testCalcLogP() throws Exception {
         LogNormalDistributionModel logNormal = new LogNormalDistributionModel();
-        logNormal.init("1.0","2.0");
 	    logNormal.m_bMeanInRealSpaceInput.setValue("true", logNormal);
 	    logNormal.m_offset.setValue("1200", logNormal);
 	    logNormal.MParameter.setValue("2000", logNormal);
 	    logNormal.SParameter.setValue("0.6", logNormal);
 	    logNormal.initAndValidate();
 	    RealParameter p = new RealParameter("2952.6747000000014");
+   
 	    double f0 = logNormal.calcLogP(p);
 	    assertEquals(-7.880210654973873, f0 , 1e-10);
 	}
 
+	@Test
+	public void testCalcLogP2() throws Exception {
+		// does the same as testCalcLogP(), but with by constructing object through XML
+	    String sXML = "<input spec='beast.math.distributions.LogNormalDistributionModel' " +
+	    		"offset='1200' " +
+	    		"M='2000' " +
+	    		"S='0.6' " +
+	    		"meanInRealSpace='true'/>";
+	    RealParameter p = new RealParameter("2952.6747000000014");
+	    XMLParser parser = new XMLParser();
+	    LogNormalDistributionModel logNormal = (LogNormalDistributionModel)	parser.parseBareFragment(sXML, true);
+	    
+	    double f0 = logNormal.calcLogP(p);
+	    assertEquals(-7.880210654973873, f0 , 1e-10);
+	}
 
+	@Test
+	public void testCalcLogP3() throws Exception {
+		// does the same as testCalcLogP(), but with by constructing object through init
+        LogNormalDistributionModel logNormal = new LogNormalDistributionModel();
+        logNormal.init("2000","0.6",true,"1200");
+	    RealParameter p = new RealParameter("2952.6747000000014");
+	    
+	    double f0 = logNormal.calcLogP(p);
+	    assertEquals(-7.880210654973873, f0 , 1e-10);
+	}
 }
 

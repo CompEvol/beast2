@@ -226,7 +226,7 @@ abstract public class Plugin {
         
         
         String sInputNames = " "; // <- space here to prevent error in .substring below
-        for (Input input : listInputs()) {
+        for (Input<?> input : listInputs()) {
         	sInputNames += input.getName() + ",";
         }
         throw new Exception("This plugin (" + (this.getID()==null? this.getClass().getName(): this.getID()) + ") has no input with name " + sName +". " +

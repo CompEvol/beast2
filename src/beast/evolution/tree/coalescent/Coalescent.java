@@ -71,7 +71,7 @@ public class Coalescent extends TreePrior {
      * @param popSizeFunction the population size function
      * @return the log likelihood of the intervals given the population size function
      */
-    public static double calculateLogLikelihood(IntervalList intervals, PopulationFunction popSizeFunction) {
+    public double calculateLogLikelihood(IntervalList intervals, PopulationFunction popSizeFunction) {
         return calculateLogLikelihood(intervals, popSizeFunction, 0.0);
     }
 
@@ -85,7 +85,7 @@ public class Coalescent extends TreePrior {
      *                        any non-zero intervals are smaller than this
      * @return the log likelihood of the intervals given the population size function
      */
-    public static double calculateLogLikelihood(IntervalList intervals, PopulationFunction popSizeFunction, double threshold) {
+    public double calculateLogLikelihood(IntervalList intervals, PopulationFunction popSizeFunction, double threshold) {
 
         double logL = 0.0;
 

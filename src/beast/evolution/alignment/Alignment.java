@@ -92,7 +92,7 @@ public class Alignment extends Plugin {
     @Override
     public void initAndValidate() throws Exception {
         if( m_sDataType == null ) {
-            throw new Exception("Input 'dataType' must be specifie");
+            throw new Exception("Input 'dataType' must be specified");
         }
         // grab data from child sequences
         for (Sequence seq : m_pSequences.get()) {
