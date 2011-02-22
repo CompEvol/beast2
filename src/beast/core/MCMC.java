@@ -148,15 +148,16 @@ public class MCMC extends Runnable {
 
     @Override
     public void run() throws Exception {
-        // initialises log so that log file headers are written, etc.
-        for (Logger log : m_loggers.get()) {
-            log.init();
-        }
     	// set up state (again). Other plugins may have manipulated the
     	// StateNodes, e.g. set up bounds or dimensions
     	state.initAndValidate();
     	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile);
+
+        // initialises log so that log file headers are written, etc.
+        for (Logger log : m_loggers.get()) {
+            log.init();
+        }
         int nBurnIn = m_oBurnIn.get();
         int nChainLength = m_oChainLength.get();
         if (m_bRestoreFromFile) {

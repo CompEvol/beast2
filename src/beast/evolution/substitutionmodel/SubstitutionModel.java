@@ -46,6 +46,8 @@ public interface SubstitutionModel {
 
     /** 
      * @return instantaneous rate matrix Q, where Q is flattened into an array
+     * This is a square matrix, where rows add to zero, or null when no rate
+     * matrix is available.
      */
     double [] getRateMatrix();
     
@@ -76,10 +78,12 @@ public interface SubstitutionModel {
     		return frequencies.get().getFreqs();
     	}
 
+        @Override
         public boolean canReturnComplexDiagonalization() {
             return false;
         }
 
+        @Override
         public double [] getRateMatrix() {
         	return null;
         }
