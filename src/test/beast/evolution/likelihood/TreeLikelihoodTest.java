@@ -72,7 +72,8 @@ public class TreeLikelihoodTest extends TestCase {
 	
 	Tree getTree(Alignment data) throws Exception {
 		TreeParser tree = new TreeParser();
-		tree.init(data, "((((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035,gorilla:0.036038):0.033087000000000005,orangutan:0.069125):0.030456999999999998,siamang:0.099582);");
+		tree.initByName("taxa", data, 
+				        "newick","((((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035,gorilla:0.036038):0.033087000000000005,orangutan:0.069125):0.030456999999999998,siamang:0.099582);");
 		return tree;
 	}
 
@@ -84,20 +85,18 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data, false);
+		freqs.initByName("data", data, 
+						 "estimate", false);
 
 		HKY hky = new HKY();
-		hky.init("1.0", freqs);
+		hky.initByName("kappa", "1.0", 
+				       "frequencies",freqs);
 
 		SiteModel siteModel = new SiteModel();
-//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-//		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
-//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, null, null, hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", hky);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -111,16 +110,17 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data, false);
+		freqs.initByName("data", data, 
+				 "estimate", false);
 
 		HKY hky = new HKY();
-		hky.init("1.0", freqs);
+		hky.initByName("kappa", "1.0", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 1, null, null, hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", hky);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -135,20 +135,17 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data, false);
+		freqs.initByName("data", data, 
+				 "estimate", false);
 
 		HKY hky = new HKY();
-		hky.init("27.402591", freqs);
+		hky.initByName("kappa", "27.40259", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-//		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
-//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, null, null, hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", hky);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -162,20 +159,16 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		HKY hky = new HKY();
-		hky.init("29.739445", freqs);
+		hky.initByName("kappa", "29.739445", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-//		RealParameter nShape = new RealParameter(0.5, 0.0, 1000.0, 1);
-//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, null, null, hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", hky);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -190,20 +183,19 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		HKY hky = new HKY();
-		hky.init("38.82974", freqs);
+		hky.initByName("kappa", "38.82974", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-//		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
-//		RealParameter fInvarProportion = new RealParameter(0.0, 0.0, 1000.0, 1);
-//		siteModel.init(fMu, 4, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 4, "0.137064", "0.0", hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 4,
+				"shape", "0.137064", 
+				"proportionInvariant", "0.0",
+				"substModel", hky);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -218,20 +210,19 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		HKY hky = new HKY();
-		hky.init("38.564672", freqs);
+		hky.initByName("kappa", "38.564672", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-//		RealParameter nShape = new RealParameter(0.137064, 0.0, 1000.0, 1);
-//		RealParameter fInvarProportion = new RealParameter(0.701211, 0.0, 1000.0, 1);
-//		siteModel.init(fMu, 1, nShape, fInvarProportion, hky, freqs);
-		siteModel.init("1.0", 1, "0.137064", "0.701211", hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1,
+				"shape", "0.137064", 
+				"proportionInvariant", "0.701211",
+				"substModel", hky);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -245,19 +236,19 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		HKY hky = new HKY();
-		hky.init("39.464538", freqs);
+		hky.initByName("kappa", "39.464538", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-//		RealParameter fMu = new RealParameter(1.0,0.0,1000.0,1);
-//		RealParameter nShape = new RealParameter(0.587649, 0.0, 1000.0, 1);
-//		RealParameter fInvarProportion = new RealParameter(0.486548, 0.0, 1000.0, 1);
-		siteModel.init("1.0", 4, "0.587649", "0.486548", hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 4,
+				"shape", "0.587649", 
+				"proportionInvariant", "0.486548",
+				"substModel", hky);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -272,16 +263,17 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
-		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+		gsm.initByName("rates", "1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 1, null, null, gsm);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1,
+				"substModel", gsm);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -295,16 +287,19 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
-		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+		gsm.initByName("rates", "1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 1, null, "0.5", gsm);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1,
+				"proportionInvariant", "0.5",
+				"substModel", gsm);
+		//siteModel.init("1.0", 1, null, "0.5", gsm);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -318,16 +313,18 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
-		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+		gsm.initByName("rates", "1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 4, "0.5", null, gsm);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 4,
+				"shape", "0.5", 
+				"substModel", gsm);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();
@@ -341,16 +338,19 @@ public class TreeLikelihoodTest extends TestCase {
 		Tree tree = getTree(data);
 		
 		Frequencies freqs = new Frequencies();
-		freqs.init(data);
+		freqs.initByName("data", data); 
 
 		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
-		gsm.init("1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", freqs);
+		gsm.initByName("rates", "1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", "frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
-		siteModel.init("1.0", 4, "0.5", "0.5", gsm);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 4,
+				"shape", "0.5", 
+				"proportionInvariant", "0.5",
+				"substModel", gsm);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
-		likelihood.init(data, tree, siteModel);
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
 
 		double fLogP = 0;
 		fLogP = likelihood.calculateLogP();

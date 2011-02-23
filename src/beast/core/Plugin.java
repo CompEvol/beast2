@@ -56,8 +56,29 @@ abstract public class Plugin {
 			inputs.get(i++).setValue(object, this);
 		}
 		initAndValidate();
-	} // c'tor
+	} // init
 	
+	/* Utility for testing purposes
+	 * The arguments are alternating input names and values,
+	 * and values are assigned to the input with the particular name.
+	 * For example initByName("kappa", 2.0, "lambda", true)
+	 * assigns 2 to input kappa and true to input lambda.
+	 * After assigning inputs, initAndValidate() is called.
+	 */
+	public void initByName(Object...objects) throws Exception {
+		if (objects.length % 2 == 1) {
+			throw new Exception("Expected even number of arguments, name-value pairs");
+		}
+		for (int i = 0; i < objects.length; i+=2) {
+			if (objects[i] instanceof String) {
+				String sName = (String) objects[i];
+				setInputValue(sName, objects[i+1]);
+			} else {
+				throw new Exception("Expected a String in " + i + "th argument ");
+			}
+		}
+		initAndValidate();
+	} // initByName
 	
     // identifiable
     protected String m_sID;

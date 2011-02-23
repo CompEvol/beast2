@@ -117,15 +117,6 @@
             <operator id="categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
         </plate>
 
-        <logger logEvery="10000">
-	        <model idref='posterior'/>
-            <log idref="likelihood"/>
-      	    <ESS spec='ESS' name='log' arg="@likelihood"/>
-            <plate var='n' range='#alignments'>
-                <log idref='$(n).hky.kappa'/>
-    	    <ESS spec='ESS' name='log' arg="@$(n).hky.kappa"/>
-            </plate>
-        </logger>
         <logger logEvery="10000" fileName="$(n).$(seed).log">
 	        <model idref='posterior'/>
             <log idref="likelihood"/>
@@ -139,6 +130,15 @@
                 <log idref="$(n).tree"/>
             </logger>
         </plate>
+        <logger logEvery="10000">
+	        <model idref='posterior'/>
+            <log idref="likelihood"/>
+      	    <ESS spec='ESS' name='log' arg="@likelihood"/>
+            <plate var='n' range='#alignments'>
+                <log idref='$(n).hky.kappa'/>
+    	    <ESS spec='ESS' name='log' arg="@$(n).hky.kappa"/>
+            </plate>
+        </logger>
     </run>
 
 </beast>
