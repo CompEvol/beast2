@@ -31,9 +31,9 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
-import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.SubstitutionModel;
+import beast.evolution.tree.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,16 +122,6 @@ public class SiteModel extends CalculationNode {
         // we only get here if something is dirty in its inputs
         ratesKnown = false;
         return true;
-//        if (muParameter.isDirty()) {
-//            ratesKnown = false;
-//        }
-//        if (muParameter.isDirty()) {
-//            ratesKnown = false;
-//        }
-//        if (muParameter.isDirty()) {
-//            ratesKnown = false;
-//        }
-//        return m_pSubstModel.isDirty() || !ratesKnown;
     }
 
 
@@ -151,11 +141,11 @@ public class SiteModel extends CalculationNode {
         throw new IllegalArgumentException("Integrating across categories");
     }
 
-    public double getRateForCategory(int category) {
+    public double getRateForCategory(int category, Node node) {
         //synchronized (this) 
         {
             if (!ratesKnown) {
-                calculateCategoryRates();
+                calculateCategoryRates(node);
             }
         }
 
@@ -165,11 +155,16 @@ public class SiteModel extends CalculationNode {
         return categoryRates[category] * mu;
     }
 
-    public double[] getCategoryRates() {
+    
+    /** return category rates
+     * @param node rates to which the rates apply. Typically, the rates will be uniform
+     * throughout the tree and the node argument is ignored.
+     */
+    public double[] getCategoryRates(Node node) {
         //synchronized (this) 
-        {   
+        {
             if (!ratesKnown) {
-                calculateCategoryRates();
+                calculateCategoryRates(node);
             }
         }
 
@@ -193,26 +188,17 @@ public class SiteModel extends CalculationNode {
     }
 
     /**
-     * get the complete transition probability matrix for the given distance
-     *
-     * @param substitutions the expected number of substitutions
-     * @param matrix        an array to store the matrix
-     */
-//    public void getTransitionProbabilities(double substitutions, double[] matrix) {
-//        m_pSubstModel.get().getTransitionProbabilities(substitutions, matrix);
-//    }
-
-    /**
      * Get the expected proportion of sites in this category.
-     *
      * @param category the category number
+     * @param node node to which the proportions apply. Typically, proportions
+     * will be uniform throughout the tree and this argument is ignored.
      * @return the proportion.
      */
-    public double getProportionForCategory(int category) {
+    public double getProportionForCategory(int category, Node node) {
         //synchronized (this) 
         {
             if (!ratesKnown) {
-                calculateCategoryRates();
+                calculateCategoryRates(node);
             }
         }
 
@@ -224,11 +210,11 @@ public class SiteModel extends CalculationNode {
      *
      * @return an array of the proportion.
      */
-    public double[] getCategoryProportions() {
+    public double[] getCategoryProportions(Node node) {
         //synchronized (this) 
         {
             if (!ratesKnown) {
-                calculateCategoryRates();
+                calculateCategoryRates(node);
             }
         }
 
@@ -239,7 +225,7 @@ public class SiteModel extends CalculationNode {
      * discretization of gamma distribution with equal proportions in each
      * category
      */
-    protected void calculateCategoryRates() {
+    protected void calculateCategoryRates(Node node) {
         double propVariable = 1.0;
         int cat = 0;
 

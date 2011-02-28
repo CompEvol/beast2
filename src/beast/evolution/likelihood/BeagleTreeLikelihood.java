@@ -401,6 +401,10 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             m_nHasDirt = Tree.IS_FILTHY;
             return true;
         }
+        if (m_data.get().isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_FILTHY;
+            return true;
+        }
         if (m_siteModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_DIRTY;
             return true;
@@ -526,7 +530,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
 
         if (updateSiteModel) {
-            double[] categoryRates = m_siteModel.getCategoryRates();
+            double[] categoryRates = m_siteModel.getCategoryRates(null);
             beagle.setCategoryRates(categoryRates);
         }
 
@@ -562,7 +566,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
             int rootIndex = partialBufferHelper.getOffsetIndex(root.getNr());
 
-            double[] categoryWeights = m_siteModel.getCategoryProportions();
+            double[] categoryWeights = m_siteModel.getCategoryProportions(null);
             double[] frequencies = m_substitutionModel.getFrequencies();
 
             int cumulateScaleBufferIndex = Beagle.NONE;
@@ -595,7 +599,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 // Need to correct for ascertainedSitePatterns
                 beagle.getSiteLogLikelihoods(patternLogLikelihoods);
                 logL = getAscertainmentCorrectedLogLikelihood((AscertainedAlignment) m_data.get(),
-                        patternLogLikelihoods, m_data.get().m_nWeight);
+                        patternLogLikelihoods, m_data.get().getWeights());
             }
 
             if (Double.isNaN(logL) || Double.isInfinite(logL)) {

@@ -107,7 +107,7 @@ public class SequenceSimulator extends beast.core.Runnable {
     	Node root =  m_tree.getRoot();
 
 
-    	double [] categoryProbs = m_siteModel.getCategoryProportions();
+    	double [] categoryProbs = m_siteModel.getCategoryProportions(root);
     	int [] category  = new int[m_sequenceLength];
     	for (int i  = 0; i < m_sequenceLength; i++) {
     		category[i] = Randomizer.randomChoicePDF(categoryProbs);
@@ -166,7 +166,7 @@ public class SequenceSimulator extends beast.core.Runnable {
 
         Node parent = node.getParent();
         double branchRate = (m_branchRateModel == null ? 1.0 : m_branchRateModel.getRateForBranch(node));
-        branchRate *= m_siteModel.getRateForCategory(rateCategory);
+        branchRate *= m_siteModel.getRateForCategory(rateCategory, node);
         
         // Get the operational time of the branch
         //final double branchTime = branchRate * (parent.getHeight() - node.getHeight());

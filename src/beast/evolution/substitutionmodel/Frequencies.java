@@ -24,20 +24,22 @@
 */
 package beast.evolution.substitutionmodel;
 
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
 
 @Description("Represents character frequencies typically used as distribution of the root of the tree. " +
         "Calculates empirical frequencies of characters in sequence data, or simply assumes a uniform " +
         "distribution if the estimate flag is set to false.")
-public class Frequencies extends Plugin {
+public class Frequencies extends CalculationNode {
     public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
     public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
     public Input<String> m_fixed = new Input<String>("frequencies", "Fixed set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
 
+    
+    boolean m_bNeedsUpdate;
     @Override
     public void initAndValidate() throws Exception {
     	if (m_fixed.get() != null) {
@@ -55,9 +57,18 @@ public class Frequencies extends Plugin {
     		if (Math.abs(fSum-1.0)>1e-6) {
     			throw new Exception("Frequencies do not add up to 1");
     		}
+    		m_bNeedsUpdate = false;
+    	} else {
+    		update();
+    	}
+    }
+    
+    void update() {
+    	if (m_fixed.get() != null) {
+    		// user specified, already handled in initAndValidate()
+        	m_bNeedsUpdate = false;
     		return;
     	}
-
     	// if not user specified, either estimate from data or set as fixed
     	if (m_bEstimate.get()) {
     		// estimate
@@ -71,11 +82,15 @@ public class Frequencies extends Plugin {
                 m_fFreqs[i] = 1.0 / nStates;
             }
         }
+    	m_bNeedsUpdate = false;
     }
 
     double[] m_fFreqs;
 
     public double[] getFreqs() {
+    	if (m_bNeedsUpdate) {
+    		update();
+    	}
         return m_fFreqs;
     }
 
@@ -138,4 +153,12 @@ public class Frequencies extends Plugin {
             }
         }
     }
+    
+    
+    @Override
+    protected boolean requiresRecalculation() {
+    	m_bNeedsUpdate = true;
+    	return true;
+    }
+    
 } // class Frequencies

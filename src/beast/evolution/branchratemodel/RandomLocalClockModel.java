@@ -40,7 +40,8 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         RealParameter rates = rateParamInput.get();
         rates.setLower(0.0);
         rates.setUpper(Double.MAX_VALUE);
-
+        
+        ratesAreMultipliers = ratesAreMultipliersInput.get();
     }
 
     /**

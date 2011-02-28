@@ -362,7 +362,7 @@ public class TreeLikelihood extends Distribution {
                 //double branchLength = m_siteModel.getRateForCategory(i) * branchTime;
                 //m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
 
-            	m_substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), m_siteModel.getRateForCategory(i), m_fProbabilities);
+            	m_substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), m_siteModel.getRateForCategory(i, node), m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
                 //m_substitutionModel.getPaddedTransitionProbabilities(branchLength, m_fProbabilities);
                 //System.arraycopy(m_fProbabilities, 0, m_fProbabilities2, i * m_nMatrixSize, m_nMatrixSize);
@@ -402,7 +402,7 @@ public class TreeLikelihood extends Distribution {
                     double[] frequencies = //m_pFreqs.get().
                             m_siteModel.getFrequencies();
 
-                    double[] proportions = m_siteModel.getCategoryProportions();
+                    double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
@@ -429,7 +429,7 @@ public class TreeLikelihood extends Distribution {
             Node parent = node.getParent();
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
-                double jointBranchRate = m_siteModel.getRateForCategory(i) * branchRate;
+                double jointBranchRate = m_siteModel.getRateForCategory(i, node) * branchRate;
 //                m_substitutionModel.getTransitionProbabilities(branchLength, m_fProbabilities);
             	m_substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), jointBranchRate, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
@@ -475,7 +475,7 @@ public class TreeLikelihood extends Distribution {
                     double[] frequencies = //m_pFreqs.get().
                             m_siteModel.getFrequencies();
 
-                    double[] proportions = m_siteModel.getCategoryProportions();
+                    double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
@@ -494,6 +494,10 @@ public class TreeLikelihood extends Distribution {
         m_nHasDirt = Tree.IS_CLEAN;
 
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_FILTHY;
+            return true;
+        }
+        if (m_data.get().isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
             return true;
         }

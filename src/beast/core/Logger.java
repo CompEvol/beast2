@@ -26,7 +26,6 @@ package beast.core;
 
 
 import beast.core.Input.Validate;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;

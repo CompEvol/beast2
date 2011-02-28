@@ -24,10 +24,11 @@
 */
 package beast.evolution.alignment;
 
+
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.Plugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ import java.util.List;
  * **/
 
 @Description("Class representing alignment data")
-public class Alignment extends Plugin {
+public class Alignment extends CalculationNode {
     static final String NUCLEOTIDE = "nucleotide";
     static final String BINARY = "binary";
     static final String TWOSTATECOVARION = "twoStateCovarion";
@@ -81,8 +82,8 @@ public class Alignment extends Plugin {
 
 
     // weight over the columns of a matrix
-    public int[] m_nWeight;
-    public int[][] m_nPatterns; // #patters x #taxa
+    protected int[] m_nWeight;
+    protected int[][] m_nPatterns; // #patters x #taxa
     protected int m_nMaxStateCount;
     /**
      * maps site nr to pattern nr *
@@ -176,6 +177,10 @@ public class Alignment extends Plugin {
 
     public int getSiteCount() {
         return m_nPatternIndex.length;
+    }
+
+    public int [] getWeights() {
+        return m_nWeight;
     }
 
 

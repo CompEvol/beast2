@@ -17,9 +17,13 @@ public class CalculationNode extends Plugin {
 	// General default implementations are provided.
     //=================================================================
 
-    /** Store internal calculations
-     *
-     * This is called prior to the proposal of a new state.
+    /** Store internal calculations. Called before a calculation node
+     * is asked to perform any calculations, but after some part of the
+     * state has changed through a operator proposal.
+     * 
+     * This is not meant to be used to calculate anything, just store
+     * intermediate results of calculations. Input values should not
+     * be accessed because some StateNodes may have been changed.
      *
      **/
     protected void store() {

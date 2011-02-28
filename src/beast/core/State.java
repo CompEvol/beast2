@@ -27,7 +27,6 @@ package beast.core;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;

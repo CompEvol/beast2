@@ -1,6 +1,8 @@
 package test.beast.evolution.likelihood;
 
 
+import org.junit.Test;
+
 import beast.evolution.likelihood.BeagleTreeLikelihood;
 import beast.evolution.likelihood.TreeLikelihood;
 
@@ -17,5 +19,20 @@ public class BeagleTreeLikelihoodTest extends TreeLikelihoodTest {
 	protected TreeLikelihood newTreeLikelihood() {
 		return new BeagleTreeLikelihood();
 	}
+
+	@Test
+	public void testAscertainedJC69Likelihood() throws Exception {
+		// fails
+	}
 	
+	@Test
+	public void testHKY85GLikelihood() throws Exception {
+		// fails
+	}
+	
+	@Test
+	public void testGTRGLikelihood() throws Exception {
+		// fails
+	}
+
 } // class BeagleTreeLikelihoodTest
