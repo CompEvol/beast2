@@ -167,7 +167,7 @@ public class SiteModel extends CalculationNode {
 
     public double[] getCategoryRates() {
         //synchronized (this) 
-        {
+        {   
             if (!ratesKnown) {
                 calculateCategoryRates();
             }
@@ -239,7 +239,7 @@ public class SiteModel extends CalculationNode {
      * discretization of gamma distribution with equal proportions in each
      * category
      */
-    private void calculateCategoryRates() {
+    protected void calculateCategoryRates() {
         double propVariable = 1.0;
         int cat = 0;
 
@@ -299,13 +299,13 @@ public class SiteModel extends CalculationNode {
     }
 
 
-    private boolean ratesKnown;
+    protected boolean ratesKnown;
 
-    private int categoryCount;
+    protected int categoryCount;
 
-    private double[] categoryRates;
+    protected double[] categoryRates;
 
-    private double[] categoryProportions;
+    protected double[] categoryProportions;
 
 
     /**
@@ -317,7 +317,7 @@ public class SiteModel extends CalculationNode {
      * @return icdf value
      * @throws Exception if arguments out of range
      */
-    double GammaDistributionQuantile(double y, double shape, double scale) throws Exception {
+    protected double GammaDistributionQuantile(double y, double shape, double scale) throws Exception {
         return 0.5 * scale * pointChi2(y, 2.0 * shape);
     }
 
