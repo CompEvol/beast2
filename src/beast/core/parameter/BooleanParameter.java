@@ -35,9 +35,6 @@ import java.io.PrintStream;
 @Description("A Boolean-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
 public class BooleanParameter extends Parameter<java.lang.Boolean> {
-
-//    public Input<Boolean> m_pValues = new Input<Boolean>("value", "start value for this parameter");
-
     public BooleanParameter() {}
 
     /** Constructor used by Input.setValue(String) **/
@@ -71,6 +68,7 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
     }
 
 
+    /** Valuable implementation follows **/
     /** we need this here, because the base implementation (public T getValue()) fails
      * for some reason
      */
@@ -81,7 +79,7 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
     @Override public double getArrayValue() {return (values[0] ? 1 : 0);}
     @Override public double getArrayValue(int iValue) {return (values[iValue] ? 1 : 0);};
 
-    // RRB: if you remove next line, please document properly!
+    /** Loggable implementation follows **/
     @Override
     public void log(int nSample, PrintStream out) {
         BooleanParameter var = (BooleanParameter) getCurrent();
@@ -92,6 +90,7 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
         }
     }
 
+    /** StateNode methods **/
 	@Override
 	public int scale(double fScale) {
 		// nothing to do

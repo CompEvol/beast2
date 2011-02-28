@@ -265,6 +265,7 @@ public class HKY extends SubstitutionModel.Base {
     }
 
 
+    /** CalculationNode methods **/
     @Override
     protected boolean requiresRecalculation() {
     	// we only get here if something is dirty
@@ -287,6 +288,7 @@ public class HKY extends SubstitutionModel.Base {
         if (eigenDecomposition != null) {
             storedEigenDecomposition = eigenDecomposition.copy();
         }
+        super.store();
     }
 
     @Override
@@ -296,5 +298,6 @@ public class HKY extends SubstitutionModel.Base {
         if (storedEigenDecomposition != null) {
             eigenDecomposition = storedEigenDecomposition;
         }
+        super.restore();
     }
 }

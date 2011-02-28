@@ -135,8 +135,12 @@ public class Node extends Plugin {
 	}
 
 	 /**
-	 * @return beast.tree in Newick format, without any length or meta data
-	 * information.
+	 * @return beast.tree in Newick format, with length and meta data
+	 * information. Unlike toNewick(), here Nodes are numbered, instead of 
+	 * using the taxon names. 
+	 * Also, internal nodes are labelled if bPrintInternalNodeLabels
+	 * is set true. This is useful for example when storing a State to file
+	 * so that it can be restored.
 	 **/
 	public String toShortNewick(boolean bPrintInternalNodeLabels) {
 		StringBuffer buf = new StringBuffer();
@@ -152,26 +156,16 @@ public class Node extends Plugin {
 			}
 			buf.append(")");
 		} else {
-//			if (m_sID != null) {
-//				buf.append(m_sID);
-//			} else {
-				buf.append(m_iLabel);
-//			}
+			buf.append(m_iLabel);
 		}
-//		buf.append("["+m_iLabel+"]");
-        //buf.append(":").append(String.format("%7.7f", getLength()));
 		buf.append(getNewickMetaData());
         buf.append(":").append(getLength());
-		for (int i = 0; i < m_bIsDirty; i++) {
-			//buf.append("X");
-		}
 		return buf.toString();
 	}
 
 	/**
-	 * @param sLabels
-     * @return  beast.tree in long Newick format, with all length and meta data
-	 * information
+	 * @param sLabels names of the taxa
+     * @return  beast.tree in Newick format with taxon labels for leafs.
 	 **/
 	public String toNewick(List<String> sLabels) {
 		StringBuffer buf = new StringBuffer();

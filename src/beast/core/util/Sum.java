@@ -45,13 +45,17 @@ public class Sum extends CalculationNode implements Valuable {
 		if (iDim == 1) {return getArrayValue();}
 		return Double.NaN;
 	}
+
+	/** CalculationNode methods **/
 	@Override
 	public void store() {
 		m_fStoredSum = m_fSum;
+		super.store();
 	}
 	@Override
 	public void restore() {
 		m_fSum = m_fStoredSum;
+		super.restore();
 	}
 	@Override
 	public boolean requiresRecalculation() {

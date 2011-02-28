@@ -47,7 +47,11 @@ public class CompoundDistribution extends Distribution {
     public double calculateLogP() throws Exception {
         logP = 0;
         for(Distribution dists : pDistributions.get()) {
-            logP += dists.calculateLogP();
+        	if (dists.isDirtyCalculation()) {
+        		logP += dists.calculateLogP();
+        	} else {
+        		logP += dists.getCurrentLogP();
+        	}
             if (Double.isInfinite(logP) || Double.isNaN(logP)) {
             	return logP;
             }

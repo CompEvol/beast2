@@ -15,7 +15,6 @@ import java.io.PrintStream;
 @Description("An integer-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
 public class IntegerParameter extends Parameter<java.lang.Integer> {
-//    public Input<Integer> m_pValues = new Input<Integer>("value", "start value for this parameter");
     public Input<Integer> lowerValueInput = new Input<Integer>("lower", "lower value for this parameter");
     public Input<Integer> upperValueInput = new Input<Integer>("upper", "upper value for this parameter");
 
@@ -32,16 +31,6 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     public IntegerParameter(String value, Integer lower, Integer upper, Integer dimension) throws Exception {
     	init(lower, upper, value, dimension);
     }
-
-    /** we need this here, because the base implementation (public T getValue()) fails
-     * for some reason
-     */
-    @Override
-    public Integer getValue() {
-        return values[0];
-    }
-    @Override public double getArrayValue() {return (double) values[0];}
-    @Override public double getArrayValue(int iValue) {return (double) values[iValue];};
 
     @Override
     public void initAndValidate() throws Exception {
@@ -70,6 +59,18 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     }
 
 
+    /** Valuable implementation follows **/
+    /** we need this here, because the base implementation (public T getValue()) fails
+     * for some reason
+     */
+    @Override
+    public Integer getValue() {
+        return values[0];
+    }
+    @Override public double getArrayValue() {return (double) values[0];}
+    @Override public double getArrayValue(int iValue) {return (double) values[iValue];};
+
+    /** Loggable implementation follows **/
     @Override
     public void log(int nSample, PrintStream out) {
         IntegerParameter var = (IntegerParameter) getCurrent();
@@ -79,7 +80,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         }
     }
 
-
+    /** StateNode methods **/
 	@Override
 	public int scale(double fScale) {
 		// nothing to do

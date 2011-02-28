@@ -62,7 +62,7 @@ public class MCMC extends Runnable {
     /** Alternative representation of operatorsInput that allows random selection
      * of operators and calculation of statistics.
      */
-    public OperatorSet operatorSet = new OperatorSet();
+    protected OperatorSet operatorSet = new OperatorSet();
 
 
     /** The state that takes care of managing StateNodes, 
@@ -73,9 +73,12 @@ public class MCMC extends Runnable {
     
     /**
      * number of samples taken where calculation is checked against full
-     * recalculation of the posterior.
+     * recalculation of the posterior. Note that after every proposal that
+     * is checked, there are 2 that are not checked. This allows errors 
+     * in store/restore to be detected that cannot be found when every single
+     * consecutive sample is checked.
+     * So, only after 3*NR_OF_DEBUG_SAMPLES samples checking is stopped.
      */
-    //final protected int NR_OF_DEBUG_SAMPLES = 0;
     final protected int NR_OF_DEBUG_SAMPLES = 2000;
 
     @Override
@@ -154,10 +157,6 @@ public class MCMC extends Runnable {
     	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile);
 
-        // initialises log so that log file headers are written, etc.
-        for (Logger log : m_loggers.get()) {
-            log.init();
-        }
         int nBurnIn = m_oBurnIn.get();
         int nChainLength = m_oChainLength.get();
         if (m_bRestoreFromFile) {
@@ -180,6 +179,11 @@ public class MCMC extends Runnable {
         state.checkCalculationNodesDirtiness();
         double fOldLogLikelihood = posterior.calculateLogP();
         System.err.println("Start likelihood: " + fOldLogLikelihood);
+
+        // initialises log so that log file headers are written, etc.
+        for (Logger log : m_loggers.get()) {
+            log.init();
+        }
 
         // main MCMC loop 
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {

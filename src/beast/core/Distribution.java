@@ -39,7 +39,10 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     protected double storedLogP = 0;
 
     /**
-     * @return the normalised probability (density) for this distribution
+     * @return the normalised probability (density) for this distribution.
+     * Note that some efficiency can be gained by testing whether the
+     * Distribution is dirty, and if not, call getCurrentLogP() instead
+     * of recalculating.
      * @throws Exception an exception
      */
     public double calculateLogP() throws Exception {
@@ -47,7 +50,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         return logP;
     }
 
-    /* The plugin implements f( arguments | conditionals) */
+    /** The plugin implements f( arguments | conditionals) **/
 
     /**
      * @return a list of unique ids for the state nodes that form the argument
@@ -70,7 +73,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     public abstract void sample(State state, Random random);
 
     /**
-     * get result from last known calculation *
+     * get result from last known calculation, useful for logging
      *
      * @return log probability
      */
@@ -83,6 +86,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         // nothing to do
     }
 
+    /** CalculationNode methods **/
     @Override
 	public void store() {
         storedLogP = logP;
@@ -96,20 +100,27 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     }
 
     /** Loggable interface implementation follows **/
+    @Override
 	public void init(PrintStream out) throws Exception {
 		out.print(getID() + "\t");
 	}
 
+    @Override
 	public void log(int nSample, PrintStream out) {
 		out.print(getCurrentLogP() + "\t");
 	}
 
+    @Override
 	public void close(PrintStream out) {
 		// nothing to do
 	}
+    
     /** Valuable interface implementation follows **/
+    @Override
 	public int getDimension() {return 1;}
+    @Override
 	public double getArrayValue() {return logP;}
+    @Override
 	public double getArrayValue(int iDim) {if (iDim == 1) return getArrayValue(); return 0;}
 
 } // class ProbabilityDistribution

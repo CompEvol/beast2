@@ -121,18 +121,6 @@
             <tree idref="tree"/>
         </operator>
 
-        <logger logEvery="10000">
-	    <model idref='posterior'/>
-            <log idref="coalescent"/>
-            <log idref="likelihood"/>
-            <log spec='beast.evolution.tree.TreeHeightLogger'>
-                <tree idref='tree'/>
-            </log>
-            <log idref="popSize"/>
-            <log idref="hky.kappa"/>
-            <log idref="indicators"/>
-            <log idref="posterior"/>
-        </logger>
         <logger logEvery="10000" fileName="test.$(seed).log">
 	    <model idref='posterior'/>
             <log idref="coalescent"/>
@@ -147,6 +135,18 @@
         </logger>
         <logger logEvery="10000" fileName="test.$(seed).trees">
             <log idref="tree"/>
+        </logger>
+        <logger logEvery="10000">
+	    <model idref='posterior'/>
+            <log idref="coalescent"/>
+            <log idref="likelihood"/>
+            <log spec='beast.evolution.tree.TreeHeightLogger'>
+                <tree idref='tree'/>
+            </log>
+            <log idref="popSize"/>
+            <log idref="hky.kappa"/>
+            <log idref="indicators"/>
+            <log idref="posterior"/>
         </logger>
     </run>
 

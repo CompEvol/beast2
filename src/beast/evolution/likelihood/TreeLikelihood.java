@@ -191,7 +191,13 @@ public class TreeLikelihood extends Distribution {
 
     @Override
     public void initAndValidate() throws Exception {
-    	// TODO: check that alignment has same taxa as trees
+    	// sanity check: alignment should have same #taxa as tree
+    	if (m_data.get().getNrTaxa() != m_tree.get().getLeafNodeCount()) {
+    		throw new Exception("The number of nodes in the tree does not match the number of sequences");
+    	}
+    	
+    	
+    	
         int nodeCount = m_tree.get().getNodeCount();
         m_siteModel = m_pSiteModel.get();
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
@@ -486,6 +492,8 @@ public class TreeLikelihood extends Distribution {
         return update;
     } // traverseWithBRM
 
+    /** CalculationNode methods **/
+
     /**
      * check state for changed variables and update temp results if necessary *
      */
@@ -507,20 +515,6 @@ public class TreeLikelihood extends Distribution {
         }
         return m_tree.get().somethingIsDirty();
     }
-        
-    /**
-     * @return a list of unique ids for the state nodes that form the argument
-     */
-    public List<String> getArguments() {
-        return Collections.singletonList(m_data.get().getID());
-    }
-
-    /**
-     * @return a list of unique ids for the state nodes that make up the conditions
-     */
-    public List<String> getConditions() {
-        return m_siteModel.getConditions();
-    }
 
     @Override
     public void store() {
@@ -541,5 +535,20 @@ public class TreeLikelihood extends Distribution {
         m_branchLengths = m_StoredBranchLengths;
         m_StoredBranchLengths = tmp;
     }
+        
+    /**
+     * @return a list of unique ids for the state nodes that form the argument
+     */
+    public List<String> getArguments() {
+        return Collections.singletonList(m_data.get().getID());
+    }
+
+    /**
+     * @return a list of unique ids for the state nodes that make up the conditions
+     */
+    public List<String> getConditions() {
+        return m_siteModel.getConditions();
+    }
+
 
 } // class TreeLikelihood

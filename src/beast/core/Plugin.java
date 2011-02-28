@@ -147,6 +147,8 @@ abstract public class Plugin {
         return buf.toString();
     } // getCitations
 
+    
+    /** create list of inputs to this plug-in **/
     public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
         List<Input<?>> inputs = new ArrayList<Input<?>>();
         Field[] fields = getClass().getFields();
@@ -163,7 +165,7 @@ abstract public class Plugin {
      * create array of all plug-ins in the inputs that are instantiated.
      * If the input is a List of plug-ins, these individual plug-ins are
      * added to the list.
-     * @return list of all active plugins
+     * @return list of all active plug-ins
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
@@ -190,6 +192,10 @@ abstract public class Plugin {
         return sPlugins;
     } // listActivePlugins
 
+    /** get description of an input
+     * @param sName of the input
+     * @return list of inputs
+     */
     public String getTipText(String sName) throws IllegalArgumentException, IllegalAccessException {
         Field[] fields = getClass().getDeclaredFields();
         for(Field field : fields) {
@@ -204,6 +210,7 @@ abstract public class Plugin {
     } // getTipText
 
 
+    /** check whether the input is an Integer, Double, Boolean or String **/
     public boolean isPrimitive(String sName) throws Exception {
         Input<?> input = getInput(sName);
         if (input.getType() == null) {
@@ -224,16 +231,19 @@ abstract public class Plugin {
         return false;
     } // isPrimitive
 
+    /** get value of an input by input name **/
     public Object getInputValue(String sName) throws Exception {
         Input<?> input = getInput(sName);
         return input.get();
     } // getInputValue
 
+    /** set value of an input by input name **/
     public void setInputValue(String sName, Object value) throws Exception {
         Input<?> input = getInput(sName);
         input.setValue(value, this);
     } // setInputValue
 
+    /** get input by input name **/
     public Input<?> getInput(String sName) throws Exception {
         Field[] fields = getClass().getFields();
         for(Field field : fields) {

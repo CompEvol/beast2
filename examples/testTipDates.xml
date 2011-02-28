@@ -154,16 +154,16 @@
             <tree idref="tree"/>
         </operator>
 
-        <logger logEvery="10000">
-            <log idref="likelihood"/>
-            <log idref="hky.kappa"/>
-        </logger>
         <logger logEvery="10000" fileName="test.$(seed).log">
             <log idref="likelihood"/>
             <log idref="hky.kappa"/>
         </logger>
         <logger logEvery="10000" fileName="test.$(seed).trees">
             <log idref="tree"/>
+        </logger>
+        <logger logEvery="10000">
+            <log idref="likelihood"/>
+            <log idref="hky.kappa"/>
         </logger>
 
     </run>

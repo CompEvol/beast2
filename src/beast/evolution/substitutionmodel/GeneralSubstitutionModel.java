@@ -178,6 +178,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     public void store() {
         storedUpdateMatrix = updateMatrix;
         storedEigenDecomposition = eigenDecomposition.copy();
+        super.store();
     }
 
     /**
@@ -196,6 +197,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         EigenDecomposition tmp = storedEigenDecomposition;
         storedEigenDecomposition = eigenDecomposition;
         eigenDecomposition = tmp;
+        super.restore();
 
     }
 

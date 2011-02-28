@@ -77,7 +77,8 @@ public abstract class Parameter<T> extends StateNode {
     public boolean isDirty(int iParam) {
         return m_bIsDirty[iParam];
     }
-    /** returns index of entry that was changed last **/
+    /** Returns index of entry that was changed last. Useful if it is known only a
+     * single  value has changed in the array. **/
     public int getLastDirty() {
     	return m_nLastDirty;
     }
@@ -217,9 +218,10 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     /**
-     * Loggable interface implementation follows (partly) *
+     * Loggable interface implementation follows (partly, the actual 
+     * logging of values happens in derived classes) *
      */
-
+    @Override
     public void init(PrintStream out) throws Exception {
         final int nValues = getDimension();
         if (nValues == 1) {
@@ -236,6 +238,7 @@ public abstract class Parameter<T> extends StateNode {
         // nothing to do
     }
 
+    /** StateNode implementation **/
     @Override
     public void fromXML(Node node) {
     	NamedNodeMap atts = node.getAttributes();

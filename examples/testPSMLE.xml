@@ -91,11 +91,6 @@
             <tree idref="tree"/>
         </operator>
 
-        <logger logEvery="10000">
-            <probabilityDistribution idref="likelihood" name='log'/>
-            <!--parameter idref="treeModel.rootHeight"/-->
-            <parameter idref="hky.kappa" name='log'/>
-        </logger>
         <logger logEvery="10000" fileName="test.$(seed).log">
             <probabilityDistribution idref="likelihood" name='log'/>
             <!--parameter idref="treeModel.rootHeight"/-->
@@ -103,6 +98,11 @@
         </logger>
         <logger logEvery="10000" fileName="test.$(seed).trees">
             <tree idref="tree" name='log'/>
+        </logger>
+        <logger logEvery="10000">
+            <probabilityDistribution idref="likelihood" name='log'/>
+            <!--parameter idref="treeModel.rootHeight"/-->
+            <parameter idref="hky.kappa" name='log'/>
         </logger>
     </run>
 

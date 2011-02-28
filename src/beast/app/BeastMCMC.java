@@ -81,10 +81,6 @@ public class BeastMCMC {
 					} else if (args[i].equals("-overwrite")) {
 						Logger.FILE_MODE = Logger.FILE_OVERWRITE;
 						i += 1;
-					} else if (args[i].equals("-append")) {
-						bResume = true;
-						Logger.FILE_MODE = Logger.FILE_APPEND;
-						i += 1;
 					} else if (args[i].equals("-seed")) {
 						m_nSeed = Integer.parseInt(args[i + 1]);
 						i += 2;
@@ -141,9 +137,8 @@ public class BeastMCMC {
 		return 	"Usage: BeastMCMC [options] <Beast.xml>\n" +
 				"where <Beast.xml> the name of a file specifying a Beast run\n" +
 				"and the following options are allowed:\n" +
-				"-resume : read state that was stored at the end of the last run from file\n" +
+				"-resume : read state that was stored at the end of the last run from file and append log file\n" +
 				"-overwrite : overwrite existing log files (if any). By default, existing files will not be overwritten.\n" +
-				"-append : resume and append log file\n" +
 				"-seed <int> : sets random number seed (default 127)\n" +
 				"-threads <int> : sets number of threads (default 1)\n" +
 				"-beastlib <path> : Colon separated list of directories. All jar files in the path are loaded. (default 'beastlib')";

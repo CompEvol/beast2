@@ -6,7 +6,6 @@ import beast.core.Description;
 import beast.core.Input;
 
 import java.io.PrintStream;
-import java.util.List;
 
 
 /**
@@ -33,17 +32,6 @@ public class RealParameter extends Parameter<Double> {
     	init(lower, upper, value, dimension);
     }
 
-
-    /** RRB: we need this here, because the base implementation (public T getValue()) fails
-     * for some reason. Why?
-     */
-    @Override
-    public Double getValue() {
-        return values[0];
-    }
-
-    @Override public double getArrayValue() {return values[0];}
-    @Override public double getArrayValue(int iValue) {return values[iValue];};
 
     @Override
     public void initAndValidate() throws Exception {
@@ -72,7 +60,20 @@ public class RealParameter extends Parameter<Double> {
         super.initAndValidate();
     }
 
-    // RRB: if you remove next line, please document properly!
+    /** Valuable implementation follows **/
+    
+    /** RRB: we need this here, because the base implementation (public T getValue()) fails
+     * for some reason. Why?
+     */
+    @Override
+    public Double getValue() {
+        return values[0];
+    }
+
+    @Override public double getArrayValue() {return values[0];}
+    @Override public double getArrayValue(int iValue) {return values[iValue];};
+
+    /** Loggable implementation **/
     @Override
     public void log(int nSample, PrintStream out) {
         RealParameter var = (RealParameter) getCurrent();
@@ -82,6 +83,7 @@ public class RealParameter extends Parameter<Double> {
         }
     }
 
+    /** StateNode methods **/
     @Override
 	public int scale(double fScale) throws Exception {
     	for (int i = 0; i < values.length; i++) {

@@ -18,6 +18,7 @@ public class CompoundValuable extends CalculationNode implements Valuable {
 			new ArrayList<Plugin>(), Validate.REQUIRED, Valuable.class); 
 
 	boolean m_bRecompute = true;
+	/** contains values of the inputs **/
 	double [] m_fValues;
 	
 	@Override
@@ -25,11 +26,15 @@ public class CompoundValuable extends CalculationNode implements Valuable {
 		// determine dimension
 		int nDimension = 0;
 		for (Plugin plugin : m_values.get()) {
+			if (!(plugin instanceof Valuable)) {
+				throw new Exception("Input does not implement Valuable");
+			}
 			nDimension += ((Valuable) plugin).getDimension();
 		}
 		m_fValues = new double[nDimension];
 	}
 	
+	/** Valuable implementation follows **/
 	@Override
 	public int getDimension() {
 		return m_fValues.length;
@@ -67,11 +72,21 @@ public class CompoundValuable extends CalculationNode implements Valuable {
 		m_bRecompute = false;
 	}
 	
+    /** CalculationNode methods **/
 	@Override
-	public void store() {m_bRecompute = true;}
+	public void store() {
+		m_bRecompute = true;        
+		super.store();
+	}
 	@Override
-	public void restore() {m_bRecompute = true;}
+	public void restore() {
+		m_bRecompute = true;
+        super.restore();
+	}
 	@Override
-	public boolean requiresRecalculation() {m_bRecompute = true;return true;}
+	public boolean requiresRecalculation() {
+		m_bRecompute = true;
+		return true;
+	}
 
 }

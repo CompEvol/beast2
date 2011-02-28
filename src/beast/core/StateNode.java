@@ -84,13 +84,15 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     	out.print("</statenode>\n");
     }
     
+    /** stores a state node in XML format, to be restored by fromXML() **/
     final public String toXML() {
     	return "<statenode id='" + getID() +"'>" +
     		toString() +
     		"</statenode>\n";
     }
     
-    /** for restoring a state that was stored using toXML() above. **/
+    /** for restoring a state that was stored using toXML() above
+     * from a DOM Node. **/
     public abstract void fromXML(Node node);
 
     
@@ -126,10 +128,6 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     abstract public int scale(double fScale) throws Exception;
     
     
-//    abstract public int getDimension();
-//    abstract public double getArrayValue();
-//    abstract public double getArrayValue(int iValue);
-
     /** 
      * Pointer to state, null if not part of a State.
      */
@@ -145,6 +143,7 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * The index of the parameter for identifying this StateNode 
      * in the State.
      */
-    public int index = -1;
+    protected int index = -1;
+    public int getIndex() {return index;}
 
 } // class StateNode

@@ -53,6 +53,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         intervalsKnown = false;
 	}
 	
+    /** CalculationNode methods **/
 	@Override
     protected boolean requiresRecalculation() {
 		// we only get here if the tree is dirty, which is a StateNode

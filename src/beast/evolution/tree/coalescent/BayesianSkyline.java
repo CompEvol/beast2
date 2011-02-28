@@ -80,6 +80,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         m_bIsPrepared = true;
     }
 
+    /** CalculationNode methods **/
     @Override
     protected boolean requiresRecalculation() {
     	m_bIsPrepared = false;
@@ -88,10 +89,12 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     @Override
     protected void store() {
     	m_bIsPrepared = false;
+    	super.store();
     }
     @Override
     protected void restore() {
     	m_bIsPrepared = false;
+    	super.restore();
     }
     
     public List<String> getParameterIds() {

@@ -40,12 +40,6 @@ import org.w3c.dom.NodeList;
 
 import beast.core.Input;
 
-/**"The state represents the current point in the state space, and " +
-        "maintains values of a set of StateNodes, such as parameters and trees. " +
-        "Furthermore, the state manages which parts of the model need to be stored/restored " +
-        "and notified that recalculation is appropriate."**/
-
-
 
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of StateNodes, such as parameters and trees. " +
@@ -54,10 +48,10 @@ import beast.core.Input;
 public class State extends Plugin {
 
     public Input<List<StateNode>> stateNodeInput = 
-            new Input<List<StateNode>>("stateNode", "a part of the state", new ArrayList<StateNode>());
+            new Input<List<StateNode>>("stateNode", "anything that is part of the state", new ArrayList<StateNode>());
     public Input<Integer> m_storeEvery = 
             new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
-    		"resume computation later on", -1);
+    		"resume computation later on if the process failed half-way.", -1);
     
     /**
      * The components of the state, for instance tree & parameters.
@@ -66,9 +60,9 @@ public class State extends Plugin {
      * the state can be restored. This is currently implemented by having 
      * Operators call getEditableStateNode() at which point the requested
      * StateNode is copied.
+     * Access through getNrStatNodes() and getStateNode(.).
      */
-    // Public so it can be interrogated. No point in creating a getter...
-    public StateNode[] stateNode;
+    protected StateNode[] stateNode;
 
     /** Copy of state nodes, for restoration if required **/
     private StateNode[] storedStateNode;
@@ -80,8 +74,8 @@ public class State extends Plugin {
     /** pointers to memory allocated to stateNodes and storedStateNodes **/
     private StateNode[] m_stateNodeMem;
 
-    /** File naem use for storing the state, either periodically or at the end of an MCMC chain
-     * so that the chain can be resumed
+    /** File name used for storing the state, either periodically or at the end of an MCMC chain
+     * so that the chain can be resumed.
      */
     private String m_sStateFileName = "state.backup.xml";
 
@@ -95,7 +89,7 @@ public class State extends Plugin {
      */
     
     /** Maps a Plugin to a list of Outputs.
-     * This map only contains those plugins that have a path to the posterior **/
+     * This map only contains those plug-ins that have a path to the posterior **/
     private HashMap<Plugin, List<Plugin>> m_outputMap;
     
     /** Same as m_outputMap, but only for StateNodes indexed by the StateNode number
@@ -289,7 +283,7 @@ public class State extends Plugin {
 		return buf.toString();
     }
 
-    /* Restore state from an XML fragment **/
+    /** Restore state from an XML fragment **/
     public void fromXML(String sXML) {
 		try {
 	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -458,11 +452,11 @@ public class State extends Plugin {
 
     	m_map.put(m_changedStateNodeCode, calcNodes);
     	
-    	System.out.print(m_changedStateNodeCode + ":");
-    	for (CalculationNode node : calcNodes) {
-    		System.out.print(node.m_sID + " ");
-    	}
-    	System.out.println();
+//    	System.out.print(m_changedStateNodeCode + ":");
+//    	for (CalculationNode node : calcNodes) {
+//    		System.out.print(node.m_sID + " ");
+//    	}
+//    	System.out.println();
     	
     	return calcNodes;
     } // getCurrentCalculationNodes
