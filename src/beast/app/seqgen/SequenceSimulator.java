@@ -14,6 +14,7 @@ import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
@@ -80,18 +81,20 @@ public class SequenceSimulator extends beast.core.Runnable {
      * @throws Exception 
      */
 	Sequence intArray2Sequence(int [] seq, Node node) throws Exception {
-    	StringBuilder sSeq = new StringBuilder();
-    	String sMap = m_data.get().getMap();
-    	if (sMap != null) {
-    		for (int i  = 0; i < m_sequenceLength; i++) {
-    			sSeq.append(sMap.charAt(seq[i]));
-    		}
-    	} else {
-    		for (int i  = 0; i < m_sequenceLength-1; i++) {
-    			sSeq.append(seq[i] + ",");
-    		}
-			sSeq.append(seq[m_sequenceLength-1] + "");
-    	}
+		DataType dataType = m_data.get().getDataType();
+		String sSeq = dataType.state2string(seq);
+//    	StringBuilder sSeq = new StringBuilder();
+//    	String sMap = m_data.get().getMap();
+//    	if (sMap != null) {
+//    		for (int i  = 0; i < m_sequenceLength; i++) {
+//    			sSeq.append(sMap.charAt(seq[i]));
+//    		}
+//    	} else {
+//    		for (int i  = 0; i < m_sequenceLength-1; i++) {
+//    			sSeq.append(seq[i] + ",");
+//    		}
+//			sSeq.append(seq[m_sequenceLength-1] + "");
+//    	}
     	List<Sequence> taxa = m_data.get().m_pSequences.get();
     	String sTaxon = taxa.get(node.getNr()).m_sTaxon.get();
 		return new Sequence(sTaxon, sSeq.toString());

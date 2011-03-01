@@ -27,6 +27,7 @@ package beast.evolution.alignment;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
+import beast.evolution.datatype.DataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +90,19 @@ public class Sequence extends Plugin {
         if (m_nTotalCount.get() == null && sDataMap != null) {
             // derive default from char-map
             m_nTotalCount.setValue(sDataMap.length(), this);
+        }
+        return sequence;
+    }
+
+    public List<Integer> getSequence(DataType dataType) throws Exception {
+        String sData = m_sData.get();
+        // remove spaces
+        sData = sData.replaceAll("\\s", "");
+        List<Integer> sequence = dataType.string2state(sData);
+        
+        if (m_nTotalCount.get() == null) {
+            // derive default from char-map
+            m_nTotalCount.setValue(dataType.getStateCount(), this);
         }
         return sequence;
     }

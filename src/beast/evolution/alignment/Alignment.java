@@ -29,6 +29,8 @@ import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.evolution.datatype.DataType;
+import beast.util.ClassDiscovery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,30 +42,68 @@ import java.util.List;
 
 @Description("Class representing alignment data")
 public class Alignment extends CalculationNode {
-    static final String NUCLEOTIDE = "nucleotide";
-    static final String BINARY = "binary";
-    static final String TWOSTATECOVARION = "twoStateCovarion";
-    static final String INTEGERDATA = "integerdata";
-    static final String AMINOACID = "aminoacid";
-    /** currently supported types **/
-	String[] TYPES = {NUCLEOTIDE,BINARY,TWOSTATECOVARION,INTEGERDATA,AMINOACID};
+	/** default data type **/
+    final static String NUCLEOTIDE = "nucleotide";
+    
+    /** directory to pick up data types from **/
+	final static String[] IMPLEMENTATION_DIR = {"beast.evolution.datatype"};
+
+	/** list of data type descriptions, obtained from DataType classes **/
+	static List<String> m_sTypes = new ArrayList<String>();
+
+	static {
+		// build up list of data types
+		List<String> m_sDataTypes = ClassDiscovery.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+		for (String sDataType : m_sDataTypes) {
+			try {
+				DataType dataType = (DataType) Class.forName(sDataType).newInstance();
+				if (dataType.isStandard()) {
+					String sDescription = dataType.getDescription();
+					m_sTypes.add(sDescription);
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	}
+	
+	
 	
     public Input<List<Sequence>> m_pSequences =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
     public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
-    public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
+    //public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
+    public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + m_sTypes, NUCLEOTIDE, m_sTypes.toArray(new String[0]));
+    public Input<DataType.Base> m_userDataType = new Input<DataType.Base>("userDataType", "non-standard, user specified data type", Validate.XOR, m_sDataType);
 
 
+    /** list of taxa names defined through the sequences in the alignment **/
     protected List<String> m_sTaxaNames = new ArrayList<String>();
-    public List<String> getTaxaNames() {return m_sTaxaNames;}
-
-    protected List<Integer> m_nStateCounts = new ArrayList<Integer>();
-    public List<Integer> getStateCounts() {return m_nStateCounts;}
     
+    /** list of state counts for each of the sequences, typically these are
+     * constant throughout the whole alignment.
+     */
+    protected List<Integer> m_nStateCounts = new ArrayList<Integer>();
+    
+    /** maximum of m_nStateCounts **/
+    protected int m_nMaxStateCount;
+    
+    /** state codes for the sequences **/
     protected List<List<Integer>> m_counts = new ArrayList<List<Integer>>();
-    public List<List<Integer>> getCounts() {return m_counts;}
+    
+    /** data type, useful for converting String sequence to Code sequence, and back **/
+    protected DataType m_dataType;
+    
+    /** weight over the columns of a matrix **/
+    protected int[] m_nWeight;
+    
+    /** pattern state encodings **/
+    protected int[][] m_nPatterns; // #patters x #taxa
 
-
+    /**maps site nr to pattern nr **/
+    protected int[] m_nPatternIndex;
+    
+    
     public Alignment() {
     }
 
@@ -86,23 +126,31 @@ public class Alignment extends CalculationNode {
     }
 
 
-    // weight over the columns of a matrix
-    protected int[] m_nWeight;
-    protected int[][] m_nPatterns; // #patters x #taxa
-    protected int m_nMaxStateCount;
-    /**
-     * maps site nr to pattern nr *
-     */
-    protected int[] m_nPatternIndex;
 
     @Override
     public void initAndValidate() throws Exception {
-        if( m_sDataType == null ) {
-            throw new Exception("Input 'dataType' must be specified");
+    	// determine data type, either user defined or one of the standard ones
+        if( m_sDataType.get() == null ) {
+        	m_dataType = m_userDataType.get();
+        } else {
+	        if (m_sTypes.indexOf(m_sDataType.get()) < 0) {
+	            throw new Exception("data type + '" + m_sDataType.get() +"' cannot be found. " +
+	            		"Choose one of " + m_sTypes.toArray(new String[0]));
+	        }
+			List<String> sDataTypes = ClassDiscovery.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+			for (String sDataType : sDataTypes) {
+				DataType dataType = (DataType) Class.forName(sDataType).newInstance();
+				if (m_sDataType.get().equals(dataType.getDescription())) {
+					m_dataType = dataType;
+					break;
+				}
+			}
         }
+        
         // grab data from child sequences
         for (Sequence seq : m_pSequences.get()) {
-            m_counts.add(seq.getSequence(getMap()));
+            //m_counts.add(seq.getSequence(getMap()));
+            m_counts.add(seq.getSequence(m_dataType));
             if (m_sTaxaNames.indexOf(seq.m_sTaxon.get()) >= 0) {
             	throw new Exception("Duplicate taxon found in alignment: " + seq.m_sTaxon.get());
             }
@@ -125,32 +173,15 @@ public class Alignment extends CalculationNode {
         calcPatterns();
     } // initAndValidate
 
-    /**
-     * @return string (depending on datatype) which represents map of character onto
-     * state representation, e.g. the string "ACGT" corresponds to a map that encodes
-     * 'A' as 0, 'C' as 1, 'G' as 2 and 'T' as 3. Unknown characters are mapped to the
-     * length of the string, so a '-' with map "ACGT" is encoded as 4.*
-     */
-    public String getMap() {
-        if (m_sDataType.get().equals(NUCLEOTIDE)) {
-            return "ACGT";
-        }
-        if (m_sDataType.get().equals(BINARY)) {
-            return "01";
-        }
-        if (m_sDataType.get().equals(AMINOACID)) {
-            return "arndcqeghilkmfpstwyv";
-        }
-        if (m_sDataType.get().equals(TWOSTATECOVARION)) {
-            return "abcd";
-        }
-        return null;
-    } // getMap
-
 
     /*
      * assorted getters and setters *
      */
+    public List<String> getTaxaNames() {return m_sTaxaNames;}
+    public List<Integer> getStateCounts() {return m_nStateCounts;}
+    public List<List<Integer>> getCounts() {return m_counts;}
+    public DataType getDataType() {return m_dataType;}
+
     public int getNrTaxa() {
         return m_sTaxaNames.size();
     }

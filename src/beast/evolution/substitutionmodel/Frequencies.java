@@ -108,7 +108,7 @@ public class Frequencies extends CalculationNode {
             int[] nPattern = alignment.getPattern(i);
             int nWeight = alignment.getPatternWeight(i);
             for (int iValue : nPattern) {
-                if (iValue != m_fFreqs.length) { // ignore unknowns
+                if (iValue < m_fFreqs.length) { // ignore unknowns
                     m_fFreqs[iValue] += nWeight;
                 }
             }
