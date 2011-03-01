@@ -11,6 +11,7 @@ import beast.core.Input.Validate;
 public class TaxonSet extends Taxon {
 	public Input<List<Taxon>> m_taxonset = new Input<List<Taxon>>("taxon","list of taxa making up the set", new ArrayList<Taxon>(), Validate.REQUIRED);
 	
+	
 	@Override
 	public void initAndValidate() {
 		

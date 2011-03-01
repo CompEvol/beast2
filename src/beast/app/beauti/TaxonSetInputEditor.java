@@ -42,7 +42,7 @@ public class TaxonSetInputEditor extends ListInputEditor {
 				String sRegexp = "^(.+)[_\\. ].*$";
 				sRegexp = JOptionPane.showInputDialog("<html>Try to match this expression (hit ok if you don't know what this means. It's ok. Trust me...)" +
 						" The pattern in brackets will be matched and grouped together.</html>", sRegexp);
-				// build map of names onto taxon sets from Taxon IDs
+				// build map of names onto taxon sets from Taxon labels
 				HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
 		    	Pattern m_pattern = Pattern.compile(sRegexp);
 		    	for (Taxon taxon : BeautiDoc.m_taxa) {

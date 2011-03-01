@@ -31,6 +31,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -87,6 +88,9 @@ public class TreeParser extends Tree {
         super.initAndValidate();
     } // init
 
+    /** used to make sure all taxa only occur once in the tree **/
+    List<Boolean> m_bTaxonIndexInUse = new ArrayList<Boolean>();
+    
     public TreeParser() {
     }
 
@@ -172,18 +176,31 @@ public class TreeParser extends Tree {
     private int getLabelIndex(String sStr) throws Exception {
         if (!m_bIsLabelledNewick) {
             try {
-                return Integer.parseInt(sStr) - m_nOffset.get();
+            	int nIndex = Integer.parseInt(sStr) - m_nOffset.get();
+            	checkTaxaIsAvailable(sStr, nIndex);
+            	return nIndex; 
             } catch (Exception e) {
             }
         }
-        for (int i = 0; i < m_sLabels.size(); i++) {
-            if (sStr.equals(m_sLabels.get(i))) {
-                return i;
+        for (int nIndex = 0; nIndex < m_sLabels.size(); nIndex++) {
+            if (sStr.equals(m_sLabels.get(nIndex))) {
+            	checkTaxaIsAvailable(sStr, nIndex);
+            	return nIndex;
             }
         }
         throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified");
     }
 
+	void checkTaxaIsAvailable(String sStr, int nIndex) throws Exception {
+		while (nIndex + 1 > m_bTaxonIndexInUse.size()) {
+			m_bTaxonIndexInUse.add(false);
+		}
+		if (m_bTaxonIndexInUse.get(nIndex) == true) {
+			throw new Exception("Duplicate taxon found: " + sStr);
+		}
+		m_bTaxonIndexInUse.set(nIndex, true);
+	}
+    
 
     char[] m_chars;
     int m_iTokenStart;

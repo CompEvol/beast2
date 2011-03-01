@@ -92,6 +92,7 @@ public class Input<T> {
         name = sName;
         tipText = sTipText;
         value = null;
+        checkName();
     } // c'tor
 
     public Input(String sName, String sTipText, T startValue) {
@@ -99,6 +100,7 @@ public class Input<T> {
         tipText = sTipText;
         value = startValue;
         defaultValue = startValue;
+        checkName();
     } // c'tor
 
     public Input(String sName, String sTipText, T startValue, Class<?> type) {
@@ -107,6 +109,7 @@ public class Input<T> {
         value = startValue;
         defaultValue = startValue;
         theClass = type;
+        checkName();
     } // c'tor
 
     public Input(String sName, String sTipText, T startValue, Validate rule, Class<?> type) {
@@ -116,6 +119,7 @@ public class Input<T> {
         defaultValue = startValue;
         theClass = type;
         this.rule = rule;
+        checkName();
     } // c'tor
 
     /**
@@ -131,6 +135,7 @@ public class Input<T> {
                     + " (" + sName + ")");
         }
         this.rule = rule;
+        checkName();
     } // c'tor
 
     /**
@@ -145,6 +150,7 @@ public class Input<T> {
                     + " (" + sName + ")");
         }
         this.rule = rule;
+        checkName();
     } // c'tor
 
     /**
@@ -161,6 +167,7 @@ public class Input<T> {
         this.other = other;
         this.other.other = this;
         this.other.rule = rule;
+        checkName();
     } // c'tor
 
 
@@ -177,8 +184,20 @@ public class Input<T> {
         value = startValue;
         defaultValue = startValue;
         possibleValues = sPossibleValues;
+        checkName();
     } // c'tor
 
+    /** check name is not one of the reserved ones **/
+    private void checkName() {
+    	if (name.toLowerCase().equals("id") ||
+    			name.toLowerCase().equals("idref") ||
+    			name.toLowerCase().equals("spec") ||
+    			name.toLowerCase().equals("name")) {
+    		System.err.println("Found an input with invalid name: " + name);
+    		System.err.println("'id', 'idref', 'spec' and 'name' are reserved and cannot be used");
+    		System.exit(0);
+    	}
+    }
 
     /**
      * various setters and getters

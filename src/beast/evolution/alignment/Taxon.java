@@ -1,13 +1,15 @@
 package beast.evolution.alignment;
 
+
 import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.Plugin;
 
 @Description("For identifying a single taxon")
 public class Taxon extends Plugin {
-	//public Input<String> m_sName = new Input<String>("name","name of the taxon", Validate.REQUIRED);
+	// we can use the ID to identify a taxon name/taxon label
+	// if there are multiple taxaset with the same taxa, use
+	// idref to refer to the single taxon.
+//	public Input<String> m_sLabel = new Input<String>("label", "name of the taxon", Validate.REQUIRED);
 
 	
 	@Override

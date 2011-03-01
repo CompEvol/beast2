@@ -70,7 +70,7 @@ public class TaxonSetDialog extends JDialog {
 	
 	Component createIDBox() {
 		Box box = Box.createHorizontalBox();
-		box.add(new JLabel("Taxon set id:"));
+		box.add(new JLabel("Taxon set label:"));
 		m_IDEntry = new JTextField();
 		m_IDEntry.setText(m_sID);
 		box.add(m_IDEntry);
