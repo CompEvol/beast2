@@ -45,6 +45,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -575,7 +576,8 @@ public class XMLParser {
                 }
             }
             if (!bDone) {
-                throw new ClassNotFoundException(sSpecClass);
+            	throw new Exception("Class could not be found. Did you mean " + guessClass(sSpecClass) +"?");
+                //throw new ClassNotFoundException(sSpecClass);
             }
             // hack required to make log-parsing easier
             if (o instanceof State) {
@@ -583,7 +585,7 @@ public class XMLParser {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new XMLParserException(node, "Cannot create class: " + sSpecClass + " " + e.getMessage(), 122);
+            throw new XMLParserException(node, "Cannot create class: " + sSpecClass + ". " + e.getMessage(), 122);
         }
         // sanity check
         if (!(o instanceof Plugin)) {
@@ -615,6 +617,8 @@ public class XMLParser {
             	plugin.validateInputs();
             	plugin.initAndValidate();
         	} catch (Exception e) {
+            	plugin.validateInputs();
+            	plugin.initAndValidate();
         		e.printStackTrace();
         		throw new XMLParserException(node, "validate and intialize error: " + e.getMessage(), 110);
             }
@@ -622,7 +626,76 @@ public class XMLParser {
         return plugin;
     } // createObject
 
+    /** find closest matching class to named class **/
+    String guessClass(String sClass) {
+    	String sName = sClass;
+    	if(sClass.contains(".")) {
+    		sName = sClass.substring(sClass.lastIndexOf('.') + 1);
+    	}
+        List<String> sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+        int nBestDistance = Integer.MAX_VALUE;
+        String sClosest = null;
+        for (String sPlugin : sPluginNames) {
+        	String sClassName = sPlugin.substring(sPlugin.lastIndexOf('.')+1);
+        	int nDistance = getLevenshteinDistance(sName, sClassName);
+        	
+        	
+        	
+        	if (nDistance < nBestDistance) {
+        		nBestDistance = nDistance;
+        		sClosest = sPlugin;
+        	}
+        }
+    	return sClosest;
+    }
+    
+    
+    /** Compute edit distance between two strings = Levenshtein distance **/
+    public static int getLevenshteinDistance (String s, String t) {
+    	  if (s == null || t == null) {
+    	    throw new IllegalArgumentException("Strings must not be null");
+    	  }
+    			
+    	  int n = s.length(); // length of s
+    	  int m = t.length(); // length of t
+    			
+    	  if (n == 0) {
+    	    return m;
+    	  } else if (m == 0) {
+    	    return n;
+    	  }
 
+    	  int p[] = new int[n+1]; //'previous' cost array, horizontally
+    	  int d[] = new int[n+1]; // cost array, horizontally
+    	  int _d[]; //placeholder to assist in swapping p and d
+
+    	  // indexes into strings s and t
+    	  int i; // iterates through s
+    	  int j; // iterates through t
+    	  char t_j; // jth character of t
+    	  int cost; // cost
+    	  for (i = 0; i<=n; i++) {
+    	     p[i] = i;
+    	  }
+    	  for (j = 1; j<=m; j++) {
+    	     t_j = t.charAt(j-1);
+    	     d[0] = j;
+    	     for (i=1; i<=n; i++) {
+    	        cost = s.charAt(i-1)==t_j ? 0 : 1;
+    	        // minimum of cell to the left+1, to the top+1, diagonally left and up +cost				
+    	        d[i] = Math.min(Math.min(d[i-1]+1, p[i]+1),  p[i-1]+cost);  
+    	     }
+    	     // copy current distance counts to 'previous row' distance counts
+    	     _d = p;
+    	     p = d;
+    	     d = _d;
+    	  } 
+    			
+    	  // our last action in the above loop was to switch d and p, so p now 
+    	  // actually has the most recent cost counts
+    	  return p[n];
+   	}
+    
     void parseInputs(Plugin parent, Node node) throws Exception {
         // first, process attributes
         NamedNodeMap atts = node.getAttributes();
@@ -789,9 +862,14 @@ public class XMLParser {
     /** parses file and formats it using the XMLProducer **/
     public static void main(String [] args) {
     	try {
+    		// redirect stdout to stderr
+    		PrintStream out = System.out;
+    		System.setOut(System.err);
+    		// parse the file
     		XMLParser parser = new XMLParser();
     		Plugin plugin = parser.parseFile(args[0]);
-    		//System.err.println(plugin.toString());
+    		// restore stdout 
+    		System.setOut(out);
     		System.out.println(new XMLProducer().toXML(plugin));
     	} catch (Exception e) {
 			e.printStackTrace();

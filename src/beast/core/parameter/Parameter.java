@@ -25,6 +25,7 @@
 package beast.core.parameter;
 
 import beast.core.*;
+import beast.core.Input.Validate;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -38,9 +39,14 @@ import org.w3c.dom.Node;
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
 public abstract class Parameter<T> extends StateNode {
-    public Input<String> m_pValues = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.");
+	/** value is a required input since it is very hard to ensure any internal consistency 
+	 * when no value is specified. When	another class wants to set the dimension, say, 
+	 * this will make it the responsibility of the other class to maintain internal consistency of
+	 * the parameter.
+	 */
+    public Input<String> m_pValues = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", Validate.REQUIRED);
     public Input<java.lang.Integer> m_nDimension =
-            new Input<java.lang.Integer>("dimension", "dimension of the paperameter(default 1)", 1);
+            new Input<java.lang.Integer>("dimension", "dimension of the paperameter (default 1)", 1);
 
 
     /**
