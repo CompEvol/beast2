@@ -70,7 +70,7 @@ public class TreeParser extends Tree {
     @Override
     public void initAndValidate() throws Exception {
         if (m_oData.get() != null) {
-            m_sLabels = m_oData.get().m_sTaxaNames;
+            m_sLabels = m_oData.get().getTaxaNames();
         } else {
             m_sLabels = null;
             m_bIsLabelledNewick = false;

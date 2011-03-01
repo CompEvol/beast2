@@ -54,7 +54,8 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * converts MCMC plug in into XML, i.e. does the reverse of XMLParser *
+ * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
+ * but tries to prettify the XML as well.
  */
 public class XMLProducer extends XMLParser {
     /**
@@ -111,17 +112,8 @@ public class XMLProducer extends XMLParser {
     } // toXML
 
     /** like toXML() but without the assumption that plugin is Runnable **/
-    @SuppressWarnings("rawtypes")
 	public String modelToXML(Plugin plugin) {
         try {
-//            StringBuffer buf = new StringBuffer();
-//            //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
-//            m_bDone = new HashSet<Plugin>();
-//            m_bInputsDone = new HashSet<Input>();
-//            m_sIDs = new HashSet<String>();
-//            m_nIndent = 0;
-//            pluginToXML(plugin, buf, null, false);
-//            //buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
             String sXML0 = toRawXML(plugin);
             String sXML = cleanUpXML(sXML0, m_sSupressAlignmentXSL);
             String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
@@ -136,6 +128,7 @@ public class XMLProducer extends XMLParser {
     } // toXML
 
     /** like modelToXML, but without the cleanup **/
+	@SuppressWarnings("rawtypes")
 	public String toRawXML(Plugin plugin) {
         try {
 		    StringBuffer buf = new StringBuffer();
@@ -212,6 +205,7 @@ public class XMLProducer extends XMLParser {
         return sw.toString();
     }
 
+    /** tries to compress XML into plates **/
     void findPlates(Node node) {
     	NodeList children = node.getChildNodes();
     	for (int iChild = 0; iChild < children.getLength(); iChild++) {
@@ -498,10 +492,6 @@ public class XMLProducer extends XMLParser {
      */
     @SuppressWarnings("rawtypes")
     void pluginToXML(Plugin plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
-if (plugin instanceof RealParameter) {
-	int h =3 ;
-	h++;
-}
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
         if (plugin instanceof Alignment) {

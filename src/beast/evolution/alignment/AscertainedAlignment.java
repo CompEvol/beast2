@@ -11,6 +11,9 @@ public class AscertainedAlignment extends Alignment {
 	public Input<Integer> m_excludefrom = new Input<Integer>("excludefrom","first site to condition on, default 0", 0);
 	public Input<Integer> m_excludeto = new Input<Integer>("excludeto","last site to condition on, default 0", 0);
 	public Input<Integer> m_excludeevery = new Input<Integer>("excludeevery","interval between sites to condition on (default 1)", 1);
+	
+// RRB: Note that all commented code is stuff to support inclusion-sites,
+// so don't delete them.
 //	public Input<Integer> m_includefrom = new Input<Integer>("includefrom","first site to condition on, default 0", 0);
 //	public Input<Integer> m_includeto = new Input<Integer>("includeto","last site to condition on, default 0", 0);
 //	public Input<Integer> m_includeevery = new Input<Integer>("includeevery","interval between sites to condition on (default 1)", 1);

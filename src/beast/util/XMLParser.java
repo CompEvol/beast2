@@ -56,7 +56,7 @@ import java.util.List;
  * <p/>
  * <p/>
  * Reserved elements (present in element2class map)
- * <probabilityDistribution>
+ * <distribution>
  * <operator>
  * <logger>
  * <data>
@@ -68,6 +68,7 @@ import java.util.List;
  * <map name='elementName'>x.y.z.Class</map>
  * <run>
  * <plate>
+ * <input>
  * <p/>
  * Reserved attributes:
  * <input id='myId' idRef='otherId' name='inputName' spec='x.y.z.MyClass'/>
@@ -136,8 +137,6 @@ public class XMLParser {
     final static String LOG_CLASS = Logger.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
     final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
-//    final static String INT_PARAMETER_CLASS = IntegerParameter.class.getName();
-//    final static String BOOL_PARAMETER_CLASS = BooleanParameter.class.getName();
     final static String PLUGIN_CLASS = Plugin.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
@@ -158,8 +157,6 @@ public class XMLParser {
     final static String STATE_ELEMENT = "state";
     final static String TREE_ELEMENT = "tree";
     final static String REAL_PARAMETER_ELEMENT = "parameter";
-//    final static String INT_PARAMETER_ELEMENT = "intParameter";
-//    final static String BOOL_PARAMETER_ELEMENT = "boolParameter";
     final static String RUN_ELEMENT = "run";
     final static String PLATE_ELEMENT = "plate";
     
@@ -192,7 +189,6 @@ public class XMLParser {
     
     public XMLParser() {
         m_sElement2ClassMap = new HashMap<String, String>();
-        //m_sElement2ClassMap.put(MCMC_ELEMENT, MCMC_CLASS);
         m_sElement2ClassMap.put(DISTRIBUTION_ELEMENT, LIKELIHOOD_CLASS);
         m_sElement2ClassMap.put(OPERATOR_ELEMENT, OPERATOR_CLASS);
         m_sElement2ClassMap.put(INPUT_ELEMENT, INPUT_CLASS);
@@ -202,8 +198,6 @@ public class XMLParser {
         m_sElement2ClassMap.put(SEQUENCE_ELEMENT, SEQUENCE_CLASS);
         m_sElement2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
         m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
-//        m_sElement2ClassMap.put(INT_PARAMETER_ELEMENT, INT_PARAMETER_CLASS);
-//        m_sElement2ClassMap.put(BOOL_PARAMETER_ELEMENT, BOOL_PARAMETER_CLASS);
     }
 
     public Runnable parseFile(String sFileName) throws Exception {
@@ -255,11 +249,6 @@ public class XMLParser {
         parseNameSpaceAndMap(topNode);
         
         NodeList children = topNode.getChildNodes();
-//        int i = 0;
-//        while (i < children.getLength() && children.item(i).getNodeType() != Node.ELEMENT_NODE) {
-//        	i++;
-//        }
-//        children = children.item(i).getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
             	Node child = children.item(i);
@@ -617,9 +606,6 @@ public class XMLParser {
         // set id
         Plugin plugin = (Plugin) o;
         plugin.setID(sID);
-//		if (!Class.forName(sClass).isInstance(plugin)) {
-//			throw new XMLParserException(node, "id=" + sID + ". Expected object of type " + sClass + " instead of " + plugin.getClass().getName(), 109);
-//		}
         register(node, plugin);
         // process inputs
         parseInputs(plugin, node);
@@ -671,9 +657,6 @@ public class XMLParser {
             Node child = children.item(i);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
                 String sElement = child.getNodeName();
-//				if (sElement.equals("log")) {
-//					parseLog(parent, child);
-//				} else {
                 // resolve name of the input
                 String sName = getAttribute(child, "name");
                 if (sName == null) {
@@ -688,7 +671,6 @@ public class XMLParser {
                 if (childItem != null) {
                     setInput(node, parent, sName, childItem);
                 }
-//				}
                 nChildElements++;
             }
         }
@@ -738,14 +720,14 @@ public class XMLParser {
         }
         //throw new XMLParserException(node, "no such input '"+sName+"' for element <" + node.getNodeName() + ">", 168);
     }
-
+    
+    /** records id in IDMap, for ease of retrieving Plugins associated with idrefs **/
     void register(Node node, Plugin plugin) {
         String sID = getID(node);
         if (sID != null) {
             m_sIDMap.put(sID, plugin);
         }
     }
-
 
     public static String getID(Node node) { // throws Exception {
         return getAttribute(node, "id");
@@ -755,6 +737,8 @@ public class XMLParser {
         return getAttribute(node, "idref");
     } // getIDRef
 
+    /** get string value of attribute with given name
+     * as opposed to double or integer value (see methods below) **/
     public static String getAttribute(Node node, String sAttName) { // throws Exception {
         NamedNodeMap atts = node.getAttributes();
         if (atts == null) {
@@ -770,6 +754,7 @@ public class XMLParser {
         return null;
     } // getAttribute
 
+    /** get integer value of attribute with given name **/
     public static int getAttributeAsInt(Node node, String sAttName) { //throws Exception {
         String sAtt = getAttribute(node, sAttName);
         if (sAtt == null) {
@@ -778,6 +763,7 @@ public class XMLParser {
         return Integer.parseInt(sAtt);
     }
 
+    /** get double value of attribute with given name **/
     public static double getAttributeAsDouble(Node node, String sAttName) { // throws Exception {
         String sAtt = getAttribute(node, sAttName);
         if (sAtt == null) {
@@ -786,6 +772,7 @@ public class XMLParser {
         return Double.parseDouble(sAtt);
     }
 
+    /** test whether a node contains a attribute with given name **/
     boolean hasAtt(Node node, String sAttributeName) {
         NamedNodeMap atts = node.getAttributes();
         if (atts != null) {
@@ -799,6 +786,7 @@ public class XMLParser {
         return false;
     }
 
+    /** parses file and formats it using the XMLProducer **/
     public static void main(String [] args) {
     	try {
     		XMLParser parser = new XMLParser();

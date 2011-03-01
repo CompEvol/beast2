@@ -26,10 +26,7 @@
 package beast.evolution.speciation;
 
 import beast.core.Description;
-import beast.core.Input;
 import beast.core.State;
-import beast.core.Input.Validate;
-import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreePrior;
 
@@ -38,19 +35,14 @@ import java.util.Random;
 
 /**
  * Ported from Beast 1.6
- * Parts of this class were derived from C++ code provided by Oliver Pybus.
  *
  * @author Andrew Rambaut
  * @author Alexei Drummond
  * @version $Id: SpeciationLikelihood.java,v 1.10 2005/05/18 09:51:11 rambaut Exp $
  */
 @Description("A likelihood function for speciation processes.")
-public class SpeciationLikelihood extends TreePrior {
+abstract public class SpeciationLikelihood extends TreePrior {
 	
-//	@Override
-//	public void initAndValidate(State state) throws Exception {
-//		// nothing to do
-//	}
 
    /**
      * Calculates the log likelihood of this set of coalescent intervals,
@@ -60,38 +52,19 @@ public class SpeciationLikelihood extends TreePrior {
      */
 	@Override
     public final double calculateLogP() {
-      	Tree stateTree = m_tree.get();
-      	
-//        if (m_bIsDirty || stateTree.isDirty()) {
-        if (isDirty(stateTree.getRoot())) {
-//          if (exclude != null) {
-//          logP = calculateTreeLogLikelihood(tree, exclude);
-//          }
-  		    logP = calculateTreeLogLikelihood(stateTree);
-//            m_bIsDirty = false;
+      	Tree tree = m_tree.get();
+      	if (m_tree.isDirty()) {
+  		    logP = calculateTreeLogLikelihood(tree);
         }
         return logP;
     } // calculateLogP
 	
-	// this is a bit crude.
-	// the tree should really know whether it is dirty all by itself.
-	boolean isDirty(Node node) {
-		if (node.isDirty() != Tree.IS_CLEAN) {
-			return true;
-		}
-		if (node.isLeaf()) {
-			return false;
-		}
-		return isDirty(node.m_left) || isDirty(node.m_right);  
-	}
 	
 	/** 
      * Generic likelihood calculation
      * @return log-likelihood of density
      */
-	double calculateTreeLogLikelihood(Tree tree) {
-		return 0;
-	}
+	abstract double calculateTreeLogLikelihood(Tree tree);
 
     // ****************************************************************
     // Private and protected stuff

@@ -1,8 +1,6 @@
 package beast.evolution.branchratemodel;
 
 
-import org.apache.commons.math.MathException;
-
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -22,6 +20,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distribution", "the distribution governing the rates among branches", Input.Validate.REQUIRED);
     public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
+    public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
 
     @Override
     public void initAndValidate() throws Exception {
@@ -38,6 +37,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         for (int i = 0; i < rates.length; i++) {
             rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
         }
+        normalize = normalizeInput.get();
     }
 
     public double getRateForBranch(Node node) {

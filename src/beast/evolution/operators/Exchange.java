@@ -64,7 +64,6 @@ import beast.util.Randomizer;
                 "The narrow exchange is very similar to a rooted-beast.tree nearest-neighbour " +
                 "interchange but with the restriction that node height must remain consistent.")
 public class Exchange extends TreeOperator {
-    //public Input<Tree> m_tree = new Input<Tree>("beast.tree","beast.tree on which an exchange operation is performed");
     public Input<Boolean> m_bIsNarrow = new Input<Boolean>("isNarrow", "if true (default) a narrow exchange is performed, otherwise a wide exchange", new Boolean(true));
 
     @Override
@@ -75,9 +74,7 @@ public class Exchange extends TreeOperator {
 	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
     @Override
     public double proposal() {
-        Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
-//		calculateHeightsFromLengths(beast.tree);
-
+        Tree tree = m_tree.get(this);
 
         double fLogHastingsRatio = 0;
 
@@ -87,7 +84,6 @@ public class Exchange extends TreeOperator {
             fLogHastingsRatio = wide(tree);
         }
 
-//        setLengthsFromHeights(beast.tree.getRoot());
         return fLogHastingsRatio;
     }
 
@@ -117,14 +113,10 @@ public class Exchange extends TreeOperator {
 
         if (i.getHeight() < iUncle.getHeight() && iUncle.getHeight() < iParent.getHeight()) {
             exchangeNodes(i, iUncle, iParent, iGrandParent);
-
-            // exchangeNodes generates the events
-            //beast.tree.pushTreeChangedEvent(iParent);
-            //beast.tree.pushTreeChangedEvent(iGrandParent);
             return 0;
         } else {
+            // Couldn't find valid narrow move on this beast.tree!!
             return Double.NEGATIVE_INFINITY;
-            //throw new Exception("Couldn't find valid narrow move on this beast.tree!!");
         }
     }
 
@@ -160,8 +152,8 @@ public class Exchange extends TreeOperator {
             // System.out.println("tries = " + tries+1);
             return 0;
         }
+        // Couldn't find valid wide move on this beast.tree!
         return Double.NEGATIVE_INFINITY;
-        //throw new Exception("Couldn't find valid wide move on this beast.tree!");
     }
 
 

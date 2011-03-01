@@ -517,7 +517,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             // we are currently assuming a no-category model...
             for (int i = 0; i < eigenCount; i++) {
                 //EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(i, 0);
-                EigenDecomposition ed = m_substitutionModel.getEigenDecomposition();
+                EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(null);
 
                 eigenBufferHelper.flipOffset(i);
 

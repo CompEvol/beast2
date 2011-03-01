@@ -115,7 +115,7 @@ public class BeerLikelihoodCoreCnG4 extends BeerLikelihoodCoreCnG {
 	}
 	
 	void calcSPP(int state1, double [] fMatrices1, double [] fMatrices2, double [] fPartials2, double [] fPartials3, int w, int v, int u) {
-		double tmp, sum;
+		double sum;
 		sum = 0.0;
 		if (state1 < 4) {
 			sum =	fMatrices2[w] * fPartials2[v];

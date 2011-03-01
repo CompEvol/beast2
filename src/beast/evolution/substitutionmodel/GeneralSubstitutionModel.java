@@ -43,7 +43,9 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
             		"rate matrix). Entry i specifies the rate of from i%n to floor(i/(n-1)) where " +
             		"n is the number of states.", Validate.REQUIRED);
 
+    /** number of states **/
     int m_nStates;
+    /** a square m_nStates x m_nStates matrix containing current rates  **/
     double [][] m_rateMatrix;
     
     @Override
@@ -67,7 +69,6 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
     protected EigenSystem eigenSystem;
     
-    //private double q[][];
     protected EigenDecomposition eigenDecomposition;
     private EigenDecomposition storedEigenDecomposition;
 
@@ -75,7 +76,6 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     private boolean storedUpdateMatrix = true;
 
     @Override
-    //public void getTransitionProbabilities(, double[] matrix) {
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
     	double distance = (fStartTime - fEndTime) * fRate;
     	
@@ -93,9 +93,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
             }
         }
 
-        // TODO: is the following really necessary?
-        // TODO: implemented a pool of iexp matrices to support multiple threads
-        // TODO: without creating a new matrix each call. - AJD
+        // is the following really necessary?
+        // implemented a pool of iexp matrices to support multiple threads
+        // without creating a new matrix each call. - AJD
+        // a quick timing experiment shows no difference - RRB
         double[] iexp = new double[m_nStates * m_nStates];
         // Eigen vectors
         double[] Evec = eigenDecomposition.getEigenVectors();
@@ -174,6 +175,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
     
 
+    /** CalculationNode implementation follows **/
     @Override
     public void store() {
         storedUpdateMatrix = updateMatrix;
@@ -216,7 +218,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
      * @return the array
      */
     @Override
-    public EigenDecomposition getEigenDecomposition() {
+    public EigenDecomposition getEigenDecomposition(Node node) {
         synchronized (this) {
             if (updateMatrix) {
             	setupRelativeRates();

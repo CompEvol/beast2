@@ -4,6 +4,7 @@ import beast.core.Input.Validate;
 import beast.core.Description;
 import beast.core.Valuable;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
 
 @Description("A substitution model where the rates and frequencies are obtained from " +
 		"empirical evidence. Especially, amino acid models like WAG.")
@@ -27,7 +28,6 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 		}
 		
 		super.initAndValidate();
-        //q = new double[m_nStates][m_nStates];
     } // initAndValidate
 
 
@@ -37,7 +37,6 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 		int nStates = matrix.length;
 		RealParameter rates = new RealParameter("0",0.0, Double.POSITIVE_INFINITY, nStates*(nStates-1));
 
-		int k = 0;
 		for (int i = 0; i < nStates; i++) {
 			for (int j = i + 1; j < nStates; j++) {
 				rates.setValue(i*(nStates-1)+j, matrix[i][j]);
@@ -69,7 +68,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 	abstract double [] getEmpiricalFrequencies();
 
 	@Override
-    public double [] getRateMatrix() {
+    public double [] getRateMatrix(Node node) {
 		double[][] matrix = getEmpiricalRates();
 		int nStates = matrix.length;
 		double [] rates = new double[nStates*nStates];

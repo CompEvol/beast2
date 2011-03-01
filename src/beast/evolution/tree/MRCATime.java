@@ -8,7 +8,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Loggable;
-import beast.core.Plugin;
 import beast.core.Valuable;
 import beast.evolution.alignment.Alignment;
 
@@ -40,7 +39,7 @@ public class MRCATime extends CalculationNode implements Valuable, Loggable {
 		// determine which taxa are in the set
 		m_bTaxaSet = new boolean [data.getNrTaxa()];
 		for (String sTaxon : sTaxa) {
-			int iTaxon = data.m_sTaxaNames.indexOf(sTaxon);
+			int iTaxon = data.getTaxaNames().indexOf(sTaxon);
 			if (iTaxon < 0) {
 				throw new Exception ("Cannot find taxon " + sTaxon + " in data");
 			}

@@ -6,7 +6,6 @@ import beast.core.Input;
 import beast.core.Valuable;
 import beast.core.Input.Validate;
 import beast.core.Loggable;
-import beast.core.Plugin;
 
 import java.io.PrintStream;
 

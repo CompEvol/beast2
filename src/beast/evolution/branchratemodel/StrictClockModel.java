@@ -30,6 +30,9 @@ public class StrictClockModel extends BranchRateModel.Base {
 
     @Override
     public boolean requiresRecalculation() {
+    	/* Suppose muParameter is not specified, then this
+    	 * method is never called, so no need to check muParameter.get() == null.
+    	 */
     	if (muParameter.get().somethingIsDirty()) {
     		mu = muParameter.get().getValue();
         	return true;

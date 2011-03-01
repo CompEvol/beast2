@@ -22,7 +22,7 @@ import beast.util.TreeParser;
  * So, it these tests succeed, then Beast II calculates the same for these simple models as Beast 1 and PAUP.
  * **/
 public class TreeLikelihoodTest extends TestCase {
-	final static double PRECISION = 1e-7;
+	final static double PRECISION = 1e-6;
 	
 	public TreeLikelihoodTest() {
 		super();

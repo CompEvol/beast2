@@ -28,13 +28,14 @@ public class IntRandomWalkOperator extends Operator {
     @Override
     public double proposal() {
 
-        IntegerParameter param = parameterInput.get(this);//(IntegerParameter) state.getStateNode(parameterInput);
+        IntegerParameter param = parameterInput.get(this);
 
         int i = Randomizer.nextInt(param.getDimension());
         int value = param.getValue(i);
         int newValue = value + Randomizer.nextInt(2 * windowSize + 1) - windowSize;
 
         if (newValue < param.getLower() || newValue > param.getUpper()) {
+        	// invalid move, can be rejected immediately
         	return Double.NEGATIVE_INFINITY;
         }
         if (newValue == value) {
@@ -47,15 +48,9 @@ public class IntRandomWalkOperator extends Operator {
         return 0.0;
     }
 
-    /**
-     * called after every invocation of this operator to see whether
-     * a parameter can be optimised for better acceptance hence faster
-     * mixing
-     *
-     * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
-     */
+    @Override
     public void optimize(double logAlpha) {
-        // must be overridden by operator implementation to have an effect
+        // nothing to optimise
     }
 
 } // class IntRandomWalkOperator

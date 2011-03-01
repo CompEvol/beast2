@@ -30,7 +30,8 @@ import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 
 
-@Description("Specifies transition probability matrix for a given distance")
+@Description("Specifies substitution model from which a transition probability matrix for a given " +
+		"distance can be obtained.")
 public interface SubstitutionModel {
 
 	/**
@@ -48,8 +49,11 @@ public interface SubstitutionModel {
      * @return instantaneous rate matrix Q, where Q is flattened into an array
      * This is a square matrix, where rows add to zero, or null when no rate
      * matrix is available.
+     * @param node 
+     * In most cases, the rate matrix is independent of the tree, but if it changes
+     * throughout a tree, the node can provide this information.
      */
-    double [] getRateMatrix();
+    double [] getRateMatrix(Node node);
     
     /** return frequencies for root distribution **/
     double [] getFrequencies();
@@ -59,16 +63,22 @@ public interface SubstitutionModel {
      * Such Eigen decomposition may not be available because the substitution model changes over time,
      * for example, when one HKY model applies for some time t less than threshold time T while a GTR
      * model applies when t >= T.
+     * @param node 
+     * In most cases, the rate matrix, and thus the Eigen decomposition, is independent of the tree, 
+     * but if it changes throughout a tree, the node can provide this information.
      *  
      * @return the EigenDecomposition, null if not available
      */
-    EigenDecomposition getEigenDecomposition();
+    EigenDecomposition getEigenDecomposition(Node node);
 
     /**
      * @return whether substitution model can return complex diagonalizations
+     * If so, for example, a treelikelihood needs to be able to deal with this.
      */
     boolean canReturnComplexDiagonalization();
 
+    
+    /** basic implementation of a SubstitutionModel bringing together relevant super class**/
     public abstract class Base extends CalculationNode implements SubstitutionModel {
         public Input<Frequencies> frequencies =
                 new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
@@ -84,10 +94,9 @@ public interface SubstitutionModel {
         }
 
         @Override
-        public double [] getRateMatrix() {
+        public double [] getRateMatrix(Node node) {
         	return null;
         }
+    } // class Base
     
-    
-    }
-}
+} // class SubstitutionModel

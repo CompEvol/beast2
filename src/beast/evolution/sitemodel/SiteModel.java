@@ -25,18 +25,16 @@
 package beast.evolution.sitemodel;
 
 
-import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
-import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.math.distribution.GammaDistribution;
+import org.apache.commons.math.distribution.GammaDistributionImpl;
+
+
 
 /**
  * Site model with
@@ -44,11 +42,10 @@ import java.util.List;
  * o proportion of sites that are invariant
  * *
  */
-
 @Description("Defines mutation rate " +
         "and gamma distributed rates across sites (optional) " +
         "and proportion of the sites invariant (also optional).")
-public class SiteModel extends CalculationNode {
+public class SiteModel extends SiteModelInterface.Base {
     public Input<RealParameter> muParameter = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)");
     public Input<Integer> gammaCategoryCount =
             new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
@@ -56,10 +53,6 @@ public class SiteModel extends CalculationNode {
             new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
     public Input<RealParameter> invarParameter =
             new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
-    public Input<SubstitutionModel.Base> m_pSubstModel =
-            new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
-//    public Input<Frequencies> m_pFreqs =
-//            new Input<Frequencies>("frequencies", "frequencies of characters used as prior on root", Validate.REQUIRED);
 
 
     @Override
@@ -99,22 +92,6 @@ public class SiteModel extends CalculationNode {
         addCondition(shapeParameter);
     }
 
-    public List<String> getConditions() {
-        return conditions;
-    }
-
-    // RRB: do we need this bit of undocumented code?
-
-    public void addCondition(Input<? extends StateNode> stateNode) {
-//        if (this instanceof StateNode) throw new RuntimeException();
-        if (stateNode.get() == null) return;
-
-        if (conditions == null) conditions = new ArrayList<String>();
-
-        conditions.add(stateNode.get().getID());
-    }
-
-    protected List<String> conditions = null;
 
 
 
@@ -123,20 +100,24 @@ public class SiteModel extends CalculationNode {
     // Interface SiteModel
     // *****************************************************************
 
+    @Override
     public boolean integrateAcrossCategories() {
         return true;
     }
 
+    @Override
     public int getCategoryCount() {
         return categoryCount;
     }
 
-    public int getCategoryOfSite(int site) {
+    @Override
+    public int getCategoryOfSite(int site, Node node) {
         throw new IllegalArgumentException("Integrating across categories");
     }
 
+    @Override
     public double getRateForCategory(int category, Node node) {
-        //synchronized (this) 
+        synchronized (this) 
         {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -154,8 +135,9 @@ public class SiteModel extends CalculationNode {
      * @param node rates to which the rates apply. Typically, the rates will be uniform
      * throughout the tree and the node argument is ignored.
      */
+    @Override
     public double[] getCategoryRates(Node node) {
-        //synchronized (this) 
+        synchronized (this) 
         {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -173,12 +155,10 @@ public class SiteModel extends CalculationNode {
         return rates;
     }
 
+    /** @return substitution model **/
+    @Override
     public SubstitutionModel getSubstitutionModel() {
         return m_pSubstModel.get();
-    }
-
-    public double[] getFrequencies() {
-        return m_pSubstModel.get().getFrequencies();
     }
 
     /**
@@ -188,8 +168,9 @@ public class SiteModel extends CalculationNode {
      * will be uniform throughout the tree and this argument is ignored.
      * @return the proportion.
      */
+    @Override
     public double getProportionForCategory(int category, Node node) {
-        //synchronized (this) 
+        synchronized (this) 
         {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -204,8 +185,9 @@ public class SiteModel extends CalculationNode {
      *
      * @return an array of the proportion.
      */
+    @Override
     public double[] getCategoryProportions(Node node) {
-        //synchronized (this) 
+        synchronized (this) 
         {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -216,7 +198,7 @@ public class SiteModel extends CalculationNode {
     }
 
     /**
-     * discretization of gamma distribution with equal proportions in each
+     * discretisation of gamma distribution with equal proportions in each
      * category
      */
     protected void calculateCategoryRates(Node node) {
@@ -237,10 +219,14 @@ public class SiteModel extends CalculationNode {
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
+       	 	GammaDistribution g = new GammaDistributionImpl(a, 1.0 / a);
             for (int i = 0; i < gammaCatCount; i++) {
-
                 try {
-                    categoryRates[i + cat] = GammaDistributionQuantile((2.0 * i + 1.0) / (2.0 * gammaCatCount), a, 1.0 / a);
+                	// RRB: alternative implementation that seems equally good in
+                	// the first 5 significant digits, but uses a standard distribution object
+                	 categoryRates[i + cat] = g.inverseCumulativeProbability((2.0 * i + 1.0) / (2.0 * gammaCatCount));
+                	
+                    //categoryRates[i + cat] = GammaDistributionQuantile((2.0 * i + 1.0) / (2.0 * gammaCatCount), a, 1.0 / a);
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.err.println("Something went wrong with the gamma distribution calculation");
@@ -323,6 +309,7 @@ public class SiteModel extends CalculationNode {
         }
         g = GammaFunctionlnGamma(v / 2);
         xx = v / 2;
+        
         c = xx - 1;
         if (v < -1.24 * Math.log(prob)) {
             ch = Math.pow((prob * xx * Math.exp(g + xx * aa)), 1 / xx);
@@ -558,4 +545,5 @@ public class SiteModel extends CalculationNode {
         z = y + ((((y * a4 + a3) * y + a2) * y + a1) * y + a0) / ((((y * b4 + b3) * y + b2) * y + b1) * y + b0);
         return (prob < 0.5 ? -z : z);
     }
+
 } // class SiteModel

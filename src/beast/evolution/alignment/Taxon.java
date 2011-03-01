@@ -7,7 +7,7 @@ import beast.core.Plugin;
 
 @Description("For identifying a single taxon")
 public class Taxon extends Plugin {
-//	public Input<String> m_sName = new Input<String>("name","name of the taxon", Validate.REQUIRED);
+	//public Input<String> m_sName = new Input<String>("name","name of the taxon", Validate.REQUIRED);
 
 	
 	@Override

@@ -166,16 +166,16 @@ public class ClusterTree extends Tree {
 
 			if (m_left == null) {
 				if (m_right == null) {
-					return "(" + m_pData.get().m_sTaxaNames.get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
-					m_pData.get().m_sTaxaNames.get(m_iRightInstance) +":" + myFormatter.format(m_fRightLength) + ")";
+					return "(" + m_pData.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
+					m_pData.get().getTaxaNames().get(m_iRightInstance) +":" + myFormatter.format(m_fRightLength) + ")";
 				} else {
-					return "(" + m_pData.get().m_sTaxaNames.get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
+					return "(" + m_pData.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
 						m_right.toString() + ":" + myFormatter.format(m_fRightLength) + ")";
 				}
 			} else {
 				if (m_right == null) {
 					return "(" + m_left.toString() + ":" + myFormatter.format(m_fLeftLength) + "," +
-					m_pData.get().m_sTaxaNames.get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
+					m_pData.get().getTaxaNames().get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
 				} else {
 					return "(" + m_left.toString() + ":" + myFormatter.format(m_fLeftLength) + "," +m_right.toString() + ":" + myFormatter.format(m_fRightLength) + ")";
 				}
@@ -188,12 +188,12 @@ public class ClusterTree extends Tree {
 			if (m_left == null) {
 				node.m_left = newNode();
 				node.m_left.setNr(m_iLeftInstance);
-				node.m_left.setID(m_pData.get().m_sTaxaNames.get(m_iLeftInstance));
+				node.m_left.setID(m_pData.get().getTaxaNames().get(m_iLeftInstance));
 				node.m_left.setHeight(m_fHeight - m_fLeftLength);
 				if (m_right == null) {
 					node.m_right = newNode();
 					node.m_right.setNr(m_iRightInstance);
-					node.m_right.setID(m_pData.get().m_sTaxaNames.get(m_iRightInstance));
+					node.m_right.setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
 					node.m_right.setHeight(m_fHeight - m_fRightLength);
 				} else {
 					node.m_right = m_right.toNode();
@@ -203,7 +203,7 @@ public class ClusterTree extends Tree {
 				if (m_right == null) {
 					node.m_right = newNode();
 					node.m_right.setNr(m_iRightInstance);
-					node.m_right.setID(m_pData.get().m_sTaxaNames.get(m_iRightInstance));
+					node.m_right.setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
 					node.m_right.setHeight(m_fHeight - m_fRightLength);
 				} else {
 					node.m_right = m_right.toNode();

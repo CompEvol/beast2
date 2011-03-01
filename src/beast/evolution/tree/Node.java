@@ -31,20 +31,36 @@ import java.util.List;
 
 @Description("Nodes in building binary beast.tree data structure.")
 public class Node extends Plugin {
+	
 	/** label nr of node, only used when this is a leaf **/
 	protected int m_iLabel;
+	
 	/** height of this node. */
 	protected double m_fHeight = Double.MAX_VALUE;
+	
 	/** list of children of this node **/
 	public Node m_left;
 	public Node m_right;
+	
 	/** parent node in the beast.tree, null if root **/
 	Node m_Parent = null;
+	
 	/** status of this node after an operation is performed on the state **/
 	int m_bIsDirty = Tree.IS_CLEAN;
+	
 	/** meta-data contained in square brackets in Newick **/
 	public String m_sMetaData;
 
+	@Override
+	public void initAndValidate() throws Exception {
+		// do nothing
+	}
+
+	/** number uniquely identifying the node in the tree.
+	 * This is a number between 0 and the total number of nodes in the tree
+	 * Leaf nodes are number 0 to #leaf nodes -1
+	 * Internal nodes are numbered  #leaf nodes  up to #nodes-1
+	 * The root node is not guaranteed a number. **/
 	public int getNr() {return m_iLabel;}
 	public void setNr(int iLabel) {m_iLabel = iLabel;}
 
@@ -69,6 +85,10 @@ public class Node extends Plugin {
 		}
 	}
 
+	/** methods for accessing the dirtiness state of the Node.
+	 * A Node is Tree.IS_DIRTY if its value (like height) has changed
+	 * A Node Tree.IS_if FILTHY if its parent or child has changed.
+	 * Otherwise the node is Tree.IS_CLEAN **/
 	public int isDirty() {return m_bIsDirty;}
 	public void makeDirty(int nDirty) {
 		m_bIsDirty |= nDirty;
@@ -290,6 +310,7 @@ public class Node extends Plugin {
 		return node;
 	} // copy
 
+	/** assign values to a tree in array representation **/
 	public void assignTo(Node [] nodes) {
 		Node node = nodes[getNr()];
 		node.m_fHeight = m_fHeight;
@@ -309,8 +330,8 @@ public class Node extends Plugin {
 		}
 	}
 	
+	/** assign values from a tree in array representation **/
 	public void assignFrom(Node [] nodes, Node node) {
-//		Node node = nodes[getNr()];
 		m_fHeight = node.m_fHeight;
 		m_iLabel = node.m_iLabel;
 		m_sMetaData = node.m_sMetaData;
@@ -327,7 +348,11 @@ public class Node extends Plugin {
 			}
 		}
 	}
-	
+
+	/** set meta-data according to pattern.
+	 * Only heights are recognised, but derived classes could deal with
+	 * richer meta data pattersn.
+	 */
 	public void setMetaData(String sPattern, Object fValue) {
 		if (sPattern.equals(TraitSet.DATE_TRAIT) || 
 				sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) || 
@@ -356,11 +381,6 @@ public class Node extends Plugin {
 				throw new Exception("Scale gives negative branch length");
 			}
 		}
-	}
-
-	@Override
-	public void initAndValidate() throws Exception {
-		// do nothing
 	}
 
 } // class Node

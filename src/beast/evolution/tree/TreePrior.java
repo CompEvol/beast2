@@ -17,20 +17,16 @@ public class TreePrior extends Distribution {
 
 	@Override
 	public List<String> getArguments() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<String> getConditions() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void sample(State state, Random random) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

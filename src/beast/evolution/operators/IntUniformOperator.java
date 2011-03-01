@@ -22,7 +22,7 @@ public class IntUniformOperator extends Operator {
     @Override
     public double proposal() {
 
-        IntegerParameter param = parameterInput.get(this);//(IntegerParameter) state.getStateNode(parameterInput);
+        IntegerParameter param = parameterInput.get(this);
 
         int i = Randomizer.nextInt(param.getDimension());
         int newValue = Randomizer.nextInt(param.getUpper() - param.getLower() + 1) + param.getLower();
@@ -32,15 +32,9 @@ public class IntUniformOperator extends Operator {
         return 0.0;
     }
 
-    /**
-     * called after every invocation of this operator to see whether
-     * a parameter can be optimised for better acceptance hence faster
-     * mixing
-     *
-     * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
-     */
+    @Override
     public void optimize(double logAlpha) {
-        // must be overridden by operator implementation to have an effect
+        // nothing to optimise
     }
 
 } // class IntRandomWalkOperator

@@ -36,6 +36,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/*
+* Note that leaf nodes are always numbered 0,...,nodeCount-1
+* Internal nodes are numbered higher, but the root has no guaranteed 
+* number.
+*/
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
@@ -87,9 +92,13 @@ public class Tree extends StateNode {
 	}
 
     
-    
+    /** state of dirtiness of a node in the tree
+     * DIRTY means a property on the node has changed, but not the topology
+     * FILTHY means the nodes' parent or child has changed.
+     */
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
+    /** counters of number of nodes, nodeCount = internalNodeCount + leafNodeCount **/
     int nodeCount = -1;
     int internalNodeCount = -1;
     int leafNodeCount = -1;
@@ -168,7 +177,12 @@ public class Tree extends StateNode {
             }
         }
     }
-
+    
+    /** traverse tree and assign meta-data values in fT to nodes in the
+     * tree to the meta-data field represented by the given pattern. 
+     * This only has an effect when setMetadata() in a subclass
+     * of Node know how to process such value.
+     */
     public void setMetaData(Node node, Double[] fT, String sPattern) {
         node.setMetaData(sPattern, fT[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
@@ -179,8 +193,33 @@ public class Tree extends StateNode {
         }
     }
 
+    /** array of all nodes in the tree **/
+    Node[] m_nodes = null;
+
+    /** convert tree to array representation **/
+    void listNodes(Node node, Node[] nodes) {
+        nodes[node.getNr()] = node;
+        if (!node.isLeaf()) {
+            listNodes(node.m_left, nodes);
+            if (node.m_right != null) {
+            	listNodes(node.m_right, nodes);
+            }
+        }
+    }
+
+    /** returns list of nodes in array format.
+     *  **/
+    public Node [] getNodesAsArray() {
+        if (m_nodes == null) {
+        	m_nodes = new Node[getNodeCount()];
+        	listNodes(root, m_nodes);
+        }    	
+        return m_nodes;
+    }
+
+
     /**
-     * deep copy
+     * deep copy, returns a completely new tree
      *
      * @return a deep copy of this beast.tree.
      */
@@ -198,6 +237,7 @@ public class Tree extends StateNode {
         return tree;
     }
 
+    /** copy of all values into existing tree **/
     @Override
     public void assignTo(StateNode other) {
         Tree tree = (Tree) other;
@@ -214,14 +254,7 @@ public class Tree extends StateNode {
         //tree.m_state = m_state;
     }
 
-    public Node [] getNodesAsArray() {
-        if (m_nodes == null) {
-        	m_nodes = new Node[getNodeCount()];
-        	listNodes(root, m_nodes);
-        }    	
-        return m_nodes;
-    }
-    
+    /** copy of all values from existing tree **/
     @Override
     public void assignFrom(StateNode other) {
         Tree tree = (Tree) other;
@@ -238,7 +271,7 @@ public class Tree extends StateNode {
         //m_state = tree.m_state;
     }
 
-    Node[] m_nodes = null;
+    /** as assignFrom, but only copy tree structure **/
     @Override
     public void assignFromFragile(StateNode other) {
         Tree tree = (Tree) other;
@@ -270,8 +303,8 @@ public class Tree extends StateNode {
 //    	root.assignFromFragile(otherNodes[iRoot]);
         assignFrom(iRoot + 1, nodeCount, otherNodes);
     }
-    
-    void assignFrom(int iStart, int iEnd, Node [] otherNodes) {
+    /** helper to assignFromFragile **/
+    private void assignFrom(int iStart, int iEnd, Node [] otherNodes) {
         for (int i = iStart; i < iEnd; i++) {
         	Node sink = m_nodes[i];
         	Node src = otherNodes[i];
@@ -288,17 +321,16 @@ public class Tree extends StateNode {
 //        	sink.assignFromFragile(src);
         }
     }
-    /** convert tree to array representation **/
-    void listNodes(Node node, Node[] nodes) {
-        nodes[node.getNr()] = node;
-        if (!node.isLeaf()) {
-            listNodes(node.m_left, nodes);
-            if (node.m_right != null) {
-            	listNodes(node.m_right, nodes);
-            }
-        }
-    }
     
+
+    public String toString() {
+        return root.toString();
+    }
+
+
+	/**
+     * StateNode implementation 
+     */
     @Override
     public void setEverythingDirty(boolean bDirty) {
     	setSomethingIsDirty(bDirty);
@@ -309,12 +341,13 @@ public class Tree extends StateNode {
     	}
     }
 
-    public String toString() {
-        return root.toString();
-    }
+    @Override
+	public int scale(double fScale) throws Exception {
+		root.scale(fScale);
+		return getInternalNodeCount();
+	}
 
-
-    /* Loggable interface implementation follows */
+	/** Loggable interface implementation follows **/
 
     /**
      * print translate block for NEXUS beast.tree file
@@ -345,9 +378,6 @@ public class Tree extends StateNode {
         }
     }
 
-    /**
-     * Loggable implementation follows *
-     */
     @Override
     public void init(PrintStream out) throws Exception {
         out.println("#NEXUS\n");
@@ -373,12 +403,7 @@ public class Tree extends StateNode {
         out.print("End;");
     }
 
-	@Override
-	public int scale(double fScale) throws Exception {
-		root.scale(fScale);
-		return getInternalNodeCount();
-	}
-
+	/** reconstruct tree from XML fragment in the form of a DOM node **/
 	@Override
 	public void fromXML(org.w3c.dom.Node node) {
 		String sNewick = node.getTextContent();
@@ -391,6 +416,8 @@ public class Tree extends StateNode {
 			e.printStackTrace();
 		}
 	}
+
+	/** Valuable implementation **/
 	@Override public int getDimension() {return getNodeCount();}
     @Override public double getArrayValue() {return (double) root.m_fHeight;}
     @Override public double getArrayValue(int iValue) {

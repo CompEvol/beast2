@@ -144,7 +144,7 @@ public class TreeLikelihood extends Distribution {
 
     public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree", Validate.REQUIRED);
     public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
-    public Input<SiteModel> m_pSiteModel = new Input<SiteModel>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+    public Input<SiteModel.Base> m_pSiteModel = new Input<SiteModel.Base>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     public Input<BranchRateModel.Base> m_pBranchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
     public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
@@ -156,7 +156,7 @@ public class TreeLikelihood extends Distribution {
      * is safe to link to them only once, during initAndValidate.
      */
     SubstitutionModel.Base m_substitutionModel;
-    protected SiteModel m_siteModel;
+    protected SiteModel.Base m_siteModel;
     BranchRateModel.Base m_branchRateModel;
 
     /** flag to indicate the 
@@ -406,7 +406,7 @@ public class TreeLikelihood extends Distribution {
                     // No parent this is the root of the beast.tree -
                     // calculate the pattern likelihoods
                     double[] frequencies = //m_pFreqs.get().
-                            m_siteModel.getFrequencies();
+                            m_substitutionModel.getFrequencies();
 
                     double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
@@ -479,7 +479,7 @@ public class TreeLikelihood extends Distribution {
                     // No parent this is the root of the beast.tree -
                     // calculate the pattern likelihoods
                     double[] frequencies = //m_pFreqs.get().
-                            m_siteModel.getFrequencies();
+                            m_substitutionModel.getFrequencies();
 
                     double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);

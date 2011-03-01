@@ -31,7 +31,7 @@ public class RealRandomWalkOperator extends Operator {
     @Override
     public double proposal() {
 
-    	RealParameter param = parameterInput.get(this);//(IntegerParameter) state.getStateNode(parameterInput);
+    	RealParameter param = parameterInput.get(this);
 
         int i = Randomizer.nextInt(param.getDimension());
         double value = param.getValue(i);

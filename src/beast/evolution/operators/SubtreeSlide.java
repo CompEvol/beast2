@@ -68,14 +68,11 @@ import java.util.List;
         "slide down into.")
 public class SubtreeSlide extends TreeOperator {
 
-//    public Input<Tree> m_tree = new Input<Tree>("beast.tree", "beast.tree on which the subtree slide operator is applied");
     public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
+    public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
+
     // shadows m_size
     double m_fSize;
-    public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
-//    public Input<Boolean> m_swapInRandomRate= new Input<Boolean>("swapInRandomRate","swapInRandomRate???", new Boolean(true));
-//    public Input<Boolean> m_swapInRandomTrait= new Input<Boolean>("swapInRandomTrait","swapInRandomTrait???", new Boolean(true));
-//    public Input<Boolean> m_scaledDirichletBranches= new Input<Boolean>("scaledDirichletBranches","scaledDirichletBranches???", new Boolean(true));
 
     @Override
     public void initAndValidate() {
@@ -88,9 +85,7 @@ public class SubtreeSlide extends TreeOperator {
 	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
     @Override
     public double proposal() {
-        Tree tree = m_tree.get(this);//(Tree) state.getStateNode(m_tree);
-
-        //calculateHeightsFromLengths(beast.tree);
+        Tree tree = m_tree.get(this);
 
         double logq;
 
@@ -127,35 +122,11 @@ public class SubtreeSlide extends TreeOperator {
 
                 // 3.1.1 if creating a new root
                 if (newChild.isRoot()) {
-                	//if (true) return Double.NEGATIVE_INFINITY;
                     replace(iP, CiP, newChild);
                     replace(PiP, iP, CiP);
 
-//                	beast.tree.removeChild(iP, CiP);
-//                    beast.tree.removeChild(PiP, iP);
-//                    beast.tree.addChild(iP, newChild);
-//                    beast.tree.addChild(PiP, CiP);
-
                     iP.setParent(null);
                     tree.setRoot(iP);
-                    //System.err.println("Creating new root!");
-
-//                    if (beast.tree.hasNodeTraits()) {
-//                        // **********************************************
-//                        // swap traits and rates so that root keeps it trait and rate values
-//                        // **********************************************
-//
-//                        beast.tree.swapAllTraits(newChild, iP);
-//
-//                    }
-
-//                    if (beast.tree.hasRates()) {
-//                        final double rootNodeRate = beast.tree.getNodeRate(newChild);
-//                        beast.tree.setNodeRate(newChild, beast.tree.getNodeRate(iP));
-//                        beast.tree.setNodeRate(iP, rootNodeRate);
-//                    }
-
-                    // **********************************************
 
                 }
                 // 3.1.2 no new root
@@ -163,14 +134,6 @@ public class SubtreeSlide extends TreeOperator {
                     replace(iP, CiP, newChild);
                     replace(PiP, iP, CiP);
                     replace(newParent, newChild, iP);
-
-//                    beast.tree.removeChild(iP, CiP);
-//                    beast.tree.removeChild(PiP, iP);
-//                    beast.tree.removeChild(newParent, newChild);
-//                    beast.tree.addChild(iP, newChild);
-//                    beast.tree.addChild(PiP, CiP);
-//                    beast.tree.addChild(newParent, iP);
-                    //System.err.println("No new root!");
                 }
 
                 iP.setHeight(newHeight);
@@ -218,43 +181,13 @@ public class SubtreeSlide extends TreeOperator {
                     replace(iP, CiP, newChild);
                     replace(newParent, newChild, iP);
 
-                    //beast.tree.removeChild(iP, CiP);
-                    //beast.tree.removeChild(newParent, newChild);
-                    //beast.tree.addChild(iP, newChild);
-                    //beast.tree.addChild(newParent, iP);
                     CiP.setParent(null);
                     tree.setRoot(CiP);
 
-//                    if (beast.tree.hasNodeTraits()) {
-//                        // **********************************************
-//                        // swap traits and rates, so that root keeps it trait and rate values
-//                        // **********************************************
-//
-//                        beast.tree.swapAllTraits(iP, CiP);
-//
-//                    }
-//getHeight()
-//                    if (beast.tree.hasRates()) {
-//                        final double rootNodeRate = beast.tree.getNodeRate(iP);
-//                        beast.tree.setNodeRate(iP, beast.tree.getNodeRate(CiP));
-//                        beast.tree.setNodeRate(CiP, rootNodeRate);
-//                    }
-
-                    // **********************************************
-
-                    //System.err.println("DOWN: Creating new root!");
                 } else {
                     replace(iP, CiP, newChild);
                     replace(PiP, iP, CiP);
                     replace(newParent, newChild, iP);
-
-                    //beast.tree.removeChild(iP, CiP);
-                    //beast.tree.removeChild(PiP, iP);
-                    //beast.tree.removeChild(newParent, newChild);
-                    //beast.tree.addChild(iP, newChild);
-                    //beast.tree.addChild(PiP, CiP);
-                    //beast.tree.addChild(newParent, iP);
-                    //System.err.println("DOWN: no new root!");
                 }
 
                 iP.setHeight(newHeight);
@@ -265,39 +198,6 @@ public class SubtreeSlide extends TreeOperator {
                 logq = 0.0;
             }
         }
-
-//        if (swapInRandomRate) {
-//            final Node j = beast.tree.getNode(Randomizer.nextInt(beast.tree.getNodeCount()));
-//            if (j != i) {
-//                final double tmp = beast.tree.getNodeRate(i);
-//                beast.tree.setNodeRate(i, beast.tree.getNodeRate(j));
-//                beast.tree.setNodeRate(j, tmp);
-//            }
-//
-//        }
-//
-//        if (swapInRandomTrait) {
-//            final Node j = beast.tree.getNode(Randomizer.nextInt(beast.tree.getNodeCount()));
-//            if (j != i) {
-//
-//                beast.tree.swapAllTraits(i, j);
-//
-////                final double tmp = beast.tree.getNodeTrait(i, TRAIT);
-////                beast.tree.setNodeTrait(i, TRAIT, beast.tree.getNodeTrait(j, TRAIT));
-////                beast.tree.setNodeTrait(j, TRAIT, tmp);
-//            }
-//
-//        }
-
-//        if (logq == Double.NEGATIVE_INFINITY) throw new Exception("invalid slide");
-
-//        if (scaledDirichletBranches) {
-//            if (oldTreeHeight != beast.tree.getRoot().getHeight())
-//                throw new Exception("Temporarily disabled."); // TODO calculate Hastings ratio
-//        }
-
-        //beast.tree.getRoot().setLength(0);
-        //setLengthsFromHeights(beast.tree.getRoot());
         return logq;
     }
 

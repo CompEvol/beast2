@@ -52,11 +52,16 @@ public class Alignment extends CalculationNode {
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
     public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
     public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
-    //public Input<String> m_sName = new Input<String>("name", "name of the alignment");
 
-    public List<String> m_sTaxaNames = new ArrayList<String>();
-    public List<Integer> m_nStateCounts = new ArrayList<Integer>();
-    public List<List<Integer>> m_counts = new ArrayList<List<Integer>>();
+
+    protected List<String> m_sTaxaNames = new ArrayList<String>();
+    public List<String> getTaxaNames() {return m_sTaxaNames;}
+
+    protected List<Integer> m_nStateCounts = new ArrayList<Integer>();
+    public List<Integer> getStateCounts() {return m_nStateCounts;}
+    
+    protected List<List<Integer>> m_counts = new ArrayList<List<Integer>>();
+    public List<List<Integer>> getCounts() {return m_counts;}
 
 
     public Alignment() {
@@ -98,6 +103,9 @@ public class Alignment extends CalculationNode {
         // grab data from child sequences
         for (Sequence seq : m_pSequences.get()) {
             m_counts.add(seq.getSequence(getMap()));
+            if (m_sTaxaNames.indexOf(seq.m_sTaxon.get()) >= 0) {
+            	throw new Exception("Duplicate taxon found in alignment: " + seq.m_sTaxon.get());
+            }
             m_sTaxaNames.add(seq.m_sTaxon.get());
             m_nStateCounts.add(seq.m_nTotalCount.get());
         }
@@ -184,6 +192,9 @@ public class Alignment extends CalculationNode {
     }
 
 
+    /** SiteComparator is used for ordering the sites,
+     * which makes it easy to identify patterns.
+     */
     class SiteComparator implements Comparator<int[]> {
         public int compare(int[] o1, int[] o2) {
             for (int i = 0; i < o1.length; i++) {

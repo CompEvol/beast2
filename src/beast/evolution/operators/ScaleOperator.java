@@ -27,6 +27,7 @@ package beast.evolution.operators;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -40,8 +41,6 @@ public class ScaleOperator extends Operator {
             Input.Validate.XOR, m_pTree);
 
     public Input<Double> m_pScaleFactor = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
-    // shadows input
-    double m_fScaleFactor;
     public Input<Boolean> m_pScaleAll =
             new Input<Boolean>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
                     false);
@@ -49,15 +48,32 @@ public class ScaleOperator extends Operator {
             new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
                     "a different factor, otherwise a single factor is used", false);
 
-    public Input<Integer> m_pDegreesOfFreedom = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used in ...", 1);
+    public Input<Integer> m_pDegreesOfFreedom = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used when " +
+    		"scaleAllIndependently=false and scaleAll=true to override default in calcualation of Hasting ratio. " +
+    		"Ignored when less than 0, default 1.", 1);
+    public Input<BooleanParameter> m_indicator = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
+    		"of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
+    		"it is assumed all dimensions are allowed to be scaled.");
+
+    /**  shadows input **/
+    double m_fScaleFactor;
 
     /** flag to indicate this scales trees as opposed to scaling a parameter **/
     boolean m_bIsTreeScaler = true;
     
     @Override
-    public void initAndValidate() {
+    public void initAndValidate() throws Exception {
         m_fScaleFactor = m_pScaleFactor.get();
         m_bIsTreeScaler = (m_pTree.get() != null);
+        
+        if (m_indicator.get() != null) {
+        	if (m_bIsTreeScaler) {
+        		throw new Exception("indicator is specified which has no effect for scaling a tree");
+        	}
+        	if (m_indicator.get().getDimension() != m_pParameter.get().getDimension()) {
+        		throw new Exception("indicator dimension differs from parameter dimension");
+        	}
+        }
     }
 
 
@@ -66,7 +82,6 @@ public class ScaleOperator extends Operator {
     @Override
     public double proposal() {
     	try {
-        //double fScaleFactor = m_pScaleFactor.get();
 
         double hastingsRatio = 1.0;
         double d = Randomizer.nextDouble();
@@ -78,6 +93,8 @@ public class ScaleOperator extends Operator {
         	int nInternalNodes = tree.scale(scale);
             return Math.log(scale) * (nInternalNodes - 2);
         }
+        
+        // not a tree scaler, so scale a parameter
         boolean bScaleAll = m_pScaleAll.get();
         int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
         boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
@@ -128,57 +145,54 @@ public class ScaleOperator extends Operator {
             hastingsRatio = -Math.log(scale);
 
             // which bit to scale
-            int index;
-            /*
-            if (indicator != null) {
-                int idim = indicator.getDimension();
-                bool impliedOne = idim == (dim - 1);
-                // available bit locations
-                int* loc = new int[idim + 1];
-                for (int i = 0; i < idim + 1; i++) {
-                	loc[i] = 0;
+            int index = -1;
+            if (m_indicator.get() != null) {
+                int nDim = m_indicator.get().getDimension();
+                Boolean [] indicator = m_indicator.get().getValues(); 
+                int nCandidates = 0;
+                for (int i = 0; i < nDim; i++) {
+                	if (indicator[i]) {
+                		nCandidates++;
+                	}
                 }
-                int nLoc = 0;
-                // choose active or non active ones?
-                bool takeOne = indicatorOnProb >= 1.0 || rand() < indicatorOnProb;
-
-                if (impliedOne && takeOne) {
-                    loc[nLoc] = 0;
-                    ++nLoc;
+                if (nCandidates == 0) {
+                	// indicator shows there are no dimensions to scale
+                	return Double.NEGATIVE_INFINITY;
                 }
-                for (int i = 0; i < idim; i++) {
-                    double value = indicator.getStatisticValue(i);
-                    if (takeOne == (value > 0)) {
-                        loc[nLoc] = i + (impliedOne ? 1 : 0);
-                        ++nLoc;
-                    }
-                }
-
-                if (nLoc > 0) {
-                    int rand = random_num(nLoc);
-                    index = loc[rand];
+                if (nCandidates == 1) {
+                    for (int i = 0; i < nDim; i++) {
+                    	if (indicator[i]) {
+                    		index = i;
+                    	}
+                    }                	
                 } else {
-                    throw Exception("Error scaleOperator 103: no active indicators");
+                	int iCandidate = Randomizer.nextInt();
+                    for (int i = 0; i < nDim; i++) {
+                    	if (indicator[i]) {
+                    		if (iCandidate > 0) {
+                    			iCandidate--;
+                    		} else {
+                    			index = i;
+                    		}
+                    	}
+                    }                	
                 }
-                delete [] loc;
             } else {
-            */
-            // any is good
-            index = Randomizer.nextInt(dim);
-//            }
+            	// any is good
+            	index = Randomizer.nextInt(dim);
+            }
 
             double oldValue = param.getValue(index);
 
             if (oldValue == 0) {
+            	// Error: parameter has value 0 and cannot be scaled
                 return Double.NEGATIVE_INFINITY;
-                //throw new Exception("Error scaleOperator 104: parameter has value 0 and cannot be scaled");
             }
             double newValue = scale * oldValue;
 
             if (param.getLower() != null && newValue < param.getLower() || param.getUpper() != null && newValue > param.getUpper()) {
                 // reject out of bounds scales
                 return Double.NEGATIVE_INFINITY;
-                //throw new Exception("Error scaleOperator 105: proposed value outside boundaries");
             }
 
             param.setValue(index, newValue);

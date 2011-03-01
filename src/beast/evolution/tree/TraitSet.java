@@ -54,7 +54,7 @@ public class TraitSet extends Plugin {
         // first, determine taxon numbers associated with traits
         // The Taxon number is the index in the alignment, and
         // used as node number in a tree.
-        List<String> sLabels = m_taxa.get().m_sTaxaNames;
+        List<String> sLabels = m_taxa.get().getTaxaNames();
         String[] sTraits = m_traits.get().split(",");
         m_sValues = new String[sLabels.size()];
         m_fValues = new double[sLabels.size()];
@@ -126,25 +126,6 @@ public class TraitSet extends Plugin {
      * see if we can convert the string to a double value *
      */
     private double parseDouble(String sStr) throws Exception {
-        /** deal with a few special cases **/
-//		try {
-//			if (getName().equals("date")) {
-//					Date date = new SimpleDateFormat().parse(sStr);
-//					// the number of milliseconds since January 1, 1970, 00:00:00 GMT
-//					long nMilliSecs = date.getTime();
-//					if (m_sUnits.get().equals("year")) {
-//						// ... 
-//					} else if (m_sUnits.get().equals("months")) {
-//						// ... 
-//					} else if (m_sUnits.get().equals("days")) {
-//						// ... 
-//					}
-//					// return in years
-//					return nMilliSecs/1000/3600/356;
-//			} 
-//		} catch (Exception e) {
-//			// ignore
-//		}
         // default, try to interpret the string as a number
         try {
             return Double.parseDouble(sStr);

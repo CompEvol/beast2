@@ -30,6 +30,8 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 
+// RRB: TODO: make this an interface?
+
 @Description("Represents character frequencies typically used as distribution of the root of the tree. " +
         "Calculates empirical frequencies of characters in sequence data, or simply assumes a uniform " +
         "distribution if the estimate flag is set to false.")
@@ -38,8 +40,11 @@ public class Frequencies extends CalculationNode {
     public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
     public Input<String> m_fixed = new Input<String>("frequencies", "Fixed set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
 
-    
+    /** contains frequency distribution **/
+    protected double[] m_fFreqs;
+    /** flag to indicate m_fFreqs is up to date **/
     boolean m_bNeedsUpdate;
+    
     @Override
     public void initAndValidate() throws Exception {
     	if (m_fixed.get() != null) {
@@ -63,6 +68,15 @@ public class Frequencies extends CalculationNode {
     	}
     }
     
+    /** return up to date frequencies **/
+    public double[] getFreqs() {
+    	if (m_bNeedsUpdate) {
+    		update();
+    	}
+        return m_fFreqs;
+    }
+
+    /** recalculate frequencies, unless it is fixed **/
     void update() {
     	if (m_fixed.get() != null) {
     		// user specified, already handled in initAndValidate()
@@ -72,10 +86,10 @@ public class Frequencies extends CalculationNode {
     	// if not user specified, either estimate from data or set as fixed
     	if (m_bEstimate.get()) {
     		// estimate
-            calcFrequencies();
+            estimateFrequencies();
             checkFrequencies();
         } else {
-    		// fixed
+    		// uniformly distributed
             int nStates = m_data.get().getMaxStateCount();
             m_fFreqs = new double[nStates];
             for (int i = 0; i < nStates; i++) {
@@ -83,18 +97,11 @@ public class Frequencies extends CalculationNode {
             }
         }
     	m_bNeedsUpdate = false;
-    }
+    } // update
 
-    double[] m_fFreqs;
 
-    public double[] getFreqs() {
-    	if (m_bNeedsUpdate) {
-    		update();
-    	}
-        return m_fFreqs;
-    }
-
-    void calcFrequencies() {
+    /** estimate from sequence alignment **/
+    void estimateFrequencies() {
         Alignment alignment = m_data.get();
         m_fFreqs = new double[alignment.getMaxStateCount()];
         for (int i = 0; i < alignment.getPatternCount(); i++) {
@@ -152,9 +159,9 @@ public class Frequencies extends CalculationNode {
                 }
             }
         }
-    }
+    } // checkFrequencies
     
-    
+    /** CalculationNode implementation **/
     @Override
     protected boolean requiresRecalculation() {
     	m_bNeedsUpdate = true;

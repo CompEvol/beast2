@@ -31,7 +31,7 @@ import beast.util.XMLProducer;
 public class SequenceSimulator extends beast.core.Runnable {
     public Input<Alignment> m_data = new Input<Alignment>("data", "alignment data which specifies the taxa of the beast.tree", Validate.REQUIRED);
     public Input<Tree> m_treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
-    public Input<SiteModel> m_pSiteModelInput = new Input<SiteModel>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+    public Input<SiteModel.Base> m_pSiteModelInput = new Input<SiteModel.Base>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     public Input<BranchRateModel.Base> m_pBranchRateModelInput = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
     public Input<Integer> m_sequenceLengthInput = new Input<Integer>("sequencelength", "nr of samples to generate (default 1000).", 1000);
@@ -42,7 +42,7 @@ public class SequenceSimulator extends beast.core.Runnable {
 	/** tree used for generating samples **/
     protected Tree m_tree;
 	/** site model used for generating samples **/
-    protected SiteModel m_siteModel;
+    protected SiteModel.Base m_siteModel;
 	/** branch rate model used for generating samples **/
     protected BranchRateModel m_branchRateModel;
     /** nr of categories in site model **/
@@ -113,7 +113,7 @@ public class SequenceSimulator extends beast.core.Runnable {
     		category[i] = Randomizer.randomChoicePDF(categoryProbs);
     	}
 
-       	double [] frequencies = m_siteModel.getFrequencies();
+       	double [] frequencies = m_siteModel.getSubstitutionModel().getFrequencies();
     	int [] seq = new int[m_sequenceLength];
     	for (int i  = 0; i < m_sequenceLength; i++) {
         	seq[i] = Randomizer.randomChoicePDF(frequencies);

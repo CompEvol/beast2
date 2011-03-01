@@ -64,11 +64,9 @@ abstract public class TreeOperator extends Operator {
 			// it must be the right child
 			node.m_right = replacement;
 		}
-		//child.setParent(null);
 		node.makeDirty(Tree.IS_FILTHY);
 		replacement.setParent(node);
 		replacement.makeDirty(Tree.IS_FILTHY);
-//		replacement.setLength(m_fHeights[node.getNr()] - m_fHeights[replacement.getNr()]);
 	}
 
 }

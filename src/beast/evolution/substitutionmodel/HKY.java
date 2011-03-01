@@ -37,20 +37,24 @@ import beast.evolution.tree.Node;
 public class HKY extends SubstitutionModel.Base {
     public Input<RealParameter> kappa = new Input<RealParameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
+    /** applies to nucleotides only **/
     public static final int STATE_COUNT = 4;
 
+    /** Eigenvalue decomposition of rate matrix + its stored version **/ 
     private EigenDecomposition eigenDecomposition = null;
     private EigenDecomposition storedEigenDecomposition = null;
 
+    /** flag to indicate eigen decomposition is up to date **/
     private boolean updateEigen = true;
+    /** flag to indicate matrix is up to date **/
     protected boolean updateMatrix = true;
 
     @Override
     public void initAndValidate() throws Exception {
+    	kappa.get().setBounds(0.0, Double.POSITIVE_INFINITY);
     }
 
     @Override
-    //public void getTransitionProbabilities(double distance, double[] matrix) {
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
       	double distance = (fStartTime - fEndTime) * fRate;
 
@@ -91,48 +95,8 @@ public class HKY extends SubstitutionModel.Base {
         matrix[15] = freqT + t1Taa + (tab2T * bbY);
     }
 
-//    @Override
-//    public void getPaddedTransitionProbabilities(double distance, double[] matrix) {
-//
-//        if (updateMatrix) {
-//            setupMatrix();
-//        }
-//
-//        final double xx = beta * distance;
-//        final double bbR = Math.exp(xx * A_R);
-//        final double bbY = Math.exp(xx * A_Y);
-//
-//        final double aa = Math.exp(xx);
-//        final double oneminusa = 1 - aa;
-//
-//        final double t1Aaa = (tab1A * aa);
-//        matrix[0] = freqA + t1Aaa + (tab2A * bbR);
-//
-//        matrix[1] = freqC * oneminusa;
-//        final double t1Gaa = (tab1G * aa);
-//        matrix[2] = freqG + t1Gaa - (tab3G * bbR);
-//        matrix[3] = freqT * oneminusa;
-//
-//        matrix[4+1] = freqA * oneminusa;
-//        final double t1Caa = (tab1C * aa);
-//        matrix[5+1] = freqC + t1Caa + (tab2C * bbY);
-//        matrix[6+1] = freqG * oneminusa;
-//        final double t1Taa = (tab1T * aa);
-//        matrix[7+1] = freqT + t1Taa - (tab3T * bbY);
-//
-//        matrix[8+2] = freqA + t1Aaa - (tab3A * bbR);
-//        matrix[9+2] = matrix[1];
-//        matrix[10+2] = freqG + t1Gaa + (tab2G * bbR);
-//        matrix[11+2] = matrix[3];
-//
-//        matrix[12+3] = matrix[4+1];
-//        matrix[13+3] = freqC + t1Caa - (tab3C * bbY);
-//        matrix[14+3] = matrix[6+1];
-//        matrix[15+3] = freqT + t1Taa + (tab2T * bbY);
-//    }
-
     @Override
-    public EigenDecomposition getEigenDecomposition() {
+    public EigenDecomposition getEigenDecomposition(Node node) {
 
         if (eigenDecomposition == null) {
             double[] evec = new double[STATE_COUNT * STATE_COUNT];
@@ -265,22 +229,13 @@ public class HKY extends SubstitutionModel.Base {
     }
 
 
-    /** CalculationNode methods **/
+    /** CalculationNode implementations **/
     @Override
     protected boolean requiresRecalculation() {
     	// we only get here if something is dirty
         updateMatrix = true;
         updateEigen = true;
     	return true;
-//        if (frequencies.isDirty()) {
-//            updateMatrix = true;
-//            updateEigen = true;
-//        }
-//        if (kappa.isDirty()) {
-//            updateMatrix = true;
-//            updateEigen = true;
-//        }
-//        return updateMatrix;
     }
 
     @Override
