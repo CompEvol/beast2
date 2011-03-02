@@ -50,14 +50,17 @@ public class Frequencies extends CalculationNode {
     
     @Override
     public void initAndValidate() throws Exception {
+
+
+
+
+
+    	update();
+        double fSum = getSumOfFrequencies(getFreqs());
         // sanity check
-        double fSum = getSumOfFrequencies(frequencies.get());
-        m_fFreqs = new double[frequencies.get().getDimension()];
-        stored_fFreqs = new double[frequencies.get().getDimension()];
-    	if (Math.abs(fSum-1.0)>1e-6) {
+        if (Math.abs(fSum-1.0)>1e-6) {
     		throw new Exception("Frequencies do not add up to 1");
     	}
-    	update();
     }
     
     /** return up to date frequencies **/
@@ -87,7 +90,8 @@ public class Frequencies extends CalculationNode {
         if (frequencies.get() != null) {
             //System.out.println("Get values from here");
         	// if user specified, parse frequencies from space delimited string
-
+            m_fFreqs = new double[frequencies.get().getDimension()];
+            stored_fFreqs = new double[frequencies.get().getDimension()];
 
     		for (int i = 0; i < m_fFreqs.length; i++) {
     			m_fFreqs[i] = frequencies.get().getValue(i);
@@ -188,10 +192,10 @@ public class Frequencies extends CalculationNode {
      * @param frequencies the frequencies
      * @return return the sum of frequencies
      */
-    private double getSumOfFrequencies(RealParameter frequencies) {
+    private double getSumOfFrequencies(double[] frequencies) {
         double total = 0.0;
-        for (int i = 0; i < frequencies.getDimension(); i++) {
-            total += frequencies.getValue(i);
+        for (int i = 0; i < frequencies.length; i++) {
+            total += frequencies[i];
         }
         return total;
     }
