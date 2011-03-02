@@ -2,6 +2,7 @@ package beast.evolution.operators;
 
 import beast.core.Operator;
 import beast.core.Input;
+import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.tree.Tree;
@@ -15,12 +16,13 @@ import beast.util.Randomizer;
  *
  * Migrated to BEAST 2 by CHW
  */
+@Description("A generic operator for use with a sum-constrained (possibly weighted) vector parameter.")
 public class DeltaExchangeOperator extends Operator {
     public Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
 
     public Input<RealParameter> parameter = new Input<RealParameter>("parameter", "if specified, this parameter is scaled", Input.Validate.REQUIRED);
 
-    public Input<Double> input_delta = new Input<Double>("delta", "Magnitude of change", 1.0);
+    public Input<Double> input_delta = new Input<Double>("delta", "Magnitude of change for two randomly picked values.", 1.0);
     public Input<Boolean> input_autoOptimize =
             new Input<Boolean>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
     public Input<Boolean> input_isIntegerOperator = new Input<Boolean>("integer", "if true, changes are all integers.", false);
