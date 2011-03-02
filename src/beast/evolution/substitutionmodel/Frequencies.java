@@ -43,18 +43,13 @@ public class Frequencies extends CalculationNode {
     
     /** contains frequency distribution **/
     protected double[] m_fFreqs;
-    protected double[] stored_fFreqs;
+
     /** flag to indicate m_fFreqs is up to date **/
     boolean m_bNeedsUpdate;
-    boolean store_bNeedsUpdate;
+
     
     @Override
     public void initAndValidate() throws Exception {
-
-
-
-
-
     	update();
         double fSum = getSumOfFrequencies(getFreqs());
         // sanity check
@@ -65,33 +60,20 @@ public class Frequencies extends CalculationNode {
     
     /** return up to date frequencies **/
     public double[] getFreqs(){
-        //synchronized (this) {
-        //System.err.println(m_bNeedsUpdate);
     	    if (m_bNeedsUpdate) {
 
     		    update();
     	    }
-        //}
 
-        /*System.err.println(frequencies.get());
-        for (int i = 0; i < m_fFreqs.length; i++) {
-
-            System.err.print(m_fFreqs[i]+" ");
-            if(m_fFreqs[i] !=frequencies.get().getValue(i)){
-                throw new RuntimeException(""+m_fFreqs[i]);
-            }
-    		}
-        System.err.println();*/
         return m_fFreqs;
     }
 
     /** recalculate frequencies, unless it is fixed **/
     void update() {
         if (frequencies.get() != null) {
-            //System.out.println("Get values from here");
+
         	// if user specified, parse frequencies from space delimited string
             m_fFreqs = new double[frequencies.get().getDimension()];
-            stored_fFreqs = new double[frequencies.get().getDimension()];
 
     		for (int i = 0; i < m_fFreqs.length; i++) {
     			m_fFreqs[i] = frequencies.get().getValue(i);
@@ -184,7 +166,7 @@ public class Frequencies extends CalculationNode {
     	    m_bNeedsUpdate = true;
             recalculates = true;
         }
-        //System.err.println("requiresRC: "+m_bNeedsUpdate);
+        
     	return recalculates;
     }
 
@@ -200,15 +182,8 @@ public class Frequencies extends CalculationNode {
         return total;
     }
 
-    public void store(){
-        System.arraycopy(m_fFreqs, 0, stored_fFreqs, 0, stored_fFreqs.length);
-        super.store();
-    }
-
     public void restore(){
-        double[] tmp = stored_fFreqs;
-        stored_fFreqs = m_fFreqs;
-        m_fFreqs = tmp;
+        m_bNeedsUpdate = true;
         super.restore();
     }
     
