@@ -25,8 +25,9 @@
 package beast.evolution.substitutionmodel;
 
 import beast.core.CalculationNode;
-import beast.core.Description;
 import beast.core.Input;
+import beast.core.Description;
+import beast.core.parameter.RealParameter;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 
@@ -38,53 +39,62 @@ import beast.evolution.alignment.Alignment;
 public class Frequencies extends CalculationNode {
     public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
     public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
-    public Input<String> m_fixed = new Input<String>("frequencies", "Fixed set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
-
+    public Input<RealParameter> frequencies = new Input<RealParameter>("frequencies", "A set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
+    
     /** contains frequency distribution **/
     protected double[] m_fFreqs;
+    protected double[] stored_fFreqs;
     /** flag to indicate m_fFreqs is up to date **/
     boolean m_bNeedsUpdate;
+    boolean store_bNeedsUpdate;
     
     @Override
     public void initAndValidate() throws Exception {
-    	if (m_fixed.get() != null) {
-        	// if user specified, parse frequencies from space delimited string
-    		String [] sValues = m_fixed.get().split("\\s+");
-            m_fFreqs = new double[sValues.length];
-    		for (int i = 0; i < sValues.length; i++) {
-    			m_fFreqs[i] = Double.parseDouble(sValues[i]);
-    		}
-    		// sanity check
-    		double fSum = 0;
-    		for (int i = 0; i < sValues.length; i++) {
-    			fSum += m_fFreqs[i];
-    		}
-    		if (Math.abs(fSum-1.0)>1e-6) {
-    			throw new Exception("Frequencies do not add up to 1");
-    		}
-    		m_bNeedsUpdate = false;
-    	} else {
-    		update();
+        // sanity check
+        double fSum = getSumOfFrequencies(frequencies.get());
+        m_fFreqs = new double[frequencies.get().getDimension()];
+        stored_fFreqs = new double[frequencies.get().getDimension()];
+    	if (Math.abs(fSum-1.0)>1e-6) {
+    		throw new Exception("Frequencies do not add up to 1");
     	}
+    	update();
     }
     
     /** return up to date frequencies **/
-    public double[] getFreqs() {
-    	if (m_bNeedsUpdate) {
-    		update();
-    	}
+    public double[] getFreqs(){
+        //synchronized (this) {
+        //System.err.println(m_bNeedsUpdate);
+    	    if (m_bNeedsUpdate) {
+
+    		    update();
+    	    }
+        //}
+
+        /*System.err.println(frequencies.get());
+        for (int i = 0; i < m_fFreqs.length; i++) {
+
+            System.err.print(m_fFreqs[i]+" ");
+            if(m_fFreqs[i] !=frequencies.get().getValue(i)){
+                throw new RuntimeException(""+m_fFreqs[i]);
+            }
+    		}
+        System.err.println();*/
         return m_fFreqs;
     }
 
     /** recalculate frequencies, unless it is fixed **/
     void update() {
-    	if (m_fixed.get() != null) {
-    		// user specified, already handled in initAndValidate()
-        	m_bNeedsUpdate = false;
-    		return;
-    	}
-    	// if not user specified, either estimate from data or set as fixed
-    	if (m_bEstimate.get()) {
+        if (frequencies.get() != null) {
+            //System.out.println("Get values from here");
+        	// if user specified, parse frequencies from space delimited string
+
+
+    		for (int i = 0; i < m_fFreqs.length; i++) {
+    			m_fFreqs[i] = frequencies.get().getValue(i);
+    		}
+
+
+    	}else if (m_bEstimate.get()) { // if not user specified, either estimate from data or set as fixed
     		// estimate
             estimateFrequencies();
             checkFrequencies();
@@ -164,8 +174,38 @@ public class Frequencies extends CalculationNode {
     /** CalculationNode implementation **/
     @Override
     protected boolean requiresRecalculation() {
-    	m_bNeedsUpdate = true;
-    	return true;
+        boolean recalculates = false;
+        if(frequencies.get().somethingIsDirty()){
+
+    	    m_bNeedsUpdate = true;
+            recalculates = true;
+        }
+        //System.err.println("requiresRC: "+m_bNeedsUpdate);
+    	return recalculates;
+    }
+
+/**
+     * @param frequencies the frequencies
+     * @return return the sum of frequencies
+     */
+    private double getSumOfFrequencies(RealParameter frequencies) {
+        double total = 0.0;
+        for (int i = 0; i < frequencies.getDimension(); i++) {
+            total += frequencies.getValue(i);
+        }
+        return total;
+    }
+
+    public void store(){
+        System.arraycopy(m_fFreqs, 0, stored_fFreqs, 0, stored_fFreqs.length);
+        super.store();
+    }
+
+    public void restore(){
+        double[] tmp = stored_fFreqs;
+        stored_fFreqs = m_fFreqs;
+        m_fFreqs = tmp;
+        super.restore();
     }
     
 } // class Frequencies

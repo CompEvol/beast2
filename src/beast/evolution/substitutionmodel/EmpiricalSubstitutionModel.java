@@ -52,10 +52,18 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 		int nStates = freqs.length;
 		Frequencies freqsParam = new Frequencies();
 		String sValues = "";
+
 		for (int i = 0; i < nStates; i++) {
 			sValues += freqs[i]+" ";
 		}
-		freqsParam.m_fixed.setValue(sValues, freqsParam);
+        RealParameter freqsRParam = new RealParameter();
+        freqsRParam.initByName(
+                "values",sValues,
+                "lower", 0,
+                "upper", 1,
+                "dimension",nStates
+        );
+		freqsParam.frequencies.setValue(freqsRParam, freqsParam);
 		freqsParam.initAndValidate();
 		return freqsParam;
 	}
