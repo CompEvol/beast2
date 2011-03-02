@@ -78,7 +78,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     	if (dist instanceof ContinuousDistribution) {
     		return ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
     	} else if (dist instanceof IntegerDistribution) {
-    		((IntegerDistribution)dist).cumulativeProbability(p);
+    		return dist.cumulativeProbability(p);
     	}
    		return 0.0;
     }
@@ -92,10 +92,9 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     public double density(double x) {
     	org.apache.commons.math.distribution.Distribution dist = getDistribution();
     	if (dist instanceof ContinuousDistribution) {
-    		double f = ((ContinuousDistribution) dist).density(x);
-    		return f;
+            return ((ContinuousDistribution) dist).density(x);
     	} else if (dist instanceof IntegerDistribution) {
-    		return Math.log(((IntegerDistribution)dist).probability(x));
+    		return ((IntegerDistribution)dist).probability(x);
     	}
    		return 0.0;
     }
@@ -104,8 +103,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     public double logDensity(double x) {
     	org.apache.commons.math.distribution.Distribution dist = getDistribution();
     	if (dist instanceof ContinuousDistribution) {
-    		double f = ((ContinuousDistribution) dist).logDensity(x);
-    		return f;
+            return ((ContinuousDistribution) dist).logDensity(x);
     	} else if (dist instanceof IntegerDistribution) {
     		return Math.log(((IntegerDistribution)dist).probability(x));
     	}
