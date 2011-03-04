@@ -42,7 +42,7 @@ public class Sum extends CalculationNode implements Valuable {
 	
 	@Override
 	public double getArrayValue(int iDim) {
-		if (iDim == 1) {return getArrayValue();}
+		if (iDim == 0) {return getArrayValue();}
 		return Double.NaN;
 	}
 
