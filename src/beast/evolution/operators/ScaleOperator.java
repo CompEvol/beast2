@@ -65,17 +65,32 @@ public class ScaleOperator extends Operator {
     public void initAndValidate() throws Exception {
         m_fScaleFactor = m_pScaleFactor.get();
         m_bIsTreeScaler = (m_pTree.get() != null);
-        
-        if (m_indicator.get() != null) {
+
+        final BooleanParameter indicators = m_indicator.get();
+        if ( indicators != null ) {
         	if (m_bIsTreeScaler) {
         		throw new Exception("indicator is specified which has no effect for scaling a tree");
         	}
-        	if (m_indicator.get().getDimension() != m_pParameter.get().getDimension()) {
-        		throw new Exception("indicator dimension differs from parameter dimension");
+            final int dataDim = m_pParameter.get().getDimension();
+            final int indsDim = indicators.getDimension();
+            if ( ! (indsDim == dataDim || indsDim+1 == dataDim) ) {
+        		throw new Exception("indicator dimension not compatible from parameter dimension");
         	}
         }
     }
 
+
+    private boolean outsideBounds(double value, RealParameter param) {
+        final Double l = param.getLower();
+        final Double h = param.getUpper();
+
+        return ( value < l || value > h );
+        //return (l != null && value < l || h != null && value > h);
+    }
+
+    private double getScaler() {
+         return (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
+    }
 
     /** override this for proposals,
 	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
@@ -83,128 +98,122 @@ public class ScaleOperator extends Operator {
     public double proposal() {
     	try {
 
-        double hastingsRatio = 1.0;
-        double d = Randomizer.nextDouble();
-        double scale = (m_fScaleFactor + (d * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
-        
-        if (m_bIsTreeScaler) {
-        	Tree tree = m_pTree.get(this); 
-            // scale the beast.tree
-        	int nInternalNodes = tree.scale(scale);
-            return Math.log(scale) * (nInternalNodes - 2);
-        }
-        
-        // not a tree scaler, so scale a parameter
-        boolean bScaleAll = m_pScaleAll.get();
-        int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
-        boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
+            double hastingsRatio;
+            final double scale = getScaler();
 
-        RealParameter param = m_pParameter.get(this);
-        int dim = param.getDimension();
-
-        if (bScaleAllIndependently) {
-            // update all dimensions independently.
-            hastingsRatio = 0;
-            for (int i = 0; i < dim; i++) {
-
-                double scaleOne = (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
-                double value = scaleOne * param.getValue(i);
-
-                hastingsRatio -= Math.log(scaleOne);
-
-                if (value < param.getLower() || value > param.getUpper()) {
-                    return Double.NEGATIVE_INFINITY;
-                }
-
-                param.setValue(i, value);
-            }
-        } else if (bScaleAll) {
-            // update all dimensions
-            // hasting ratio is dim-2 times of 1dim case. would be nice to have a reference here
-            // for the proof. It is supposed to be somewhere in an Alexei/Nicholes article.
-            if (nDegreesOfFreedom > 0)
-                // For parameters with non-uniform prior on only one dimension
-                hastingsRatio = -nDegreesOfFreedom * Math.log(scale);
-            else
-                hastingsRatio = (dim - 2) * Math.log(scale);
-
-            // Must first set all parameters first and check for boundries later for the operator to work
-            // correctly with dependent parameters such as beast.tree node heights.
-            for (int i = 0; i < dim; i++) {
-                param.setValue(i, param.getValue(i) * scale);
+            if (m_bIsTreeScaler) {
+                Tree tree = m_pTree.get(this);
+                // scale the beast.tree
+                final int nInternalNodes = tree.scale(scale);
+                return Math.log(scale) * (nInternalNodes - 2);
             }
 
-            for (int i = 0; i < dim; i++) {
-                if (param.getValue(i) < param.getLower() ||
-                        param.getValue(i) > param.getUpper()) {
-                    return Double.NEGATIVE_INFINITY;
-                    //throw new Exception("Error scaleOperator 102: proposed value outside boundaries");
-                }
-            }
-        } else {
-            hastingsRatio = -Math.log(scale);
+            // not a tree scaler, so scale a parameter
+            final boolean bScaleAll = m_pScaleAll.get();
+            final int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
+            final boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
 
-            // which bit to scale
-            int index = -1;
-            if (m_indicator.get() != null) {
-                int nDim = m_indicator.get().getDimension();
-                Boolean [] indicator = m_indicator.get().getValues(); 
-                int nCandidates = 0;
-                for (int i = 0; i < nDim; i++) {
-                	if (indicator[i]) {
-                		nCandidates++;
-                	}
+            final RealParameter param = m_pParameter.get(this);
+
+            assert param.getLower() != null  && param.getUpper() != null;
+
+            final int dim = param.getDimension();
+
+            if (bScaleAllIndependently) {
+                // update all dimensions independently.
+                hastingsRatio = 0;
+                for (int i = 0; i < dim; i++) {
+
+                    final double scaleOne = getScaler();
+                    final double newValue = scaleOne * param.getValue(i);
+
+                    hastingsRatio -= Math.log(scaleOne);
+
+                    if ( outsideBounds(newValue, param) ) {
+                        return Double.NEGATIVE_INFINITY;
+                    }
+
+                    param.setValue(i, newValue);
                 }
-                if (nCandidates == 0) {
-                	// indicator shows there are no dimensions to scale
-                	return Double.NEGATIVE_INFINITY;
-                }
-                if (nCandidates == 1) {
-                    for (int i = 0; i < nDim; i++) {
-                    	if (indicator[i]) {
-                    		index = i;
-                    	}
-                    }                	
-                } else {
-                	int iCandidate = Randomizer.nextInt();
-                    for (int i = 0; i < nDim; i++) {
-                    	if (indicator[i]) {
-                    		if (iCandidate > 0) {
-                    			iCandidate--;
-                    		} else {
-                    			index = i;
-                    		}
-                    	}
-                    }                	
+            } else if (bScaleAll) {
+                // update all dimensions
+                // hasting ratio is dim-2 times of 1dim case. would be nice to have a reference here
+                // for the proof. It is supposed to be somewhere in an Alexei/Nicholes article.
+                final int df = (nDegreesOfFreedom > 0) ? -nDegreesOfFreedom  : dim - 2;
+                hastingsRatio = df * Math.log(scale);
+
+                // all Values assumed independent!
+                for (int i = 0; i < dim; i++) {
+                    final double newValue = param.getValue(i) * scale;
+
+                    if ( outsideBounds(newValue, param) ) {
+                        return Double.NEGATIVE_INFINITY;
+                    }
+                    param.setValue(i, newValue);
                 }
             } else {
-            	// any is good
-            	index = Randomizer.nextInt(dim);
+                hastingsRatio = -Math.log(scale);
+
+                // which position to scale
+                int index = -1;
+                final BooleanParameter indicators = m_indicator.get();
+                if ( indicators != null ) {
+                    final int nDim = indicators.getDimension();
+                    Boolean [] indicator = indicators.getValues();
+                    final boolean impliedOne = nDim == (dim - 1);
+
+                    // available bit locations. there can be hundreds of them. scan list only once.
+                    int[] loc = new int[nDim + 1];
+                    int nLoc = 0;
+
+                    if (impliedOne) {
+                        loc[nLoc] = 0;
+                        ++nLoc;
+                    }
+                    for (int i = 0; i < nDim; i++) {
+                        if ( indicator[i] ) {
+                            loc[nLoc] = i + (impliedOne ? 1 : 0);
+                            ++nLoc;
+                        }
+                    }
+
+                    if (nLoc > 0) {
+                        final int rand = Randomizer.nextInt(nLoc);
+                        index = loc[rand];
+                    } else {
+                        return Double.NEGATIVE_INFINITY; // no active indicators
+                    }
+
+                } else {
+                    // any is good
+                    index = Randomizer.nextInt(dim);
+                }
+
+                final double oldValue = param.getValue(index);
+
+                if (oldValue == 0) {
+                    // Error: parameter has value 0 and cannot be scaled
+                    return Double.NEGATIVE_INFINITY;
+                }
+
+                final double newValue = scale * oldValue;
+
+                if ( outsideBounds(newValue, param) ) {
+                    // reject out of bounds scales
+                    return Double.NEGATIVE_INFINITY;
+                }
+
+                param.setValue(index, newValue);
+                // provides a hook for subclasses
+                //cleanupOperation(newValue, oldValue);
             }
+                       
+            return hastingsRatio;
 
-            double oldValue = param.getValue(index);
-
-            if (oldValue == 0) {
-            	// Error: parameter has value 0 and cannot be scaled
-                return Double.NEGATIVE_INFINITY;
-            }
-            double newValue = scale * oldValue;
-
-            if (param.getLower() != null && newValue < param.getLower() || param.getUpper() != null && newValue > param.getUpper()) {
-                // reject out of bounds scales
-                return Double.NEGATIVE_INFINITY;
-            }
-
-            param.setValue(index, newValue);
-            // provides a hook for subclasses
-            //cleanupOperation(newValue, oldValue);
-        }
-        hastingsRatio = Math.exp(hastingsRatio);
-        return Math.log(hastingsRatio);
-    	} catch (Exception e) {
-    		// whatever went wrong, we want to abort this operation...
+        } catch (Exception e) {
+            // whatever went wrong, we want to abort this operation...
             return Double.NEGATIVE_INFINITY;
-		}
+        }
     }
 
 
