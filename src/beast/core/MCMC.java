@@ -175,9 +175,7 @@ public class MCMC extends Runnable {
         double logAlpha = 0;
 
         boolean bDebug = true;
-        state.setEverythingDirty(true);
-        state.checkCalculationNodesDirtiness();
-        double fOldLogLikelihood = posterior.calculateLogP();
+        double fOldLogLikelihood = robustlyCalcPosterior(posterior); 
         System.err.println("Start likelihood: " + fOldLogLikelihood);
 
         // initialises log so that log file headers are written, etc.
@@ -232,13 +230,7 @@ public class MCMC extends Runnable {
             if (bDebug && iSample % 3 == 0) { 
             	// check that the posterior is correctly calculated at every third
             	// sample, as long as we are in debug mode
-                state.store(-1);
-                state.setEverythingDirty(true);
-                state.storeCalculationNodes();
-                state.checkCalculationNodesDirtiness();
-
-                double fLogLikelihood = posterior.calculateLogP();
-
+                double fLogLikelihood = robustlyCalcPosterior(posterior); 
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
                     throw new Exception("At sample "+ iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
                 }
@@ -246,8 +238,6 @@ public class MCMC extends Runnable {
                 	// switch of debug mode once a sufficient large sample is checked
                     bDebug = false;
                 }
-                state.setEverythingDirty(false);
-                state.acceptCalculationNodes();
             } else {
                 operator.optimize(logAlpha);
             }
@@ -262,5 +252,17 @@ public class MCMC extends Runnable {
         state.storeToFile();
     } // run;
 
+    /** Calculate posterior by setting all StateNodes and CalculationNodes dirty.
+     * Clean everything afterwards.
+     */
+    double robustlyCalcPosterior(Distribution posterior) throws Exception {
+        state.store(-1);
+        state.setEverythingDirty(true);
+        state.checkCalculationNodesDirtiness();
+        double fLogLikelihood = posterior.calculateLogP();
+        state.setEverythingDirty(false);
+        state.acceptCalculationNodes();
+        return fLogLikelihood;
+    }
 } // class MCMC
 
