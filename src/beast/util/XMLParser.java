@@ -180,6 +180,8 @@ public class XMLParser {
     HashMap<String, Node> m_sIDNodeMap;
 
     HashMap<String, String> m_sElement2ClassMap;
+    public HashMap<String, String> getElement2ClassMap() {return m_sElement2ClassMap;}
+
 
     String[] m_sNameSpaces;
 

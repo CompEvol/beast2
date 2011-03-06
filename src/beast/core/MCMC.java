@@ -228,19 +228,13 @@ public class MCMC extends Runnable {
                 //System.out.print(" direct reject");
             }
             log(iSample);
-
-//            if (iSample % 10000 == 0) {
-//                state.store(-1);
-//                state.setEverythingDirty(true);
-//                state.checkCalculationNodesDirtiness();
-//                posterior.calculateLogP();
-//            }
             
-            if (bDebug && iSample % 3 == 0) { // || iSample % 10000 == 0) {
-            	//System.out.print("*");
-            	// check that the posterior is correctly calculated
+            if (bDebug && iSample % 3 == 0) { 
+            	// check that the posterior is correctly calculated at every third
+            	// sample, as long as we are in debug mode
                 state.store(-1);
                 state.setEverythingDirty(true);
+                state.storeCalculationNodes();
                 state.checkCalculationNodesDirtiness();
 
                 double fLogLikelihood = posterior.calculateLogP();
@@ -249,9 +243,11 @@ public class MCMC extends Runnable {
                     throw new Exception("At sample "+ iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
                 }
                 if (iSample > NR_OF_DEBUG_SAMPLES * 3) {
+                	// switch of debug mode once a sufficient large sample is checked
                     bDebug = false;
                 }
                 state.setEverythingDirty(false);
+                state.acceptCalculationNodes();
             } else {
                 operator.optimize(logAlpha);
             }

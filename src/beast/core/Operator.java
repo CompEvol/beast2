@@ -32,9 +32,11 @@ import beast.core.Input.Validate;
 public abstract class Operator extends Plugin {
 	public Input<Double> m_pWeight = new Input<Double>("weight","weight with which this operator is selected", Validate.REQUIRED);
 
-	/** override this for proposals,
+	/** Implement this for proposing a new State. 
+	 * The proposal is responsible for keeping the State valid,
+	 * and if the State becomes invalid (e.g. a parameter goes out
+	 * of its range) Double.NEGATIVE_INFINITY should be returned.
 	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted
-     *
      **/
 	abstract public double proposal();
 

@@ -44,7 +44,8 @@ import java.util.List;
  * @author Alexei Drummond
  * @version $Id: TreeIntervals.java,v 1.9 2005/05/24 20:25:56 rambaut Exp $
  */
-@Description("Extracts the intervals from a tree.")
+@Description("Extracts the intervals from a tree. Points in the intervals " +
+		"are defined by the heights of nodes in the tree.")
 public class TreeIntervals extends CalculationNode implements IntervalList {
 	public Input<Tree> m_tree = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
 	
@@ -73,26 +74,6 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     protected void store() {
     	super.store();
     }
-
-//    /**
-//     * Parameterless constructor.
-//     */
-//    public TreeIntervals() {
-//    }
-//
-//
-//    public TreeIntervals(Tree tree) {
-//        setTree(tree);
-//    }
-//
-//
-//    /**
-//     * @param tree the beast.tree for which intervals are obtained
-//     */
-//    public void setTree(Tree tree) {
-//        this.tree = tree;
-//        intervalsKnown = false;
-//    }
 
     /**
      * Specifies that the intervals are unknown (i.e., the beast.tree has changed).
