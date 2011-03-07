@@ -84,4 +84,13 @@ public class CompoundDistribution extends Distribution {
         return conditions;
     }
 
+    @Override
+    protected boolean requiresRecalculation() {
+      for(Distribution distribution : pDistributions.get()) {
+          if( distribution.isDirtyCalculation() ) {
+              return true;
+          }
+      }
+      return false;   
+    }
 } // class CompoundProbabilityDistribution
