@@ -1,14 +1,14 @@
 package beast.evolution.tree;
 
-import java.util.List;
-import java.util.Random;
-
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.evolution.tree.coalescent.TreeIntervals;
+
+import java.util.List;
+import java.util.Random;
 
 @Description("Prior on a tree, such as Coalescent or Yule")
 public class TreePrior extends Distribution {
@@ -29,4 +29,9 @@ public class TreePrior extends Distribution {
 	public void sample(State state, Random random) {
 	}
 
+    @Override
+    protected boolean requiresRecalculation() {
+        final TreeIntervals ti = treeIntervals.get();
+        return (ti != null && ti.isDirtyCalculation()) || m_tree.get().somethingIsDirty();
+    }
 }
