@@ -62,6 +62,10 @@ public class Tree extends StateNode {
     		adjustTreeToNodeHeights(root);
     	}
     	
+    	initArrays();
+    }
+
+    void initArrays() {
     	// initialise tree-as-array representation + its stored variant
     	m_nodes = new Node[nodeCount];
     	listNodes(root, m_nodes);
@@ -77,6 +81,7 @@ public class Tree extends StateNode {
     public Tree(String sNewick) throws Exception {
     	TreeParser parser = new TreeParser();
     	setRoot(parser.parseNewick(sNewick));
+    	initArrays();
     }
     
 	/** process m_nodeDates, moving taxon heights to match the m_nodeHeights if necessary.
@@ -406,6 +411,7 @@ public class Tree extends StateNode {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		initArrays();
 	}
 
 	/** Valuable implementation **/
