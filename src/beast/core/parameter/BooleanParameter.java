@@ -61,6 +61,7 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
     	String [] sValues = sValue.split("\\s+");
     	int nDimension = Math.max(m_nDimension.get(), sValues.length);
         values = new java.lang.Boolean[nDimension];
+        storedValues = new java.lang.Boolean[nDimension];
         for (int i = 0; i < values.length; i++) {
             values[i] = new Boolean(sValues[i % sValues.length]);
         }

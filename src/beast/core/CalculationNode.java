@@ -60,21 +60,23 @@ public class CalculationNode extends Plugin {
      * After the operation has changed the state.
      */
     protected boolean requiresRecalculation() {
-        try {
-            for (Plugin plugin : listActivePlugins()) {
-                if (plugin instanceof StateNode && ((StateNode)plugin).somethingIsDirty()) {
-                	return true;
-                }
-
-                if (plugin instanceof CalculationNode && ((CalculationNode)plugin).isDirtyCalculation()) {
-                    return true;
-                }
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+    	return true;
+    	// this is a prototypical implementation of requiresRecalculation() 
+//        try {
+//            for (Plugin plugin : listActivePlugins()) {
+//                if (plugin instanceof StateNode && ((StateNode)plugin).somethingIsDirty()) {
+//                	return true;
+//                }
+//
+//                if (plugin instanceof CalculationNode && ((CalculationNode)plugin).isDirtyCalculation()) {
+//                    return true;
+//                }
+//            }
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return false;
     }
 
     /** Restore internal calculations
@@ -112,6 +114,6 @@ public class CalculationNode extends Plugin {
     /**
      * flag to indicate whether this node will be updating its calculations
      */
-    private boolean isDirty = true;
+    private boolean isDirty = false;
 
 } // class CalculationNode

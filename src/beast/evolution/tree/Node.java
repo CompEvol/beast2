@@ -50,6 +50,10 @@ public class Node extends Plugin {
 	
 	/** meta-data contained in square brackets in Newick **/
 	public String m_sMetaData;
+	
+	/** The Tree that this node is a part of.
+	 * This allows e.g. access to the State containing the Tree **/ 
+	protected Tree m_tree;
 
 	@Override
 	public void initAndValidate() throws Exception {
@@ -66,6 +70,7 @@ public class Node extends Plugin {
 
 	public double getHeight() {return m_fHeight;}
 	public void setHeight(double fHeight) {
+		startEditing();
 		m_fHeight = fHeight;
 		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
@@ -109,6 +114,7 @@ public class Node extends Plugin {
 		return m_Parent;
 	}
 	public void setParent(Node parent) {
+		startEditing();
 		m_Parent = parent;
 	}
 
@@ -354,6 +360,7 @@ public class Node extends Plugin {
 	 * richer meta data pattersn.
 	 */
 	public void setMetaData(String sPattern, Object fValue) {
+		startEditing();
 		if (sPattern.equals(TraitSet.DATE_TRAIT) || 
 				sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) || 
 				sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
@@ -370,6 +377,7 @@ public class Node extends Plugin {
      * @param fScale scale factor
      **/
 	public void scale(double fScale) throws Exception {
+		startEditing();
 		m_bIsDirty |= Tree.IS_DIRTY;
 		if (!isLeaf()) {
 			m_fHeight *= fScale;
@@ -383,4 +391,9 @@ public class Node extends Plugin {
 		}
 	}
 
+	private void startEditing() {
+		if (m_tree != null && m_tree.getState() != null) {
+			m_tree.startEditing(null);
+		}
+	}
 } // class Node

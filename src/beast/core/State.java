@@ -164,18 +164,22 @@ public class State extends Plugin {
      * method on the input associated with this StateNode.
      */
     protected StateNode getEditableStateNode(int nID, Operator operator) {
-    	if (stateNode[nID] == storedStateNode[nID]) {
-    		if (stateNode[nID] == m_stateNodeMem[nID]) {
-    			storedStateNode[nID] = m_stateNodeMem[m_nStateNode + nID];
-    		} else {
-    			storedStateNode[nID] = m_stateNodeMem[nID];
-    		}
-    		storedStateNode[nID].assignFromFragile(stateNode[nID]);
-
-    		storedStateNode[nID].m_state = this;
-    		stateNode[nID].setSomethingIsDirty(true);
-    		storedStateNode[nID].setSomethingIsDirty(false);
+    	if (g_bUseNew) {
     		m_changedStateNodeCode.set(nID);
+    	} else {
+	    	if (stateNode[nID] == storedStateNode[nID]) {
+	    		if (stateNode[nID] == m_stateNodeMem[nID]) {
+	    			storedStateNode[nID] = m_stateNodeMem[m_nStateNode + nID];
+	    		} else {
+	    			storedStateNode[nID] = m_stateNodeMem[nID];
+	    		}
+	    		storedStateNode[nID].assignFromFragile(stateNode[nID]);
+	
+	    		storedStateNode[nID].m_state = this;
+	    		stateNode[nID].setSomethingIsDirty(true);
+	    		storedStateNode[nID].setSomethingIsDirty(false);
+	    		m_changedStateNodeCode.set(nID);
+	    	}
     	}
         return stateNode[nID];
     }
@@ -189,9 +193,17 @@ public class State extends Plugin {
      *
      * @param nSample chain state number
      **/
+    static final public boolean g_bUseNew = true;
     public void store(int nSample) {
-    	System.arraycopy(stateNode, 0, storedStateNode, 0, m_nStateNode);
-    	m_changedStateNodeCode.clear();// = new BitSet(m_nStateNode);
+    	if (g_bUseNew) {
+    		m_changedStateNodeCode.clear();
+//	    	for (int i = m_changedStateNodeCode.nextSetBit(0); i >= 0; i = m_changedStateNodeCode.nextSetBit(i+1)) {
+//	    		stateNode[i].store();
+//	    	}
+    	} else {
+    		System.arraycopy(stateNode, 0, storedStateNode, 0, m_nStateNode);
+    		m_changedStateNodeCode.clear();// = new BitSet(m_nStateNode);
+    	}
     	
     	if (m_nStoreEvery> 0 && nSample % m_nStoreEvery == 0 && nSample > 0) {
     		storeToFile();
@@ -202,9 +214,15 @@ public class State extends Plugin {
      * This assigns the state to the stored state.
      * NB this does not affect any Inputs connected to any stateNode. **/
     public void restore() {
-    	StateNode [] tmp = storedStateNode;
-    	storedStateNode = stateNode;
-    	stateNode = tmp;
+    	if (g_bUseNew) {
+	    	for (int i = m_changedStateNodeCode.nextSetBit(0); i >= 0; i = m_changedStateNodeCode.nextSetBit(i+1)) {
+	    		stateNode[i].restore();
+	    	}
+    	} else {
+	    	StateNode [] tmp = storedStateNode;
+	    	storedStateNode = stateNode;
+	    	stateNode = tmp;
+    	}
     }
 
     /** Visit all calculation nodes in partial order determined by the Plugin-input relations
@@ -452,11 +470,11 @@ public class State extends Plugin {
 
     	m_map.put(m_changedStateNodeCode, calcNodes);
     	
-//    	System.out.print(m_changedStateNodeCode + ":");
-//    	for (CalculationNode node : calcNodes) {
-//    		System.out.print(node.m_sID + " ");
-//    	}
-//    	System.out.println();
+    	System.out.print(m_changedStateNodeCode + ":");
+    	for (CalculationNode node : calcNodes) {
+    		System.out.print(node.m_sID + " ");
+    	}
+    	System.out.println();
     	
     	return calcNodes;
     } // getCurrentCalculationNodes

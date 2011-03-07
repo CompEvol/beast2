@@ -121,10 +121,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	recompute = true;
         	return true;
         }
-        // processed as trait on the tree, so don't mark as dirty
+        // NOT processed as trait on the tree, so DO mark as dirty
         if (categoryInput.get().somethingIsDirty()) {
         	recompute = true;
-        	return false;
+        	return true;
         }
         return recompute;
     }

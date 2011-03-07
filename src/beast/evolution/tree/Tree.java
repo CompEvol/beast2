@@ -61,6 +61,13 @@ public class Tree extends StateNode {
     	if (m_trait.get() != null) {
     		adjustTreeToNodeHeights(root);
     	}
+    	
+    	// initialise tree-as-array representation + its stored variant
+    	m_nodes = new Node[nodeCount];
+    	listNodes(root, m_nodes);
+    	m_storedNodes = new Node[nodeCount];
+        Node copy = root.copy();
+    	listNodes(copy, m_storedNodes);
     }
 
     
@@ -107,7 +114,12 @@ public class Tree extends StateNode {
      * node representation of the beast.tree *
      */
     protected beast.evolution.tree.Node root;
+    protected beast.evolution.tree.Node storedRoot;
 
+    /** array of all nodes in the tree **/
+    Node[] m_nodes = null;
+    Node[] m_storedNodes = null;
+    
     /**
      * getters and setters
      *
@@ -193,12 +205,11 @@ public class Tree extends StateNode {
         }
     }
 
-    /** array of all nodes in the tree **/
-    Node[] m_nodes = null;
 
     /** convert tree to array representation **/
     void listNodes(Node node, Node[] nodes) {
         nodes[node.getNr()] = node;
+        node.m_tree = this;
         if (!node.isLeaf()) {
             listNodes(node.m_left, nodes);
             if (node.m_right != null) {
@@ -210,10 +221,6 @@ public class Tree extends StateNode {
     /** returns list of nodes in array format.
      *  **/
     public Node [] getNodesAsArray() {
-        if (m_nodes == null) {
-        	m_nodes = new Node[getNodeCount()];
-        	listNodes(root, m_nodes);
-        }    	
         return m_nodes;
     }
 
@@ -232,8 +239,6 @@ public class Tree extends StateNode {
         tree.nodeCount = nodeCount;
         tree.internalNodeCount = internalNodeCount;
         tree.leafNodeCount = leafNodeCount;
-//        tree.treeTraitsInput = treeTraitsInput;
-//        tree.m_state = m_state;
         return tree;
     }
 
@@ -250,8 +255,6 @@ public class Tree extends StateNode {
         tree.nodeCount = nodeCount;
         tree.internalNodeCount = internalNodeCount;
         tree.leafNodeCount = leafNodeCount;
-//        tree.treeTraitsInput = treeTraitsInput;
-        //tree.m_state = m_state;
     }
 
     /** copy of all values from existing tree **/
@@ -267,22 +270,12 @@ public class Tree extends StateNode {
         nodeCount = tree.nodeCount;
         internalNodeCount = tree.internalNodeCount;
         leafNodeCount = tree.leafNodeCount;
-//      tree.treeTraitsInput = treeTraitsInput;
-        //m_state = tree.m_state;
     }
 
     /** as assignFrom, but only copy tree structure **/
     @Override
     public void assignFromFragile(StateNode other) {
         Tree tree = (Tree) other;
-        if (m_nodes == null) {
-        	m_nodes = new Node[nodeCount];
-        	listNodes(root, m_nodes);
-        	if (tree.m_nodes == null) {
-        		tree.m_nodes = new Node[nodeCount];
-            	listNodes(tree.root, tree.m_nodes);
-        	}
-        }
         
         root = m_nodes[tree.root.getNr()];
         Node [] otherNodes = tree.m_nodes;
@@ -300,7 +293,6 @@ public class Tree extends StateNode {
     	} else {
     		root.m_right = null;
     	}
-//    	root.assignFromFragile(otherNodes[iRoot]);
         assignFrom(iRoot + 1, nodeCount, otherNodes);
     }
     /** helper to assignFromFragile **/
@@ -318,7 +310,6 @@ public class Tree extends StateNode {
         			sink.m_right = null;
         		}
         	}
-//        	sink.assignFromFragile(src);
         }
     }
     
@@ -421,10 +412,54 @@ public class Tree extends StateNode {
 	@Override public int getDimension() {return getNodeCount();}
     @Override public double getArrayValue() {return (double) root.m_fHeight;}
     @Override public double getArrayValue(int iValue) {
-        if (m_nodes == null) {
-        	m_nodes = new Node[nodeCount];
-        	listNodes(root, m_nodes);
-        }
     	return (double) m_nodes[iValue].m_fHeight;
     }
+
+	/** StateNode implementation **/
+    @Override
+    protected void store() {
+        storedRoot = m_storedNodes[root.getNr()];
+        int iRoot = root.getNr();
+        storeNodes(0, iRoot);
+        storedRoot.m_fHeight = m_nodes[iRoot].m_fHeight;
+        storedRoot.m_Parent = null;
+    	if (root.m_left != null) {
+    		storedRoot.m_left = m_storedNodes[root.m_left.getNr()];
+    	} else {
+    		storedRoot.m_left = null;
+    	}
+    	if (root.m_right != null) {
+    		storedRoot.m_right = m_storedNodes[root.m_right.getNr()];
+    	} else {
+    		storedRoot.m_right = null;
+    	}
+    	storeNodes(iRoot + 1, nodeCount);
+    }
+    /** helper to store **/
+    private void storeNodes(int iStart, int iEnd) {
+        for (int i = iStart; i < iEnd; i++) {
+        	Node sink = m_storedNodes[i];
+        	Node src = m_nodes[i];
+        	sink.m_fHeight = src.m_fHeight;
+        	sink.m_Parent = m_storedNodes[src.m_Parent.getNr()];
+        	if (src.m_left != null) {
+        		sink.m_left = m_storedNodes[src.m_left.getNr()];
+        		if (src.m_right != null) {
+        			sink.m_right = m_storedNodes[src.m_right.getNr()];
+        		} else {
+        			sink.m_right = null;
+        		}
+        	}
+        }
+    }
+
+    @Override
+    public void restore() {
+    	Node [] tmp = m_storedNodes;
+    	m_storedNodes = m_nodes;
+    	m_nodes = tmp;
+    	root = m_nodes[storedRoot.getNr()];
+    	m_bHasStartedEditing = false;
+    }
+    
 } // class Tree

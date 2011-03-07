@@ -54,6 +54,7 @@ public class RealParameter extends Parameter<Double> {
     	String [] sValues = sValue.split("\\s+");
     	int nDimension = Math.max(m_nDimension.get(), sValues.length);
         values = new java.lang.Double[nDimension];
+        storedValues = new java.lang.Double[nDimension];
         for (int i = 0; i < values.length; i++) {
             values[i] = new Double(sValues[i % sValues.length]);
         }

@@ -34,7 +34,12 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * @param operator explain here why operator is useful
      */
     public StateNode getCurrentEditable(Operator operator) {
-    	return m_state.getEditableStateNode(this.index, operator);
+    	if (State.g_bUseNew) {
+    		startEditing(operator);
+    		return this;
+    	} else {
+    		return m_state.getEditableStateNode(this.index, operator);
+    	}
     }
 
     /** Getting/setting global dirtiness state for this StateNode.
@@ -44,11 +49,11 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * an element in an array, or a node in a tree) has changed.
      * **/
     public boolean somethingIsDirty() {
-        return this.somethingIsDirty;
+        return this.m_bHasStartedEditing;
     }
     
     public void setSomethingIsDirty(final boolean isDirty) {
-    	this.somethingIsDirty = isDirty;
+    	this.m_bHasStartedEditing = isDirty;
     }
     /** mark every internal element of a StateNode as isDirty.
      * So both the global flag for this StateNode (somethingIsDirty) should be set as
@@ -132,12 +137,14 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * Pointer to state, null if not part of a State.
      */
     protected State m_state = null;
+    public State getState() {return m_state;}
     
     /**
-     * flag to indicate some value has changed after operation is performed on state *
-     * For multidimensional parameters, there is an internal flag to indicate
+     * flag to indicate some value has changed after operation is performed on state
+     * For multidimensional parameters, there is an internal flag to indicate which
+     * dimension is dirty
      */
-    boolean somethingIsDirty = false;
+    protected boolean m_bHasStartedEditing = false;
 
     /**
      * The index of the parameter for identifying this StateNode 
@@ -145,5 +152,21 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      */
     protected int index = -1;
     public int getIndex() {return index;}
+    
+    /** should be called before an Operator proposes a new State **/
+    public void startEditing(Operator operator) {
+    	if (m_bHasStartedEditing) {
+    		// we are already editing
+    		return;
+    	}
+    	m_bHasStartedEditing = true;
+    	// notify the state
+    	m_state.getEditableStateNode(this.index, operator);
+    	store();
+    } 
+    
+    abstract protected void store();
+    
+    abstract public void restore();
 
 } // class StateNode

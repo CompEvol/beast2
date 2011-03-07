@@ -52,6 +52,7 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     	String [] sValues = sValue.split("\\s+");
     	int nDimension = Math.max(m_nDimension.get(), sValues.length);
         values = new java.lang.Integer[nDimension];
+        storedValues = new java.lang.Integer[nDimension];
         for (int i = 0; i < values.length; i++) {
             values[i] = new Integer(sValues[i % sValues.length]);
         }

@@ -70,6 +70,8 @@ public abstract class Parameter<T> extends StateNode {
      * the actual values of this parameter
      */
     protected T[] values;
+    protected T[] storedValues;
+    
     /**
      * isDirty flags for individual elements in high dimensional parameters
      */
@@ -136,28 +138,26 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     public void setValue(T fValue) {
+    	startEditing(null);
 //        if (isStochastic()) {
-            values[0] = fValue;
-            m_bIsDirty[0] = true;
-            m_nLastDirty = 0;
-            // next line is superfluous, since it is already done in the State
-            // setSomethingIsDirty(true);
+        values[0] = fValue;
+        m_bIsDirty[0] = true;
+        m_nLastDirty = 0;
+//    	}
 //        } else {
-//        	System.err.println("Can't set the value of a fixed parameter.");
+//        	System.err.println("Can't set the value of a parameter, unless startEditing() is called first.");
 //        	System.exit(1);
 //        }
     }
 
     public void setValue(int iParam, T fValue) {
+    	startEditing(null);
 //        if (isStochastic()) {
-            values[iParam] = fValue;
-            m_bIsDirty[iParam] = true;
-            m_nLastDirty = iParam;
-
-            // next line is superfluous, since it is already done in the State
-            // setSomethingIsDirty(true);
+        values[iParam] = fValue;
+        m_bIsDirty[iParam] = true;
+        m_nLastDirty = iParam;
 //        } else {
-//	    	System.err.println("Can't set the value of a fixed parameter.");
+//        	System.err.println("Can't set the value of a parameter, unless startEditing() is called first.");
 //	        System.exit(1);
 //	    }
     }
@@ -272,4 +272,17 @@ public abstract class Parameter<T> extends StateNode {
      **/
     abstract void fromXML(int nDimension, String sLower, String sUpper, String [] sValues);
 
+
+    @Override
+    protected void store() {
+        System.arraycopy(values, 0, storedValues, 0, values.length);
+    }
+
+    @Override
+    public void restore() {
+    	T [] tmp = storedValues;
+    	storedValues = values;
+    	values = tmp;
+    	m_bHasStartedEditing = false;
+    }
 } // class Parameter
