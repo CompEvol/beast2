@@ -1,5 +1,6 @@
 package beast.evolution.tree.coalescent;
 
+
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
@@ -9,7 +10,6 @@ import beast.evolution.tree.Tree;
 import beast.util.HeapSort;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /*
@@ -66,13 +66,27 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 
 	@Override
     protected void restore() {
-		intervalsKnown = false;
+		//intervalsKnown = false;
+		double [] tmp = storedIntervals;
+		storedIntervals = intervals;
+		intervals = tmp;
+		
+		int [] tmp2 = storedLineageCounts;
+		storedLineageCounts = lineageCounts;
+		lineageCounts = tmp2;
+		
+		int tmp3 = storedIntervalCount;
+		storedIntervalCount = intervalCount;
+		intervalCount = tmp3;
     	super.restore();
     }
 
 	@Override
     protected void store() {
-    	super.store();
+		System.arraycopy(lineageCounts, 0, storedLineageCounts, 0, lineageCounts.length); 
+		System.arraycopy(intervals, 0, storedIntervals, 0, intervals.length); 
+		storedIntervalCount = intervalCount;
+		super.store();
     }
 
     /**
@@ -98,7 +112,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 
     public int getSampleCount() {
         // Assumes a binary tree!
-        return (m_tree.get().getNodeCount() - 1) / 2;
+        return m_tree.get().getInternalNodeCount();
     }
 
     /**
@@ -173,20 +187,20 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * @param interval the index of the interval
      * @return a list of the nodes representing the lineages in the ith interval.
      */
-    public final List<Node> getLineages(int interval) {
-
-        if (lineages[interval] == null) {
-
-            List<Node> lines = new ArrayList<Node>();
-            for (int i = 0; i <= interval; i++) {
-                if (lineagesAdded[i] != null) lines.addAll(lineagesAdded[i]);
-                if (lineagesRemoved[i] != null) lines.removeAll(lineagesRemoved[i]);
-            }
-            lineages[interval] = Collections.unmodifiableList(lines);
-
-        }
-        return lineages[interval];
-    }
+//    public final List<Node> getLineages(int interval) {
+//
+//        if (lineages[interval] == null) {
+//
+//            List<Node> lines = new ArrayList<Node>();
+//            for (int i = 0; i <= interval; i++) {
+//                if (lineagesAdded[i] != null) lines.addAll(lineagesAdded[i]);
+//                if (lineagesRemoved[i] != null) lines.removeAll(lineagesRemoved[i]);
+//            }
+//            lineages[interval] = Collections.unmodifiableList(lines);
+//
+//        }
+//        return lineages[interval];
+//    }
 
     /**
      * Returns the number coalescent events in an interval
@@ -218,15 +232,15 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         else return IntervalType.NOTHING;
     }
 
-    public Node getCoalescentNode(int interval) {
-        if (getIntervalType(interval) == IntervalType.COALESCENT) {
-            if (lineagesRemoved[interval] != null) {
-                if (lineagesRemoved[interval].size() == 1) {
-                    return lineagesRemoved[interval].get(0);
-                } else throw new IllegalArgumentException("multiple lineages lost over this interval!");
-            } else throw new IllegalArgumentException("Inconsistent: no intervals lost over this interval!");
-        } else throw new IllegalArgumentException("Interval " + interval + " is not a coalescent interval.");
-    }
+//    public Node getCoalescentNode(int interval) {
+//        if (getIntervalType(interval) == IntervalType.COALESCENT) {
+//            if (lineagesRemoved[interval] != null) {
+//                if (lineagesRemoved[interval].size() == 1) {
+//                    return lineagesRemoved[interval].get(0);
+//                } else throw new IllegalArgumentException("multiple lineages lost over this interval!");
+//            } else throw new IllegalArgumentException("Inconsistent: no intervals lost over this interval!");
+//        } else throw new IllegalArgumentException("Interval " + interval + " is not a coalescent interval.");
+//    }
 
     /**
      * get the total height of the genealogy represented by these
@@ -301,9 +315,24 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
             lineageCounts = new int[nodeCount];
             lineagesAdded = new List[nodeCount];
             lineagesRemoved = new List[nodeCount];
-            lineages = new List[nodeCount];
-        }
+//            lineages = new List[nodeCount];
 
+            storedIntervals = new double[nodeCount];
+            storedLineageCounts = new int[nodeCount];
+
+        } else {
+	        for( List l : lineagesAdded ) {
+	            if( l != null ) {
+	                l.clear();
+	            }
+	        }
+	        for( List l : lineagesRemoved ) {
+	            if( l != null ) {
+	                l.clear();
+	            }
+	        }
+        }
+        
         // start is the time of the first tip
         double start = times[indices[0]];
         int numLines = 0;
@@ -404,16 +433,16 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * @param childCounts the number of children of each node
      */
     private static void collectTimes(Tree tree, double[] times, int[] childCounts) {
-
-        for (int i = 0; i < tree.getNodeCount(); i++) {
-            Node node = tree.getNode(i);
+    	Node [] nodes = tree.getNodesAsArray();
+    	for (int i = 0; i < nodes.length; i++) {
+    		Node node = nodes[i];
             times[i] = node.getHeight();
             childCounts[i] = node.isLeaf() ? 0 : 2;
-        }
+    	}
     }
 
     /**
-     * The beast.tree. RRB: not a good idea to keep a copy around, since it chagnes all the time.
+     * The beast.tree. RRB: not a good idea to keep a copy around, since it changes all the time.
      */
 //    private Tree tree = null;
 
@@ -421,20 +450,23 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * The widths of the intervals.
      */
     private double[] intervals;
+    private double[] storedIntervals;
 
     /**
      * The number of uncoalesced lineages within a particular interval.
      */
     private int[] lineageCounts;
+    private int[] storedLineageCounts;
 
     /**
      * The lineages in each interval (stored by node ref).
      */
     private List<Node>[] lineagesAdded;
     private List<Node>[] lineagesRemoved;
-    private List<Node>[] lineages;
+//    private List<Node>[] lineages;
 
     private int intervalCount = 0;
+    private int storedIntervalCount = 0;
 
     /**
      * are the intervals known?

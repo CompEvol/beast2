@@ -21,14 +21,15 @@ import java.util.Random;
 	"in account, in other words, the constant required for making this a proper distribution that integrates " +
 	"to unity is not calculated (partly, because we don't know how for sequentially samples data).")
 public class Coalescent extends TreePrior {
-
-//    public Input<Tree> tree = new Input<Tree>("tree", "A phylogenetic beast tree");
     public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model", Validate.REQUIRED);
 
     TreeIntervals intervals;
 	@Override
-	public void initAndValidate() {
+	public void initAndValidate() throws Exception {
 		intervals = treeIntervals.get();
+		if (intervals == null) {
+			throw new Exception("Expected treeIntervals to be specified");
+		}
 	}
 
     

@@ -573,6 +573,10 @@ public class XMLParser {
                         o = Class.forName(sNameSpace + sSpecClass).newInstance();
                         bDone = true;
                     }
+                } catch (InstantiationException e) {
+                	// we only get here when the class exists, but cannot be created
+                	// for instance because it is abstract
+                	throw new Exception("Cannot instantiate class. Please check the spec attribute.");
                 } catch (ClassNotFoundException e) {
                     // TODO: handle exception
                 }
