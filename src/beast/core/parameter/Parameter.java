@@ -209,6 +209,7 @@ public abstract class Parameter<T> extends StateNode {
         Parameter<T> source = (Parameter<T>) other;
         setID(source.getID());
         values = source.values.clone();
+        storedValues = source.storedValues.clone();
         System.arraycopy(source.values, 0, values, 0, values.length);
         m_fLower = source.m_fLower;
         m_fUpper = source.m_fUpper;

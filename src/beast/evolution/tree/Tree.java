@@ -275,6 +275,7 @@ public class Tree extends StateNode {
         nodeCount = tree.nodeCount;
         internalNodeCount = tree.internalNodeCount;
         leafNodeCount = tree.leafNodeCount;
+        initArrays();
     }
 
     /** as assignFrom, but only copy tree structure **/
