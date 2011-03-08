@@ -159,23 +159,24 @@ public class Tree extends StateNode {
     }
 
     public Node getNode(int iNodeNr) {
-        return getNode(iNodeNr, root);
+    	return m_nodes[iNodeNr];
+        //return getNode(iNodeNr, root);
     }
 
-    public Node getNode(int iNodeNr, Node node) {
-        if (node.getNr() == iNodeNr) {
-            return node;
-        }
-        if (node.isLeaf()) {
-            return null;
-        } else {
-            Node child = getNode(iNodeNr, node.m_left);
-            if (child != null) {
-                return child;
-            }
-            return getNode(iNodeNr, node.m_right);
-        }
-    } // getNode
+//    public Node getNode(int iNodeNr, Node node) {
+//        if (node.getNr() == iNodeNr) {
+//            return node;
+//        }
+//        if (node.isLeaf()) {
+//            return null;
+//        } else {
+//            Node child = getNode(iNodeNr, node.m_left);
+//            if (child != null) {
+//                return child;
+//            }
+//            return getNode(iNodeNr, node.m_right);
+//        }
+//    } // getNode
 
 
     /**

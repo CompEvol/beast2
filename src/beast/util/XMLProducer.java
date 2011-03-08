@@ -377,11 +377,12 @@ public class XMLProducer extends XMLParser {
             "    <xsl:copy><xsl:apply-templates select='*[@*!=\"\"]'/> </xsl:copy>\n" +
             "</xsl:template>\n" +
             "\n" +
-            "<xsl:template match='@id'>\n" +
-            "    <xsl:if test='//@idref=. or not(contains(../@spec,substring(.,string-length(.)-2)))'>\n" +
-            "        <xsl:copy/>\n" +
-            "    </xsl:if>\n" +
-            "</xsl:template>\n" +
+            // Better not suppress unused id's; used for example in reporting Operators
+            //"<xsl:template match='@id'>\n" +
+            //"    <xsl:if test='//@idref=. or not(contains(../@spec,substring(.,string-length(.)-2)))'>\n" +
+            //"        <xsl:copy/>\n" +
+            //"    </xsl:if>\n" +
+            //"</xsl:template>\n" +
             "\n" +
             "<xsl:template match='@*|node()'>\n" +
             "  <xsl:copy>\n" +
