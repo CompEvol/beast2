@@ -281,7 +281,9 @@ public class Tree extends StateNode {
     @Override
     public void assignFromFragile(StateNode other) {
         Tree tree = (Tree) other;
-        
+        if (m_nodes == null) {
+        	initArrays();
+        }
         root = m_nodes[tree.root.getNr()];
         Node [] otherNodes = tree.m_nodes;
         int iRoot = root.getNr();

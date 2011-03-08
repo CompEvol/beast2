@@ -193,7 +193,7 @@ public class State extends Plugin {
      *
      * @param nSample chain state number
      **/
-    static final public boolean g_bUseNew = true;
+    static final public boolean g_bUseNew = false;
     public void store(int nSample) {
     	if (g_bUseNew) {
     		m_changedStateNodeCode.clear();
