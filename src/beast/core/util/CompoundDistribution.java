@@ -37,10 +37,12 @@ import java.util.Random;
         "and priors and combines them into the compound of these distributions " +
         "typically interpreted as the posterior.")
 public class CompoundDistribution extends Distribution {
+    // no need to make this input REQUIRED. If no distribution input is
+    // specified the class just returns probability 1.
     public Input<List<Distribution>> pDistributions =
             new Input<List<Distribution>>("distribution",
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
-                    new ArrayList<Distribution>());
+                    new ArrayList<Distribution>()); 
 
     /** Distribution implementation follows **/
     @Override

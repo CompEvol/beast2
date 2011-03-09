@@ -18,8 +18,6 @@ import beast.core.Plugin;
 public class ESS extends Plugin implements Loggable {
 	public Input<Valuable> m_pParam =
             new Input<Valuable>("arg","value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
-//	public Input<Distribution> m_pDistribution =
-//            new Input<Distribution>("distribution","probability distribution to report ESS for", Validate.XOR, m_pParam);
 
 	/** values from which the ESS is calculated **/
 	List<Double> m_trace;
@@ -27,21 +25,15 @@ public class ESS extends Plugin implements Loggable {
 	double m_fSum = 0;
 	/** keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  **/
     List<Double> m_fSquareLaggedSums;
-//	/** shadow of distribution input (if any) **/
-//	Distribution m_distribution;
 	
 	@Override
 	public void initAndValidate() {
-//		if (m_pParam.get() == null) {
-//			m_distribution = m_pDistribution.get();
-//		}
 		m_trace = new ArrayList<Double>();
 		m_fSquareLaggedSums = new ArrayList<Double>();
 	}
 	
 	@Override
 	public void init(PrintStream out) throws Exception {
-//		final String sID = (m_distribution == null? m_pParam.get().getID() : m_distribution.getID());
 		final String sID = ((Plugin) m_pParam.get()).getID();
 		out.print("ESS("+sID+")\t");
 	}

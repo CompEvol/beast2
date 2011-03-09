@@ -2,6 +2,7 @@ package beast.evolution.operators;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
@@ -13,7 +14,7 @@ public class RealRandomWalkOperator extends Operator {
     public Input<Double> windowSizeInput =
             new Input<Double>("windowSize", "the size of the window both up and down when using uniform interval OR standard deviation when using Gaussian", Input.Validate.REQUIRED);
     public Input<RealParameter> parameterInput =
-            new Input<RealParameter>("parameter", "the parameter to operate a random walk on.");
+            new Input<RealParameter>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
     public Input<Boolean> useGaussianInput =
         new Input<Boolean>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
 

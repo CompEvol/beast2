@@ -22,8 +22,8 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
                     "If time units are set to Units.EXPECTED_SUBSTITUTIONS then" +
                     "the N0 parameter will be interpreted as N0 * mu. " +
                     "Also note that if you are dealing with a diploid population " +
-                    "N0 will be out by a factor of 2.");
-    public Input<IntegerParameter> groupSizeParamInput = new Input<IntegerParameter>("groupSizes", "the group sizes parameter");
+                    "N0 will be out by a factor of 2.", Validate.REQUIRED);
+    public Input<IntegerParameter> groupSizeParamInput = new Input<IntegerParameter>("groupSizes", "the group sizes parameter", Validate.REQUIRED);
     //public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
     public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals", "The intervals of teh tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
 

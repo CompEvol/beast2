@@ -27,7 +27,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     public Input<Tree> treeInput =
             new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
     public Input<Boolean> ratesAreMultipliersInput =
-            new Input<Boolean>("ratesAreMultipliers", "true if the rates should be treated as multipliers.");
+            new Input<Boolean>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).", false);
 
     @Override
     public void initAndValidate() throws Exception {

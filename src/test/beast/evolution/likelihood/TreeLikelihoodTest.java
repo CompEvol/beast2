@@ -60,7 +60,7 @@ public class TreeLikelihoodTest extends TestCase {
     	for (Sequence sequence : sequences) {
     		data.m_pSequences.setValue(sequence, data);
     	}
-    	data.m_nStateCount.setValue(4, data);
+    	//data.m_nStateCount.setValue(4, data);
     	data.m_sDataType.setValue("nucleotide", data);
     	data.m_excludefrom.setValue(0, data);
     	data.m_excludeto.setValue(4, data);

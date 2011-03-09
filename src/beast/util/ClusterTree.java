@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import beast.evolution.alignment.Alignment;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -64,7 +65,7 @@ public class ClusterTree extends Tree {
 
 	public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
 			"Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE +")", M_AVERAGE, TYPES);
-	public Input<Alignment> m_pData = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
+	public Input<Alignment> m_pData = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering", Validate.REQUIRED);
 	public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
 
 	/** Whether the distance represent node height (if false) or branch length (if true). */

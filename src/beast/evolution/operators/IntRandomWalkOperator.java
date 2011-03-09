@@ -2,6 +2,7 @@ package beast.evolution.operators;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.parameter.IntegerParameter;
 import beast.util.Randomizer;
@@ -11,9 +12,9 @@ import beast.util.Randomizer;
         "random amount within +/- windowSize.")
 public class IntRandomWalkOperator extends Operator {
     public Input<Integer> windowSizeInput =
-            new Input<Integer>("windowSize", "the size of the window both up and down", Input.Validate.REQUIRED);
+            new Input<Integer>("windowSize", "the size of the window both up and down", Validate.REQUIRED);
     public Input<IntegerParameter> parameterInput =
-            new Input<IntegerParameter>("parameter", "the parameter to operate a random walk on.");
+            new Input<IntegerParameter>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
 
     int windowSize = 1;
 

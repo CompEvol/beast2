@@ -2,6 +2,7 @@ package beast.evolution.operators;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.parameter.IntegerParameter;
 import beast.util.Randomizer;
@@ -9,7 +10,7 @@ import beast.util.Randomizer;
 
 @Description("A uniform random operator that selects a random dimension of the integer parameter and picks a new random value within the bounds.")
 public class IntUniformOperator extends Operator {
-    public Input<IntegerParameter> parameterInput = new Input<IntegerParameter>("parameter", "the parameter to operate a random walk on.");
+    public Input<IntegerParameter> parameterInput = new Input<IntegerParameter>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
 
 
     public void initAndValidate() {

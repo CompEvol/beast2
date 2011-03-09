@@ -71,7 +71,7 @@ public class Alignment extends CalculationNode {
 	
     public Input<List<Sequence>> m_pSequences =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
-    public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
+    //public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
     //public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
     public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + m_sTypes, NUCLEOTIDE, m_sTypes.toArray(new String[0]));
     public Input<DataType.Base> m_userDataType = new Input<DataType.Base>("userDataType", "non-standard, user specified data type", Validate.XOR, m_sDataType);
@@ -120,7 +120,7 @@ public class Alignment extends CalculationNode {
     	for (Sequence sequence : sequences) {
     		m_pSequences.setValue(sequence, this);
     	}
-        m_nStateCount.setValue(stateCount, this);
+        //m_nStateCount.setValue(stateCount, this);
         m_sDataType.setValue(dataType, this);
         initAndValidate();
     }

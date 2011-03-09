@@ -623,8 +623,9 @@ public class XMLParser {
             	plugin.validateInputs();
             	plugin.initAndValidate();
         	} catch (Exception e) {
-            	plugin.validateInputs();
-            	plugin.initAndValidate();
+        		// next lines for debugging only
+            	//plugin.validateInputs();
+            	//plugin.initAndValidate();
         		e.printStackTrace();
         		throw new XMLParserException(node, "validate and intialize error: " + e.getMessage(), 110);
             }
