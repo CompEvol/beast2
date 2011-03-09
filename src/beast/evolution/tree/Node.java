@@ -189,6 +189,39 @@ public class Node extends Plugin {
 		return buf.toString();
 	}
 
+	/** prints newick string where it orders by highest leaf number
+	 * in a clade
+	 */
+	String toSortedNewick(int [] iMaxNodeInClade) {
+		StringBuffer buf = new StringBuffer();
+		if (m_left != null) {
+			buf.append("(");
+			String sChild1 = m_left.toSortedNewick(iMaxNodeInClade);
+			int iChild1 = iMaxNodeInClade[0];
+			if (m_right != null) {
+				String sChild2 = m_left.toSortedNewick(iMaxNodeInClade);
+				int iChild2 = iMaxNodeInClade[0];
+				if (iChild1 > iChild2) {
+					buf.append(sChild2);
+					buf.append(",");
+					buf.append(sChild1);
+				} else {
+					buf.append(sChild1);
+					buf.append(",");
+					buf.append(sChild2);
+					iMaxNodeInClade[0] = iChild1;
+				}
+			} else {
+				buf.append(sChild1);
+			}
+			buf.append(")");
+		} else {
+			iMaxNodeInClade[0] = m_iLabel;
+			buf.append(m_iLabel);
+		}			
+		return buf.toString();
+	}
+	
 	/**
 	 * @param sLabels names of the taxa
      * @return  beast.tree in Newick format with taxon labels for leafs.

@@ -321,12 +321,12 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
             storedLineageCounts = new int[nodeCount];
 
         } else {
-	        for( List l : lineagesAdded ) {
+	        for( List<Node> l : lineagesAdded ) {
 	            if( l != null ) {
 	                l.clear();
 	            }
 	        }
-	        for( List l : lineagesRemoved ) {
+	        for( List<Node> l : lineagesRemoved ) {
 	            if( l != null ) {
 	                l.clear();
 	            }

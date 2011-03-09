@@ -390,10 +390,13 @@ public class Tree extends StateNode {
 
     @Override
     public void log(int nSample, PrintStream out) {
-        Tree tree = (Tree) getCurrent();//(Tree) state.getStateNode(m_sID);
+        Tree tree = (Tree) getCurrent();
         out.print("tree STATE_" + nSample + " = ");
-		tree.getRoot().sort();
-        out.print(tree.getRoot().toShortNewick(false));
+        // Don't sort, this can confuse CalculationNodes relying on the tree
+		//tree.getRoot().sort();
+		int [] dummy = new int[1];
+		String sNewick = tree.getRoot().toSortedNewick(dummy);
+        out.print(sNewick);
         out.print(";");
     }
 
