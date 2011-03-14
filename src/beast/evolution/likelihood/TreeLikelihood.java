@@ -162,7 +162,7 @@ public class TreeLikelihood extends Distribution {
     /** flag to indicate the 
     // when CLEAN=0, nothing needs to be recalculated for the node
     // when DIRTY=1 indicates a node partial needs to be recalculated
-    // when GORED=2 indicates the indices for the node need to be recalculated
+    // when FILTHY=2 indicates the indices for the node need to be recalculated
     // (often not necessary while node partial recalculation is required)
      */
     int m_nHasDirt;
@@ -212,14 +212,9 @@ public class TreeLikelihood extends Distribution {
 
         int nStateCount = m_data.get().getMaxStateCount();
         if (nStateCount == 4) {
-        	//m_likelihoodCore = new BeerLikelihoodCore4();
-        	m_likelihoodCore = new BeerLikelihoodCoreCnG4();
-        	//m_likelihoodCore = new BeerLikelihoodCoreCnG(4);
-            //m_likelihoodCore = new BeerLikelihoodCoreJava4();
-        	//m_likelihoodCore = new BeerLikelihoodCoreNative(4);
+            m_likelihoodCore = new BeerLikelihoodCore4();
         } else {
             m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
-            //m_likelihoodCore = new BeerLikelihoodCoreCnG(nStateCount);
         }
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
         initCore();
@@ -252,7 +247,11 @@ public class TreeLikelihood extends Distribution {
         int extNodeCount = nodeCount / 2 + 1;
         int intNodeCount = nodeCount / 2;
 
-        setStates(m_tree.get().getRoot(), m_data.get().getPatternCount());
+        if (m_useAmbiguities.get()) {
+        	setPartials(m_tree.get().getRoot(), m_data.get().getPatternCount());
+        } else {
+        	setStates(m_tree.get().getRoot(), m_data.get().getPatternCount());
+        }
         m_nHasDirt = Tree.IS_FILTHY;
         for (int i = 0; i < intNodeCount; i++) {
             m_likelihoodCore.createNodePartials(extNodeCount + i);
@@ -282,6 +281,29 @@ public class TreeLikelihood extends Distribution {
         }
     }
 
+    /** set leaf partials in likelihood core **/
+    void setPartials(Node node, int patternCount) {
+        if (node.isLeaf()) {
+        	Alignment data = m_data.get();
+        	int nStates = data.getDataType().getStateCount();
+            double[] partials = new double[patternCount * nStates];
+
+            int k = 0;
+            for (int iPattern = 0; iPattern < patternCount; iPattern++) {
+            	int nState = data.getPattern(node.getNr(), iPattern);
+            	boolean [] stateSet = data.getStateSet(nState);
+        		for (int iState = 0; iState < nStates; iState++) {
+        			partials[k++] = (stateSet[iState] ? 1.0 : 0.0);
+            	}
+            }
+            m_likelihoodCore.setNodePartials(node.getNr(), partials);
+
+        } else {
+        	setPartials(node.m_left, patternCount);
+        	setPartials(node.m_right, patternCount);
+        }
+    }
+    
     /**
      * Calculate the log likelihood of the current state.
      * @return the log likelihood.

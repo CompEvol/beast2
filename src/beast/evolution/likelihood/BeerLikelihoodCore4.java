@@ -1,209 +1,290 @@
-
-/*
- * File BeerLikelihoodCore4.java
- *
- * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
- *
- * This file is part of BEAST2.
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership and licensing.
- *
- * BEAST is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- *  BEAST is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with BEAST; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301  USA
- */
-
-// TODO: unroll loops
-
-// TODO: separate inner loops to small methods
-
-// TODO: remove all loops on matrices if matrixcount==1
-
-// TODO: why do partials not sum to 1???
-// TODO: ensure matrices are normalised so that the last item can be calculated as (1 - rest)
-
-// TODO: efficient gamma distribution handling
-
-// TODO: buffered calculation (ie. save up all partials/partials calculations and do them in 1 go
-
-// TODO: CUDA support
-
-
 package beast.evolution.likelihood;
 
-
+/** nucleotide implementation of standard likelihood core **/
 public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
 
 	public BeerLikelihoodCore4() {
 		super(4);
-	} // c'tor
-
-	int calcSSP(int state1, int state2, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials3, int w, int v) {
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
-			v++;
-			w += m_nStates+1;
-
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
-			v++;
-			w += m_nStates+1;
-
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
-			v++;
-			w += m_nStates+1;
-
-			pfPartials3[v] = pfMatrices1[w + state1] * pfMatrices2[w + state2];
-			v++;
-			w += m_nStates+1;
-			return v;
 	}
 
-	int calcSPP(int state1, double [] pfMatrices1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v, int u) {
-		double tmp, sum;
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+	/**
+	 * Calculates partial likelihoods at a node when both children have states.
+	 */
+	protected void calculateStatesStatesPruning(int[] iStates1, double[] fMatrices1,
+												int[] iStates2, double[] fMatrices2,
+												double[] fPartials3)
+	{
+		int v = 0;
 
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+		for (int l = 0; l < m_nMatrices; l++) {
 
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+			for (int k = 0; k < m_nPatterns; k++) {
 
-			tmp = pfMatrices1[w + state1];
-			sum = 0.0;
-				sum += pfMatrices2[w] * pfPartials2[v + 0];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 1];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 2];
-				w++;
-				sum += pfMatrices2[w] * pfPartials2[v + 3];
-				w++;
-			w++;
-			pfPartials3[u] = tmp * sum;
-			u++;
+				int state1 = iStates1[k];
+				int state2 = iStates2[k];
 
-		//v += m_nStates;
-		return u;
+				int w = l * m_nMatrixSize;
+
+				if (state1 < 4 && state2 < 4) {
+
+					fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
+					v++;	w += 4;
+
+				} else if (state1 < 4) {
+					// child 2 has a gap or unknown state so don't use it
+
+					fPartials3[v] = fMatrices1[w + state1];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices1[w + state1];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices1[w + state1];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices1[w + state1];
+					v++;	w += 4;
+
+				} else if (state2 < 4) {
+					// child 2 has a gap or unknown state so don't use it
+					fPartials3[v] = fMatrices2[w + state2];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices2[w + state2];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices2[w + state2];
+					v++;	w += 4;
+					fPartials3[v] = fMatrices2[w + state2];
+					v++;	w += 4;
+
+				} else {
+					// both children have a gap or unknown state so set partials to 1
+					fPartials3[v] = 1.0;
+					v++;
+					fPartials3[v] = 1.0;
+					v++;
+					fPartials3[v] = 1.0;
+					v++;
+					fPartials3[v] = 1.0;
+					v++;
+				}
+			}
+		}
 	}
 
-	int calcPPP(double [] pfMatrices1, double [] pfPartials1, double [] pfMatrices2, double [] pfPartials2, double [] pfPartials3, int w, int v1, int v2, int u) {
+	/**
+	 * Calculates partial likelihoods at a node when one child has states and one has partials.
+	 */
+	protected void calculateStatesPartialsPruning(	int[] iStates1, double[] fMatrices1,
+													double[] fPartials2, double[] fMatrices2,
+													double[] fPartials3)
+	{
+
+		double sum;//, tmp;
+
+		int u = 0;
+		int v = 0;
+
+		for (int l = 0; l < m_nMatrices; l++) {
+			for (int k = 0; k < m_nPatterns; k++) {
+
+				int state1 = iStates1[k];
+
+                int w = l * m_nMatrixSize;
+
+				if (state1 < 4) {
+
+
+					sum =	fMatrices2[w] * fPartials2[v];
+					sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+					fPartials3[u] = fMatrices1[w + state1] * sum;	u++;
+
+					sum =	fMatrices2[w + 4] * fPartials2[v];
+					sum +=	fMatrices2[w + 5] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 6] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 7] * fPartials2[v + 3];
+					fPartials3[u] = fMatrices1[w + 4 + state1] * sum;	u++;
+
+					sum =	fMatrices2[w + 8] * fPartials2[v];
+					sum +=	fMatrices2[w + 9] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 10] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 11] * fPartials2[v + 3];
+					fPartials3[u] = fMatrices1[w + 8 + state1] * sum;	u++;
+
+					sum =	fMatrices2[w + 12] * fPartials2[v];
+					sum +=	fMatrices2[w + 13] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 14] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 15] * fPartials2[v + 3];
+					fPartials3[u] = fMatrices1[w + 12 + state1] * sum;	u++;
+
+					v += 4;
+
+				} else {
+					// Child 1 has a gap or unknown state so don't use it
+
+
+					sum =	fMatrices2[w] * fPartials2[v];
+					sum +=	fMatrices2[w + 1] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 2] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 3] * fPartials2[v + 3];
+					fPartials3[u] = sum;	u++;
+
+					sum =	fMatrices2[w + 4] * fPartials2[v];
+					sum +=	fMatrices2[w + 5] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 6] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 7] * fPartials2[v + 3];
+					fPartials3[u] = sum;	u++;
+
+					sum =	fMatrices2[w + 8] * fPartials2[v];
+					sum +=	fMatrices2[w + 9] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 10] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 11] * fPartials2[v + 3];
+					fPartials3[u] = sum;	u++;
+
+					sum =	fMatrices2[w + 12] * fPartials2[v];
+					sum +=	fMatrices2[w + 13] * fPartials2[v + 1];
+					sum +=	fMatrices2[w + 14] * fPartials2[v + 2];
+					sum +=	fMatrices2[w + 15] * fPartials2[v + 3];
+					fPartials3[u] = sum;	u++;
+
+					v += 4;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Calculates partial likelihoods at a node when both children have partials.
+	 */
+	protected void calculatePartialsPartialsPruning(double[] fPartials1, double[] fMatrices1,
+													double[] fPartials2, double[] fMatrices2,
+													double[] fPartials3)
+	{
 		double sum1, sum2;
-			sum1=0;
-			sum2=0;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
-				w++;
-			w++;
-			pfPartials3[u] = sum1 * sum2;
-			u++;
 
-			sum1=0;
-			sum2=0;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
-				w++;
-			w++;
-			pfPartials3[u] = sum1 * sum2;
-			u++;
+		int u = 0;
+		int v = 0;
 
-			sum1=0;
-			sum2=0;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
-				w++;
-			w++;
-			pfPartials3[u] = sum1 * sum2;
-			u++;
+		for (int l = 0; l < m_nMatrices; l++) {
 
-			sum1=0;
-			sum2=0;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 0];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 0];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 1];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 1];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 2];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 2];
-				w++;
-				sum1 += pfMatrices1[w] * pfPartials1[v1 + 3];
-				sum2 += pfMatrices2[w] * pfPartials2[v2 + 3];
-				w++;
-			w++;
-			pfPartials3[u] = sum1 * sum2;
-			u++;
-			return u;
+			for (int k = 0; k < m_nPatterns; k++) {
+
+                int w = l * m_nMatrixSize;
+
+				sum1 = fMatrices1[w] * fPartials1[v];
+				sum2 = fMatrices2[w] * fPartials2[v];
+				sum1 += fMatrices1[w + 1] * fPartials1[v + 1];
+				sum2 += fMatrices2[w + 1] * fPartials2[v + 1];
+				sum1 += fMatrices1[w + 2] * fPartials1[v + 2];
+				sum2 += fMatrices2[w + 2] * fPartials2[v + 2];
+				sum1 += fMatrices1[w + 3] * fPartials1[v + 3];
+				sum2 += fMatrices2[w + 3] * fPartials2[v + 3];
+				fPartials3[u] = sum1 * sum2; u++;
+
+				sum1 = fMatrices1[w + 4] * fPartials1[v];
+				sum2 = fMatrices2[w + 4] * fPartials2[v];
+				sum1 += fMatrices1[w + 5] * fPartials1[v + 1];
+				sum2 += fMatrices2[w + 5] * fPartials2[v + 1];
+				sum1 += fMatrices1[w + 6] * fPartials1[v + 2];
+				sum2 += fMatrices2[w + 6] * fPartials2[v + 2];
+				sum1 += fMatrices1[w + 7] * fPartials1[v + 3];
+				sum2 += fMatrices2[w + 7] * fPartials2[v + 3];
+				fPartials3[u] = sum1 * sum2; u++;
+
+				sum1 = fMatrices1[w + 8] * fPartials1[v];
+				sum2 = fMatrices2[w + 8] * fPartials2[v];
+				sum1 += fMatrices1[w + 9] * fPartials1[v + 1];
+				sum2 += fMatrices2[w + 9] * fPartials2[v + 1];
+				sum1 += fMatrices1[w + 10] * fPartials1[v + 2];
+				sum2 += fMatrices2[w + 10] * fPartials2[v + 2];
+				sum1 += fMatrices1[w + 11] * fPartials1[v + 3];
+				sum2 += fMatrices2[w + 11] * fPartials2[v + 3];
+				fPartials3[u] = sum1 * sum2; u++;
+
+				sum1 = fMatrices1[w + 12] * fPartials1[v];
+				sum2 = fMatrices2[w + 12] * fPartials2[v];
+				sum1 += fMatrices1[w + 13] * fPartials1[v + 1];
+				sum2 += fMatrices2[w + 13] * fPartials2[v + 1];
+				sum1 += fMatrices1[w + 14] * fPartials1[v + 2];
+				sum2 += fMatrices2[w + 14] * fPartials2[v + 2];
+				sum1 += fMatrices1[w + 15] * fPartials1[v + 3];
+				sum2 += fMatrices2[w + 15] * fPartials2[v + 3];
+				fPartials3[u] = sum1 * sum2; u++;
+
+				v += 4;
+			}
+		}
 	}
 
-} // class BeerLikelihoodCore
+
+
+
+
+	@Override
+    public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials) {
+		int u = 0;
+		double [] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+		for (int k = 0; k < m_nPatterns * m_nMatrices; k++) {
+			fPseudoPartials[u] = fInPartials[u] * fFrequencies[0];
+			fPseudoPartials[u+1] = fInPartials[u+1] * fFrequencies[1];
+			fPseudoPartials[u+2] = fInPartials[u+2] * fFrequencies[2];
+			fPseudoPartials[u+3] = fInPartials[u+3] * fFrequencies[3];
+			u+=4;
+		}
+    }
+    
+	@Override
+    public void calcPsuedoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials) {
+		int v = 0;
+		int u = 0;
+		double [] fMatrices = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+		for (int k = 0; k < m_nPatterns; k++) {
+			for (int l = 0; l < m_nMatrices; l++) {
+				int w = l * m_nMatrixSize;
+				fPseudoPartials[v] = fParentPseudoPartials[u] * fMatrices[w] +
+					fParentPseudoPartials[u+1] * fMatrices[w+1] +
+					fParentPseudoPartials[u+2] * fMatrices[w+2] +
+					fParentPseudoPartials[u+3] * fMatrices[w+3];
+				w += 4;
+				fPseudoPartials[v+1] = fParentPseudoPartials[u] * fMatrices[w] +
+						fParentPseudoPartials[u+1] * fMatrices[w+1] +
+						fParentPseudoPartials[u+2] * fMatrices[w+2] +
+						fParentPseudoPartials[u+3] * fMatrices[w+3];
+				w += 4;
+				fPseudoPartials[v+1] = fParentPseudoPartials[u] * fMatrices[w] +
+					fParentPseudoPartials[u+1] * fMatrices[w+1] +
+					fParentPseudoPartials[u+2] * fMatrices[w+2] +
+					fParentPseudoPartials[u+3] * fMatrices[w+3];
+				w += 4;
+				fPseudoPartials[v+1] = fParentPseudoPartials[u] * fMatrices[w] +
+					fParentPseudoPartials[u+1] * fMatrices[w+1] +
+					fParentPseudoPartials[u+2] * fMatrices[w+2] +
+					fParentPseudoPartials[u+3] * fMatrices[w+3];
+				v += 4;
+				u += 4;
+			}
+		}
+    }
+
+	/**
+	 * Calculates pattern log likelihoods at a node.
+	 * @param fPartials the partials used to calculate the likelihoods
+	 * @param fFrequencies an array of state frequencies
+	 * @param fOutLogLikelihoods an array into which the likelihoods will go
+	 */
+    @Override
+	public void calculateLogLikelihoodsP(double[] fPartials,double[] fOutLogLikelihoods)
+	{
+        int v = 0;
+		for (int k = 0; k < m_nPatterns; k++) {
+            double sum = fPartials[v] + fPartials[v+1] + fPartials[v + 2] + fPartials[v + 3];
+            v +=4;
+            fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
+		}
+	}
+
+}

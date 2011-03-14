@@ -312,22 +312,16 @@ public class Alignment extends CalculationNode {
     /**
      * returns an array containing the non-ambiguous states that this state represents.
      */
-    public boolean[] getStateSet(int state) {
-
-        boolean[] stateSet = new boolean[m_nMaxStateCount];
-        if (!isAmbiguousState(state)) {
-            for (int i = 0; i < m_nMaxStateCount; i++) {
-                stateSet[i] = false;
-            }
-
-            stateSet[state] = true;
-        } else {
-            for (int i = 0; i < m_nMaxStateCount; i++) {
-                stateSet[i] = true;
-            }
-        }
-        return stateSet;
+    public boolean[] getStateSet(int iState) {
+    	return m_dataType.getStateSet(iState);
+//        if (!isAmbiguousState(iState)) {
+//            boolean[] stateSet = new boolean[m_nMaxStateCount];
+//            stateSet[iState] = true;
+//            return stateSet;
+//        } else {
+//        }
     }
+    
     boolean isAmbiguousState(int state) {
     	return (state >=0 && state < m_nMaxStateCount);
     }
