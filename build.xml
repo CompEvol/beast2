@@ -48,6 +48,7 @@
 
 	<!-- compile Java source code -->
 	<target name="compile-all" depends="init">
+        <echo>Building BEAST 2</echo>
 		<mkdir dir="${build}" />
 
 		<!-- Compile the java code from ${src} into ${build} /bin -->
@@ -56,9 +57,15 @@
 		       memoryinitialsize="256m"
 		       memorymaximumsize="256m">
 			<include name="beast/**/**" />
+            <!-- apache commons math -->
+			<include name="org/**/**" />
 			<!-- compile JUnit test classes -->
 			<include name="test/beast/**" />
 		</javac>
+        <copy todir="${build}">
+            <fileset dir="${src}" includes="**/*.properties"/>
+            <fileset dir="${src}" includes="**/*.png"/>
+        </copy>
 		<echo message="Successfully compiled." />
 	</target>
 
@@ -75,8 +82,11 @@
 			</manifest>
 			<fileset dir="${build}">
 				<include name="beast/**/*.class" />
+				<include name="beast/**/*.properties" />
+				<include name="beast/**/*.png" />
+				<include name="beagle/**/*.class" />
+				<include name="org/**/*.class" />
 			</fileset>
-			<zipgroupfileset dir="${lib}" includes="commons-math-2.0.jar" />
 		</jar>
 		<jar jarfile="${dist}/beast.src.jar">
 			<fileset dir="${src}">

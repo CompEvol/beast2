@@ -520,6 +520,8 @@ Idref inline using @ sign.
 
 \section{FAQ/Known ways to get into trouble\label{sec.faq}}
 
+\subsection{General programming issues}
+
 \subsubsection{{\tt Input} is not declared public.}
 
 If {\tt Input}s are not public, they cannot get values assigned by for
@@ -593,6 +595,40 @@ add a constructor
 \end{lstlisting}}
 Note that the constructor needs to be public, to prevent IllegalAccessExceptions
 on construction by e.g. the XMLParser.
+
+
+\subsubsection{Log header on screen seems to have rubbish in there.}
+
+Put the logger that outputs to screen (i.e. does not have a filename specified)
+as last in the list of loggers.
+
+\subsection{Setting up}
+
+\subsubsection{Setting up an add-on in Intellij}
+
+This assumes that Beast2 source code is checked out from google code
+using 'svn checkout http://beast2.googlecode.com/svn/trunk/ beast2-read-only' and set up 
+as a project in Intellij, named beast2.
+
+To set up a new Add-on to Beast 2 in Intellij
+
+\begin{itemize}
+\item Create new project
+\item Import Beast 2 as follows:\\
+Choose menu File/New Module\\
+then choose 'Import existing module'\\
+select the button for browsing the file to be imported.\\
+Then go to the Beast 2 source folder where you select Beast2.iml
+file.\\
+Press OK
+\item Add dependency on Beast 2 as follows:\\
+Choose menu File/Project structure.\\
+Select Modules tab\\
+Select your new module\\
+Press Add button, select Module Dependencies\\
+Select the Beast 2 module\\
+Press OK
+\end{itemize}
 
 
 \end{document}

@@ -149,6 +149,15 @@ public class MCMC extends Runnable {
     } // class OperatorSet
 
 
+    
+    double logAlpha;
+    boolean bDebug;
+    double fOldLogLikelihood; 
+    double fNewLogLikelihood; 
+    int nBurnIn;
+    int nChainLength;
+    Distribution posterior;
+    
     @Override
     public void run() throws Exception {
     	// set up state (again). Other plugins may have manipulated the
@@ -157,8 +166,8 @@ public class MCMC extends Runnable {
     	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile);
 
-        int nBurnIn = m_oBurnIn.get();
-        int nChainLength = m_oChainLength.get();
+        nBurnIn = m_oBurnIn.get();
+        nChainLength = m_oChainLength.get();
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
         	nBurnIn = 0;
@@ -169,13 +178,12 @@ public class MCMC extends Runnable {
         System.err.println(state.toString());
 
         state.setEverythingDirty(true);
-        Distribution posterior = posteriorInput.get();
+        posterior = posteriorInput.get();
 
         // do the sampling
-        double logAlpha = 0;
-
-        boolean bDebug = true;
-        double fOldLogLikelihood = robustlyCalcPosterior(posterior); 
+        logAlpha = 0;
+        bDebug = true;
+        fOldLogLikelihood = robustlyCalcPosterior(posterior); 
         System.err.println("Start likelihood: " + fOldLogLikelihood);
 
         // initialises log so that log file headers are written, etc.
@@ -183,7 +191,21 @@ public class MCMC extends Runnable {
             log.init();
         }
 
-        // main MCMC loop 
+        doLoop();
+        
+        operatorSet.showOperatorRates(System.out);
+        long tEnd = System.currentTimeMillis();
+        System.out.println("Total calculation time: " + (tEnd - tStart) / 1000.0 + " seconds");
+        close();
+
+        System.err.println("End likelihood: " + fOldLogLikelihood);
+        System.err.println(state);
+        state.storeToFile();
+    } // run;
+
+    
+    /** main MCMC loop **/ 
+    void doLoop() throws Exception {
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
             state.store(iSample);
 
@@ -194,7 +216,7 @@ public class MCMC extends Runnable {
             	state.storeCalculationNodes();
                 state.checkCalculationNodesDirtiness();
 
-                double fNewLogLikelihood = posterior.calculateLogP();
+                fNewLogLikelihood = posterior.calculateLogP();
 
                 logAlpha = fNewLogLikelihood - fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
                 //System.out.println(logAlpha + " " + fNewLogLikelihood + " " + fOldLogLikelihood);
@@ -241,17 +263,13 @@ public class MCMC extends Runnable {
             } else {
                 operator.optimize(logAlpha);
             }
+            callUserFunction(iSample);
         }
-        operatorSet.showOperatorRates(System.out);
-        long tEnd = System.currentTimeMillis();
-        System.out.println("Total calculation time: " + (tEnd - tStart) / 1000.0 + " seconds");
-        close();
+    }    
 
-        System.err.println("End likelihood: " + fOldLogLikelihood);
-        System.err.println(state);
-        state.storeToFile();
-    } // run;
+    void callUserFunction(int iSample) {}
 
+    
     /** Calculate posterior by setting all StateNodes and CalculationNodes dirty.
      * Clean everything afterwards.
      */
