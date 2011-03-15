@@ -54,6 +54,7 @@ public interface DataType {
 
     	/** maps string encoding to state codes **/
     	String m_sCodeMap;
+    	public String getCodeMap() {return m_sCodeMap;}
     	
     	/** length of the encoding, e.g. 1 for nucleotide, 3 for codons **/
     	int m_nCodeLength;

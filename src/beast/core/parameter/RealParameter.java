@@ -25,6 +25,15 @@ public class RealParameter extends Parameter<Double> {
     public RealParameter(String sValue) throws Exception {
     	init(0.0, 0.0, sValue, 1);
     }
+    public RealParameter(double [] fValues) throws Exception {
+    	int nDimension = fValues.length;
+    	values = new Double[nDimension];
+    	for (int i = 0; i < nDimension; i++) {
+    		values[i] = fValues[i];
+    	}
+		m_fLower = Double.NEGATIVE_INFINITY;
+		m_fUpper = Double.POSITIVE_INFINITY;
+    }
     /**
      * Constructor for testing.
      */

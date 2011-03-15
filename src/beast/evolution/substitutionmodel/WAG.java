@@ -1,6 +1,9 @@
 package beast.evolution.substitutionmodel;
 
 import beast.core.Description;
+import beast.core.Valuable;
+import beast.core.parameter.RealParameter;
+import beast.evolution.datatype.Aminoacid;
 
 @Description("WAG model of amino acid evolution by " +
 		"S. Whelan and N. Goldman. 2000. Bioinformatics ?.")
@@ -157,6 +160,18 @@ public class WAG extends EmpiricalSubstitutionModel {
 		f[18] = 0.0353;
 		f[19] = 0.0709;
 		return f;
+	}
+
+	@Override
+	public int [] getEncodingOrder() {
+		Aminoacid dataType = new Aminoacid();
+		String sCodeMap = dataType.getCodeMap();
+		int [] nCodeMap = new int[dataType.getStateCount()];
+		String sEncoding = "ARNDCQEGHILKMFPSTWYV";
+		for (int i = 0; i < dataType.getStateCount(); i++) {
+			nCodeMap[i] = sEncoding.indexOf(sCodeMap.charAt(i));
+		}
+		return nCodeMap;
 	}
 	
 } // class WAG

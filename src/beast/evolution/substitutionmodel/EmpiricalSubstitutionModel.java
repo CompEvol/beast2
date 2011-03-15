@@ -34,33 +34,40 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 	/** convert empirical rates into a RealParameter, only off diagonal entries are recorded **/
 	Valuable getEmpericalRateValues() throws Exception {
 		double[][] matrix = getEmpiricalRates();
+		int [] nOrder = getEncodingOrder();
 		int nStates = matrix.length;
-		RealParameter rates = new RealParameter("0",0.0, Double.POSITIVE_INFINITY, nStates*(nStates-1));
 
+		double [] rates = new double[nStates*(nStates-1)];
+		int k = 0;
 		for (int i = 0; i < nStates; i++) {
-			for (int j = i + 1; j < nStates; j++) {
-				rates.setValue(i*(nStates-1)+j, matrix[i][j]);
-				rates.setValue(j*(nStates-1)+i, matrix[i][j]);
+			int u = nOrder[i];
+			for (int j = 0; j < nStates; j++) {
+				int v = nOrder[j];
+				if (i != j) {
+					rates[k++] = matrix[Math.min(u,v)][Math.max(u,v)];
+				}
 			}
 		}
-		return rates;
+		RealParameter ratesParam = new RealParameter(rates);
+		return ratesParam;
 	}
 	
 	/** convert empirical frequencies into a RealParameter **/
 	Frequencies getEmpericalFrequencieValues() throws Exception {
 		double[] freqs = getEmpiricalFrequencies();
+		int [] nOrder = getEncodingOrder();
 		int nStates = freqs.length;
 		Frequencies freqsParam = new Frequencies();
 		String sValues = "";
 
 		for (int i = 0; i < nStates; i++) {
-			sValues += freqs[i]+" ";
+			sValues += freqs[nOrder[i]]+" ";
 		}
         RealParameter freqsRParam = new RealParameter();
         freqsRParam.initByName(
-                "values",sValues,
-                "lower", 0,
-                "upper", 1,
+                "value",sValues,
+                "lower", 0.0,
+                "upper", 1.0,
                 "dimension",nStates
         );
 		freqsParam.frequencies.setValue(freqsRParam, freqsParam);
@@ -74,6 +81,15 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 	
 	/** return empirical frequencies **/
 	abstract double [] getEmpiricalFrequencies();
+
+	/** return character order for getEmpricialRates and getEmpriricalFrequencies 
+	// The rates may be specified assuming that the amino acids are in this order:
+	// ARNDCQEGHILKMFPSTWYV
+	// but the AminoAcids dataType wants them in this order:
+	// ACDEFGHIKLMNPQRSTVWY
+	// This method returns the proper order
+	**/ 
+	abstract int [] getEncodingOrder();
 
 	@Override
     public double [] getRateMatrix(Node node) {

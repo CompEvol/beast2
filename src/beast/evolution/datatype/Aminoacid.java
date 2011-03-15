@@ -10,6 +10,7 @@ public class Aminoacid extends Base {
 		m_nStateCount = 20;
 		m_nCodeLength = 1;
 		m_sCodeMap = "ARNDCQEGHILKMFPSTWYV-?";
+		m_sCodeMap = "ACDEFGHIKLMNPQRSTVWY-?";
 
 		m_mapCodeToStateSet = new int[22][];
 		for (int i = 0; i < 20; i++) {
@@ -26,7 +27,7 @@ public class Aminoacid extends Base {
 	
 	@Override
 	public String getDescription() {
-		return "aminodacid";
+		return "aminoacid";
 	}
 
 }
