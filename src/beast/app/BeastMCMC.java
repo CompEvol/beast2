@@ -52,7 +52,7 @@ public class BeastMCMC {
 	/** thread pool **/
 	public static ExecutorService g_exec = null;
 	/** random number seed used to initialise Randomizer **/
-	int m_nSeed = 127;
+	long m_nSeed = 127;
 	/** name of SnAP specification file **/
 	String m_sFileName = "";//"examples/testCoalescent.xml";
 	/** MCMC object to execute **/
@@ -82,9 +82,14 @@ public class BeastMCMC {
 						Logger.FILE_MODE = Logger.FILE_OVERWRITE;
 						i += 1;
 					} else if (args[i].equals("-seed")) {
-						m_nSeed = Integer.parseInt(args[i + 1]);
+                        if(args[i+1].equals("random")){
+                            m_nSeed = Randomizer.getSeed();
+                        }else{
+						    m_nSeed = Integer.parseInt(args[i + 1]);
+                        }
 						i += 2;
-					} else if (args[i].equals("-threads")) {
+					
+                    } else if (args[i].equals("-threads")) {
 						m_nThreads = Integer.parseInt(args[i + 1]);
 						i += 2;
 					} else if (args[i].equals("-beastlib")) {
