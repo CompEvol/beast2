@@ -95,6 +95,7 @@ public class NexusParser {
 	
 	/** parse data block and create Alignment **/
 	public Alignment parseDataBlock(BufferedReader fin) throws Exception {
+
 		Alignment alignment = new Alignment();
 		
 		String sStr = null;
@@ -108,6 +109,11 @@ public class NexusParser {
 
 			//dimensions ntax=12 nchar=898;
 			if (sStr.toLowerCase().contains("dimensions")) {
+				while (sStr.indexOf(';') < 0) {
+					sStr += nextLine(fin);
+				}
+				sStr = sStr.replace(";", " ");
+				
 				String sChar=getAttValue("nchar", sStr);
 				if (sChar == null) {
 					throw new Exception ("nchar attribute expected (e.g. 'dimensions char=123') expected, not "+ sStr);
@@ -118,18 +124,30 @@ public class NexusParser {
 					nTaxa = Integer.parseInt(sTaxa);
 				}
 			} else if (sStr.toLowerCase().contains("format")) {
+				while (sStr.indexOf(';') < 0) {
+					sStr += nextLine(fin);
+				}
+				sStr = sStr.replace(";", " ");
+				
 				//format datatype=dna interleave=no gap=-;
 				String sDataType = getAttValue("datatype", sStr);
+				String sSymbols = getAttValue("symbols", sStr);
 				if (sDataType == null) {
 					throw new Exception ("expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr +"'"); 
-				}
+				} else 
 				if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
 					alignment.m_sDataType.setValue("nucleotide", alignment);
 					nTotalCount = 4;
-				}
+				} else 
 				if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
 					alignment.m_sDataType.setValue("aminoacid", alignment);
 					nTotalCount = 20;
+				} else 
+				if (sDataType.toLowerCase().equals("standard") && sSymbols.equals("01")) {
+					alignment.m_sDataType.setValue("binary", alignment);
+					nTotalCount = 2;
+				} else {
+					alignment.m_sDataType.setValue("integer", alignment);
 				}
 				String sMissingChar = getAttValue("missing", sStr);
 				if (sMissingChar != null) {
@@ -217,12 +235,16 @@ public class NexusParser {
 
 	/** return attribute value as a string **/
 	String getAttValue(String sAttribute, String sStr) {
-		Pattern pattern = Pattern.compile(".*" + sAttribute +"\\s*=\\s*([^\\s;]+)\\b.*");
+		Pattern pattern = Pattern.compile(".*" + sAttribute +"\\s*=\\s*([^\\s;]+).*");
 		Matcher matcher = pattern.matcher(sStr.toLowerCase());
 		if (!matcher.find()) {
 			return null; 
 		}
-		return matcher.group(1);
+		String sAtt = matcher.group(1);
+		if (sAtt.startsWith("\"") && sAtt.endsWith("\"")) {
+			sAtt = sAtt.substring(1, sAtt.length()-1);
+		}
+		return sAtt;
 	}
 	
 	public static void main(String [] args) {
