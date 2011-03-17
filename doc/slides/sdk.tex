@@ -400,13 +400,13 @@ store and restore.
 To create a new Operator, implement the {\tt public double proposal()} method, 
 which changes one of more {\tt StateNode}s and returns the Hasting ratio of the proposal.
 
-\begin{center}{\huge WARNING}\end{center}
-
-When retrieving a {\tt StateNode} to operate on, use {\tt Input.get(this)} instead of
-{\tt Input.get()}. 
-
-The latter will {\em not} notify the {\tt State} and changes can be lost or not
-propagate through at all.
+%\begin{center}{\huge WARNING}\end{center}
+%
+%When retrieving a {\tt StateNode} to operate on, use {\tt Input.get(this)} instead of
+%{\tt Input.get()}. 
+%
+%The latter will {\em not} notify the {\tt State} and changes can be lost or not
+%propagate through at all.
 
 \subsubsection{Loggable\label{ssec.logger}}
 
@@ -527,6 +527,8 @@ Idref inline using @ sign.
 If {\tt Input}s are not public, they cannot get values assigned by for
 instance the {\tt XMLParser}.
 
+\if0
+% this is obsolete now
 \subsubsection{{\tt Operator} calls {\tt input.get()} instead of {\tt input.get(this)}.}
 
 When an {\tt Operator} does a proposal, it should change a {\tt StateNode}.
@@ -539,6 +541,7 @@ Note that this only applies to the {\tt proposal()} method, not to {\tt initAndV
 (though it does not hurt in the latter) since only in {\tt proposal()} a {\tt StateNode}
 should be changed.
 
+% this is obsolete now
 \subsubsection{Shadow a {\tt StateNode} in a {\tt CalculationNode}.}
 
 It is tempting to use a pattern like this:
@@ -570,7 +573,7 @@ parameter {\tt m\_p} and follows the changes of {\tt m\_p} when it changes in th
 
 To ensure always a current version of the {\tt StateNode} is available, call
 {\tt get()} every time at the start of a method.
-
+\fi
 
 \subsubsection{Type of input is a template class (other than {\tt List}).}
 
@@ -630,6 +633,63 @@ Select the Beast 2 module\\
 Press OK
 \end{itemize}
 
+\subsubsection{Setting up an add-on in Eclipse}
+
+This assumes that Beast2 source code is checked out from google code
+using 'svn checkout http://beast2.googlecode.com/svn/trunk/ beast2-read-only' and set up 
+as a project in Eclipse, named beast2.
+
+To set up a new Add-on to Beast 2 in Eclipse
+
+\begin{itemize}
+\item Import beast2 as a project as follows\\
+Choose File/Import menu\\
+The 'import' dialog pops up. Choose 'General/Existing Projects into Workspace'
+and click 'Next'\\
+The next 'import' dialog pops up. Select Browse button\\
+Select the directory containing beast2 in the file choose dialog, click ok\\
+Click next, and beast2 will be added as a project\\
+\item Create new add-on project as follows\\
+Select File/New/Java Project menu\\
+Fill in project name and click the Next button\\
+A 'New Java Project' dialog pops up, select the 'Projects' tab\\
+Click 'Add' button, and a "Required Project Selection" dialog pops up\\
+Select 'beast2' and click OK\\
+Click 'Finish' and all is done
+\end{itemize}
+
+
+\subsubsection{Set up Hudson for a google-code project add-on}
+
+This assumes that there is a build.xml file based on the
+build file for the beastii add-on. Hudson can be set up for
+a new add-on using the following steps:
+
+1. create new job on Hudson Main Page\\
+fill in job name\\
+select 'Build a free-style software project'\\
+click OK\\
+2. Select sensible directory\\
+Under 'Advanced Project Options' click 'Advanced' button\\
+Click 'Use custom workspace'\\
+In Directory entry that now appears, fill in the project name\\
+3. Under 'Source Code Management', select 'Subversion'\\
+Fill in repository URL, say 'http://myaddon.googlecode.com/svn/trunk'\\
+Put a full stop in 'Local module directory (optional)'\\
+4. set up build triggers\\
+Click 'Build after other projects are built'\\
+Fill in 'BEAST_2_Trunk' under 'Projects names'\\
+Click 'Poll SCM'\\
+Fill in '* * * * *' under 'Schedule'\\
+5 Add build step\\
+Click "Add build step" button, select 'Invoke Ant'\\
+Fill in the target, e.g., build_jar_all_BEAST\\
+6 Add Post-build actions\\
+Click 'Publish JUnit test result report'\\
+Fill in 'Test report XMLs' with 'build/junitreport/*.xml'\\
+Click 'E-mail notification'\\
+Fill in recipients\\
+7 Click 'Save'.
 
 \end{document}
 

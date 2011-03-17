@@ -16,7 +16,7 @@ public class Binary extends Base {
 		m_nStateCount = 2;
 		m_mapCodeToStateSet = x;
 		m_nCodeLength = 1;
-		m_sCodeMap = "01-?";
+		m_sCodeMap = "01" + GAP_CHAR + MISSING_CHAR;
 	}
 	
 	@Override

@@ -144,7 +144,7 @@ public class BeastMCMC {
 				"and the following options are allowed:\n" +
 				"-resume : read state that was stored at the end of the last run from file and append log file\n" +
 				"-overwrite : overwrite existing log files (if any). By default, existing files will not be overwritten.\n" +
-				"-seed <int> : sets random number seed (default 127)\n" +
+				"-seed [<int>|random] : sets random number seed (default 127), or picks a random seed\n" +
 				"-threads <int> : sets number of threads (default 1)\n" +
 				"-beastlib <path> : Colon separated list of directories. All jar files in the path are loaded. (default 'beastlib')";
 	} // getUsage

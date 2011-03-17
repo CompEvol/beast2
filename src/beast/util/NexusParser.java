@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.datatype.DataType;
 import beast.evolution.tree.TraitSet;
 
 /** parses nexus file and grabs alignment and calibration from the file **/
@@ -104,6 +105,8 @@ public class NexusParser {
 		int nTotalCount = 4;
 		String sMissing="?";
 		String sGap="-";
+		// indicates character matches the one in the first sequence
+		String sMatchChar = null;
 		do {
 			sStr = nextLine(fin);
 
@@ -133,7 +136,8 @@ public class NexusParser {
 				String sDataType = getAttValue("datatype", sStr);
 				String sSymbols = getAttValue("symbols", sStr);
 				if (sDataType == null) {
-					throw new Exception ("expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr +"'"); 
+					System.err.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr +"' Assuming integer dataType"); 
+					alignment.m_sDataType.setValue("integer", alignment);
 				} else 
 				if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
 					alignment.m_sDataType.setValue("nucleotide", alignment);
@@ -157,6 +161,7 @@ public class NexusParser {
 				if (sGapChar != null) {
 					sGap = sGapChar;
 				}
+				sMatchChar = getAttValue("matchchar", sStr);
 			}
 		} while (!sStr.toLowerCase().contains("matrix"));
 
@@ -187,8 +192,22 @@ public class NexusParser {
 			if (sData.length() != nChar) {
 				throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
 			}
-			sData = sData.replace(sMissing.charAt(0),'?');
-			sData = sData.replace(sGap.charAt(0),'_');
+			// map to standard missing and gap chars
+			sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
+			sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
+
+			// resolve matching char, if any
+			if (sMatchChar != null && sData.contains(sMatchChar)) {
+				char cMatchChar = sMatchChar.charAt(0);
+				String sBaseData = seqMap.get(sTaxa.get(0));
+				for (int i = 0; i < sData.length(); i++) {
+				    if (sData.charAt(i) == cMatchChar) {
+				    	char cReplaceChar = sBaseData.charAt(i);
+				    	sData = sData.substring(0, i) + cReplaceChar + (i+1<sData.length() ? sData.substring(i+1) : "" );
+				    }
+				}
+			}
+			
 			Sequence sequence = new Sequence();
 			sequence.init(nTotalCount, sTaxon, sData);
 			sequence.setID(sTaxon);
@@ -219,8 +238,9 @@ public class NexusParser {
 		if (sStr.contains("[")) {
 			int iStart = sStr.indexOf('[');
 			int iEnd = sStr.indexOf(']', iStart);
-			if (iEnd < 0){
-				throw new Exception("Comment mismatched in line " + sStr);
+			while (iEnd < 0){
+				sStr += readLine(fin);
+				iEnd = sStr.indexOf(']', iStart);
 			}
 			sStr = sStr.substring(0, iStart) + sStr.substring(iEnd+1);
 			if (sStr.matches("^\\s*$")) {
@@ -242,7 +262,8 @@ public class NexusParser {
 		}
 		String sAtt = matcher.group(1);
 		if (sAtt.startsWith("\"") && sAtt.endsWith("\"")) {
-			sAtt = sAtt.substring(1, sAtt.length()-1);
+			int iStart = matcher.start(1);
+			sAtt = sStr.substring(iStart + 1, sStr.indexOf('"', iStart+1));
 		}
 		return sAtt;
 	}

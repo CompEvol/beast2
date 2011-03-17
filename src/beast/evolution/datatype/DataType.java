@@ -9,6 +9,9 @@ import beast.core.Description;
 import beast.core.Plugin;
 
 public interface DataType {
+	final static public char GAP_CHAR = '-';
+	final static public char MISSING_CHAR = '?';
+	
 	/** @return number of states for this data type.
 	 * Assuming there is a finite number of states, or -1 otherwise.  
 	 */
