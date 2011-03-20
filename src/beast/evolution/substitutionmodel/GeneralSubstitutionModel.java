@@ -125,6 +125,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         }
     } // getTransitionProbabilities
 
+    /** access to (copy of) rate matrix **/
+    protected double [][] getRateMatrix() {return m_rateMatrix.clone();}
     
     protected void setupRelativeRates() {
     	Valuable rates = m_rates.get();
