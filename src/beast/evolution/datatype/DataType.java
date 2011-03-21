@@ -86,6 +86,7 @@ public interface DataType {
             sequence = new ArrayList<Integer>();
             // remove spaces
             sData = sData.replaceAll("\\s", "");
+            sData = sData.toUpperCase();
             if (m_sCodeMap == null) {
                 if (sData.contains(",")) {
                 	// assume it is a comma separated string of integers

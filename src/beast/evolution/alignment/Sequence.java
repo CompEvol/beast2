@@ -29,7 +29,6 @@ import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.datatype.DataType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Description("Single sequence in an allignment.")
@@ -60,39 +59,6 @@ public class Sequence extends Plugin {
     @Override
     public void initAndValidate() throws Exception {
     } // initAndValidate
-
-
-    public List<Integer> getSequence(String sDataMap) throws Exception {
-        List<Integer> sequence;
-        sequence = new ArrayList<Integer>();
-        String sData = m_sData.get();
-        // remove spaces
-        sData = sData.replaceAll("\\s", "");
-        if (sDataMap == null) {
-            if (sData.contains(",")) {
-            	// assume it is a comma separated string
-            	String[] sStrs = sData.split(",");
-            	for (String sStr : sStrs) {
-            		sequence.add(Integer.parseInt(sStr));
-            	}
-            } else {
-            	// assume it is a string where each character is a site
-            	for (byte c: sData.getBytes()) {
-            		sequence.add(Integer.parseInt((char)c+""));
-            	}
-            }
-        } else {
-            for (int i = 0; i < sData.length(); i++) {
-                char c = sData.charAt(i);
-                sequence.add(mapCharToData(sDataMap, c));
-            }
-        }
-        if (m_nTotalCount.get() == null && sDataMap != null) {
-            // derive default from char-map
-            m_nTotalCount.setValue(sDataMap.length(), this);
-        }
-        return sequence;
-    }
 
     public List<Integer> getSequence(DataType dataType) throws Exception {
         String sData = m_sData.get();
