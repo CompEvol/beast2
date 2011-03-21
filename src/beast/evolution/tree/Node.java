@@ -199,7 +199,7 @@ public class Node extends Plugin {
 			String sChild1 = m_left.toSortedNewick(iMaxNodeInClade);
 			int iChild1 = iMaxNodeInClade[0];
 			if (m_right != null) {
-				String sChild2 = m_left.toSortedNewick(iMaxNodeInClade);
+				String sChild2 = m_right.toSortedNewick(iMaxNodeInClade);
 				int iChild2 = iMaxNodeInClade[0];
 				if (iChild1 > iChild2) {
 					buf.append(sChild2);
@@ -219,6 +219,7 @@ public class Node extends Plugin {
 			iMaxNodeInClade[0] = m_iLabel;
 			buf.append(m_iLabel);
 		}			
+        buf.append(":").append(getLength());
 		return buf.toString();
 	}
 	
