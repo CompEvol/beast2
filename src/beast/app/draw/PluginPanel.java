@@ -186,7 +186,9 @@ public class PluginPanel extends JPanel {
         InputEditor inputEditor;
     	if (List.class.isAssignableFrom(inputClass) ||
                 (input.get() != null && input.get() instanceof List<?>)) {
+        	// handle list inputs
 	            if (g_listInputEditorMap.containsKey(inputClass)) {
+	            	// use custom list input editor
 	                String sInputEditor = g_listInputEditorMap.get(inputClass);
 	                inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
 	            } else {
@@ -194,14 +196,16 @@ public class PluginPanel extends JPanel {
 		        	inputEditor = new ListInputEditor();
 	            }
         } else if (input.possibleValues != null) {
+        	// handle enumeration inputs
             inputEditor = new EnumInputEditor();
         } else if (g_inputEditorMap.containsKey(inputClass)) {
+        	// handle Plugin-input with custom input editors
             String sInputEditor = g_inputEditorMap.get(inputClass);
             inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
-        } else if (inputClass.isEnum()) {
-            inputEditor = new EnumInputEditor();
+        //} else if (inputClass.isEnum()) {
+        //    inputEditor = new EnumInputEditor();
         } else {
-            // assume it is a general Plugin, so create a Plugin class
+            // assume it is a general Plugin, so create a default Plugin input editor
             inputEditor = new PluginInputEditor();
         }
     	String sFullInputName = plugin.getClass().getName() + "." + input.getName();

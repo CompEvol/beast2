@@ -1,50 +1,96 @@
 package beast.app.draw;
 
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.Box;
-import javax.swing.JLabel;
+import javax.swing.JCheckBox;
 
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
 
 public class ParameterInputEditor extends PluginInputEditor {
-
-	JLabel m_parameterlabel;
+	private static final long serialVersionUID = 1L;
+	JCheckBox m_isEstimatedBox;
+	
 	
     @Override
     public Class<?> type() {
         return RealParameter.class;
     }
-	
+
+	@Override
+	void initEntry() {
+		if (m_input.get()!= null) {
+			RealParameter parameter = (RealParameter)m_input.get();
+			m_entry.setText(parameter.m_pValues.get());
+		}
+	}
+
+	@Override
+    void processEntry() {
+		try {
+			String sValue = m_entry.getText();
+			RealParameter parameter = (RealParameter)m_input.get();
+			parameter.m_pValues.setValue(sValue, parameter);
+			parameter.initAndValidate();
+			//m_input.setValue(sValue, m_plugin);
+			checkValidation();
+		} catch (Exception ex) {
+//			JOptionPane.showMessageDialog(null, "Error while setting " + m_input.getName() + ": " + ex.getMessage() +
+//					" Leaving value at " + m_input.get());
+//			m_entry.setText(m_input.get() + "");
+			m_validateLabel.setVisible(true);
+			m_validateLabel.setToolTipText("<html><p>Parsing error: " + ex.getMessage() + ". Value was left at " + m_input.get() +".</p></html>");
+			m_validateLabel.m_circleColor = Color.orange;
+			repaint();
+		}
+	}
+    
+    
 	@Override
     void addComboBox(Box box, Input <?> input, Plugin plugin) {
-		RealParameter parameter = (RealParameter) input.get();
-		if (parameter != null) {
-			m_parameterlabel = new JLabel("");
-			refresh();
-			box.add(m_parameterlabel); 
-			box.add(Box.createHorizontalGlue());
-		} else {
+		Box paramBox = Box.createHorizontalBox();
+		RealParameter parameter = (RealParameter)input.get();
+		
+		if (parameter == null) {
 			super.addComboBox(box, input, plugin);
+		} else {
+			setUpEntry();
+			paramBox.add(m_entry);
+	
+			m_isEstimatedBox = new JCheckBox(parameter.m_bIsEstimated.getName());
+			if (input.get() != null) {
+				m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
+			}
+			m_entry.setToolTipText(parameter.m_bIsEstimated.getTipText());
+			m_isEstimatedBox.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						RealParameter parameter = (RealParameter)m_input.get();
+						parameter.m_bIsEstimated.setValue(m_isEstimatedBox.isSelected(), parameter);
+					} catch (Exception ex) {
+						System.err.println("ParameterInputEditor " + ex.getMessage());
+					}
+				}
+			});
+			paramBox.add(m_isEstimatedBox);
+			
+			
+			box.add(paramBox);
 		}
     }
 
 	@Override
-    void refresh() {
+	void refresh() {
 		RealParameter parameter = (RealParameter)m_input.get();
-		String sStr = parameter.m_pValues.get() + " (";
-		if (parameter.lowerValueInput.get() != null) {
-			sStr += parameter.lowerValueInput.get() +",";
-		} else {
-			sStr += "0,";
-		}
-		if (parameter.upperValueInput.get() != null) {
-			sStr += parameter.upperValueInput.get() +")";
-		} else {
-			sStr += "Infinity)";
-		}
-		m_parameterlabel.setText(sStr);
-		m_parameterlabel.repaint();
+		m_entry.setText(parameter.m_pValues.get());
+		m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
+		repaint();
 	}
 
 }

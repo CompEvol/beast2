@@ -2,6 +2,15 @@
 	hidepanes='TAXON_SETS_PANEL|TIP_DATES_PANEL|PRIORS_PANEL|OPERATORS_PANEL'
        namespace='beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution'>
 
+<!--
+done: scaler parameter/tree entry should be <none>
+done: better parameter editor
+TODO: handle StateNode estimate flag
+TODO: substitution model: make datatype safe
+TODO: save/load unused part of templates
+-->
+
+
     <data id="#alignments"/>
 
 
@@ -17,15 +26,20 @@
         <input spec='TwoStateCovarion' id='$(n).TwoStateCovarion' alpha='0.1' switchingParameter='0.01' frequencies="@$(n).freqs"/>
 
         <!-- site model                                                              -->
-        <input spec='SiteModel' id="$(n).siteModel">
+        <input spec='SiteModel' id="$(n).siteModel" gammaCategoryCount='0'>
             <substModel idref='$(n).hky'/>
+            <proportionInvariant idref='$(n).proportionInvariant'/>
+            <mutationRate        idref='$(n).mutationRate'/>
+            <shape               idref='$(n).gammaShape'/>
         </input>
 
         <input spec='TreeLikelihood' id="$(n).treeLikelihood">
             <data idref="$(n)"/>
             <tree idref="$(n).tree"/>
             <siteModel idref="$(n).siteModel"/>
-            <branchRateModel spec='StrictClockModel' id='$(n).StrictClockModel'/>
+            <branchRateModel spec='StrictClockModel' id='$(n).StrictClockModel'>
+                <clock.rate id='$(n).clockRate' spec='parameter.RealParameter' value='1.0'/>
+            </branchRateModel>
         </input>
 
 	    <input spec='BirthDeathGernhard08Model' id="$(n).Yule" type='timesonly'>
@@ -83,6 +97,9 @@
         		<stateNode idref="$(n).birthRate"/>
         		<stateNode idref="$(n).growthRate"/>
                 <stateNode idref='$(n).rateCategories'/>
+                <stateNode id='$(n).proportionInvariant' spec='parameter.RealParameter' value='0.0' lower='0.0' upper='1.0'/>
+                <stateNode id='$(n).mutationRate' spec='parameter.RealParameter' value='1.0'/>
+                <stateNode id='$(n).gammaShape' spec='parameter.RealParameter' value='1.0'/>
             </plate>
         </state>
 
@@ -105,16 +122,16 @@
         </distribution>
     
         <plate var='n' range='#alignments'>
-            <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).hky.kappa"/>
-            <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@$(n).tree"/>
+            <operator id='$(n).kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).hky.kappa"/>
+            <operator id='$(n).treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@$(n).tree"/>
             <operator spec='Uniform' weight="10" tree="@$(n).tree"/>
             <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@$(n).tree"/>
-            <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@$(n).tree"/>
-            <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@$(n).tree"/>
+            <operator id='$(n).narrow' spec='Exchange' isNarrow='true' weight="1" tree="@$(n).tree"/>
+            <operator id='$(n).wide' spec='Exchange' isNarrow='false' weight="1" tree="@$(n).tree"/>
             <operator spec='WilsonBalding' weight="1" tree="@$(n).tree"/>
-	        <operator spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).birthRate'/>
-	        <operator spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).growthRate'/>
-            <operator id="categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
+	        <operator id='$(n).birthRateScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).birthRate'/>
+	        <operator id='$(n).growthRatecaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).growthRate'/>
+            <operator id="$(n).categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
         </plate>
 
         <logger logEvery="10000" fileName="$(n).$(seed).log">

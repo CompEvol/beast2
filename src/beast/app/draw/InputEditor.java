@@ -124,12 +124,25 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		m_plugin = plugin;
 
 		addInputLabel();
+		
+		setUpEntry();
+		
+//		m_entry.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				processEntry();
+//			}
+//		});
+		add(m_entry);
+		addValidationLabel();
+	} // init
+
+
+	void setUpEntry() {
 		m_entry = new JTextField();
 		m_entry.setMinimumSize(new Dimension(100,16));
-		if (input.get()!= null) {
-			m_entry.setText(input.get().toString());
-		}
-		m_entry.setToolTipText(input.getTipText());
+		initEntry();
+		m_entry.setToolTipText(m_input.getTipText());
 		m_entry.setMaximumSize(new Dimension(1024, 20));
 		
 		m_entry.getDocument().addDocumentListener(new DocumentListener() {
@@ -146,18 +159,14 @@ public abstract class InputEditor extends Box implements ValidateListener {
 				processEntry();
 			}
 		});
-		
-//		m_entry.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				processEntry();
-//			}
-//		});
-		add(m_entry);
-		addValidationLabel();
-	} // init
+	}
 
-
+	void initEntry() {
+		if (m_input.get()!= null) {
+			m_entry.setText(m_input.get().toString());
+		}
+	}
+	
 	void processEntry() {
 		try {
 			m_input.setValue(m_entry.getText(), m_plugin);

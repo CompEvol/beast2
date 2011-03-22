@@ -78,8 +78,9 @@ public class SiteModel extends SiteModelInterface.Base {
         if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
             categoryCount += 1;
             invarParameter.get().setBounds(0.0, 1.0);
-        } else if (invarParameter.get() != null && invarParameter.get().getValue() <= 0) {
-            invarParameter.setValue(null, this);
+        } else if (invarParameter.get() != null && invarParameter.get().getValue() < 0) {
+        	throw new Exception("proportion invariant should be between 0 and 1");
+            //invarParameter.setValue(null, this);
         }
 
         categoryRates = new double[categoryCount];
@@ -205,7 +206,7 @@ public class SiteModel extends SiteModelInterface.Base {
         double propVariable = 1.0;
         int cat = 0;
 
-        if (invarParameter.get() != null) {
+        if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
             categoryRates[0] = 0.0;
             categoryProportions[0] = invarParameter.get().getValue();
 
