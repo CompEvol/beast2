@@ -37,12 +37,8 @@ public class ParameterInputEditor extends PluginInputEditor {
 			RealParameter parameter = (RealParameter)m_input.get();
 			parameter.m_pValues.setValue(sValue, parameter);
 			parameter.initAndValidate();
-			//m_input.setValue(sValue, m_plugin);
 			checkValidation();
 		} catch (Exception ex) {
-//			JOptionPane.showMessageDialog(null, "Error while setting " + m_input.getName() + ": " + ex.getMessage() +
-//					" Leaving value at " + m_input.get());
-//			m_entry.setText(m_input.get() + "");
 			m_validateLabel.setVisible(true);
 			m_validateLabel.setToolTipText("<html><p>Parsing error: " + ex.getMessage() + ". Value was left at " + m_input.get() +".</p></html>");
 			m_validateLabel.m_circleColor = Color.orange;
@@ -66,7 +62,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 			if (input.get() != null) {
 				m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
 			}
-			m_entry.setToolTipText(parameter.m_bIsEstimated.getTipText());
+			m_isEstimatedBox.setToolTipText(parameter.m_bIsEstimated.getTipText());
 			m_isEstimatedBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

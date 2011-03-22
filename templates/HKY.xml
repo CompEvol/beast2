@@ -5,7 +5,7 @@
 <!--
 done: scaler parameter/tree entry should be <none>
 done: better parameter editor
-TODO: handle StateNode estimate flag
+done: handle StateNode estimate flag
 TODO: substitution model: make datatype safe
 TODO: save/load unused part of templates
 -->
@@ -97,9 +97,9 @@ TODO: save/load unused part of templates
         		<stateNode idref="$(n).birthRate"/>
         		<stateNode idref="$(n).growthRate"/>
                 <stateNode idref='$(n).rateCategories'/>
-                <stateNode id='$(n).proportionInvariant' spec='parameter.RealParameter' value='0.0' lower='0.0' upper='1.0'/>
-                <stateNode id='$(n).mutationRate' spec='parameter.RealParameter' value='1.0'/>
-                <stateNode id='$(n).gammaShape' spec='parameter.RealParameter' value='1.0'/>
+                <stateNode id='$(n).proportionInvariant' spec='parameter.RealParameter' value='0.0' lower='0.0' upper='1.0' estimate='false'/>
+                <stateNode id='$(n).mutationRate' spec='parameter.RealParameter' value='1.0' estimate='false'/>
+                <stateNode id='$(n).gammaShape' spec='parameter.RealParameter' value='1.0' estimate='false'/>
             </plate>
         </state>
 
@@ -123,6 +123,10 @@ TODO: save/load unused part of templates
     
         <plate var='n' range='#alignments'>
             <operator id='$(n).kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).hky.kappa"/>
+            <operator id='$(n).proportionInvariantScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).proportionInvariant"/>
+            <operator id='$(n).mutationRateScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).mutationRate"/>
+            <operator id='$(n).gammaShapeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).gammaShape"/>
+
             <operator id='$(n).treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@$(n).tree"/>
             <operator spec='Uniform' weight="10" tree="@$(n).tree"/>
             <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@$(n).tree"/>

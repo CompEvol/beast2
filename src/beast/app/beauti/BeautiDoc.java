@@ -13,6 +13,7 @@ import beast.core.Logger;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.Plugin;
+import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
@@ -444,7 +445,19 @@ public class BeautiDoc extends Plugin {
 			collectPredecessors(operator, operatorPredecessors);
 			for (Plugin plugin : operatorPredecessors) {
 				if (posteriorPredecessors.contains(plugin)) {
-					operators0.add(operator);
+					// test at least one of the inputs is a StateNode that needs to be estimated
+					try {
+						for (Plugin plugin2 : operator.listActivePlugins()) {
+							if (plugin2 instanceof StateNode) {
+								if (((StateNode)plugin2).m_bIsEstimated.get()) {
+									operators0.add(operator);
+									break;
+								}
+							}
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
 					break;
 				}
 			}
