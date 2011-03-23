@@ -19,8 +19,11 @@ public class PluginInputEditor extends InputEditor {
     JComboBox m_selectPluginBox;
     SmallButton m_editPluginButton;
 
+    PluginInputEditor _this;
+    
     public PluginInputEditor() {
         super();
+        _this = this;
     }
 
     @Override
@@ -133,7 +136,7 @@ public class PluginInputEditor extends InputEditor {
         addComboBox(combobox, input, plugin);
         box.add(combobox);
        
-    	PluginPanel.addInputs(box, (Plugin) input.get());
+    	PluginPanel.addInputs(box, (Plugin) input.get(), this);
 
         box.setBorder(new EtchedBorder());
         add(box);
@@ -254,7 +257,7 @@ public class PluginInputEditor extends InputEditor {
                         	}
                         	// add new items to Expansion Box
                         	if (plugin != null) {
-                        		PluginPanel.addInputs(m_expansionBox, plugin);
+                        		PluginPanel.addInputs(m_expansionBox, plugin, _this);
                         	}
                         } else {
                         	// it is not expanded, enable the edit button

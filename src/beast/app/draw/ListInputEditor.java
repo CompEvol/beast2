@@ -152,7 +152,7 @@ public class ListInputEditor extends InputEditor {
         if (m_bExpand) {
         	Box box = Box.createVerticalBox();
         	box.add(itemBox);
-        	PluginPanel.addInputs(box, plugin);
+        	PluginPanel.addInputs(box, plugin, this);
         	box.setBorder(BorderFactory.createEtchedBorder());
         	itemBox = box;
         }

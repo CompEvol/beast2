@@ -13,7 +13,9 @@ import java.util.Set;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -82,6 +84,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	protected Plugin m_plugin;
 	/** text field used for primitive input editors **/
 	JTextField m_entry;
+	public JTextField getEntry() {return m_entry;}
 
 	JLabel m_inputLabel;
 	
@@ -277,7 +280,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	
 	@Override
 	public void validate(State state) {
-System.err.println("InputEditor::validate " + m_plugin.getID());		
 		checkValidation();
 	}
+
 } // class InputEditor

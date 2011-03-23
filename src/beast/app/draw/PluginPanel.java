@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -126,7 +127,7 @@ public class PluginPanel extends JPanel {
         }
 
         
-        addInputs(mainBox, plugin);
+        addInputs(mainBox, plugin, null);
         
 
         mainBox.add(Box.createVerticalStrut(5));
@@ -147,7 +148,7 @@ public class PluginPanel extends JPanel {
     }
 
     /** add all inputs of a plugin to a box **/
-    public static List<InputEditor> addInputs(Box box, Plugin plugin) {
+    public static List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor) {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
         List<InputEditor> editors = new ArrayList<InputEditor>();
@@ -160,7 +161,7 @@ public class PluginPanel extends JPanel {
             try {
             	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
             	if (!InputEditor.m_suppressPlugins.contains(sFullInputName)) {
-	            	InputEditor inputEditor = createInputEditor(input, plugin);
+	            	InputEditor inputEditor = createInputEditor(input, plugin, true, false, editor);
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
 	                box.add(Box.createVerticalGlue());
@@ -177,16 +178,31 @@ public class PluginPanel extends JPanel {
     } // addInputs
 
     public static InputEditor createInputEditor(Input<?> input, Plugin plugin) throws Exception {
-    	return createInputEditor(input, plugin, true, false);
+    	return createInputEditor(input, plugin, true, false, null);
     }
     
-    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, boolean bForceExpansion) throws Exception {
+    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, boolean bForceExpansion, InputEditor editor) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
         }
         Class<?> inputClass = input.getType();
 
         InputEditor inputEditor;
+        
+        // check whether the super.editor has a custom method for creating an Editor
+        if (editor != null) {
+        	try {
+        		String sName = input.getName();
+        		sName = new String(sName.charAt(0)+"").toUpperCase() + sName.substring(1);
+        		sName = "create" + sName + "Editor";
+        		Class _class = editor.getClass();
+        		Method method = _class.getMethod(sName);
+        		inputEditor = (InputEditor) method.invoke(editor);
+        		return inputEditor;
+        	} catch (Exception e) {
+        		// ignore
+        	}
+        }
     	if (List.class.isAssignableFrom(inputClass) ||
                 (input.get() != null && input.get() instanceof List<?>)) {
         	// handle list inputs
@@ -343,7 +359,13 @@ public class PluginPanel extends JPanel {
                     }
                 }
                 if (!bIsTabu) {
-                    sPlugins.add(plugin.getID());
+	        		try {
+						if (input.canSetValue(plugin, parent)) {
+							sPlugins.add(plugin.getID());
+						}
+					} catch (Exception e) {
+						// ignore
+					}
                 }
             }
         }
@@ -356,7 +378,7 @@ public class PluginPanel extends JPanel {
 	        			sPlugins.add("new " + sClass);
 	        		}
 	        	} catch (Exception e) {
-					// TODO: handle exception
+					// ignore
 				}
 	        }
         }
