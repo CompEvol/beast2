@@ -31,6 +31,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Valuable;
 import beast.core.Input.Validate;
+import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
 
 @Description("Specifies transition probability matrix with no restrictions on the rates other " +
@@ -231,5 +232,13 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         }
         return eigenDecomposition;
     }    
+
+    @Override
+    public boolean canHandleDataType(DataType dataType) throws Exception {
+    	if (dataType.getStateCount() == Integer.MAX_VALUE) {
+    		return false;
+    	}
+	   return true;
+    }
 
 } // class GeneralSubstitutionModel

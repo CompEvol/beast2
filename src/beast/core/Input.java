@@ -28,6 +28,7 @@ import beast.core.parameter.RealParameter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -364,6 +365,31 @@ public class Input<T> {
         }
     }
 
+	/** Call custom input validation.
+	 * For an input with name "name", the method canSetName will be invoked,
+	 * that is, 'canSet' + the name of the input with first letter capitalised.
+	 * The canSetName(Object o) method should have one argument of type Object.
+	 * 
+	 * It is best for Beauti to throw an Exception from canSetName() with some 
+	 * diagnostic info when the value cannot be set.
+	 */
+    public boolean canSetValue(Object value, Plugin plugin) throws Exception {
+    	String sName = new String(name.charAt(0)+"").toUpperCase() + name.substring(1);
+    	try {
+    		Method method = plugin.getClass().getMethod("canSet"+sName, Object.class);
+    		//System.err.println("Calling method " + plugin.getClass().getName() +"."+ method.getName());
+    		Object o = method.invoke(plugin, value);
+    		return (Boolean) o;
+    	} catch (java.lang.NoSuchMethodException e) {
+        	return true;
+    	} catch (java.lang.reflect.InvocationTargetException e) {
+    		if (e.getCause() != null) {
+    			throw new Exception(e.getCause().getMessage());
+    		}
+        	return false;
+		}
+    }
+    
     /**
      * Determine class through introspection,
      * This sets the m_class member of Input<T> to the actual value of T.

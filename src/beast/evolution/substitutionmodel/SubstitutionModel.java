@@ -27,6 +27,7 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.*;
 import beast.core.Input.Validate;
+import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
 
 
@@ -77,6 +78,9 @@ public interface SubstitutionModel {
      */
     boolean canReturnComplexDiagonalization();
 
+    /** return true if this substitution model is suitable for the data type 
+     * @throws Exception **/ 
+    boolean canHandleDataType(DataType dataType) throws Exception;
     
     /** basic implementation of a SubstitutionModel bringing together relevant super class**/
     public abstract class Base extends CalculationNode implements SubstitutionModel {
@@ -97,6 +101,7 @@ public interface SubstitutionModel {
         public double [] getRateMatrix(Node node) {
         	return null;
         }
+        
     } // class Base
     
 } // class SubstitutionModel

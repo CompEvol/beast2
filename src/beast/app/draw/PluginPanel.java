@@ -147,9 +147,10 @@ public class PluginPanel extends JPanel {
     }
 
     /** add all inputs of a plugin to a box **/
-    public static void addInputs(Box box, Plugin plugin) {
+    public static List<InputEditor> addInputs(Box box, Plugin plugin) {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
+        List<InputEditor> editors = new ArrayList<InputEditor>();
         try {
             inputs = plugin.listInputs();
         } catch (Exception e) {
@@ -163,6 +164,7 @@ public class PluginPanel extends JPanel {
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
 	                box.add(Box.createVerticalGlue());
+	                editors.add(inputEditor);
             	}
             } catch (Exception e) {
                 // ignore
@@ -171,6 +173,7 @@ public class PluginPanel extends JPanel {
                 JOptionPane.showMessageDialog(null, "Could not add entry for " + input.getName());
             }
         }
+        return editors;
     } // addInputs
 
     public static InputEditor createInputEditor(Input<?> input, Plugin plugin) throws Exception {
@@ -347,7 +350,14 @@ public class PluginPanel extends JPanel {
         /* add all plugin-classes of type assignable to the input */
         if (InputEditor.m_bExpertMode) {
 	        for (String sClass : ClassDiscovery.find(input.getType(), "beast")) {
-	            sPlugins.add("new " + sClass);
+	        	try {
+	        		Object o = Class.forName(sClass).newInstance();
+	        		if (input.canSetValue(o, parent)) {
+	        			sPlugins.add("new " + sClass);
+	        		}
+	        	} catch (Exception e) {
+					// TODO: handle exception
+				}
 	        }
         }
         return sPlugins;

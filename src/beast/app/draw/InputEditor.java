@@ -277,6 +277,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	
 	@Override
 	public void validate(State state) {
+System.err.println("InputEditor::validate " + m_plugin.getID());		
 		checkValidation();
 	}
 } // class InputEditor

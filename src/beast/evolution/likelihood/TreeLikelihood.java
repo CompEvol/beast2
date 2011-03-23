@@ -200,6 +200,7 @@ public class TreeLikelihood extends Distribution {
     	
         int nodeCount = m_tree.get().getNodeCount();
         m_siteModel = m_pSiteModel.get();
+        m_siteModel.setDataType(m_data.get().getDataType());
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
         m_branchRateModel = m_pBranchRateModel.get();
         if (m_branchRateModel != null) {

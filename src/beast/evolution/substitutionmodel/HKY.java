@@ -29,6 +29,9 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.datatype.Aminoacid;
+import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.Nucleotide;
 import beast.evolution.tree.Node;
 
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
@@ -255,4 +258,13 @@ public class HKY extends SubstitutionModel.Base {
         }
         super.restore();
     }
+
+	@Override
+	public boolean canHandleDataType(DataType dataType) throws Exception {
+		if (dataType instanceof Nucleotide) {
+			return true;
+		}
+		throw new Exception("Can only handle nucleotide data");
+	}
+
 }

@@ -4,6 +4,8 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.Nucleotide;
 
 
 @Description("Covarion model for binary data")
@@ -35,4 +37,11 @@ public class TwoStateCovarion extends GeneralSubstitutionModel {
         relativeRates[5] = 1.0;
     }	
 
+	@Override
+	public boolean canHandleDataType(DataType dataType) throws Exception {
+		if (dataType.getStateCount() == 4) {
+			return true;
+		}
+		throw new Exception("Can only handle 4 state data");
+	}
 } // class TwoStateCovarion

@@ -12,7 +12,6 @@ import javax.swing.border.EtchedBorder;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PluginInputEditor extends InputEditor {
@@ -133,7 +132,9 @@ public class PluginInputEditor extends InputEditor {
         Box combobox = Box.createHorizontalBox();
         addComboBox(combobox, input, plugin);
         box.add(combobox);
-        PluginPanel.addInputs(box, (Plugin) input.get());
+       
+    	PluginPanel.addInputs(box, (Plugin) input.get());
+
         box.setBorder(new EtchedBorder());
         add(box);
         m_expansionBox = box;
@@ -195,7 +196,7 @@ public class PluginInputEditor extends InputEditor {
                             	try {
                             		Input<?> newInput = plugin.getInput(sName);
                             		if (newInput.get() instanceof List) {
-                            			List<?> values = (List) oldInput.get();
+                            			List<?> values = (List<?>) oldInput.get();
                             			for (Object value: values) {
                                 			newInput.setValue(value, plugin);
                             			}
@@ -231,6 +232,9 @@ public class PluginInputEditor extends InputEditor {
                             	}
                             }
                         } else {
+                            if (!m_input.canSetValue(plugin, m_plugin)) {
+                            	throw new Exception("Cannot set input to this value");
+                            }
                         	// get handle on ID of the plugin, and add to combobox if necessary
                             String sID = plugin.getID();
                             // TODO RRB: have to remove ID first, then add it
@@ -240,8 +244,8 @@ public class PluginInputEditor extends InputEditor {
                             m_selectPluginBox.addItem(sID);
                             m_selectPluginBox.setSelectedItem(sID);
                         }
-                        m_input.setValue(plugin, m_plugin);
                         
+                        m_input.setValue(plugin, m_plugin);
                         
                         if (m_expansionBox != null) {
                         	// remove items from Expansion Box
@@ -261,7 +265,9 @@ public class PluginInputEditor extends InputEditor {
                         }
                         
                     } catch (Exception ex) {
-                    	ex.printStackTrace();
+                        String sID = ((Plugin)m_input.get()).getID();
+                        m_selectPluginBox.setSelectedItem(sID);
+                    	//ex.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Could not change plugin: " +
                                 ex.getClass().getName() + " " +
                                 ex.getMessage()

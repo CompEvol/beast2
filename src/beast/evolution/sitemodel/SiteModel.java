@@ -546,5 +546,4 @@ public class SiteModel extends SiteModelInterface.Base {
         z = y + ((((y * a4 + a3) * y + a2) * y + a1) * y + a0) / ((((y * b4 + b3) * y + b2) * y + b1) * y + b0);
         return (prob < 0.5 ? -z : z);
     }
-
 } // class SiteModel

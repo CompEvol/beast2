@@ -4,6 +4,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
 
 @Description("Mutation Death substitution model, can be used as Stochastic Dollo model.")
@@ -80,4 +81,13 @@ public class MutationDeathModel extends SubstitutionModel.Base {
 	   	// we only get here if delParameter or mutationRate is dirty
 	   	return true;
 	}
+	
+    @Override
+    public boolean canHandleDataType(DataType dataType) throws Exception {
+    	if (dataType.getStateCount() == Integer.MAX_VALUE) {
+    		return false;
+    	}
+	   return true;
+    }
+	
 } // class MutationDeathModel

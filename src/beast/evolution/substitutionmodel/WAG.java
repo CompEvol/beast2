@@ -4,6 +4,7 @@ import beast.core.Description;
 import beast.core.Valuable;
 import beast.core.parameter.RealParameter;
 import beast.evolution.datatype.Aminoacid;
+import beast.evolution.datatype.DataType;
 
 @Description("WAG model of amino acid evolution by " +
 		"S. Whelan and N. Goldman. 2000. Bioinformatics ?.")
@@ -173,5 +174,12 @@ public class WAG extends EmpiricalSubstitutionModel {
 		}
 		return nCodeMap;
 	}
-	
+
+	@Override
+	public boolean canHandleDataType(DataType dataType) throws Exception {
+		if (dataType instanceof Aminoacid) {
+			return true;
+		}
+		throw new Exception("Can only handle amino acid data");
+	}
 } // class WAG

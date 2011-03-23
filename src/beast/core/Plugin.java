@@ -240,6 +240,9 @@ abstract public class Plugin {
     /** set value of an input by input name **/
     public void setInputValue(String sName, Object value) throws Exception {
         Input<?> input = getInput(sName);
+        if (!input.canSetValue(value, this)) {
+        	throw new Exception("Cannot set input value of " + sName);
+        }
         input.setValue(value, this);
     } // setInputValue
 

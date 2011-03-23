@@ -8,6 +8,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.Input.Validate;
+import beast.evolution.datatype.DataType;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
@@ -79,11 +80,28 @@ public interface SiteModelInterface {
 		 */
 		double[] getCategoryProportions(Node node);
 
+		
+		/** set DataType so it can validate the Substitution model can handle it **/
+		void setDataType(DataType dataType);
+		
+		
 		@Description(value = "Non-functional base implementation of a site model", isInheritable=false)
 		public abstract class Base extends CalculationNode implements SiteModelInterface {
 		    public Input<SubstitutionModel.Base> m_pSubstModel =
 	            new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
 
+		    public boolean canSetSubstModel(Object o) throws Exception {
+				SubstitutionModel substModel = (SubstitutionModel) o;
+		    	if (m_dataType != null) {
+		    		if (!substModel.canHandleDataType(m_dataType)) {
+		    			throw new Exception("substitution model cannot handle data type");
+		    		}
+		    	}
+		    	return true;
+			}
+
+		    DataType m_dataType;
+		    
 			@Override
 			public SubstitutionModel getSubstitutionModel() {
 		        return m_pSubstModel.get();
@@ -107,6 +125,10 @@ public interface SiteModelInterface {
 		        conditions.add(stateNode.get().getID());
 		    }
 		
+			public void setDataType(DataType dataType) {
+				m_dataType = dataType;
+			}
+			
 		} // class SiteModelInterface.Base 
 		
 } // SiteModelInterface
