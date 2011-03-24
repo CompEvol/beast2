@@ -21,8 +21,9 @@ public class TwoStateCovarion extends GeneralSubstitutionModel {
 	
     @Override
     public void initAndValidate() throws Exception {
+    	m_frequencies = frequencies.get();
         updateMatrix = true;
-        m_nStates = frequencies.get().getFreqs().length;
+        m_nStates = m_frequencies.getFreqs().length;
         relativeRates = new double[6];
         storedRelativeRates = new double[6];
     }

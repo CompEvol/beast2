@@ -23,6 +23,7 @@ public class MutationDeathModel extends SubstitutionModel.Base {
     
     @Override
     public void initAndValidate() throws Exception {
+    	super.initAndValidate();
 		double [] freqs = getFrequencies();
 		m_nStates = freqs.length;
         m_trMatrix = new double[(m_nStates - 1) * (m_nStates - 1)];

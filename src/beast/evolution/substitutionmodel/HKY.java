@@ -54,6 +54,7 @@ public class HKY extends SubstitutionModel.Base {
 
     @Override
     public void initAndValidate() throws Exception {
+    	super.initAndValidate();
     	kappa.get().setBounds(0.0, Double.POSITIVE_INFINITY);
     }
 
@@ -125,7 +126,7 @@ public class HKY extends SubstitutionModel.Base {
 
             double[] evec = eigenDecomposition.getEigenVectors();
             double[] ivec = eigenDecomposition.getInverseEigenVectors();
-            double[] pi = frequencies.get().getFreqs();
+            double[] pi = m_frequencies.getFreqs();
             double piR = pi[0] + pi[2];
             double piY = pi[1] + pi[3];
 
@@ -190,7 +191,7 @@ public class HKY extends SubstitutionModel.Base {
 
     protected void setupMatrix() {
 
-        double[] freqs = frequencies.get().getFreqs();
+        double[] freqs = m_frequencies.getFreqs();
         freqA = freqs[0];
         freqC = freqs[1];
         freqG = freqs[2];

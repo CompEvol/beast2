@@ -49,10 +49,12 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     /** a square m_nStates x m_nStates matrix containing current rates  **/
     double [][] m_rateMatrix;
     
+    
     @Override
     public void initAndValidate() throws Exception {
+    	super.initAndValidate();
         updateMatrix = true;
-        m_nStates = frequencies.get().getFreqs().length;
+        m_nStates = m_frequencies.getFreqs().length;
         if (m_rates.get().getDimension() != m_nStates * (m_nStates-1)) {
         	throw new Exception("Dimension of input 'rates' is " + m_rates.get().getDimension() + " but a " +
         			"rate matrix of dimension " + m_nStates + "x" + (m_nStates -1) + "=" + m_nStates * (m_nStates -1) + " was " +
@@ -62,7 +64,6 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         m_rateMatrix = new double[m_nStates][m_nStates];
         relativeRates = new double[m_rates.get().getDimension()];
         storedRelativeRates = new double[m_rates.get().getDimension()];
-        //q = new double[m_nStates][m_nStates];
     } // initAndValidate
 
     protected double[] relativeRates;
@@ -138,7 +139,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
     /** sets up rate matrix **/
     protected void setupRateMatrix() {
-    	double [] fFreqs = frequencies.get().getFreqs();
+    	double [] fFreqs = m_frequencies.getFreqs();
 	    for (int i = 0; i < m_nStates; i++) {
 	    	m_rateMatrix[i][i] = 0;
 		    for (int j = 0; j < i; j++) {

@@ -87,9 +87,17 @@ public interface SubstitutionModel {
         public Input<Frequencies> frequencies =
                 new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
 
+        /** shadows frequencies, or can be set by subst model **/
+        Frequencies m_frequencies;
+
+        @Override
+        public void initAndValidate() throws Exception {
+        	m_frequencies = frequencies.get();
+        }
+
         @Override
     	public double[] getFrequencies() {
-    		return frequencies.get().getFreqs();
+    		return m_frequencies.getFreqs();
     	}
 
         @Override

@@ -2,7 +2,6 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.Input.Validate;
 import beast.core.Description;
-import beast.core.Valuable;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 
@@ -15,24 +14,34 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 		m_rates.setRule(Validate.OPTIONAL);
 	}
 	
+	double [] m_empiricalRates;
+	
 	@Override
     public void initAndValidate() throws Exception {
-		Valuable rates = getEmpericalRateValues();
-		m_rates.setValue(rates, this);
-		Frequencies freqs = getEmpericalFrequencieValues();
-		frequencies.setValue(freqs, this);
-		int nFreqs = freqs.getFreqs().length;
-		if (rates.getDimension() != nFreqs * (nFreqs-1)) {
-			throw new Exception("The number of empirical rates (" + rates.getDimension() + ") should be " +
+		m_frequencies = getEmpericalFrequencieValues();
+		m_empiricalRates = getEmpericalRateValues();
+		int nFreqs = m_frequencies.getFreqs().length;
+		if (m_empiricalRates.length != nFreqs * (nFreqs-1)) {
+			throw new Exception("The number of empirical rates (" + m_empiricalRates.length + ") should be " +
 					"equal to #frequencies * (#frequencies-1) = (" + nFreqs + "*"+(nFreqs-1)+").");
 		}
 		
-		super.initAndValidate();
+        updateMatrix = true;
+        m_nStates = m_frequencies.getFreqs().length;
+        eigenSystem = new DefaultEigenSystem(m_nStates);
+        m_rateMatrix = new double[m_nStates][m_nStates];
+        relativeRates = new double[m_empiricalRates.length];
+        storedRelativeRates = new double[m_empiricalRates.length];
     } // initAndValidate
 
+	@Override
+    protected void setupRelativeRates() {
+		System.arraycopy(m_empiricalRates, 0, relativeRates, 0, m_empiricalRates.length);
+    }
 
+	
 	/** convert empirical rates into a RealParameter, only off diagonal entries are recorded **/
-	Valuable getEmpericalRateValues() throws Exception {
+	double [] getEmpericalRateValues() throws Exception {
 		double[][] matrix = getEmpiricalRates();
 		int [] nOrder = getEncodingOrder();
 		int nStates = matrix.length;
@@ -48,8 +57,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 				}
 			}
 		}
-		RealParameter ratesParam = new RealParameter(rates);
-		return ratesParam;
+		return rates;
 	}
 	
 	/** convert empirical frequencies into a RealParameter **/

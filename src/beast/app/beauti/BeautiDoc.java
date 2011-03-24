@@ -22,6 +22,7 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreePrior;
@@ -325,6 +326,23 @@ public class BeautiDoc extends Plugin {
 				m_tipdates.setValue(tree.m_trait.get(), this);
 			}
 		}
+		// hacky bit to ensure SubstitutionModel can handle DataType of alignment data
+		SiteModelInterface.Base siteModel = likelihood.m_pSiteModel.get();
+		try {
+			siteModel.canSetSubstModel(siteModel.getSubstitutionModel());
+		} catch (Exception e) {
+			// obviously not
+	        for (Plugin plugin : PluginPanel.g_plugins.values()) {
+        		try {
+					if (siteModel.canSetSubstModel(plugin)) {
+						siteModel.m_pSubstModel.setValue(plugin, siteModel);
+						break;
+					}
+				} catch (Exception ex) {
+					// ignore
+				}
+            }
+        }
 	}
 	
 	void connectPrior(Distribution distribution) throws Exception {

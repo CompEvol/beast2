@@ -8,7 +8,7 @@ import beast.evolution.datatype.DataType;
 
 @Description("WAG model of amino acid evolution by " +
 		"S. Whelan and N. Goldman. 2000. Bioinformatics ?.")
-public class WAG extends EmpiricalSubstitutionModel {
+public class WAG extends EmpiricalSubstitutionModel { 
 
 	@Override
 	double [][] getEmpiricalRates() {
