@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -10,7 +11,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -24,6 +31,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.InputEditor;
@@ -93,7 +113,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 					i += 2;
 				} else if (args[i].equals("-template")) {
 					String sFileName = args[i + 1];
-					m_sTemplateXML = load(sFileName);
+					processTemplate(sFileName);
 					m_sTemplateName = nameFromFile(sFileName);
 					i += 2;
 				} else if (args[i].equals("-nex")) {
@@ -476,7 +496,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 					m_beastButton.setText(nameFromFile(sFileName));
 					m_startBeastButton.setEnabled(true);
 				} else {
-					m_sTemplateXML = load(sFileName);
+					processTemplate(sFileName);
 					m_templateButton.setText(nameFromFile(sFileName));
 					if (m_doc.m_alignments.get().size()>0) {
 						m_startTemplateButton.setEnabled(true);
@@ -498,7 +518,93 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		return false;
 	}
 
-	String load(String sFileName) throws IOException {
+	void processTemplate(String sFileName) throws Exception {
+		final String MERGE_ELEMENT = "mergepoint";
+		m_sTemplateXML = load(sFileName);
+		// find merge points
+		int i = 0;
+		HashMap<String, String> sMergePoints = new HashMap<String, String>();
+		while (i >= 0) {
+			i = m_sTemplateXML.indexOf("<" + MERGE_ELEMENT, i+1);
+			if (i > 0) {
+				int j = m_sTemplateXML.indexOf('>', i);
+				String sStr = m_sTemplateXML.substring(i, j);
+				sStr = sStr.replaceAll(".*id=","");
+				char c = sStr.charAt(0);
+				sStr = sStr.replaceAll(c+"[^"+c+"]*$","");
+				sStr = sStr.substring(1);
+				sMergePoints.put(sStr, "");
+			}
+		}
+
+		// find XML to merge
+		
+		
+		File templates = new File("templates");
+		for (File template : templates.listFiles()) {
+			if (template.getName().toLowerCase().endsWith(".xml")) {
+				try {
+
+			        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			        //factory.setValidating(true);
+			        Document doc = factory.newDocumentBuilder().parse(template);
+			        doc.normalize();
+			        // find mergewith elements
+			        NodeList nodes = doc.getElementsByTagName("mergewith");
+			        for (int iMergeElement = 0; iMergeElement < nodes.getLength(); iMergeElement++) {
+			        	Node mergeElement = nodes.item(iMergeElement);
+			        	String sMergePoint = mergeElement.getAttributes().getNamedItem("point").getNodeValue();
+			        	if (!sMergePoints.containsKey(sMergePoint)) {
+			        		System.err.println("Cannot find merge point named " + sMergePoint + "from " + template.getName()+ " in template. MergeWith ignored.");
+			        	} else {
+				        	String sXML = "";
+				        	NodeList children = mergeElement.getChildNodes();
+				        	for (int iChild = 0; iChild < children.getLength(); iChild++) {
+				        		sXML += nodeToString(children.item(iChild));
+				        	}
+							String sStr = sMergePoints.get(sMergePoint);
+							sStr += sXML;
+							sMergePoints.put(sMergePoint, sStr);
+			        	}
+			        		
+			        }
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+				}
+			}
+		}
+
+		// merge XML
+		i = 0;
+		while (i >= 0) {
+			i = m_sTemplateXML.indexOf("<" + MERGE_ELEMENT, i+1);
+			if (i > 0) {
+				int j = m_sTemplateXML.indexOf('>', i);
+				String sStr = m_sTemplateXML.substring(i, j);
+				sStr = sStr.replaceAll(".*id=","");
+				char c = sStr.charAt(0);
+				sStr = sStr.replaceAll(c+"[^"+c+"]*$","");
+				sStr = sStr.substring(1);
+				String sXML = sMergePoints.get(sStr);
+				m_sTemplateXML = m_sTemplateXML.substring(0, i) + sXML + m_sTemplateXML.substring(j+1); 
+			}
+		}
+		
+	}		
+		
+
+	String nodeToString(Node node) throws TransformerException {
+		TransformerFactory transFactory = TransformerFactory.newInstance();
+		Transformer transformer = transFactory.newTransformer();
+		StringWriter buffer = new StringWriter();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		transformer.transform(new DOMSource(node),
+		      new StreamResult(buffer));
+		return buffer.toString();
+	}
+	
+	
+	static public String load(String sFileName) throws IOException {
 		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
 		StringBuffer buf = new StringBuffer();
 		String sStr = null;

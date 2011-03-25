@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,7 +38,7 @@ public class TaxonSetDialog extends JDialog {
     DefaultListModel m_listModel2;
 
 	
-	public TaxonSetDialog(TaxonSet taxonSet, List<Taxon> candidates) {
+	public TaxonSetDialog(TaxonSet taxonSet, Set<Taxon> candidates) {
 		// initialize state
 		m_taxonSet = taxonSet;
 		m_sID = taxonSet.getID();

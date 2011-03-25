@@ -1,8 +1,13 @@
 package beast.app.draw;
 
+import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.Loggable;
 import beast.core.MCMC;
+import beast.core.Operator;
 import beast.core.Plugin;
+import beast.core.StateNode;
+import beast.evolution.alignment.Taxon;
 import beast.util.ClassDiscovery;
 import beast.util.XMLProducer;
 
@@ -46,6 +51,11 @@ public class PluginPanel extends JPanel {
     /* Set of plugins in the system.
       * These are the plugins that an input can be connected to **/
     static public Map<String, Plugin> g_plugins = null;
+    static public Set<Operator> g_operators = null;
+    static public Set<StateNode> g_stateNodes = null;
+    static public Set<Loggable> g_loggers = null;
+    static public Set<Distribution> g_distributions = null;
+    static public Set<Taxon> g_taxa = null;
 
     public static Point m_position;
 
@@ -84,6 +94,11 @@ public class PluginPanel extends JPanel {
         }
         m_position = new Point(0, 0);
         g_plugins = new HashMap<String, Plugin>();
+        g_operators = new HashSet<Operator>();
+        g_stateNodes = new HashSet<StateNode>();
+        g_loggers = new HashSet<Loggable>();
+        g_distributions = new HashSet<Distribution>();
+        g_taxa = new HashSet<Taxon>();
     }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins) {
@@ -95,9 +110,28 @@ public class PluginPanel extends JPanel {
                 plugin2.setID(null);
                 sID = getID(plugin2);
             }
-            g_plugins.put(getID(plugin2), plugin2);
+            registerPlugin(getID(plugin2), plugin2);
         }
         init(plugin, _pluginClass, true);
+    }
+
+    static public void registerPlugin(String sID, Plugin plugin) { 
+    	g_plugins.put(sID, plugin);
+    	if (plugin instanceof Operator) {
+    		g_operators.add((Operator)plugin);
+    	}
+    	if (plugin instanceof StateNode) {
+    		g_stateNodes.add((StateNode)plugin);
+    	}
+    	if (plugin instanceof Loggable) {
+    		g_loggers.add((Loggable)plugin);
+    	}
+    	if (plugin instanceof Distribution) {
+    		g_distributions.add((Distribution)plugin);
+    	}
+    	if (plugin instanceof Taxon) {
+    		g_taxa.add((Taxon)plugin);
+    	}
     }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass) {
@@ -463,7 +497,7 @@ public class PluginPanel extends JPanel {
     }
 
     static public void addPluginToMap(Plugin plugin) {
-        g_plugins.put(getID(plugin), plugin);
+        registerPlugin(getID(plugin), plugin);
         try {
             for (Input<?> input : plugin.listInputs()) {
                 if (input.get() != null) {

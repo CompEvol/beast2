@@ -248,6 +248,19 @@ public class XMLParser {
             throw new Exception("Expected top level beast element in XML");
         }
         Node topNode = nodes.item(0);
+        // sanity check that we are reading a beast 2 file
+        double fVersion = getAttributeAsDouble(topNode, "version");
+        if (!topNode.getNodeName().equals(BEAST_ELEMENT) || fVersion < 2.0 || fVersion == Double.MAX_VALUE) {
+            return plugins;
+        }
+        // only process templates
+//        String sType = getAttribute(topNode, "type");
+//        if (sType == null || !sType.equals("template")) {
+//        	return plugins;
+//        }
+        
+        
+        
         initIDNodeMap(topNode);
         parseNameSpaceAndMap(topNode);
         

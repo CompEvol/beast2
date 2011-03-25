@@ -105,7 +105,7 @@ public class PluginDialog extends JDialog {
     		String sOldID = m_panel.m_plugin.getID();
 			PluginPanel.g_plugins.remove(sOldID);
 			m_panel.m_plugin.setID(m_panel.m_identry.getText());
-			PluginPanel.g_plugins.put(m_panel.m_plugin.getID(), m_panel.m_plugin);
+			PluginPanel.registerPlugin(m_panel.m_plugin.getID(), m_panel.m_plugin);
     	}
         return m_bOK;
     }

@@ -45,7 +45,7 @@ public class TaxonSetInputEditor extends ListInputEditor {
 				// build map of names onto taxon sets from Taxon labels
 				HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
 		    	Pattern m_pattern = Pattern.compile(sRegexp);
-		    	for (Taxon taxon : BeautiDoc.m_taxa) {
+		    	for (Taxon taxon : PluginPanel.g_taxa) {
 		    		Matcher matcher = m_pattern.matcher(taxon.getID());
 					if (matcher.find()) {
 						String sMatch = matcher.group(1);
@@ -91,7 +91,7 @@ public class TaxonSetInputEditor extends ListInputEditor {
 	protected Object editItem(Object o) {
 		int i = ((List<?>)m_input.get()).indexOf(o);
 		TaxonSet taxonset = (TaxonSet) ((List<?>)m_input.get()).get(i);
-        TaxonSetDialog dlg = new TaxonSetDialog(taxonset, BeautiDoc.m_taxa);
+        TaxonSetDialog dlg = new TaxonSetDialog(taxonset, PluginPanel.g_taxa);
         dlg.setVisible(true);
         if (dlg.m_bOK) {
         	m_labels.get(i).setText(dlg.m_taxonSet.getID());

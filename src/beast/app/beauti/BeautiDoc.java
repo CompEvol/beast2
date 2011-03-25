@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,11 +56,11 @@ public class BeautiDoc extends Plugin {
 	TraitSet m_tipdatesOrg;
 
 	/** contains all operators from the template **/
-	List<Operator> m_operators;
+	//List<Operator> m_operators;
 	/** contains all loggers from the template **/
 	List<List<Plugin>> m_loggerInputs;
 	/** contains all taxa from the template **/
-	static protected List<Taxon> m_taxa;
+	//static protected List<Taxon> m_taxa;
 	
 	
 	boolean m_bAutoScrubOperators = true;
@@ -124,7 +125,6 @@ public class BeautiDoc extends Plugin {
 		outfile.write(sXML);
 		outfile.close();
 	} // save
-	
 	
 	List<String> extractSequences(String sXML) throws  Exception {
 		XMLParser parser = new XMLParser();
@@ -301,10 +301,10 @@ public class BeautiDoc extends Plugin {
 		
 		
 		// build global list of operators
-		m_operators = new ArrayList<Operator>();
-		for (Operator o : m_mcmc.get().operatorsInput.get()) {
-			m_operators.add(o);
-		}
+//		m_operators = new ArrayList<Operator>();
+//		for (Operator o : m_mcmc.get().operatorsInput.get()) {
+//			m_operators.add(o);
+//		}
 		// build global list of loggers
 		m_loggerInputs = new ArrayList<List<Plugin>>();
 		for (Logger logger : m_mcmc.get().m_loggers.get()) {
@@ -315,14 +315,14 @@ public class BeautiDoc extends Plugin {
 			m_loggerInputs.add(loggers);
 		}
 		// build global list of taxa
-		m_taxa = new ArrayList<Taxon>();
-		for (Plugin plugin : PluginPanel.g_plugins.values()) {
-			if (plugin instanceof Sequence) {
-				Taxon taxon = new Taxon();
-				taxon.setID(((Sequence)plugin).m_sTaxon.get());
-				m_taxa.add(taxon);
-			}
-		}		
+//		m_taxa = new ArrayList<Taxon>();
+//		for (Plugin plugin : PluginPanel.g_plugins.values()) {
+//			if (plugin instanceof Sequence) {
+//				Taxon taxon = new Taxon();
+//				taxon.setID(((Sequence)plugin).m_sTaxon.get());
+//				m_taxa.add(taxon);
+//			}
+//		}		
 	} // connectModel
 	
 	void setTreeLikelihoodID(Distribution treelikelihood, List<String >sAlignmentNames) {
@@ -470,14 +470,16 @@ public class BeautiDoc extends Plugin {
 		collectPredecessors(m_mcmc.get().posteriorInput.get(), posteriorPredecessors);
 		// clear operatorsInput & add to global list of operators if not already there
 		List<Operator> operators0 = m_mcmc.get().operatorsInput.get();
-		for (int i = operators0.size()-1; i>=0;i--) {
-			Operator o = operators0.remove(i);
-			if (!m_operators.contains(o)) {
-				m_operators.add(o);
-			}
-		}
+		operators0.clear();
+//		for (int i = operators0.size()-1; i>=0;i--) {
+//			Operator o = operators0.remove(i);
+//			if (!m_operators.contains(o)) {
+//				m_operators.add(o);
+//			}
+//		}
 		// add operators that have predecessors in posteriorPredecessors
-		for (Operator operator : m_operators) {
+		//for (Operator operator : m_operators) {
+		for (Operator operator : PluginPanel.g_operators) {
 			List<Plugin> operatorPredecessors = new ArrayList<Plugin>();
 			collectPredecessors(operator, operatorPredecessors);
 			for (Plugin plugin : operatorPredecessors) {
