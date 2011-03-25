@@ -50,6 +50,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -73,7 +74,9 @@ public class XMLProducer extends XMLParser {
      */
     int m_nIndent;
 
-    final static String DEFAULT_NAMESPACE="beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood";
+    final public static String DEFAULT_NAMESPACE = "beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood";
+    final public static String DO_NOT_EDIT_WARNING = "DO NOT EDIT the following machine generated text, they are used in Beauti";
+    
     public XMLProducer() {
         super();
     }
@@ -85,6 +88,9 @@ public class XMLProducer extends XMLParser {
      */
     @SuppressWarnings("rawtypes")
 	public String toXML(Plugin plugin) {
+    	return toXML(plugin, new ArrayList<Plugin>());
+    }
+   	public String toXML(Plugin plugin, Collection<Plugin> others) {
         try {
             StringBuffer buf = new StringBuffer();
             buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0' namespace='" + DEFAULT_NAMESPACE + "'>\n");
@@ -93,7 +99,8 @@ public class XMLProducer extends XMLParser {
             m_sIDs = new HashSet<String>();
             m_nIndent = 0;
             pluginToXML(plugin, buf, null, true);
-            buf.append("</" + XMLParser.BEAST_ELEMENT + ">");
+            String sEndBeast = "</" + XMLParser.BEAST_ELEMENT + ">";
+            buf.append(sEndBeast);
             //return buf.toString();
             // beautify XML hierarchy
             String sXML = cleanUpXML(buf.toString(), m_sXMLBeutifyXSL);
@@ -104,6 +111,20 @@ public class XMLProducer extends XMLParser {
             for (String sNameSpace : sNameSpaces) {
             	sXML = sXML.replaceAll("spec=\"" + sNameSpace+".", "spec=\"");
             }
+
+            
+            buf = new StringBuffer();
+            if (others.size() > 0) {
+            	buf.append("\n\n<!-- "  + DO_NOT_EDIT_WARNING + " \n\n");
+            	for (Plugin plugin2 : others) {
+            		if (!m_sIDs.contains(plugin2.getID())) {
+                        pluginToXML(plugin2, buf, null, false);
+            		}
+            	}
+            	buf.append("\n\n-->\n\n");
+            }
+        	sXML = sXML.replaceAll(sEndBeast, buf.toString() + sEndBeast);
+            
             return sXML;
         } catch (Exception e) {
             e.printStackTrace();

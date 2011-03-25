@@ -84,11 +84,14 @@ public class BeautiDoc extends Plugin {
         	connectModel(sAlignmentNames);
     		break;
     	}
-    	case SHOW_DETAILS_USE_XML_SPEC:
-    		XMLParser parser = new XMLParser();
-    		m_mcmc.setValue(parser.parseFragment(sXML, true), this);
-        	connectModel(null);
+    	case SHOW_DETAILS_USE_XML_SPEC: {
+    		List<String> sAlignmentNames = extractSequences(sXML);
+        	connectModel(sAlignmentNames);
+//    		XMLParser parser = new XMLParser();
+//    		m_mcmc.setValue(parser.parseFragment(sXML, true), this);
+//        	connectModel(null);
     		break;
+    	}
     	case WRITE_XML: {
     		List<String> sAlignmentNames = mergeSequences(sTemplate);
         	connectModel(sAlignmentNames);
@@ -116,13 +119,29 @@ public class BeautiDoc extends Plugin {
 		if (m_bAutoScrubOperators) {
 			scrubOperators();
 		}
-		String sXML = new XMLProducer().toXML(m_mcmc.get());
+		String sXML = new XMLProducer().toXML(m_mcmc.get(), PluginPanel.g_plugins.values());
 		FileWriter outfile = new FileWriter(sFileName);
 		outfile.write(sXML);
 		outfile.close();
 	} // save
 	
 	
+	List<String> extractSequences(String sXML) throws  Exception {
+		XMLParser parser = new XMLParser();
+		List<Plugin> plugins = parser.parseTemplate(sXML);
+		List<String> sAlignmentNames = new ArrayList<String>();
+		for (Plugin plugin: plugins) {
+			PluginPanel.addPluginToMap(plugin);
+			if (plugin instanceof beast.core.Runnable) {
+				m_mcmc.setValue(plugin, this);
+			}
+			if (plugin instanceof beast.evolution.alignment.Alignment) {
+				sAlignmentNames.add(plugin.getID());
+			}
+		}
+		return sAlignmentNames;
+	}
+
 	/** Merge sequence data with sXML specification. 
 	 **/
 	List<String> mergeSequences(String sXML) throws  Exception {

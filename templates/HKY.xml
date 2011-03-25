@@ -6,8 +6,18 @@
 done: scaler parameter/tree entry should be <none>
 done: better parameter editor
 done: handle StateNode estimate flag
-TODO: substitution model: make datatype safe
-TODO: save/load unused part of templates
+done: substitution model: make datatype safe
+done: SiteModelInputEditor that does implement enable gamma shape only if gamma categories >= 2
+done: operator editor, with weights
+done: default subst model for amino acids in standard template
+done: WAG prevent inputs
+done: save/load unused part of templates
+TODO: support partial templates (subst.model, site.model templates)
+TODO: tree prior: select from tree priors instead of having a list
+TODO: state scrubbing?
+TODO: prior editor with dynamic graphs of prior distribution
+TODO: trait editor
+TODO: sequence inspector
 -->
 
 
@@ -22,6 +32,10 @@ TODO: save/load unused part of templates
                 <data idref='$(n)'/>
             </frequencies>
         </input>
+
+        <!-- The WAG empirical amino acidmodel  -->
+        <input spec='WAG' id='$(n).WAG'/>
+
 
         <input spec='TwoStateCovarion' id='$(n).TwoStateCovarion' alpha='0.1' switchingParameter='0.01' frequencies="@$(n).freqs"/>
 

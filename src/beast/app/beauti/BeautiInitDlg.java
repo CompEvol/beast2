@@ -33,6 +33,7 @@ import beast.core.Input;
 import beast.core.Plugin;
 import beast.util.NexusParser;
 //import beast.util.XMLParser;
+import beast.util.XMLProducer;
 
 public class BeautiInitDlg extends JDialog implements ValidateListener {
 	private static final long serialVersionUID = 1L;
@@ -507,7 +508,14 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 			buf.append('\n');
 		}
 		fin.close();
-		return buf.toString();
+		
+		String sXML = buf.toString(); 
+		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
+			sXML = sXML.replaceAll("<!--\\s*" + XMLProducer.DO_NOT_EDIT_WARNING, "");
+			int i = sXML.lastIndexOf("-->");
+			sXML = sXML.substring(0, i) + sXML.substring(i + 3);
+		}
+		return sXML;
 	}
 	
 	@Override
