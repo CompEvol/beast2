@@ -14,11 +14,10 @@ import beast.core.Logger;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.Plugin;
+import beast.core.State;
 import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
@@ -59,19 +58,25 @@ public class BeautiDoc extends Plugin {
 	//List<Operator> m_operators;
 	/** contains all loggers from the template **/
 	List<List<Plugin>> m_loggerInputs;
+	/** contains all Priors from the template **/
+	static protected List<Distribution> m_potentialPriors;
 	/** contains all taxa from the template **/
 	//static protected List<Taxon> m_taxa;
 	
 	
 	boolean m_bAutoScrubOperators = true;
 	boolean m_bAutoScrubLoggers = true;
+	boolean m_bAutoScrubPriors = true;
+	boolean m_bAutoScrubState = true;
 	
 //	public Input<List<Operator>> m_operators;
 	public Input<MCMC> m_mcmc = new Input<MCMC>("runnable", "main entry of analysis", Validate.REQUIRED);
 	
 	public BeautiDoc() {
 		setID("BeautiDoc");
+		m_potentialPriors = new ArrayList<Distribution>();
 	}
+	
 	class InputID {
 		Input<?> m_input;
 		int m_nEntryNr = -1;
@@ -114,6 +119,12 @@ public class BeautiDoc extends Plugin {
 	
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
+		if (m_bAutoScrubPriors) {
+			scrubPriors();
+		}
+		if (m_bAutoScrubState) {
+			scrubState();
+		}
 		if (m_bAutoScrubLoggers) {
 			scrubLoggers();
 		}
@@ -369,6 +380,7 @@ public class BeautiDoc extends Plugin {
 			m_treeprior.setValue(distribution, this);
 		} else {
 			m_priors.setValue(distribution, this);
+			m_potentialPriors.add(distribution);
 		}
 	}
 	
@@ -446,6 +458,14 @@ public class BeautiDoc extends Plugin {
 		case Beauti.TREE_PRIOR_PANEL : 
 			break;
 		case Beauti.PRIORS_PANEL : 
+			if (m_bAutoScrubPriors) {
+				scrubPriors();
+			}
+			break;
+		case Beauti.STATE_PANEL : 
+			if (m_bAutoScrubState) {
+				scrubState();
+			}
 			break;
 		case Beauti.OPERATORS_PANEL : 
 			if (m_bAutoScrubOperators) {
@@ -528,6 +548,48 @@ public class BeautiDoc extends Plugin {
 						loggers0.add(newlogger);
 						break;
 					}
+				}
+			}
+		}
+	}
+
+
+	/** remove StateNodes that are not estimated or have no impact on the posterior **/
+	void scrubState() {
+		try {
+			List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
+			collectPredecessors(m_mcmc.get().posteriorInput.get(), posteriorPredecessors);
+			
+			State state = m_mcmc.get().m_startState.get(); 
+			List<StateNode> stateNodes = state.stateNodeInput.get();
+			stateNodes.clear();
+			for (StateNode stateNode :  PluginPanel.g_stateNodes) {
+				if (posteriorPredecessors.contains(stateNode) && stateNode.m_bIsEstimated.get()) {
+					stateNodes.add(stateNode);
+					System.err.println(stateNode.getID());
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/** collect priors that have predecessors in the State, i.e. a StateNode that is estimated **/
+	void scrubPriors() {
+
+		List<Distribution> priors = m_priors.get();
+		priors.clear();
+		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
+		collectPredecessors(m_mcmc.get().posteriorInput.get(), posteriorPredecessors);
+
+		for (Distribution prior : m_potentialPriors) {
+			List<Plugin> priorPredecessors = new ArrayList<Plugin>();
+			collectPredecessors(prior, priorPredecessors);
+			for (Plugin plugin : priorPredecessors) {
+				if (posteriorPredecessors.contains(plugin) && plugin instanceof StateNode && ((StateNode) plugin).m_bIsEstimated.get()) {
+					priors.add(prior);
+					break;
 				}
 			}
 		}

@@ -149,12 +149,10 @@ public class Beauti extends JTabbedPane {
 	}
 
 	
-//    Action a_new = new ActionNew();
-//    Action a_load = new ActionLoad();
     Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
     Action a_quit = new ActionQuit();
-
+    Action a_viewall = new ActionViewAllPanels();
     
     class ActionSave extends MyAction {
         /**
@@ -269,6 +267,7 @@ public class Beauti extends JTabbedPane {
         }
     } // class ActionQuit
 
+    ViewPanelCheckBoxMenuItem [] m_viewPanelCheckBoxMenuItems;
     
     class ViewPanelCheckBoxMenuItem extends JCheckBoxMenuItem{
 		private static final long serialVersionUID = 1L;
@@ -276,11 +275,34 @@ public class Beauti extends JTabbedPane {
     	ViewPanelCheckBoxMenuItem(int iPanel) {
     		super("Show " + TAB_NAME[iPanel] + " panel", m_bPaneIsVisible[iPanel]);
     		m_iPanel = iPanel;
+    		if (m_viewPanelCheckBoxMenuItems == null) {
+    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[NR_OF_PANELS];
+    		}
+    		m_viewPanelCheckBoxMenuItems[iPanel] = this;
     	}
     	void doAction() {
     		toggleVisible(m_iPanel);
     	}
     };
+
+    /** makes all panels visible **/
+    class ActionViewAllPanels extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionViewAllPanels() {
+            super("View all", "View all panels", "viewall", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+        	for(int nPanelNr = 0; nPanelNr < NR_OF_PANELS; nPanelNr++) {
+        		if (!m_bPaneIsVisible[nPanelNr]) {
+        			toggleVisible(nPanelNr);
+        			m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
+        		}
+        	}
+        } // actionPerformed
+    } // class ActionViewAllPanels
+    
     
     
 //    boolean m_bExpertMode = false;
@@ -324,6 +346,22 @@ public class Beauti extends JTabbedPane {
 		modeMenu.add(viewEditTree);
 		modeMenu.addSeparator();
 
+		final JCheckBoxMenuItem autoScrubPriors = new JCheckBoxMenuItem("Automatic scrub priors", m_doc.m_bAutoScrubPriors);
+		autoScrubPriors.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				m_doc.m_bAutoScrubPriors = autoScrubPriors.getState();
+				refreshPanel();
+			}
+		});
+		modeMenu.add(autoScrubPriors);
+		final JCheckBoxMenuItem autoScrubState = new JCheckBoxMenuItem("Automatic scrub state", m_doc.m_bAutoScrubState);
+		autoScrubState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				m_doc.m_bAutoScrubState = autoScrubState.getState();
+				refreshPanel();
+			}
+		});
+		modeMenu.add(autoScrubState);
 		final JCheckBoxMenuItem autoScrubOperators = new JCheckBoxMenuItem("Automatic scrub operators", m_doc.m_bAutoScrubOperators);
 		autoScrubOperators.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -355,6 +393,8 @@ public class Beauti extends JTabbedPane {
             });
         	viewMenu.add(viewPanelAction);
         }
+        viewMenu.addSeparator();
+    	viewMenu.add(a_viewall);
         
         return menuBar;
     } // makeMenuBar
