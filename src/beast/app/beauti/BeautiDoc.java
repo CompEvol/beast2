@@ -267,38 +267,23 @@ public class BeautiDoc extends Plugin {
 			throw new Exception("Expected treelikelihood or derived distribution in posterior");
 		}
 		// put in some defaults, if not provided by the template
-//		boolean bAddTipDates = (m_tipdates.get().size() == 0);
-//		boolean bAddBranchRates = (m_clockmodel.get().size() == 0);
+		/*
 		if (likelihood instanceof CompoundDistribution) {
 			for (Distribution treelikelihood : ((CompoundDistribution) likelihood).pDistributions.get()) {
 				Tree tree = ((TreeLikelihood) treelikelihood).m_tree.get();
-//				if (bAddTipDates) {
 				if (tree.m_trait.get() == null) {
 					TraitSet traitSet = new TraitSet();
-//					m_tipdates.setValue(traitSet, this);
 					tree.m_trait.setValue(traitSet, tree);
 				}
-//				if (bAddBranchRates) {
-//					BranchRateModel.Base clockmodel = new StrictClockModel();
-//					m_clockmodel.setValue(clockmodel, this);
-//					((TreeLikelihood) treelikelihood).m_pBranchRateModel.setValue(clockmodel, treelikelihood);
-//				}
 			}
 		} else {
 			Tree tree = ((TreeLikelihood)likelihood).m_tree.get();
-//			if (bAddTipDates) {
 			if (tree.m_trait.get() == null) {
 				TraitSet traitSet = new TraitSet();
-//				m_tipdates.setValue(traitSet, this);
 				tree.m_trait.setValue(traitSet, tree);
 			}
-//			if (bAddBranchRates) {
-//				BranchRateModel.Base clockmodel = new StrictClockModel();
-//				m_clockmodel.setValue(clockmodel, this);
-//				((TreeLikelihood) likelihood).m_pBranchRateModel.setValue(clockmodel, likelihood);
-//			}
 		}
-		
+		*/
 		
 		PluginPanel.addPluginToMap(m_mcmc.get());
 
@@ -564,7 +549,7 @@ public class BeautiDoc extends Plugin {
 			List<StateNode> stateNodes = state.stateNodeInput.get();
 			stateNodes.clear();
 			for (StateNode stateNode :  PluginPanel.g_stateNodes) {
-				if (posteriorPredecessors.contains(stateNode) && stateNode.m_bIsEstimated.get()) {
+				if (posteriorPredecessors.contains(stateNode)) { // && stateNode.m_bIsEstimated.get()) {
 					stateNodes.add(stateNode);
 					System.err.println(stateNode.getID());
 				}

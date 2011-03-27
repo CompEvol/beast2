@@ -20,6 +20,7 @@ import javax.swing.event.ListSelectionListener;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.PluginPanel;
+import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
@@ -99,16 +100,16 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	
 	void refreshPanel() throws Exception {
 		switch (m_iPanel) {
-			case Beauti.DATA_PANEL : refreshInputPanel(m_doc, m_doc.m_likelihoods, true, false);break;
-			case Beauti.TAXON_SETS_PANEL : refreshInputPanel(m_doc, m_doc.m_taxonset, false, false);break;
-			case Beauti.TIP_DATES_PANEL : refreshInputPanel(m_doc, m_doc.m_tipdates, false, true);break;
-			case Beauti.SITE_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_siteModel, false, true);break;
-			case Beauti.CLOCK_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_clockModel, false, true);break;
-			case Beauti.TREE_PRIOR_PANEL : refreshInputPanel(m_doc, m_doc.m_treeprior, false, true);break;
-			case Beauti.STATE_PANEL : refreshInputPanel(m_doc.m_mcmc.get().m_startState.get(), m_doc.m_mcmc.get().m_startState.get().stateNodeInput, true, false);break;
-			case Beauti.PRIORS_PANEL : refreshInputPanel(m_doc, m_doc.m_priors, true, false);break;
-			case Beauti.OPERATORS_PANEL : refreshInputPanel(m_doc.m_mcmc.get(), m_doc.m_mcmc.get().operatorsInput, true, false);break;
-			case Beauti.MCMC_PANEL : refreshInputPanel(m_doc, m_doc.m_mcmc, false, true);break;
+			case Beauti.DATA_PANEL : refreshInputPanel(m_doc, m_doc.m_likelihoods, true, EXPAND.FALSE);break;
+			case Beauti.TAXON_SETS_PANEL : refreshInputPanel(m_doc, m_doc.m_taxonset, false, EXPAND.FALSE);break;
+			case Beauti.TIP_DATES_PANEL : refreshInputPanel(m_doc, m_doc.m_tipdates, false, EXPAND.TRUE);break;
+			case Beauti.SITE_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_siteModel, false, EXPAND.TRUE);break;
+			case Beauti.CLOCK_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_clockModel, false, EXPAND.TRUE);break;
+			case Beauti.TREE_PRIOR_PANEL : refreshInputPanel(m_doc, m_doc.m_treeprior, false, EXPAND.TRUE);break;
+			case Beauti.STATE_PANEL : refreshInputPanel(m_doc.m_mcmc.get().m_startState.get(), m_doc.m_mcmc.get().m_startState.get().stateNodeInput, true, EXPAND.TRUE);break;
+			case Beauti.PRIORS_PANEL : refreshInputPanel(m_doc, m_doc.m_priors, true, EXPAND.IF_ONE_ITEM);break;
+			case Beauti.OPERATORS_PANEL : refreshInputPanel(m_doc.m_mcmc.get(), m_doc.m_mcmc.get().operatorsInput, true, EXPAND.FALSE);break;
+			case Beauti.MCMC_PANEL : refreshInputPanel(m_doc, m_doc.m_mcmc, false, EXPAND.TRUE);break;
 		}
 		if (m_listBox != null) {
 			m_listBox.setVisible(m_doc.m_alignments.get().size() > 1);
@@ -116,7 +117,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	}
 	
 	Component m_centralComponent = null;
-	void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, boolean bForceExpansion) throws Exception {
+	void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, EXPAND bForceExpansion) throws Exception {
 		if (m_centralComponent != null) {
 			remove(m_centralComponent);
 		}

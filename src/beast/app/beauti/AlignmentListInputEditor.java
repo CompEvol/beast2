@@ -29,7 +29,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 	
 	@Override
-    public void init(Input<?> input, Plugin plugin, boolean bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		super.init(input, plugin, bExpand, bAddButtons);
 		//m_editButton.setVisible(false);
 	}

@@ -33,6 +33,8 @@ import beast.core.Plugin;
  **/ 
 public abstract class InputEditor extends Box implements ValidateListener {
 	final public static String NO_VALUE = "<none>";
+	public enum EXPAND {TRUE, FALSE, IF_ONE_ITEM};
+
 	public static boolean m_bExpertMode = false;
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
 	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
@@ -121,7 +123,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	abstract public Class<?> type();
 	
 	/** construct an editor consisting of a label and input entry **/
-	public void init(Input<?> input, Plugin plugin, boolean bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
 		m_input = input;
 		m_plugin = plugin;

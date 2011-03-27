@@ -27,7 +27,7 @@ public class TreeLikelihoodListInputEditor extends ListInputEditor {
 	}
 	
 	@Override
-    public void init(Input<?> input, Plugin plugin, boolean bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		super.init(input, plugin, bExpand, bAddButtons);
 		add(Box.createVerticalGlue());
 	}
@@ -47,15 +47,15 @@ public class TreeLikelihoodListInputEditor extends ListInputEditor {
         itemBox.add(label);
         itemBox.add(Box.createHorizontalGlue());
         try {
-        	InputEditor editor = PluginPanel.createInputEditor(likelihood.m_tree, likelihood, false, false, this);
+        	InputEditor editor = PluginPanel.createInputEditor(likelihood.m_tree, likelihood, false, EXPAND.FALSE, this);
         	editor.addValidationListener(this);
         	editor.setMaximumSize(new Dimension(100,30));
 	        itemBox.add(editor);
-	        editor = PluginPanel.createInputEditor(likelihood.m_pSiteModel, likelihood, false, false, this);
+	        editor = PluginPanel.createInputEditor(likelihood.m_pSiteModel, likelihood, false, EXPAND.FALSE, this);
         	editor.addValidationListener(this);
         	editor.setMaximumSize(new Dimension(100,30));
 	        itemBox.add(editor);
-	        editor = PluginPanel.createInputEditor(likelihood.m_pBranchRateModel, likelihood, false, false, this);
+	        editor = PluginPanel.createInputEditor(likelihood.m_pBranchRateModel, likelihood, false, EXPAND.FALSE, this);
         	editor.addValidationListener(this);
         	editor.setMaximumSize(new Dimension(100,30));
 	        itemBox.add(editor);

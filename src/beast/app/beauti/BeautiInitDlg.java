@@ -49,6 +49,7 @@ import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.InputEditor;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.ValidateListener;
+import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.util.NexusParser;
@@ -267,7 +268,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         		"Select template containing an analysis, where alignments are replaced by those selected above",
         		sStartText, false);
     	String sFullInputName = m_doc.getClass().getName() + "." + m_doc.m_mcmc.getName();
-        inputEditor.init(m_doc.m_mcmc, m_doc, InputEditor.m_inlinePlugins.contains(sFullInputName));
+        inputEditor.init(m_doc.m_mcmc, m_doc, InputEditor.m_inlinePlugins.contains(sFullInputName)? EXPAND.TRUE : EXPAND.FALSE);
         inputEditor.setBorder(new EtchedBorder());
 		inputEditor.setVisible(true);
 		m_createNewBox.add(inputEditor);
@@ -294,7 +295,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         		"Select existing Beast II specification",
         		sStartText, true); 
     	sFullInputName = m_doc.getClass().getName() + "." + m_doc.m_mcmc.getName();
-        inputEditor2.init(m_doc.m_mcmc, m_doc, InputEditor.m_inlinePlugins.contains(sFullInputName));
+        inputEditor2.init(m_doc.m_mcmc, m_doc, (InputEditor.m_inlinePlugins.contains(sFullInputName) ? EXPAND.TRUE : EXPAND.FALSE));
         inputEditor2.setBorder(new EtchedBorder());
 		inputEditor2.setVisible(true);
 		m_loadExistingBox.add(inputEditor2);
@@ -404,7 +405,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		public Class<?> type() {return null;}
 		
 		/** construct an editor consisting of a label and input entry **/
-		public void init(Input<?> input, Plugin plugin, boolean bExpand) {
+		public void init(Input<?> input, Plugin plugin, EXPAND bExpand) {
 			m_input = input;
 			m_plugin = plugin;
 

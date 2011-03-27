@@ -64,6 +64,10 @@ public class SiteModel extends SiteModelInterface.Base {
 
         if (shapeParameter.get() != null) {
             categoryCount = gammaCategoryCount.get();
+            if (categoryCount < 1) {
+            	System.err.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
+               	categoryCount = 1;
+            }
 
             // The quantile calculator fails when the shape parameter goes much below
             // 1E-3 so we have put a hard lower bound on it. If this is not there then

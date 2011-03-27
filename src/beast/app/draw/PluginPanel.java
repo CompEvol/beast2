@@ -1,5 +1,7 @@
 package beast.app.draw;
 
+
+import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Loggable;
@@ -195,7 +197,7 @@ public class PluginPanel extends JPanel {
             try {
             	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
             	if (!InputEditor.m_suppressPlugins.contains(sFullInputName)) {
-	            	InputEditor inputEditor = createInputEditor(input, plugin, true, false, editor);
+	            	InputEditor inputEditor = createInputEditor(input, plugin, true, EXPAND.FALSE, editor);
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
 	                box.add(Box.createVerticalGlue());
@@ -212,10 +214,10 @@ public class PluginPanel extends JPanel {
     } // addInputs
 
     public static InputEditor createInputEditor(Input<?> input, Plugin plugin) throws Exception {
-    	return createInputEditor(input, plugin, true, false, null);
+    	return createInputEditor(input, plugin, true, EXPAND.FALSE, null);
     }
     
-    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, boolean bForceExpansion, InputEditor editor) throws Exception {
+    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, EXPAND bForceExpansion, InputEditor editor) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
         }
@@ -262,7 +264,11 @@ public class PluginPanel extends JPanel {
             inputEditor = new PluginInputEditor();
         }
     	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-        inputEditor.init(input, plugin, InputEditor.m_inlinePlugins.contains(sFullInputName) | bForceExpansion , bAddButtons);
+    	EXPAND expand = bForceExpansion;
+    	if (InputEditor.m_inlinePlugins.contains(sFullInputName)) {
+    		expand = EXPAND.TRUE;
+    	}
+        inputEditor.init(input, plugin,  expand, bAddButtons);
         inputEditor.setBorder(new EtchedBorder());
 		inputEditor.setVisible(true);
 		return inputEditor;

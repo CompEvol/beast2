@@ -27,7 +27,7 @@ public class ListInputEditor extends InputEditor {
     protected List<SmallButton> m_editButton;
     protected List<SmallLabel> m_validateLabels;
     protected Box m_listBox;
-    protected boolean m_bExpand;
+    protected EXPAND m_bExpand;
 
     public abstract class ActionListenerObject implements ActionListener {
     	public Object m_o;
@@ -43,7 +43,7 @@ public class ListInputEditor extends InputEditor {
         m_delButton = new ArrayList<SmallButton>();
         m_editButton = new ArrayList<SmallButton>();
         m_validateLabels = new ArrayList<SmallLabel>();
-        m_bExpand = false;
+        m_bExpand = EXPAND.FALSE;
    }
 
     @Override
@@ -63,7 +63,7 @@ public class ListInputEditor extends InputEditor {
      * o a set of buttons for adding, deleting, editing items in the list
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, boolean bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
     	m_bExpand = bExpand;
         m_input = input;
@@ -149,7 +149,8 @@ public class ListInputEditor extends InputEditor {
 		m_validateLabels.add(validateLabel);
         itemBox.setBorder(BorderFactory.createEtchedBorder());
         
-        if (m_bExpand) {
+        if (m_bExpand == EXPAND.TRUE || 
+        		(m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
         	Box box = Box.createVerticalBox();
         	box.add(itemBox);
         	PluginPanel.addInputs(box, plugin, this);

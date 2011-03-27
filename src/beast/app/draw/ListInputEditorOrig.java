@@ -47,7 +47,7 @@ public class ListInputEditorOrig extends InputEditor {
      * o a set of buttons for adding, deleting, editing items in the list
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, boolean bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;

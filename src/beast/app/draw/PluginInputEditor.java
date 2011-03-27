@@ -39,14 +39,14 @@ public class PluginInputEditor extends InputEditor {
      * o validation label -- optional, if input is not valid
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, boolean bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
-    	if (bExpand) {
-    		expandedInit(input, plugin);
-    	} else {
+    	if (bExpand == EXPAND.FALSE) {
     		simpleInit(input, plugin);
+    	} else {
+    		expandedInit(input, plugin);
     	}
     } // init
     
