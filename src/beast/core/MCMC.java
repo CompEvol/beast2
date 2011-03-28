@@ -249,7 +249,7 @@ public class MCMC extends Runnable {
             }
             log(iSample);
             
-            if (bDebug && iSample % 3 == 0) { 
+            if (bDebug && iSample % 3 == 0 || iSample % 10000 == 0) { 
             	// check that the posterior is correctly calculated at every third
             	// sample, as long as we are in debug mode
                 double fLogLikelihood = robustlyCalcPosterior(posterior); 

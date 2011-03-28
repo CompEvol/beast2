@@ -262,7 +262,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
             updateSubstitutionModel = true;
             updateSiteModel = true;
-
+            // some subst models (e.g. WAG) never become dirty, so set up subst models right now
+            setUpSubstModel();
     }
 
     private static List<Integer> parseSystemPropertyIntegerArray(String propertyName) {
@@ -352,6 +353,22 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         return m_nPatternCount;
     }
 
+    void setUpSubstModel() {
+    	// we are currently assuming a no-category model...
+    	// TODO More efficient to update only the substitution model that changed, instead of all
+	    for (int i = 0; i < eigenCount; i++) {
+	        //EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(i, 0);
+	        EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(null);
+	
+	        eigenBufferHelper.flipOffset(i);
+	
+	        beagle.setEigenDecomposition(
+	            eigenBufferHelper.getOffsetIndex(i),
+	            ed.getEigenVectors(),
+	            ed.getInverseEigenVectors(),
+	            ed.getEigenValues());
+	    }
+	}
     /**
      * Sets the partials from a sequence in an alignment.
      *
@@ -514,20 +531,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         final Node root = m_tree.get().getRoot();
         traverse(root, null, true);
 
-        if (updateSubstitutionModel) { // TODO More efficient to update only the substitution model that changed, instead of all
-            // we are currently assuming a no-category model...
-            for (int i = 0; i < eigenCount; i++) {
-                //EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(i, 0);
-                EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(null);
-
-                eigenBufferHelper.flipOffset(i);
-
-                beagle.setEigenDecomposition(
-                    eigenBufferHelper.getOffsetIndex(i),
-                    ed.getEigenVectors(),
-                    ed.getInverseEigenVectors(),
-                    ed.getEigenValues());
-            }
+        if (updateSubstitutionModel) { 
+        	setUpSubstModel();
         }
 
         if (updateSiteModel) {
