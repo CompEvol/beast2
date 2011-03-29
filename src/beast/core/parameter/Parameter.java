@@ -24,10 +24,12 @@
 */
 package beast.core.parameter;
 
+
 import beast.core.*;
 import beast.core.Input.Validate;
 
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,7 +80,7 @@ public abstract class Parameter<T> extends StateNode {
     protected boolean[] m_bIsDirty;
     /** last element to be changed **/
     protected int m_nLastDirty;
-
+    
     /** @return true if the iParam-th element has changed
      *  @param iParam dimention to check
      **/
@@ -102,6 +104,26 @@ public abstract class Parameter<T> extends StateNode {
      */
     public int getDimension() {
         return values.length;
+    }
+
+    /** Change the dimension of a parameter
+     * 
+     * This should only be called from initAndValidate() when a parent
+     * plugin can easily calculate the dimension of a parameter, but it
+     * is awkward to do this by hand. 
+     * 
+     * Values are sourced from the original parameter values.
+     **/
+    public void setDimension(int nDimension) {
+    	if (getDimension() != nDimension) {
+    		@SuppressWarnings("unchecked")
+			T [] values2 = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
+    		for (int i = 0; i < nDimension; i++) {
+    			values2[i] = values[i % getDimension()];
+    		}
+    		values = (T[]) values2;
+    	}
+        m_bIsDirty = new boolean[nDimension];
     }
 
     public T getValue() {
@@ -224,6 +246,9 @@ public abstract class Parameter<T> extends StateNode {
         Arrays.fill(m_bIsDirty, false);
     }
 
+
+    
+    
     /**
      * Loggable interface implementation follows (partly, the actual 
      * logging of values happens in derived classes) *
