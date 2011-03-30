@@ -48,7 +48,32 @@ public class Tree extends StateNode {
 	public Input<Tree> m_initial = new Input<Tree>("initial","tree to start with");
 	public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
 
-    @Override
+
+	
+    /** state of dirtiness of a node in the tree
+     * DIRTY means a property on the node has changed, but not the topology
+     * FILTHY means the nodes' parent or child has changed.
+     */
+    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
+
+    /** counters of number of nodes, nodeCount = internalNodeCount + leafNodeCount **/
+    int nodeCount = -1;
+    int internalNodeCount = -1;
+    int leafNodeCount = -1;
+
+    /**
+     * node representation of the beast.tree *
+     */
+    protected beast.evolution.tree.Node root;
+    protected beast.evolution.tree.Node storedRoot;
+
+    /** array of all nodes in the tree **/
+    Node[] m_nodes = null;
+    Node[] m_storedNodes = null;
+	
+    protected String [] m_sTaxaNames;
+    
+	@Override
     public void initAndValidate() throws Exception {
     	if (m_initial.get() != null) {
     		Tree other = m_initial.get();
@@ -56,6 +81,7 @@ public class Tree extends StateNode {
             nodeCount = other.nodeCount;
             internalNodeCount = other.internalNodeCount;
             leafNodeCount = other.leafNodeCount;
+            m_sTaxaNames = other.m_sTaxaNames;
     	}
     	
     	if (m_trait.get() != null) {
@@ -102,28 +128,6 @@ public class Tree extends StateNode {
 			}
 		}
 	}
-
-    
-    /** state of dirtiness of a node in the tree
-     * DIRTY means a property on the node has changed, but not the topology
-     * FILTHY means the nodes' parent or child has changed.
-     */
-    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
-
-    /** counters of number of nodes, nodeCount = internalNodeCount + leafNodeCount **/
-    int nodeCount = -1;
-    int internalNodeCount = -1;
-    int leafNodeCount = -1;
-
-    /**
-     * node representation of the beast.tree *
-     */
-    protected beast.evolution.tree.Node root;
-    protected beast.evolution.tree.Node storedRoot;
-
-    /** array of all nodes in the tree **/
-    Node[] m_nodes = null;
-    Node[] m_storedNodes = null;
     
     /**
      * getters and setters
@@ -148,7 +152,11 @@ public class Tree extends StateNode {
     	}
         return leafNodeCount;
     }
-
+    
+    public String getTaxonName(int iNode) {
+    	return m_sTaxaNames[iNode];
+    }
+    
     public Node getRoot() {
         return root;
     }

@@ -1,6 +1,41 @@
 <beast version='2.0'
-	hidepanes='TAXON_SETS_PANEL|TIP_DATES_PANEL|PRIORS_PANEL|OPERATORS_PANEL'
-       namespace='beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution'>
+       namespace='beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+
+    <beauticonfig spec='beast.app.beauti.BeautiConfig'
+        hidePanels='TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL'
+        inputLabelMap='beast.core.MCMC.operator=Operators,
+	        beast.core.MCMC.logger=Loggers'
+        inlinePlugins ='beast.core.MCMC.distribution,
+            beast.core.MCMC.logger,
+            beast.evolution.sitemodel.SiteModel.substModel,
+            beast.evolution.tree.coalescent.ExponentialGrowth,
+            beast.evolution.tree.coalescent.ConstantPopulation,
+            beast.evolution.tree.coalescent.Coalescent,
+            beast.core.State.stateNode'
+        suppressPlugins = 'beast.core.MCMC.operator,
+	        beast.evolution.tree.coalescent.Coalescent.treeIntervals,
+	        beast.evolution.tree.coalescent.Coalescent.tree,
+	        beast.core.MCMC.state,
+	        beast.core.MCMC.distribution,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.relativeDeathRate,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.type,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.tree,
+	        beast.evolution.tree.Tree.trait,
+	        beast.util.TreeParser.initial,
+	        beast.util.TreeParser.taxa,
+	        beast.util.TreeParser.trait,
+	        beast.util.TreeParser.estimate,
+	        beast.util.ClusterTree.initial,
+	        beast.util.ClusterTree.taxa,
+	        beast.util.ClusterTree.trait,
+	        beast.util.ClusterTree.estimate,
+	        beast.evolution.substitutionmodel.WAG.rates,
+	        beast.evolution.substitutionmodel.WAG.frequencies'
+        buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
+    >
+    </beauticonfig>
 
 <!--
 done: scaler parameter/tree entry should be <none>
@@ -12,12 +47,13 @@ done: operator editor, with weights
 done: default subst model for amino acids in standard template
 done: WAG prevent inputs
 done: save/load unused part of templates
-TODO: support partial templates (subst.model, site.model templates)
+done: support partial templates (subst.model, site.model templates)
+done: state scrubbing?
 TODO: tree prior: select from tree priors instead of having a list
-TODO: state scrubbing?
 TODO: prior editor with dynamic graphs of prior distribution
 TODO: trait editor
 TODO: sequence inspector
+TODO: coalescent tree as initial tree - with taxa constraints
 -->
 
 
@@ -25,6 +61,8 @@ TODO: sequence inspector
 
 
     <plate var='n' range='#alignments'>
+        <mergepoint id='substitutionmodel'/>
+
         <!-- The HKY substitution model (Hasegawa, Kishino & Yano, 1985)             -->
         <input spec='HKY' id='$(n).hky'>
             <kappa idref='$(n).hky.kappa'/>
@@ -34,7 +72,7 @@ TODO: sequence inspector
         </input>
 
         <!-- The WAG empirical amino acidmodel  -->
-        <input spec='WAG' id='$(n).WAG'/>
+        <!--input spec='WAG' id='$(n).WAG'/-->
 
 
         <input spec='TwoStateCovarion' id='$(n).TwoStateCovarion' alpha='0.1' switchingParameter='0.01' frequencies="@$(n).freqs"/>
@@ -52,33 +90,33 @@ TODO: sequence inspector
             <tree idref="$(n).tree"/>
             <siteModel idref="$(n).siteModel"/>
             <branchRateModel spec='StrictClockModel' id='$(n).StrictClockModel'>
-                <clock.rate id='$(n).clockRate' spec='parameter.RealParameter' value='1.0'/>
+                <clock.rate id='$(n).clockRate' spec='parameter.RealParameter' value='1.0' estimate='false'/>
             </branchRateModel>
         </input>
 
 	    <input spec='BirthDeathGernhard08Model' id="$(n).Yule" type='timesonly'>
- 	    	<parameter name='birthDiffRate' id="$(n).birthRate" value="1.0" lower="0.0" upper="100.0"/>
-        	<parameter name='relativeDeathRate' id='$(n).constantDeathRate' value='1.0'/>
+ 	    	<parameter name='birthDiffRate' id="$(n).birthRate" value="1.0" lower="0.0" upper="100.0"  estimate='false'/>
+        	<parameter name='relativeDeathRate' id='$(n).constantDeathRate' value='1.0'  estimate='false'/>
         	<tree idref='$(n).tree'/>
     	</input>
 
         <input spec='UCRelaxedClockModel' id="$(n).RelaxedClock">
             <input id='lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
-                <parameter name='M' id='M' value="1"/>
-                <parameter name='S' id='S' value="0.5" lower="0" upper="5"/>
+                <parameter name='M' id='M' value="1" estimate='false'/>
+                <parameter name='S' id='S' value="0.5" lower="0" upper="5" estimate='false'/>
             </input>
             <parameter spec='parameter.IntegerParameter' name='rateCategories' id='$(n).rateCategories' dimension="11" value="1"/>
             <input name='tree' idref="$(n).tree"/>
         </input>
 
         <populationModel spec="ExponentialGrowth" id="$(n).ExponentialGrowth">
-            <parameter name="popSize" id="$(n).popSize" value='1.0'/>
-            <parameter name="growthRate" id="$(n).growthRate" value='1.0'/>
+            <parameter name="popSize" id="$(n).popSize" value='1.0' estimate='false'/>
+            <parameter name="growthRate" id="$(n).growthRate" value='1.0' estimate='false'/>
         </populationModel>
 
 
 
-        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0"/>
+        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0" estimate='false'/>
 
         <tree spec='beast.evolution.tree.Tree' id='$(n).tree' initial='@$(n).upgmatree'>
 	        <trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
@@ -86,7 +124,7 @@ TODO: sequence inspector
 		        <taxa idref='$(n)'/>
 	        </trait>
         </tree>
-        <input spec='beast.util.ClusterTree' id='$(n).upgmatree' clusterType='upgma'>
+        <input spec='beast.util.ClusterTree' id='$(n).upgmatree' clusterType='upgma' estimate='false'>
             <taxa idref='$(n)'/>
 	        <trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
 		        value=''>
@@ -97,6 +135,7 @@ TODO: sequence inspector
                 <input name='newick'></input>
                 <input name='taxa' idref='$(n)'/>
         </input>        
+
     </plate>
 
 
@@ -126,6 +165,9 @@ TODO: sequence inspector
                         </treeIntervals>
                         <populationModel spec="ConstantPopulation" id='$(n).ConstantPopulation' popSize='@$(n).popSize'/>
                     </distribution>
+                    <distribution id='$(n).kappa.prior' spec='Prior' x='@$(n).hky.kappa'>
+                        <distribution spec="OneOnX"/>
+                    </distribution>
                 </plate>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
@@ -136,6 +178,7 @@ TODO: sequence inspector
         </distribution>
     
         <plate var='n' range='#alignments'>
+            <mergepoint id='operator'/>
             <operator id='$(n).kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).hky.kappa"/>
             <operator id='$(n).proportionInvariantScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).proportionInvariant"/>
             <operator id='$(n).mutationRateScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).mutationRate"/>

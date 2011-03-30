@@ -45,7 +45,7 @@ public class BeautiDoc extends Plugin {
 
 	
 	/** place holders for plugins **/
-	public Input<SiteModel.Base> m_siteModel = new Input<SiteModel.Base>("sitemodel", "site model, contains substitution model");
+	public Input<SiteModel.Base> m_siteModel = new Input<SiteModel.Base>("sitemodel", "site model, contains substitution model", Validate.REQUIRED);
 	SiteModel.Base m_siteModelOrg;
 	
 	public Input<BranchRateModel.Base> m_clockModel = new Input<BranchRateModel.Base>("clockmodel", "clock model");
@@ -549,7 +549,7 @@ public class BeautiDoc extends Plugin {
 			List<StateNode> stateNodes = state.stateNodeInput.get();
 			stateNodes.clear();
 			for (StateNode stateNode :  PluginPanel.g_stateNodes) {
-				if (posteriorPredecessors.contains(stateNode)) { // && stateNode.m_bIsEstimated.get()) {
+				if (posteriorPredecessors.contains(stateNode) && stateNode.m_bIsEstimated.get()) {
 					stateNodes.add(stateNode);
 					System.err.println(stateNode.getID());
 				}

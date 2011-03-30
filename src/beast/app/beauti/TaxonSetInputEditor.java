@@ -35,13 +35,14 @@ public class TaxonSetInputEditor extends ListInputEditor {
 	@Override
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		super.init(input, plugin, bExpand, bAddButtons);
-		JButton guessButton = new JButton("Guess taxon sets");
+		JButton guessButton = new JButton(BeautiConfig.getButtonLabel(this, "Guess taxon sets"));
 		guessButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String sRegexp = "^(.+)[_\\. ].*$";
 				sRegexp = JOptionPane.showInputDialog("<html>Try to match this expression (hit ok if you don't know what this means. It's ok. Trust me...)" +
-						" The pattern in brackets will be matched and grouped together.</html>", sRegexp);
+						" The pattern in brackets will be matched and grouped together." +
+						" See e.g. <a href='http://download.oracle.com/javase/1.4.2/docs/api/java/util/regex/Pattern.html'></a>http://download.oracle.com/javase/1.4.2/docs/api/java/util/regex/Pattern.html for syntax.</html>", sRegexp);
 				// build map of names onto taxon sets from Taxon labels
 				HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
 		    	Pattern m_pattern = Pattern.compile(sRegexp);

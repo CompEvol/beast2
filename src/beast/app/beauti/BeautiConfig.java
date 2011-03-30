@@ -19,7 +19,11 @@ public class BeautiConfig extends Plugin {
 			"display labels separated by a '=', e.g. beast.core.MCMC.logger=Loggers ");
 	public Input<String> m_hidePanels = new Input<String>("hidePanels","comma separated list of panes that should not" +
 			"be displayed when starting beauti, e.g. TAXON_SETS_PANEL,TIP_DATES_PANEL");
-	
+	public Input<String> m_buttonLabelMap = new Input<String>("buttonLabelMap","comma separated list of buttons in dialogs and their " +
+			"display labels separated by a '=', e.g. beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters");
+	public Input<String> m_disableMenus = new Input<String>("disableMenus","comma separated list of menus that should " +
+	"not be visible, e.g., View.Show Data Panel,Mode");
+
 	
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
 	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
@@ -29,38 +33,38 @@ public class BeautiConfig extends Plugin {
 	public static Set<String> g_suppressPlugins = new HashSet<String>();
     /** map that identifies the label to be used for a particular input **/
 	public static HashMap<String, String> g_inputLabelMap = new HashMap<String, String>();
+	public static HashMap<String, String> g_buttonLabelMap = new HashMap<String, String>();
 	
 	public static Set<String> g_sHidePanels = new HashSet<String>();
+	public static Set<String> g_sDisabledMenus = new HashSet<String>();
 	
 	@Override
 	public void initAndValidate() {
-		String sInlinePlugins = m_inlineInput.get();
-		if (sInlinePlugins != null) {
-			for (String sInlinePlugin: sInlinePlugins.split(",")) {
-				g_inlinePlugins.add(normalize(sInlinePlugin));
+		parseSet(m_inlineInput.get(), null, g_inlinePlugins);
+		parseSet(m_hidePanels.get(), "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL", g_sHidePanels);
+		parseSet(m_suppressInputs.get(), null, g_suppressPlugins);
+		parseSet(m_disableMenus.get(), null, g_sDisabledMenus);
+		
+		parseMap(m_inputLabelMap.get(), g_inputLabelMap);
+		parseMap(m_buttonLabelMap.get(), g_buttonLabelMap);
+	}
+
+	private void parseMap(String sStr, HashMap<String, String> stringMap) {
+		if (sStr != null) {
+			for (String sStr2: sStr.split(",")) {
+				String [] sStrs = sStr2.split("=");
+				stringMap.put(normalize(sStrs[0]), normalize(sStrs[1]));
 			}
 		}
-		
-		String sHidePanels = m_hidePanels.get();
-		if (sHidePanels == null) {
-			sHidePanels = "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL";
+	}
+
+	private void parseSet(String sStr, String sDefault, Set<String> stringSet) {
+		if (sStr == null) {
+			sStr = sDefault;
 		}
-		for (String sPanel: sHidePanels.split(",")) {
-			g_sHidePanels.add(normalize(sPanel));
-		}
-		
-		String sInputLabelMap = m_inputLabelMap.get();
-		if (sInputLabelMap != null) {
-			for (String sLabelMap: sInputLabelMap.split(",")) {
-				String [] sStr = sLabelMap.split("=");
-				g_inputLabelMap.put(normalize(sStr[0]), normalize(sStr[1]));
-			}
-		}
-		
-		String sSuppressPlugins = m_suppressInputs.get();
-		if (sSuppressPlugins != null) {
-			for (String sSuppressPlugin: sSuppressPlugins.split(",")) {
-				g_suppressPlugins.add(normalize(sSuppressPlugin));
+		if (sStr != null) {
+			for (String sStr2 : sStr.split(",")) {
+				stringSet.add(normalize(sStr2));
 			}
 		}
 	}
@@ -78,4 +82,27 @@ public class BeautiConfig extends Plugin {
 		return sStr.substring(i, n);
 	}
 
+	public static String getButtonLabel(String sClass, String sStr) {
+		if (g_buttonLabelMap.containsKey(sClass + "." + sStr)) {
+			return g_buttonLabelMap.get(sClass + "." + sStr);
+		}
+		return sStr;
+	}
+	
+	public static String getButtonLabel(Object o, String sStr) {
+		if (g_buttonLabelMap.containsKey(o.getClass().getName() + "." + sStr)) {
+			return g_buttonLabelMap.get(o.getClass().getName() + "." + sStr);
+		}
+		return sStr;
+	}
+	public static String getInputLabel(Plugin plugin, String sName) {
+		if (g_inputLabelMap.containsKey(plugin.getClass().getName()+"."+sName)) {
+			sName =  BeautiConfig.g_inputLabelMap.get(plugin.getClass().getName()+"."+sName);
+		}
+		return sName;
+	}
+
+	public static boolean menuIsInvisible(String sMenuName) {
+		return g_sDisabledMenus.contains(sMenuName);
+	}
 } // class BeautiConfig

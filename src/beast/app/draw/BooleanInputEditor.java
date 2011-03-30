@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 
+import beast.app.beauti.BeautiConfig;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -25,7 +26,7 @@ public class BooleanInputEditor extends InputEditor {
 		m_bAddButtons = bAddButtons;
 		m_plugin = plugin;
 		m_input = input;
-		m_entry = new JCheckBox(input.getName());
+		m_entry = new JCheckBox(BeautiConfig.getInputLabel(m_plugin, input.getName()));
 		if (input.get() != null) {
 			m_entry.setSelected((Boolean)input.get());
 		}

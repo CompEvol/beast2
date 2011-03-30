@@ -195,8 +195,6 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 
 	} // init
 	
-	final static String g_create_new = "Create new specification";
-	final static String g_load_existing = "Load existing file";
 	
     Box m_createNewBox;
     Box m_loadExistingBox;
@@ -209,10 +207,10 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         
         Box radioBox = Box.createVerticalBox();
         // Create the radio buttons.
-        JRadioButton firstButton = new JRadioButton(g_create_new);
+        JRadioButton firstButton = new JRadioButton(BeautiConfig.getButtonLabel(this, "Create new specification"));
         //firstButton.setSelected(true);
 
-        JRadioButton secondButton = new JRadioButton(g_load_existing);
+        JRadioButton secondButton = new JRadioButton(BeautiConfig.getButtonLabel(this, "Load existing file"));
 
         // Group the radio buttons.
         ButtonGroup group = new ButtonGroup();
@@ -222,14 +220,12 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         // Register a listener for the radio buttons.
         firstButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-        	    System.out.println(g_create_new + " pressed.");
                 m_createNewBox.setVisible(true);
                 m_loadExistingBox.setVisible(false);
             }
         });
         secondButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-        	    System.out.println(g_load_existing + " pressed.");
                 m_createNewBox.setVisible(false);
                 m_loadExistingBox.setVisible(true);
             }
@@ -238,7 +234,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         radioBox.add(secondButton);
         radioBox.add(Box.createHorizontalGlue());
         radioBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), 
-        		"How do you want to start:", 
+        		BeautiConfig.getButtonLabel(this, "How do you want to start:"), 
         		TitledBorder.LEFT, TitledBorder.DEFAULT_JUSTIFICATION));
         centralBox.add(Box.createVerticalStrut(10));
         centralBox.add(radioBox);
@@ -285,8 +281,8 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         
         sStartText = (m_doc.m_mcmc.get() != null ? m_doc.m_mcmc.get().getID():
         	"<html>Select file</html>");
-        ButtonInputEditor inputEditor2 = new ButtonInputEditor("Beast file:", 
-        		"Select existing Beast II specification",
+        ButtonInputEditor inputEditor2 = new ButtonInputEditor(BeautiConfig.getButtonLabel(this, "Beast file:"), 
+        		BeautiConfig.getButtonLabel(this, "Select existing Beast II specification"),
         		sStartText, true); 
     	sFullInputName = m_doc.getClass().getName() + "." + m_doc.m_mcmc.getName();
         inputEditor2.init(m_doc.m_mcmc, m_doc, (BeautiConfig.g_inlinePlugins.contains(sFullInputName) ? EXPAND.TRUE : EXPAND.FALSE));
@@ -317,7 +313,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		box.setAlignmentX(LEFT_ALIGNMENT);
 		
 		box.add(Box.createGlue());
-		m_generateXMLButton = new JButton("Generate XML");
+		m_generateXMLButton = new JButton(BeautiConfig.getButtonLabel(this, "Generate XML"));
 		m_generateXMLButton.setEnabled(false);
 		box.add(m_generateXMLButton);
 		m_generateXMLButton.addActionListener(new ActionListener() {
@@ -331,7 +327,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         });
 		
 		box.add(Box.createGlue());
-		m_startTemplateButton = new JButton(">> details");
+		m_startTemplateButton = new JButton(BeautiConfig.getButtonLabel(this, ">> details"));
 		m_startTemplateButton.setEnabled(false);
 		box.add(m_startTemplateButton);
 		m_startTemplateButton.addActionListener(new ActionListener() {
@@ -363,7 +359,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
     	Box box = Box.createHorizontalBox();
 		box.setAlignmentX(LEFT_ALIGNMENT);
 		box.add(Box.createGlue());
-		m_startBeastButton = new JButton(">> details");
+		m_startBeastButton = new JButton(BeautiConfig.getButtonLabel(this, ">> details"));
 		m_startBeastButton.setEnabled(false);
 		box.add(m_startBeastButton);
 		m_startBeastButton.addActionListener(new ActionListener() {

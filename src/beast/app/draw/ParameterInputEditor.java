@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 
+import beast.app.beauti.BeautiConfig;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
@@ -58,7 +59,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 			setUpEntry();
 			paramBox.add(m_entry);
 	
-			m_isEstimatedBox = new JCheckBox(parameter.m_bIsEstimated.getName());
+			m_isEstimatedBox = new JCheckBox(BeautiConfig.getInputLabel(parameter, parameter.m_bIsEstimated.getName()));
 			if (input.get() != null) {
 				m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
 			}
