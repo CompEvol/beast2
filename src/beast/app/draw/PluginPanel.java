@@ -1,6 +1,7 @@
 package beast.app.draw;
 
 
+import beast.app.beauti.BeautiConfig;
 import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -66,6 +67,8 @@ public class PluginPanel extends JPanel {
      */
     static HashMap<Class<?>, String> g_inputEditorMap;
     static HashMap<Class<?>, String> g_listInputEditorMap;
+    
+    
 
     static {
     	init();
@@ -196,7 +199,7 @@ public class PluginPanel extends JPanel {
         for (Input<?> input : inputs) {
             try {
             	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-            	if (!InputEditor.m_suppressPlugins.contains(sFullInputName)) {
+            	if (!BeautiConfig.g_suppressPlugins.contains(sFullInputName)) {
 	            	InputEditor inputEditor = createInputEditor(input, plugin, true, EXPAND.FALSE, editor);
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
@@ -265,7 +268,7 @@ public class PluginPanel extends JPanel {
         }
     	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
     	EXPAND expand = bForceExpansion;
-    	if (InputEditor.m_inlinePlugins.contains(sFullInputName)) {
+    	if (BeautiConfig.g_inlinePlugins.contains(sFullInputName)) {
     		expand = EXPAND.TRUE;
     	}
         inputEditor.init(input, plugin,  expand, bAddButtons);

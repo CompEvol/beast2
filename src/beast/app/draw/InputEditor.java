@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -13,12 +14,11 @@ import java.util.Set;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import beast.app.beauti.BeautiConfig;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -36,48 +36,58 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	public enum EXPAND {TRUE, FALSE, IF_ONE_ITEM};
 
 	public static boolean m_bExpertMode = false;
-	/** list of inputs for which the input editor should be expanded inline in a dialog 
-	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
-	 */
-	public static Set<String> m_inlinePlugins;
-	/** list of inputs that should not be shown in a dialog. Same format as for m_inlinePlugins**/
-	public static Set<String> m_suppressPlugins;
-	
-	static {
-		// load m_inlinePlugins from properties file
-		Properties props = new Properties();
-		try {
-			// load from default position in Beast
-			String sPropFile = "beast/app/draw/" + "inputeditor.properties";
-			InputStream in = InputEditor.class.getClassLoader().getResourceAsStream(sPropFile);
-			System.err.println("Loading " + sPropFile);
-			props.load(in);
-			String sInlinePlugins = props.getProperty("inlinePlugins");
-			String sSuppressPlugins = props.getProperty("suppressPlugins");
-			// load extra specs for other packages
-			sPropFile = "inputeditor.properties";
-			in = InputEditor.class.getClassLoader().getResourceAsStream(sPropFile);
-			if (in != null) {
-				System.err.println("Loading " + sPropFile);
-				props.load(in);
-				sInlinePlugins += " " + props.getProperty("inlinePlugins");
-				sSuppressPlugins += " " + props.getProperty("suppressPlugins");
-			}
-			System.err.println("inline="+sInlinePlugins);
-			System.err.println("suppress="+sSuppressPlugins);
-			m_inlinePlugins = new HashSet<String>();
-			for (String sInlinePlugin: sInlinePlugins.split("\\s+")) {
-				m_inlinePlugins.add(sInlinePlugin);
-			}
-			
-			m_suppressPlugins = new HashSet<String>();
-			for (String sSuppressPlugin: sSuppressPlugins.split("\\s+")) {
-				m_suppressPlugins.add(sSuppressPlugin);
-			}
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + " " + e.getMessage());
-		}
-	}
+//	/** list of inputs for which the input editor should be expanded inline in a dialog 
+//	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
+//	 */
+//	public static Set<String> m_inlinePlugins;
+//	/** list of inputs that should not be shown in a dialog. Same format as for m_inlinePlugins**/
+//	public static Set<String> m_suppressPlugins;
+//    /** map that identifies the label to be used for a particular input **/
+//    static HashMap<String, String> g_inputLabelMap;
+//	
+//	static {
+//		// load m_inlinePlugins from properties file
+//		Properties props = new Properties();
+//		try {
+//			// load from default position in Beast
+//			String sPropFile = "beast/app/draw/" + "inputeditor.properties";
+//			InputStream in = InputEditor.class.getClassLoader().getResourceAsStream(sPropFile);
+//			System.err.println("Loading " + sPropFile);
+//			props.load(in);
+//			String sInlinePlugins = props.getProperty("inlinePlugins");
+//			String sSuppressPlugins = props.getProperty("suppressPlugins");
+//			String sInputLabelMap = props.getProperty("inputLabelMap");
+//			// load extra specs for other packages
+//			sPropFile = "inputeditor.properties";
+//			in = InputEditor.class.getClassLoader().getResourceAsStream(sPropFile);
+//			if (in != null) {
+//				System.err.println("Loading " + sPropFile);
+//				props.load(in);
+//				sInlinePlugins += " " + props.getProperty("inlinePlugins");
+//				sSuppressPlugins += " " + props.getProperty("suppressPlugins");
+//				sInputLabelMap += " " + props.getProperty("inputLabelMap");
+//			}
+//			System.err.println("inline="+sInlinePlugins);
+//			System.err.println("suppress="+sSuppressPlugins);
+//			m_inlinePlugins = new HashSet<String>();
+//			for (String sInlinePlugin: sInlinePlugins.split("\\s+")) {
+//				m_inlinePlugins.add(sInlinePlugin);
+//			}
+//			
+//			m_suppressPlugins = new HashSet<String>();
+//			for (String sSuppressPlugin: sSuppressPlugins.split("\\s+")) {
+//				m_suppressPlugins.add(sSuppressPlugin);
+//			}
+//		    g_inputLabelMap = new HashMap<String, String>();
+//		    String [] sStr = sInputLabelMap.split("\\s+");
+//		    for (int i = 0; i < sStr.length; i+=2) {
+//		    	g_inputLabelMap.put(sStr[i], sStr[i+1]);
+//		    }
+//
+//		} catch (Exception e) {
+//			System.err.println(e.getClass().getName() + " " + e.getMessage());
+//		}
+//	}
 	
 	private static final long serialVersionUID = 1L;
 	/** the input to be edited **/
@@ -190,8 +200,12 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	protected void addInputLabel() {
 		if (m_bAddButtons) {
 			String sName = m_input.getName();
-			sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
-			sName = sName.substring(0,1).toUpperCase() + sName.substring(1);
+			if (BeautiConfig.g_inputLabelMap.containsKey(m_plugin.getClass().getName()+"."+sName)) {
+				sName = BeautiConfig.g_inputLabelMap.get(m_plugin.getClass().getName()+"."+sName);
+			} else {
+				sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
+				sName = sName.substring(0,1).toUpperCase() + sName.substring(1);
+			}
 			addInputLabel(sName, m_input.getTipText());
 		}
 	}

@@ -403,23 +403,23 @@ public class Beauti extends JTabbedPane {
     // hide panels as indicated in the hidepanels attribute in the XML template,
     // or use default tabs to hide otherwise.
 	void hidePanels(String sXML) {			
-		String sHidePanel = "TAXON_SETS_PANEL|TIP_DATES_PANEL|PRIORS_PANEL|OPERATORS_PANEL";
-		if (sXML != null) {
-			// grab sHidePanels flags from template
-			int i = sXML.indexOf("hidepanes=");
-			if (i >= 0) {
-				i += 10;
-				char separator = sXML.charAt(i);
-				sHidePanel = "";
-				i++;
-				while (sXML.charAt(i) != separator) {
-					sHidePanel += sXML.charAt(i++);
-				}
-			}
-			
-		}
-		String [] sHidePanels = sHidePanel.split("\\|");
-		for (String sPanel : sHidePanels) {
+//		String sHidePanel = "TAXON_SETS_PANEL|TIP_DATES_PANEL|PRIORS_PANEL|OPERATORS_PANEL";
+//		if (sXML != null) {
+//			// grab sHidePanels flags from template
+//			int i = sXML.indexOf("hidepanes=");
+//			if (i >= 0) {
+//				i += 10;
+//				char separator = sXML.charAt(i);
+//				sHidePanel = "";
+//				i++;
+//				while (sXML.charAt(i) != separator) {
+//					sHidePanel += sXML.charAt(i++);
+//				}
+//			}
+//			
+//		}
+//		String [] sHidePanels = sHidePanel.split("\\|");
+		for (String sPanel : BeautiConfig.g_sHidePanels) {
 			int iPanel = 0;
 			while (!TAB_CONST[iPanel].equals(sPanel)) {
 				iPanel++;

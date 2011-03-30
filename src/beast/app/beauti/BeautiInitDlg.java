@@ -11,13 +11,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -34,7 +30,6 @@ import javax.swing.border.TitledBorder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -43,7 +38,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.InputEditor;
@@ -53,7 +47,7 @@ import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.util.NexusParser;
-//import beast.util.XMLParser;
+import beast.util.XMLParser;
 import beast.util.XMLProducer;
 
 public class BeautiInitDlg extends JDialog implements ValidateListener {
@@ -268,7 +262,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         		"Select template containing an analysis, where alignments are replaced by those selected above",
         		sStartText, false);
     	String sFullInputName = m_doc.getClass().getName() + "." + m_doc.m_mcmc.getName();
-        inputEditor.init(m_doc.m_mcmc, m_doc, InputEditor.m_inlinePlugins.contains(sFullInputName)? EXPAND.TRUE : EXPAND.FALSE);
+        inputEditor.init(m_doc.m_mcmc, m_doc, BeautiConfig.g_inlinePlugins.contains(sFullInputName)? EXPAND.TRUE : EXPAND.FALSE);
         inputEditor.setBorder(new EtchedBorder());
 		inputEditor.setVisible(true);
 		m_createNewBox.add(inputEditor);
@@ -295,7 +289,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         		"Select existing Beast II specification",
         		sStartText, true); 
     	sFullInputName = m_doc.getClass().getName() + "." + m_doc.m_mcmc.getName();
-        inputEditor2.init(m_doc.m_mcmc, m_doc, (InputEditor.m_inlinePlugins.contains(sFullInputName) ? EXPAND.TRUE : EXPAND.FALSE));
+        inputEditor2.init(m_doc.m_mcmc, m_doc, (BeautiConfig.g_inlinePlugins.contains(sFullInputName) ? EXPAND.TRUE : EXPAND.FALSE));
         inputEditor2.setBorder(new EtchedBorder());
 		inputEditor2.setVisible(true);
 		m_loadExistingBox.add(inputEditor2);
@@ -550,6 +544,9 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 			        //factory.setValidating(true);
 			        Document doc = factory.newDocumentBuilder().parse(template);
 			        doc.normalize();
+
+			        processBeautiConfig(doc);
+			        
 			        // find mergewith elements
 			        NodeList nodes = doc.getElementsByTagName("mergewith");
 			        for (int iMergeElement = 0; iMergeElement < nodes.getLength(); iMergeElement++) {
@@ -593,7 +590,18 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		
 	}		
 		
-
+    void processBeautiConfig(Document doc) throws Exception {
+        // find configuration elements, process and remove
+        NodeList nodes = doc.getElementsByTagName("beauticonfig");
+        for (int iConfigElement = 0; iConfigElement < nodes.getLength(); iConfigElement++) {
+        	Node configElement = nodes.item(iConfigElement);
+        	String sXML = nodeToString(configElement);
+        	XMLParser parser = new XMLParser();
+        	parser.parseBareFragment(sXML, true);
+        	configElement.getParentNode().removeChild(configElement);
+        }
+    }
+    
 	String nodeToString(Node node) throws TransformerException {
 		TransformerFactory transFactory = TransformerFactory.newInstance();
 		Transformer transformer = transFactory.newTransformer();

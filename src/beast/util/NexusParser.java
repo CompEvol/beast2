@@ -14,6 +14,16 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.TraitSet;
 
+
+//TODO: handle taxon sets
+//begin sets;
+//taxset junk1 = P._articulata P._gracilis P._fimbriata;
+//taxset junk2 = P._robusta;
+//end;
+
+
+
+
 /** parses nexus file and grabs alignment and calibration from the file **/
 public class NexusParser {
 	/** keep track of nexus file line number, to report when the file does not parse **/

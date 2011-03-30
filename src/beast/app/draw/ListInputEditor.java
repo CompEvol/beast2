@@ -179,7 +179,7 @@ public class ListInputEditor extends InputEditor {
             sName = plugin.getClass().getName();
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
-        JLabel label = new JLabel(sName);
+        JLabel label = new JLabel(" " + sName);
         label.setBackground(Color.WHITE);
         m_labels.add(label);
         itemBox.add(label);

@@ -50,6 +50,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     // This property is a comma-delimited list of resource numbers (0 == CPU) to
     // allocate each BEAGLE instance to. If less than the number of instances then
     // will wrap around.
+	// note: to use a different device, say device 2, start beast with 
+	// java -Dbeagle.resource.order=2 beast.app.BeastMCMC 
     private static final String RESOURCE_ORDER_PROPERTY = "beagle.resource.order";
     private static final String PREFERRED_FLAGS_PROPERTY = "beagle.preferred.flags";
     private static final String REQUIRED_FLAGS_PROPERTY = "beagle.required.flags";
