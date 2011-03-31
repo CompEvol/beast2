@@ -22,7 +22,9 @@ public class BeautiConfig extends Plugin {
 	public Input<String> m_buttonLabelMap = new Input<String>("buttonLabelMap","comma separated list of buttons in dialogs and their " +
 			"display labels separated by a '=', e.g. beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters");
 	public Input<String> m_disableMenus = new Input<String>("disableMenus","comma separated list of menus that should " +
-	"not be visible, e.g., View.Show Data Panel,Mode");
+			"not be visible, e.g., View.Show Data Panel,Mode");
+	public Input<String> m_disableButtons = new Input<String>("disableButtons","comma separated list of buttons that should " +
+			"not be visible, e.g., beast.app.beauti.BeautiInitDlg.Analysis template:");
 
 	
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
@@ -37,6 +39,7 @@ public class BeautiConfig extends Plugin {
 	
 	public static Set<String> g_sHidePanels = new HashSet<String>();
 	public static Set<String> g_sDisabledMenus = new HashSet<String>();
+	public static Set<String> g_sDisabledButtons = new HashSet<String>();
 	
 	@Override
 	public void initAndValidate() {
@@ -44,6 +47,7 @@ public class BeautiConfig extends Plugin {
 		parseSet(m_hidePanels.get(), "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL", g_sHidePanels);
 		parseSet(m_suppressInputs.get(), null, g_suppressPlugins);
 		parseSet(m_disableMenus.get(), null, g_sDisabledMenus);
+		parseSet(m_disableButtons.get(), null, g_sDisabledButtons);
 		
 		parseMap(m_inputLabelMap.get(), g_inputLabelMap);
 		parseMap(m_buttonLabelMap.get(), g_buttonLabelMap);
@@ -53,7 +57,7 @@ public class BeautiConfig extends Plugin {
 		if (sStr != null) {
 			for (String sStr2: sStr.split(",")) {
 				String [] sStrs = sStr2.split("=");
-				stringMap.put(normalize(sStrs[0]), normalize(sStrs[1]));
+				stringMap.put(normalize(sStrs[0]), normalize(sStrs.length==1?"":sStrs[1]));
 			}
 		}
 	}

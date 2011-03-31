@@ -260,7 +260,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
     	String sFullInputName = m_doc.getClass().getName() + "." + m_doc.m_mcmc.getName();
         inputEditor.init(m_doc.m_mcmc, m_doc, BeautiConfig.g_inlinePlugins.contains(sFullInputName)? EXPAND.TRUE : EXPAND.FALSE);
         inputEditor.setBorder(new EtchedBorder());
-		inputEditor.setVisible(true);
+		inputEditor.setVisible(!BeautiConfig.g_sDisabledButtons.contains(this.getClass().getName()+".Analysis template:"));
 		m_createNewBox.add(inputEditor);
 		m_createNewBox.add(Box.createGlue());
         m_templateButton = inputEditor.m_button;

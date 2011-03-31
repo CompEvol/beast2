@@ -298,7 +298,7 @@ public class Beauti extends JTabbedPane {
 
         public void actionPerformed(ActionEvent ae) {
         	for(int nPanelNr = 0; nPanelNr < NR_OF_PANELS; nPanelNr++) {
-        		if (!m_bPaneIsVisible[nPanelNr]) {
+        		if (!m_bPaneIsVisible[nPanelNr] && !BeautiConfig.g_sDisabledMenus.contains("View.Show "+TAB_NAME[nPanelNr] + " panel")) {
         			toggleVisible(nPanelNr);
         			m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
         		}
@@ -307,8 +307,6 @@ public class Beauti extends JTabbedPane {
     } // class ActionViewAllPanels
     
     
-    
-//    boolean m_bExpertMode = false;
     void refreshPanel() {
 		try {
 			BeautiPanel panel = (BeautiPanel) getSelectedComponent();
@@ -427,35 +425,12 @@ public class Beauti extends JTabbedPane {
     
     // hide panels as indicated in the hidepanels attribute in the XML template,
     // or use default tabs to hide otherwise.
-	void hidePanels(String sXML) {			
-//		String sHidePanel = "TAXON_SETS_PANEL|TIP_DATES_PANEL|PRIORS_PANEL|OPERATORS_PANEL";
-//		if (sXML != null) {
-//			// grab sHidePanels flags from template
-//			int i = sXML.indexOf("hidepanes=");
-//			if (i >= 0) {
-//				i += 10;
-//				char separator = sXML.charAt(i);
-//				sHidePanel = "";
-//				i++;
-//				while (sXML.charAt(i) != separator) {
-//					sHidePanel += sXML.charAt(i++);
-//				}
-//			}
-//			
-//		}
-//		String [] sHidePanels = sHidePanel.split("\\|");
-		for (String sPanel : BeautiConfig.g_sHidePanels) {
-			int iPanel = 0;
-			while (!TAB_CONST[iPanel].equals(sPanel)) {
-				iPanel++;
-			}
-			toggleVisible(iPanel);
-		}
-
-	//	beauti.toggleVisible(TAXON_SETS_PANEL);
-	//	beauti.toggleVisible(TIP_DATES_PANEL);
-	//	beauti.toggleVisible(PRIORS_PANEL);
-	//	beauti.toggleVisible(OPERATORS_PANEL);
+	void hidePanels() {
+    	for(int nPanelNr = 0; nPanelNr < NR_OF_PANELS; nPanelNr++) {
+    		if (BeautiConfig.g_sHidePanels.contains(TAB_CONST[nPanelNr])) {
+    			toggleVisible(nPanelNr);
+    		}
+    	}
 	} // hidePanels
 	
 	public static void main(String[] args) {
@@ -490,7 +465,7 @@ public class Beauti extends JTabbedPane {
 				
 			}
 			beauti.m_currentTab = beauti.m_panels[0];
-			beauti.hidePanels(dlg.m_sTemplateXML);
+			beauti.hidePanels();
 
 			beauti.addChangeListener(new ChangeListener() {
 				@Override
