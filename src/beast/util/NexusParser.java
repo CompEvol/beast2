@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +34,8 @@ public class NexusParser {
 	/**Beast II objects reconstructed from the file**/
 	public Alignment m_alignment;
 	public TraitSet m_traitSet;
+	static Set<String> g_sequenceIDs;
+	static { g_sequenceIDs = new HashSet<String>();}
 	
 	/**  
 	 * try to reconstruct Beast II objects from the nexus file with given file name   
@@ -220,7 +224,7 @@ public class NexusParser {
 			
 			Sequence sequence = new Sequence();
 			sequence.init(nTotalCount, sTaxon, sData);
-			sequence.setID(sTaxon);
+			sequence.setID(generateSequenceID(sTaxon));
 			alignment.m_pSequences.setValue(sequence, alignment);
 		}
 		alignment.initAndValidate();
@@ -230,6 +234,17 @@ public class NexusParser {
 		return alignment;
 	} // parseDataBlock
 	
+	private String generateSequenceID(String sTaxon) {
+		String sID = "seq_" + sTaxon;
+		int i = 0;
+		while (g_sequenceIDs.contains(sID+(i>0?i:""))) {
+			i++;
+		}
+		sID = sID + (i>0?i:"");
+		g_sequenceIDs.add(sID);
+		return sID;
+	}
+
 	/** read line from nexus file **/
 	String readLine(BufferedReader fin) throws Exception {
 		if (!fin.ready()) {

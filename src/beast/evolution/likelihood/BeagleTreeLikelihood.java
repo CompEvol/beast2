@@ -266,6 +266,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             updateSiteModel = true;
             // some subst models (e.g. WAG) never become dirty, so set up subst models right now
             setUpSubstModel();
+            // set up sitemodel
+            double[] categoryRates = m_siteModel.getCategoryRates(null);
+            beagle.setCategoryRates(categoryRates);
     }
 
     private static List<Integer> parseSystemPropertyIntegerArray(String propertyName) {
@@ -416,7 +419,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         
         updateSiteModel = m_siteModel.isDirtyCalculation();
         updateSubstitutionModel = m_substitutionModel.isDirtyCalculation();
-
+        
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
             return true;

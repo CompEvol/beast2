@@ -49,10 +49,13 @@ done: WAG prevent inputs
 done: save/load unused part of templates
 done: support partial templates (subst.model, site.model templates)
 done: state scrubbing?
-TODO: tree prior: select from tree priors instead of having a list
-TODO: prior editor with dynamic graphs of prior distribution
+TODO: spacing out of inputs
+TODO: proper refreshs for multi partition sitemodel
 TODO: trait editor
 TODO: sequence inspector
+TODO: custom panels
+TODO: tree prior: select from tree priors instead of having a list?
+TODO: prior editor with dynamic graphs of prior distribution
 TODO: coalescent tree as initial tree - with taxa constraints
 -->
 
@@ -101,9 +104,9 @@ TODO: coalescent tree as initial tree - with taxa constraints
     	</input>
 
         <input spec='UCRelaxedClockModel' id="$(n).RelaxedClock">
-            <input id='lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
-                <parameter name='M' id='M' value="1" estimate='false'/>
-                <parameter name='S' id='S' value="0.5" lower="0" upper="5" estimate='false'/>
+            <input id='$(n).lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
+                <parameter name='M' id='$(n).M' value="1" estimate='false'/>
+                <parameter name='S' id='$(n).S' value="0.5" lower="0" upper="5" estimate='false'/>
             </input>
             <parameter spec='parameter.IntegerParameter' name='rateCategories' id='$(n).rateCategories' dimension="11" value="1"/>
             <input name='tree' idref="$(n).tree"/>
@@ -160,7 +163,7 @@ TODO: coalescent tree as initial tree - with taxa constraints
             <distribution spec="CompoundDistribution" id="prior">
                 <plate var='n' range='#alignments'>
                     <distribution id="$(n).coalescent" spec="Coalescent">
-                        <treeIntervals spec='TreeIntervals' id='TreeIntervals'>
+                        <treeIntervals spec='TreeIntervals' id='$(n).TreeIntervals'>
                              <tree idref="$(n).tree"/>
                         </treeIntervals>
                         <populationModel spec="ConstantPopulation" id='$(n).ConstantPopulation' popSize='@$(n).popSize'/>
