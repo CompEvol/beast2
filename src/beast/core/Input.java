@@ -238,28 +238,6 @@ public class Input<T> {
      */
     @SuppressWarnings("unchecked")
     public T get() {
-        if (value instanceof StateNode) {
-            // return current version of StateNode
-            // TODO: rrb: the commented line seems a lot slower. Why???
-            //value=(T) ((StateNode)value).getCurrent();
-            return (T) ((StateNode) value).getCurrent();
-        }
-        // TODO: is there a smarter way to test this is a list of StateNodes?
-        if (value instanceof List && ((List<?>) value).size() > 0 && ((List<?>) value).get(0) instanceof StateNode) {
-            // if it is a list of StateNodes, make sure the current version is returned
-            List<StateNode> tmp = new ArrayList<StateNode>();
-            for (Object o : (List<?>) value) {
-                // need to check every element, since the first element
-                // may be a StateNode (e.g. for logging), but the rest
-                // may not.
-                if (o instanceof StateNode) {
-                    tmp.add(((StateNode) o).getCurrent());
-                } else {
-                    return value;
-                }
-            }
-            return (T) tmp;
-        }
         return value;
     }
 

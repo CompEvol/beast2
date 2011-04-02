@@ -34,12 +34,8 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * @param operator explain here why operator is useful
      */
     public StateNode getCurrentEditable(Operator operator) {
-    	if (State.g_bUseNew) {
-    		startEditing(operator);
-    		return this;
-    	} else {
-    		return m_state.getEditableStateNode(this.index, operator);
-    	}
+		startEditing(operator);
+		return this;
     }
 
     /** Getting/setting global dirtiness state for this StateNode.
