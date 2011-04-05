@@ -150,7 +150,7 @@ public class NexusParser {
 				String sDataType = getAttValue("datatype", sStr);
 				String sSymbols = getAttValue("symbols", sStr);
 				if (sDataType == null) {
-					System.err.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr +"' Assuming integer dataType"); 
+					System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr +"' Assuming integer dataType"); 
 					alignment.m_sDataType.setValue("integer", alignment);
 				} else 
 				if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {

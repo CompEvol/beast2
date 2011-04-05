@@ -76,7 +76,7 @@ public class TraitSet extends Plugin {
         // sanity check: did we cover all taxa?
         for (int i = 0; i < sLabels.size(); i++) {
             if (m_sValues[i] == null) {
-                System.err.println("WARNING: no trait specified for " + sLabels.get(i));
+                System.out.println("WARNING: no trait specified for " + sLabels.get(i));
             }
         }
 

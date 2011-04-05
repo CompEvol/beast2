@@ -1,6 +1,5 @@
 package test.beast.integration;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import beast.app.DocMaker;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;

@@ -434,11 +434,11 @@ public class State extends Plugin {
 
     	m_map.put(m_changedStateNodeCode, calcNodes);
     	
-    	System.out.print(m_changedStateNodeCode + ":");
+    	System.err.print(m_changedStateNodeCode + ":");
     	for (CalculationNode node : calcNodes) {
-    		System.out.print(node.m_sID + " ");
+    		System.err.print(node.m_sID + " ");
     	}
-    	System.out.println();
+    	System.err.println();
     	
     	return calcNodes;
     } // getCurrentCalculationNodes

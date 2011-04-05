@@ -119,7 +119,7 @@ public class TreeParser extends Tree {
                     Double fValue = Double.parseDouble(sStrs[1]);
                     node.setMetaData(sPattern, fValue);
                 } catch (Exception e) {
-                    System.err.println("Warning 333: Attempt to parse metadata failed: " + node.m_sMetaData);
+                    System.out.println("Warning 333: Attempt to parse metadata failed: " + node.m_sMetaData);
                 }
             }
         }

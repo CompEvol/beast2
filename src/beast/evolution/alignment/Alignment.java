@@ -302,9 +302,9 @@ public class Alignment extends CalculationNode {
         for (int i = 0; i < m_sTaxaNames.size(); i++) {
             System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
         }
-        System.err.println(getNrTaxa() + " taxa");
-        System.err.println(getSiteCount() + " sites");
-        System.err.println(getPatternCount() + " patterns");
+        System.out.println(getNrTaxa() + " taxa");
+        System.out.println(getSiteCount() + " sites");
+        System.out.println(getPatternCount() + " patterns");
     } // calcPatterns
 
 

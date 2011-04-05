@@ -112,7 +112,7 @@ public class BeastMCMC {
 		}
 		System.err.println("File: " + m_sFileName + " seed: " + m_nSeed + " threads: " + m_nThreads);
 		if (bResume) {
-			System.err.println("Resuming from file");
+			System.out.println("Resuming from file");
 		}
 		loadExternalJars();
 		// parse xml
@@ -201,11 +201,11 @@ public class BeastMCMC {
 
 			app.run();
 		} catch (XMLParserException e) {
-			System.err.println(e.getMessage());
+			System.out.println(e.getMessage());
 			//e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(BeastMCMC.getUsage());
+			System.out.println(BeastMCMC.getUsage());
 		}
 	} // main
 

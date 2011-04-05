@@ -236,7 +236,6 @@ public class Input<T> {
      *
      * @return value of this input
      */
-    @SuppressWarnings("unchecked")
     public T get() {
         return value;
     }

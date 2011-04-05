@@ -209,11 +209,11 @@ public class SequenceSimulator extends beast.core.Runnable {
 
     /** helper method **/
     public static void printUsageAndExit() {
-		System.err.println("Usage: java " + SequenceSimulator.class.getName() + " <beast file> <nr of instantiations> [<output file>]");
-		System.err.println("simulates from a treelikelihood specified in the beast file.");
-		System.err.println("<beast file> is name of the path beast file containing the treelikelihood.");
-		System.err.println("<nr of instantiations> is the number of instantiations to be replicated.");
-		System.err.println("<output file> optional name of the file to write the sequence to. By default, the sequence is written to standard output.");
+		System.out.println("Usage: java " + SequenceSimulator.class.getName() + " <beast file> <nr of instantiations> [<output file>]");
+		System.out.println("simulates from a treelikelihood specified in the beast file.");
+		System.out.println("<beast file> is name of the path beast file containing the treelikelihood.");
+		System.out.println("<nr of instantiations> is the number of instantiations to be replicated.");
+		System.out.println("<output file> optional name of the file to write the sequence to. By default, the sequence is written to standard output.");
 		System.exit(0);
 	} // printUsageAndExit
 

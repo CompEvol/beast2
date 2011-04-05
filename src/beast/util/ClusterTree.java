@@ -84,7 +84,7 @@ public class ClusterTree extends Tree {
 		else if (sType.equals(M_ADJCOMPLETE)) {m_nLinkType = ADJCOMLPETE;}
 		else if (sType.equals(M_NEIGHBORJOINING)) {m_nLinkType = NEIGHBOR_JOINING;m_bDistanceIsBranchLength = true;}
 		else {
-			System.err.println("Warning: unrecognized cluster type. Using Average/UPGMA.");
+			System.out.println("Warning: unrecognized cluster type. Using Average/UPGMA.");
 			m_nLinkType = AVERAGE;
 		}
 		Node root = buildClusterer();
