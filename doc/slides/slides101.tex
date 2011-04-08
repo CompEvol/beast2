@@ -1,6 +1,6 @@
 \nonstopmode
 \documentclass{beamer}
-\def\part{2}
+\def\part{3}
 \usepackage{listings}
 \usepackage{fancyvrb}
 
@@ -1691,18 +1691,346 @@ and the following options are allowed:
 
 \fi
 
-\if \part 2
+\if \part 3
+
+\begin{frame}[containsverbatim]{What is Beauti 2}
+
+A GUI for manipulating Beast 2 specifications\vskip0.5cm
+
+Features:
+\begin{itemize}
+\item Read/write XML specifications
+\item Customizable GUI through templates
+\item Interactive validation of specification
+\item Automatically picks up plug-ins from Add-ons
+\item Batch merging of alignments to XML specifications
+\end{itemize}
+\end{frame}
 
 
-%\section{Beauti 2}
-%
-%\begin{frame}[containsverbatim]{TODO}
-%
-%Beauti 2 demo
-%
-%XML template
-%\end{frame}
-\fi
+\section{Beauti 2: A walk through}
+
+\begin{frame}[containsverbatim]{Start up}
+\includegraphics[width=0.6\textwidth]{beauti0.png}
+
+Before editing anything, Beauti needs to know either alignments and template OR existing file.
+\end{frame}
+\begin{frame}[containsverbatim]{Start up: select alignments}
+\includegraphics[width=0.6\textwidth]{beauti1.png}
+
+Select one or more alignments\\
+Select an analysis template
+\end{frame}
+\begin{frame}[containsverbatim]{Start up: select existing file}
+\includegraphics[width=0.6\textwidth]{beauti2.png}
+\end{frame}
+\begin{frame}[containsverbatim]{Edit parameters}
+\includegraphics[width=0.8\textwidth]{beauti5.png}
+
+Familiar panel based user interface for configuring specification
+\end{frame}
+\begin{frame}[containsverbatim]{Flow}
+\includegraphics[width=1\textwidth]{beauti3.png}
+
+No new alignment selection once editing is started
+\end{frame}
+
+\begin{frame}[containsverbatim]{Start up}
+\begin{lstlisting}[language=java]
+java beast.app.beauti.Beauti [options]
+where options can be one of the following:
+-template [template file]
+-nex [nexus data file]
+-xmldat [beast xml file]
+-xml [beast file]
+-out [output file name]
+-exitaction [writexml|usetemplate|usexml]
+\end{lstlisting}
+
+Select proper command line functions to short cut the flow\\
+Multiple alignment files allowed\\
+Batch merging of alignment with template
+
+\end{frame}
+
+\begin{frame}[containsverbatim]{Start up: another template}
+\includegraphics[width=0.8\textwidth]{beauti4.png}
+
+Template for SNP and AFLP analysis\\
+Customised labels, template button invisible
+\end{frame}
+\begin{frame}[containsverbatim]{Edit: another template}
+\includegraphics[width=0.8\textwidth]{beauti7.png}
+
+Custom menu\\
+Only subset of panels used
+\end{frame}
+
+\begin{frame}[containsverbatim]{Spot the differences}
+\includegraphics[width=\textwidth]{beauti6.png}
+
+Customized labels\\
+Button visibility
+\end{frame}
+\begin{frame}[containsverbatim]{Spot the differences}
+\includegraphics[width=\textwidth]{beauti8.png}
+
+Customized menus: visibility and label names\\
+Customized panels\\
+
+\end{frame}
+
+\begin{frame}[containsverbatim]{Configurable}
+\includegraphics[width=0.6\textwidth]{beauti9.png}
+
+A: Partitionable or not\\
+B: Custom behaviour: gamma shape only shown when categories at least 2\\
+C: Expand inputs of a plugin\\
+D: Hide irrelevant inputs
+\end{frame}
+
+
+\begin{frame}[containsverbatim]{What Beauti does}
+
+\begin{itemize}
+\item Contain a large number of Plugin objects, to ensure a somewhat sensible set of choices\\
+\item User changes link in the model graph
+\includegraphics[width=0.8\textwidth]{beauti10.png}\\
+\item User changes values of primitive (String, Integer, Boolean, Double) inputs\\
+\item Automatically update links, e.g. Operator to MCMC\vskip0.5cm
+\end{itemize}
+
+Expert mode allows creation of new Plugin object, but the user is on its own as far as validation is concerned
+
+\end{frame}
+
+\section{Beauti 2 Templates}
+
+\begin{frame}[containsverbatim]{How to configure Beauti}
+
+1: XML template\vskip1cm
+
+2: Custom InputEditor classes
+\end{frame}
+
+
+\begin{frame}[containsverbatim]{Beauti templates}
+
+A Beauti template is an XML specification with extra features
+\begin{itemize}
+\item {\tt <plate var='n' range='#alignments'>} 'macros'
+\item {\tt <data id="#alignments"/>} for merging alignments
+\item {\tt <mergepoint>}/{\tt <mergewith>} for merging sub-templates
+\item {\tt <beauticonfig spec='beast.app.beauti.BeautiConfig'>} for customizing GUI components
+\end{itemize}\vskip0.5cm
+
+
+Main-templates define type of analysis, e.g. vanilla alignment analysis, *BEAST, Snap\vskip0.5cm
+
+Sub-templates define parts that go anywhere in a main template, e.g. substitution or branch rate models.
+
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]{{\tt plate} element in templates}
+
+Plate behaves like a macro
+
+{\tt<plate var='n' range='a,b,c'>\\
+ <input id='\$(n)'/>\\
+</plate>}
+
+is interpreted as\\
+{\tt<input id='a'/>\\
+<input id='b'/>\\
+<input id='c'/>\\
+}
+\vskip0.5cm
+
+For example{\small
+
+\begin{verbatim}<plate var='n' range='#alignments'>
+        <input spec='HKY' id='$(n).hky'>
+            <kappa idref='$(n).hky.kappa'/>
+            <frequencies id='$(n).freqs' spec='Frequencies'>
+                <data idref='$(n)'/>
+            </frequencies>
+        </input>
+</plate>\end{verbatim}
+}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]{Merging alignments}
+
+Single alignment merging:\vskip0.5cm
+
+{\tt <data id="\#alignments"/>}\vskip0.5cm
+
+becomes\vskip0.5cm
+
+\includegraphics[width=\textwidth]{beautiseq.png}\vskip0.5cm
+
+and everywhere in the template {\tt \#alignments} becomes {\tt dna}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]{Merging alignments}
+
+Multi alignment merging:\vskip0.5cm
+
+{\tt <data id="\#alignments"/>}\vskip0.5cm
+
+becomes\vskip0.5cm
+
+\includegraphics[width=\textwidth]{beautiseq2.png}\vskip0.5cm
+
+and everywhere in the template {\tt \#alignments} becomes {\tt 26,29}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]{{\tt mergepoint} and {\tt mergewith} elements}
+
+Main templates define {\tt mergepoint}s with ids\vskip0.5cm
+
+Sub-templates define {\tt mergwith} and point to the {\tt mergepoint}s in main template\vskip0.5cm
+
+Typical usage of sub-templates
+\begin{itemize}
+\item specify a new substitution model,
+\item specify prior distributions on parameters of the model
+\item specify operators on parameters of the model
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{{\tt mergepoint} and {\tt mergewith} Example}
+
+Main-template
+\begin{verbatim}
+    <plate var='n' range='#alignments'>
+        <mergepoint id='substitutionmodel'/>
+    </plate>
+\end{verbatim}
+
+
+Sub-template
+\begin{verbatim}
+    <mergewith point='substitutionmodel'>
+        <input spec='WAG' id='$(n).WAG'/>
+    </mergewith>
+\end{verbatim}
+
+Interpretation of main template
+
+\begin{verbatim}
+    <plate var='n' range='#alignments'>
+        <input spec='WAG' id='$(n).WAG'/>
+    </plate>
+\end{verbatim}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]{Configuring Beauti GUI}
+In template:
+
+{\tt <beauticonfig spec='beast.app.beauti.BeautiConfig'>} 
+
+for customizing 
+\begin{itemize}
+\item which panels are shown at start up
+\item which menus are visible in menubar
+\item which buttons are visible
+\item which inputs are hidden
+\item which inputs are expanded inline
+\item which labels are used
+\end{itemize}
+
+See files in {\tt beast2/templates} directory for details
+\end{frame}
+
+\section{Beauti 2 Custom GUI}
+
+\begin{frame}[containsverbatim]{Developing custom GUI components}
+
+From a developers view: everything is a Plugin\vskip0.5cm
+
+Beauti is a tool for \\
+\begin{itemize}
+\item connecting inputs with Plugins\\
+\item configuring inputs\vskip0.5cm
+\end{itemize}
+
+In Beauti, a panel for a Plugins shows a list of InputEditors.\vskip0.5cm
+
+To create customized behaviour for inputs of specific types, 
+override InputEditor
+\end{frame}
+
+\begin{frame}[containsverbatim]{InputEditor}
+
+
+Beauti uses the input editor associated with the in type of the InputEditor\vskip0.5cm
+
+
+\begin{lstlisting}[language=java]
+public class MyInputEditor extends InputEditor {
+
+    /** tell the type of input that this Input 
+        Editor applies to **/
+	@Override
+    public Class<?> type() {
+        return MyPlugin.class;
+    }
+
+    /** custom implementation **/
+
+} 
+\end{lstlisting}
+
+See code for gory details of custom implementation possibilities\vskip0.5cm
+
+{\tt beast.app.beauti} packages for examples
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]{ListInputEditor}
+
+Dealing with list of inputs: extend ListInputEditor
+and implement {\tt type()} and {\tt baseType()}
+
+\begin{lstlisting}[language=java]
+public class MyInputEditor extends ListInputEditor {
+
+    /** tell the type of input that this Input 
+        Editor applies to **/
+	@Override
+	public Class<?> type() {
+		return List.class;
+	}
+	@Override
+	public Class<?> baseType() {
+		return Operator.class;
+	}
+
+    /** custom implementation **/
+
+} 
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]{All done!}
+
+Go forth and develop new Plugins \\and Beauti templates now!\vskip1cm
+
+\begin{center}
+\includegraphics{../../src/beast/app/draw/icons/beast.png}
+\end{center}
+\end{frame}
 
 
 \end{document}
