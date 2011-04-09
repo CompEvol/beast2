@@ -2,9 +2,9 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -19,10 +19,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import beast.app.BeastMCMC;
 import beast.app.draw.InputEditor;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
@@ -117,9 +117,9 @@ public class Beauti extends JTabbedPane {
 	
 
 	public Beauti(BeautiDoc doc) {
-		m_bPaneIsVisible = new boolean[NR_OF_PANELS];
+		m_bPaneIsVisible = new boolean[NR_OF_PANELS + BeautiConfig.g_panels.size()];
 		Arrays.fill(m_bPaneIsVisible, true);
-		m_panels = new BeautiPanel[NR_OF_PANELS];
+		//m_panels = new BeautiPanel[NR_OF_PANELS];
 		m_doc = doc;
 	}
 
@@ -136,7 +136,12 @@ public class Beauti extends JTabbedPane {
 		} else {
 			m_bPaneIsVisible[nPanelNr] = true;
 			int nTabNr = tabNrForPanel(nPanelNr);
-			insertTab(BeautiConfig.getButtonLabel(this, TAB_NAME[nPanelNr]), null, m_panels[nPanelNr], TAB_TIPTEXT[nPanelNr], nTabNr);
+			if (nPanelNr < NR_OF_PANELS) {
+				insertTab(BeautiConfig.getButtonLabel(this, TAB_NAME[nPanelNr]), null, m_panels[nPanelNr], TAB_TIPTEXT[nPanelNr], nTabNr);
+			} else {
+				BeautiPanelConfig panel = BeautiConfig.g_panels.get(nPanelNr - NR_OF_PANELS);
+				insertTab(BeautiConfig.getButtonLabel(this, panel.m_sNameInput.get()), null, m_panels[nPanelNr], panel.m_sTipTextInput.get(), nTabNr);
+			}
 			setSelectedIndex(nTabNr);
 		}
 	}
@@ -276,10 +281,15 @@ public class Beauti extends JTabbedPane {
 		private static final long serialVersionUID = 1L;
 		int m_iPanel;
     	ViewPanelCheckBoxMenuItem(int iPanel) {
-    		super("Show " + BeautiConfig.getButtonLabel(Beauti.class.getName(), TAB_NAME[iPanel]) + " panel", m_bPaneIsVisible[iPanel]);
+    		super("Show " + 
+    				(iPanel < NR_OF_PANELS ? BeautiConfig.getButtonLabel(Beauti.class.getName(), TAB_NAME[iPanel]) :
+    					BeautiConfig.g_panels.get(iPanel - NR_OF_PANELS).m_sNameInput.get()
+    					) 
+    				+ " panel", 
+    				(iPanel < NR_OF_PANELS ? m_bPaneIsVisible[iPanel] : BeautiConfig.g_panels.get(iPanel - NR_OF_PANELS).m_bIsVisibleInput.get()));
     		m_iPanel = iPanel;
     		if (m_viewPanelCheckBoxMenuItems == null) {
-    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[NR_OF_PANELS];
+    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[NR_OF_PANELS + BeautiConfig.g_panels.size()];
     		}
     		m_viewPanelCheckBoxMenuItems[iPanel] = this;
     	}
@@ -393,6 +403,17 @@ public class Beauti extends JTabbedPane {
             });
         	viewMenu.add(viewPanelAction);
         }
+		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(NR_OF_PANELS + iPanel);
+        	viewPanelAction.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) {
+                	viewPanelAction.doAction();
+                }
+            });
+        	viewMenu.add(viewPanelAction);
+		}
+        
+        
         viewMenu.addSeparator();
     	viewMenu.add(a_viewall);
         
@@ -435,16 +456,7 @@ public class Beauti extends JTabbedPane {
 	
 	public static void main(String[] args) {
 		try {
-//		    // sets the default font for all Swing components.
-//			javax.swing.plaf.FontUIResource f = new javax.swing.plaf.FontUIResource("Dialog", Font.BOLD, 14);
-//		    java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
-//		    while (keys.hasMoreElements()) {
-//		      Object key = keys.nextElement();
-//		      Object value = UIManager.get (key);
-//		      if (value instanceof javax.swing.plaf.FontUIResource) {
-//		        UIManager.put (key, f);
-//		      }
-//		    }   			
+        	BeastMCMC.loadExternalJars();
 			
 			PluginPanel.init();
 			
@@ -455,14 +467,18 @@ public class Beauti extends JTabbedPane {
 			InputEditor.m_bExpertMode = false;
 
 	        doc.initialize(dlg.m_endState, dlg.m_sXML, dlg.m_sTemplateXML, dlg.m_sOutputFileName);
-	        //dlg.setVisible(true);
 	
 	        final Beauti beauti = new Beauti(doc);
-	
+
+			beauti.m_panels = new BeautiPanel[NR_OF_PANELS + BeautiConfig.g_panels.size()];
 			for (int iPanel = 0; iPanel < NR_OF_PANELS; iPanel++) {
 				beauti.m_panels[iPanel] = new BeautiPanel(iPanel, doc, HAS_PARTITIONS[iPanel]);
 				beauti.addTab(BeautiConfig.getButtonLabel(beauti, TAB_NAME[iPanel]), null, beauti.m_panels[iPanel], TAB_TIPTEXT[iPanel]);
-				
+			}
+			for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+				BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+				beauti.m_panels[NR_OF_PANELS + iPanel] = new BeautiPanel(NR_OF_PANELS + iPanel, doc, panelConfig);
+				beauti.addTab(BeautiConfig.getButtonLabel(beauti, panelConfig.getName()), null, beauti.m_panels[NR_OF_PANELS + iPanel], panelConfig.getTipText());
 			}
 			beauti.m_currentTab = beauti.m_panels[0];
 			beauti.hidePanels();
@@ -481,7 +497,7 @@ public class Beauti extends JTabbedPane {
 			
 			beauti.setVisible(true);
 			JFrame frame = new JFrame("Beauti II");
-			frame.setIconImage(BeautiPanel.getIcon(6).getImage());
+			frame.setIconImage(BeautiPanel.getIcon(6, null).getImage());
 
 			JMenuBar menuBar = beauti.makeMenuBar(); 
 			frame.setJMenuBar(menuBar);

@@ -61,7 +61,7 @@ public class Input<T> {
      * Type of T, automatically determined when setting a new value.
      * Used for type checking.
      */
-    Class<?> theClass;
+    protected Class<?> theClass;
 
     /**
      * validation rules *

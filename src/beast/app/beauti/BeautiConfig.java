@@ -1,7 +1,9 @@
 package beast.app.beauti;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import beast.core.Description;
@@ -26,6 +28,8 @@ public class BeautiConfig extends Plugin {
 	public Input<String> m_disableButtons = new Input<String>("disableButtons","comma separated list of buttons that should " +
 			"not be visible, e.g., beast.app.beauti.BeautiInitDlg.Analysis template:");
 
+	public Input<List<BeautiPanelConfig>> m_panels = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties", 
+			new ArrayList<BeautiPanelConfig>());
 	
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
 	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
@@ -40,6 +44,8 @@ public class BeautiConfig extends Plugin {
 	public static Set<String> g_sHidePanels = new HashSet<String>();
 	public static Set<String> g_sDisabledMenus = new HashSet<String>();
 	public static Set<String> g_sDisabledButtons = new HashSet<String>();
+
+	public static List<BeautiPanelConfig> g_panels = new ArrayList<BeautiPanelConfig>();
 	
 	@Override
 	public void initAndValidate() {
@@ -51,6 +57,16 @@ public class BeautiConfig extends Plugin {
 		
 		parseMap(m_inputLabelMap.get(), g_inputLabelMap);
 		parseMap(m_buttonLabelMap.get(), g_buttonLabelMap);
+		for (BeautiPanelConfig panel : m_panels.get()) {
+			g_panels.add(panel);
+			// check for duplicates
+			for (BeautiPanelConfig panel2 : g_panels) {
+				if (panel2.m_sNameInput.get().equals(panel.m_sNameInput.get()) && panel2!=panel) {
+					g_panels.remove(g_panels.size()-1);
+					break;
+				}
+			}
+		}
 	}
 
 	private void parseMap(String sStr, HashMap<String, String> stringMap) {

@@ -531,7 +531,7 @@ public class PluginPanel extends JPanel {
     /**
      * return ID of plugin, if no ID is specified, generate an appropriate ID first
      */
-    static String getID(Plugin plugin) {
+    public static String getID(Plugin plugin) {
         if (plugin.getID() == null || plugin.getID().length() == 0) {
             String sID = plugin.getClass().getName().replaceAll(".*\\.", "");
             int i = 0;

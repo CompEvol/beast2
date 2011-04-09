@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
     <beauticonfig spec='beast.app.beauti.BeautiConfig'
         hidePanels='TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL'
@@ -35,6 +35,12 @@
 	        beast.evolution.substitutionmodel.WAG.frequencies'
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
     >
+        <panel spec='beast.app.beauti.BeautiPanelConfig' panelname='sitemodel' tiptext='site model and substitution model specifications'
+            path='distribution/distribution[id="likelihood"]/distribution/siteModel'
+            hasPartitions='true'
+            icon='2.png'
+            forceExpansion='TRUE'
+        />
     </beauticonfig>
 
 <!--
@@ -49,14 +55,23 @@ done: WAG prevent inputs
 done: save/load unused part of templates
 done: support partial templates (subst.model, site.model templates)
 done: state scrubbing?
+TODO: custom panels
+
+TODO: Beauti user testing
+TODO: Beauti/Genious integration
+TODO: integration test - verify same outcomes as Beast 1 + set up Hudson for periodic integration tests
+TODO: post processing: tracer, tree log analyser (already in Snap)?
+
 TODO: spacing out of inputs
+TODO: size of list of partitions
 TODO: proper refreshs for multi partition sitemodel
+
 TODO: trait editor
 TODO: sequence inspector
-TODO: custom panels
 TODO: tree prior: select from tree priors instead of having a list?
 TODO: prior editor with dynamic graphs of prior distribution
 TODO: coalescent tree as initial tree - with taxa constraints
+
 -->
 
 
