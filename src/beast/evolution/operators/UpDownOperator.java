@@ -1,21 +1,21 @@
 package beast.evolution.operators;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.StateNode;
-import beast.core.Input.Validate;
 import beast.util.Randomizer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Description("This element represents an operator that scales two parameters in different directions. " +
 		"Each operation involves selecting a scale uniformly at random between scaleFactor and 1/scaleFactor. " +
 		"The up parameter is multiplied by this scale and the down parameter is divided by this scale.")
 public class UpDownOperator extends Operator {
 
-	public Input<Double> m_scaleFactor = new Input<Double>("scalefactor",
+	public Input<Double> m_scaleFactor = new Input<Double>("scaleFactor",
 			"magnitude factor used for scaling", Validate.REQUIRED);
 	public Input<List<StateNode>> m_up = new Input<List<StateNode>>("up",
 			"zero or more items to scale upwards", new ArrayList<StateNode>());
