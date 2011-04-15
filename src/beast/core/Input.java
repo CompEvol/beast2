@@ -470,7 +470,8 @@ public class Input<T> {
             }
         } catch (Exception e) {
             throw new Exception("Input 103: type mismatch, cannot initialize input '" + getName() +
-                    "' with value '" + sValue + "' because " + e.getMessage());
+                    "' with value '" + sValue + "'.\nExpected something of type " + getType().getName() +
+            		". " + (e.getMessage() != null ? e.getMessage() : ""));
         }
     } // setStringValue
 
