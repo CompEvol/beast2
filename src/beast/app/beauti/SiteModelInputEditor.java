@@ -1,6 +1,5 @@
 package beast.app.beauti;
 
-import java.awt.Rectangle;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -22,12 +21,17 @@ public class SiteModelInputEditor extends PluginInputEditor {
 	
 	@Override
     public Class<?> type() {
-        return SiteModel.Base.class;
+        return SiteModel.class;
+    }
+	@Override
+    public Class<?> [] types() {
+		Class<?>[] types = {SiteModel.class, SiteModel.Base.class}; 
+		return types;
     }
 
 
 	public InputEditor createGammaCategoryCountEditor() throws Exception {
-		Input input = ((SiteModel) m_input.get()).gammaCategoryCount;
+		Input<?> input = ((SiteModel) m_input.get()).gammaCategoryCount;
 		m_categoryCountEditor = (IntegerInputEditor) PluginPanel.createInputEditor(input, m_plugin);
 		m_categoryCountEntry = m_categoryCountEditor.getEntry();
 		m_categoryCountEntry.getDocument().addDocumentListener(new DocumentListener() {
@@ -60,7 +64,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 	}
 	
 	public InputEditor createShapeEditor() throws Exception {
-		Input input = ((SiteModel) m_input.get()).shapeParameter;
+		Input<?> input = ((SiteModel) m_input.get()).shapeParameter;
 		m_gammaShapeEditor = PluginPanel.createInputEditor(input, m_plugin);
 		m_gammaShapeEditor.setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
 		return m_gammaShapeEditor;

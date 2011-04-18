@@ -1,5 +1,4 @@
 /*
-* File Plugin.java
 *
 * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
@@ -40,6 +39,19 @@ abstract public class Plugin {
 	
 	/* default constructor */
 	public Plugin() {}
+	
+//	protected void setInputTypes() {
+//		try {
+//			for (Input<?> input : listInputs()) {
+//				if (input != null) {
+//					input.determineClass(this);
+//				}
+//			}
+//		} catch (Exception e) {
+//			// ignore
+//			e.printStackTrace();
+//		}
+//	}
 	
 	/* Utility for testing purposes only.
 	 * This cannot be done in a constructor, since the 

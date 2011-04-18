@@ -85,11 +85,13 @@ public class PluginPanel extends JPanel {
 	            try {
 	                Class<?> _class = Class.forName(sInputEditor);
 	                InputEditor editor = (InputEditor) _class.newInstance();
-	                Class<?> type = editor.type();
-	                g_inputEditorMap.put(type, sInputEditor);
-	                if (editor instanceof ListInputEditor) {
-		                Class<?> baseType = ((ListInputEditor)editor).baseType();
-		                g_listInputEditorMap.put(baseType, sInputEditor);
+	                Class<?> [] types = editor.types();
+	                for (Class<?> type : types) {
+		                g_inputEditorMap.put(type, sInputEditor);
+		                if (editor instanceof ListInputEditor) {
+			                Class<?> baseType = ((ListInputEditor)editor).baseType();
+			                g_listInputEditorMap.put(baseType, sInputEditor);
+		                }
 	                }
 	            } catch (Exception e) {
 	                // ignore

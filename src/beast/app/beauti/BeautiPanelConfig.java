@@ -45,6 +45,10 @@ public class BeautiPanelConfig extends Plugin {
 	FlexibleInput<?> m_input;
 	
 	class FlexibleInput<T> extends Input<T> {
+		FlexibleInput() {
+			// sets name to something non-trivial This is used by canSetValue()
+			super("xx","");
+		}
 		public void setType(Class<?> type) {
 			theClass = type;
 		}
