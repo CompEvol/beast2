@@ -123,22 +123,22 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	
 	
 	void refreshPanel() throws Exception {
-		switch (m_iPanel) {
-			case Beauti.DATA_PANEL : refreshInputPanel(m_doc, m_doc.m_likelihoods, true, EXPAND.FALSE);break;
-			case Beauti.TAXON_SETS_PANEL : refreshInputPanel(m_doc, m_doc.m_taxonset, false, EXPAND.FALSE);break;
-			case Beauti.TIP_DATES_PANEL : refreshInputPanel(m_doc, m_doc.m_tipdates, false, EXPAND.TRUE);break;
-			case Beauti.SITE_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_siteModel, false, EXPAND.TRUE);break;
-			case Beauti.CLOCK_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_clockModel, false, EXPAND.TRUE);break;
-			case Beauti.TREE_PRIOR_PANEL : refreshInputPanel(m_doc, m_doc.m_treeprior, false, EXPAND.TRUE);break;
-			case Beauti.STATE_PANEL : refreshInputPanel(m_doc.m_mcmc.get().m_startState.get(), m_doc.m_mcmc.get().m_startState.get().stateNodeInput, true, EXPAND.TRUE);break;
-			case Beauti.PRIORS_PANEL : refreshInputPanel(m_doc, m_doc.m_priors, true, EXPAND.IF_ONE_ITEM);break;
-			case Beauti.OPERATORS_PANEL : refreshInputPanel(m_doc.m_mcmc.get(), m_doc.m_mcmc.get().operatorsInput, true, EXPAND.FALSE);break;
-			case Beauti.MCMC_PANEL : refreshInputPanel(m_doc, m_doc.m_mcmc, false, EXPAND.TRUE);break;
-			default:
+//		switch (m_iPanel) {
+//			case Beauti.DATA_PANEL : refreshInputPanel(m_doc, m_doc.m_likelihoods, true, EXPAND.FALSE);break;
+//			case Beauti.TAXON_SETS_PANEL : refreshInputPanel(m_doc, m_doc.m_taxonset, false, EXPAND.FALSE);break;
+//			case Beauti.TIP_DATES_PANEL : refreshInputPanel(m_doc, m_doc.m_tipdates, false, EXPAND.TRUE);break;
+//			case Beauti.SITE_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_siteModel, false, EXPAND.TRUE);break;
+//			case Beauti.CLOCK_MODEL_PANEL : refreshInputPanel(m_doc, m_doc.m_clockModel, false, EXPAND.TRUE);break;
+//			case Beauti.TREE_PRIOR_PANEL : refreshInputPanel(m_doc, m_doc.m_treeprior, false, EXPAND.TRUE);break;
+//			case Beauti.STATE_PANEL : refreshInputPanel(m_doc.m_mcmc.get().m_startState.get(), m_doc.m_mcmc.get().m_startState.get().stateNodeInput, true, EXPAND.TRUE);break;
+//			case Beauti.PRIORS_PANEL : refreshInputPanel(m_doc, m_doc.m_priors, true, EXPAND.IF_ONE_ITEM);break;
+//			case Beauti.OPERATORS_PANEL : refreshInputPanel(m_doc.m_mcmc.get(), m_doc.m_mcmc.get().operatorsInput, true, EXPAND.FALSE);break;
+//			case Beauti.MCMC_PANEL : refreshInputPanel(m_doc, m_doc.m_mcmc, false, EXPAND.TRUE);break;
+//			default:
 				m_doc.scrubAll();
 				refreshInputPanel();
-			break;
-		}
+//			break;
+//		}
 		if (m_listBox != null) {
 			m_listBox.setVisible(m_doc.m_alignments.get().size() > 1);
 		}
@@ -171,9 +171,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		m_doc.sync(m_iPanel);
+		//m_doc.sync(m_iPanel);
+		m_config.sync();
 		m_iPartition = m_listOfPartitions.getSelectedIndex();
-		m_doc.syncTo(m_iPanel, m_iPartition);
+		//m_doc.syncTo(m_iPanel, m_iPartition);
 		try {
 			refreshPanel();
 		} catch (Exception ex) {

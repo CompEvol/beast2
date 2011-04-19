@@ -35,12 +35,56 @@
 	        beast.evolution.substitutionmodel.WAG.frequencies'
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
     >
-        <panel spec='beast.app.beauti.BeautiPanelConfig' panelname='sitemodel' tiptext='site model and substitution model specifications'
-            path='distribution/distribution[id="likelihood"]/distribution/siteModel'
-            hasPartitions='true'
-            icon='2.png'
-            forceExpansion='TRUE'
+
+        <panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Data" tiptext="Aligned sequence data"
+            path='distribution/distribution[id="likelihood"]/distribution'
+            hasPartitions="false" icon='0.png' forceExpansion='FALSE'
+            type='beast.evolution.likelihood.TreeLikelihood'
         />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
+            path='distribution/distribution[id="likelihood"]/distribution/taxonset'
+            hasPartitions="false" icon='1.png' forceExpansion='FALSE'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxan was sampled"
+            path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
+            hasPartitions="true" icon='2.png' forceExpansion='TRUE'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
+            path='distribution/distribution[id="likelihood"]/distribution/siteModel'
+            hasPartitions="true" icon='3.png' forceExpansion='TRUE'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
+            path='distribution/distribution[id="likelihood"]/distribution/branchRateModel'
+            hasPartitions="true" icon='4.png' forceExpansion='TRUE'
+        />
+<!--
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tree prior" tiptext="Tree prior"
+            path='distribution/distribution[id="prior"]/distribution[type="Tree"]'
+            hasPartitions="false" icon='5.png' forceExpansion='TRUE'
+        />
+-->
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
+            path='state/stateNode'
+            hasPartitions="false" icon='6.png' forceExpansion='TRUE'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
+            path='distribution/distribution[id="prior"]/distribution'
+            hasPartitions="false" icon='7.png' forceExpansion='IF_ONE_ITEM'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
+            path='operator'
+            hasPartitions="false" icon='8.png' forceExpansion='FALSE'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
+            path=''
+            hasPartitions="false" icon='9.png' forceExpansion='TRUE'
+        />
+
+
     </beauticonfig>
 
 <!--

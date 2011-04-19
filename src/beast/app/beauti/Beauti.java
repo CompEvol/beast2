@@ -53,68 +53,68 @@ public class Beauti extends JTabbedPane {
     
 	boolean [] m_bPaneIsVisible;
 	BeautiPanel [] m_panels;
-	static final int NR_OF_PANELS = 10;
-	static String [] TAB_NAME = {
-			"Data", 
-			"Taxon sets", 
-			"Tip Dates", 
-			"Site Model", 
-			"Clock Model", 
-			"Tree prior", 
-			"Initialization",
-			"Priors", 
-			"Operators", 
-			"MCMC"}; 
+	static final int NR_OF_PANELS = 0;
+//	static String [] TAB_NAME = {
+//			"Data", 
+//			"Taxon sets", 
+//			"Tip Dates", 
+//			"Site Model", 
+//			"Clock Model", 
+//			"Tree prior", 
+//			"Initialization",
+//			"Priors", 
+//			"Operators", 
+//			"MCMC"}; 
 	
-	final static public int DATA_PANEL = 0;
-	final static public int TAXON_SETS_PANEL = 1;
-	final static public int TIP_DATES_PANEL = 2;
-	final static public int SITE_MODEL_PANEL = 3;
-	final static public int CLOCK_MODEL_PANEL = 4;
-	final static public int TREE_PRIOR_PANEL = 5;
-	final static public int STATE_PANEL = 6;
-	final static public int PRIORS_PANEL = 7;
-	final static public int OPERATORS_PANEL = 8;
-	final static public int MCMC_PANEL = 9;
-
-	static String [] TAB_CONST = {
-		"DATA_PANEL",
-		"TAXON_SETS_PANEL",
-		"TIP_DATES_PANEL",
-		"SITE_MODEL_PANEL",
-		"CLOCK_MODEL_PANEL",
-		"TREE_PRIOR_PANEL",
-		"STATE_PANEL",
-		"PRIORS_PANEL",
-		"OPERATORS_PANEL",
-		"MCMC_PANEL"
-	};
-
-	static String [] TAB_TIPTEXT = {
-			"Aligned sequence data",
-			"Taxon sets",
-			 "Allows to specify data that a taxan was sampled",
-			 "Site model",
-			 "Clock model",
-			 "Tree prior",
-			 "Initial state",
-			 "Other priors",
-			 "MCMC Operator details",
-			 "MCMC parameters"};
-	
-	static boolean [] HAS_PARTITIONS = {
-		false,//"Data", 
-		false,//"Taxon sets", 
-		true,//"Tip Dates", 
-		true,//"Site Model", 
-		true,//"Clock Model", 
-		false,//"Tree prior", 
-		false,//Initial
-		false,//"Priors", 
-		false,//"Operators", 
-		false//"MCMC"
-	}; 
-	
+//	final static public int DATA_PANEL = 0;
+//	final static public int TAXON_SETS_PANEL = 1;
+//	final static public int TIP_DATES_PANEL = 2;
+//	final static public int SITE_MODEL_PANEL = 3;
+//	final static public int CLOCK_MODEL_PANEL = 4;
+//	final static public int TREE_PRIOR_PANEL = 5;
+//	final static public int STATE_PANEL = 6;
+//	final static public int PRIORS_PANEL = 7;
+//	final static public int OPERATORS_PANEL = 8;
+//	final static public int MCMC_PANEL = 9;
+//
+//	static String [] TAB_CONST = {
+//		"DATA_PANEL",
+//		"TAXON_SETS_PANEL",
+//		"TIP_DATES_PANEL",
+//		"SITE_MODEL_PANEL",
+//		"CLOCK_MODEL_PANEL",
+//		"TREE_PRIOR_PANEL",
+//		"STATE_PANEL",
+//		"PRIORS_PANEL",
+//		"OPERATORS_PANEL",
+//		"MCMC_PANEL"
+//	};
+//
+//	static String [] TAB_TIPTEXT = {
+//			"Aligned sequence data",
+//			"Taxon sets",
+//			 "Allows to specify data that a taxan was sampled",
+//			 "Site model",
+//			 "Clock model",
+//			 "Tree prior",
+//			 "Initial state",
+//			 "Other priors",
+//			 "MCMC Operator details",
+//			 "MCMC parameters"};
+//	
+//	static boolean [] HAS_PARTITIONS = {
+//		false,//"Data", 
+//		false,//"Taxon sets", 
+//		true,//"Tip Dates", 
+//		true,//"Site Model", 
+//		true,//"Clock Model", 
+//		false,//"Tree prior", 
+//		false,//Initial
+//		false,//"Priors", 
+//		false,//"Operators", 
+//		false//"MCMC"
+//	}; 
+//	
 
 	public Beauti(BeautiDoc doc) {
 		m_bPaneIsVisible = new boolean[NR_OF_PANELS + BeautiConfig.g_panels.size()];
@@ -136,12 +136,12 @@ public class Beauti extends JTabbedPane {
 		} else {
 			m_bPaneIsVisible[nPanelNr] = true;
 			int nTabNr = tabNrForPanel(nPanelNr);
-			if (nPanelNr < NR_OF_PANELS) {
-				insertTab(BeautiConfig.getButtonLabel(this, TAB_NAME[nPanelNr]), null, m_panels[nPanelNr], TAB_TIPTEXT[nPanelNr], nTabNr);
-			} else {
+//			if (nPanelNr < NR_OF_PANELS) {
+//				insertTab(BeautiConfig.getButtonLabel(this, TAB_NAME[nPanelNr]), null, m_panels[nPanelNr], TAB_TIPTEXT[nPanelNr], nTabNr);
+//			} else {
 				BeautiPanelConfig panel = BeautiConfig.g_panels.get(nPanelNr - NR_OF_PANELS);
 				insertTab(BeautiConfig.getButtonLabel(this, panel.m_sNameInput.get()), null, m_panels[nPanelNr], panel.m_sTipTextInput.get(), nTabNr);
-			}
+//			}
 			setSelectedIndex(nTabNr);
 		}
 	}
@@ -282,9 +282,9 @@ public class Beauti extends JTabbedPane {
 		int m_iPanel;
     	ViewPanelCheckBoxMenuItem(int iPanel) {
     		super("Show " + 
-    				(iPanel < NR_OF_PANELS ? BeautiConfig.getButtonLabel(Beauti.class.getName(), TAB_NAME[iPanel]) :
+    				//(iPanel < NR_OF_PANELS ? BeautiConfig.getButtonLabel(Beauti.class.getName(), TAB_NAME[iPanel]) :
     					BeautiConfig.g_panels.get(iPanel - NR_OF_PANELS).m_sNameInput.get()
-    					) 
+    				//	) 
     				+ " panel", 
     				(iPanel < NR_OF_PANELS ? m_bPaneIsVisible[iPanel] : BeautiConfig.g_panels.get(iPanel - NR_OF_PANELS).m_bIsVisibleInput.get()));
     		m_iPanel = iPanel;
@@ -308,7 +308,9 @@ public class Beauti extends JTabbedPane {
 
         public void actionPerformed(ActionEvent ae) {
         	for(int nPanelNr = 0; nPanelNr < NR_OF_PANELS; nPanelNr++) {
-        		if (!m_bPaneIsVisible[nPanelNr] && !BeautiConfig.g_sDisabledMenus.contains("View.Show "+TAB_NAME[nPanelNr] + " panel")) {
+        		if (!m_bPaneIsVisible[nPanelNr] 
+        		    //&& !BeautiConfig.g_sDisabledMenus.contains("View.Show "+TAB_NAME[nPanelNr] + " panel")
+        		                      ) {
         			toggleVisible(nPanelNr);
         			m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
         		}
@@ -447,11 +449,18 @@ public class Beauti extends JTabbedPane {
     // hide panels as indicated in the hidepanels attribute in the XML template,
     // or use default tabs to hide otherwise.
 	void hidePanels() {
-    	for(int nPanelNr = 0; nPanelNr < NR_OF_PANELS; nPanelNr++) {
-    		if (BeautiConfig.g_sHidePanels.contains(TAB_CONST[nPanelNr])) {
-    			toggleVisible(nPanelNr);
-    		}
-    	}
+		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+			if (!panelConfig.m_bIsVisibleInput.get()) {
+				toggleVisible(iPanel);
+			}
+		}
+		
+//		for(int nPanelNr = 0; nPanelNr < NR_OF_PANELS; nPanelNr++) {
+//    		if (BeautiConfig.g_sHidePanels.contains(TAB_CONST[nPanelNr])) {
+//    			toggleVisible(nPanelNr);
+//    		}
+//    	}
 	} // hidePanels
 	
 	public static void main(String[] args) {
@@ -471,10 +480,10 @@ public class Beauti extends JTabbedPane {
 	        final Beauti beauti = new Beauti(doc);
 
 			beauti.m_panels = new BeautiPanel[NR_OF_PANELS + BeautiConfig.g_panels.size()];
-			for (int iPanel = 0; iPanel < NR_OF_PANELS; iPanel++) {
-				beauti.m_panels[iPanel] = new BeautiPanel(iPanel, doc, HAS_PARTITIONS[iPanel]);
-				beauti.addTab(BeautiConfig.getButtonLabel(beauti, TAB_NAME[iPanel]), null, beauti.m_panels[iPanel], TAB_TIPTEXT[iPanel]);
-			}
+//			for (int iPanel = 0; iPanel < NR_OF_PANELS; iPanel++) {
+//				beauti.m_panels[iPanel] = new BeautiPanel(iPanel, doc, HAS_PARTITIONS[iPanel]);
+//				beauti.addTab(BeautiConfig.getButtonLabel(beauti, TAB_NAME[iPanel]), null, beauti.m_panels[iPanel], TAB_TIPTEXT[iPanel]);
+//			}
 			for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
 				BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
 				beauti.m_panels[NR_OF_PANELS + iPanel] = new BeautiPanel(NR_OF_PANELS + iPanel, doc, panelConfig);
@@ -486,10 +495,11 @@ public class Beauti extends JTabbedPane {
 			beauti.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					beauti.m_doc.sync(beauti.m_currentTab.m_iPanel);
+					//beauti.m_doc.sync(beauti.m_currentTab.m_iPanel);
 					BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
+					panel.m_config.sync();
 					beauti.m_currentTab = panel;
-					beauti.m_doc.syncTo(panel.m_iPanel, panel.m_iPartition);
+					//beauti.m_doc.syncTo(panel.m_iPanel, panel.m_iPartition);
 					beauti.refreshPanel();
 				}
 			});

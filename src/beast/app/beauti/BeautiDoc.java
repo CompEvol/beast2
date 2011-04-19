@@ -360,102 +360,102 @@ public class BeautiDoc extends Plugin {
 	
 	
 	/** methods for dealing with updates **/
-	void sync(int iPanel) {
-		try {
-		switch (iPanel) {
-		case Beauti.DATA_PANEL : break;
-		case Beauti.TAXON_SETS_PANEL : //refreshInputPanel(m_doc, m_doc.m_taxonset, false, true);break;
-			break;
-		case Beauti.TIP_DATES_PANEL : //refreshInputPanel(m_doc, m_doc.m_tipdates, false, true);break;
-			if (m_tipdatesOrg != m_tipdates.get()) {
-				for (TreeLikelihood likelihood: m_likelihoods.get()) {
-					Tree tree = likelihood.m_tree.get();
-					if (tree.m_trait.get() == m_tipdatesOrg) {
-						tree.m_trait.setValue(m_tipdates.get(), tree);
-					}
-				}
-			}
-			break;
-		case Beauti.SITE_MODEL_PANEL : //refreshInputPanel(m_doc, m_doc.m_sitemodel, false, true);break;
-			if (m_siteModelOrg != m_siteModel.get()) {
-				for (TreeLikelihood likelihood: m_likelihoods.get()) {
-					if (likelihood.m_pSiteModel.get() == m_siteModelOrg) {
-						likelihood.m_pSiteModel.setValue(m_siteModel.get(), likelihood);
-					}
-				}
-			}
-			break;
-		case Beauti.CLOCK_MODEL_PANEL : //refreshInputPanel(m_doc, m_doc.m_clockmodel, false, true);break;
-			if (m_clockModelOrg != m_clockModel.get()) {
-				for (TreeLikelihood likelihood: m_likelihoods.get()) {
-					if (likelihood.m_pBranchRateModel.get() == m_clockModelOrg) {
-						likelihood.m_pBranchRateModel.setValue(m_clockModel.get(), likelihood);
-					}
-				}
-			}
-			break;
-		case Beauti.TREE_PRIOR_PANEL : //refreshInputPanel(m_doc, m_doc.m_treeprior, true, false);break;
-			break;
-		case Beauti.PRIORS_PANEL : //refreshInputPanel(m_doc, m_doc.m_priors, true, false);break;
-			break;
-		case Beauti.OPERATORS_PANEL : break;
-		case Beauti.MCMC_PANEL : break;
-		}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	void sync(int iPanel) {
+//		try {
+//		switch (iPanel) {
+//		case Beauti.DATA_PANEL : break;
+//		case Beauti.TAXON_SETS_PANEL : //refreshInputPanel(m_doc, m_doc.m_taxonset, false, true);break;
+//			break;
+//		case Beauti.TIP_DATES_PANEL : //refreshInputPanel(m_doc, m_doc.m_tipdates, false, true);break;
+//			if (m_tipdatesOrg != m_tipdates.get()) {
+//				for (TreeLikelihood likelihood: m_likelihoods.get()) {
+//					Tree tree = likelihood.m_tree.get();
+//					if (tree.m_trait.get() == m_tipdatesOrg) {
+//						tree.m_trait.setValue(m_tipdates.get(), tree);
+//					}
+//				}
+//			}
+//			break;
+//		case Beauti.SITE_MODEL_PANEL : //refreshInputPanel(m_doc, m_doc.m_sitemodel, false, true);break;
+//			if (m_siteModelOrg != m_siteModel.get()) {
+//				for (TreeLikelihood likelihood: m_likelihoods.get()) {
+//					if (likelihood.m_pSiteModel.get() == m_siteModelOrg) {
+//						likelihood.m_pSiteModel.setValue(m_siteModel.get(), likelihood);
+//					}
+//				}
+//			}
+//			break;
+//		case Beauti.CLOCK_MODEL_PANEL : //refreshInputPanel(m_doc, m_doc.m_clockmodel, false, true);break;
+//			if (m_clockModelOrg != m_clockModel.get()) {
+//				for (TreeLikelihood likelihood: m_likelihoods.get()) {
+//					if (likelihood.m_pBranchRateModel.get() == m_clockModelOrg) {
+//						likelihood.m_pBranchRateModel.setValue(m_clockModel.get(), likelihood);
+//					}
+//				}
+//			}
+//			break;
+//		case Beauti.TREE_PRIOR_PANEL : //refreshInputPanel(m_doc, m_doc.m_treeprior, true, false);break;
+//			break;
+//		case Beauti.PRIORS_PANEL : //refreshInputPanel(m_doc, m_doc.m_priors, true, false);break;
+//			break;
+//		case Beauti.OPERATORS_PANEL : break;
+//		case Beauti.MCMC_PANEL : break;
+//		}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
-	void syncSiteModel() throws Exception {
-	}
+//	void syncSiteModel() throws Exception {
+//	}
 	
 	
-	void syncTo(int iPanel, int iPartition) {
-		try {
-		switch (iPanel) {
-		case Beauti.DATA_PANEL : break;
-		case Beauti.TAXON_SETS_PANEL : 
-			break;
-		case Beauti.TIP_DATES_PANEL : 
-			m_tipdatesOrg = m_likelihoods.get().get(iPartition).m_tree.get().m_trait.get();
-			m_tipdates.setValue(m_tipdatesOrg, this);
-			break;
-		case Beauti.SITE_MODEL_PANEL : 
-			m_siteModelOrg = m_likelihoods.get().get(iPartition).m_pSiteModel.get();
-			m_siteModel.setValue(m_siteModelOrg, this);
-			syncSiteModel();
-			break;
-		case Beauti.CLOCK_MODEL_PANEL :
-			m_clockModelOrg = m_likelihoods.get().get(iPartition).m_pBranchRateModel.get();
-			m_clockModel.setValue(m_clockModelOrg , this);
-			break;
-		case Beauti.TREE_PRIOR_PANEL : 
-			break;
-		case Beauti.PRIORS_PANEL : 
-			if (m_bAutoScrubPriors) {
-				scrubPriors();
-			}
-			break;
-		case Beauti.STATE_PANEL : 
-			if (m_bAutoScrubState) {
-				scrubState();
-			}
-			break;
-		case Beauti.OPERATORS_PANEL : 
-			if (m_bAutoScrubOperators) {
-				scrubOperators();
-			}
-			break;
-		case Beauti.MCMC_PANEL : 
-			if (m_bAutoScrubLoggers) {
-				scrubLoggers();
-			}
-			break;
-		}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	void syncTo(int iPanel, int iPartition) {
+//		try {
+//		switch (iPanel) {
+//		case Beauti.DATA_PANEL : break;
+//		case Beauti.TAXON_SETS_PANEL : 
+//			break;
+//		case Beauti.TIP_DATES_PANEL : 
+//			m_tipdatesOrg = m_likelihoods.get().get(iPartition).m_tree.get().m_trait.get();
+//			m_tipdates.setValue(m_tipdatesOrg, this);
+//			break;
+//		case Beauti.SITE_MODEL_PANEL : 
+//			m_siteModelOrg = m_likelihoods.get().get(iPartition).m_pSiteModel.get();
+//			m_siteModel.setValue(m_siteModelOrg, this);
+//			syncSiteModel();
+//			break;
+//		case Beauti.CLOCK_MODEL_PANEL :
+//			m_clockModelOrg = m_likelihoods.get().get(iPartition).m_pBranchRateModel.get();
+//			m_clockModel.setValue(m_clockModelOrg , this);
+//			break;
+//		case Beauti.TREE_PRIOR_PANEL : 
+//			break;
+//		case Beauti.PRIORS_PANEL : 
+//			if (m_bAutoScrubPriors) {
+//				scrubPriors();
+//			}
+//			break;
+//		case Beauti.STATE_PANEL : 
+//			if (m_bAutoScrubState) {
+//				scrubState();
+//			}
+//			break;
+//		case Beauti.OPERATORS_PANEL : 
+//			if (m_bAutoScrubOperators) {
+//				scrubOperators();
+//			}
+//			break;
+//		case Beauti.MCMC_PANEL : 
+//			if (m_bAutoScrubLoggers) {
+//				scrubLoggers();
+//			}
+//			break;
+//		}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	
 	void scrubAll() {
