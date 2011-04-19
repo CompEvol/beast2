@@ -119,24 +119,13 @@ public class BeautiDoc extends Plugin {
 	
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
-		if (m_bAutoScrubPriors) {
-			scrubPriors();
-		}
-		if (m_bAutoScrubState) {
-			scrubState();
-		}
-		if (m_bAutoScrubLoggers) {
-			scrubLoggers();
-		}
-		if (m_bAutoScrubOperators) {
-			scrubOperators();
-		}
+		scrubAll();
 		String sXML = new XMLProducer().toXML(m_mcmc.get(), PluginPanel.g_plugins.values());
 		FileWriter outfile = new FileWriter(sFileName);
 		outfile.write(sXML);
 		outfile.close();
 	} // save
-	
+
 	List<String> extractSequences(String sXML) throws  Exception {
 		XMLParser parser = new XMLParser();
 		List<Plugin> plugins = parser.parseTemplate(sXML);
@@ -468,6 +457,21 @@ public class BeautiDoc extends Plugin {
 		}
 	}
 
+	
+	void scrubAll() {
+		if (m_bAutoScrubPriors) {
+			scrubPriors();
+		}
+		if (m_bAutoScrubState) {
+			scrubState();
+		}
+		if (m_bAutoScrubLoggers) {
+			scrubLoggers();
+		}
+		if (m_bAutoScrubOperators) {
+			scrubOperators();
+		}
+	} // scrubAll
 	
 	/** remove operators on StateNodesthat have no impact on the posterior **/
 	void scrubOperators() {

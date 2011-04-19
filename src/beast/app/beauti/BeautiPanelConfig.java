@@ -34,20 +34,32 @@ public class BeautiPanelConfig extends Plugin {
 	
 	public Input<EXPAND> m_forceExpansionInput = new Input<EXPAND>("forceExpansion", "whether to expand the input(s)" +
 			"This can be " + Arrays.toString(EXPAND.values()) + " (default 'FALSE')", EXPAND.FALSE, EXPAND.values());
+	public Input<String> m_sTypeInput = new Input<String>("type", "type used for finding the appropriate plugin editor. By default, type is determined " +
+			"by the input type of the last component of the path");
 	
 	
 	String [] m_sPathComponents;
 	String [] m_sConditionalAttribute;
 	String [] m_sConditionalValue;
+	Class<?> m_type;
 	
 	/** plugins associated with inputs **/
 	List<Plugin> m_inputs;
+	/** plugins that are parents, i.e. contain inpust of m_inputs **/
+	List<Plugin> m_parentPlugins;
+	/** flag to indicate we are dealing with a list input **/
+	boolean m_bIsList;
+
+	
 	FlexibleInput<?> m_input;
 	
 	class FlexibleInput<T> extends Input<T> {
 		FlexibleInput() {
 			// sets name to something non-trivial This is used by canSetValue()
 			super("xx","");
+		}
+		public FlexibleInput(T arrayList) {
+			super("xx", "", arrayList);
 		}
 		public void setType(Class<?> type) {
 			theClass = type;
@@ -60,6 +72,9 @@ public class BeautiPanelConfig extends Plugin {
 	@Override
 	public void initAndValidate() throws Exception {
 		m_sPathComponents = m_sPathInput.get().split("/");
+		if (m_sPathComponents[0].equals("")) {
+			m_sPathComponents = new String[0];
+		}
 		m_sConditionalAttribute = new String[m_sPathComponents.length];
 		m_sConditionalValue = new String[m_sPathComponents.length];
 		for (int i = 0; i < m_sPathComponents.length; i++) {
@@ -73,7 +88,6 @@ public class BeautiPanelConfig extends Plugin {
 			}
 		}
 		m_inputs = new ArrayList<Plugin>();
-		m_input = new FlexibleInput<Plugin>();
 	    PluginPanel.getID(this);
 	}
 	
@@ -108,18 +122,26 @@ public class BeautiPanelConfig extends Plugin {
 	public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
 		try {
 			List<Plugin> plugins = new ArrayList<Plugin>();
+			m_parentPlugins = new ArrayList<Plugin>();
 			plugins.add(doc.m_mcmc.get());
+			m_parentPlugins.add(doc);
+			m_type = doc.m_mcmc.getType();
+			m_bIsList = false;
 			for (int i = 0; i < m_sPathComponents.length; i++) {
 				List<Plugin> oldPlugins = plugins;
 				plugins = new ArrayList<Plugin>();
+				m_parentPlugins = new ArrayList<Plugin>();
 				for (Plugin plugin: oldPlugins) {
 					Input<?> namedInput = plugin.getInput(m_sPathComponents[i]);
+					m_type = namedInput.getType();
 					if (namedInput.get() instanceof List<?>) {
+						m_bIsList = true;
 						List<?> list = (List<?>) namedInput.get();
 						if (m_sConditionalAttribute[i] == null) {
 							for (Object o : list) {
 								Plugin plugin2 = (Plugin) o;
 								plugins.add(plugin2);
+								m_parentPlugins.add(plugin);
 							}
 							//throw new Exception ("Don't know which element to pick from the list. List component should come with a condition. " + m_sPathComponents[i]);
 						} else {
@@ -128,18 +150,22 @@ public class BeautiPanelConfig extends Plugin {
 									Plugin plugin2 = (Plugin) list.get(j);
 									if (plugin2.getID().equals(m_sConditionalValue[i])) {
 										plugins.add(plugin2);
+										m_parentPlugins.add(plugin);
 										break;
 									}
 								}
 							}
 						}
 					} else if (namedInput.get() instanceof Plugin) {
+						m_bIsList = false;
 						if (m_sConditionalAttribute[i] == null) {
 							plugins.add((Plugin)namedInput.get());
+							m_parentPlugins.add(plugin);
 						} else {
 							if (m_sConditionalAttribute[i].equals("id")) {
 								if (plugin.getID().equals(m_sConditionalValue[i])) {
 									plugins.add(plugin);
+									m_parentPlugins.add(plugin);
 								}
 							}
 						}
@@ -148,34 +174,46 @@ public class BeautiPanelConfig extends Plugin {
 					}
 				}
 			}
+			if (m_sTypeInput.get() != null) {
+				Object o = Class.forName(m_sTypeInput.get()).newInstance(); 
+				m_type = o.getClass();
+			}
 			// sanity check
-			if (!m_bHasPartitionsInput.get() && plugins.size() > 1) {
+			if (!m_bIsList && !m_bHasPartitionsInput.get() && plugins.size() > 1) {
 				throw new Exception("multiple plugins match, but hasPartitions=false");
 			}
 			m_inputs.clear();
 			for (Plugin plugin: plugins) {
 				m_inputs.add(plugin);
 			}
+			
+			if (!m_bIsList) {
+				m_input = new FlexibleInput<Plugin>();
+			} else {
+				m_input = new FlexibleInput<ArrayList<Plugin>>(new ArrayList<Plugin>());
+			}
 			syncTo(iPartition);
 			return m_input;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Invalid Beauti configuration for " + Arrays.toString(m_sPathComponents));
-			System.exit(0);
+			System.err.println("Warning: could not find objects in path " + Arrays.toString(m_sPathComponents));
+//			e.printStackTrace();
+//			System.err.println("Invalid Beauti configuration for " + Arrays.toString(m_sPathComponents));
+//			System.exit(0);
 		}
 		return null;
 	} // resolveInputs
 	
 	public void sync() {
-		if (m_input.get() instanceof List) {
+		if (m_bIsList) { //m_input.get() instanceof List) {
 			List<Object> list = (List<Object>) m_input.get();
 			list.clear();
-			for (Object o: m_pluginList) {
-				try {
-					m_input.setValue(o, null);
-				} catch (Exception e) {
-					e.printStackTrace();
+			try {
+				m_input.setValue(list, null);
+				for (Object o: m_pluginList) {
+						m_input.setValue(o, null);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		} else {
 			try {
@@ -188,21 +226,31 @@ public class BeautiPanelConfig extends Plugin {
 
 	/** initialise m_input, and either m_plugin or m_pluginList **/
 	public void syncTo(int iPartition) {
-		Plugin plugin = m_inputs.get(iPartition); 
+		m_input.setType(m_type);
 		try {
-			m_input.setType(plugin.getClass());
-			m_input.setValue(plugin, this);
+			if (m_bIsList) { 
+				for (Plugin plugin : m_inputs) {
+					m_input.setValue(plugin, this);
+				}
+			} else {
+				Plugin plugin = m_inputs.get(iPartition); 
+				m_input.setValue(plugin, this);
+				m_plugin = (Plugin) m_input.get();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
-		if (m_input.get() instanceof List) {
-			List<Plugin> list = (List<Plugin>) m_input.get();
-			m_pluginList = new ArrayList<Plugin>();
-			for (Plugin o: list) {
-				m_pluginList.add(o);
-			}
-		} else {
-			m_plugin = (Plugin) m_input.get();
-		}
-	} 
+//		if (m_bIsList) { //m_input.get() instanceof List) {
+//			List<Plugin> list = (List<Plugin>) m_input.get();
+//			m_pluginList = new ArrayList<Plugin>();
+//			for (Plugin o: list) {
+//				m_pluginList.add(o);
+//			}
+//		} else {
+//		}
+	}
+	
+	Input<?> getInput() {
+		return m_input;
+	}
 }

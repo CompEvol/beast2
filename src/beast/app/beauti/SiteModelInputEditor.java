@@ -21,13 +21,13 @@ public class SiteModelInputEditor extends PluginInputEditor {
 	
 	@Override
     public Class<?> type() {
-        return SiteModel.class;
+        return SiteModel.Base.class;
     }
-	@Override
-    public Class<?> [] types() {
-		Class<?>[] types = {SiteModel.class, SiteModel.Base.class}; 
-		return types;
-    }
+//	@Override
+//    public Class<?> [] types() {
+//		Class<?>[] types = {SiteModel.class, SiteModel.Base.class}; 
+//		return types;
+//    }
 
 
 	public InputEditor createGammaCategoryCountEditor() throws Exception {

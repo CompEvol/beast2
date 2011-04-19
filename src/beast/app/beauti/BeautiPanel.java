@@ -135,6 +135,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			case Beauti.OPERATORS_PANEL : refreshInputPanel(m_doc.m_mcmc.get(), m_doc.m_mcmc.get().operatorsInput, true, EXPAND.FALSE);break;
 			case Beauti.MCMC_PANEL : refreshInputPanel(m_doc, m_doc.m_mcmc, false, EXPAND.TRUE);break;
 			default:
+				m_doc.scrubAll();
 				refreshInputPanel();
 			break;
 		}
