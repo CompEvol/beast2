@@ -20,6 +20,9 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
 
     public IntegerParameter() {
     }
+    public IntegerParameter(Integer [] fValues) {
+    	super(fValues);
+    }
 
     /** Constructor used by Input.setValue(String) **/
     public IntegerParameter(String sValue) throws Exception {
@@ -28,9 +31,9 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
     /**
      * Constructor for testing.
      */
-    public IntegerParameter(String value, Integer lower, Integer upper, Integer dimension) throws Exception {
-    	init(lower, upper, value, dimension);
-    }
+//    public IntegerParameter(String value, Integer lower, Integer upper, Integer dimension) throws Exception {
+//    	init(lower, upper, value, dimension);
+//    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -59,6 +62,8 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         super.initAndValidate();
     }
 
+    Integer getMax() {return Integer.MAX_VALUE-1;}
+    Integer getMin() {return Integer.MIN_VALUE+1;}
 
     /** Valuable implementation follows **/
     /** we need this here, because the base implementation (public T getValue()) fails

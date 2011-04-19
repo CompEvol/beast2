@@ -37,19 +37,22 @@ import java.io.PrintStream;
 public class BooleanParameter extends Parameter<java.lang.Boolean> {
     public BooleanParameter() {}
 
+    public BooleanParameter(Boolean [] fValues) {
+    	super(fValues);
+    }
     /** Constructor used by Input.setValue(String) **/
     public BooleanParameter(String sValue) throws Exception {
     	init(sValue, 1);
     }
-    /**
-     * Constructor for testing.
-     * @param value
-     * @param dimension
-     * @throws Exception
-     */
-    public BooleanParameter(String value, Integer dimension) throws Exception {
-    	init(value, dimension);
-    }
+//    /**
+//     * Constructor for testing.
+//     * @param value
+//     * @param dimension
+//     * @throws Exception
+//     */
+//    public BooleanParameter(String value, Integer dimension) throws Exception {
+//    	init(value, dimension);
+//    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -68,6 +71,11 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
         super.initAndValidate();
     }
 
+
+    @Override
+    Boolean getMax() {return true;}
+    @Override
+    Boolean getMin() {return false;}
 
     /** Valuable implementation follows **/
     /** we need this here, because the base implementation (public T getValue()) fails

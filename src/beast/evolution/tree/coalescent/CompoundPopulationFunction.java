@@ -78,14 +78,15 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
         events += type == Type.STEPWISE ? 0 : 1;
         try {
             if (popSizeParameter.getDimension() != events) {
-                final RealParameter p =
-                        new RealParameter(popSizeParameter.getValue() + "",
-                                popSizeParameter.getLower(), popSizeParameter.getUpper(), events);
+                final RealParameter p = new RealParameter();
+        		p.initByName("value", popSizeParameter.getValue() + "", "upper", popSizeParameter.getUpper(), "lower", popSizeParameter.getLower(), "dimension", events);
+
                 popSizeParameter.assignFrom(p);
             }
 
             if (indicatorsParameter.getDimension() != events - 1) {
-                final BooleanParameter p = new BooleanParameter(""+indicatorsParameter.getValue(), events-1) ;
+                final BooleanParameter p = new BooleanParameter() ;
+                p.initByName("value", "" + indicatorsParameter.getValue(), "dimension", events-1) ;
                 indicatorsParameter.assignFrom(p);
             }
         } catch( Exception e ) {

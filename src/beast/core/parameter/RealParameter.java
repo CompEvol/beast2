@@ -21,26 +21,29 @@ public class RealParameter extends Parameter<Double> {
     public RealParameter() {
     }
 
+    public RealParameter(Double [] fValues) throws Exception {
+    	super(fValues);
+    }
+
     /** Constructor used by Input.setValue(String) **/
     public RealParameter(String sValue) throws Exception {
     	init(0.0, 0.0, sValue, 1);
     }
-    public RealParameter(double [] fValues) throws Exception {
-    	int nDimension = fValues.length;
-    	values = new Double[nDimension];
-    	for (int i = 0; i < nDimension; i++) {
-    		values[i] = fValues[i];
-    	}
-		m_fLower = Double.NEGATIVE_INFINITY;
-		m_fUpper = Double.POSITIVE_INFINITY;
-    }
-    /**
-     * Constructor for testing.
-     */
-    public RealParameter(String value, Double lower, Double upper, Integer dimension) throws Exception {
-    	init(lower, upper, value, dimension);
-    }
-
+//    public RealParameter(double [] fValues) throws Exception {
+//    	int nDimension = fValues.length;
+//    	values = new Double[nDimension];
+//    	for (int i = 0; i < nDimension; i++) {
+//    		values[i] = fValues[i];
+//    	}
+//		m_fLower = Double.NEGATIVE_INFINITY;
+//		m_fUpper = Double.POSITIVE_INFINITY;
+//    }
+//    /**
+//     * Constructor for testing.
+//     */
+//    public RealParameter(String value, Double lower, Double upper, Integer dimension) throws Exception {
+//    	init(lower, upper, value, dimension);
+//    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -70,6 +73,10 @@ public class RealParameter extends Parameter<Double> {
         super.initAndValidate();
     }
 
+    @Override
+	Double getMax() {return Double.NEGATIVE_INFINITY;}
+    @Override
+	Double getMin() {return Double.POSITIVE_INFINITY;}
     /** Valuable implementation follows **/
     
     /** RRB: we need this here, because the base implementation (public T getValue()) fails

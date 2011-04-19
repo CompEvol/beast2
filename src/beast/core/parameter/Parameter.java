@@ -56,6 +56,12 @@ public abstract class Parameter<T> extends StateNode {
      */
     public Parameter() {
     }
+    
+    public Parameter(T [] values) {
+    	this.values = values.clone();
+    	m_fUpper = getMax();
+    	m_fLower = getMin();
+    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -68,6 +74,8 @@ public abstract class Parameter<T> extends StateNode {
      */
     protected T m_fUpper;
     protected T m_fLower;
+    abstract T getMax();
+    abstract T getMin();
     /**
      * the actual values of this parameter
      */

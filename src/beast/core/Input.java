@@ -438,7 +438,8 @@ public class Input<T> {
             }
         }
         if (theClass.equals(Valuable.class)) {
-            RealParameter param = new RealParameter(sValue, 0.0, 0.0, 1);
+            RealParameter param = new RealParameter();
+            param.initByName("value", sValue, "upper", 0.0, "lower", 0.0, "dimension", 1);
             param.initAndValidate();
             if (value != null && value instanceof List) {
                 ((List) value).add(param);

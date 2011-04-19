@@ -24,7 +24,7 @@ public class ParameterTest extends TestCase {
 		} catch (Exception e) {
 			// setValue is not allowed for StateNode not in State
 		}
-		double [] x = {1.0, 2.0, 3.0, 2.0, 4.0, 5.5};
+		Double [] x = {1.0, 2.0, 3.0, 2.0, 4.0, 5.5};
 		parameter = new RealParameter(x);
 		assertEquals(parameter.getDimension(), 6);
 	}
