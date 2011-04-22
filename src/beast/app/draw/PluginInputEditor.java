@@ -150,8 +150,6 @@ public class PluginInputEditor extends InputEditor {
      */
     
     void addComboBox(Box box, Input <?> input, Plugin plugin) {
-    	int h = 3;
-    	h++;
         List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
         if (sAvailablePlugins.size() > 0) {
         	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {

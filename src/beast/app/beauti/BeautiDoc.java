@@ -70,7 +70,7 @@ public class BeautiDoc extends Plugin {
 	boolean m_bAutoScrubState = true;
 	
 //	public Input<List<Operator>> m_operators;
-	public Input<MCMC> m_mcmc = new Input<MCMC>("runnable", "main entry of analysis", Validate.REQUIRED);
+	public Input<beast.core.Runnable> m_mcmc = new Input<beast.core.Runnable>("runnable", "main entry of analysis", Validate.REQUIRED);
 	
 	public BeautiDoc() {
 		setID("BeautiDoc");
@@ -222,8 +222,8 @@ public class BeautiDoc extends Plugin {
 	 *  **/ 
 	@SuppressWarnings("unchecked")
 	void connectModel(List<String> sAlignmentNames) throws Exception {
-		
-		MCMC mcmc = m_mcmc.get();
+		try {
+		MCMC mcmc = (MCMC) m_mcmc.get();
 		CompoundDistribution posterior = (CompoundDistribution) mcmc.posteriorInput.get();
 		if (posterior.pDistributions.get().size() != 2) {
 			throw new Exception("Expected posterior of the form prior, posterior, instead of " + posterior.pDistributions.get().size() + " distributions");
@@ -292,7 +292,7 @@ public class BeautiDoc extends Plugin {
 //		}
 		// build global list of loggers
 		m_loggerInputs = new ArrayList<List<Plugin>>();
-		for (Logger logger : m_mcmc.get().m_loggers.get()) {
+		for (Logger logger : ((MCMC)m_mcmc.get()).m_loggers.get()) {
 			List<Plugin> loggers = new ArrayList<Plugin>();
 			for (Plugin plugin : logger.m_pLoggers.get()) {
 				loggers.add(plugin);
@@ -307,7 +307,10 @@ public class BeautiDoc extends Plugin {
 //				taxon.setID(((Sequence)plugin).m_sTaxon.get());
 //				m_taxa.add(taxon);
 //			}
-//		}		
+//		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	} // connectModel
 	
 	void setTreeLikelihoodID(Distribution treelikelihood, List<String >sAlignmentNames) {
@@ -459,26 +462,30 @@ public class BeautiDoc extends Plugin {
 
 	
 	void scrubAll() {
-		if (m_bAutoScrubPriors) {
-			scrubPriors();
-		}
-		if (m_bAutoScrubState) {
-			scrubState();
-		}
-		if (m_bAutoScrubLoggers) {
-			scrubLoggers();
-		}
-		if (m_bAutoScrubOperators) {
-			scrubOperators();
+		try {
+			if (m_bAutoScrubPriors) {
+				scrubPriors();
+			}
+			if (m_bAutoScrubState) {
+				scrubState();
+			}
+			if (m_bAutoScrubLoggers) {
+				scrubLoggers();
+			}
+			if (m_bAutoScrubOperators) {
+				scrubOperators();
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
 		}
 	} // scrubAll
 	
 	/** remove operators on StateNodesthat have no impact on the posterior **/
 	void scrubOperators() {
 		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-		collectPredecessors(m_mcmc.get().posteriorInput.get(), posteriorPredecessors);
+		collectPredecessors(((MCMC)m_mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 		// clear operatorsInput & add to global list of operators if not already there
-		List<Operator> operators0 = m_mcmc.get().operatorsInput.get();
+		List<Operator> operators0 = ((MCMC)m_mcmc.get()).operatorsInput.get();
 		operators0.clear();
 //		for (int i = operators0.size()-1; i>=0;i--) {
 //			Operator o = operators0.remove(i);
@@ -515,8 +522,8 @@ public class BeautiDoc extends Plugin {
 	/** remove loggers of StateNodes that have no impact on the posterior **/
 	void scrubLoggers() {
 		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-		collectPredecessors(m_mcmc.get().posteriorInput.get(), posteriorPredecessors);
-		List<Logger> loggers = m_mcmc.get().m_loggers.get();
+		collectPredecessors(((MCMC)m_mcmc.get()).posteriorInput.get(), posteriorPredecessors);
+		List<Logger> loggers = ((MCMC)m_mcmc.get()).m_loggers.get();
 		for (int k = 0; k < loggers.size(); k++) {
 			Logger logger = loggers.get(k);
 			List<Plugin> loggerInput = m_loggerInputs.get(k);
@@ -547,9 +554,9 @@ public class BeautiDoc extends Plugin {
 	void scrubState() {
 		try {
 			List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-			collectPredecessors(m_mcmc.get().posteriorInput.get(), posteriorPredecessors);
+			collectPredecessors(((MCMC)m_mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 			
-			State state = m_mcmc.get().m_startState.get(); 
+			State state = ((MCMC)m_mcmc.get()).m_startState.get(); 
 			List<StateNode> stateNodes = state.stateNodeInput.get();
 			stateNodes.clear();
 			for (StateNode stateNode :  PluginPanel.g_stateNodes) {
@@ -570,7 +577,7 @@ public class BeautiDoc extends Plugin {
 		List<Distribution> priors = m_priors.get();
 		priors.clear();
 		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-		collectPredecessors(m_mcmc.get().posteriorInput.get(), posteriorPredecessors);
+		collectPredecessors(((MCMC)m_mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 
 		for (Distribution prior : m_potentialPriors) {
 			List<Plugin> priorPredecessors = new ArrayList<Plugin>();

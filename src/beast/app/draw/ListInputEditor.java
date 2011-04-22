@@ -90,7 +90,7 @@ public class ListInputEditor extends InputEditor {
         });
         box.add(m_addButton);
         add(m_listBox);
-        if (!m_bExpertMode) {
+        if (!g_bExpertMode) {
         	// if nothing can be added, make add button invisible
             List<String> sTabuList = new ArrayList<String>();
             for (int i = 0; i < m_labels.size(); i++) {

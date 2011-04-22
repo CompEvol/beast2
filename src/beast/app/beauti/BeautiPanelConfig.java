@@ -192,6 +192,7 @@ public class BeautiPanelConfig extends Plugin {
 			} else {
 				m_input = new FlexibleInput<ArrayList<Plugin>>(new ArrayList<Plugin>());
 			}
+			m_input.setRule(Validate.REQUIRED);
 			syncTo(iPartition);
 			return m_input;
 		} catch (Exception e) {

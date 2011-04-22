@@ -348,10 +348,10 @@ public class Beauti extends JTabbedPane {
         menuBar.add(modeMenu);
         modeMenu.setMnemonic('M');
         
-		final JCheckBoxMenuItem viewEditTree = new JCheckBoxMenuItem("Expert mode", InputEditor.m_bExpertMode);
+		final JCheckBoxMenuItem viewEditTree = new JCheckBoxMenuItem("Expert mode", InputEditor.g_bExpertMode);
 		viewEditTree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				InputEditor.m_bExpertMode = viewEditTree.getState();
+				InputEditor.g_bExpertMode = viewEditTree.getState();
 				refreshPanel();
 			}
 		});
@@ -469,11 +469,11 @@ public class Beauti extends JTabbedPane {
 			
 			PluginPanel.init();
 			
-			InputEditor.m_bExpertMode = true;
+			InputEditor.g_bExpertMode = true;
 	        BeautiInitDlg dlg = null;
 	        BeautiDoc doc = new BeautiDoc();
 	        dlg = new BeautiInitDlg(args, doc);
-			InputEditor.m_bExpertMode = false;
+			InputEditor.g_bExpertMode = false;
 
 	        doc.initialize(dlg.m_endState, dlg.m_sXML, dlg.m_sTemplateXML, dlg.m_sOutputFileName);
 	

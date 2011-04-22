@@ -4,7 +4,9 @@ package beast.app.draw;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -30,7 +32,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	final public static String NO_VALUE = "<none>";
 	public enum EXPAND {TRUE, FALSE, IF_ONE_ITEM};
 
-	public static boolean m_bExpertMode = false;
+	public static boolean g_bExpertMode = false;
 	
 	private static final long serialVersionUID = 1L;
 	/** the input to be edited **/
@@ -185,9 +187,12 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	protected void checkValidation() {
 			try {
 				m_input.validate();
+				if (!m_input.canSetValue(m_entry.getText(), m_plugin)) {
+					throw new Exception("invalid value");
+				}
 				// recurse
 				try {
-					validateRecursively(m_input);
+					validateRecursively(m_input, new HashSet<Input<?>>());
 				} catch (Exception e) {
 					notifyValidationListeners(State.HAS_INVALIDMEMBERS);
 					if (m_bAddButtons) {
@@ -215,7 +220,13 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	
 	/* Recurse in any of the input plugins
 	 * and validate its inputs */
-	void validateRecursively(Input<?> input) throws Exception {
+	void validateRecursively(Input<?> input, Set<Input<?>> done) throws Exception {
+		if (done.contains(input)) {
+			// this prevent cycles to lock up validation
+			return;
+		} else {
+			done.add(input);
+		}
 		if (input.get() != null) {
 			if (input.get() instanceof Plugin) {
 				for (Input<?> input2: ((Plugin)input.get()).listInputs()) {
@@ -224,7 +235,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 					} catch (Exception e) {
 						throw new Exception(((Plugin)input.get()).getID() + "</p><p> " + e.getMessage());
 					}
-					validateRecursively(input2);
+					validateRecursively(input2, done);
 				}
 			}
 			if (input.get() instanceof List<?>) {
@@ -236,7 +247,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 							} catch (Exception e) {
 								throw new Exception(((Plugin)o).getID() + " " + e.getMessage());
 							}
-							validateRecursively(input2);
+							validateRecursively(input2, done);
 						}
 					}
 				}

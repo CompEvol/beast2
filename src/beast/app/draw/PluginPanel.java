@@ -122,7 +122,12 @@ public class PluginPanel extends JPanel {
         init(plugin, _pluginClass, true);
     }
 
-    static public void registerPlugin(String sID, Plugin plugin) { 
+    /** add plugin to plugin map and update related maps 
+     * @return true if it was already registered **/
+    static public boolean registerPlugin(String sID, Plugin plugin) {
+    	if (g_plugins.containsKey(sID) && g_plugins.get(sID) == plugin) {
+    		return true;
+    	}
     	g_plugins.put(sID, plugin);
     	if (plugin instanceof Operator) {
     		g_operators.add((Operator)plugin);
@@ -139,6 +144,7 @@ public class PluginPanel extends JPanel {
     	if (plugin instanceof Taxon) {
     		g_taxa.add((Taxon)plugin);
     	}
+		return false;
     }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass) {
@@ -386,8 +392,10 @@ public class PluginPanel extends JPanel {
         if (sTabuList == null) {
             sTabuList = new ArrayList<String>();
         }
-        for (Plugin plugin : listAscendants(parent, g_plugins.values())) {
-            sTabuList.add(plugin.getID());
+        if (!InputEditor.g_bExpertMode) {
+		    for (Plugin plugin : listAscendants(parent, g_plugins.values())) {
+		        sTabuList.add(plugin.getID());
+		    }
         }
         System.err.println(sTabuList);
 
@@ -415,7 +423,7 @@ public class PluginPanel extends JPanel {
             }
         }
         /* add all plugin-classes of type assignable to the input */
-        if (InputEditor.m_bExpertMode) {
+        if (InputEditor.g_bExpertMode) {
 	        for (String sClass : ClassDiscovery.find(input.getType(), "beast")) {
 	        	try {
 	        		Object o = Class.forName(sClass).newInstance();
@@ -508,7 +516,9 @@ public class PluginPanel extends JPanel {
     }
 
     static public void addPluginToMap(Plugin plugin) {
-        registerPlugin(getID(plugin), plugin);
+        if (registerPlugin(getID(plugin), plugin)) {
+        	return;
+        }
         try {
             for (Input<?> input : plugin.listInputs()) {
                 if (input.get() != null) {
