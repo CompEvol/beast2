@@ -135,5 +135,66 @@ public class ESS extends Plugin implements Loggable {
 	public void close(PrintStream out) {
 		// nothing to do
 	}
+	
+	
+	/** return ESS time of a sample, batch version.
+	 * Can be used to calculate effective sample size 
+	 * @param fTrace:  values from which the ACT is calculated 
+	 * @param nSampleInterval time between samples **/
+	public static double calcESS(List<Double> fTrace) {
+		return calcESS(fTrace.toArray(new Double[0]), 1);
+	}
+	public static double calcESS(Double [] fTrace, int nSampleInterval) {
+		return fTrace.length / (ACT(fTrace, nSampleInterval)/nSampleInterval);
+	}
+	public static double ACT(Double [] fTrace, int nSampleInterval) {
+		/** sum of trace, excluding burn-in **/
+		double fSum = 0.0;
+		/** keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  **/
+	    double [] fSquareLaggedSums = new double[MAX_LAG];
+        double [] fAutoCorrelation = new double[MAX_LAG];
+		for (int i = 0; i < fTrace.length; i++) {
+			fSum += fTrace[i];
+	        // calculate mean
+	        final double fMean = fSum / (i+1);
+
+	        // calculate auto correlation for selected lag times
+	        // fSum1 = \sum_{iStart ... nTotalSamples-iLag-1} trace
+	    	double fSum1 = fSum;
+	        // fSum1 = \sum_{iStart+iLag ... nTotalSamples-1} trace
+	    	double fSum2 = fSum;
+	        for (int iLag = 0; iLag < Math.min(i + 1, MAX_LAG); iLag++) {
+	            fSquareLaggedSums[iLag] = fSquareLaggedSums[iLag] + fTrace[i - iLag] * fTrace[i];
+	            // The following line is the same approximation as in Tracer 
+	            // (valid since fMean *(nSamples - iLag), fSum1, and fSum2 are approximately the same)
+	            // though a more accurate estimate would be
+	            // fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - fSum1 * fSum2
+	            fAutoCorrelation[iLag] = fSquareLaggedSums[iLag] - (fSum1 + fSum2) * fMean + fMean * fMean * (i + 1 - iLag);
+	            fAutoCorrelation[iLag] /= ((double) (i + 1- iLag));
+	        	fSum1 -= fTrace[i - iLag];
+	        	fSum2 -= fTrace[iLag];
+	        }
+		}
+		
+        final int nMaxLag = Math.min(fTrace.length, MAX_LAG);
+        double integralOfACFunctionTimes2 = 0.0;
+        for (int iLag = 0; iLag < nMaxLag; iLag++) //{
+            if (iLag == 0) //{
+                integralOfACFunctionTimes2 = fAutoCorrelation[0];
+            else if (iLag % 2 == 0) 
+                // fancy stopping criterion - see main comment in Tracer code of BEAST 1
+                if (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag] > 0) //{
+                    integralOfACFunctionTimes2 += 2.0 * (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag]);
+                else
+                    // stop
+                    break;
+                //}
+            //}
+        //}
+
+        // auto correlation time
+        return nSampleInterval * integralOfACFunctionTimes2 / fAutoCorrelation[0];
+	}
+
 
 } // class ESS

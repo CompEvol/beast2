@@ -45,7 +45,7 @@ public class BeautiDoc extends Plugin {
 
 	
 	/** place holders for plugins **/
-	public Input<SiteModel.Base> m_siteModel = new Input<SiteModel.Base>("sitemodel", "site model, contains substitution model", Validate.REQUIRED);
+	public Input<SiteModel.Base> m_siteModel = new Input<SiteModel.Base>("sitemodel", "site model, contains substitution model");//, Validate.REQUIRED);
 	SiteModel.Base m_siteModelOrg;
 	
 	public Input<BranchRateModel.Base> m_clockModel = new Input<BranchRateModel.Base>("clockmodel", "clock model");

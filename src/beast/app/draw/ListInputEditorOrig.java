@@ -4,6 +4,8 @@ import beast.core.Input;
 import beast.core.Plugin;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -150,8 +152,10 @@ public class ListInputEditorOrig extends InputEditor {
         PluginDialog dlg = new PluginDialog(plugin, m_input.getType());
         dlg.setVisible(true);
         if (dlg.getOK()) {
-            ((List<Plugin>) m_input.get()).set(iSelected, dlg.m_panel.m_plugin);
+        	dlg.accept(((List<Plugin>) m_input.get()).get(iSelected));
+            //((List<Plugin>) m_input.get()).set(iSelected, dlg.m_panel.m_plugin);
             m_listModel.set(iSelected, dlg.m_panel.m_plugin.getID());
+            refresh();
         }
         PluginPanel.m_position.x -= 20;
         PluginPanel.m_position.y -= 20;
@@ -159,6 +163,16 @@ public class ListInputEditorOrig extends InputEditor {
         updateState();
 	} // editItem
     
+    void refresh() {
+        Component c = this;
+        while (((Component) c).getParent() != null) {
+        	c = ((Component) c).getParent();
+        	if (c instanceof ListSelectionListener) {
+        		((ListSelectionListener) c).valueChanged(null);
+        	}
+        }
+    }
+
 	protected void deleteItem() {
         int iSelected = m_list.getSelectedIndex();
         ((List<?>) m_input.get()).remove(iSelected);

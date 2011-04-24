@@ -8,7 +8,9 @@ import beast.util.ClassDiscovery;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionListener;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -82,7 +84,8 @@ public class PluginInputEditor extends InputEditor {
                		//m_selectPluginBox.removeItem(sID);
 	                if (dlg.getOK()) {
 	                	try {
-	                		m_input.setValue(dlg.m_panel.m_plugin, m_plugin);
+	                		dlg.accept(m_plugin);
+	                		//m_input.setValue(dlg.m_panel.m_plugin, m_plugin);
 	                	} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -103,6 +106,13 @@ public class PluginInputEditor extends InputEditor {
             m_selectPluginBox.addItem(sID);
             m_selectPluginBox.setSelectedItem(sID);
             m_selectPluginBox.removeItem(sOldID);
+        }
+        Component c = this;
+        while (((Component) c).getParent() != null) {
+        	c = ((Component) c).getParent();
+        	if (c instanceof ListSelectionListener) {
+        		((ListSelectionListener) c).valueChanged(null);
+        	}
         }
     }
 

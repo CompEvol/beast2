@@ -36,7 +36,14 @@ public abstract class Operator extends Plugin {
 	 * The proposal is responsible for keeping the State valid,
 	 * and if the State becomes invalid (e.g. a parameter goes out
 	 * of its range) Double.NEGATIVE_INFINITY should be returned.
-	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted
+	 * 
+	 * If the operator is a Gibbs operator, hence the proposal should 
+	 * always be accepted, the method should return Double.POSITIVE_INFINITY.
+	 * 
+	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal 
+	 * should not be accepted (because the proposal is invalid) or 
+	 * Double.POSITIVE_INFINITY if the proposal should always be accepted 
+	 * (for Gibbs operators).
      **/
 	abstract public double proposal();
 
@@ -93,7 +100,7 @@ public abstract class Operator extends Plugin {
     public double getTargetAcceptanceProbability() {
         return 0.234;
     }
-
+    
 	public String toString() {
 		String sName = getName();
 		if (sName.length() < 40) {

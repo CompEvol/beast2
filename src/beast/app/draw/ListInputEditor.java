@@ -4,6 +4,8 @@ import beast.core.Input;
 import beast.core.Plugin;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -215,7 +217,9 @@ public class ListInputEditor extends InputEditor {
         dlg.setVisible(true);
         if (dlg.getOK()) {
         	m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
-        	o = dlg.m_panel.m_plugin;
+        	//o = dlg.m_panel.m_plugin;
+        	dlg.accept((Plugin) o);
+            refresh();
         }
         PluginPanel.m_position.x -= 20;
         PluginPanel.m_position.y -= 20;
@@ -224,6 +228,16 @@ public class ListInputEditor extends InputEditor {
         doLayout();
         return o;
 	} // editItem
+
+    void refresh() {
+        Component c = this;
+        while (((Component) c).getParent() != null) {
+        	c = ((Component) c).getParent();
+        	if (c instanceof ListSelectionListener) {
+        		((ListSelectionListener) c).valueChanged(null);
+        	}
+        }
+    }
     
 	protected void deleteItem(Object o) {
 		int i = ((List<?>)m_input.get()).indexOf(o);

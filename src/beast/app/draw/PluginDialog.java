@@ -1,5 +1,6 @@
 package beast.app.draw;
 
+import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
 import beast.util.XMLProducer;
@@ -46,6 +47,17 @@ public class PluginDialog extends JDialog {
 
     public PluginDialog(Plugin plugin, Class<?> type) {
         this(new PluginPanel(plugin, type));
+    }
+
+    /* to be called when OK is pressed **/
+    void accept(Plugin plugin) {
+    	try {
+    		for (Input<?> input : m_panel.m_plugin.listInputs()) {
+    			plugin.setInputValue(input.getName(), input.get());
+    		}
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
     void init(PluginPanel panel) {

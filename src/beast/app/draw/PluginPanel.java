@@ -155,11 +155,20 @@ public class PluginPanel extends JPanel {
         initPlugins(plugin);
         init(plugin, _pluginClass, bShowHeader);
     }
-
+    
     void init(Plugin plugin, Class<?> _pluginClass, boolean showHeader) {
+    	try {
+    		m_plugin = plugin.getClass().newInstance();
+    		for (Input<?> input : plugin.listInputs()) {
+    			m_plugin.setInputValue(input.getName(), input.get());
+    		}
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
 
         //setModal(true);
-        m_plugin = plugin;
+        //m_plugin = plugin;
         m_pluginClass = _pluginClass;
         //setTitle(m_plugin.getID() + " Editor");
 
@@ -353,24 +362,6 @@ public class PluginPanel extends JPanel {
 		});
         box.add(m_identry);
         
-        
-        SmallButton helpButton2 = new SmallButton("?", true);
-        helpButton2.setToolTipText("Show help for this plugin");
-        helpButton2.addActionListener(new ActionListener() {
-
-            // implementation ActionListener
-            public void actionPerformed(ActionEvent e) {
-                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                HelpBrowser b = new HelpBrowser(m_plugin.getClass().getName());
-                b.setSize(800, 800);
-                b.setVisible(true);
-                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
-        box.add(Box.createHorizontalStrut(10));
-        box.add(helpButton2);
-        box.add(Box.createHorizontalGlue());
 
         Box vbox = Box.createVerticalBox();
         vbox.setBorder(new EtchedBorder());

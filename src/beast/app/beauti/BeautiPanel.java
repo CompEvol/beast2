@@ -3,12 +3,16 @@ package beast.app.beauti;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -19,8 +23,10 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import beast.app.draw.HelpBrowser;
 import beast.app.draw.InputEditor;
 import beast.app.draw.PluginPanel;
+import beast.app.draw.SmallButton;
 import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Input;
 import beast.core.Plugin;
@@ -52,13 +58,13 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     /** component containing main input editor **/ 
 	Component m_centralComponent = null;
 
-    public BeautiPanel(int iPanel, BeautiDoc doc, boolean bHasPartion) throws Exception {
-		m_doc = doc;
-		m_iPanel = iPanel;
-	    setLayout(new BorderLayout());
-	    refreshPanel();
-	    addParitionPanel(bHasPartion, iPanel);
-	} // c'tor
+//    public BeautiPanel(int iPanel, BeautiDoc doc, boolean bHasPartion) throws Exception {
+//		m_doc = doc;
+//		m_iPanel = iPanel;
+//	    setLayout(new BorderLayout());
+//	    refreshPanel();
+//	    addParitionPanel(bHasPartion, iPanel);
+//	} // c'tor
     
     public BeautiPanel(int iPanel, BeautiDoc doc, BeautiPanelConfig config) throws Exception {
 		m_doc = doc;
@@ -83,6 +89,23 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		box.add(Box.createVerticalGlue());
 		box.add(new JLabel(getIcon(iPanel, m_config)));
     	add(box, BorderLayout.WEST);
+    	
+        SmallButton helpButton2 = new SmallButton("?", true);
+        helpButton2.setToolTipText("Show help for this plugin");
+        helpButton2.addActionListener(new ActionListener() {
+            // implementation ActionListener
+            public void actionPerformed(ActionEvent e) {
+                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                HelpBrowser b = new HelpBrowser(m_config.m_plugin.getClass().getName());
+                b.setSize(800, 800);
+                b.setVisible(true);
+                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
+    	add(helpButton2, BorderLayout.EAST);
+        //box.add(helpButton2);
+
 	}
 	
     Box createList() {
@@ -171,10 +194,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		//m_doc.sync(m_iPanel);
-		m_config.sync();
-		m_iPartition = m_listOfPartitions.getSelectedIndex();
-		//m_doc.syncTo(m_iPanel, m_iPartition);
+		if (e != null) {
+			//m_doc.sync(m_iPanel);
+			m_config.sync();
+			m_iPartition = m_listOfPartitions.getSelectedIndex();
+			//m_doc.syncTo(m_iPanel, m_iPartition);
+		}
 		try {
 			refreshPanel();
 		} catch (Exception ex) {

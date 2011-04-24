@@ -2,7 +2,10 @@ package beast.app.draw;
 
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -159,7 +163,22 @@ public abstract class InputEditor extends Box implements ValidateListener {
 				sName = sName.substring(0,1).toUpperCase() + sName.substring(1);
 			}
 			addInputLabel(sName, m_input.getTipText());
-		}
+	        SmallButton helpButton = new SmallButton("?", true);
+
+//	        helpButton.setToolTipText("Show help for this input");
+//	        helpButton.addActionListener(new ActionListener() {
+//	        // implementation ActionListener
+//            public void actionPerformed(ActionEvent e) {
+//                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+//                HelpBrowser b = new HelpBrowser(m_plugin.getClass().getName());
+//                b.setSize(800, 800);
+//                b.setVisible(true);
+//                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//	            }
+//	        });
+//	        add(helpButton);
+	    }
 	}
 
 	protected void addInputLabel(String sLabel, String sTipText) {
@@ -187,7 +206,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	protected void checkValidation() {
 			try {
 				m_input.validate();
-				if (!m_input.canSetValue(m_entry.getText(), m_plugin)) {
+				if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_plugin)) {
 					throw new Exception("invalid value");
 				}
 				// recurse
