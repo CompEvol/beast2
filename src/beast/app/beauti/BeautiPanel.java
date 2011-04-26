@@ -4,7 +4,6 @@ package beast.app.beauti;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -69,6 +68,30 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     public BeautiPanel(int iPanel, BeautiDoc doc, BeautiPanelConfig config) throws Exception {
 		m_doc = doc;
 		m_iPanel = iPanel;
+		
+        SmallButton helpButton2 = new SmallButton("?", true);
+        helpButton2.setToolTipText("Show help for this plugin");
+        helpButton2.addActionListener(new ActionListener() {
+            // implementation ActionListener
+            public void actionPerformed(ActionEvent e) {
+                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                Object o = m_config.m_sTypeInput.get();
+                if (o == null) {
+                	o = m_config.m_plugin;
+                }
+                if (o == null) {
+                	o = m_config.m_inputs.get(0);
+                }
+                HelpBrowser b = new HelpBrowser(o.getClass().getName());
+                b.setSize(800, 800);
+                b.setVisible(true);
+                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
+    	add(helpButton2);//, BorderLayout.EAST);
+		
+		
 	    setLayout(new BorderLayout());
 	    m_config = config;
 	    refreshPanel();
@@ -90,20 +113,6 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		box.add(new JLabel(getIcon(iPanel, m_config)));
     	add(box, BorderLayout.WEST);
     	
-        SmallButton helpButton2 = new SmallButton("?", true);
-        helpButton2.setToolTipText("Show help for this plugin");
-        helpButton2.addActionListener(new ActionListener() {
-            // implementation ActionListener
-            public void actionPerformed(ActionEvent e) {
-                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                HelpBrowser b = new HelpBrowser(m_config.m_plugin.getClass().getName());
-                b.setSize(800, 800);
-                b.setVisible(true);
-                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
-    	add(helpButton2, BorderLayout.EAST);
         //box.add(helpButton2);
 
 	}
@@ -185,6 +194,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	}
 
 	void refreshInputPanel() throws Exception {
+		InputEditor.g_currentInputEditors.clear();
 		Plugin plugin = m_config;
 		Input<?> input = m_config.resolveInput(m_doc, m_iPartition);
 		boolean bAddButtons = m_config.addButtons();

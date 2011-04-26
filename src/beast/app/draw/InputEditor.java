@@ -2,10 +2,7 @@ package beast.app.draw;
 
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +10,6 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -62,18 +58,21 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		}
 		m_validateListeners.add(validateListener);
 	}
-	void notifyValidationListeners(State state) {
+	void notifyValidationListeners(ValidationStatus state) {
 		if (m_validateListeners != null) {
 			for (ValidateListener listener : m_validateListeners) {
 				listener.validate(state);
 			}
 		}
 	}
+
+	static public Set<InputEditor> g_currentInputEditors = new HashSet<InputEditor>();
 	
 	
 	public InputEditor() {
 		super(BoxLayout.X_AXIS);
 		setAlignmentX(LEFT_ALIGNMENT);
+		g_currentInputEditors.add(this);
 		//setAlignmentY(TOP_ALIGNMENT);
 	} // c'tor
 	
@@ -142,6 +141,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		try {
 			m_input.setValue(m_entry.getText(), m_plugin);
 			checkValidation();
+			m_entry.requestFocusInWindow();
 		} catch (Exception ex) {
 //			JOptionPane.showMessageDialog(null, "Error while setting " + m_input.getName() + ": " + ex.getMessage() +
 //					" Leaving value at " + m_input.get());
@@ -163,21 +163,6 @@ public abstract class InputEditor extends Box implements ValidateListener {
 				sName = sName.substring(0,1).toUpperCase() + sName.substring(1);
 			}
 			addInputLabel(sName, m_input.getTipText());
-	        SmallButton helpButton = new SmallButton("?", true);
-
-//	        helpButton.setToolTipText("Show help for this input");
-//	        helpButton.addActionListener(new ActionListener() {
-//	        // implementation ActionListener
-//            public void actionPerformed(ActionEvent e) {
-//                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-//                HelpBrowser b = new HelpBrowser(m_plugin.getClass().getName());
-//                b.setSize(800, 800);
-//                b.setVisible(true);
-//                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//	            }
-//	        });
-//	        add(helpButton);
 	    }
 	}
 
@@ -203,6 +188,11 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	}
 	
 	/* check the input is valid, continue checking recursively */
+	protected void validateAllEditors() {
+		for (InputEditor editor : g_currentInputEditors) {
+			editor.checkValidation();
+		}
+	}
 	protected void checkValidation() {
 			try {
 				m_input.validate();
@@ -213,7 +203,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 				try {
 					validateRecursively(m_input, new HashSet<Input<?>>());
 				} catch (Exception e) {
-					notifyValidationListeners(State.HAS_INVALIDMEMBERS);
+					notifyValidationListeners(ValidationStatus.HAS_INVALIDMEMBERS);
 					if (m_bAddButtons) {
 						m_validateLabel.setVisible(true);
 						m_validateLabel.setToolTipText("<html><p>Recursive error in " + e.getMessage() + "</p></html>");
@@ -225,14 +215,14 @@ public abstract class InputEditor extends Box implements ValidateListener {
 				if (m_bAddButtons) {
 					m_validateLabel.setVisible(false);
 				}
-				notifyValidationListeners(State.IS_VALID);
+				notifyValidationListeners(ValidationStatus.IS_VALID);
 			} catch (Exception e) {
 				if (m_bAddButtons) {
 					m_validateLabel.setToolTipText(e.getMessage());
 					m_validateLabel.m_circleColor = Color.red;
 					m_validateLabel.setVisible(true);
 				}
-				notifyValidationListeners(State.IS_INVALID);
+				notifyValidationListeners(ValidationStatus.IS_INVALID);
 			}
 		repaint();
 	}
@@ -248,7 +238,8 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		}
 		if (input.get() != null) {
 			if (input.get() instanceof Plugin) {
-				for (Input<?> input2: ((Plugin)input.get()).listInputs()) {
+				Plugin plugin = ((Plugin)input.get());
+				for (Input<?> input2: plugin.listInputs()) {
 					try {
 						input2.validate();
 					} catch (Exception e) {
@@ -260,7 +251,8 @@ public abstract class InputEditor extends Box implements ValidateListener {
 			if (input.get() instanceof List<?>) {
 				for (Object o : (List<?>)input.get()) {
 					if (o != null && o instanceof Plugin) {
-						for (Input<?> input2: ((Plugin)o).listInputs()) {
+						Plugin plugin = (Plugin) o;
+						for (Input<?> input2: plugin.listInputs()) {
 							try {
 								input2.validate();
 							} catch (Exception e) {
@@ -275,8 +267,9 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	} // validateRecursively
 	
 	@Override
-	public void validate(State state) {
+	public void validate(ValidationStatus state) {
 		checkValidation();
 	}
+	
 
 } // class InputEditor

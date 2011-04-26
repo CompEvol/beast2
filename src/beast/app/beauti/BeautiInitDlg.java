@@ -304,7 +304,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         centralBox.add(m_createNewBox);
         centralBox.add(m_loadExistingBox);
 
-        validate(State.IS_VALID);
+        validate(ValidationStatus.IS_VALID);
         return centralBox;
     }
     
@@ -630,7 +630,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 	}
 	
 	@Override
-	public void validate(State state) {
+	public void validate(ValidationStatus state) {
 		if (m_sXML != null) {
 			m_startBeastButton.setEnabled(true);
 		}

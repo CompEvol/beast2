@@ -209,13 +209,13 @@ public class Beauti extends JTabbedPane {
             if (rval == JFileChooser.APPROVE_OPTION) {
                 // System.out.println("Saving to file \""+
                 // f.getAbsoluteFile().toString()+"\"");
-                String sFileName = fc.getSelectedFile().toString();
-                if (sFileName.lastIndexOf('/') > 0) {
-                    m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+                m_sFileName = fc.getSelectedFile().toString();
+                if (m_sFileName.lastIndexOf('/') > 0) {
+                    m_sDir = m_sFileName.substring(0, m_sFileName.lastIndexOf('/'));
                 }
-                if (!sFileName.endsWith(FILE_EXT))
-                    sFileName = sFileName.concat(FILE_EXT);
-                saveFile(sFileName);
+                if (!m_sFileName.endsWith(FILE_EXT))
+                	m_sFileName = m_sFileName.concat(FILE_EXT);
+                saveFile(m_sFileName);
                 return true;
             }
             return false;
@@ -223,6 +223,7 @@ public class Beauti extends JTabbedPane {
 
         protected void saveFile(String sFileName) {
             try {
+            	m_currentTab.m_config.sync();
                 m_doc.save(sFileName);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -307,7 +308,7 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	for(int nPanelNr = 0; nPanelNr < NR_OF_PANELS; nPanelNr++) {
+        	for(int nPanelNr = 0; nPanelNr < m_bPaneIsVisible.length; nPanelNr++) {
         		if (!m_bPaneIsVisible[nPanelNr] 
         		    //&& !BeautiConfig.g_sDisabledMenus.contains("View.Show "+TAB_NAME[nPanelNr] + " panel")
         		                      ) {
@@ -496,8 +497,9 @@ public class Beauti extends JTabbedPane {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					//beauti.m_doc.sync(beauti.m_currentTab.m_iPanel);
+					beauti.m_currentTab.m_config.sync();
 					BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
-					panel.m_config.sync();
+					//panel.m_config.sync();
 					beauti.m_currentTab = panel;
 					//beauti.m_doc.syncTo(panel.m_iPanel, panel.m_iPartition);
 					beauti.refreshPanel();
@@ -506,6 +508,7 @@ public class Beauti extends JTabbedPane {
 			
 			
 			beauti.setVisible(true);
+			beauti.refreshPanel();
 			JFrame frame = new JFrame("Beauti II");
 			frame.setIconImage(BeautiPanel.getIcon(6, null).getImage());
 

@@ -78,7 +78,7 @@ public class PluginPanel extends JPanel {
         // register input editors
         g_inputEditorMap = new HashMap<Class<?>, String>();
         g_listInputEditorMap = new HashMap<Class<?>, String>();
-        String[] PACKAGE_DIRS = {"beast.app.draw", "beast.app.beauti"};
+        String[] PACKAGE_DIRS = {"beast.app"};
         for(String sPackage : PACKAGE_DIRS) {
 	        List<String> sInputEditors = ClassDiscovery.find("beast.app.draw.InputEditor", sPackage);
 	        for (String sInputEditor : sInputEditors) {
@@ -146,6 +146,16 @@ public class PluginPanel extends JPanel {
     	}
 		return false;
     }
+
+    public static void renamePluginID(Plugin plugin, String sOldID, String sID) {
+		g_plugins.remove(sOldID);
+		g_operators.remove(sOldID);
+		g_stateNodes.remove(sOldID);
+		g_loggers.remove(sOldID);
+		g_distributions.remove(sOldID);
+		g_taxa.remove(sOldID);
+    	registerPlugin(sID, plugin);
+	}
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass) {
     	this(plugin, _pluginClass, true);
@@ -415,7 +425,8 @@ public class PluginPanel extends JPanel {
         }
         /* add all plugin-classes of type assignable to the input */
         if (InputEditor.g_bExpertMode) {
-	        for (String sClass : ClassDiscovery.find(input.getType(), "beast")) {
+        	List<String> sClasses = ClassDiscovery.find(input.getType(), "beast");
+	        for (String sClass : sClasses) {
 	        	try {
 	        		Object o = Class.forName(sClass).newInstance();
 	        		if (input.canSetValue(o, parent)) {
@@ -591,5 +602,6 @@ public class PluginPanel extends JPanel {
             System.out.println(sXML);
         }
     } // main
+
 } // class PluginDialog
 

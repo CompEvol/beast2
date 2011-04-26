@@ -1,11 +1,11 @@
 package beast.app.draw;
 
 public interface ValidateListener {
-	public enum State {
+	public enum ValidationStatus {
 		IS_VALID,
 		IS_INVALID,
 		HAS_INVALIDMEMBERS
 	}
 
-	void validate(State state);
+	void validate(ValidationStatus state);
 }

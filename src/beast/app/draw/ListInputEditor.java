@@ -4,6 +4,8 @@ import beast.core.Input;
 import beast.core.Plugin;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
 import java.awt.*;
@@ -24,7 +26,8 @@ public class ListInputEditor extends InputEditor {
      * buttons for manipulating the list of inputs *
      */
     protected SmallButton m_addButton;
-    protected List<JLabel> m_labels;
+    //protected List<JLabel> m_labels;
+    protected List<JTextField> m_entries;
     protected List<SmallButton> m_delButton;
     protected List<SmallButton> m_editButton;
     protected List<SmallLabel> m_validateLabels;
@@ -41,7 +44,8 @@ public class ListInputEditor extends InputEditor {
     }
     public ListInputEditor() {
         super();
-        m_labels = new ArrayList<JLabel>();
+        //m_labels = new ArrayList<JLabel>();
+        m_entries = new ArrayList<JTextField>();
         m_delButton = new ArrayList<SmallButton>();
         m_editButton = new ArrayList<SmallButton>();
         m_validateLabels = new ArrayList<SmallLabel>();
@@ -95,8 +99,11 @@ public class ListInputEditor extends InputEditor {
         if (!g_bExpertMode) {
         	// if nothing can be added, make add button invisible
             List<String> sTabuList = new ArrayList<String>();
-            for (int i = 0; i < m_labels.size(); i++) {
-                sTabuList.add(m_labels.get(i).getText());
+//            for (int i = 0; i < m_labels.size(); i++) {
+//                sTabuList.add(m_labels.get(i).getText());
+//            }
+            for (int i = 0; i < m_entries.size(); i++) {
+                sTabuList.add(m_entries.get(i).getText());
             }
             List<String> sPlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, sTabuList);
             if (sPlugins.size() == 0) {
@@ -120,17 +127,17 @@ public class ListInputEditor extends InputEditor {
     protected void addSingleItem(Plugin plugin) {
         Box itemBox = Box.createHorizontalBox();
         
-        SmallButton editButton = new SmallButton("e", true);
-        editButton.setToolTipText("Edit item in the list");
-        editButton.addActionListener(new ActionListenerObject(plugin) {
-            @SuppressWarnings("unchecked")
-            // implements ActionListener
-            public void actionPerformed(ActionEvent e) {
-            	m_o = editItem(m_o);
-            }
-        });
-        m_editButton.add(editButton);
-        itemBox.add(editButton);
+        if (m_bExpand == EXPAND.FALSE) {
+	        SmallButton editButton = new SmallButton("e", true);
+	        editButton.setToolTipText("Edit item in the list");
+	        editButton.addActionListener(new ActionListenerObject(plugin) {
+	            public void actionPerformed(ActionEvent e) {
+	            	m_o = editItem(m_o);
+	            }
+	        });
+	        m_editButton.add(editButton);
+	        itemBox.add(editButton);
+        }
         
         SmallButton delButton = new SmallButton("-", true);
         delButton.setToolTipText("Delete item from the list");
@@ -181,24 +188,63 @@ public class ListInputEditor extends InputEditor {
             sName = plugin.getClass().getName();
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
-        JLabel label = new JLabel(" " + sName);
-        label.setBackground(Color.WHITE);
-        m_labels.add(label);
-        itemBox.add(label);
-        itemBox.add(Box.createHorizontalGlue());
+        JTextField entry = new JTextField(sName);
+        entry.setMinimumSize(new Dimension(200, 16));
+        entry.setMaximumSize(new Dimension(200, 20));
+		entry.getDocument().addDocumentListener(new IDDocumentListener(plugin, entry));
+				
+		itemBox.add(entry);
+		m_entries.add(entry);
+		itemBox.add(Box.createHorizontalGlue());
+//        JLabel label = new JLabel(" " + sName);
+//        label.setBackground(Color.WHITE);
+//        m_labels.add(label);
+//        itemBox.add(label);
+//        itemBox.add(Box.createHorizontalGlue());
     }
 
+    
+	class IDDocumentListener implements DocumentListener {
+		Plugin m_plugin;
+		JTextField m_entry;
+		IDDocumentListener(Plugin plugin, JTextField entry) {
+			m_plugin = plugin;
+			m_entry = entry;
+		}
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			processEntry();
+		}
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			processEntry();
+		}
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			processEntry();
+		}
+		void processEntry() {
+			String sOldID = m_plugin.getID();
+			m_plugin.setID(m_entry.getText());
+			PluginPanel.renamePluginID(m_plugin, sOldID, m_plugin.getID());
+			validateAllEditors();
+			m_entry.requestFocusInWindow();
+		}
+	}
     
     
 	protected void addItem() {
         List<String> sTabuList = new ArrayList<String>();
-        for (int i = 0; i < m_labels.size(); i++) {
-            sTabuList.add(m_labels.get(i).getText());
+//        for (int i = 0; i < m_labels.size(); i++) {
+//            sTabuList.add(m_labels.get(i).getText().substring(1));
+//        }
+        for (int i = 0; i < m_entries.size(); i++) {
+            sTabuList.add(m_entries.get(i).getText());
         }
         Plugin plugin = pluginSelector(m_input, m_plugin, sTabuList);
         if (plugin != null) {
             try {
-                m_input.setValue(plugin, m_plugin);
+           		m_input.setValue(plugin, m_plugin);
             } catch (Exception ex) {
                 System.err.println(ex.getClass().getName() + " " + ex.getMessage());
             }
@@ -209,26 +255,27 @@ public class ListInputEditor extends InputEditor {
         }
 	} // addItem
 	
-	@SuppressWarnings("unchecked")
 	protected Object editItem(Object o) {
 		int i = ((List<?>)m_input.get()).indexOf(o);
         Plugin plugin = (Plugin) ((List<?>)m_input.get()).get(i);
         PluginDialog dlg = new PluginDialog(plugin, m_input.getType());
         dlg.setVisible(true);
         if (dlg.getOK()) {
-        	m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
+        	//m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
+        	m_entries.get(i).setText(dlg.m_panel.m_plugin.getID());
         	//o = dlg.m_panel.m_plugin;
         	dlg.accept((Plugin) o);
             refresh();
         }
         PluginPanel.m_position.x -= 20;
         PluginPanel.m_position.y -= 20;
-        checkValidation();
+        //checkValidation();
+        validateAllEditors();
         updateState();
         doLayout();
         return o;
 	} // editItem
-
+    
     void refresh() {
         Component c = this;
         while (((Component) c).getParent() != null) {
@@ -238,22 +285,29 @@ public class ListInputEditor extends InputEditor {
         	}
         }
     }
-    
-	protected void deleteItem(Object o) {
+
+    protected void deleteItem(Object o) {
 		int i = ((List<?>)m_input.get()).indexOf(o);
 		m_listBox.remove(i);
 		((List<?>)m_input.get()).remove(i);
-		m_labels.remove(i);
-		m_delButton.remove(i);
-		m_editButton.remove(i);
-		m_validateLabels.remove(i);
+		//safeRemove(m_labels, i);
+		safeRemove(m_entries, i);
+		safeRemove(m_delButton, i);
+		safeRemove(m_editButton, i);
+		safeRemove(m_validateLabels, i);
         checkValidation();
         updateState();
         doLayout();
         repaint();
 	} // deleteItem
 		
-    /**
+    private void safeRemove(List<?> list, int i) {
+		if (list.size() > i) {
+			list.remove(i);
+		}
+	}
+
+	/**
      * Select existing plug-in, or create a new one.
      * Suppress existing plug-ins with IDs from the tabu list.
      * Return null if nothing is selected.
@@ -264,6 +318,13 @@ public class ListInputEditor extends InputEditor {
         String sClassName = null;
         if (sPlugins.size() == 1) {
             // if there is only one candidate, select that one
+            sClassName = sPlugins.get(0);
+        } else if (sPlugins.size() == 0) {
+        	// no candidate => we cannot be in expert mode
+        	// create a new Plugin 
+        	InputEditor.g_bExpertMode = true;
+            sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList);
+        	InputEditor.g_bExpertMode = false;
             sClassName = sPlugins.get(0);
         } else {
             // otherwise, pop up a list box
@@ -314,7 +375,7 @@ public class ListInputEditor extends InputEditor {
     } // updateState
 
 	@Override
-	public void validate(State state) {
+	public void validate(ValidationStatus state) {
 		updateState();
 	}
 } // class ListPluginInputEditor

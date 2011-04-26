@@ -47,6 +47,7 @@ public class BeautiPanelConfig extends Plugin {
 	List<Plugin> m_inputs;
 	/** plugins that are parents, i.e. contain inpust of m_inputs **/
 	List<Plugin> m_parentPlugins;
+	List<Input> m_parentInputs;
 	/** flag to indicate we are dealing with a list input **/
 	boolean m_bIsList;
 
@@ -67,7 +68,7 @@ public class BeautiPanelConfig extends Plugin {
 	}
 	
 	Plugin m_plugin;
-	List<Plugin> m_pluginList;
+	//List<Plugin> m_pluginList;
 	
 	@Override
 	public void initAndValidate() throws Exception {
@@ -123,14 +124,17 @@ public class BeautiPanelConfig extends Plugin {
 		try {
 			List<Plugin> plugins = new ArrayList<Plugin>();
 			m_parentPlugins = new ArrayList<Plugin>();
+			m_parentInputs =  new ArrayList<Input>();
 			plugins.add(doc.m_mcmc.get());
 			m_parentPlugins.add(doc);
+			m_parentInputs.add(doc.m_mcmc);
 			m_type = doc.m_mcmc.getType();
 			m_bIsList = false;
 			for (int i = 0; i < m_sPathComponents.length; i++) {
 				List<Plugin> oldPlugins = plugins;
 				plugins = new ArrayList<Plugin>();
 				m_parentPlugins = new ArrayList<Plugin>();
+				m_parentInputs =  new ArrayList<Input>();
 				for (Plugin plugin: oldPlugins) {
 					Input<?> namedInput = plugin.getInput(m_sPathComponents[i]);
 					m_type = namedInput.getType();
@@ -142,6 +146,7 @@ public class BeautiPanelConfig extends Plugin {
 								Plugin plugin2 = (Plugin) o;
 								plugins.add(plugin2);
 								m_parentPlugins.add(plugin);
+								m_parentInputs.add(namedInput);
 							}
 							//throw new Exception ("Don't know which element to pick from the list. List component should come with a condition. " + m_sPathComponents[i]);
 						} else {
@@ -151,6 +156,7 @@ public class BeautiPanelConfig extends Plugin {
 									if (plugin2.getID().equals(m_sConditionalValue[i])) {
 										plugins.add(plugin2);
 										m_parentPlugins.add(plugin);
+										m_parentInputs.add(namedInput);
 										break;
 									}
 								}
@@ -161,11 +167,13 @@ public class BeautiPanelConfig extends Plugin {
 						if (m_sConditionalAttribute[i] == null) {
 							plugins.add((Plugin)namedInput.get());
 							m_parentPlugins.add(plugin);
+							m_parentInputs.add(namedInput);
 						} else {
 							if (m_sConditionalAttribute[i].equals("id")) {
 								if (plugin.getID().equals(m_sConditionalValue[i])) {
 									plugins.add(plugin);
 									m_parentPlugins.add(plugin);
+									m_parentInputs.add(namedInput);
 								}
 							}
 						}
@@ -204,24 +212,14 @@ public class BeautiPanelConfig extends Plugin {
 		return null;
 	} // resolveInputs
 	
+	@SuppressWarnings("unchecked")
 	public void sync() {
-		if (m_bIsList) { //m_input.get() instanceof List) {
+		if (m_bIsList && m_parentInputs.size() > 0) { 
+			Input<?> input = m_parentInputs.get(0);
 			List<Object> list = (List<Object>) m_input.get();
-			list.clear();
-			try {
-				m_input.setValue(list, null);
-				for (Object o: m_pluginList) {
-						m_input.setValue(o, null);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			try {
-				m_input.setValue(m_plugin, null);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			List<Object> targetList = ((List<Object>)input.get());
+			targetList.clear();
+			targetList.addAll(list);
 		}
 	} 
 

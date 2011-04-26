@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.Box;
-import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
@@ -41,10 +41,17 @@ public class TreeLikelihoodListInputEditor extends ListInputEditor {
             sName = plugin.getClass().getName();
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
-        JLabel label = new JLabel(" " +sName);
-        label.setBackground(Color.WHITE);
-        m_labels.add(label);
-        itemBox.add(label);
+//        JLabel label = new JLabel(" " +sName);
+//        label.setBackground(Color.WHITE);
+//        m_labels.add(label);
+//        itemBox.add(label);
+        JTextField entry= new JTextField(sName);
+        //entry.setBackground(Color.WHITE);
+        entry.setMinimumSize(new Dimension(200, 16));
+        entry.setMaximumSize(new Dimension(200, 20));
+        m_entries.add(entry);
+        itemBox.add(entry);
+        
         itemBox.add(Box.createHorizontalGlue());
         try {
         	InputEditor editor = PluginPanel.createInputEditor(likelihood.m_tree, likelihood, false, EXPAND.FALSE, this);

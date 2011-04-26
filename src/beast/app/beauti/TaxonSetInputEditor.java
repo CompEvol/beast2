@@ -95,7 +95,8 @@ public class TaxonSetInputEditor extends ListInputEditor {
         TaxonSetDialog dlg = new TaxonSetDialog(taxonset, PluginPanel.g_taxa);
         dlg.setVisible(true);
         if (dlg.m_bOK) {
-        	m_labels.get(i).setText(dlg.m_taxonSet.getID());
+        	//m_labels.get(i).setText(dlg.m_taxonSet.getID());
+        	m_entries.get(i).setText(dlg.m_taxonSet.getID());
         	o = dlg.m_taxonSet;
         }
         PluginPanel.m_position.x -= 20;

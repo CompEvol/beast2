@@ -1,12 +1,10 @@
 package beast.app.beauti;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
-import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -37,11 +35,17 @@ public class OperatorListInputEditor extends ListInputEditor {
      */
     protected void addPluginItem(Box itemBox, Plugin plugin) {
         Operator operator = (Operator) plugin;
-        JLabel label = new JLabel(getLabel(operator));
         
-        label.setBackground(Color.WHITE);
-        m_labels.add(label);
-        itemBox.add(label);
+        JTextField entry = new JTextField(getLabel(operator));
+        entry.setMinimumSize(new Dimension(200, 16));
+        entry.setMaximumSize(new Dimension(200, 20));
+        m_entries.add(entry);
+        itemBox.add(entry);
+        entry.setEnabled(false);
+//        JLabel label = new JLabel(getLabel(operator));
+//        label.setBackground(Color.WHITE);
+//        m_labels.add(label);
+//        itemBox.add(label);
 
         
         
@@ -96,7 +100,8 @@ public class OperatorListInputEditor extends ListInputEditor {
 		super.updateState();
 		for (int i = 0; i < m_textFields.size(); i++) {
 			m_textFields.get(i).setText(m_operators.get(i).m_pWeight.get() + "");
-			m_labels.get(i).setText(getLabel(m_operators.get(i)));
+			//m_labels.get(i).setText(getLabel(m_operators.get(i)));
+			m_entries.get(i).setText(getLabel(m_operators.get(i)));
 		}
     }
 	
