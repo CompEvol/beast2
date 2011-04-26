@@ -53,7 +53,7 @@ public class Beauti extends JTabbedPane {
     
 	boolean [] m_bPaneIsVisible;
 	BeautiPanel [] m_panels;
-	static final int NR_OF_PANELS = 0;
+//	static final int NR_OF_PANELS = 0;
 //	static String [] TAB_NAME = {
 //			"Data", 
 //			"Taxon sets", 
@@ -117,7 +117,7 @@ public class Beauti extends JTabbedPane {
 //	
 
 	public Beauti(BeautiDoc doc) {
-		m_bPaneIsVisible = new boolean[NR_OF_PANELS + BeautiConfig.g_panels.size()];
+		m_bPaneIsVisible = new boolean[/*NR_OF_PANELS*/ + BeautiConfig.g_panels.size()];
 		Arrays.fill(m_bPaneIsVisible, true);
 		//m_panels = new BeautiPanel[NR_OF_PANELS];
 		m_doc = doc;
@@ -139,7 +139,7 @@ public class Beauti extends JTabbedPane {
 //			if (nPanelNr < NR_OF_PANELS) {
 //				insertTab(BeautiConfig.getButtonLabel(this, TAB_NAME[nPanelNr]), null, m_panels[nPanelNr], TAB_TIPTEXT[nPanelNr], nTabNr);
 //			} else {
-				BeautiPanelConfig panel = BeautiConfig.g_panels.get(nPanelNr - NR_OF_PANELS);
+				BeautiPanelConfig panel = BeautiConfig.g_panels.get(nPanelNr /*- NR_OF_PANELS*/);
 				insertTab(BeautiConfig.getButtonLabel(this, panel.m_sNameInput.get()), null, m_panels[nPanelNr], panel.m_sTipTextInput.get(), nTabNr);
 //			}
 			setSelectedIndex(nTabNr);
@@ -284,13 +284,14 @@ public class Beauti extends JTabbedPane {
     	ViewPanelCheckBoxMenuItem(int iPanel) {
     		super("Show " + 
     				//(iPanel < NR_OF_PANELS ? BeautiConfig.getButtonLabel(Beauti.class.getName(), TAB_NAME[iPanel]) :
-    					BeautiConfig.g_panels.get(iPanel - NR_OF_PANELS).m_sNameInput.get()
+    					BeautiConfig.g_panels.get(iPanel /*- NR_OF_PANELS*/).m_sNameInput.get()
     				//	) 
     				+ " panel", 
-    				(iPanel < NR_OF_PANELS ? m_bPaneIsVisible[iPanel] : BeautiConfig.g_panels.get(iPanel - NR_OF_PANELS).m_bIsVisibleInput.get()));
+    				//(iPanel < NR_OF_PANELS ? m_bPaneIsVisible[iPanel] : )
+    				BeautiConfig.g_panels.get(iPanel /*- NR_OF_PANELS*/).m_bIsVisibleInput.get());
     		m_iPanel = iPanel;
     		if (m_viewPanelCheckBoxMenuItems == null) {
-    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[NR_OF_PANELS + BeautiConfig.g_panels.size()];
+    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[/*NR_OF_PANELS*/ + BeautiConfig.g_panels.size()];
     		}
     		m_viewPanelCheckBoxMenuItems[iPanel] = this;
     	}
@@ -397,17 +398,17 @@ public class Beauti extends JTabbedPane {
         JMenu viewMenu = new JMenu("View");
         menuBar.add(viewMenu);
         viewMenu.setMnemonic('V');
-        for (int i = 0; i < NR_OF_PANELS; i++) {
-        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(i);
-        	viewPanelAction.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
-                	viewPanelAction.doAction();
-                }
-            });
-        	viewMenu.add(viewPanelAction);
-        }
+//        for (int i = 0; i < NR_OF_PANELS; i++) {
+//        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(i);
+//        	viewPanelAction.addActionListener(new ActionListener() {
+//                public void actionPerformed(ActionEvent ae) {
+//                	viewPanelAction.doAction();
+//                }
+//            });
+//        	viewMenu.add(viewPanelAction);
+//        }
 		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(NR_OF_PANELS + iPanel);
+        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(/*NR_OF_PANELS*/ + iPanel);
         	viewPanelAction.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                 	viewPanelAction.doAction();
@@ -480,15 +481,15 @@ public class Beauti extends JTabbedPane {
 	
 	        final Beauti beauti = new Beauti(doc);
 
-			beauti.m_panels = new BeautiPanel[NR_OF_PANELS + BeautiConfig.g_panels.size()];
+			beauti.m_panels = new BeautiPanel[/*NR_OF_PANELS*/ + BeautiConfig.g_panels.size()];
 //			for (int iPanel = 0; iPanel < NR_OF_PANELS; iPanel++) {
 //				beauti.m_panels[iPanel] = new BeautiPanel(iPanel, doc, HAS_PARTITIONS[iPanel]);
 //				beauti.addTab(BeautiConfig.getButtonLabel(beauti, TAB_NAME[iPanel]), null, beauti.m_panels[iPanel], TAB_TIPTEXT[iPanel]);
 //			}
 			for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
 				BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
-				beauti.m_panels[NR_OF_PANELS + iPanel] = new BeautiPanel(NR_OF_PANELS + iPanel, doc, panelConfig);
-				beauti.addTab(BeautiConfig.getButtonLabel(beauti, panelConfig.getName()), null, beauti.m_panels[NR_OF_PANELS + iPanel], panelConfig.getTipText());
+				beauti.m_panels[/*NR_OF_PANELS*/ + iPanel] = new BeautiPanel(/*NR_OF_PANELS*/ + iPanel, doc, panelConfig);
+				beauti.addTab(BeautiConfig.getButtonLabel(beauti, panelConfig.getName()), null, beauti.m_panels[/*NR_OF_PANELS*/ + iPanel], panelConfig.getTipText());
 			}
 			beauti.m_currentTab = beauti.m_panels[0];
 			beauti.hidePanels();

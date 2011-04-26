@@ -127,7 +127,7 @@ public class ListInputEditor extends InputEditor {
     protected void addSingleItem(Plugin plugin) {
         Box itemBox = Box.createHorizontalBox();
         
-        if (m_bExpand == EXPAND.FALSE) {
+        if (m_bExpand == EXPAND.FALSE || m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size()>1) {
 	        SmallButton editButton = new SmallButton("e", true);
 	        editButton.setToolTipText("Edit item in the list");
 	        editButton.addActionListener(new ActionListenerObject(plugin) {

@@ -18,41 +18,34 @@ import beast.core.State;
 import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.sitemodel.SiteModelInterface;
-import beast.evolution.tree.TraitSet;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreePrior;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 
 @Description("Beauti document in doc-view pattern, not useful in models")
 public class BeautiDoc extends Plugin {
 	public Input<List<Alignment>> m_alignments = new Input<List<Alignment>>("alignment", "list of alignments or partitions", new ArrayList<Alignment>(), Validate.REQUIRED);
-	public Input<List<TreeLikelihood>> m_likelihoods = new Input<List<TreeLikelihood>>("treelikelihood", "list of tree likelihoods, at least one per alignment", new ArrayList<TreeLikelihood>());
+//	public Input<List<TreeLikelihood>> m_likelihoods = new Input<List<TreeLikelihood>>("treelikelihood", "list of tree likelihoods, at least one per alignment", new ArrayList<TreeLikelihood>());
 	
 //	public Input<Plugin> m_taxonset = new Input<Plugin>("taxonset", "specifies set of taxa"); 
 //	public Input<List<TraitSet>> m_tipdates = new Input<List<TraitSet>>("tipdates", "specify dates of taxa", new ArrayList<TraitSet>()); 
 //	public Input<List<SiteModel>> m_sitemodel = new Input<List<SiteModel>>("sitemodel", "site model, contains substitution model", new ArrayList<SiteModel>());
 //	public Input<List<BranchRateModel.Base>> m_clockmodel = new Input<List<BranchRateModel.Base>>("clockmodel", "clock model", new ArrayList<BranchRateModel.Base>()); 
-	public Input<List<TreePrior>> m_treeprior = new Input<List<TreePrior>>("treeprior", "prior on the tree or trees", new ArrayList<TreePrior>()); 
-	public Input<List<Distribution>> m_priors = new Input<List<Distribution>>("prior", "list of prior distributions", new ArrayList<Distribution>()); 
+//	public Input<List<TreePrior>> m_treeprior = new Input<List<TreePrior>>("treeprior", "prior on the tree or trees", new ArrayList<TreePrior>()); 
+	//public Input<List<Distribution>> m_priors = new Input<List<Distribution>>("prior", "list of prior distributions", new ArrayList<Distribution>()); 
+	Input<List<Distribution>> m_priors; 
 
-	public Input<List<TaxonSet>> m_taxonset; // = new Input<List<TaxonSet>>("taxonset", "list of taxon sets", new ArrayList<TaxonSet>()); 
+//	public Input<List<TaxonSet>> m_taxonset; // = new Input<List<TaxonSet>>("taxonset", "list of taxon sets", new ArrayList<TaxonSet>()); 
 
 	
 	/** place holders for plugins **/
-	public Input<SiteModel.Base> m_siteModel = new Input<SiteModel.Base>("sitemodel", "site model, contains substitution model");//, Validate.REQUIRED);
-	SiteModel.Base m_siteModelOrg;
+//	public Input<SiteModel.Base> m_siteModel = new Input<SiteModel.Base>("sitemodel", "site model, contains substitution model");//, Validate.REQUIRED);
+//	SiteModel.Base m_siteModelOrg;
 	
-	public Input<BranchRateModel.Base> m_clockModel = new Input<BranchRateModel.Base>("clockmodel", "clock model");
-	BranchRateModel.Base m_clockModelOrg;
+//	public Input<BranchRateModel.Base> m_clockModel = new Input<BranchRateModel.Base>("clockmodel", "clock model");
+//	BranchRateModel.Base m_clockModelOrg;
 
-	public Input<TraitSet> m_tipdates = new Input<TraitSet>("tipdates", "specify dates of taxa");
-	TraitSet m_tipdatesOrg;
+//	public Input<TraitSet> m_tipdates = new Input<TraitSet>("tipdates", "specify dates of taxa");
+//	TraitSet m_tipdatesOrg;
 
 	/** contains all operators from the template **/
 	//List<Operator> m_operators;
@@ -220,76 +213,76 @@ public class BeautiDoc extends Plugin {
 	/** Connect all inputs to the relevant ancestors of m_runnable.
 	 * @throws Exception 
 	 *  **/ 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	void connectModel(List<String> sAlignmentNames) throws Exception {
-		try {
 		MCMC mcmc = (MCMC) m_mcmc.get();
-		CompoundDistribution posterior = (CompoundDistribution) mcmc.posteriorInput.get();
-		if (posterior.pDistributions.get().size() != 2) {
-			throw new Exception("Expected posterior of the form prior, posterior, instead of " + posterior.pDistributions.get().size() + " distributions");
-		}
-		Distribution prior = posterior.pDistributions.get().get(0);
-		if (prior instanceof CompoundDistribution) {
-			CompoundDistribution priors = (CompoundDistribution) prior;
-			for (Distribution dist: priors.pDistributions.get()) {
-				connectPrior(dist);
-			}
-		} else {
-			connectPrior(prior);
-		}
-		
-		Distribution likelihood = posterior.pDistributions.get().get(1);
-		if (likelihood instanceof CompoundDistribution) {
-			CompoundDistribution likelihoods = (CompoundDistribution) likelihood;
-			for (Distribution treelikelihood : likelihoods.pDistributions.get()) {
-				if (treelikelihood instanceof TreeLikelihood) {
-					connectTreeLikelihood (treelikelihood);
-					setTreeLikelihoodID(treelikelihood, sAlignmentNames);
-				} else {
-					throw new Exception("Expected treelikelihood or derived distribution in compound posterior");
-				}
-			}
-		} else if (likelihood instanceof TreeLikelihood) {
-			connectTreeLikelihood (likelihood);
-			setTreeLikelihoodID(likelihood, sAlignmentNames);
-		} else {
-			throw new Exception("Expected treelikelihood or derived distribution in posterior");
-		}
-		// put in some defaults, if not provided by the template
-		/*
-		if (likelihood instanceof CompoundDistribution) {
-			for (Distribution treelikelihood : ((CompoundDistribution) likelihood).pDistributions.get()) {
-				Tree tree = ((TreeLikelihood) treelikelihood).m_tree.get();
-				if (tree.m_trait.get() == null) {
-					TraitSet traitSet = new TraitSet();
-					tree.m_trait.setValue(traitSet, tree);
-				}
-			}
-		} else {
-			Tree tree = ((TreeLikelihood)likelihood).m_tree.get();
-			if (tree.m_trait.get() == null) {
-				TraitSet traitSet = new TraitSet();
-				tree.m_trait.setValue(traitSet, tree);
-			}
-		}
-		*/
-		
-		PluginPanel.addPluginToMap(m_mcmc.get());
-
-		for (Plugin plugin : PluginPanel.g_plugins.values()) {
-			for (@SuppressWarnings("rawtypes") Input input : plugin.listInputs()) {
-				if (input.getType() ==  TaxonSet.class && input.get() instanceof List) {
-					m_taxonset = input;
-				}
-			}
-		}
-		
-		
-		// build global list of operators
-//		m_operators = new ArrayList<Operator>();
-//		for (Operator o : m_mcmc.get().operatorsInput.get()) {
-//			m_operators.add(o);
+//	try {
+//		CompoundDistribution posterior = (CompoundDistribution) mcmc.posteriorInput.get();
+//		if (posterior.pDistributions.get().size() != 2) {
+//			throw new Exception("Expected posterior of the form prior, posterior, instead of " + posterior.pDistributions.get().size() + " distributions");
 //		}
+//		Distribution prior = posterior.pDistributions.get().get(0);
+//		if (prior instanceof CompoundDistribution) {
+//			CompoundDistribution priors = (CompoundDistribution) prior;
+//			for (Distribution dist: priors.pDistributions.get()) {
+//				connectPrior(dist);
+//			}
+//		} else {
+//			connectPrior(prior);
+//		}
+//		
+//		Distribution likelihood = posterior.pDistributions.get().get(1);
+//		if (likelihood instanceof CompoundDistribution) {
+//			CompoundDistribution likelihoods = (CompoundDistribution) likelihood;
+//			for (Distribution treelikelihood : likelihoods.pDistributions.get()) {
+//				if (treelikelihood instanceof TreeLikelihood) {
+//					connectTreeLikelihood (treelikelihood);
+//					setTreeLikelihoodID(treelikelihood, sAlignmentNames);
+//				} else {
+//					throw new Exception("Expected treelikelihood or derived distribution in compound posterior");
+//				}
+//			}
+//		} else if (likelihood instanceof TreeLikelihood) {
+//			connectTreeLikelihood (likelihood);
+//			setTreeLikelihoodID(likelihood, sAlignmentNames);
+//		} else {
+//			throw new Exception("Expected treelikelihood or derived distribution in posterior");
+//		}
+//		// put in some defaults, if not provided by the template
+//		/*
+//		if (likelihood instanceof CompoundDistribution) {
+//			for (Distribution treelikelihood : ((CompoundDistribution) likelihood).pDistributions.get()) {
+//				Tree tree = ((TreeLikelihood) treelikelihood).m_tree.get();
+//				if (tree.m_trait.get() == null) {
+//					TraitSet traitSet = new TraitSet();
+//					tree.m_trait.setValue(traitSet, tree);
+//				}
+//			}
+//		} else {
+//			Tree tree = ((TreeLikelihood)likelihood).m_tree.get();
+//			if (tree.m_trait.get() == null) {
+//				TraitSet traitSet = new TraitSet();
+//				tree.m_trait.setValue(traitSet, tree);
+//			}
+//		}
+//		*/
+//		
+//		PluginPanel.addPluginToMap(m_mcmc.get());
+//
+//		for (Plugin plugin : PluginPanel.g_plugins.values()) {
+//			for (@SuppressWarnings("rawtypes") Input input : plugin.listInputs()) {
+//				if (input.getType() ==  TaxonSet.class && input.get() instanceof List) {
+//					m_taxonset = input;
+//				}
+//			}
+//		}
+//		
+//		
+//		// build global list of operators
+////		m_operators = new ArrayList<Operator>();
+////		for (Operator o : m_mcmc.get().operatorsInput.get()) {
+////			m_operators.add(o);
+////		}
 		// build global list of loggers
 		m_loggerInputs = new ArrayList<List<Plugin>>();
 		for (Logger logger : ((MCMC)m_mcmc.get()).m_loggers.get()) {
@@ -299,68 +292,75 @@ public class BeautiDoc extends Plugin {
 			}
 			m_loggerInputs.add(loggers);
 		}
-		// build global list of taxa
-//		m_taxa = new ArrayList<Taxon>();
-//		for (Plugin plugin : PluginPanel.g_plugins.values()) {
-//			if (plugin instanceof Sequence) {
-//				Taxon taxon = new Taxon();
-//				taxon.setID(((Sequence)plugin).m_sTaxon.get());
-//				m_taxa.add(taxon);
+		
+		CompoundDistribution posteror = (CompoundDistribution) mcmc.posteriorInput.get();
+		m_priors = ((CompoundDistribution)posteror.pDistributions.get().get(0)).pDistributions;
+		List<Distribution> list = m_priors.get();
+		for (Distribution d : list) {
+			m_potentialPriors.add(d);
+		}
+//		// build global list of taxa
+////		m_taxa = new ArrayList<Taxon>();
+////		for (Plugin plugin : PluginPanel.g_plugins.values()) {
+////			if (plugin instanceof Sequence) {
+////				Taxon taxon = new Taxon();
+////				taxon.setID(((Sequence)plugin).m_sTaxon.get());
+////				m_taxa.add(taxon);
+////			}
+////		}	
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	} // connectModel
+//	
+//	void setTreeLikelihoodID(Distribution treelikelihood, List<String >sAlignmentNames) {
+//		if (sAlignmentNames != null && sAlignmentNames.size() > 0) {
+//			treelikelihood.setID(sAlignmentNames.get(0));
+//			sAlignmentNames.remove(0);
+//		}
+//	} // setTreeLikelihoodID
+//
+//	void connectTreeLikelihood(Distribution distribution) throws Exception {
+//		m_likelihoods.setValue(distribution, this);
+//		TreeLikelihood likelihood = (TreeLikelihood) distribution;
+//		m_siteModel.setValue(likelihood.m_pSiteModel.get(), this);
+//		if (likelihood.m_pBranchRateModel.get() != null) {
+//			m_clockModel.setValue(likelihood.m_pBranchRateModel.get(), this);
+//		}
+//		Tree tree = likelihood.m_tree.get();
+//		if (tree != null) {
+//			if (tree.m_trait.get() != null) {
+//				m_tipdates.setValue(tree.m_trait.get(), this);
 //			}
-//		}	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	} // connectModel
-	
-	void setTreeLikelihoodID(Distribution treelikelihood, List<String >sAlignmentNames) {
-		if (sAlignmentNames != null && sAlignmentNames.size() > 0) {
-			treelikelihood.setID(sAlignmentNames.get(0));
-			sAlignmentNames.remove(0);
-		}
-	} // setTreeLikelihoodID
-
-	void connectTreeLikelihood(Distribution distribution) throws Exception {
-		m_likelihoods.setValue(distribution, this);
-		TreeLikelihood likelihood = (TreeLikelihood) distribution;
-		m_siteModel.setValue(likelihood.m_pSiteModel.get(), this);
-		if (likelihood.m_pBranchRateModel.get() != null) {
-			m_clockModel.setValue(likelihood.m_pBranchRateModel.get(), this);
-		}
-		Tree tree = likelihood.m_tree.get();
-		if (tree != null) {
-			if (tree.m_trait.get() != null) {
-				m_tipdates.setValue(tree.m_trait.get(), this);
-			}
-		}
-		// hacky bit to ensure SubstitutionModel can handle DataType of alignment data
-		SiteModelInterface.Base siteModel = likelihood.m_pSiteModel.get();
-		try {
-			siteModel.canSetSubstModel(siteModel.getSubstitutionModel());
-		} catch (Exception e) {
-			// obviously not
-	        for (Plugin plugin : PluginPanel.g_plugins.values()) {
-        		try {
-					if (siteModel.canSetSubstModel(plugin)) {
-						siteModel.m_pSubstModel.setValue(plugin, siteModel);
-						break;
-					}
-				} catch (Exception ex) {
-					// ignore
-				}
-            }
-        }
+//		}
+//		// hacky bit to ensure SubstitutionModel can handle DataType of alignment data
+//		SiteModelInterface.Base siteModel = likelihood.m_pSiteModel.get();
+//		try {
+//			siteModel.canSetSubstModel(siteModel.getSubstitutionModel());
+//		} catch (Exception e) {
+//			// obviously not
+//	        for (Plugin plugin : PluginPanel.g_plugins.values()) {
+//        		try {
+//					if (siteModel.canSetSubstModel(plugin)) {
+//						siteModel.m_pSubstModel.setValue(plugin, siteModel);
+//						break;
+//					}
+//				} catch (Exception ex) {
+//					// ignore
+//				}
+//            }
+//        }
 	}
-	
-	void connectPrior(Distribution distribution) throws Exception {
-		if (distribution instanceof TreePrior) {
-			m_treeprior.setValue(distribution, this);
-		} else {
-			m_priors.setValue(distribution, this);
-			m_potentialPriors.add(distribution);
-		}
-	}
-	
+//	
+//	void connectPrior(Distribution distribution) throws Exception {
+//		if (distribution instanceof TreePrior) {
+//			m_treeprior.setValue(distribution, this);
+//		} else {
+//			m_priors.setValue(distribution, this);
+//			m_potentialPriors.add(distribution);
+//		}
+//	}
+//	
 	
 	/** methods for dealing with updates **/
 //	void sync(int iPanel) {
