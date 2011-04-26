@@ -67,9 +67,6 @@ public class BeautiPanelConfig extends Plugin {
 		}
 	}
 	
-	Plugin m_plugin;
-	//List<Plugin> m_pluginList;
-	
 	@Override
 	public void initAndValidate() throws Exception {
 		m_sPathComponents = m_sPathInput.get().split("/");
@@ -205,9 +202,6 @@ public class BeautiPanelConfig extends Plugin {
 			return m_input;
 		} catch (Exception e) {
 			System.err.println("Warning: could not find objects in path " + Arrays.toString(m_sPathComponents));
-//			e.printStackTrace();
-//			System.err.println("Invalid Beauti configuration for " + Arrays.toString(m_sPathComponents));
-//			System.exit(0);
 		}
 		return null;
 	} // resolveInputs
@@ -234,22 +228,21 @@ public class BeautiPanelConfig extends Plugin {
 			} else {
 				Plugin plugin = m_inputs.get(iPartition); 
 				m_input.setValue(plugin, this);
-				m_plugin = (Plugin) m_input.get();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
-//		if (m_bIsList) { //m_input.get() instanceof List) {
-//			List<Plugin> list = (List<Plugin>) m_input.get();
-//			m_pluginList = new ArrayList<Plugin>();
-//			for (Plugin o: list) {
-//				m_pluginList.add(o);
-//			}
-//		} else {
-//		}
 	}
 	
 	Input<?> getInput() {
 		return m_input;
+	}
+
+	/** returns name of the plugin **/
+	public String getType() {
+		if (m_bIsList) {
+			return m_inputs.get(0).getClass().getName();
+		}
+		return m_input.get().getClass().getName();
 	}
 }
