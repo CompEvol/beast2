@@ -58,6 +58,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 		} else {
 			setUpEntry();
 			paramBox.add(m_entry);
+			paramBox.add(Box.createHorizontalGlue());
 	
 			m_isEstimatedBox = new JCheckBox(BeautiConfig.getInputLabel(parameter, parameter.m_bIsEstimated.getName()));
 			if (input.get() != null) {
@@ -70,6 +71,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 					try {
 						RealParameter parameter = (RealParameter)m_input.get();
 						parameter.m_bIsEstimated.setValue(m_isEstimatedBox.isSelected(), parameter);
+						refreshPanel();
 					} catch (Exception ex) {
 						System.err.println("ParameterInputEditor " + ex.getMessage());
 					}

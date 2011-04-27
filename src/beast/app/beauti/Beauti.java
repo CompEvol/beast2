@@ -3,8 +3,15 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -23,6 +30,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import beast.app.BeastMCMC;
+import beast.app.draw.HelpBrowser;
 import beast.app.draw.InputEditor;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
@@ -97,6 +105,10 @@ public class Beauti extends JTabbedPane {
     Action a_quit = new ActionQuit();
     Action a_viewall = new ActionViewAllPanels();
     
+    Action a_help = new ActionHelp();
+    Action a_citation = new ActionCitation();
+    Action a_about = new ActionAbout();
+
     class ActionSave extends MyAction {
         /**
          * for serialisation
@@ -249,6 +261,61 @@ public class Beauti extends JTabbedPane {
         	}
         } // actionPerformed
     } // class ActionViewAllPanels
+
+    class ActionAbout extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionAbout() {
+            super("About", "Help about", "about", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+            JOptionPane.showMessageDialog(null, "Beauti 2\n\n2011", "About Message", JOptionPane.PLAIN_MESSAGE);
+        }
+    } // class ActionAbout
+
+    class ActionHelp extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionHelp() {
+            super("Help", "Help on current panel", "help", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            HelpBrowser b = new HelpBrowser(m_currentTab.m_config.getType());
+            b.setSize(800, 800);
+            b.setVisible(true);
+            b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
+    } // class ActionHelp
+
+    class ActionCitation extends MyAction implements ClipboardOwner {
+        private static final long serialVersionUID = -1;
+
+        public ActionCitation() {
+            super("Citation", "Show appropriate citations and copy to clipboard", "citation", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+        	String sCitations = m_doc.m_mcmc.get().getCitations();
+        	try {
+	            StringSelection stringSelection = new StringSelection( sCitations );
+	            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+	            clipboard.setContents(stringSelection, this);
+        	} catch (Exception e) {
+        		e.printStackTrace();
+			}
+            JOptionPane.showMessageDialog(null, sCitations + "\nCitations copied to clipboard", "Citation(s) applicable to this model:", JOptionPane.INFORMATION_MESSAGE);
+        	
+        } // getCitations
+
+		@Override
+		public void lostOwnership(Clipboard clipboard, Transferable contents) {
+			// do nothing
+		}
+     } // class ActionAbout
     
     
     void refreshPanel() {
@@ -339,7 +406,14 @@ public class Beauti extends JTabbedPane {
         
         viewMenu.addSeparator();
     	viewMenu.add(a_viewall);
-        
+
+        JMenu helpMenu = new JMenu("Help");
+        menuBar.add(helpMenu);
+        helpMenu.setMnemonic('H');
+        helpMenu.add(a_help);
+        helpMenu.add(a_citation);
+        helpMenu.add(a_about);
+    	
     	setMenuVisibiliy("", menuBar);
     	
         return menuBar;

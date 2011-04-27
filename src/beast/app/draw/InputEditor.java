@@ -2,6 +2,7 @@ package beast.app.draw;
 
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
 
 import beast.app.beauti.BeautiConfig;
 import beast.core.Input;
@@ -32,6 +34,7 @@ import beast.core.Plugin;
 public abstract class InputEditor extends Box implements ValidateListener {
 	final public static String NO_VALUE = "<none>";
 	public enum EXPAND {TRUE, FALSE, IF_ONE_ITEM};
+	public enum BUTTONSTATUS {ALL,NONE,DELONLY,ADDONLY};
 
 	public static boolean g_bExpertMode = false;
 	
@@ -48,6 +51,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	
 	/** flag to indicate label, edit and validate buttons/labels should be added **/
 	protected boolean m_bAddButtons = true;
+	
 	/** label that shows up when validation fails **/
 	protected SmallLabel m_validateLabel;
 	
@@ -68,6 +72,8 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	}
 
 	static public Set<InputEditor> g_currentInputEditors = new HashSet<InputEditor>();
+
+	public static Integer g_nLabelWidth = 150;
 	
 	
 	public InputEditor() {
@@ -97,12 +103,6 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		
 		setUpEntry();
 		
-//		m_entry.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				processEntry();
-//			}
-//		});
 		add(m_entry);
 		add(Box.createHorizontalGlue());
 		addValidationLabel();
@@ -174,7 +174,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		if (m_bAddButtons) {
 			m_inputLabel = new JLabel(sLabel);
 			m_inputLabel.setToolTipText(sTipText);
-			Dimension size = new Dimension(150,20);
+			Dimension size = new Dimension(g_nLabelWidth,20);
 			m_inputLabel.setMaximumSize(size);
 			m_inputLabel.setMinimumSize(size);
 			m_inputLabel.setPreferredSize(size);
@@ -278,5 +278,15 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		checkValidation();
 	}
 	
+
+    void refreshPanel() {
+        Component c = this;
+        while (((Component) c).getParent() != null) {
+        	c = ((Component) c).getParent();
+        	if (c instanceof ListSelectionListener) {
+        		((ListSelectionListener) c).valueChanged(null);
+        	}
+        }
+    }
 
 } // class InputEditor

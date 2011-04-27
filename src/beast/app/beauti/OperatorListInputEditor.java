@@ -40,8 +40,9 @@ public class OperatorListInputEditor extends ListInputEditor {
         entry.setMinimumSize(new Dimension(200, 16));
         entry.setMaximumSize(new Dimension(200, 20));
         m_entries.add(entry);
+        itemBox.add(Box.createRigidArea(new Dimension(5,1)));
         itemBox.add(entry);
-        entry.setEnabled(false);
+        entry.setEditable(false);
 //        JLabel label = new JLabel(getLabel(operator));
 //        label.setBackground(Color.WHITE);
 //        m_labels.add(label);

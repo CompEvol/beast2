@@ -29,7 +29,7 @@ public class BeautiDoc extends Plugin {
 	/** points to input that contains prior distribution, if any **/
 	Input<List<Distribution>> m_priors; 
 	/** contains all Priors from the template **/
-	static protected List<Distribution> m_potentialPriors;
+	protected List<Distribution> m_potentialPriors;
 
 	/** contains all loggers from the template **/
 	List<List<Plugin>> m_loggerInputs;
@@ -318,7 +318,8 @@ public class BeautiDoc extends Plugin {
 			List<Plugin> priorPredecessors = new ArrayList<Plugin>();
 			collectPredecessors(prior, priorPredecessors);
 			for (Plugin plugin : priorPredecessors) {
-				if (posteriorPredecessors.contains(plugin) && plugin instanceof StateNode && ((StateNode) plugin).m_bIsEstimated.get()) {
+				if (//posteriorPredecessors.contains(plugin) && 
+						plugin instanceof StateNode && ((StateNode) plugin).m_bIsEstimated.get()) {
 					priors.add(prior);
 					break;
 				}

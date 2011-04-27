@@ -28,6 +28,8 @@ public class BeautiConfig extends Plugin {
 			"not be visible, e.g., View.Show Data Panel,Mode");
 	public Input<String> m_disableButtons = new Input<String>("disableButtons","comma separated list of buttons that should " +
 			"not be visible, e.g., beast.app.beauti.BeautiInitDlg.Analysis template:");
+//	public Input<String> m_editButtonStatus = new Input<String>("editButtonStatus","comma separated list of list-inputs with custom " +
+//	"button status. One of 'none', 'addonly' 'delonly' +, e.g., beast.core.MCMC.operator=addonly");
 
 	public Input<List<BeautiPanelConfig>> m_panels = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties", 
 			new ArrayList<BeautiPanelConfig>());
@@ -42,7 +44,8 @@ public class BeautiConfig extends Plugin {
     /** map that identifies the label to be used for a particular input **/
 	public static HashMap<String, String> g_inputLabelMap = new HashMap<String, String>();
 	public static HashMap<String, String> g_buttonLabelMap = new HashMap<String, String>();
-	
+//	public static HashMap<String, String> g_sEditButtonStatus = new HashMap<String, String>();
+		
 	public static Set<String> g_sHidePanels = new HashSet<String>();
 	public static Set<String> g_sDisabledMenus = new HashSet<String>();
 	public static Set<String> g_sDisabledButtons = new HashSet<String>();
@@ -59,6 +62,7 @@ public class BeautiConfig extends Plugin {
 		
 		parseMap(m_inputLabelMap.get(), g_inputLabelMap);
 		parseMap(m_buttonLabelMap.get(), g_buttonLabelMap);
+//		parseMap(m_editButtonStatus.get(), g_sEditButtonStatus);
 		for (BeautiPanelConfig panel : m_panels.get()) {
 			g_panels.add(panel);
 			// check for duplicates
@@ -128,4 +132,25 @@ public class BeautiConfig extends Plugin {
 	public static boolean menuIsInvisible(String sMenuName) {
 		return g_sDisabledMenus.contains(sMenuName);
 	}
+
+//	public static boolean hasDeleteButton(String sFullInputName) {
+//		if (!g_sEditButtonStatus.containsKey(sFullInputName)) {
+//			return true;
+//		}
+//		String sStatus = g_sEditButtonStatus.get(sFullInputName);
+//		if (sStatus.equals("none") || sStatus.equals("onlyadd")) {
+//			return false;
+//		}
+//		return true;
+//	}
+//	public static boolean hasAddButton(String sFullInputName) {
+//		if (!g_sEditButtonStatus.containsKey(sFullInputName)) {
+//			return true;
+//		}
+//		String sStatus = g_sEditButtonStatus.get(sFullInputName);
+//		if (sStatus.equals("none") || sStatus.equals("onlydel")) {
+//			return false;
+//		}
+//		return true;
+//	}
 } // class BeautiConfig

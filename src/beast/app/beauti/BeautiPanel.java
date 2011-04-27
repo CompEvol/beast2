@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionListener;
 
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.InputEditor;
+import beast.app.draw.InputEditor.BUTTONSTATUS;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.SmallButton;
 import beast.app.draw.InputEditor.EXPAND;
@@ -145,10 +146,14 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			remove(m_centralComponent);
 		}
 	    if (input != null && input.get() != null) {
-	        InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, null);
+	    	BUTTONSTATUS bs = m_config.m_buttonStatusInput.get();
+	        InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null);
 	        Box box = Box.createVerticalBox();
 	        box.add(inputEditor);
-	        box.add(Box.createGlue());
+	        // RRB: is there a better way than just pooring in glue at the bottom?
+	        for (int i = 0; i < 30; i++) {
+	        	box.add(Box.createGlue());
+	        }
 	        JScrollPane scroller = new JScrollPane(box);
 	        m_centralComponent = scroller;
 	    } else {
@@ -159,6 +164,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
 	void refreshInputPanel() throws Exception {
 		InputEditor.g_currentInputEditors.clear();
+		InputEditor.g_nLabelWidth = m_config.m_nLabelWidthInput.get();
 		Plugin plugin = m_config;
 		Input<?> input = m_config.resolveInput(m_doc, m_iPartition);
 		boolean bAddButtons = m_config.addButtons();

@@ -8,9 +8,6 @@ import beast.util.ClassDiscovery;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ListSelectionListener;
-
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,38 +60,31 @@ public class PluginInputEditor extends InputEditor {
         addComboBox(this, input, plugin);
 
         if (m_bAddButtons) {
-	        m_editPluginButton = new SmallButton("e", true);
-	        if (input.get() == null) {
-	            m_editPluginButton.setEnabled(false);
-	        }
-	        m_editPluginButton.setToolTipText("Edit " + m_inputLabel.getText());
-	
-	        m_editPluginButton.addActionListener(new ActionListener() {
-	            // implements ActionListener
-	            public void actionPerformed(ActionEvent e) {
-	                PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType());
-	                dlg.setVisible(true);
-//	                String sID = ((Plugin)m_input.get()).getID();
-//	                for (int i = 0; i < m_selectPluginBox.getItemCount(); i++) {
-//	                	String sItem = (String) m_selectPluginBox.getItemAt(i);
-//	                	if (sItem.equals(sID)) {
-//	                		m_selectPluginBox.removeItemAt(i);
-//	                	}
-//	                }
-               		//m_selectPluginBox.removeItem(sID);
-	                if (dlg.getOK()) {
-	                	try {
-	                		dlg.accept(m_plugin);
-	                		//m_input.setValue(dlg.m_panel.m_plugin, m_plugin);
-	                	} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-	                }
-	                refresh();
-	                checkValidation();
-	            }
-	        });
-	        add(m_editPluginButton);
+        	if (PluginPanel.countInputs((Plugin)m_input.get()) > 0) {
+		        m_editPluginButton = new SmallButton("e", true);
+		        if (input.get() == null) {
+		            m_editPluginButton.setEnabled(false);
+		        }
+		        m_editPluginButton.setToolTipText("Edit " + m_inputLabel.getText());
+		
+		        m_editPluginButton.addActionListener(new ActionListener() {
+		            // implements ActionListener
+		            public void actionPerformed(ActionEvent e) {
+		                PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType());
+		                dlg.setVisible(true);
+		                if (dlg.getOK()) {
+		                	try {
+		                		dlg.accept(m_plugin);
+		                	} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+		                }
+		                refresh();
+		                checkValidation();
+		            }
+		        });
+		        add(m_editPluginButton);
+        	}
         }
         addValidationLabel();
     } // init
@@ -107,13 +97,14 @@ public class PluginInputEditor extends InputEditor {
             m_selectPluginBox.setSelectedItem(sID);
             m_selectPluginBox.removeItem(sOldID);
         }
-        Component c = this;
-        while (((Component) c).getParent() != null) {
-        	c = ((Component) c).getParent();
-        	if (c instanceof ListSelectionListener) {
-        		((ListSelectionListener) c).valueChanged(null);
-        	}
-        }
+        super.refreshPanel();
+//        Component c = this;
+//        while (((Component) c).getParent() != null) {
+//        	c = ((Component) c).getParent();
+//        	if (c instanceof ListSelectionListener) {
+//        		((ListSelectionListener) c).valueChanged(null);
+//        	}
+//        }
     }
 
     void initSelectPluginBox() {

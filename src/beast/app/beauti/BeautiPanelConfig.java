@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import beast.app.draw.InputEditor.BUTTONSTATUS;
 import beast.app.draw.InputEditor.EXPAND;
 import beast.app.draw.PluginPanel;
 import beast.core.Description;
@@ -36,6 +37,11 @@ public class BeautiPanelConfig extends Plugin {
 			"This can be " + Arrays.toString(EXPAND.values()) + " (default 'FALSE')", EXPAND.FALSE, EXPAND.values());
 	public Input<String> m_sTypeInput = new Input<String>("type", "type used for finding the appropriate plugin editor. By default, type is determined " +
 			"by the input type of the last component of the path");
+	
+	public Input<Integer> m_nLabelWidthInput = new Input<Integer>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
+
+	public Input<BUTTONSTATUS> m_buttonStatusInput = new Input<BUTTONSTATUS>("buttonStatus", "whether to show add and delete buttons. " +
+			"This can be " + Arrays.toString(BUTTONSTATUS.values()) + " (default 'ALL')", BUTTONSTATUS.ALL, BUTTONSTATUS.values());
 	
 	
 	String [] m_sPathComponents;

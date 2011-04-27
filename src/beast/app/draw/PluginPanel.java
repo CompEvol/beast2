@@ -2,6 +2,7 @@ package beast.app.draw;
 
 
 import beast.app.beauti.BeautiConfig;
+import beast.app.draw.InputEditor.BUTTONSTATUS;
 import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -20,8 +21,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -227,7 +226,7 @@ public class PluginPanel extends JPanel {
             try {
             	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
             	if (!BeautiConfig.g_suppressPlugins.contains(sFullInputName)) {
-	            	InputEditor inputEditor = createInputEditor(input, plugin, true, EXPAND.FALSE, editor);
+	            	InputEditor inputEditor = createInputEditor(input, plugin, true, EXPAND.FALSE, BUTTONSTATUS.ALL, editor);
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
 	                //box.add(Box.createVerticalGlue());
@@ -244,11 +243,31 @@ public class PluginPanel extends JPanel {
         return editors;
     } // addInputs
 
+    /** add all inputs of a plugin to a box **/
+    public static int countInputs(Plugin plugin) {
+    	int nInputs = 0;
+        try {
+        	List<Input<?>> inputs = plugin.listInputs();
+        	for (Input<?> input : inputs) {
+            	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
+            	if (!BeautiConfig.g_suppressPlugins.contains(sFullInputName)) {
+            		nInputs++;
+            	}
+        	}
+        } catch (Exception e) {
+            // ignore
+        }
+        return nInputs;
+    } // addInputs
+    
+    
     public static InputEditor createInputEditor(Input<?> input, Plugin plugin) throws Exception {
-    	return createInputEditor(input, plugin, true, EXPAND.FALSE, null);
+    	return createInputEditor(input, plugin, true, EXPAND.FALSE, BUTTONSTATUS.ALL, null);
     }
     
-    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, EXPAND bForceExpansion, InputEditor editor) throws Exception {
+    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, 
+    		EXPAND bForceExpansion, BUTTONSTATUS buttonStatus, 
+    		InputEditor editor) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
         }
@@ -281,6 +300,7 @@ public class PluginPanel extends JPanel {
 		        	// otherwise, use generic list editor
 		        	inputEditor = new ListInputEditor();
 	            }
+                ((ListInputEditor) inputEditor).setButtonStatus(buttonStatus);
         } else if (input.possibleValues != null) {
         	// handle enumeration inputs
             inputEditor = new EnumInputEditor();

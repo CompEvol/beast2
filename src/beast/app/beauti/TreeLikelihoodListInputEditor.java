@@ -1,6 +1,5 @@
 package beast.app.beauti;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.List;
 
@@ -41,12 +40,7 @@ public class TreeLikelihoodListInputEditor extends ListInputEditor {
             sName = plugin.getClass().getName();
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
-//        JLabel label = new JLabel(" " +sName);
-//        label.setBackground(Color.WHITE);
-//        m_labels.add(label);
-//        itemBox.add(label);
         JTextField entry= new JTextField(sName);
-        //entry.setBackground(Color.WHITE);
         entry.setMinimumSize(new Dimension(200, 16));
         entry.setMaximumSize(new Dimension(200, 20));
         m_entries.add(entry);
@@ -54,15 +48,15 @@ public class TreeLikelihoodListInputEditor extends ListInputEditor {
         
         itemBox.add(Box.createHorizontalGlue());
         try {
-        	InputEditor editor = PluginPanel.createInputEditor(likelihood.m_tree, likelihood, false, EXPAND.FALSE, this);
+        	InputEditor editor = PluginPanel.createInputEditor(likelihood.m_tree, likelihood, false, EXPAND.FALSE, BUTTONSTATUS.ALL, this);
         	editor.addValidationListener(this);
         	editor.setMaximumSize(new Dimension(100,30));
 	        itemBox.add(editor);
-	        editor = PluginPanel.createInputEditor(likelihood.m_pSiteModel, likelihood, false, EXPAND.FALSE, this);
+	        editor = PluginPanel.createInputEditor(likelihood.m_pSiteModel, likelihood, false, EXPAND.FALSE, BUTTONSTATUS.ALL, this);
         	editor.addValidationListener(this);
         	editor.setMaximumSize(new Dimension(100,30));
 	        itemBox.add(editor);
-	        editor = PluginPanel.createInputEditor(likelihood.m_pBranchRateModel, likelihood, false, EXPAND.FALSE, this);
+	        editor = PluginPanel.createInputEditor(likelihood.m_pBranchRateModel, likelihood, false, EXPAND.FALSE, BUTTONSTATUS.ALL, this);
         	editor.addValidationListener(this);
         	editor.setMaximumSize(new Dimension(100,30));
 	        itemBox.add(editor);
