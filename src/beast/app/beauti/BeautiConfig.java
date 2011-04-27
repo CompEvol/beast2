@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import beast.app.draw.InputEditor;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
@@ -30,6 +31,7 @@ public class BeautiConfig extends Plugin {
 
 	public Input<List<BeautiPanelConfig>> m_panels = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties", 
 			new ArrayList<BeautiPanelConfig>());
+	public Input<Boolean> m_bIsExpertInput = new Input<Boolean>("isExpert", "flag to indicate Beauti should start in expert mode", false);
 	
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
 	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
@@ -67,6 +69,7 @@ public class BeautiConfig extends Plugin {
 				}
 			}
 		}
+		InputEditor.g_bExpertMode = m_bIsExpertInput.get();
 	}
 
 	private void parseMap(String sStr, HashMap<String, String> stringMap) {

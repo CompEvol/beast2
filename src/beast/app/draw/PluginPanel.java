@@ -230,7 +230,7 @@ public class PluginPanel extends JPanel {
 	            	InputEditor inputEditor = createInputEditor(input, plugin, true, EXPAND.FALSE, editor);
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
-	                box.add(Box.createVerticalGlue());
+	                //box.add(Box.createVerticalGlue());
 	                editors.add(inputEditor);
             	}
             } catch (Exception e) {
@@ -240,6 +240,7 @@ public class PluginPanel extends JPanel {
                 JOptionPane.showMessageDialog(null, "Could not add entry for " + input.getName());
             }
         }
+        box.add(Box.createVerticalGlue());
         return editors;
     } // addInputs
 

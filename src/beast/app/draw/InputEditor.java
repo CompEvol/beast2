@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -71,9 +72,8 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	
 	public InputEditor() {
 		super(BoxLayout.X_AXIS);
-		setAlignmentX(LEFT_ALIGNMENT);
+		//setAlignmentX(LEFT_ALIGNMENT);
 		g_currentInputEditors.add(this);
-		//setAlignmentY(TOP_ALIGNMENT);
 	} // c'tor
 	
 	
@@ -104,13 +104,17 @@ public abstract class InputEditor extends Box implements ValidateListener {
 //			}
 //		});
 		add(m_entry);
+		add(Box.createHorizontalGlue());
 		addValidationLabel();
 	} // init
 
 
 	void setUpEntry() {
 		m_entry = new JTextField();
-		m_entry.setMinimumSize(new Dimension(100,16));
+		Dimension size = new Dimension(100,20);
+		m_entry.setMinimumSize(size);
+		m_entry.setPreferredSize(size);
+		m_entry.setSize(size);
 		initEntry();
 		m_entry.setToolTipText(m_input.getTipText());
 		m_entry.setMaximumSize(new Dimension(1024, 20));
@@ -170,10 +174,13 @@ public abstract class InputEditor extends Box implements ValidateListener {
 		if (m_bAddButtons) {
 			m_inputLabel = new JLabel(sLabel);
 			m_inputLabel.setToolTipText(sTipText);
-			Dimension size = new Dimension(150,15);
+			Dimension size = new Dimension(150,20);
 			m_inputLabel.setMaximumSize(size);
 			m_inputLabel.setMinimumSize(size);
 			m_inputLabel.setPreferredSize(size);
+			m_inputLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+			// RRB: temporary
+			//m_inputLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 			add(m_inputLabel);
 		}
 	}

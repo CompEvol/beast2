@@ -489,7 +489,12 @@ public class ClassDiscovery {
 
       // sort result
       Collections.sort(result, new StringCompare());
-
+      // remove duplicates
+      for (i = result.size()-1; i > 0; i--) {
+    	  if (result.get(i).equals(result.get(i-1))) {
+    		  result.remove(i);
+    	  }
+      }
       // add to cache
       addCache(cls, pkgname, result);
     }

@@ -12,21 +12,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ListInputEditor extends InputEditor {
     private static final long serialVersionUID = 1L;
-    /**
-     * for handling list of inputs *
-     */
-//    protected JList m_list;
-//    protected DefaultListModel m_listModel;
 
     /**
      * buttons for manipulating the list of inputs *
      */
     protected SmallButton m_addButton;
-    //protected List<JLabel> m_labels;
     protected List<JTextField> m_entries;
     protected List<SmallButton> m_delButton;
     protected List<SmallButton> m_editButton;
@@ -34,22 +30,34 @@ public class ListInputEditor extends InputEditor {
     protected Box m_listBox;
     protected EXPAND m_bExpand;
 
+    static Set<String> g_expandedIDs = new HashSet<String>();
+    
     public abstract class ActionListenerObject implements ActionListener {
     	public Object m_o;
     	public ActionListenerObject(Object o) {
     		super();
     		m_o = o;
     	}
-    	
     }
+
+    public abstract class ExpandActionListener implements ActionListener {
+    	Box m_box;
+    	Plugin m_plugin;
+    	public ExpandActionListener(Box box, Plugin plugin) {
+    		super();
+        	m_box = box;
+        	m_plugin = plugin;
+    	}
+    }
+
     public ListInputEditor() {
         super();
-        //m_labels = new ArrayList<JLabel>();
         m_entries = new ArrayList<JTextField>();
         m_delButton = new ArrayList<SmallButton>();
         m_editButton = new ArrayList<SmallButton>();
         m_validateLabels = new ArrayList<SmallLabel>();
         m_bExpand = EXPAND.FALSE;
+		setAlignmentY(Component.BOTTOM_ALIGNMENT);
    }
 
     @Override
@@ -75,9 +83,15 @@ public class ListInputEditor extends InputEditor {
         m_input = input;
         m_plugin = plugin;
         addInputLabel();
+        if (m_inputLabel != null) {
+        	m_inputLabel.setMaximumSize(new Dimension(m_inputLabel.getSize().width, 1000));
+        	m_inputLabel.setAlignmentY(1.0f);
+        	m_inputLabel.setVerticalAlignment(JLabel.TOP);
+        	m_inputLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        }
 
         m_listBox = Box.createVerticalBox();
-        /** list of inputs **/
+        // list of inputs 
         for (Object o : (List<?>) input.get()) {
             if (o instanceof Plugin) {
                 Plugin plugin2 = (Plugin) o;
@@ -99,9 +113,6 @@ public class ListInputEditor extends InputEditor {
         if (!g_bExpertMode) {
         	// if nothing can be added, make add button invisible
             List<String> sTabuList = new ArrayList<String>();
-//            for (int i = 0; i < m_labels.size(); i++) {
-//                sTabuList.add(m_labels.get(i).getText());
-//            }
             for (int i = 0; i < m_entries.size(); i++) {
                 sTabuList.add(m_entries.get(i).getText());
             }
@@ -111,7 +122,7 @@ public class ListInputEditor extends InputEditor {
             }
         }
         
-        
+        // add validation label at the end of a list
 		m_validateLabel = new SmallLabel("x", new Color(200,0,0));
         if (m_bAddButtons) {
 			box.add(m_validateLabel);
@@ -127,18 +138,6 @@ public class ListInputEditor extends InputEditor {
     protected void addSingleItem(Plugin plugin) {
         Box itemBox = Box.createHorizontalBox();
         
-        if (m_bExpand == EXPAND.FALSE || m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size()>1) {
-	        SmallButton editButton = new SmallButton("e", true);
-	        editButton.setToolTipText("Edit item in the list");
-	        editButton.addActionListener(new ActionListenerObject(plugin) {
-	            public void actionPerformed(ActionEvent e) {
-	            	m_o = editItem(m_o);
-	            }
-	        });
-	        m_editButton.add(editButton);
-	        itemBox.add(editButton);
-        }
-        
         SmallButton delButton = new SmallButton("-", true);
         delButton.setToolTipText("Delete item from the list");
         delButton.addActionListener(new ActionListenerObject(plugin) {
@@ -152,6 +151,25 @@ public class ListInputEditor extends InputEditor {
         
         addPluginItem(itemBox, plugin);
         
+        
+        SmallButton editButton = new SmallButton("e", true);
+        if (m_bExpand == EXPAND.FALSE || m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size()>1) {
+	        editButton.setToolTipText("Edit item in the list");
+	        editButton.addActionListener(new ActionListenerObject(plugin) {
+	            public void actionPerformed(ActionEvent e) {
+	            	m_o = editItem(m_o);
+	            }
+	        });
+        } else {
+        	editButton.setText("_");
+	        editButton.setToolTipText("Expand/collapse item in the list");
+        }
+        m_editButton.add(editButton);
+        itemBox.add(editButton);
+        
+        
+        
+        
         SmallLabel validateLabel = new SmallLabel("x", new Color(200,0,0));
         itemBox.add(validateLabel);
 		validateLabel.setVisible(true);
@@ -160,12 +178,36 @@ public class ListInputEditor extends InputEditor {
         
         if (m_bExpand == EXPAND.TRUE || 
         		(m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
-        	Box box = Box.createVerticalBox();
-        	box.add(itemBox);
-        	PluginPanel.addInputs(box, plugin, this);
-        	box.setBorder(BorderFactory.createEtchedBorder());
-        	itemBox = box;
+        	Box expandBox = Box.createVerticalBox();
+        	//box.add(itemBox);
+        	PluginPanel.addInputs(expandBox, plugin, this);
+        	if (expandBox.getComponentCount() > 1) {
+        		// only go here if it is worth showing expanded box
+	        	expandBox.setBorder(BorderFactory.createEtchedBorder());
+	        	//itemBox = box;
+	        	Box box2 = Box.createVerticalBox();
+	        	box2.add(itemBox);
+	        	box2.add(expandBox);
+//        		expandBox.setVisible(false);
+//        		//itemBox.remove(editButton);
+//        		editButton.setVisible(false);
+//        	} else {
+        		itemBox = box2;
+        	}
+	        editButton.addActionListener(new ExpandActionListener(expandBox, plugin) {
+	            public void actionPerformed(ActionEvent e) {
+	            	m_box.setVisible(!m_box.isVisible());
+	            	if (m_box.isVisible()) {
+	            		g_expandedIDs.add(m_plugin.getID());
+	            	} else {
+	            		g_expandedIDs.remove(m_plugin.getID());
+	            	}
+	            }
+	        });
+	        String sID = plugin.getID();
+	        expandBox.setVisible(g_expandedIDs.contains(sID));
         }
+        
         
         if (m_validateLabel == null) {
         	m_listBox.add(itemBox);
@@ -189,18 +231,21 @@ public class ListInputEditor extends InputEditor {
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
         JTextField entry = new JTextField(sName);
-        entry.setMinimumSize(new Dimension(200, 16));
-        entry.setMaximumSize(new Dimension(200, 20));
+        Dimension size = new Dimension(200, 20);
+        entry.setMinimumSize(size);
+        entry.setMaximumSize(size);
+        entry.setPreferredSize(size);
+        //entry.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(0xed,0xed,0xed)));
+//        entry.setBorder(BorderFactory.createCompoundBorder(
+//        		BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(0xed,0xed,0xed)),
+//        		BorderFactory.createBevelBorder(0)));
+        
 		entry.getDocument().addDocumentListener(new IDDocumentListener(plugin, entry));
 				
+		itemBox.add(Box.createRigidArea(new Dimension(5,1)));
 		itemBox.add(entry);
 		m_entries.add(entry);
 		itemBox.add(Box.createHorizontalGlue());
-//        JLabel label = new JLabel(" " + sName);
-//        label.setBackground(Color.WHITE);
-//        m_labels.add(label);
-//        itemBox.add(label);
-//        itemBox.add(Box.createHorizontalGlue());
     }
 
     
@@ -235,9 +280,6 @@ public class ListInputEditor extends InputEditor {
     
 	protected void addItem() {
         List<String> sTabuList = new ArrayList<String>();
-//        for (int i = 0; i < m_labels.size(); i++) {
-//            sTabuList.add(m_labels.get(i).getText().substring(1));
-//        }
         for (int i = 0; i < m_entries.size(); i++) {
             sTabuList.add(m_entries.get(i).getText());
         }
