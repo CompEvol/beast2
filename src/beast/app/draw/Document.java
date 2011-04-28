@@ -1386,7 +1386,15 @@ public class Document {
                 scanner.close();
             }
             Plugin plugin0 = parser.parseBareFragment(sXML.toString(), false);
-
+            init(plugin0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO: handle exception
+        }
+    }
+    
+    public void init(Plugin plugin0) {
+        try {
             if (plugin0 instanceof PluginSet) {
                 List<Plugin> set = ((PluginSet) plugin0).m_plugins.get();
                 if (set == null) {

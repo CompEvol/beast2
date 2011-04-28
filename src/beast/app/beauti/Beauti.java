@@ -4,6 +4,7 @@ package beast.app.beauti;
 
 
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -32,6 +33,7 @@ import javax.swing.event.ChangeListener;
 import beast.app.BeastMCMC;
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.InputEditor;
+import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.PluginPanel;
@@ -108,6 +110,7 @@ public class Beauti extends JTabbedPane {
     Action a_help = new ActionHelp();
     Action a_citation = new ActionCitation();
     Action a_about = new ActionAbout();
+    Action a_viewModel = new ActionViewModel();
 
     class ActionSave extends MyAction {
         /**
@@ -316,6 +319,27 @@ public class Beauti extends JTabbedPane {
 			// do nothing
 		}
      } // class ActionAbout
+
+    class ActionViewModel extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionViewModel() {
+            super("View model", "View model graph", "model", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+            JFrame frame = new JFrame("Model Builder");
+            ModelBuilder modelBuilder = new ModelBuilder();
+            modelBuilder.init();
+            frame.add(modelBuilder, BorderLayout.CENTER);
+            frame.add(modelBuilder.m_jTbTools2, BorderLayout.NORTH);
+            modelBuilder.setEditable(false);
+            modelBuilder.m_doc.init(m_doc.m_mcmc.get());
+            modelBuilder.setDrawingFlag();
+            frame.setSize(600, 800);
+            frame.setVisible(true);
+        }
+    } // class ActionViewModel
     
     
     void refreshPanel() {
@@ -412,6 +436,7 @@ public class Beauti extends JTabbedPane {
         helpMenu.setMnemonic('H');
         helpMenu.add(a_help);
         helpMenu.add(a_citation);
+        helpMenu.add(a_viewModel);
         helpMenu.add(a_about);
     	
     	setMenuVisibiliy("", menuBar);

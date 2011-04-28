@@ -89,7 +89,11 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 //	boolean m_bViewSequences = false;
 //	boolean m_bViewState = false;
     boolean m_bRelax = false;
-
+    
+    // flag to indicate the model can be edited.
+    // set to false for read only view of the model, e.g. from beauti
+    boolean m_bIsEditable = true;
+    public void setEditable(boolean bIsEditable) {m_bIsEditable = bIsEditable;}
     /**
      * number of seconds to 'relax' after loading a file *
      */
@@ -138,6 +142,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     Action a_spacevertical = new ActionSpaceVertical();
 
     Action a_about = new ActionAbout();
+
+    Action a_relax = new ActionRelax();
+    Action a_viewOperators = new ActionViewOperators();
+    Action a_viewLoggers = new ActionViewLoggers();
+    Action a_viewSequences = new ActionViewSequences();
+    Action a_layout = new ActionLayout();
+    
 
     ClipBoard m_clipboard = new ClipBoard();
     /**
@@ -1016,6 +1027,80 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         }
     } // class ActionAbout
 
+    
+    class ActionRelax extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionRelax() {
+            super("Relax", "Relax positions", "about", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+            m_bRelax = !m_bRelax;
+            m_viewRelax.setState(m_bRelax);
+            g_panel.repaint();
+        }
+    } // class ActionRelax
+    
+    class ActionViewLoggers extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionViewLoggers() {
+            super("View loggers", "View loggers", "about", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+            m_bViewLoggers = !m_bViewLoggers;
+            setDrawingFlag();
+            g_panel.repaint();
+        }
+    } // class ActionViewLoggers
+
+    class ActionViewOperators extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionViewOperators() {
+            super("View Operators", "View Operators", "viewoperators", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+            m_bViewOperators = !m_bViewOperators;
+            setDrawingFlag();
+            g_panel.repaint();
+        }
+    } // class ActionViewOperators
+
+    class ActionViewSequences extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionViewSequences() {
+            super("View Sequences", "View Sequences", "viewsequences", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+            m_bViewSequences = !m_bViewSequences;
+            setDrawingFlag();
+            g_panel.repaint();
+        }
+    } // class ActionViewSequences
+    
+    class ActionLayout extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionLayout() {
+            super("Layout", "Layout graph", "layout", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent e) {
+            g_panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            m_doc.layout();
+            m_doc.adjustArrows();
+            repaint();
+            g_panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }    
+    } // class ActionViewSequences
+    
+    
     void updateStatus() {
         a_undo.setEnabled(m_doc.canUndo());
         a_redo.setEnabled(m_doc.canRedo());
@@ -1051,6 +1136,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     }
 
     public JToolBar m_jTbTools;
+    public JToolBar m_jTbTools2;
 
     public void init() {
         m_Selection.setDocument(m_doc);
@@ -1102,6 +1188,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         setLayout(new BorderLayout());
         // add("North", m_jTbTools);
         // add("Center", g_panel);
+        
+        m_jTbTools2 = new JToolBar();
+        m_jTbTools2.setFloatable(false);
+        m_jTbTools2.add(a_relax);
+        m_jTbTools2.add(a_viewLoggers);
+        m_jTbTools2.add(a_viewOperators);
+        m_jTbTools2.add(a_viewSequences);
+        m_jTbTools2.add(a_layout);
+        
     } // init
 
     boolean needsDrawing(Plugin plugin) {
@@ -1493,6 +1588,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             } // handleDoubleClick
 
             void handleRightClick(MouseEvent me) {
+            	if (!m_bIsEditable) {
+            		return;
+            	}
                 JPopupMenu popupMenu = new JPopupMenu("Choose a value");
 
                 if (!m_Selection.hasSelection()) {

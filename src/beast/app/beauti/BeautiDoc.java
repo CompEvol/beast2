@@ -155,7 +155,7 @@ public class BeautiDoc extends Plugin {
 		
 		// merge in the alignments
 		i = sXML.indexOf("<data");
-		int j = sXML.indexOf(">",i);
+		int j = Math.max(sXML.indexOf(">",i), sXML.indexOf("</data>",i) + 7);
 		sXML = sXML.substring(0, i) + sAlignments + sXML.substring(j);
 		
 		// parse the resulting XML

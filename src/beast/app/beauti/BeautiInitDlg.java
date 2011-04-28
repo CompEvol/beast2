@@ -532,7 +532,9 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		
 		
 		File templates = new File("templates");
-		for (File template : templates.listFiles()) {
+		File [] files = templates.listFiles();
+		if (files != null) {
+		for (File template : files ) {
 			if (template.getName().toLowerCase().endsWith(".xml")) {
 				try {
 
@@ -582,6 +584,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 				String sXML = sMergePoints.get(sStr);
 				m_sTemplateXML = m_sTemplateXML.substring(0, i) + sXML + m_sTemplateXML.substring(j+1); 
 			}
+		}
 		}
 		
 	}		
