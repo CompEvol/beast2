@@ -9,7 +9,7 @@
         </state>
 	
 	<distribution spec="CompoundDistribution" id="posterior"/>
-	  
+
         <operator id="bitflip" spec="BitFlipOperator" weight="1">
             <input name="parameter" idref="indicators"/>
         </operator>
