@@ -379,22 +379,28 @@ public class Input<T> {
     public void determineClass(Plugin plugin) throws Exception {
         try {
             Field[] fields = plugin.getClass().getFields();
+            // find this input in the plugin
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getType().isAssignableFrom(Input.class)) {
                     Input<?> input = (Input<?>) fields[i].get(plugin);
                     if (input == this) {
+                    	// found the input, now determine the type of the input
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
-                        if (value != null && value instanceof ArrayList<?>) {
-                            Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
-                            theClass = (Class<?>) genericTypes2[0];
+                        // check if it is a List
+                        // NB: if the List is not initialised, there is no way 
+                        // to determine the type (that I know of...)
+                        if (value != null && value instanceof List<?>) {
+                        		Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
+                        		theClass = (Class<?>) genericTypes2[0];
                         } else {
-
-
+                        	// it is not a list (or if it is, this will fail)
                             try {
                                 theClass = (Class<?>) genericTypes[0];
                             } catch (Exception e) {
-                                System.err.println(plugin.getClass().getName() + " " + plugin.getID() + " failed. Possibly template or abstract Plugin used???");
+                                System.err.println(plugin.getClass().getName() + " " + plugin.getID() + " failed. " +
+                                		"Possibly template or abstract Plugin used " +
+                                		"or if it is a list, the list was not initilised???");
                                 System.err.println("class is " + plugin.getClass());
                                 e.printStackTrace(System.err);
                                 System.exit(0);
