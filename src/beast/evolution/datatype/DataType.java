@@ -180,7 +180,7 @@ public interface DataType {
     	
     	@Override
         public boolean isAmbiguousState(int state) {
-        	return (state >=0 && state < m_nStateCount);
+        	return (state < 0 && state >= m_nStateCount);
         }
 
     	@Override

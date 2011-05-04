@@ -128,6 +128,10 @@ public interface SiteModelInterface {
 			public void setDataType(DataType dataType) {
 				m_dataType = dataType;
 			}
+
+			public double getProportianInvariant() {
+				return 0;
+			}
 			
 		} // class SiteModelInterface.Base 
 		

@@ -132,6 +132,7 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -189,6 +190,10 @@ public class TreeLikelihood extends Distribution {
     /** flag to indicate ascertainment correction should be applied **/
     boolean m_bAscertainedSitePatterns = false;
 
+    /** dealing with proportion of site being invariant **/
+    double m_fProportianInvariant = 0;
+    List<Integer> m_iConstantPattern = null;
+    
     @Override
     public void initAndValidate() throws Exception {
     	// sanity check: alignment should have same #taxa as tree
@@ -220,9 +225,9 @@ public class TreeLikelihood extends Distribution {
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
         initCore();
         
-        
-        m_fPatternLogLikelihoods = new double[m_data.get().getPatternCount()];
-        m_fRootPartials = new double[m_data.get().getPatternCount() * nStateCount];
+        int nPatterns = m_data.get().getPatternCount();
+        m_fPatternLogLikelihoods = new double[nPatterns];
+        m_fRootPartials = new double[nPatterns * nStateCount];
         m_nMatrixSize = (nStateCount +1)* (nStateCount+1);
         m_fProbabilities = new double[(nStateCount +1)* (nStateCount+1)];
         Arrays.fill(m_fProbabilities, 1.0);
@@ -233,6 +238,35 @@ public class TreeLikelihood extends Distribution {
             m_bAscertainedSitePatterns = true;
         }
     
+        m_fProportianInvariant = m_siteModel.getProportianInvariant();
+        if (m_fProportianInvariant > 0) {
+        	// Determine indices of m_fRootProbabilities that need to be updates
+        	// due to sites being invariant. If none of the sites are invariant,
+        	// the 'site invariant' category does not contribute anything to the
+        	// root probability. If the site IS invariant for a certain character,
+        	// taking ambiguities in account, there is a contribution of 1 from
+        	// the 'site invariant' category.
+        	m_iConstantPattern = new ArrayList<Integer>();
+        	for (int i = 0; i < nPatterns; i++) {
+        		int [] pattern = m_data.get().getPattern(i);
+        		boolean [] bIsInvariant = new boolean[nStateCount];
+        		Arrays.fill(bIsInvariant, true);
+        		for (int j = 0; j < pattern.length; j++) {
+        			int state = pattern[j];
+        			boolean [] bStateSet = m_data.get().getStateSet(state);
+        			if (m_useAmbiguities.get() || !m_data.get().getDataType().isAmbiguousState(state)) {
+            			for (int k = 0; k < nStateCount; k++) {
+            				bIsInvariant[k] &= bStateSet[k];
+            			}
+        			}
+        		}
+     			for (int k = 0; k < nStateCount; k++) {
+    				if (bIsInvariant[k]) {
+            			m_iConstantPattern.add(i * nStateCount + k);    					
+    				}
+    			}
+        	}
+        }
     }
 
     
@@ -433,6 +467,12 @@ public class TreeLikelihood extends Distribution {
 
                     double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
+                    if (m_iConstantPattern != null && !SiteModel.g_bUseOriginal) {
+                    	// some portion of sites is invariant, so adjust root partials for this
+                    	for (int i : m_iConstantPattern) {
+                			m_fRootPartials[i] += m_fProportianInvariant;
+                    	}
+                    }
 
                     m_likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, m_fPatternLogLikelihoods);
                 }

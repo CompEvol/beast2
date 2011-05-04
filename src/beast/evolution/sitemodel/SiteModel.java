@@ -46,6 +46,9 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
         "and gamma distributed rates across sites (optional) " +
         "and proportion of the sites invariant (also optional).")
 public class SiteModel extends SiteModelInterface.Base {
+    public static final boolean g_bUseOriginal = true;
+
+    
     public Input<RealParameter> muParameter = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)");
     public Input<Integer> gammaCategoryCount =
             new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
@@ -80,9 +83,11 @@ public class SiteModel extends SiteModelInterface.Base {
         }
 
         if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
+if (g_bUseOriginal) {        	
             categoryCount += 1;
+}
             invarParameter.get().setBounds(0.0, 1.0);
-        } else if (invarParameter.get() != null && invarParameter.get().getValue() < 0) {
+        } else if (invarParameter.get() != null && (invarParameter.get().getValue() < 0 || invarParameter.get().getValue() > 1)) {
         	throw new Exception("proportion invariant should be between 0 and 1");
             //invarParameter.setValue(null, this);
         }
@@ -211,11 +216,14 @@ public class SiteModel extends SiteModelInterface.Base {
         int cat = 0;
 
         if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
+if (g_bUseOriginal) {        	
             categoryRates[0] = 0.0;
             categoryProportions[0] = invarParameter.get().getValue();
-
-            propVariable = 1.0 - categoryProportions[0];
+}
+            propVariable = 1.0 - invarParameter.get().getValue();
+if (g_bUseOriginal) {        	
             cat = 1;
+}
         }
 
         if (shapeParameter.get() != null) {
@@ -550,4 +558,12 @@ public class SiteModel extends SiteModelInterface.Base {
         z = y + ((((y * a4 + a3) * y + a2) * y + a1) * y + a0) / ((((y * b4 + b3) * y + b2) * y + b1) * y + b0);
         return (prob < 0.5 ? -z : z);
     }
+
+	public double getProportianInvariant() {
+		if (invarParameter.get() == null) {
+			return 0;
+		}
+		return invarParameter.get().getValue();
+	}
+	
 } // class SiteModel
