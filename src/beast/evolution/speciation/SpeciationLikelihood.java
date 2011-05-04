@@ -51,9 +51,9 @@ abstract public class SpeciationLikelihood extends TreePrior {
      * @return the log likelihood
      */
 	@Override
-    public final double calculateLogP() {
-      	Tree tree = m_tree.get();
-      	if (m_tree.isDirty()) {
+    public double calculateLogP() {
+      	if (isDirtyCalculation()) {
+          	Tree tree = m_tree.get();
   		    logP = calculateTreeLogLikelihood(tree);
         }
         return logP;
