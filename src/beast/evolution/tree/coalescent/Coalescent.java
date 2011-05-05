@@ -5,6 +5,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.State;
 import beast.core.CalculationNode;
+import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.TreePrior;
 import beast.math.Binomial;
 
@@ -20,7 +21,7 @@ import java.util.Random;
 	"Note that this does not take the number of possible tree interval/tree topology combinations " +
 	"in account, in other words, the constant required for making this a proper distribution that integrates " +
 	"to unity is not calculated (partly, because we don't know how for sequentially samples data).")
-public class Coalescent extends TreePrior {
+public class Coalescent extends TreeDistribution {
     public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model", Validate.REQUIRED);
 
     TreeIntervals intervals;

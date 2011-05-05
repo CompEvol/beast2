@@ -28,6 +28,7 @@ package beast.evolution.speciation;
 import beast.core.Description;
 import beast.core.State;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.TreePrior;
 
 import java.util.List;
@@ -41,7 +42,7 @@ import java.util.Random;
  * @version $Id: SpeciationLikelihood.java,v 1.10 2005/05/18 09:51:11 rambaut Exp $
  */
 @Description("A likelihood function for speciation processes.")
-abstract public class SpeciationLikelihood extends TreePrior {
+abstract public class SpeciesTreeDistribution extends TreeDistribution {
 //	SpeciesTreeDistribution extends TreeDistribution
 	
 

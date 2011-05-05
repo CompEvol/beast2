@@ -15,7 +15,7 @@ import beast.evolution.tree.Tree;
 // }
 
 @Description("Pure birth model (i.e. no deaths)")	 
-public class YuleModel extends SpeciationLikelihood {
+public class YuleModel extends SpeciesTreeDistribution {
     public Input<RealParameter> birthDiffRateParameter = 
             new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
     public Input<Boolean> m_pConditionlOnRoot =
