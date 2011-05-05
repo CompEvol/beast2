@@ -2,6 +2,8 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Plugin;
+import beast.core.Valuable;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
@@ -17,7 +19,7 @@ import java.util.List;
 @Description("A likelihood function for the generalized skyline plot coalescent.")
 public class BayesianSkyline extends PopulationFunction.Abstract {
 
-    public Input<RealParameter> popSizeParamInput = new Input<RealParameter>("popSizes",
+    public Input<Valuable> popSizeParamInput = new Input<Valuable>("popSizes",
             "present-day population size. " +
                     "If time units are set to Units.EXPECTED_SUBSTITUTIONS then" +
                     "the N0 parameter will be interpreted as N0 * mu. " +
@@ -27,7 +29,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     //public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
     public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals", "The intervals of teh tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
 
-    RealParameter popSizes;
+    Valuable popSizes;
     IntegerParameter groupSizes;
     Tree tree;
     TreeIntervals intervals;
@@ -100,7 +102,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     public List<String> getParameterIds() {
 
         List<String> paramIDs = new ArrayList<String>();
-        paramIDs.add(popSizes.getID());
+        paramIDs.add(((Plugin)popSizes).getID());
         paramIDs.add(groupSizes.getID());
 
         return paramIDs;
@@ -118,7 +120,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
     		prepare();
     	}
 
-        if (t > coalescentTimes[coalescentTimes.length - 1]) return popSizes.getValue(popSizes.getDimension() - 1);
+        if (t > coalescentTimes[coalescentTimes.length - 1]) return popSizes.getArrayValue(popSizes.getDimension() - 1);
 
         int epoch = Arrays.binarySearch(coalescentTimes, t);
         if (epoch < 0) {
@@ -134,7 +136,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         	groupIndex = popSizes.getDimension() - 1;
         }
 
-        return popSizes.getValue(groupIndex);
+        return popSizes.getArrayValue(groupIndex);
     }
 
     /**
@@ -157,10 +159,10 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
         }
 
         if (t < coalescentTimes[0]) {
-            return t / popSizes.getValue(0);
+            return t / popSizes.getArrayValue(0);
         } else {
 
-            double intensity = coalescentTimes[0] / popSizes.getValue(0);
+            double intensity = coalescentTimes[0] / popSizes.getArrayValue(0);
             index += 1;
             if (index >= cumulativeGroupSizes[groupIndex]) {
                 groupIndex += 1;
@@ -168,14 +170,14 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
 
             while (t > coalescentTimes[index]) {
 
-                intensity += (coalescentTimes[index] - coalescentTimes[index - 1]) / popSizes.getValue(groupIndex);
+                intensity += (coalescentTimes[index] - coalescentTimes[index - 1]) / popSizes.getArrayValue(groupIndex);
 
                 index += 1;
                 if (index >= cumulativeGroupSizes[groupIndex]) {
                     groupIndex += 1;
                 }
             }
-            intensity += (t - coalescentTimes[index - 1]) / popSizes.getValue(groupIndex);
+            intensity += (t - coalescentTimes[index - 1]) / popSizes.getArrayValue(groupIndex);
 
             return intensity;
         }
