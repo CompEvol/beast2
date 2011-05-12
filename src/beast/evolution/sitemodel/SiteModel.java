@@ -46,7 +46,6 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
         "and gamma distributed rates across sites (optional) " +
         "and proportion of the sites invariant (also optional).")
 public class SiteModel extends SiteModelInterface.Base {
-    public static final boolean g_bUseOriginal = true;
 
     
     public Input<RealParameter> muParameter = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)");
@@ -57,7 +56,6 @@ public class SiteModel extends SiteModelInterface.Base {
     public Input<RealParameter> invarParameter =
             new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
 
-
     @Override
     public void initAndValidate() throws Exception {
 
@@ -65,6 +63,18 @@ public class SiteModel extends SiteModelInterface.Base {
             muParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
         }
 
+        if (invarParameter.get() != null && (invarParameter.get().getValue() < 0 || invarParameter.get().getValue() > 1)) {
+        	throw new Exception("proportion invariant should be between 0 and 1");
+        }
+        refresh();
+        
+        addCondition(muParameter);
+        addCondition(invarParameter);
+        addCondition(shapeParameter);
+    }
+
+    @Override
+	protected void refresh() {
         if (shapeParameter.get() != null) {
             categoryCount = gammaCategoryCount.get();
             if (categoryCount < 1) {
@@ -83,27 +93,17 @@ public class SiteModel extends SiteModelInterface.Base {
         }
 
         if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
-if (g_bUseOriginal) {        	
-            categoryCount += 1;
-}
+        	if (m_bPropInvariantIsCategory) {        	
+        		categoryCount += 1;
+        	}
             invarParameter.get().setBounds(0.0, 1.0);
-        } else if (invarParameter.get() != null && (invarParameter.get().getValue() < 0 || invarParameter.get().getValue() > 1)) {
-        	throw new Exception("proportion invariant should be between 0 and 1");
-            //invarParameter.setValue(null, this);
         }
 
         categoryRates = new double[categoryCount];
         categoryProportions = new double[categoryCount];
 
         ratesKnown = false;
-
-        addCondition(muParameter);
-        addCondition(invarParameter);
-        addCondition(shapeParameter);
-    }
-
-
-
+	}
 
 
     // *****************************************************************
@@ -216,14 +216,14 @@ if (g_bUseOriginal) {
         int cat = 0;
 
         if (invarParameter.get() != null && invarParameter.get().getValue() > 0) {
-if (g_bUseOriginal) {        	
-            categoryRates[0] = 0.0;
-            categoryProportions[0] = invarParameter.get().getValue();
-}
+        	if (m_bPropInvariantIsCategory) {        	
+        		categoryRates[0] = 0.0;
+        		categoryProportions[0] = invarParameter.get().getValue();
+        	}
             propVariable = 1.0 - invarParameter.get().getValue();
-if (g_bUseOriginal) {        	
-            cat = 1;
-}
+            if (m_bPropInvariantIsCategory) {        	
+            	cat = 1;
+            }
         }
 
         if (shapeParameter.get() != null) {
@@ -280,7 +280,7 @@ if (g_bUseOriginal) {
     @Override
     protected boolean requiresRecalculation() {
         // we only get here if something is dirty in its inputs
-        ratesKnown = false;
+   		ratesKnown = false;
         return true;
     }
 

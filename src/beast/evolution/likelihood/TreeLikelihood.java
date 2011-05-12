@@ -61,6 +61,7 @@ public class TreeLikelihood extends Distribution {
 
     /** calculation engine **/
     LikelihoodCore m_likelihoodCore;
+    BeagleTreeLikelihood m_beagle;
     
     /** Plugin associated with inputs. Since none of the inputs are StateNodes, it
      * is safe to link to them only once, during initAndValidate.
@@ -100,7 +101,7 @@ public class TreeLikelihood extends Distribution {
     boolean m_bAscertainedSitePatterns = false;
 
     /** dealing with proportion of site being invariant **/
-    double m_fProportianInvariant = 0;
+    double m_fProportionInvariant = 0;
     List<Integer> m_iConstantPattern = null;
     
     @Override
@@ -109,6 +110,15 @@ public class TreeLikelihood extends Distribution {
     	if (m_data.get().getNrTaxa() != m_tree.get().getLeafNodeCount()) {
     		throw new Exception("The number of nodes in the tree does not match the number of sequences");
     	}
+    	m_beagle = null;
+    	m_beagle = new BeagleTreeLikelihood();
+    	m_beagle.initByName("data", m_data.get(), "tree", m_tree.get(), "siteModel", m_pSiteModel.get(), "branchRateModel", m_pBranchRateModel.get(), "useAmbiguities", m_useAmbiguities.get());
+    	if (m_beagle.beagle != null) {
+    		//a Beagle instance was found, so we use it
+    		return;
+    	}
+		// No Beagle instance was found, so we use the good old java likelihood core
+    	m_beagle = null;
     	
         int nodeCount = m_tree.get().getNodeCount();
         m_siteModel = m_pSiteModel.get();
@@ -124,15 +134,22 @@ public class TreeLikelihood extends Distribution {
     	m_StoredBranchLengths = new double[nodeCount];
     	
         int nStateCount = m_data.get().getMaxStateCount();
+        int nPatterns = m_data.get().getPatternCount();
         if (nStateCount == 4) {
             m_likelihoodCore = new BeerLikelihoodCore4();
         } else {
             m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
         }
         System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
+
+        m_fProportionInvariant = m_siteModel.getProportianInvariant();
+        m_siteModel.setPropInvariantIsCategory(false);
+        if (m_fProportionInvariant > 0) {
+        	calcConstantPatternIndices(nPatterns, nStateCount);
+        }
+        
         initCore();
         
-        int nPatterns = m_data.get().getPatternCount();
         m_fPatternLogLikelihoods = new double[nPatterns];
         m_fRootPartials = new double[nPatterns * nStateCount];
         m_nMatrixSize = (nStateCount +1)* (nStateCount+1);
@@ -141,11 +158,6 @@ public class TreeLikelihood extends Distribution {
 
         if (m_data.get() instanceof AscertainedAlignment) {
             m_bAscertainedSitePatterns = true;
-        }
-    
-        m_fProportianInvariant = m_siteModel.getProportianInvariant();
-        if (m_fProportianInvariant > 0) {
-        	calcConstantPatternIndices(nPatterns, nStateCount);
         }
     }
 
@@ -258,6 +270,9 @@ public class TreeLikelihood extends Distribution {
     int X = 100;
     @Override
     public double calculateLogP() throws Exception {
+    	if (m_beagle != null) {
+    		return m_beagle.calculateLogP();
+    	}
         Tree tree = m_tree.get();
 
        	traverse(tree.getRoot());
@@ -362,10 +377,11 @@ public class TreeLikelihood extends Distribution {
                     double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
-                    if (m_iConstantPattern != null && !SiteModel.g_bUseOriginal) {
+                    if (m_iConstantPattern != null) { // && !SiteModel.g_bUseOriginal) {
+                    	m_fProportionInvariant = m_siteModel.getProportianInvariant();
                     	// some portion of sites is invariant, so adjust root partials for this
                     	for (int i : m_iConstantPattern) {
-                			m_fRootPartials[i] += m_fProportianInvariant;
+                			m_fRootPartials[i] += m_fProportionInvariant;
                     	}
                     }
 
@@ -384,6 +400,9 @@ public class TreeLikelihood extends Distribution {
      */
     @Override
     protected boolean requiresRecalculation() {
+    	if (m_beagle != null) {
+    		return m_beagle.requiresRecalculation();
+    	}
         m_nHasDirt = Tree.IS_CLEAN;
 
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
@@ -403,6 +422,10 @@ public class TreeLikelihood extends Distribution {
 
     @Override
     public void store() {
+    	if (m_beagle != null) {
+    		m_beagle.store();
+    		return;
+    	}
     	if (m_likelihoodCore != null) {
     		m_likelihoodCore.store();
     	}
@@ -412,6 +435,10 @@ public class TreeLikelihood extends Distribution {
 
     @Override
     public void restore() {
+    	if (m_beagle != null) {
+    		m_beagle.restore();
+    		return;
+    	}
     	if (m_likelihoodCore != null) {
     		m_likelihoodCore.restore();
     	}

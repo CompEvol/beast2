@@ -29,6 +29,7 @@ import beagle.*;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
+import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -72,6 +73,10 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     
     @Override
     public void initAndValidate() {
+    	initialize();
+    }
+    
+    boolean initialize() {
         m_nNodeCount = m_tree.get().getNodeCount();
         m_bUseAmbiguities = m_useAmbiguities.get();
         m_siteModel = m_pSiteModel.get();
@@ -89,7 +94,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         m_nStateCount = m_data.get().getMaxStateCount();
         m_nPatternCount = m_data.get().getPatternCount();
 
-        	System.err.println("Using BEAGLE TreeLikelihood");
+        	System.err.println("Attempt to load BEAGLE TreeLikelihood");
 
             eigenCount = 1;//this.branchSubstitutionModel.getEigenCount();
 
@@ -201,6 +206,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                     preferenceFlags,
                     requirementFlags
             );
+            if (beagle == null) {
+            	return false;
+            }
 
             InstanceDetails instanceDetails = beagle.getDetails();
             ResourceDetails resourceDetails = null;
@@ -223,9 +231,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                     System.err.println(sb.toString());
                 } else {
                 	System.err.println("  Error retrieving BEAGLE resource for instance: " + instanceDetails.toString());
+                	beagle = null;
+                    return false;
                 }
             } else {
             	System.err.println("  No external BEAGLE resources available, or resource list/requirements not met, using Java implementation");
+            	beagle = null;
+                return false;
             }
             System.err.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
             System.err.println("  With " + m_nPatternCount + " unique site patterns.");
@@ -259,6 +271,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             }
 
             if (this.rescalingScheme == PartialsRescalingScheme.DYNAMIC) {
+            	int h  = 3;
+            	// TODO: uncomment following line once bug in java impl. is fixed
                 everUnderflowed = true; // If commented out, BEAST does not rescale until first under-/over-flow.
             }
 
@@ -269,6 +283,18 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             // set up sitemodel
             double[] categoryRates = m_siteModel.getCategoryRates(null);
             beagle.setCategoryRates(categoryRates);
+            
+            
+//            m_fProportionInvariant = m_siteModel.getProportianInvariant();
+//            double [] fProportionInvariantCorrection = new double[m_nPatternCount * m_nStateCount];
+//            if (!SiteModel.g_bUseOriginal && m_fProportionInvariant > 0) {
+//            	calcConstantPatternIndices(m_nPatternCount, m_nStateCount);
+//            	for (int i : m_iConstantPattern) {
+//            		fProportionInvariantCorrection[i] = m_fProportionInvariant;
+//            	}
+//            }
+//            beagle.setProportionInvariantCorrection(fProportionInvariantCorrection);
+            return true;
     }
 
     private static List<Integer> parseSystemPropertyIntegerArray(String propertyName) {
@@ -664,11 +690,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         return logL;
     }
 
-    protected void getPartials(int number, double[] partials) {
-        int cumulativeBufferIndex = Beagle.NONE;
-        /* No need to rescale partials */
-        beagle.getPartials(partialBufferHelper.getOffsetIndex(number), cumulativeBufferIndex, partials);
-    }
+//    protected void getPartials(int number, double[] partials) {
+//        int cumulativeBufferIndex = Beagle.NONE;
+//        /* No need to rescale partials */
+//        beagle.getPartials(partialBufferHelper.getOffsetIndex(number), cumulativeBufferIndex, partials);
+//    }
 
     protected void setPartials(int number, double[] partials) {
         beagle.setPartials(partialBufferHelper.getOffsetIndex(number), partials);
@@ -867,12 +893,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     protected boolean updateSiteModel;
     protected boolean storedUpdateSiteModel;
 
-//    /***
-//     * Flag to specify if LikelihoodCore supports dynamic rescaling
-//     */
-//    private boolean dynamicRescaling = false;
-
-
     /**
      * Flag to specify if site patterns are acertained
      */
@@ -934,7 +954,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         private int[] indexOffsets;
         private int[] storedIndexOffsets;
 
-    }
+    } // class BufferIndexHelper
     
     public enum PartialsRescalingScheme {
 

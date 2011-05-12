@@ -101,7 +101,21 @@ public interface SiteModelInterface {
 			}
 
 		    DataType m_dataType;
-		    
+		    /** Flag indicating proportional invariant is treated as a separate
+		     * category. If set to false, only gamma-categories are returned and
+		     * a TreeLikelihood has to deal with the proportional invariant category
+		     * separately -- and potentially much more efficiently.
+		     */
+		    public boolean m_bPropInvariantIsCategory = true;
+
+		    public void setPropInvariantIsCategory(boolean bPropInvariantIsCategory) {
+		    	m_bPropInvariantIsCategory = bPropInvariantIsCategory;
+				refresh();
+		    }
+
+		    /** set up categories, reserve appropriately sized memory **/
+			protected void refresh() {}
+
 			@Override
 			public SubstitutionModel getSubstitutionModel() {
 		        return m_pSubstModel.get();
