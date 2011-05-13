@@ -24,10 +24,10 @@
 */
 package beast.util;
 
-
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
+import beast.core.StateNode;
+import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -38,7 +38,7 @@ import java.util.Vector;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
-public class TreeParser extends Tree {
+public class TreeParser extends Tree implements StateNodeInitialiser {
     /**
      * default beast.tree branch length, used when that info is not in the Newick beast.tree
      */
@@ -87,6 +87,7 @@ public class TreeParser extends Tree {
         }
 
         super.initAndValidate();
+        initStateNodes();
     } // init
 
     /** used to make sure all taxa only occur once in the tree **/
@@ -395,5 +396,21 @@ public class TreeParser extends Tree {
         }
         //return node;
 	 }
+
+	@Override
+	public void initStateNodes() {
+		if (m_initial.get() != null) {
+			m_initial.get().assignFrom(this);
+		}
+	}
+
+	@Override
+	public List<StateNode> getInitialisedStateNodes() {
+		List<StateNode> stateNodes = new ArrayList<StateNode>();
+		if (m_initial.get() != null) {
+			stateNodes.add(m_initial.get());
+		}
+		return stateNodes;
+	}
 
 } // class TreeParser

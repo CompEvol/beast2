@@ -36,6 +36,8 @@ import beast.evolution.alignment.Alignment;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.StateNode;
+import beast.core.StateNodeInitialiser;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -49,7 +51,7 @@ import beast.evolution.tree.Tree;
 		"<br/>o centroid, " +
 		"<br/>o Ward and " +
 		"<br/>o adjusted complete link")
-public class ClusterTree extends Tree {
+public class ClusterTree extends Tree implements StateNodeInitialiser {
 	final static String M_SINGLE = "single";
 	final static String M_AVERAGE = "average";
 	final static String M_COMPLETE = "complete";
@@ -91,6 +93,7 @@ public class ClusterTree extends Tree {
 		setRoot(root);
 		root.labelInternalNodes((getNodeCount()+1)/2);
 		super.initAndValidate();
+		initStateNodes();
 	}
 
 	Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -697,6 +700,20 @@ public class ClusterTree extends Tree {
 		return fESS / cluster.size();
 	} // calcESS
 
+	@Override
+	public void initStateNodes() {
+		if (m_initial.get() != null) {
+			m_initial.get().assignFrom(this);
+		}
+	}
 
+	@Override
+	public List<StateNode> getInitialisedStateNodes() {
+		List<StateNode> stateNodes = new ArrayList<StateNode>();
+		if (m_initial.get() != null) {
+			stateNodes.add(m_initial.get());
+		}
+		return stateNodes;
+	}
 
-} // class HierarchicalClusterer
+} // class ClusterTree

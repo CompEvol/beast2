@@ -685,4 +685,11 @@ public class GeneralBeagleImpl implements Beagle {
         return details;
     }
 
+	@Override
+	public void setProportionInvariantCorrection(double[] proportionInvariantCorrection) {
+		System.err.println("THIS CODE IS NOT MAINTAINED");
+		System.exit(0);
+		
+	}
+
 }

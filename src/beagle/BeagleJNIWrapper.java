@@ -138,6 +138,10 @@ public class BeagleJNIWrapper {
     public native int getSiteLogLikelihoods(final int instance,
                                             final double[] outLogLikelihoods);
 
+    
+    public native void setProportionInvariantCorrection(final int instance,
+    		double[] proportionInvariantCorrection);
+    
     /* Library loading routines */
 
     private static String getPlatformSpecificLibraryName()

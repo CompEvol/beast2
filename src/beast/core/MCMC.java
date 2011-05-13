@@ -29,6 +29,7 @@ import beast.util.Randomizer;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Description("MCMC chain. This is the main element that controls which posterior " +
@@ -45,8 +46,12 @@ public class MCMC extends Runnable {
                     Input.Validate.REQUIRED);
 
     public Input<State> m_startState =
-            new Input<State>("state", "elements of the state space", new State(), Input.Validate.REQUIRED);
-
+            new Input<State>("state", "elements of the state space");
+    
+    public Input<Integer> m_storeEvery = 
+        new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
+		"resume computation later on if the process failed half-way.", -1);
+    
     public Input<Distribution> posteriorInput =
             new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)",
                     Input.Validate.REQUIRED);
@@ -59,6 +64,10 @@ public class MCMC extends Runnable {
             new Input<List<Logger>>("logger", "loggers for reporting progress of MCMC chain",
                     new ArrayList<Logger>(), Input.Validate.REQUIRED);
 
+    public Input<List<StateNodeInitialiser>> m_initilisers = 
+    	new Input<List<StateNodeInitialiser>>("init", "one or more state node initilisers used for determining " +
+    			"the start state of the chain", 
+    			new ArrayList<StateNodeInitialiser>());
     /** Alternative representation of operatorsInput that allows random selection
      * of operators and calculation of statistics.
      */
@@ -92,10 +101,44 @@ public class MCMC extends Runnable {
             operatorSet.addOperator(op);
         }
 
-        // state initialisation
-        this.state = m_startState.get();
-        this.state.setPosterior(posteriorInput.get());
+        // StateNode initialisation
+        HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
+        for (StateNodeInitialiser initialiser : m_initilisers.get()) {
+        	// make sure that the initialiser does not re-initialises a StateNode
+        	List<StateNode> list = initialiser.getInitialisedStateNodes();
+        	for (StateNode stateNode : list) {
+        		if (initialisedStateNodes.contains(stateNode)) {
+        			throw new Exception("Trying to initialise stateNode (id=" + stateNode.getID() + ") more than once. " +
+        					"Remove an initialiser from MCMC to fix this.");
+        		}
+        	}
+        	initialisedStateNodes.addAll(list);
+        	// do the initialisation
+        	//initialiser.initStateNodes();
+        }
 
+        // State initialisation
+        if (m_startState.get() != null) {
+	        this.state = m_startState.get();
+        } else {
+            // create state from scratch
+            this.state = new State();
+            HashSet<StateNode> stateNodes = new HashSet<StateNode>();
+            for (Operator op : operatorsInput.get()) {
+            	for (Plugin o : op.listActivePlugins()) {
+            		if (o instanceof StateNode) {
+            			stateNodes.add((StateNode) o);
+            		}
+            	}
+            }
+            for (StateNode stateNode : stateNodes) {
+            	this.state.stateNodeInput.setValue(stateNode, this.state);
+            }
+            this.state.m_storeEvery.setValue(m_storeEvery.get(), this.state);
+        }
+        this.state.initialise();
+        this.state.setPosterior(posteriorInput.get());
+        
     } // init
 
     public void log(int nSample) {

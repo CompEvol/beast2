@@ -29,6 +29,7 @@ package beast.evolution.tree;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
+import beast.core.StateNodeInitialiser;
 import beast.util.TreeParser;
 
 import java.io.PrintStream;
@@ -50,7 +51,7 @@ public class Tree extends StateNode {
 
     @Override
     public void initAndValidate() throws Exception {
-    	if (m_initial.get() != null) {
+    	if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
     		Tree other = m_initial.get();
             root = other.root.copy();
             nodeCount = other.nodeCount;
@@ -61,8 +62,9 @@ public class Tree extends StateNode {
     	if (m_trait.get() != null) {
     		adjustTreeToNodeHeights(root);
     	}
-    	
-    	initArrays();
+    	if (nodeCount >= 0) {
+    		initArrays();
+    	}
     }
 
     void initArrays() {
@@ -267,7 +269,7 @@ public class Tree extends StateNode {
     @Override
     public void assignFrom(StateNode other) {
         Tree tree = (Tree) other;
-        Node [] nodes = getNodesAsArray();
+        Node [] nodes = tree.getNodesAsArray();
         m_sID = tree.m_sID;
         index = tree.index;
         root = nodes[tree.root.getNr()];

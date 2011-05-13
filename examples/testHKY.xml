@@ -47,7 +47,9 @@
 
     <parameter id="hky.kappa" value="1.0" lower="0.0"/>
 
-    <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+    <tree id='tree'/>
+
+    <tree spec='beast.util.ClusterTree' id='upgmatree' clusterType='upgma' initial='@tree'>
         <taxa idref='alignment'/>
     </tree>
 
@@ -57,6 +59,8 @@
             <stateNode idref="hky.kappa"/>
             <stateNode idref="tree"/>
         </state>
+
+	<init idref='upgmatree'/>
 
         <distribution id='likelihood' idref="treeLikelihood"/>
     

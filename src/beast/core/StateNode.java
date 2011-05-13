@@ -72,6 +72,13 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     * Assign all values of other to this **/
     public abstract void assignFrom(StateNode other);
     
+    /** as assignFrom, but without copying the ID **/
+    public void assignFromWithoutID(StateNode other) {
+    	String sID = m_sID;
+    	assignFrom(other);
+    	m_sID = sID;
+    }
+    
     /** As assignFrom, but only those parts are assigned that 
      * are variable, for instance for parameters bounds and dimension
      * do not need to be copied.

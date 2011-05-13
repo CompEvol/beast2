@@ -1,6 +1,7 @@
 package test.beast.evolution.likelihood;
 
 
+import junit.framework.TestCase;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
@@ -21,7 +22,7 @@ import test.beast.BEASTTestCase;
 /** This test mimics the testLikelihood.xml file from Beast 1, which compares Beast 1 results to PAUP results. 
  * So, it these tests succeed, then Beast II calculates the same for these simple models as Beast 1 and PAUP.
  * **/
-public class TreeLikelihoodTest extends BEASTTestCase {
+public class TreeLikelihoodTest extends TestCase {
 
     public TreeLikelihoodTest() {
 		super();
@@ -349,7 +350,9 @@ public class TreeLikelihoodTest extends BEASTTestCase {
 		assertEquals(fLogP, -1947.5829396144961, BEASTTestCase.PRECISION);
 	}
 
-	void aminoacidModelTest(SubstitutionModel substModel, double fExpectedValue, Alignment data, Tree tree) throws Exception {
+	void aminoacidModelTest(SubstitutionModel substModel, double fExpectedValue) throws Exception {
+		Alignment data = BEASTTestCase.getAminoAcidAlignment();
+		Tree tree = BEASTTestCase.getAminoAcidTree(data);
 		SiteModel siteModel = new SiteModel();
 		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", substModel);
 
@@ -361,41 +364,183 @@ public class TreeLikelihoodTest extends BEASTTestCase {
 	}
 
 	@Test
-	public void testAminoAcidLikelihood() throws Exception {
+	public void testAminoAcidLikelihoodWAG() throws Exception {
 		// Set up WAG model	
-		Alignment data = BEASTTestCase.getAminoAcidAlignment();
-		Tree tree = BEASTTestCase.getAminoAcidTree(data);
-
 		WAG wag = new WAG();
 		wag.initAndValidate();
-		aminoacidModelTest(wag, -338.6388785157248, data, tree);
+		aminoacidModelTest(wag, -338.6388785157248);
 		
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodJTT() throws Exception {
 		// JTT
 		JTT jtt = new JTT();
 		jtt.initAndValidate();
-		aminoacidModelTest(jtt, -338.80761792179726, data, tree);
+		aminoacidModelTest(jtt, -338.80761792179726);
 
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodBlosum62() throws Exception {
 		// Blosum62
 		Blosum62 blosum62 = new Blosum62();
 		blosum62.initAndValidate();
-		aminoacidModelTest(blosum62, -345.3825963600176, data, tree);
+		aminoacidModelTest(blosum62, -345.3825963600176);
 
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodDayhoff() throws Exception {
 		// Dayhoff
 		Dayhoff dayhoff = new Dayhoff();
 		dayhoff.initAndValidate();
-		aminoacidModelTest(dayhoff, -340.6149187667345, data, tree);
+		aminoacidModelTest(dayhoff, -340.6149187667345);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodcpRev() throws Exception {
+		// cpRev
+		CPREV cpRev = new CPREV();
+		cpRev.initAndValidate();
+		aminoacidModelTest(cpRev, -348.71458467304154);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodMTRev() throws Exception {
+		// MTRev
+		MTREV mtRev = new MTREV();
+		mtRev.initAndValidate();
+		aminoacidModelTest(mtRev, -369.4791633617842);
 		
+	}
+	
+	void aminoacidModelTestI(SubstitutionModel substModel, double fExpectedValue) throws Exception {
+		Alignment data = BEASTTestCase.getAminoAcidAlignment();
+		Tree tree = BEASTTestCase.getAminoAcidTree(data);
+		SiteModel siteModel = new SiteModel();
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", substModel,
+				"proportionInvariant", "0.2");
+
+		TreeLikelihood likelihood = newTreeLikelihood();
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
+		double fLogP = 0;
+		fLogP = likelihood.calculateLogP();
+		assertEquals(fExpectedValue, fLogP, BEASTTestCase.PRECISION);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodIWAG() throws Exception {
+		// Set up WAG model	
+		WAG wag = new WAG();
+		wag.initAndValidate();
+		aminoacidModelTestI(wag, -338.7631166242887);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodIJTT() throws Exception {
+		// JTT
+		JTT jtt = new JTT();
+		jtt.initAndValidate();
+		aminoacidModelTestI(jtt, -338.97566093453275);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodIBlosum62() throws Exception {
+		// Blosum62
+		Blosum62 blosum62 = new Blosum62();
+		blosum62.initAndValidate();
+		aminoacidModelTestI(blosum62, -345.4456979614507);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodIDayhoff() throws Exception {
+		// Dayhoff
+		Dayhoff dayhoff = new Dayhoff();
+		dayhoff.initAndValidate();
+		aminoacidModelTestI(dayhoff, -340.7630258641759);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodIcpRev() throws Exception {
+		// cpRev
+		CPREV cpRev = new CPREV();
+		cpRev.initAndValidate();
+		aminoacidModelTestI(cpRev, -348.66316715026977);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodIMTRev() throws Exception {
+		// MTRev
+		MTREV mtRev = new MTREV();
+		mtRev.initAndValidate();
+		aminoacidModelTestI(mtRev, -369.34449408200175);
+	
+	}
+
+	void aminoacidModelTestIG(SubstitutionModel substModel, double fExpectedValue) throws Exception {
+		Alignment data = BEASTTestCase.getAminoAcidAlignment();
+		Tree tree = BEASTTestCase.getAminoAcidTree(data);
+		SiteModel siteModel = new SiteModel();
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", substModel,
+				"gammaCategoryCount", 4,
+				"shape", "0.15", 
+				"proportionInvariant", "0.2");
+
+		TreeLikelihood likelihood = newTreeLikelihood();
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
+		double fLogP = 0;
+		fLogP = likelihood.calculateLogP();
+		assertEquals(fExpectedValue, fLogP, BEASTTestCase.PRECISION);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodGIWAG() throws Exception {
+		// Set up WAG model	
+		WAG wag = new WAG();
+		wag.initAndValidate();
+		aminoacidModelTestIG(wag, -342.69745607208495);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodGIJTT() throws Exception {
+		// JTT
+		JTT jtt = new JTT();
+		jtt.initAndValidate();
+		aminoacidModelTestIG(jtt, -343.23738058653373);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodGIBlosum62() throws Exception {
+		// Blosum62
+		Blosum62 blosum62 = new Blosum62();
+		blosum62.initAndValidate();
+		aminoacidModelTestIG(blosum62, -348.7305212479578);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodGIDayhoff() throws Exception {
+		// Dayhoff
+		Dayhoff dayhoff = new Dayhoff();
+		dayhoff.initAndValidate();
+		aminoacidModelTestIG(dayhoff, -345.11861069556966);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodGIcpRev() throws Exception {
 		
 		// cpRev
 		CPREV cpRev = new CPREV();
 		cpRev.initAndValidate();
-		aminoacidModelTest(cpRev, -348.71458467304154, data, tree);
-		
+		aminoacidModelTestIG(cpRev, -351.35553855806137);
+	}
+
+	@Test
+	public void testAminoAcidLikelihoodGIMTRev() throws Exception {
 		// MTRev
 		MTREV mtRev = new MTREV();
 		mtRev.initAndValidate();
-		aminoacidModelTest(mtRev, -369.4791633617842, data, tree);
-		
-	}
+		aminoacidModelTestIG(mtRev, -371.0038574147396);
 	
+	}
 } // class TreeLikelihoodTest

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BEASTTestCase extends TestCase {
-    protected static final double PRECISION = 1e-6;
+    public static final double PRECISION = 1e-6;
 
     public Alignment getFourTaxaNoData() throws Exception {
 		Sequence a = new Sequence("A", "A");

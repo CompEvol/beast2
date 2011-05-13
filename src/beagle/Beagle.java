@@ -362,4 +362,11 @@ public interface Beagle {
      * @return
      */
     public InstanceDetails getDetails();
+    
+    /** Sets initial values for integratePartials during calculateRootLogLikelihoods
+     * This can be used for efficiently dealing with site models that have a 
+     * proportion invariant.
+     * @param proportionInvariantCorrection
+     */
+    void setProportionInvariantCorrection(double [] proportionInvariantCorrection);
 }

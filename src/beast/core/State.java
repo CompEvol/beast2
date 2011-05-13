@@ -113,6 +113,9 @@ public class State extends Plugin {
     
     @Override
     public void initAndValidate() {
+    }
+    
+    void initialise() {
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
 
         for (int i = 0; i < stateNode.length; i++) {
