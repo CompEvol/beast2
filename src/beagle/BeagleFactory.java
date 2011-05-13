@@ -42,12 +42,25 @@ public class BeagleFactory {
             long requirementFlags
     ) {
 
-        boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
+//        boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
+//    	if (forceJava) {
+//            return new GeneralBeagleImpl(tipCount,
+//                    partialsBufferCount,
+//                    compactBufferCount,
+//                    stateCount,
+//                    patternCount,
+//                    eigenBufferCount,
+//                    matrixBufferCount,
+//                    categoryCount,
+//                    scaleBufferCount
+//            );
+//    	}
+    	
 //        boolean forceHybrid = Boolean.valueOf(System.getProperty("force.hybrid"));
 
         getBeagleJNIWrapper();
 
-        if (!forceJava && BeagleJNIWrapper.INSTANCE != null) {
+        if (/*!forceJava && */BeagleJNIWrapper.INSTANCE != null) {
 
             try {
                 Beagle beagle = new BeagleJNIImpl(
@@ -78,10 +91,10 @@ public class BeagleFactory {
             }
         }
 
-        if (!forceJava) {
-            throw new RuntimeException("No acceptable BEAGLE library plugins found. " +
-                    "Make sure that BEAGLE is properly installed or try changing resource requirements.");
-        }
+//        if (!forceJava) {
+//            throw new RuntimeException("No acceptable BEAGLE library plugins found. " +
+//                    "Make sure that BEAGLE is properly installed or try changing resource requirements.");
+//        }
 
 //      if (stateCount == 4) {
 //      return new FourStateBeagleImpl(
@@ -96,16 +109,17 @@ public class BeagleFactory {
 //      );
 //  }
 
-        return new GeneralBeagleImpl(tipCount,
-                partialsBufferCount,
-                compactBufferCount,
-                stateCount,
-                patternCount,
-                eigenBufferCount,
-                matrixBufferCount,
-                categoryCount,
-                scaleBufferCount
-        );
+//        return new GeneralBeagleImpl(tipCount,
+//                partialsBufferCount,
+//                compactBufferCount,
+//                stateCount,
+//                patternCount,
+//                eigenBufferCount,
+//                matrixBufferCount,
+//                categoryCount,
+//                scaleBufferCount
+//        );
+        return null;
     }
 
     private static BeagleJNIWrapper getBeagleJNIWrapper() {
@@ -213,7 +227,7 @@ public class BeagleFactory {
 
         BeagleInfo.printResourceList();
 
-        System.setProperty("java.only", "true");
+        System.setProperty("java.only", "false");
 
         // create an instance of the BEAGLE library
         Beagle instance = loadBeagleInstance(
