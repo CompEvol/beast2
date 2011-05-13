@@ -64,7 +64,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 	}
 	
 	public InputEditor createShapeEditor() throws Exception {
-		Input<?> input = ((SiteModel) m_input.get()).shapeParameter;
+		Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
 		m_gammaShapeEditor = PluginPanel.createInputEditor(input, m_plugin);
 		m_gammaShapeEditor.setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
 		return m_gammaShapeEditor;
