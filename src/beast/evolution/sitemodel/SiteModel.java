@@ -142,7 +142,7 @@ public class SiteModel extends SiteModelInterface.Base {
     public double getRateForCategory(int category, Node node) {
         synchronized (this) 
         {
-            if (!ratesKnown) {
+            if (needRefresh) {
                 calculateCategoryRates(node);
             }
         }
@@ -161,7 +161,7 @@ public class SiteModel extends SiteModelInterface.Base {
     public double[] getCategoryRates(Node node) {
         synchronized (this) 
         {
-            if (!ratesKnown) {
+            if (needRefresh) {
                 calculateCategoryRates(node);
             }
         }
@@ -193,7 +193,7 @@ public class SiteModel extends SiteModelInterface.Base {
     public double getProportionForCategory(int category, Node node) {
         synchronized (this) 
         {
-            if (!ratesKnown) {
+            if (needRefresh) {
                 calculateCategoryRates(node);
             }
         }
@@ -210,7 +210,7 @@ public class SiteModel extends SiteModelInterface.Base {
     public double[] getCategoryProportions(Node node) {
         synchronized (this) 
         {
-            if (!ratesKnown) {
+            if (needRefresh) {
                 calculateCategoryRates(node);
             }
         }
@@ -272,8 +272,9 @@ public class SiteModel extends SiteModelInterface.Base {
             categoryProportions[cat] = propVariable;
         }
 
-
-        ratesKnown = true;
+        needRefresh = false;
+//        ratesUnknown = false;
+//        proportionsUnknown = false;
     }
 
 
@@ -286,28 +287,38 @@ public class SiteModel extends SiteModelInterface.Base {
     @Override
     public void restore() {
         super.restore();
-        ratesKnown = false;
+        needRefresh = true;
+//        ratesUnknown = true;
+//        proportionsUnknown = true;
     }
     @Override
     protected boolean requiresRecalculation() {
     	// do explicit check whether any of the non-substitution model parameters changed
     	if (categoryCount > 1) {
-    		if (shapeParameter != null && shapeParameter.somethingIsDirty() || 
-        			muParameter.somethingIsDirty() ||
-        			invarParameter.somethingIsDirty()) {
-        		ratesKnown = false;
-    		}
+    		ratesUnknown |= (shapeParameter != null && shapeParameter.somethingIsDirty()) || 
+				muParameter.somethingIsDirty();
+				// || invarParameter.somethingIsDirty();
+//    		if (shapeParameter != null && shapeParameter.somethingIsDirty() || 
+//        			muParameter.somethingIsDirty() ||
+//        			invarParameter.somethingIsDirty()) {
+//    			ratesUnknown = true;
+//    		}
     	} else {
-    		if (muParameter.somethingIsDirty() || !m_bPropInvariantIsCategory && invarParameter.somethingIsDirty()) {
-    			ratesKnown = false; 
-    		}
+			ratesUnknown = muParameter.somethingIsDirty();// || !m_bPropInvariantIsCategory && invarParameter.somethingIsDirty();
+//    		if (muParameter.somethingIsDirty() || !m_bPropInvariantIsCategory && invarParameter.somethingIsDirty()) {
+//    			ratesUnknown = true; 
+//    		}
     	}
+    	proportionsUnknown = invarParameter.somethingIsDirty();
+    	needRefresh |= proportionsUnknown || ratesUnknown;
 //    	ratesKnown = false;
         // we only get here if something is dirty in its inputs, so always return true
         return true;
     }
 
-    protected boolean ratesKnown;
+    protected boolean needRefresh;
+    public boolean ratesUnknown;
+    public boolean proportionsUnknown;
 
     protected int categoryCount;
 

@@ -380,11 +380,28 @@ public class Tree extends StateNode {
         }
     }
 
+    public static void printTaxa(Node node, PrintStream out, int nNodeCount) {
+    	List<String> translateLines = new ArrayList<String>();
+    	printTranslate(node, translateLines, nNodeCount);
+        Collections.sort(translateLines);
+        for (String sLine : translateLines) {
+        	sLine = sLine.split("\\s+")[2];
+        	out.println("\t\t\t"+sLine.replace(',', ' '));
+        }
+    }
+
     @Override
     public void init(PrintStream out) throws Exception {
-        out.println("#NEXUS\n");
-        out.println("Begin trees;");
         Node node = getRoot();
+        out.println("#NEXUS\n");
+        out.println("Begin taxa;");
+        out.println("\tDimensions ntax=" + getLeafNodeCount() + ";");
+        out.println("\t\tTaxlabels");
+        printTaxa(node, out, getNodeCount() / 2);
+        out.println("\t\t\t;");
+		out.println("End;");
+        
+        out.println("Begin trees;");
         out.println("\tTranslate");
         printTranslate(node, out, getNodeCount() / 2);
         out.print(";");

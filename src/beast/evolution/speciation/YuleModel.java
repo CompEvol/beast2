@@ -6,6 +6,7 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.coalescent.TreeIntervals;
 
 // From Gernhard 2008, Yule density (p; conditioned on n nodes) should be:
 // double p = 0.0;
@@ -135,5 +136,10 @@ public class YuleModel extends SpeciesTreeDistribution {
 
     public boolean includeExternalNodesInLikelihoodCalculation() {
         return false;
+    }
+    
+    @Override
+    protected boolean requiresRecalculation() {
+    	return super.requiresRecalculation() || birthDiffRateParameter.get().somethingIsDirty();
     }
 }

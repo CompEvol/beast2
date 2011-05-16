@@ -14,16 +14,13 @@
     <!-- a Yule speciation process (a pure birth process).                       -->
     <input spec='YuleModel' id="yule">
         <parameter name='birthDiffRate' idref="birthRate"/>
-	<tree spec='TreeParser' id='tree'>
-	        <input name='newick'>((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0);</input>
-       		<input name='taxa' idref='alignment'/>
-	</tree>
+	<tree spec='TreeParser' id='tree' taxa='@alignment'
+	        newick='((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0);'/>
     </input>
 
-    <input spec='BirthDeathGernhard08Model' id="yulelike" type='timesonly'>
+    <input spec='BirthDeathGernhard08Model' id="yulelike" type='timesonly' tree='@tree'>
         <parameter name='birthDiffRate' idref="birthRate"/>
 	<parameter name='relativeDeathRate' idref='relativeDeathRate'/>
-	<tree idref='tree'/>
     </input>
 
 
@@ -34,10 +31,6 @@
     <run spec='MCMC' chainLength="1000">
 	<state>
 	    <stateNode idref='birthRate'/>
-<!--
-	    <stateNode idref='relativeDeathRate'/>
-	    <stateNode idref='tree'/>
--->
 	</state>
 
 	<distribution spec='CompoundDistribution'>

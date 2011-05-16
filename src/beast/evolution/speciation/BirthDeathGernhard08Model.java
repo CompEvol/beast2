@@ -121,4 +121,8 @@ public class BirthDeathGernhard08Model extends YuleModel {
         return 0.0;
     }
     
+    @Override
+    protected boolean requiresRecalculation() {
+    	return super.requiresRecalculation() || relativeDeathRateParameter.get().somethingIsDirty() || sampleProbability.get().somethingIsDirty();
+    }
 } // class BirthDeathGernhard08Model
