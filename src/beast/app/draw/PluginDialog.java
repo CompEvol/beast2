@@ -49,12 +49,13 @@ public class PluginDialog extends JDialog {
         this(new PluginPanel(plugin, type));
     }
 
-    /* to be called when OK is pressed **/
+    /* to be called when Cancel is pressed **/
     void accept(Plugin plugin) {
     	try {
     		for (Input<?> input : m_panel.m_plugin.listInputs()) {
     			plugin.setInputValue(input.getName(), input.get());
     		}
+    		plugin.setID(m_panel.m_plugin.getID());
     	} catch (Exception e) {
 			e.printStackTrace();
 		}

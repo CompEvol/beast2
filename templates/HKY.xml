@@ -17,6 +17,7 @@
 	        beast.evolution.tree.coalescent.Coalescent.tree,
 	        beast.core.MCMC.state,
 	        beast.core.MCMC.distribution,
+	        beast.core.MCMC.init,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.relativeDeathRate,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.type,
@@ -32,7 +33,8 @@
 	        beast.util.ClusterTree.trait,
 	        beast.util.ClusterTree.estimate,
 	        beast.evolution.substitutionmodel.WAG.rates,
-	        beast.evolution.substitutionmodel.WAG.frequencies'
+	        beast.evolution.substitutionmodel.WAG.frequencies,
+	        beast.core.Operator.weight'
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
     >
 
@@ -76,7 +78,7 @@
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
-            hasPartitions="false" icon='8.png' forceExpansion='FALSE'
+            hasPartitions="false" icon='8.png' forceExpansion='TRUE'
             isVisible='false'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
@@ -99,7 +101,7 @@ done: WAG prevent inputs
 done: save/load unused part of templates
 done: support partial templates (subst.model, site.model templates)
 done: state scrubbing?
-TODO: custom panels
+done: custom panels
 
 TODO: Beauti user testing
 TODO: Beauti/Genious integration
@@ -115,11 +117,12 @@ TODO: sequence inspector
 TODO: tree prior: select from tree priors instead of having a list?
 TODO: prior editor with dynamic graphs of prior distribution
 TODO: coalescent tree as initial tree - with taxa constraints
+TODO: initialisers, prior, posterior
 
 -->
 
 
-    <data id="#alignments"/>
+    <data id="#alignments"></data>
 
 
     <plate var='n' range='#alignments'>

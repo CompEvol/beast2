@@ -171,6 +171,7 @@ public class PluginPanel extends JPanel {
     		for (Input<?> input : plugin.listInputs()) {
     			m_plugin.setInputValue(input.getName(), input.get());
     		}
+    		m_plugin.setID(plugin.getID());
     	} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -192,7 +193,7 @@ public class PluginPanel extends JPanel {
         }
 
         
-        addInputs(mainBox, plugin, null);
+        addInputs(mainBox, m_plugin, null);
         
 
         mainBox.add(Box.createVerticalStrut(5));
@@ -281,7 +282,7 @@ public class PluginPanel extends JPanel {
         		String sName = input.getName();
         		sName = new String(sName.charAt(0)+"").toUpperCase() + sName.substring(1);
         		sName = "create" + sName + "Editor";
-        		Class _class = editor.getClass();
+        		Class<?> _class = editor.getClass();
         		Method method = _class.getMethod(sName);
         		inputEditor = (InputEditor) method.invoke(editor);
         		return inputEditor;
@@ -340,8 +341,9 @@ public class PluginPanel extends JPanel {
         JLabel label = new JLabel(m_pluginClass.getName().replaceAll(".*\\.", "") + ":");
         box.add(label);
 
-        m_pluginButton = new JLabel(m_plugin.getID());
-        m_pluginButton.setToolTipText(m_plugin.getID() + " is of type " + m_plugin.getClass().getName() + " Click to change.");
+//        m_pluginButton = new JLabel(m_plugin.getID());
+//        m_pluginButton.setToolTipText(m_plugin.getID() + " is of type " + m_plugin.getClass().getName() + " Click to change.");
+        label.setToolTipText(m_plugin.getID() + " is of type " + m_plugin.getClass().getName() + " Click to change.");
 
 //		m_pluginButton.addActionListener(new ActionListener() {
 //			@Override
@@ -369,12 +371,15 @@ public class PluginPanel extends JPanel {
 //				}
 //			}
 //		});
-        box.add(Box.createHorizontalStrut(10));
-        box.add(m_pluginButton);
+//        box.add(Box.createHorizontalStrut(10));
+//        box.add(m_pluginButton);
 
 
 		m_identry = new JTextField();
-		m_identry.setMinimumSize(new Dimension(100,16));
+		Dimension size = new Dimension(100,22);
+		m_identry.setMinimumSize(size);
+		m_identry.setPreferredSize(size);
+		m_identry.setMaximumSize(size);
         m_identry.setText(m_plugin.getID()); 
         
 		m_identry.getDocument().addDocumentListener(new DocumentListener() {

@@ -55,8 +55,10 @@ public class OperatorListInputEditor extends ListInputEditor {
         weightEntry.setToolTipText(operator.m_pWeight.getTipText());
         weightEntry.setText(operator.m_pWeight.get() + "");
         weightEntry.getDocument().addDocumentListener(new OperatorDocumentListener(operator, weightEntry));    
-        weightEntry.setMinimumSize(new Dimension(200, 16));
-        weightEntry.setMaximumSize(new Dimension(200, 20));
+        Dimension size = new Dimension(50, 16);
+        weightEntry.setMinimumSize(size);
+        weightEntry.setPreferredSize(size);
+        weightEntry.setMaximumSize(size);
         itemBox.add(weightEntry);
         
     }
