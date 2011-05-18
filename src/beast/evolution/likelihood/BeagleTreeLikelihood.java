@@ -29,7 +29,6 @@ import beagle.*;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
-import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -94,7 +93,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         m_nStateCount = m_data.get().getMaxStateCount();
         m_nPatternCount = m_data.get().getPatternCount();
 
-        	System.err.println("Attempt to load BEAGLE TreeLikelihood");
+        	//System.err.println("Attempt to load BEAGLE TreeLikelihood");
 
             eigenCount = 1;//this.branchSubstitutionModel.getEigenCount();
 
@@ -164,9 +163,10 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
             // Define default behaviour here
             if (this.rescalingScheme == PartialsRescalingScheme.DEFAULT) {
-                //if GPU: the default is dynamic scaling in BEAST
+                //if GPU: the default is^H^Hwas dynamic scaling in BEAST, now NONE
                 if (resourceList != null && resourceList[0] > 1) {
-                    this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
+                    //this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
+                    this.rescalingScheme = PartialsRescalingScheme.NONE;
                 } else { // if CPU: just run as fast as possible
 //                    this.rescalingScheme = PartialsRescalingScheme.NONE;
                     // Dynamic should run as fast as none until first underflow
@@ -271,7 +271,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             }
 
             if (this.rescalingScheme == PartialsRescalingScheme.DYNAMIC) {
-            	int h  = 3;
             	// TODO: uncomment following line once bug in java impl. is fixed
                 everUnderflowed = true; // If commented out, BEAST does not rescale until first under-/over-flow.
             }
@@ -443,8 +442,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     protected boolean requiresRecalculation() {
         m_nHasDirt = Tree.IS_CLEAN;
         
-        updateSiteModel = m_siteModel.isDirtyCalculation();
-        updateSubstitutionModel = m_substitutionModel.isDirtyCalculation();
+        updateSiteModel |= m_siteModel.isDirtyCalculation();
+        updateSubstitutionModel |= m_substitutionModel.isDirtyCalculation();
         
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
@@ -732,6 +731,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         // First update the transition probability matrix(ices) for this branch
         int update = (node.isDirty() | m_nHasDirt);
+//        if (parent!=null) {
+//        	update |= parent.isDirty();
+//        }
         if (!node.isRoot() && (update != Tree.IS_CLEAN)) {
 
             final double branchRate = (m_branchRateModel == null ? 1.0:m_branchRateModel.getRateForBranch(node));
@@ -752,6 +754,12 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             final int eigenIndex = 0;// = m_substitutionModel.getBranchIndex(node);
             final int updateCount = branchUpdateCount[eigenIndex];
             matrixUpdateIndices[eigenIndex][updateCount] = matrixBufferHelper.getOffsetIndex(nodeNum);
+            
+//            if (!m_substitutionModel.canReturnDiagonalization()) {
+//            	m_substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), branchRate, m_fProbabilities);
+//            	int matrixIndex = matrixBufferHelper.getOffsetIndex(nodeNum);
+//            	beagle.setTransitionMatrix(matrixIndex, m_fProbabilities, 1);
+//            }
 
             branchLengths[eigenIndex][updateCount] = branchTime;
             branchUpdateCount[eigenIndex]++;

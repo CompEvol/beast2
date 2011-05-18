@@ -15,7 +15,9 @@ import beast.core.Plugin;
 		"information from Beauti template files.")
 public class BeautiConfig extends Plugin {
 	public Input<String> m_inlineInput = new Input<String>("inlinePlugins","comma separated list of inputs that should " +
-			"go inline, e.g. beast.core.MCMC.logger");
+			"go inline, e.g. beast.evolution.sitemodel.SiteModel.substModel");
+	public Input<String> m_collapsedInput = new Input<String>("collapsedPlugins","comma separated list of inputs that should " +
+		"go inline, but are initially collapsed, e.g. beast.core.MCMC.logger");
 	public Input<String> m_suppressInputs = new Input<String>("suppressPlugins","comma separated list of inputs that should " +
 			"be suppressed. e.g. beast.core.MCMC.operator");
 	public Input<String> m_inputLabelMap = new Input<String>("inputLabelMap","comma separated list of inputs and their " +
@@ -36,9 +38,11 @@ public class BeautiConfig extends Plugin {
 	public Input<Boolean> m_bIsExpertInput = new Input<Boolean>("isExpert", "flag to indicate Beauti should start in expert mode", false);
 	
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
-	 * in the format <className>.<inputName>, e.g. beast.core.MCMC.state  
-	 */
+	 * in the format <className>.<inputName>, e.g. beast.evolution.sitemodel.SiteModel.substModel */
 	public static Set<String> g_inlinePlugins = new HashSet<String>();
+	/** list of inputs for which the input editor should be expanded inline in a dialog but initially collapsed.  
+	 * e.g. beast.evolution.sitemodel.SiteModel.substModel */
+	public static Set<String> g_collapsedPlugins = new HashSet<String>();
 	/** list of inputs that should not be shown in a dialog. Same format as for m_inlinePlugins**/
 	public static Set<String> g_suppressPlugins = new HashSet<String>();
     /** map that identifies the label to be used for a particular input **/
@@ -55,6 +59,8 @@ public class BeautiConfig extends Plugin {
 	@Override
 	public void initAndValidate() {
 		parseSet(m_inlineInput.get(), null, g_inlinePlugins);
+		parseSet(m_collapsedInput.get(), null, g_collapsedPlugins);
+		g_inlinePlugins.addAll(g_collapsedPlugins);
 		parseSet(m_hidePanels.get(), "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL", g_sHidePanels);
 		parseSet(m_suppressInputs.get(), null, g_suppressPlugins);
 		parseSet(m_disableMenus.get(), null, g_sDisabledMenus);

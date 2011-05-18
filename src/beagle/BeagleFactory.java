@@ -42,7 +42,7 @@ public class BeagleFactory {
             long requirementFlags
     ) {
 
-//        boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
+        boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
 //    	if (forceJava) {
 //            return new GeneralBeagleImpl(tipCount,
 //                    partialsBufferCount,
@@ -60,7 +60,7 @@ public class BeagleFactory {
 
         getBeagleJNIWrapper();
 
-        if (/*!forceJava && */BeagleJNIWrapper.INSTANCE != null) {
+        if (!forceJava && BeagleJNIWrapper.INSTANCE != null) {
 
             try {
                 Beagle beagle = new BeagleJNIImpl(

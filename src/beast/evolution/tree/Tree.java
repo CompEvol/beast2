@@ -127,6 +127,11 @@ public class Tree extends StateNode {
     Node[] m_nodes = null;
     Node[] m_storedNodes = null;
     
+    /** array of taxa names for the nodes in the tree 
+     * such that m_sTaxaNames[node.getNr()] == node.getID()**/
+    String [] m_sTaxaNames = null;
+    
+    
     /**
      * getters and setters
      *
@@ -165,20 +170,22 @@ public class Tree extends StateNode {
         //return getNode(iNodeNr, root);
     }
 
-//    public Node getNode(int iNodeNr, Node node) {
-//        if (node.getNr() == iNodeNr) {
-//            return node;
-//        }
-//        if (node.isLeaf()) {
-//            return null;
-//        } else {
-//            Node child = getNode(iNodeNr, node.m_left);
-//            if (child != null) {
-//                return child;
-//            }
-//            return getNode(iNodeNr, node.m_right);
-//        }
-//    } // getNode
+    public String [] getTaxaNames() {
+    	if (m_sTaxaNames == null) {
+    		m_sTaxaNames = new String[getLeafNodeCount()];
+    		collectTaxaNames(getRoot());
+    	}
+    	return m_sTaxaNames;
+    }
+    
+	void collectTaxaNames(Node node) {
+		if (node.isLeaf()) {
+			m_sTaxaNames[node.getNr()] = node.getID();
+		} else {
+			collectTaxaNames(node.m_left);
+			collectTaxaNames(node.m_right);
+		}
+	}
 
 
     /**

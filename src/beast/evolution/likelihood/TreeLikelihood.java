@@ -271,7 +271,8 @@ public class TreeLikelihood extends Distribution {
     @Override
     public double calculateLogP() throws Exception {
     	if (m_beagle != null) {
-    		return m_beagle.calculateLogP();
+    		logP =  m_beagle.calculateLogP();
+    		return logP;
     	}
         Tree tree = m_tree.get();
 

@@ -53,7 +53,7 @@ public class BeautiPanelConfig extends Plugin {
 	List<Plugin> m_inputs;
 	/** plugins that are parents, i.e. contain inpust of m_inputs **/
 	List<Plugin> m_parentPlugins;
-	List<Input> m_parentInputs;
+	List<Input<?>> m_parentInputs;
 	/** flag to indicate we are dealing with a list input **/
 	boolean m_bIsList;
 
@@ -127,7 +127,7 @@ public class BeautiPanelConfig extends Plugin {
 		try {
 			List<Plugin> plugins = new ArrayList<Plugin>();
 			m_parentPlugins = new ArrayList<Plugin>();
-			m_parentInputs =  new ArrayList<Input>();
+			m_parentInputs =  new ArrayList<Input<?>>();
 			plugins.add(doc.m_mcmc.get());
 			m_parentPlugins.add(doc);
 			m_parentInputs.add(doc.m_mcmc);
@@ -137,7 +137,7 @@ public class BeautiPanelConfig extends Plugin {
 				List<Plugin> oldPlugins = plugins;
 				plugins = new ArrayList<Plugin>();
 				m_parentPlugins = new ArrayList<Plugin>();
-				m_parentInputs =  new ArrayList<Input>();
+				m_parentInputs =  new ArrayList<Input<?>>();
 				for (Plugin plugin: oldPlugins) {
 					Input<?> namedInput = plugin.getInput(m_sPathComponents[i]);
 					m_type = namedInput.getType();

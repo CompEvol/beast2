@@ -121,6 +121,6 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     @Override
 	public double getArrayValue() {return logP;}
     @Override
-	public double getArrayValue(int iDim) {if (iDim == 1) return getArrayValue(); return 0;}
+	public double getArrayValue(int iDim) {if (iDim == 0) return getArrayValue(); return 0;}
 
 } // class ProbabilityDistribution

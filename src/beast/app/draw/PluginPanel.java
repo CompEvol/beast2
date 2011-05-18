@@ -316,9 +316,34 @@ public class PluginPanel extends JPanel {
             inputEditor = new PluginInputEditor();
         }
     	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
+		System.err.println(sFullInputName);
     	EXPAND expand = bForceExpansion;
     	if (BeautiConfig.g_inlinePlugins.contains(sFullInputName)) {
     		expand = EXPAND.TRUE;
+    		// deal with initially collapsed plugins
+    		if (BeautiConfig.g_collapsedPlugins.contains(sFullInputName)) {
+    			if (input.get() != null) {
+    				Object o = input.get();
+    				if (o instanceof ArrayList) {
+    					for (Object o2 : (ArrayList<?>)o) {
+    						if (o2 instanceof Plugin) {
+    			    			String sID = ((Plugin)o2).getID();
+    			    	        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
+    			    	        	ListInputEditor.g_initiallyCollapsedIDs.add(sID);
+    			    	        	ListInputEditor.g_collapsedIDs.add(sID);
+    			    	        }
+    						}
+    					}
+    				} else if (o instanceof Plugin) {
+		    			String sID = ((Plugin)o).getID();
+		    	        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
+		    	        	ListInputEditor.g_initiallyCollapsedIDs.add(sID);
+		    	        	ListInputEditor.g_collapsedIDs.add(sID);
+		    	        }
+    				}
+    			}
+
+    		}
     	}
         inputEditor.init(input, plugin,  expand, bAddButtons);
         inputEditor.setBorder(new EtchedBorder());
@@ -380,7 +405,8 @@ public class PluginPanel extends JPanel {
 		m_identry.setMinimumSize(size);
 		m_identry.setPreferredSize(size);
 		m_identry.setMaximumSize(size);
-        m_identry.setText(m_plugin.getID()); 
+        m_identry.setText(m_plugin.getID());
+        m_identry.setToolTipText("Name/ID that uniquely identifies this item");
         
 		m_identry.getDocument().addDocumentListener(new DocumentListener() {
 			@Override

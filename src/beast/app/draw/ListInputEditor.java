@@ -32,6 +32,7 @@ public class ListInputEditor extends InputEditor {
     protected EXPAND m_bExpand;
 
     static Set<String> g_collapsedIDs = new HashSet<String>();
+    static Set<String> g_initiallyCollapsedIDs = new HashSet<String>();
     
     public abstract class ActionListenerObject implements ActionListener {
     	public Object m_o;
