@@ -227,7 +227,15 @@ public class MCMC extends Runnable {
         logAlpha = 0;
         bDebug = true;
         fOldLogLikelihood = robustlyCalcPosterior(posterior); 
-        System.err.println("Start likelihood: " + fOldLogLikelihood);
+        
+        int nInitiliasiationAttemps = 0;
+        while (Double.isInfinite(fOldLogLikelihood) && nInitiliasiationAttemps++ < 10) {
+            for (StateNodeInitialiser initialiser : m_initilisers.get()) {
+            	initialiser.initStateNodes();
+            }
+            fOldLogLikelihood = robustlyCalcPosterior(posterior);
+        }
+        System.err.println("Start likelihood: " + fOldLogLikelihood + " " + (nInitiliasiationAttemps > 1?"after " + nInitiliasiationAttemps + " initialisation attempts":""));
 
         // initialises log so that log file headers are written, etc.
         for (Logger log : m_loggers.get()) {
@@ -297,7 +305,8 @@ public class MCMC extends Runnable {
             	// sample, as long as we are in debug mode
                 double fLogLikelihood = robustlyCalcPosterior(posterior); 
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
-                    throw new Exception("At sample "+ iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
+                    throw new Exception("At sample "+ iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood
+                    		+ " Operator: " + operator.getClass().getName());
                 }
                 if (iSample > NR_OF_DEBUG_SAMPLES * 3) {
                 	// switch of debug mode once a sufficient large sample is checked
