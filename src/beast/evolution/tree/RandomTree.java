@@ -98,8 +98,18 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 			candidates.add(node);
 		}
 
+    	if (m_trait.get() != null) {
+    		// set tip dates
+    		for (Node node : candidates) {
+    			node.setMetaData(m_trait.get().getTraitName(), m_trait.get().getValue(node.getNr()));
+    		}
+    	}
 
 //TODO: deal with dated taxa
+    	double fMostRecent = 0;
+		for (Node node : candidates) {
+			fMostRecent = Math.max(fMostRecent, node.getHeight());
+		}
 //		dr.evolution.util.Date mostRecent = null;
 //		boolean usingDates = false;
 //
@@ -121,7 +131,6 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //
 //			for (int i =0; i < taxa.size(); i++) {
 //				dr.evolution.util.Date date = (dr.evolution.util.Date)taxa.getTaxonAttribute(i, dr.evolution.util.Date.DATE);
-//
 //				if (date == null) {
 //					throw new IllegalArgumentException("Taxon, " + taxa.get(i) + ", is missing its date");
 //				}
@@ -270,7 +279,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 		Node right = nodeList.get(node2);
 
 		Node newNode = new Node();
-		newNode.setNr(2*m_taxa.get().getNrTaxa() - activeNodeCount);
+System.err.println(2*m_taxa.get().getNrTaxa() - nodeList.size());
+		newNode.setNr(2*m_taxa.get().getNrTaxa() - nodeList.size());
 		newNode.setHeight(height);
 		newNode.m_left = left;
 		left.setParent(newNode);
