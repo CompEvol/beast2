@@ -83,8 +83,13 @@ public abstract class Operator extends Plugin {
 	/** @return  change of value of a parameter for MCMC chain optimisation
      * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
      **/
+	static int g_autoOptimizeDelay = 0;
 	protected double calcDelta(double logAlpha) {
-
+		// do no optimisation for the first N optimisable operations
+		if (g_autoOptimizeDelay < 100000) {
+			g_autoOptimizeDelay++;
+			return 0;
+		}
         final double target = getTargetAcceptanceProbability();
 
         final double deltaP = ((1.0 / (m_nNrRejected + m_nNrAccepted + 1.0)) * (Math.exp(Math.min(logAlpha, 0)) - target));
@@ -94,7 +99,7 @@ public abstract class Operator extends Plugin {
         }
         return 0;
 	} // calcDelta
-
+	
 	/** @return target for automatic operator optimisation
      **/
     public double getTargetAcceptanceProbability() {
