@@ -16,4 +16,12 @@ public class TaxonSet extends Taxon {
 	public void initAndValidate() {
 		
 	}
+
+	public List<String> asStringList() {
+        List<String> list = new ArrayList<String>();
+        for (Taxon taxon : m_taxonset.get()) {
+                list.add(taxon.getID());
+        }
+        return list;
+	}
 }
