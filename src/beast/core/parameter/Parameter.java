@@ -59,6 +59,7 @@ public abstract class Parameter<T> extends StateNode {
     
     public Parameter(T [] values) {
     	this.values = values.clone();
+    	this.storedValues = values.clone();
     	m_fUpper = getMax();
     	m_fLower = getMin();
     }
@@ -122,14 +123,15 @@ public abstract class Parameter<T> extends StateNode {
      * 
      * Values are sourced from the original parameter values.
      **/
+	@SuppressWarnings("unchecked")
     public void setDimension(int nDimension) {
     	if (getDimension() != nDimension) {
-    		@SuppressWarnings("unchecked")
 			T [] values2 = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
     		for (int i = 0; i < nDimension; i++) {
     			values2[i] = values[i % getDimension()];
     		}
     		values = (T[]) values2;
+    		storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
     	}
         m_bIsDirty = new boolean[nDimension];
     }

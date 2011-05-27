@@ -264,7 +264,7 @@ public class Tree extends StateNode {
         Node[] nodes = new Node[nodeCount];
         listNodes(tree.root, nodes);
         tree.m_sID = m_sID;
-        tree.index = index;
+        //tree.index = index;
         root.assignTo(nodes);
         tree.root = nodes[root.getNr()];
         tree.nodeCount = nodeCount;
@@ -278,7 +278,7 @@ public class Tree extends StateNode {
         Tree tree = (Tree) other;
         Node [] nodes = tree.getNodesAsArray();
         m_sID = tree.m_sID;
-        index = tree.index;
+        //index = tree.index;
         root = nodes[tree.root.getNr()];
         root.assignFrom(nodes, tree.root);
         root.m_Parent = null;
