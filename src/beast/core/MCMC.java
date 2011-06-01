@@ -341,7 +341,7 @@ public class MCMC extends Runnable {
     protected double robustlyCalcPosterior(Distribution posterior) throws Exception {
         state.store(-1);
         state.setEverythingDirty(true);
-    	state.storeCalculationNodes();
+    	//state.storeCalculationNodes();
         state.checkCalculationNodesDirtiness();
         double fLogLikelihood = posterior.calculateLogP();
         state.setEverythingDirty(false);

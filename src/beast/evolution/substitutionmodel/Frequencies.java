@@ -24,12 +24,15 @@
 */
 package beast.evolution.substitutionmodel;
 
+import java.util.Arrays;
+
 import beast.core.CalculationNode;
 import beast.core.Input;
 import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.datatype.DataType;
 
 // RRB: TODO: make this an interface?
 
@@ -56,6 +59,7 @@ public class Frequencies extends CalculationNode {
         if (Math.abs(fSum-1.0)>1e-6) {
     		throw new Exception("Frequencies do not add up to 1");
     	}
+        
     }
     
     /** return up to date frequencies **/
@@ -96,28 +100,78 @@ public class Frequencies extends CalculationNode {
     } // update
 
 
-    /** estimate from sequence alignment **/
+    /** Estimate from sequence alignment.
+     *  This version matches the implementation in Beast 1 & PAUP  **/
     void estimateFrequencies() {
-        Alignment alignment = m_data.get();
-        m_fFreqs = new double[alignment.getMaxStateCount()];
-        for (int i = 0; i < alignment.getPatternCount(); i++) {
-            int[] nPattern = alignment.getPattern(i);
-            int nWeight = alignment.getPatternWeight(i);
-            for (int iValue : nPattern) {
-                if (iValue < m_fFreqs.length) { // ignore unknowns
-                    m_fFreqs[iValue] += nWeight;
+    	Alignment alignment = m_data.get();
+        DataType dataType = alignment.getDataType();
+        int stateCount = alignment.getMaxStateCount();
+
+        m_fFreqs = new double[stateCount];
+        Arrays.fill(m_fFreqs, 1.0 / stateCount);
+        
+        int nAttempts = 0;
+        double fDifference;
+        do {
+            double[] fTmpFreq = new double[stateCount];
+
+            double fTotal = 0.0;
+            for (int i = 0; i < alignment.getPatternCount(); i++) {
+                int[] nPattern = alignment.getPattern(i);
+                double fWeight = alignment.getPatternWeight(i);
+
+                for (int iValue : nPattern) {
+                	int [] codes = dataType.getStatesForCode(iValue);
+
+                    double sum = 0.0;
+                	for (int iCode : codes) {
+                         sum += m_fFreqs[iCode];
+                	}
+
+                	for (int iCode : codes) {
+                        double fTmp = (m_fFreqs[iCode] * fWeight) / sum;
+                        fTmpFreq[iCode] += fTmp;
+                        fTotal += fTmp;
+                	}
                 }
             }
-        }
-        // normalize
-        double fSum = 0;
-        for (double f : m_fFreqs) {
-            fSum += f;
-        }
-        for (int i = 0; i < m_fFreqs.length; i++) {
-            m_fFreqs[i] /= fSum;
-        }
-    } // calcFrequencies
+
+            fDifference = 0.0;
+            for (int i = 0; i < stateCount; i++) {
+                fDifference += Math.abs((fTmpFreq[i] / fTotal) - m_fFreqs[i]);
+                m_fFreqs[i] = fTmpFreq[i] / fTotal;
+            }
+            nAttempts++;
+        } while (fDifference > 1E-8 && nAttempts < 1000);
+
+//    	Alignment alignment = m_data.get();
+//        m_fFreqs = new double[alignment.getMaxStateCount()];
+//        for (int i = 0; i < alignment.getPatternCount(); i++) {
+//            int[] nPattern = alignment.getPattern(i);
+//            double fWeight = alignment.getPatternWeight(i);
+//            DataType dataType = alignment.getDataType();
+//            for (int iValue : nPattern) {
+//            	if (iValue < 4) {
+//            	int [] codes = dataType.getStatesForCode(iValue);
+//            	for (int iCode : codes) {
+//                    m_fFreqs[iCode] += fWeight / codes.length;
+//            	}
+//            	}
+////                if (iValue < m_fFreqs.length) { // ignore unknowns
+////                    m_fFreqs[iValue] += nWeight;
+////                }
+//            }
+//        }
+//        // normalize
+//        double fSum = 0;
+//        for (double f : m_fFreqs) {
+//            fSum += f;
+//        }
+//        for (int i = 0; i < m_fFreqs.length; i++) {
+//            m_fFreqs[i] /= fSum;
+//        }
+        System.err.println("Starting frequencies: " + Arrays.toString(m_fFreqs));
+   } // calcFrequencies
 
     /**
      * Ensures that frequencies are not smaller than MINFREQ and
