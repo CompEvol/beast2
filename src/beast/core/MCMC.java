@@ -25,6 +25,7 @@
 package beast.core;
 
 
+import beast.core.util.CompoundDistribution;
 import beast.util.Randomizer;
 
 import java.io.PrintStream;
@@ -305,6 +306,7 @@ public class MCMC extends Runnable {
             	// sample, as long as we are in debug mode
                 double fLogLikelihood = robustlyCalcPosterior(posterior); 
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
+                	reportLogLikelihoods(posterior, "");
                     throw new Exception("At sample "+ iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood
                     		+ " Operator: " + operator.getClass().getName());
                 }
@@ -318,8 +320,19 @@ public class MCMC extends Runnable {
             callUserFunction(iSample);
         }
     }    
+    
+    /** report posterior and subcomponents recursively, for debugging 
+     * incorrectly recalculated posteriors **/ 
+    private void reportLogLikelihoods(Distribution distr, String sTab) {
+		System.err.println(sTab + "P(" + distr.getID() + ") = " + distr.logP + " (was " + distr.storedLogP +")");
+		if (distr instanceof CompoundDistribution) {
+			for (Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
+				reportLogLikelihoods(distr2, sTab + "\t");
+			}
+		}
+	}
 
-    void callUserFunction(int iSample) {}
+	void callUserFunction(int iSample) {}
 
     
     /** Calculate posterior by setting all StateNodes and CalculationNodes dirty.
@@ -328,6 +341,7 @@ public class MCMC extends Runnable {
     protected double robustlyCalcPosterior(Distribution posterior) throws Exception {
         state.store(-1);
         state.setEverythingDirty(true);
+    	state.storeCalculationNodes();
         state.checkCalculationNodesDirtiness();
         double fLogLikelihood = posterior.calculateLogP();
         state.setEverythingDirty(false);

@@ -276,7 +276,10 @@ public class Tree extends StateNode {
     @Override
     public void assignFrom(StateNode other) {
         Tree tree = (Tree) other;
-        Node [] nodes = tree.getNodesAsArray();
+        Node [] nodes = new Node[tree.getNodeCount()];//tree.getNodesAsArray();
+        for (int i = 0; i < tree.getNodeCount(); i++) {
+        	nodes[i] = new Node();
+        }
         m_sID = tree.m_sID;
         //index = tree.index;
         root = nodes[tree.root.getNr()];

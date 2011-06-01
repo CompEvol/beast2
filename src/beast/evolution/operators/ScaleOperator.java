@@ -223,7 +223,7 @@ public class ScaleOperator extends Operator {
     @Override
     public void optimize(double logAlpha) {
         double fDelta = calcDelta(logAlpha);
-        //double fScaleFactor = m_pScaleFactor.get();
+//        //double fScaleFactor = m_pScaleFactor.get();
         fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
         m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
     }

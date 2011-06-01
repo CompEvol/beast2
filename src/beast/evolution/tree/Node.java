@@ -381,7 +381,7 @@ public class Node extends Plugin {
 			m_left = nodes[node.m_left.getNr()];
 			m_left.assignFrom(nodes, node.m_left);
 			m_left.m_Parent = this;
-			if (m_right != null) {
+			if (node.m_right != null) {
 				m_right = nodes[node.m_right.getNr()];
 				m_right.assignFrom(nodes, node.m_right);
 				m_right.m_Parent = this;

@@ -29,6 +29,7 @@ import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -59,6 +60,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
 
     public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
+    public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset", "Specifies list of taxa represented as a set");
     public Input<String> m_oNewick = new Input<String>("newick", "initial beast.tree represented in newick format");// not required, Beuati may need this for example
     public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
     public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", 1);
@@ -73,6 +75,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public void initAndValidate() throws Exception {
         if (m_oData.get() != null) {
             m_sLabels = m_oData.get().getTaxaNames();
+        } else if (m_taxonset.get() != null) {
+            	m_sLabels = m_taxonset.get().asStringList();
         } else {
             m_sLabels = null;
             m_bIsLabelledNewick = false;

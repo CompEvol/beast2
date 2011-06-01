@@ -72,7 +72,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             initArrays();
             
             if (m_initial.get() != null) {
-                    m_initial.get().assignFrom(this);
+                    m_initial.get().assignFromWithoutID(this);
             }
     }
 
