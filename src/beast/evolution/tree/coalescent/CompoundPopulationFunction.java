@@ -2,11 +2,15 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.parameter.RealParameter;
 import beast.core.parameter.BooleanParameter;
+import beast.core.parameter.RealParameter;
+import beast.evolution.tree.coalescent.IntervalType;
+import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.evolution.tree.coalescent.TreeIntervals;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author joseph
@@ -39,6 +43,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
     private Type type;
     private boolean useMid;
 
+
     public enum Type {
         LINEAR("linear"),
         //EXPONENTIAL("exponential"),
@@ -55,23 +60,29 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
         String name;
     }
 
+    private void getParams() {
+        popSizeParameter = popSizeParameterInput.get();
+        indicatorsParameter = indicatorsParameterInput.get();
+        assert popSizeParameter != null && popSizeParameter.getArrayValue(0) > 0 &&  indicatorsParameter != null; 
+    }
+
     // why do we need this additional level on top of initAndValidate - does not seem to do anything?
     @Override
     public void prepare() {
-       popSizeParameter = popSizeParameterInput.get();
-       indicatorsParameter = indicatorsParameterInput.get();
+       getParams();
         // is that safe???
        trees = treesInput.get();
 
        useMid = useMiddle.get();
 
-       type = Type.valueOf(demographicType.get());  // errors?
+       // used to work without upper case ???
+       type = Type.valueOf(demographicType.get().toUpperCase());  // errors?
         // set lengths
 
         int events = 0;
         for (TreeIntervals ti : trees) {
             // number of coalescent events
-            events += ti.getIntervalCount(); //getExternalNodeCount() - 1;
+            events += ti.m_tree.get().getLeafNodeCount() - 1;
         }
         // all trees share time 0, need fixing for serial data
 
@@ -80,13 +91,14 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
             if (popSizeParameter.getDimension() != events) {
                 final RealParameter p = new RealParameter();
         		p.initByName("value", popSizeParameter.getValue() + "", "upper", popSizeParameter.getUpper(), "lower", popSizeParameter.getLower(), "dimension", events);
-
+                p.setID(popSizeParameter.getID());
                 popSizeParameter.assignFrom(p);
             }
 
             if (indicatorsParameter.getDimension() != events - 1) {
-                final BooleanParameter p = new BooleanParameter() ;
+                final BooleanParameter p = new BooleanParameter();
                 p.initByName("value", "" + indicatorsParameter.getValue(), "dimension", events-1) ;
+                p.setID(indicatorsParameter.getID()); 
                 indicatorsParameter.assignFrom(p);
             }
         } catch( Exception e ) {
@@ -95,6 +107,13 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
         }
 
         initInternals();
+        for (int nt = 0; nt < trees.size(); ++nt) {
+            setTreeTimes(nt);
+        }
+        mergeTreeTimes();
+        setDemographicArrays();
+
+        shadow = new Shadow();
     }
 
     @Override
@@ -143,7 +162,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
     private double[] values;
     // times participating in the demographic
     private double[] times;
-    // convenience: intervals[n] = times[n+1] - times[n] 
+    // convenience: intervals[n] = times[n+1] - times[n]
     private double[] intervals;
 
     // sorted times from each tree
@@ -152,11 +171,137 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
     // sorted times from all trees (merge of ttimes above)
     private double[] alltimes;
 
+    // no allocations, minimal copying
+    class Shadow {
+        double[] values;
+        double[] times;
+        double[] intervals;
+        double[][] ttimes;
+        double[] alltimes;
+
+        boolean c_demo, c_alltimes;
+        boolean[] c_ttimes;
+
+        Shadow() {
+            values = CompoundPopulationFunction.this.values.clone();
+            times = CompoundPopulationFunction.this.times.clone();
+            intervals = CompoundPopulationFunction.this.intervals.clone();
+
+            alltimes = CompoundPopulationFunction.this.alltimes.clone();
+
+            ttimes = CompoundPopulationFunction.this.ttimes.clone();
+            for (int nt = 0; nt < ttimes.length; ++nt) {
+                ttimes[nt] = CompoundPopulationFunction.this.ttimes[nt].clone();
+            }
+            c_ttimes = new boolean[ttimes.length];
+
+            reset();
+        }
+
+        void reset() {
+            c_alltimes = false;
+            c_demo = false;
+            Arrays.fill(c_ttimes, false);
+        }
+
+        void protect_demo() {
+
+                values = CompoundPopulationFunction.this.values;
+                times = CompoundPopulationFunction.this.times;
+                intervals = CompoundPopulationFunction.this.intervals;
+
+                CompoundPopulationFunction.this.values = null;
+                CompoundPopulationFunction.this.times = null;
+                CompoundPopulationFunction.this.intervals = null;
+//            {
+//                final double[] src = CompoundPopulationFunction.this.values;
+//                final double[] target = values;
+//                if( src.length == target.length ) {
+//                    System.arraycopy(src, 0,  target, 0, src.length);
+//                } else {
+//                    values = src.clone();
+//                }
+//            }
+//            {
+//                final double[] src = CompoundPopulationFunction.this.times;
+//                final double[] target = times;
+//                if( src.length == target.length ) {
+//                    System.arraycopy(src, 0,  target, 0, src.length);
+//                }  else {
+//                    times = src.clone();
+//                }
+//            }
+//            {
+//                final double[] src = CompoundPopulationFunction.this.intervals;
+//                final double[] target = intervals;
+//                if( src.length == target.length ) {
+//                    System.arraycopy(src, 0,  target, 0, src.length);
+//                } else {
+//                    intervals = src.clone();
+//                }
+//            }
+            c_demo = true;
+        }
+
+        void protect_alltimes() {
+            final double[] src = CompoundPopulationFunction.this.alltimes;
+            System.arraycopy(src, 0,  alltimes, 0, src.length);
+            c_alltimes = true;
+        }
+
+        void protect_ttimes(int nt) {
+            final double[] src = CompoundPopulationFunction.this.ttimes[nt];
+            System.arraycopy(src, 0,  ttimes[nt], 0, src.length);
+            c_ttimes[nt] = true;
+        }
+
+        void accept() {
+          values = times = intervals = null;
+        }
+
+        void reject() {
+            if( c_alltimes ) {
+                final double[] v = CompoundPopulationFunction.this.alltimes;
+                CompoundPopulationFunction.this.alltimes = alltimes;
+                alltimes = v;
+            }
+
+            if( c_demo ) {
+                CompoundPopulationFunction.this.values = values;
+                CompoundPopulationFunction.this.times = times;
+                CompoundPopulationFunction.this.intervals = intervals;
+
+                values = times = intervals = null;
+//                double[] v = CompoundPopulationFunction.this.values;
+//                CompoundPopulationFunction.this.values = values;
+//                values = v;
+//
+//                v = CompoundPopulationFunction.this.times;
+//                CompoundPopulationFunction.this.times = times;
+//                times = v;
+//
+//                v = CompoundPopulationFunction.this.intervals;
+//                CompoundPopulationFunction.this.intervals = intervals;
+//                intervals = v;
+            }
+
+            for (int nt = 0; nt < c_ttimes.length; ++nt) {
+                if( c_ttimes[nt] ) {
+                   double[] v = CompoundPopulationFunction.this.ttimes[nt];
+                   CompoundPopulationFunction.this.ttimes[nt] = ttimes[nt];
+                   ttimes[nt] = v;
+                }
+            }
+        }
+    }
+
+    private Shadow shadow;
+
     private void initInternals() {
-             ttimes = new double[trees.size()][];
+        ttimes = new double[trees.size()][];
         int tot = 0;
         for (int k = 0; k < ttimes.length; ++k) {
-            ttimes[k] = new double[trees.get(k).getIntervalCount()];
+            ttimes[k] = new double[trees.get(k).m_tree.get().getLeafNodeCount() -1];
             tot += ttimes[k].length;
         }
         alltimes = new double[tot];
@@ -277,7 +422,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
     }
 
     /**
-     * Get times of the (presumably changed) nt'th tree intor the local array.
+     * Get times of the (presumably changed) nt'th tree into the local array.
      * @param nt
      */
     private void setTreeTimes(int nt) {
@@ -374,5 +519,56 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
                 ++n;
             }
         }
+    }
+
+    @Override
+    protected void store() {
+        super.store();
+    }
+
+    @Override
+    protected boolean requiresRecalculation() {
+        boolean anyTreesChanged = false;
+        for (int nt = 0; nt < trees.size(); ++nt) {
+            TreeIntervals ti = trees.get(nt);
+            if( ti.isDirtyCalculation() ) {
+                shadow.protect_ttimes(nt);
+
+                setTreeTimes(nt);
+                anyTreesChanged = true;
+            }
+        }
+
+        // we access parameters in any case
+        getParams();
+
+        if( anyTreesChanged ) {
+            shadow.protect_alltimes();
+            shadow.protect_demo();
+
+            mergeTreeTimes();
+            setDemographicArrays();
+        } else {
+            if( popSizeParameter.somethingIsDirty() &&  !indicatorsParameter.somethingIsDirty() ) {
+
+            }
+            shadow.protect_demo();
+            setDemographicArrays();
+        }
+        return true;
+    }
+
+    @Override
+    protected void restore() {
+        shadow.reject();
+        shadow.reset();
+        super.restore();
+    }
+
+    @Override
+    protected void accept() {
+        shadow.accept();
+        shadow.reset();
+        super.accept();
     }
 }

@@ -1,21 +1,37 @@
 package beast.core.util;
 
+import java.io.PrintStream;
+
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Loggable;
+import beast.core.Plugin;
 import beast.core.Valuable;
 import beast.core.Input.Validate;
+import beast.core.parameter.BooleanParameter;
+import beast.core.parameter.IntegerParameter;
 
 @Description("calculates sum of a valuable")
-public class Sum extends CalculationNode implements Valuable {
+public class Sum extends CalculationNode implements Valuable, Loggable {
 	public Input<Valuable> m_value = new Input<Valuable>("arg", "argument to be summed", Validate.REQUIRED);
 
+	enum Mode {integer_mode, double_mode}
+	Mode m_mode;
+	
 	boolean m_bRecompute = true;
 	double m_fSum = 0;
 	double m_fStoredSum = 0;
 	
 	@Override
-	public void initAndValidate() {}
+	public void initAndValidate() {
+		Valuable valuable =  m_value.get();
+		if (valuable instanceof IntegerParameter || valuable instanceof BooleanParameter) {
+			m_mode = Mode.integer_mode;
+		} else {
+			m_mode = Mode.double_mode;
+		}
+	}
 	
 	@Override
 	public int getDimension() {
@@ -63,4 +79,32 @@ public class Sum extends CalculationNode implements Valuable {
 		return true;
 	}
 
+    /**
+     * Loggable interface implementation follows
+     */
+    @Override
+	public void init(PrintStream out) throws Exception {
+        out.print("sum("+((Plugin)m_value.get()).getID() + ")\t");
+    }
+
+    @Override
+	public void log(int nSample, PrintStream out) {
+    	Valuable valuable = m_value.get();
+        final int nDimension = valuable.getDimension();
+        double fSum = 0;
+        for (int iValue = 0; iValue < nDimension; iValue++) {
+        	fSum += valuable.getArrayValue(iValue);
+        }
+        if (m_mode == Mode.integer_mode) {
+        	out.print((int)fSum + "\t");
+        } else {
+        	out.print(fSum + "\t");
+        }
+	}
+
+    @Override
+	public void close(PrintStream out) {
+		// nothing to do
+	}
+	
 } // class Sum
