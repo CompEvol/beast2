@@ -34,6 +34,8 @@ import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Valuable;
+import beast.core.parameter.RealParameter;
+import beast.util.Randomizer;
 
 /**
  * A class that describes a parametric distribution
@@ -63,6 +65,20 @@ public abstract class ParametricDistribution extends CalculationNode implements 
 			fLogP += logDensity(fX);
 		}
 		return fLogP;
+    }
+
+    /*
+     * This implemenatation is only suitable for univariate distributions.
+     * Must be overwritten for multivariate ones.
+     */
+    public RealParameter[] sample(int size) throws Exception{
+        RealParameter[] sample = new RealParameter[size];
+        for(int i = 0; i < sample.length; i++){
+            double p = Randomizer.nextDouble();
+            sample[i] = new RealParameter(new Double[]{inverseCumulativeProbability(p)});
+        }
+        return sample;
+
     }
     
     /**
