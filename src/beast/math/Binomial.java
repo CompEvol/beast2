@@ -96,6 +96,7 @@ public class Binomial {
     private static double[] choose2LUT;
 
     static {
+        //
         initialize();
     }
 }
