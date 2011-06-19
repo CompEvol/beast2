@@ -28,7 +28,7 @@ public class MutationDeathModel extends SubstitutionModel.Base {
 		m_nStates = freqs.length;
         m_trMatrix = new double[(m_nStates - 1) * (m_nStates - 1)];
         if (m_CTMCModel.get() != null) {
-        	if (m_CTMCModel.get().frequencies.get().m_fFreqs.length != m_nStates - 1) {
+        	if (m_CTMCModel.get().frequenciesInput.get().m_fFreqs.length != m_nStates - 1) {
         		throw new Exception("substmodel does not have the correct state space: should be " + (m_nStates-1));
         	}
         }

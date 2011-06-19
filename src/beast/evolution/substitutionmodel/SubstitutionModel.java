@@ -84,7 +84,7 @@ public interface SubstitutionModel {
     
     /** basic implementation of a SubstitutionModel bringing together relevant super class**/
     public abstract class Base extends CalculationNode implements SubstitutionModel {
-        public Input<Frequencies> frequencies =
+        public Input<Frequencies> frequenciesInput =
                 new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
 
         /** shadows frequencies, or can be set by subst model **/
@@ -92,7 +92,7 @@ public interface SubstitutionModel {
 
         @Override
         public void initAndValidate() throws Exception {
-        	m_frequencies = frequencies.get();
+        	m_frequencies = frequenciesInput.get();
         }
 
         @Override

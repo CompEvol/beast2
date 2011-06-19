@@ -10,7 +10,7 @@ import beast.evolution.tree.Node;
 public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionModel {
 	
 	public EmpiricalSubstitutionModel() {
-		frequencies.setRule(Validate.OPTIONAL);
+		frequenciesInput.setRule(Validate.OPTIONAL);
 		m_rates.setRule(Validate.OPTIONAL);
 	}
 	

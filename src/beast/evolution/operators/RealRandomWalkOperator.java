@@ -68,12 +68,7 @@ public class RealRandomWalkOperator extends Operator {
         double fDelta = calcDelta(logAlpha);
         
         fDelta += Math.log(windowSize);
-
-        //double fScaleFactor = m_pScaleFactor.get();
-        //fDelta += Math.log(1.0 / windowSize - 1.0);
-        //windowSize = 1.0 / (Math.exp(fDelta) + 1.0);
         windowSize = Math.exp(fDelta);
-        //System.out.println(windowSize);
     }
 
 } // class IntRandomWalkOperator
