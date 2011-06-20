@@ -457,7 +457,7 @@
 
     <operator id="bitflip" parameter="@indicators" spec="BitFlipOperator" uniform="true" weight="1.0"/>
 
-    <operator dist="@popPriorDist" indicators="@indicators" spec="evolution.tree.coalescent.SampleOffValues" values="@popSizes" weight="15.0"/>
+    <operator dist="@popPriorDist" indicators="@indicators" spec="beast.evolution.tree.coalescent.SampleOffValues" values="@popSizes" weight="15.0"/>
 
     <operator degreesOfFreedom="1" indicator="@indicators" parameter="@popSizes" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" weight="15.0"/>
 
