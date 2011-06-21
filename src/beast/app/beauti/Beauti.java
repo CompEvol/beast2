@@ -345,10 +345,10 @@ public class Beauti extends JTabbedPane {
     void refreshPanel() {
 		try {
 			BeautiPanel panel = (BeautiPanel) getSelectedComponent();
-			int i = 0;
-			while (m_panels[i] != panel) {
-				i++;
-			}
+//			int i = 0;
+//			while (m_panels[i] != panel) {
+//				i++;
+//			}
 			panel.refreshPanel();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -483,11 +483,9 @@ public class Beauti extends JTabbedPane {
 			
 			PluginPanel.init();
 			
-			InputEditor.g_bExpertMode = true;
 	        BeautiInitDlg dlg = null;
 	        BeautiDoc doc = new BeautiDoc();
 	        dlg = new BeautiInitDlg(args, doc);
-			InputEditor.g_bExpertMode = false;
 
 	        doc.initialize(dlg.m_endState, dlg.m_sXML, dlg.m_sTemplateXML, dlg.m_sOutputFileName);
 	

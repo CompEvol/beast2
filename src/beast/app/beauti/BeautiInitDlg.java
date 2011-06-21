@@ -82,7 +82,9 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		m_doc = doc;
 		m_dlg = this;
 		parseArgs(args);
+		InputEditor.g_bExpertMode = true;
 		init();
+		InputEditor.g_bExpertMode = false;
 		if (m_endState != ActionOnExit.UNKNOWN) {
 			dispose();
 		} else {

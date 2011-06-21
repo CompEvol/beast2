@@ -51,7 +51,7 @@ public class BeautiPanelConfig extends Plugin {
 	
 	/** plugins associated with inputs **/
 	List<Plugin> m_inputs;
-	/** plugins that are parents, i.e. contain inpust of m_inputs **/
+	/** plugins that are parents, i.e. contain inputs of m_inputs **/
 	List<Plugin> m_parentPlugins;
 	List<Input<?>> m_parentInputs;
 	/** flag to indicate we are dealing with a list input **/
@@ -214,12 +214,20 @@ public class BeautiPanelConfig extends Plugin {
 	
 	@SuppressWarnings("unchecked")
 	public void sync() {
-		if (m_bIsList && m_parentInputs.size() > 0) { 
+		if (m_parentInputs.size() > 0) { 
 			Input<?> input = m_parentInputs.get(0);
-			List<Object> list = (List<Object>) m_input.get();
-			List<Object> targetList = ((List<Object>)input.get());
-			targetList.clear();
-			targetList.addAll(list);
+			if (m_bIsList) {			
+				List<Object> list = (List<Object>) m_input.get();
+				List<Object> targetList = ((List<Object>)input.get());
+				targetList.clear();
+				targetList.addAll(list);
+			} else {
+				try {
+					input.setValue(m_input.get(), m_parentPlugins.get(0));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	} 
 
@@ -251,4 +259,5 @@ public class BeautiPanelConfig extends Plugin {
 		}
 		return m_input.get().getClass().getName();
 	}
+
 }

@@ -133,12 +133,18 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	}
 	
 	
+	static BeautiPanel g_currentPanel = null;
+	
 	void refreshPanel() throws Exception {
+		if (g_currentPanel != null) {
+			g_currentPanel.m_config.sync();
+		}
 		m_doc.scrubAll();
 		refreshInputPanel();
 		if (m_listBox != null) {
 			m_listBox.setVisible(m_doc.m_alignments.get().size() > 1);
 		}
+		g_currentPanel = this;
 	}
 	
 	void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, EXPAND bForceExpansion) throws Exception {
@@ -167,6 +173,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		InputEditor.g_nLabelWidth = m_config.m_nLabelWidthInput.get();
 		Plugin plugin = m_config;
 		Input<?> input = m_config.resolveInput(m_doc, m_iPartition);
+		
 		boolean bAddButtons = m_config.addButtons();
 		EXPAND bForceExpansion = m_config.forceExpansion();
 		refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);

@@ -211,7 +211,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 					validateRecursively(m_input, new HashSet<Input<?>>());
 				} catch (Exception e) {
 					notifyValidationListeners(ValidationStatus.HAS_INVALIDMEMBERS);
-					if (m_bAddButtons) {
+					if (m_validateLabel != null) {
 						m_validateLabel.setVisible(true);
 						m_validateLabel.setToolTipText("<html><p>Recursive error in " + e.getMessage() + "</p></html>");
 						m_validateLabel.m_circleColor = Color.orange;
@@ -219,12 +219,13 @@ public abstract class InputEditor extends Box implements ValidateListener {
 					repaint();
 					return;
 				}
-				if (m_bAddButtons) {
+				if (m_validateLabel != null) {
 					m_validateLabel.setVisible(false);
 				}
 				notifyValidationListeners(ValidationStatus.IS_VALID);
 			} catch (Exception e) {
-				if (m_bAddButtons) {
+				System.err.println("Validation message: " + e.getMessage());
+				if (m_validateLabel != null) {
 					m_validateLabel.setToolTipText(e.getMessage());
 					m_validateLabel.m_circleColor = Color.red;
 					m_validateLabel.setVisible(true);

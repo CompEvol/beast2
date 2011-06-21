@@ -6,12 +6,12 @@
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers'
         inlinePlugins ='beast.core.MCMC.distribution,
-            beast.core.MCMC.logger,
             beast.evolution.sitemodel.SiteModel.substModel,
             beast.evolution.tree.coalescent.ExponentialGrowth,
             beast.evolution.tree.coalescent.ConstantPopulation,
             beast.evolution.tree.coalescent.Coalescent,
             beast.core.State.stateNode'
+        collapsedPlugins ='beast.core.MCMC.logger'
         suppressPlugins = 'beast.core.MCMC.operator,
 	        beast.evolution.tree.coalescent.Coalescent.treeIntervals,
 	        beast.evolution.tree.coalescent.Coalescent.tree,
@@ -260,7 +260,7 @@ TODO: initialisers, prior, posterior
             <operator id="$(n).categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
         </plate>
 
-        <logger logEvery="10000" fileName="$(n).$(seed).log">
+        <logger id='tracelog' logEvery="10000" fileName="beast.$(n).$(seed).log">
 	        <model idref='posterior'/>
             <log idref="likelihood"/>
             <plate var='n' range='#alignments'>
@@ -269,11 +269,11 @@ TODO: initialisers, prior, posterior
             </plate>
         </logger>
         <plate var='n' range='#alignments'>
-            <logger logEvery="10000" fileName="$(n).$(seed).trees">
+            <logger id='$(n).treelog' logEvery="10000" fileName="beast.$(n).$(seed).trees">
                 <log idref="$(n).tree"/>
             </logger>
         </plate>
-        <logger logEvery="10000">
+        <logger id='screenlog' logEvery="10000">
 	        <model idref='posterior'/>
             <log idref="likelihood"/>
       	    <ESS spec='ESS' name='log' arg="@likelihood"/>
