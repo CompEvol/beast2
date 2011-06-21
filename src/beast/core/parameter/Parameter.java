@@ -62,6 +62,7 @@ public abstract class Parameter<T> extends StateNode {
     	this.storedValues = values.clone();
     	m_fUpper = getMax();
     	m_fLower = getMin();
+        m_bIsDirty = new boolean[values.length];
     }
 
     @Override
