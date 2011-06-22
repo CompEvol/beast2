@@ -440,7 +440,7 @@ public class PluginPanel extends JPanel {
 //		PluginPanel.g_plugins.put(m_plugin.getID(), m_plugin);
 	}
 
-	static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
+	public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
         /* add ascendants to tabu list */
         if (sTabuList == null) {
             sTabuList = new ArrayList<String>();

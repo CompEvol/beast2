@@ -34,7 +34,8 @@
 	        beast.util.ClusterTree.estimate,
 	        beast.evolution.substitutionmodel.WAG.rates,
 	        beast.evolution.substitutionmodel.WAG.frequencies,
-	        beast.core.Operator.weight'
+	        beast.core.Operator.weight,
+            beast.math.distributions.Prior.x'
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
     >
 
@@ -75,6 +76,7 @@
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
             hasPartitions="false" icon='7.png' forceExpansion='TRUE_START_COLLAPSED'
+            type='beast.core.Distribution'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
@@ -191,7 +193,7 @@ TODO: Data panel: only allow selection of trees that are not initialisers
 
 
 
-        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0" estimate='true'/>
+        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0" estimate='false'/>
 
         <tree spec='beast.evolution.tree.Tree' id='$(n).tree' initial='@$(n).upgmatree'>
 	        <trait id='$(n).datetrait' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'

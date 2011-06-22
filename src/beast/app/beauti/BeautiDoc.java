@@ -18,6 +18,7 @@ import beast.core.State;
 import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.tree.TreeDistribution;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 
@@ -314,7 +315,12 @@ public class BeautiDoc extends Plugin {
 	/** collect priors that have predecessors in the State, i.e. a StateNode that is estimated **/
 	void scrubPriors() {
 		List<Distribution> priors = m_priors.get();
-		priors.clear();
+		for (int i = priors.size()-1; i>=0; i--) {
+			if (!(priors.get(i) instanceof TreeDistribution)) {
+				priors.remove(i);
+			}
+		}
+		//priors.clear();
 		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
 		collectPredecessors(((MCMC)m_mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 
@@ -324,7 +330,9 @@ public class BeautiDoc extends Plugin {
 			for (Plugin plugin : priorPredecessors) {
 				if (//posteriorPredecessors.contains(plugin) && 
 						plugin instanceof StateNode && ((StateNode) plugin).m_bIsEstimated.get()) {
-					priors.add(prior);
+					if (!(prior instanceof TreeDistribution)) {
+						priors.add(prior);
+					}
 					break;
 				}
 			}

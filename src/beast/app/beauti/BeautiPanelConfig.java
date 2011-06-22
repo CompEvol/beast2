@@ -188,8 +188,7 @@ if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iP
 				}
 			}
 			if (m_sTypeInput.get() != null) {
-				Object o = Class.forName(m_sTypeInput.get()).newInstance(); 
-				m_type = o.getClass();
+				m_type = Class.forName(m_sTypeInput.get());
 			}
 			// sanity check
 			if (!m_bIsList && !m_bHasPartitionsInput.get() && plugins.size() > 1) {

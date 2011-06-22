@@ -28,11 +28,7 @@ public class OperatorListInputEditor extends ListInputEditor {
 		return Operator.class;
 	}
 
-    /** add components to box that are specific for the plugin.
-     * By default, this just inserts a label with the plugin ID 
-     * @param itemBox box to add components to
-     * @param plugin plugin to add
-     */
+	@Override
     protected void addPluginItem(Box itemBox, Plugin plugin) {
         Operator operator = (Operator) plugin;
         
