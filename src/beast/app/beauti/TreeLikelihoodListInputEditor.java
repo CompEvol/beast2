@@ -27,6 +27,7 @@ public class TreeLikelihoodListInputEditor extends ListInputEditor {
 	
 	@Override
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+		m_buttonStatus = BUTTONSTATUS.NONE;
 		super.init(input, plugin, bExpand, bAddButtons);
 		add(Box.createVerticalGlue());
 	}

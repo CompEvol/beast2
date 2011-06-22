@@ -173,7 +173,7 @@ public class Beauti extends JTabbedPane {
 
         protected void saveFile(String sFileName) {
             try {
-            	m_currentTab.m_config.sync();
+            	m_currentTab.m_config.sync(m_currentTab.m_iPartition);
                 m_doc.save(sFileName);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -503,7 +503,7 @@ public class Beauti extends JTabbedPane {
 			beauti.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					beauti.m_currentTab.m_config.sync();
+					beauti.m_currentTab.m_config.sync(beauti.m_currentTab.m_iPartition);
 					BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
 					beauti.m_currentTab = panel;
 					beauti.refreshPanel();

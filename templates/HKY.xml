@@ -51,7 +51,7 @@
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxan was sampled"
             path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
             hasPartitions="true" icon='2.png' forceExpansion='TRUE'
-            isVisible='false'
+            isVisible='true'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
             path='distribution/distribution[id="likelihood"]/distribution/siteModel'
@@ -69,16 +69,16 @@
 -->
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
             path='state/stateNode'
-            hasPartitions="false" icon='6.png' forceExpansion='TRUE'
+            hasPartitions="false" icon='6.png' forceExpansion='TRUE_START_COLLAPSED'
             isVisible='false'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
-            hasPartitions="false" icon='7.png' forceExpansion='IF_ONE_ITEM'
+            hasPartitions="false" icon='7.png' forceExpansion='TRUE_START_COLLAPSED'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
-            hasPartitions="false" icon='8.png' forceExpansion='TRUE'
+            hasPartitions="false" icon='8.png' forceExpansion='TRUE_START_COLLAPSED'
             isVisible='false'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
@@ -108,16 +108,21 @@ TODO: Beauti/Genious integration
 TODO: integration test - verify same outcomes as Beast 1 + set up Hudson for periodic integration tests
 TODO: post processing: tracer, tree log analyser (already in Snap)?
 
-TODO: spacing out of inputs
-TODO: size of list of partitions
-TODO: proper refreshs for multi partition sitemodel
+done: spacing out of inputs
+done: size of list of partitions
+done: proper refreshs for multi partition sitemodel
 
-TODO: trait editor
 TODO: sequence inspector
-TODO: tree prior: select from tree priors instead of having a list?
-TODO: prior editor with dynamic graphs of prior distribution
-TODO: coalescent tree as initial tree - with taxa constraints
+done: coalescent tree as initial tree - with taxa constraints
+TODO: trait editor: guess button and clear button
 TODO: initialisers, prior, posterior
+
+TODO: tree prior: select from tree priors instead of having a list?
+done: trait editor
+TODO: prior editor with dynamic graphs of prior distribution
+done: Data panel: remove delete button
+TODO: Data panel: only allow selection of trees that are not initialisers
+
 
 -->
 
@@ -174,6 +179,11 @@ TODO: initialisers, prior, posterior
             <input name='tree' idref="$(n).tree"/>
         </input>
 
+        <input spec='RandomLocalClockModel' id="$(n).RandomLocalClock" ratesAreMultipliers="false" indicators='@$(n).rateCategories'>
+            <parameter name='rates' id='$(n).clockrates' dimension="11" value="1"/>
+            <tree idref="$(n).tree"/>
+        </input>
+
         <populationModel spec="ExponentialGrowth" id="$(n).ExponentialGrowth">
             <parameter name="popSize" id="$(n).popSize" value='1.0' estimate='false'/>
             <parameter name="growthRate" id="$(n).growthRate" value='1.0' estimate='false'/>
@@ -181,26 +191,17 @@ TODO: initialisers, prior, posterior
 
 
 
-        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0" estimate='false'/>
+        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0" estimate='true'/>
 
         <tree spec='beast.evolution.tree.Tree' id='$(n).tree' initial='@$(n).upgmatree'>
-	        <trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
+	        <trait id='$(n).datetrait' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
 		        value=''>
 		        <taxa idref='$(n)'/>
 	        </trait>
         </tree>
-        <input spec='beast.util.ClusterTree' id='$(n).upgmatree' clusterType='upgma' estimate='false'>
-            <taxa idref='$(n)'/>
-	        <trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
-		        value=''>
-		        <taxa idref='$(n)'/>
-	        </trait>
-        </input>
-        <input spec='beast.util.TreeParser' id='$(n).Newicktree'>
-                <input name='newick'></input>
-                <input name='taxa' idref='$(n)'/>
-        </input>        
-
+        <tree spec='beast.util.ClusterTree' id='$(n).upgmatree' clusterType='upgma' estimate='false'  trait='@$(n).datetrait' taxa='@$(n)'/>
+        <tree spec='beast.util.TreeParser' id='$(n).Newicktree' estimate='false'  trait='@$(n).datetrait'  taxa='@$(n)' newick=""/>
+        <tree spec='beast.evolution.tree.RandomTree' id='$(n).RandomTree' populationModel='@$(n).ConstantPopulation'  estimate='false' trait='@$(n).datetrait'  taxa='@$(n)'/>
     </plate>
 
 
@@ -248,6 +249,8 @@ TODO: initialisers, prior, posterior
             <operator id='$(n).proportionInvariantScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).proportionInvariant"/>
             <operator id='$(n).mutationRateScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).mutationRate"/>
             <operator id='$(n).gammaShapeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).gammaShape"/>
+            <operator id='$(n).clockRateScaler' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@$(n).clockrates"/>
+
 
             <operator id='$(n).treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@$(n).tree"/>
             <operator spec='Uniform' weight="10" tree="@$(n).tree"/>
@@ -260,7 +263,7 @@ TODO: initialisers, prior, posterior
             <operator id="$(n).categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
         </plate>
 
-        <logger id='tracelog' logEvery="10000" fileName="beast.$(n).$(seed).log">
+        <logger id='tracelog' logEvery="10000" fileName="beast_$(seed).log">
 	        <model idref='posterior'/>
             <log idref="likelihood"/>
             <plate var='n' range='#alignments'>
@@ -269,7 +272,7 @@ TODO: initialisers, prior, posterior
             </plate>
         </logger>
         <plate var='n' range='#alignments'>
-            <logger id='$(n).treelog' logEvery="10000" fileName="beast.$(n).$(seed).trees">
+            <logger id='$(n).treelog' logEvery="10000" fileName="beast_$(n).$(seed).trees">
                 <log idref="$(n).tree"/>
             </logger>
         </plate>

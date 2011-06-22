@@ -78,7 +78,7 @@ public class BeautiDoc extends Plugin {
 	
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
-		scrubAll();
+		scrubAll(false);
 		String sXML = new XMLProducer().toXML(m_mcmc.get(), PluginPanel.g_plugins.values());
 		FileWriter outfile = new FileWriter(sFileName);
 		outfile.write(sXML);
@@ -207,13 +207,13 @@ public class BeautiDoc extends Plugin {
 		}
 	}	
 	
-	void scrubAll() {
+	void scrubAll(boolean bUseNotEstimatedStateNodes) {
 		try {
 			if (m_bAutoScrubPriors) {
 				scrubPriors();
 			}
 			if (m_bAutoScrubState) {
-				scrubState();
+				scrubState(bUseNotEstimatedStateNodes);
 			}
 			if (m_bAutoScrubLoggers) {
 				scrubLoggers();
@@ -291,7 +291,7 @@ public class BeautiDoc extends Plugin {
 
 
 	/** remove StateNodes that are not estimated or have no impact on the posterior **/
-	void scrubState() {
+	void scrubState(boolean bUseNotEstimatedStateNodes) {
 		try {
 			List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
 			collectPredecessors(((MCMC)m_mcmc.get()).posteriorInput.get(), posteriorPredecessors);
@@ -300,7 +300,7 @@ public class BeautiDoc extends Plugin {
 			List<StateNode> stateNodes = state.stateNodeInput.get();
 			stateNodes.clear();
 			for (StateNode stateNode :  PluginPanel.g_stateNodes) {
-				if (posteriorPredecessors.contains(stateNode) && stateNode.m_bIsEstimated.get()) {
+				if (posteriorPredecessors.contains(stateNode) && (stateNode.m_bIsEstimated.get() || bUseNotEstimatedStateNodes)) {
 					stateNodes.add(stateNode);
 					System.err.println(stateNode.getID());
 				}

@@ -4,6 +4,8 @@ package beast.app.beauti;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -102,6 +104,14 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		partitionBox.add(new JLabel("partition"));
         m_listModel = new DefaultListModel();
     	m_listOfPartitions = new JList(m_listModel);
+
+    	Dimension size = new Dimension(100,300);
+    	m_listOfPartitions.setFixedCellWidth(100);
+//    	m_listOfPartitions.setSize(size);
+    	m_listOfPartitions.setPreferredSize(size);
+//    	m_listOfPartitions.setMinimumSize(size);
+//    	m_listOfPartitions.setBounds(0, 0, 100, 100);
+    	
     	m_listOfPartitions.addListSelectionListener(this);
     	for (Alignment data : m_doc.m_alignments.get()) {
     		m_listModel.addElement(data);
@@ -136,10 +146,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	static BeautiPanel g_currentPanel = null;
 	
 	void refreshPanel() throws Exception {
-		if (g_currentPanel != null) {
-			g_currentPanel.m_config.sync();
-		}
-		m_doc.scrubAll();
+//		if (g_currentPanel != null) {
+//			g_currentPanel.m_config.sync(m_iPartition);
+//		}
+		m_doc.scrubAll(true);
 		refreshInputPanel();
 		if (m_listBox != null) {
 			m_listBox.setVisible(m_doc.m_alignments.get().size() > 1);
@@ -181,12 +191,31 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
+		System.err.print("BeautiPanel::valueChanged " + m_iPartition + " => ");
 		if (e != null) {
-			m_config.sync();
+//			if (m_iPartition == m_listOfPartitions.getSelectedIndex()) {
+//				return;
+//			}
+			m_config.sync(m_iPartition);
 			m_iPartition = m_listOfPartitions.getSelectedIndex();
 		}
+		System.err.println(m_iPartition);
 		try {
 			refreshPanel();
+
+			m_centralComponent.repaint();
+			repaint();
+			
+			// hack to ensure m_centralComponent is repainted RRB: is there a better way???
+			Frame frame = Frame.getFrames()[Frame.getFrames().length - 1];
+			frame.setSize(frame.getSize());
+			//Frame frame = frames[frames.length - 1];
+//			Dimension size = frames[frames.length-1].getSize();
+//			frames[frames.length-1].setSize(size);
+
+//			m_centralComponent.repaint();
+//			m_centralComponent.requestFocusInWindow();
+			m_centralComponent.requestFocus();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

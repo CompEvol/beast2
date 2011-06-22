@@ -21,7 +21,7 @@ import java.util.List;
         "other traits can be supported as well.")
 public class TraitSet extends Plugin {
 
-    enum Units {
+    public enum Units {
         year, month, day
     }
 

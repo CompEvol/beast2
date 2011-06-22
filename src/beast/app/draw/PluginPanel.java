@@ -318,10 +318,10 @@ public class PluginPanel extends JPanel {
     	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
 		System.err.println(sFullInputName);
     	EXPAND expand = bForceExpansion;
-    	if (BeautiConfig.g_inlinePlugins.contains(sFullInputName)) {
+    	if (BeautiConfig.g_inlinePlugins.contains(sFullInputName) || bForceExpansion == EXPAND.TRUE_START_COLLAPSED) {
     		expand = EXPAND.TRUE;
     		// deal with initially collapsed plugins
-    		if (BeautiConfig.g_collapsedPlugins.contains(sFullInputName)) {
+    		if (BeautiConfig.g_collapsedPlugins.contains(sFullInputName) || bForceExpansion == EXPAND.TRUE_START_COLLAPSED) {
     			if (input.get() != null) {
     				Object o = input.get();
     				if (o instanceof ArrayList) {

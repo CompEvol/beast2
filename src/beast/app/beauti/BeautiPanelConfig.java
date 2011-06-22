@@ -125,6 +125,8 @@ public class BeautiPanelConfig extends Plugin {
 	 */
 	public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
 		try {
+if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
+			
 			List<Plugin> plugins = new ArrayList<Plugin>();
 			m_parentPlugins = new ArrayList<Plugin>();
 			m_parentInputs =  new ArrayList<Input<?>>();
@@ -205,6 +207,7 @@ public class BeautiPanelConfig extends Plugin {
 			}
 			m_input.setRule(Validate.REQUIRED);
 			syncTo(iPartition);
+if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
 			return m_input;
 		} catch (Exception e) {
 			System.err.println("Warning: could not find objects in path " + Arrays.toString(m_sPathComponents));
@@ -213,9 +216,9 @@ public class BeautiPanelConfig extends Plugin {
 	} // resolveInputs
 	
 	@SuppressWarnings("unchecked")
-	public void sync() {
+	public void sync(int iPartition) {
 		if (m_parentInputs.size() > 0) { 
-			Input<?> input = m_parentInputs.get(0);
+			Input<?> input = m_parentInputs.get(iPartition);
 			if (m_bIsList) {			
 				List<Object> list = (List<Object>) m_input.get();
 				List<Object> targetList = ((List<Object>)input.get());
@@ -223,7 +226,8 @@ public class BeautiPanelConfig extends Plugin {
 				targetList.addAll(list);
 			} else {
 				try {
-					input.setValue(m_input.get(), m_parentPlugins.get(0));
+					System.err.println("sync " + m_parentPlugins.get(iPartition) + "[" + input.getName() + "] = " + m_input.get());
+					input.setValue(m_input.get(), m_parentPlugins.get(iPartition));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

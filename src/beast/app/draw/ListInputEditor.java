@@ -184,7 +184,7 @@ public class ListInputEditor extends InputEditor {
 		m_validateLabels.add(validateLabel);
         itemBox.setBorder(BorderFactory.createEtchedBorder());
         
-        if (m_bExpand == EXPAND.TRUE || 
+        if (m_bExpand == EXPAND.TRUE || m_bExpand == EXPAND.TRUE_START_COLLAPSED || 
         		(m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
         	Box expandBox = Box.createVerticalBox();
         	//box.add(itemBox);
