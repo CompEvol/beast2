@@ -20,6 +20,7 @@ import beast.evolution.tree.Tree;
 public class GeneTreeForSpeciesTreeDistribution extends Distribution {
 	public Input<Tree> m_speciesTree = new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 	public Input<Tree> m_geneTree = new Input<Tree>("geneTree", "gene tree for which to calculate probability conditioned on the species tree", Validate.REQUIRED);
+	public Input<Double> m_ploidy = new Input<Double>("ploidy","ploidy for this gene, typically a whole number of half (default 1)", 1.0);
 
 	public Input<SpeciesTreePrior> m_speciesTreePrior = new Input<SpeciesTreePrior>("speciesTreePrior","defines population function and its parameters", Validate.REQUIRED);
 	
@@ -33,9 +34,11 @@ public class GeneTreeForSpeciesTreeDistribution extends Distribution {
 	beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction m_bIsConstantPopFunction;
 	RealParameter m_fPopSizesBottom;
 	RealParameter m_fPopSizesTop;
+	double m_fPloidy;
 	
 	@Override 
 	public void initAndValidate() throws Exception {
+		m_fPloidy = m_ploidy.get();
 		Node [] nodes = m_geneTree.get().getNodesAsArray();
 		int nLineages = m_geneTree.get().getLeafNodeCount();
 		Node [] nodes2 = m_speciesTree.get().getNodesAsArray();
@@ -178,7 +181,7 @@ public class GeneTreeForSpeciesTreeDistribution extends Distribution {
 	 * the log probability, for constant population function.
 	 */
 	private void calcConstantPopSizeContribution(int nLineagesBottom, int iNode, double[] fTimes, int k) {
-		double fPopSize = m_fPopSizesBottom.getValue(iNode);
+		double fPopSize = m_fPopSizesBottom.getValue(iNode) * m_fPloidy;
 		logP += - k * Math.log(fPopSize);
 //		System.err.print(logP);
 		for (int i = 0; i <= k; i++) {
@@ -193,13 +196,13 @@ public class GeneTreeForSpeciesTreeDistribution extends Distribution {
 	private void calcLinearPopSizeContribution(int nLineagesBottom, int iNode, double[] fTimes, int k, Node node) {
 		double fPopSizeBottom;
 		if (node.isLeaf()) {
-			fPopSizeBottom = m_fPopSizesBottom.getValue(iNode);
+			fPopSizeBottom = m_fPopSizesBottom.getValue(iNode) * m_fPloidy;
 		} else {
 			// use sum of left and right child branches for internal nodes
-			fPopSizeBottom = m_fPopSizesTop.getValue(node.m_left.getNr()) + 
-				m_fPopSizesTop.getValue(node.m_right.getNr());
+			fPopSizeBottom = (m_fPopSizesTop.getValue(node.m_left.getNr()) + 
+				m_fPopSizesTop.getValue(node.m_right.getNr())) * m_fPloidy;
 		}
-		double fPopSizeTop = m_fPopSizesTop.getValue(iNode);
+		double fPopSizeTop = m_fPopSizesTop.getValue(iNode) * m_fPloidy;
 		double a = (fPopSizeTop-fPopSizeBottom)/(fTimes[k]-fTimes[0]);
 		double b = fPopSizeBottom; 
 		for (int i = 0; i < k; i++) {
