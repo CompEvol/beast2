@@ -2,7 +2,6 @@ package beast.math.distributions;
 
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
-import org.apache.commons.math.distribution.GammaDistributionImpl;
 import org.apache.commons.math.MathException;
 
 import beast.core.Description;
