@@ -31,15 +31,31 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     @Override
     public void initAndValidate() throws Exception {
+        Tree tree = treeInput.get();
+        
     	IntegerParameter indicators = indicatorParamInput.get();
         indicators.setLower(0);
         indicators.setUpper(1);
 
+        if (indicators.getDimension() != tree.getNodeCount()) {
+        	System.out.println("RandomLocalClockModel::Setting dimension of indicators to " + tree.getNodeCount());
+        	indicators.setDimension(tree.getNodeCount());
+        }
+        
         unscaledBranchRates = new double[indicators.getDimension()];
         
         RealParameter rates = rateParamInput.get();
-        rates.setLower(0.0);
-        rates.setUpper(Double.MAX_VALUE);
+        if (rates.lowerValueInput.get() == null || rates.lowerValueInput.get() < 0.0) {
+        	rates.setLower(0.0);
+        }
+        if (rates.upperValueInput.get() == null || rates.upperValueInput.get() < 0.0) {
+        	rates.setUpper(Double.MAX_VALUE);
+        }
+        if (rates.getDimension() != tree.getNodeCount()) {
+        	System.out.println("RandomLocalClockModel::Setting dimension of rates to " + tree.getNodeCount());
+        	rates.setDimension(tree.getNodeCount());
+        }
+
         
         ratesAreMultipliers = ratesAreMultipliersInput.get();
     }
