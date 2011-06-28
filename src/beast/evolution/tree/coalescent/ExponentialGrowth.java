@@ -60,7 +60,7 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
      * @return initial population size.
      */
     public double getN0() {
-        return N0;
+        return popSizeParameter.get().getValue();
     }
 
     /**
@@ -68,15 +68,15 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
      *
      * @param N0 new size
      */
-    public void setN0(double N0) {
-        this.N0 = N0;
-    }
+//    public void setN0(double N0) {
+//        this.N0 = N0;
+//    }
 
     /**
      * @return growth rate.
      */
     public final double getGrowthRate() {
-        return r;
+        return growthRateParameter.get().getValue();
     }
 
     /**
@@ -84,9 +84,9 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
      *
      * @param r
      */
-    public void setGrowthRate(double r) {
-        this.r = r;
-    }
+//    public void setGrowthRate(double r) {
+//        this.r = r;
+//    }
 
     /**
      * An alternative parameterization of this model. This
@@ -94,9 +94,9 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
      *
      * @param doublingTime
      */
-    public void setDoublingTime(double doublingTime) {
-        setGrowthRate(Math.log(2) / doublingTime);
-    }
+//    public void setDoublingTime(double doublingTime) {
+//        setGrowthRate(Math.log(2) / doublingTime);
+//    }
 
     // Implementation of abstract methods
 
@@ -200,10 +200,10 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
     /**
      * The current day population size
      */
-    private double N0 = 1.0;
+    //private double N0 = 1.0;
 
     /**
      * The exponential growth rate
      */
-    private double r = 0.01;
+    //private double r = 0.01;
 }
