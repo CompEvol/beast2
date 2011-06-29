@@ -141,11 +141,11 @@
 
         <distribution id="speciesCoalescent" spec="util.CompoundDistribution">
             <!-- gene tree priors -->
-            <distribution id='tree.prior.29' spec='GeneTreeForSpeciesTreeDistribution' geneTree='@tree29' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
-            <distribution id='tree.prior.26' spec='GeneTreeForSpeciesTreeDistribution' geneTree='@tree26' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
+            <distribution id='tree.prior.29' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree29' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
+            <distribution id='tree.prior.26' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree26' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
 
             <!-- species tree priors -->
-            <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' speciesTree='@speciesTree' 
+            <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' tree='@speciesTree' 
             		popFunction='constant' taxonset='@taxonsuperset'>
                 <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
                 <parameter name='gammaParameter' id='popMean' value='0.004'/>

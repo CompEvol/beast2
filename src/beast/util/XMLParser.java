@@ -298,7 +298,7 @@ public class XMLParser {
         			Node child = children.item(iChild);
         			Node newChild = child.cloneNode(true);
         			replace(newChild, sVar, sValue);
-        			node.getParentNode().appendChild(newChild);
+        			node.getParentNode().insertBefore(newChild, node);
         		}
         	}
         	node.getParentNode().removeChild(node);

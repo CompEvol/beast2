@@ -14,11 +14,12 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.Gamma;
 
 @Description("Species tree prior for *BEAST analysis")
-public class SpeciesTreePrior extends Distribution {
-	public Input<Tree> m_speciesTree = new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
+public class SpeciesTreePrior extends TreeDistribution {
+	//public Input<Tree> m_speciesTree = new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
 	protected enum PopSizeFunction {constant, linear, linear_with_constant_root}
 	public Input<PopSizeFunction> m_popFunctionInput = new Input<PopSizeFunction>("popFunction", "Population function. " +
@@ -50,8 +51,8 @@ public class SpeciesTreePrior extends Distribution {
 		m_fPopSizesTop = m_popSizesTop.get();
 		
 		// set up sizes of population functions
-		int nSpecies = m_speciesTree.get().getLeafNodeCount();
-		int nNodes = m_speciesTree.get().getNodeCount();
+		int nSpecies = m_tree.get().getLeafNodeCount();
+		int nNodes = m_tree.get().getNodeCount();
 		switch (m_popFunction) {
 		case constant:
 			m_fPopSizesBottom.setDimension(nNodes);
@@ -125,7 +126,7 @@ public class SpeciesTreePrior extends Distribution {
 		case linear_with_constant_root:
 			logP += m_gamma4Prior.calcLogP(m_fPopSizesBottom);
 			logP += m_gamma2Prior.calcLogP(m_fPopSizesTop);
-			int iRoot = m_speciesTree.get().getRoot().getNr();
+			int iRoot = m_tree.get().getRoot().getNr();
 			double fPopSize = m_fPopSizesTop.getValue(iRoot);
 			logP -= m_gamma2Prior.logDensity(fPopSize); 
 			

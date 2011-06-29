@@ -1,0 +1,280 @@
+<beast version='2.0'
+       namespace='beast.evolution.alignment:beast.evolution.tree:beast.math:beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+
+    <beauticonfig spec='beast.app.beauti.BeautiConfig'
+        hidePanels='TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL'
+        inputLabelMap='beast.core.MCMC.operator=Operators,
+	        beast.core.MCMC.logger=Loggers'
+        inlinePlugins ='beast.core.MCMC.distribution,
+            beast.evolution.sitemodel.SiteModel.substModel,
+            beast.evolution.tree.coalescent.ExponentialGrowth,
+            beast.evolution.tree.coalescent.ConstantPopulation,
+            beast.evolution.tree.coalescent.Coalescent,
+            beast.core.State.stateNode'
+        collapsedPlugins ='beast.core.MCMC.logger'
+        suppressPlugins = 'beast.core.MCMC.operator,
+	        beast.evolution.tree.coalescent.Coalescent.treeIntervals,
+	        beast.evolution.tree.coalescent.Coalescent.tree,
+	        beast.core.MCMC.state,
+	        beast.core.MCMC.distribution,
+	        beast.core.MCMC.init,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.relativeDeathRate,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.type,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.tree,
+	        beast.evolution.tree.Tree.trait,
+	        beast.util.TreeParser.initial,
+	        beast.util.TreeParser.taxa,
+	        beast.util.TreeParser.trait,
+	        beast.util.TreeParser.estimate,
+	        beast.util.ClusterTree.initial,
+	        beast.util.ClusterTree.taxa,
+	        beast.util.ClusterTree.trait,
+	        beast.util.ClusterTree.estimate,
+	        beast.evolution.substitutionmodel.WAG.rates,
+	        beast.evolution.substitutionmodel.WAG.frequencies,
+	        beast.core.Operator.weight,
+            beast.math.distributions.Prior.x'
+        buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
+    >
+
+        <panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Data" tiptext="Aligned sequence data"
+            path='distribution/distribution[id="likelihood"]/distribution'
+            hasPartitions="false" icon='0.png' forceExpansion='FALSE'
+            type='beast.evolution.likelihood.TreeLikelihood'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
+            path='distribution/distribution[id="likelihood"]/distribution/taxonset'
+            hasPartitions="false" icon='1.png' forceExpansion='FALSE'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxan was sampled"
+            path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
+            hasPartitions="true" icon='2.png' forceExpansion='TRUE'
+            isVisible='true'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
+            path='distribution/distribution[id="likelihood"]/distribution/siteModel'
+            hasPartitions="true" icon='3.png' forceExpansion='TRUE'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
+            path='distribution/distribution[id="likelihood"]/distribution/branchRateModel'
+            hasPartitions="true" icon='4.png' forceExpansion='TRUE'
+        />
+<!--
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tree prior" tiptext="Tree prior"
+            path='distribution/distribution[id="prior"]/distribution[type="Tree"]'
+            hasPartitions="false" icon='5.png' forceExpansion='TRUE'
+        />
+-->
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
+            path='state/stateNode'
+            hasPartitions="false" icon='6.png' forceExpansion='TRUE_START_COLLAPSED'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
+            path='distribution/distribution[id="prior"]/distribution'
+            hasPartitions="false" icon='7.png' forceExpansion='TRUE_START_COLLAPSED'
+            type='beast.core.Distribution'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
+            path='operator'
+            hasPartitions="false" icon='8.png' forceExpansion='TRUE_START_COLLAPSED'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
+            path=''
+            hasPartitions="false" icon='9.png' forceExpansion='TRUE'
+        />
+
+
+    </beauticonfig>
+
+    <data id="#alignments"></data>
+
+
+    <plate var='n' range='#alignments'>
+        <mergepoint id='substitutionmodel'/>
+    </plate>
+
+    
+	<taxonset id='taxonsuperset' spec='beast.evolution.alignment.TaxonSet'/>
+
+    <tree spec='RandomTree' id='randomSpeciesTree' initial='@speciesTree'
+        taxonset='@taxonsuperset'>
+        <populationModel spec='ConstantPopulation'>
+		<popSize spec='parameter.RealParameter' value='1'/>
+	</populationModel>
+    </tree>
+
+<!--
+<tree spec='beast.util.TreeParser' id='newickSpeciesTree' newick='' initial='@speciesTree' threshold='1e-12' taxonset='@taxonsuperset'/>
+-->
+
+<plate var='n' range='#alignments'>
+    <tree spec='RandomGeneTree' id='randomGeneTree$(n)' 
+	initial='@tree$(n)' speciesTree='@speciesTree' taxa='@$(n)'>
+        <populationModel spec='ConstantPopulation'>
+		<popSize spec='parameter.RealParameter' value='1'/>
+	</populationModel>
+    </tree>
+</plate>
+
+<run chainLength="10000000" id="mcmc" preBurnin="0" spec="MCMC">
+    <init idref='randomSpeciesTree'/>
+
+    <plate var='n' range='#alignments'>
+        <init idref='randomGeneTree$(n)'/>
+    </plate>
+
+    <state id="State0" storeEvery="100000">
+        <!--parameter dimension="1" estimate="false" id="popSize" name="stateNode" value="1.0"/-->
+        <parameter dimension="1" estimate="false" id="mutationRate" name="stateNode" value="1.0"/>
+        <parameter dimension="1" estimate="false" id="clockRate" name="stateNode" value="1.0"/>
+
+        <stateNode idref='popSize'/> 
+        <stateNode idref='popMean'/>
+
+        <plate var='n' range='#alignments'>
+            <parameter dimension="1" estimate="false" id="hky.kappa$(n)" lower="0.0" name="stateNode" value="1.0"/>
+            <tree estimate="true" id="tree$(n)" name="stateNode"/>
+        </plate>
+        <tree estimate="true" id="speciesTree" name="stateNode"/>
+
+        <stateNode idref="birthRate"/>
+       	<!--stateNode idref="relativeDeathRate"/-->
+        <parameter dimension="1" estimate="false" id="gammaShape" name="stateNode" value="1.0"/>
+        <parameter dimension="1" estimate="false" id="proportionInvariant" lower="0.0" name="stateNode" upper="1.0" value="0.0"/>
+    </state>
+
+
+    <distribution id="posterior" spec="util.CompoundDistribution">
+        <distribution id="prior" spec="util.CompoundDistribution">
+
+            <!-- gene tree priors -->
+            <plate var='n' range='#alignments'>
+                <distribution id='tree.prior.$(n)' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree$(n)' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
+            </plate>
+
+            <!-- species tree priors -->
+            <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' tree='@speciesTree' 
+            		popFunction='constant' taxonset='@taxonsuperset'>
+                <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
+                <parameter name='gammaParameter' id='popMean' value='0.004'/>
+            </distribution>
+
+            <distribution id="SpeciesTreeDivergenceTimesPrior" spec="speciation.YuleModel" tree='@speciesTree'>
+                <birthDiffRate spec='parameter.RealParameter' id="birthRate" value='213.2021' lower='0' upper='10000' />
+            </distribution>
+
+            <!-- hyper priors for assorted parameters -->
+            <distribution id='birthRatePrior' spec='distributions.Prior' x='@birthRate'>
+                <distribution id='OneOnX' spec='distributions.OneOnX'/>
+            </distribution>
+<!--
+            <distribution id='relativeDeathRatePrior' spec='distributions.Prior' x='@relativeDeathRate'>
+                <distribution id="UniformRelDeathRate" spec='distributions.Uniform' lower='0' upper='1'/>
+            </distribution>
+-->
+            <distribution id="popMean.prior" spec="beast.math.distributions.Prior" x="@popMean" distribution='@OneOnX'/>
+
+            <plate var='n' range='#alignments'>
+                <distribution id="kappa.prior$(n)" spec="beast.math.distributions.Prior" x="@hky.kappa$(n)">
+                    <distribution id='logNormal$(n)' spec='beast.math.distributions.LogNormalDistributionModel' M="1.0" S="1.25" offset="0.0" meanInRealSpace="false"/>
+                </distribution>
+            </plate>
+
+        </distribution>
+        <distribution id="likelihood" spec="util.CompoundDistribution">
+
+            <plate var='n' range='#alignments'>
+                <distribution data="@$(n)" id="treelikelihood.$(n)" spec="TreeLikelihood" tree="@tree$(n)" useAmbiguities="false">
+                    <siteModel gammaCategoryCount="1" id="siteModel$(n)" mutationRate="@mutationRate" proportionInvariant="@proportionInvariant" shape="@gammaShape" spec="SiteModel">
+                        <substModel id="hky$(n)" kappa="@hky.kappa$(n)" spec="HKY">
+                            <frequencies id="freqs$(n)" spec="Frequencies" estimate='true' data='@$(n)'/>
+                        </substModel>
+                    </siteModel>
+                    <branchRateModel clock.rate="@clockRate" id="StrictClockModel$(n)" spec="beast.evolution.branchratemodel.StrictClockModel"/>
+                </distribution>
+            </plate>
+        </distribution>
+    </distribution>
+
+
+        <operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
+        <operator degreesOfFreedom="1" id="birthRateScaler" scaleFactor="0.5" spec="ScaleOperator" parameter="@birthRate" weight="3"/>
+        <!--operator degreesOfFreedom="1" id="relDeathRateScaler" scaleFactor="0.5" spec="ScaleOperator" parameter="@relativeDeathRate" weight="1.0"/-->
+        <operator degreesOfFreedom="1" id="psiScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popMean" weight="94"/>
+    <plate var='n' range='#alignments'>
+        <operator degreesOfFreedom="1" id="kappa$(n)Scaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.35" spec="ScaleOperator" parameter="@hky.kappa$(n)" weight="0.1"/>
+        <operator gaussian="true" id="SubtreeSlide$(n)" size="0.003" spec="SubtreeSlide" tree="@tree$(n)" weight="15.0"/>
+        <operator degreesOfFreedom="1" id="treeScaler$(n)" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.85" spec="ScaleOperator" tree="@tree$(n)" weight="6.0"/>
+        <operator id="wide$(n)" isNarrow="false" spec="Exchange" tree="@tree$(n)" weight="1.0"/>
+    <!--
+        <operator id="narrow$(n)" isNarrow="true" spec="Exchange" tree="@tree$(n)" weight="15"/>
+        <operator id="WilsonBalding$(n)" spec="WilsonBalding" tree="@tree$(n)" weight="3"/>
+    -->
+        <operator id="Uniform$(n)" spec="Uniform" tree="@tree$(n)" weight="30.0"/>
+    </plate>
+
+	<operator spec='UpDownOperator' scaleFactor="0.75" weight="30">
+			<up idref="birthRate"/>
+			<down idref="popSize"/>
+			<down idref="popMean"/>
+			<down idref="speciesTree"/>
+            <plate var='n' range='#alignments'>
+    			<down idref="tree$(n)"/>
+            </plate>
+	</operator>
+
+    <operator id="Reheight" spec="NodeReheight" tree="@speciesTree" weight="94" taxonset='@taxonsuperset'>
+        <plate var='n' range='#alignments'>
+            <genetree idref='tree$(n)'/>
+        </plate>
+    </operator>
+
+    <logger fileName="$(seed).log" id="Logger0" logEvery="1000" mode="autodetect" model="@posterior">
+        <log idref="posterior"/>
+        <log idref="prior"/>
+        <!--log idref="speciesCoalescent"/-->
+        <log idref="SpeciesTreePopSizePrior"/>
+        <plate var='n' range='#alignments'>
+            <log idref="tree.prior.$(n)"/>
+        </plate>
+        <log idref="SpeciesTreeDivergenceTimesPrior"/>
+        <log idref="likelihood"/>
+        <log idref="popMean"/>
+        <log idref="birthRate"/>
+        <!--log idref="relativeDeathRate"/-->
+        <plate var='n' range='#alignments'>
+            <log idref="hky.kappa$(n)"/>
+        </plate>
+        <log idref="popSize"/>
+        <log id="TreeHeightSP" spec="beast.evolution.tree.TreeHeightLogger" tree="@speciesTree"/>
+        <plate var='n' range='#alignments'>
+            <log id="TreeHeight$(n)" spec="beast.evolution.tree.TreeHeightLogger" tree="@tree$(n)"/>
+        </plate>
+    </logger>
+
+    <logger fileName="$(seed).sp.trees" id="TraceLogger" logEvery="1000" mode="tree">
+        <log spec='SpeciesTreeLogger' popSize='@popSize' tree="@speciesTree"/>
+    </logger>
+
+    <plate var='n' range='#alignments'>
+        <logger fileName="$(seed).$(n).trees" id="TreeLogger.$(n)" logEvery="1000" mode="autodetect">
+            <log idref="tree$(n)"/>
+        </logger>
+    </plate>
+
+    <logger id="ScreenLogger" logEvery="100000" mode="autodetect">
+        <log idref="posterior"/>
+        <log spec='ESS' arg='@posterior'/>
+        <log idref="prior"/>
+        <log spec='ESS' arg='@prior'/>
+    </logger>
+
+</run>
+
+
+</beast>

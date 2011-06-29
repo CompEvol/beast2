@@ -15,11 +15,12 @@ import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeDistribution;
 
 @Description("Calculates probability of gene tree conditioned on a species tree (as in *BEAST)")
-public class GeneTreeForSpeciesTreeDistribution extends Distribution {
+public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 	public Input<Tree> m_speciesTree = new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
-	public Input<Tree> m_geneTree = new Input<Tree>("geneTree", "gene tree for which to calculate probability conditioned on the species tree", Validate.REQUIRED);
+	//public Input<Tree> m_geneTree = new Input<Tree>("geneTree", "gene tree for which to calculate probability conditioned on the species tree", Validate.REQUIRED);
 	public Input<Double> m_ploidy = new Input<Double>("ploidy","ploidy for this gene, typically a whole number of half (default 1)", 1.0);
 
 	public Input<SpeciesTreePrior> m_speciesTreePrior = new Input<SpeciesTreePrior>("speciesTreePrior","defines population function and its parameters", Validate.REQUIRED);
@@ -36,11 +37,15 @@ public class GeneTreeForSpeciesTreeDistribution extends Distribution {
 	RealParameter m_fPopSizesTop;
 	double m_fPloidy;
 	
+	public GeneTreeForSpeciesTreeDistribution() {
+		m_tree.setRule(Validate.REQUIRED);
+	}
+
 	@Override 
 	public void initAndValidate() throws Exception {
 		m_fPloidy = m_ploidy.get();
-		Node [] nodes = m_geneTree.get().getNodesAsArray();
-		int nLineages = m_geneTree.get().getLeafNodeCount();
+		Node [] nodes = m_tree.get().getNodesAsArray();
+		int nLineages = m_tree.get().getLeafNodeCount();
 		Node [] nodes2 = m_speciesTree.get().getNodesAsArray();
 		int nSpecies = m_speciesTree.get().getNodeCount();
 		
@@ -115,7 +120,7 @@ public class GeneTreeForSpeciesTreeDistribution extends Distribution {
 		Arrays.fill(m_nLineages, 0);
 
 		Node [] speciesNodes = m_speciesTree.get().getNodesAsArray();
-		traverseLineageTree(speciesNodes, m_geneTree.get().getRoot());
+		traverseLineageTree(speciesNodes, m_tree.get().getRoot());
 //		System.err.println(getID());
 //		for (int i = 0; i < m_intervals.length; i++) {
 //			System.err.println(m_intervals[i]);
@@ -148,7 +153,7 @@ public class GeneTreeForSpeciesTreeDistribution extends Distribution {
 		if (!node.isRoot()) {
 			fTimes[k+1] = node.getParent().getHeight(); 
 		} else {
-			fTimes[k+1] = Math.max(node.getHeight(), m_geneTree.get().getRoot().getHeight());
+			fTimes[k+1] = Math.max(node.getHeight(), m_tree.get().getRoot().getHeight());
 		}
 		// sanity check
 		for (int i = 0; i <= k; i++) {
