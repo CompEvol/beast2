@@ -32,7 +32,7 @@
     <input spec='RandomLocalClockModel' id="branchRates" ratesAreMultipliers="false" tree='@tree'>
         <!--<parameter name='mutationRate'>1.0</parameter>-->
         <parameter name='rates' id='rates' value="1" lower='0' upper='100'/>
-        <indicators spec='IntegerParameter' id='indicators' value="0"/>
+        <indicators spec='BooleanParameter' id='indicators' value="false"/>
     </input>
 
     <input spec='TreeLikelihood' id="treeLikelihood" data='@alignment' tree='@tree' branchRateModel='@branchRates'>
@@ -73,7 +73,8 @@
             <distribution id='likelihood' idref="treeLikelihood"/>
         </distribution>
 
-        <operator id="indicatorsRandomWalk" spec="IntUniformOperator" weight="1" parameter='@indicators'/>
+        <!--operator id="indicatorsRandomWalk" spec="IntUniformOperator" weight="1" parameter='@indicators'/-->
+        <operator id='indicatorFlip' spec='BitFlipOperator' weight='1' parameter='@indicators'/>
         <operator id='rateScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter='@rates'/>
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter='@hky.kappa'/>

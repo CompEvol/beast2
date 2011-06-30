@@ -35,14 +35,16 @@ import java.io.PrintStream;
 @Description("A Boolean-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
 public class BooleanParameter extends Parameter<java.lang.Boolean> {
-    public BooleanParameter() {}
+    public BooleanParameter() {m_fUpper=true;}
 
     public BooleanParameter(Boolean [] fValues) {
     	super(fValues);
+    	m_fUpper=true;
     }
     /** Constructor used by Input.setValue(String) **/
     public BooleanParameter(String sValue) throws Exception {
     	init(sValue, 1);
+    	m_fUpper=true;
     }
 //    /**
 //     * Constructor for testing.
