@@ -1,8 +1,9 @@
 package beast.evolution.branchratemodel;
 
+
 import beast.core.Input;
 import beast.core.Description;
-import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -13,8 +14,8 @@ import beast.evolution.tree.Tree;
 @Description("Random Local Clock Model, whatever that is....")
 public class RandomLocalClockModel extends BranchRateModel.Base {
 
-    public Input<IntegerParameter> indicatorParamInput =
-            new Input<IntegerParameter>("indicators",
+    public Input<BooleanParameter> indicatorParamInput =
+            new Input<BooleanParameter>("indicators",
                     "the indicators associated with nodes in the tree for sampling of individual rate changes among branches.",
                     Input.Validate.REQUIRED);
     public Input<RealParameter> rateParamInput =
@@ -35,9 +36,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     public void initAndValidate() throws Exception {
     	m_tree = treeInput.get();
         
-    	IntegerParameter indicators = indicatorParamInput.get();
-        indicators.setLower(0);
-        indicators.setUpper(1);
+    	BooleanParameter indicators = indicatorParamInput.get();
 
         if (indicators.getDimension() != m_tree.getNodeCount() - 1) {
         	System.out.println("RandomLocalClockModel::Setting dimension of indicators to " + (m_tree.getNodeCount() - 1));
@@ -70,12 +69,12 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
      * @param node the node
      * @param rate the rate of the parent node
      */
-    private void calculateUnscaledBranchRates(Node node, double rate, IntegerParameter indicators, RealParameter rates) {
+    private void calculateUnscaledBranchRates(Node node, double rate, BooleanParameter indicators, RealParameter rates) {
 
         int nodeNumber = getNr(node);
 
         if (!node.isRoot()) {
-            if (indicators.getValue(nodeNumber) == 1) {
+            if (indicators.getValue(nodeNumber)) {
                 if (ratesAreMultipliers) {
                     rate *= rates.getValue(nodeNumber);
                 } else {
@@ -93,7 +92,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     private void recalculateScaleFactor() {
 
-    	IntegerParameter indicators = indicatorParamInput.get();
+    	BooleanParameter indicators = indicatorParamInput.get();
         RealParameter rates = rateParamInput.get();
         
         calculateUnscaledBranchRates(m_tree.getRoot(), 1.0, indicators, rates);

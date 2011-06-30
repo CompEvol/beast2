@@ -26,7 +26,7 @@ public class DeltaExchangeOperator extends Operator {
     public Input<Boolean> input_autoOptimize =
             new Input<Boolean>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
     public Input<Boolean> input_isIntegerOperator = new Input<Boolean>("integer", "if true, changes are all integers.", false);
-    public Input<IntegerParameter> input_parameterWeights = new Input<IntegerParameter>("parameter", "weights on a vector parameter",
+    public Input<IntegerParameter> input_parameterWeights = new Input<IntegerParameter>("weightvector", "weights on a vector parameter",
             Input.Validate.OPTIONAL);
     
     private boolean autoOptimize;
