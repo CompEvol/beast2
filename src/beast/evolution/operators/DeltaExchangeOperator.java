@@ -14,8 +14,8 @@ import beast.util.Randomizer;
  *
  * @author Alexei Drummond
  * @author Andrew Rambaut
- *
- * Migrated to BEAST 2 by CHW
+ *         <p/>
+ *         Migrated to BEAST 2 by CHW
  */
 @Description("A generic operator for use with a sum-constrained (possibly weighted) vector parameter.")
 public class DeltaExchangeOperator extends Operator {
@@ -29,7 +29,7 @@ public class DeltaExchangeOperator extends Operator {
             new Input<Boolean>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
     public Input<Boolean> input_isIntegerOperator = new Input<Boolean>("integer", "if true, changes are all integers.", false);
     public Input<IntegerParameter> input_parameterWeights = new Input<IntegerParameter>("weightvector", "weights on a vector parameter");
-    
+
     private boolean autoOptimize;
     private double delta;
     private boolean isIntegerOperator;
@@ -41,13 +41,17 @@ public class DeltaExchangeOperator extends Operator {
         delta = input_delta.get();
         isIntegerOperator = input_isIntegerOperator.get();
 
-        parameterWeights = new int[parameterInput.get().getDimension()];
+        if (parameterInput.get() == null) {
+            parameterWeights = new int[intparameterInput.get().getDimension()];
+        } else {
+            parameterWeights = new int[parameterInput.get().getDimension()];
+        }
 
-        if(input_parameterWeights.get() != null){
+        if (input_parameterWeights.get() != null) {
             for (int i = 0; i < parameterWeights.length; i++) {
                 parameterWeights[i] = input_parameterWeights.get().getValue(i);
             }
-        }else{
+        } else {
             for (int i = 0; i < parameterWeights.length; i++) {
                 parameterWeights[i] = 1;
             }
@@ -73,61 +77,61 @@ public class DeltaExchangeOperator extends Operator {
         }
 
         if (intparameter == null) {
-        	// operate on real parameter
-	        double scalar1 = realparameter.getValue(dim1);
-	        double scalar2 = realparameter.getValue(dim2);
-	
-	        if (isIntegerOperator) {
-	            int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
-	
-	            if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
-	            scalar1 = Math.round(scalar1 - d);
-	            scalar2 = Math.round(scalar2 + d);
-	        } else {
-	
-	            // exchange a random delta
-	            final double d = Randomizer.nextDouble() * delta;
-	            scalar1 -= d;
-	            if (parameterWeights[dim1] != parameterWeights[dim2]) {
-	                scalar2 += d * (double) parameterWeights[dim1] / (double) parameterWeights[dim2];
-	            } else {
-	                scalar2 += d;
-	            }
-	
-	        }
-	
-	
-	        if (scalar1 < realparameter.getLower() ||
-	                scalar1 > realparameter.getUpper() ||
-	                scalar2 < realparameter.getLower() ||
-	                scalar2 > realparameter.getUpper()) {
-	            logq = Double.NEGATIVE_INFINITY;
-	        }else{
-	            realparameter.setValue(dim1, scalar1);
-	            realparameter.setValue(dim2, scalar2);
-	        }
+            // operate on real parameter
+            double scalar1 = realparameter.getValue(dim1);
+            double scalar2 = realparameter.getValue(dim2);
+
+            if (isIntegerOperator) {
+                int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
+
+                if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
+                scalar1 = Math.round(scalar1 - d);
+                scalar2 = Math.round(scalar2 + d);
+            } else {
+
+                // exchange a random delta
+                final double d = Randomizer.nextDouble() * delta;
+                scalar1 -= d;
+                if (parameterWeights[dim1] != parameterWeights[dim2]) {
+                    scalar2 += d * (double) parameterWeights[dim1] / (double) parameterWeights[dim2];
+                } else {
+                    scalar2 += d;
+                }
+
+            }
+
+
+            if (scalar1 < realparameter.getLower() ||
+                    scalar1 > realparameter.getUpper() ||
+                    scalar2 < realparameter.getLower() ||
+                    scalar2 > realparameter.getUpper()) {
+                logq = Double.NEGATIVE_INFINITY;
+            } else {
+                realparameter.setValue(dim1, scalar1);
+                realparameter.setValue(dim2, scalar2);
+            }
         } else {
-        	// operate on int parameter
-	        int scalar1 = intparameter.getValue(dim1);
-	        int scalar2 = intparameter.getValue(dim2);
-	
+            // operate on int parameter
+            int scalar1 = intparameter.getValue(dim1);
+            int scalar2 = intparameter.getValue(dim2);
+
             int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
             if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
             scalar1 = Math.round(scalar1 - d);
             scalar2 = Math.round(scalar2 + d);
-	
-	
-	        if (scalar1 < intparameter.getLower() ||
-	                scalar1 > intparameter.getUpper() ||
-	                scalar2 < intparameter.getLower() ||
-	                scalar2 > intparameter.getUpper()) {
-	            logq = Double.NEGATIVE_INFINITY;
-	        } else {
-	        	intparameter.setValue(dim1, scalar1);
-	        	intparameter.setValue(dim2, scalar2);
-	        }
-        	
+
+
+            if (scalar1 < intparameter.getLower() ||
+                    scalar1 > intparameter.getUpper() ||
+                    scalar2 < intparameter.getLower() ||
+                    scalar2 > intparameter.getUpper()) {
+                logq = Double.NEGATIVE_INFINITY;
+            } else {
+                intparameter.setValue(dim1, scalar1);
+                intparameter.setValue(dim2, scalar2);
+            }
+
         }
         //System.err.println("apply deltaEx");
         // symmetrical move so return a zero hasting ratio
@@ -144,7 +148,7 @@ public class DeltaExchangeOperator extends Operator {
     @Override
     public void optimize(double logAlpha) {
         // must be overridden by operator implementation to have an effect
-        if(autoOptimize){
+        if (autoOptimize) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(delta);
             delta = Math.exp(fDelta);
