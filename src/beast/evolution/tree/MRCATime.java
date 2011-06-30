@@ -2,6 +2,7 @@ package beast.evolution.tree;
 
 
 import java.io.PrintStream;
+import java.util.List;
 
 import beast.core.CalculationNode;
 import beast.core.Description;
@@ -10,11 +11,12 @@ import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.Valuable;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 
 @Description("Calculates the time of the most recent common ancestor (MRCA) for a set of taxa. " +
 		"This is useful for adding prior information on sets of taxa to the analysis.")
 public class MRCATime extends CalculationNode implements Valuable, Loggable {
-	public Input<String> m_taxa = new Input<String>("taxa","comma separated list of taxa", Validate.REQUIRED);
+	public Input<TaxonSet> m_taxa = new Input<TaxonSet>("taxa","comma separated list of taxa", Validate.REQUIRED);
 	public Input<Alignment> m_data = new Input<Alignment>("data","alignment containing the complete list of taxa to choose from", Validate.REQUIRED);
 	public Input<Tree> m_tree = new Input<Tree>("tree","tree for which the MRCA time is calculated", Validate.REQUIRED);
 	
@@ -29,9 +31,8 @@ public class MRCATime extends CalculationNode implements Valuable, Loggable {
 	public void initAndValidate() throws Exception {
 		// determine nr of taxa in taxon set
 		Alignment data = m_data.get();
-		String sTaxaString = m_taxa.get();
-		String [] sTaxa = sTaxaString.split(",");
-		m_nNrOfTaxa = sTaxa.length;
+		List<String> sTaxa = m_taxa.get().asStringList();
+		m_nNrOfTaxa = sTaxa.size();
 		if (m_nNrOfTaxa <= 1) {
 			throw new Exception ("At least two taxa are required in a taxon set");
 		}
