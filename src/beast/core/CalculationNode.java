@@ -37,7 +37,7 @@ public class CalculationNode extends Plugin {
      * A CalculationNode that needs a custom implementation should 
      * override requiresRecalculation()
      */
-    final void checkDirtiness() {
+    public final void checkDirtiness() {
         isDirty = requiresRecalculation();
     }
 

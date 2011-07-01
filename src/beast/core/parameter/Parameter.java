@@ -195,11 +195,11 @@ public abstract class Parameter<T> extends StateNode {
 //	    }
     }
 
-    public void setValueQuietly(int dim, T value){
+    /*public void setValueQuietly(int dim, T value){
         values[dim] = value;
         m_bIsDirty[dim] = true;
         m_nLastDirty = dim;
-    }
+    }*/
 
     /** Note that changing toString means fromXML needs to be changed as well,
      * since it parses the output of toString back into a parameter.
