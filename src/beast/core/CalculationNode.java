@@ -4,7 +4,7 @@ package beast.core;
  * A CalculationNode is a Plugin that perform calculations based on the State.
  * CalculationNodes differ from  StateNodes in that they
  * 1. Calculate something
- * 2. can not be changed by Operators 
+ * 2. can not be changed by Operators
  *
  * @author Andrew Rambaut
  */
@@ -20,7 +20,7 @@ public class CalculationNode extends Plugin {
     /** Store internal calculations. Called before a calculation node
      * is asked to perform any calculations, but after some part of the
      * state has changed through a operator proposal.
-     * 
+     *
      * This is not meant to be used to calculate anything, just store
      * intermediate results of calculations. Input values should not
      * be accessed because some StateNodes may have been changed.
@@ -32,12 +32,12 @@ public class CalculationNode extends Plugin {
 
 
     /** Check whether internal calculations need to be updated
-     * 
+     *
      * This is called after a proposal of a new state.
-     * A CalculationNode that needs a custom implementation should 
+     * A CalculationNode that needs a custom implementation should
      * override requiresRecalculation()
      */
-    public final void checkDirtiness() {
+    final void checkDirtiness() {
         isDirty = requiresRecalculation();
     }
 
@@ -55,13 +55,13 @@ public class CalculationNode extends Plugin {
      * Derived classes can provide a more efficient implementation
      * by checking which part of any input StateNode or Plugin has changed.
      *
-     * Note this default implementation is relative expensive since it uses 
+     * Note this default implementation is relative expensive since it uses
      * introspection, so overrides should be preferred.
      * After the operation has changed the state.
      */
     protected boolean requiresRecalculation() {
     	return true;
-    	// this is a prototypical implementation of requiresRecalculation() 
+    	// this is a prototypical implementation of requiresRecalculation()
 //        try {
 //            for (Plugin plugin : listActivePlugins()) {
 //                if (plugin instanceof StateNode && ((StateNode)plugin).somethingIsDirty()) {
