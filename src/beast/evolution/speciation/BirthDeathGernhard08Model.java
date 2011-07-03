@@ -26,13 +26,14 @@
 package beast.evolution.speciation;
 
 
-import java.util.Arrays;
 
+import java.util.Arrays;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
 import static org.apache.commons.math.special.Gamma.logGamma;
@@ -83,14 +84,17 @@ public class BirthDeathGernhard08Model extends YuleModel {
     
     @Override
     public double calculateTreeLogLikelihood(Tree tree) {
-        final int taxonCount = tree.getNodeCount()/2;
+        final int taxonCount = tree.getLeafNodeCount();
         final double r = birthDiffRateParameter.get().getValue();
-        final double rho = relativeDeathRateParameter.get().getValue();
-        final double a = (sampleProbability.get() == null ? 0 : sampleProbability.get().getValue());
+        final double a = relativeDeathRateParameter.get().getValue();
+        final double rho = (sampleProbability.get() == null ? 1.0 : sampleProbability.get().getValue());
         
         double logL = logTreeProbability(taxonCount, r, rho, a);
-
-        logL += logNodeProbability(tree.getRoot(), r, rho, a, taxonCount);
+        
+        Node [] nodes = tree.getNodesAsArray();
+        for (int i = taxonCount; i < nodes.length; i++) {
+  		    logL += calcLogNodeProbability(nodes[i], r, rho, a, taxonCount);
+        }
         
         return logL;
     }
@@ -119,6 +123,11 @@ public class BirthDeathGernhard08Model extends YuleModel {
             }
         }
         return 0.0;
+    }
+    
+    @Override
+    public boolean includeExternalNodesInLikelihoodCalculation() {
+        return true;
     }
     
     @Override

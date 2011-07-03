@@ -44,7 +44,6 @@ import java.util.Random;
 @Description("A likelihood function for speciation processes.")
 abstract public class SpeciesTreeDistribution extends TreeDistribution {
 //	SpeciesTreeDistribution extends TreeDistribution
-	
 
    /**
      * Calculates the log likelihood of this set of coalescent intervals,
@@ -54,10 +53,8 @@ abstract public class SpeciesTreeDistribution extends TreeDistribution {
      */
 	@Override
     public double calculateLogP() {
-      	if (isDirtyCalculation()) {
-          	Tree tree = m_tree.get();
-  		    logP = calculateTreeLogLikelihood(tree);
-        }
+      	Tree tree = m_tree.get();
+	    logP = calculateTreeLogLikelihood(tree);
         return logP;
     } // calculateLogP
 	

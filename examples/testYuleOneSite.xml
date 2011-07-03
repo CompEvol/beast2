@@ -18,33 +18,66 @@
 	        newick='((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0);'/>
     </input>
 
-    <input spec='BirthDeathGernhard08Model' id="yulelike" type='timesonly' tree='@tree'>
+    <input spec='BirthDeathGernhard08Model' id="yulelike" type='unscaled' tree='@tree'>
         <parameter name='birthDiffRate' idref="birthRate"/>
-	<parameter name='relativeDeathRate' idref='relativeDeathRate'/>
+	    <parameter name='relativeDeathRate' idref='relativeDeathRate'/>
     </input>
 
+    <!-- site model                                                              -->
+    <input spec='SiteModel' id="siteModel" gammaCategoryCount='1'>
+	<substModel spec='HKY' id='hky'>
+	    <kappa id='hky.kappa' spec='parameter.RealParameter' value='1.0'/>
+	    <frequencies id='freqs' spec='Frequencies'>
+	       <data idref='alignment'/>
+	    </frequencies>
+	</substModel>
+    </input>
 
     <parameter id="birthRate" value="1.0" lower="0.0" upper="100.0"/>
-    <parameter id='relativeDeathRate' value='1'/>
+    <parameter id='relativeDeathRate' value='0'/>
 
     <!-- initial yule prior = -6.0, yule-like prior = -2.8219461696520542 -->
-    <run spec='MCMC' chainLength="1000">
+    <!-- expected yule prior = 1/(n.lambda)\sum_{k=1}^{n-1}k/(n-k) where lambda = birth rate, n = number of taxa
+	with lambda=1, n=-4 we expect 1/4(1/3+2/2+3/1)=1.155555555
+ -->
+    <run spec='MCMC' chainLength="10">
 	<state>
+	    <stateNode idref='tree'/>
 	    <stateNode idref='birthRate'/>
 	</state>
 
 	<distribution spec='CompoundDistribution'>
 	        <distribution id="yule.prior" idref='yule'/>
+<!--
+		<distribution spec='TreeLikelihood' id="treeLikelihood" data='@alignment' tree='@tree' siteModel='@siteModel'/>
+-->
 	        <distribution id="yulelike.prior" idref='yulelike'/>
 	</distribution>
 
+        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
+<!--
+        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
+-->
+        <operator spec='Uniform' weight="10" tree="@tree"/>
+        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
+        <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
+        <operator spec='WilsonBalding' weight="1" tree="@tree"/>
+<!--
         <operator spec='ScaleOperator' scaleFactor="0.75" weight="3">
             <parameter idref="birthRate"/>
         </operator>
-
-	<logger>
-		<log idref='yule.prior'/>
-		<log idref='yulelike.prior'/>
+-->
+	<logger logEvery='100'>
+	    <log idref='yule.prior'/>
+	    <!--log idref='treeLikelihood'/-->
+	    <log idref='yulelike.prior'/>
+            <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+	</logger>
+	<logger logEvery='100' fileName='$(seed).log'>
+	    <log idref='yule.prior'/>
+	    <!--log idref='treeLikelihood'/-->
+	    <!--log idref='yulelike.prior'/-->
+            <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
 	</logger>
     </run>
 

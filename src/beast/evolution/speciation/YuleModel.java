@@ -6,7 +6,6 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.evolution.tree.coalescent.TreeIntervals;
 
 // From Gernhard 2008, Yule density (p; conditioned on n nodes) should be:
 // double p = 0.0;
@@ -32,7 +31,7 @@ public class YuleModel extends SpeciesTreeDistribution {
 
     @Override
     public double calculateTreeLogLikelihood(Tree tree) {
-        final int taxonCount = tree.getNodeCount()/2+1;
+        final int taxonCount = tree.getLeafNodeCount();
         final double r = birthDiffRateParameter.get().getValue();
         final double rho = 1;
         final double a = 0;
@@ -60,7 +59,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         return c1;
     }
 
-    /** default implementation, equivalent with unscaled tree in Grerhard 2008 model
+    /** default implementation, equivalent with unscaled tree in Gernhard 2008 model
      * @param taxonCount
      * @return
      **/
