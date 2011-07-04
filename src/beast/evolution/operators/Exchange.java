@@ -111,7 +111,8 @@ public class Exchange extends TreeOperator {
 
         assert i.getHeight() <= iGrandParent.getHeight();
 
-        if (i.getHeight() < iUncle.getHeight() && iUncle.getHeight() < iParent.getHeight()) {
+        if (//i.getHeight() < iUncle.getHeight() && 
+        		iUncle.getHeight() < iParent.getHeight()) {
             exchangeNodes(i, iUncle, iParent, iGrandParent);
             return 0;
         } else {
