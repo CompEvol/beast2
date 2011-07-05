@@ -26,89 +26,102 @@
         </sequence>
     </data>
 
-    <!-- The HKY substitution model (Hasegawa, Kishino & Yano, 1985)             -->
-    <input spec='HKY' id='hky'>
-        <kappa idref='hky.kappa'/>
-        <frequencies id='freqs' spec='Frequencies'>
-            <data idref='alignment'/>
-        </frequencies>
-    </input>
 
-    <!-- site model                                                              -->
-    <input spec='SiteModel' id="siteModel" gammaCategoryCount='1'>
-        <substModel idref='hky'/>
-    </input>
+    <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
+        <init spec='beast.evolution.tree.RandomTree' id='randomTree' initial='@tree' taxa='@alignment'>
+            <populationModel spec='ConstantPopulation' popSize='@popSize'/>
+        </init>
 
-    <input spec='TreeLikelihood' id="treeLikelihood">
-        <data idref="alignment"/>
-        <tree idref="tree"/>
-        <siteModel idref="siteModel"/>
-    </input>
+        <state>
+            <stateNode spec='parameter.RealParameter' id="hky.kappa" value="2.0" lower="0.0"/>
+            <stateNode spec='parameter.RealParameter' id="hky.frequencies" value="0.25" dimension="4" lower='0.0'/>
+            <stateNode spec='parameter.RealParameter' id="popSize" value="17" lower="0.0"/>
+            <stateNode spec='beast.evolution.tree.Tree' id='tree'/>
+        </state>
 
-    <parameter id="hky.kappa" value="1.0" lower="0.0"/>
+        <distribution spec='CompoundDistribution' id='posterior'>
+            <distribution spec='CompoundDistribution' id='prior'>
+                <distribution id="hky.kappa.prior" spec="beast.math.distributions.Prior" x="@hky.kappa">
+                    <distribution id="LogNormalDistributionModel" M="1.0" S="1.25" meanInRealSpace="false"
+                                  spec="beast.math.distributions.LogNormalDistributionModel"/>
+                </distribution>
+                <distribution id="hky.frequencies.prior" spec="beast.math.distributions.Prior" x="@hky.frequencies">
+                    <distribution id="Uniform" lower="0.0" upper="1.0" spec="beast.math.distributions.Uniform"/>
+                </distribution>
+                <distribution id="popSize.prior" spec="beast.math.distributions.Prior" x="@popSize">
+                    <distribution id="OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
+                </distribution>
 
-    <tree id='tree'/>
+                <distribution spec='beast.math.distributions.MRCAPrior' tree='@tree' id='mrcaPrior2' taxonset='@human,chimp' monophyletic='true'>
+                    <distr spec='beast.math.distributions.Normal'>
+                        <parameter name='mean' value='6.0'/>
+                        <parameter name='sigma' value='0.5'/>
+                    </distr>
+                </distribution>
 
-    <tree spec='beast.util.ClusterTree' id='upgmatree' clusterType='upgma' initial='@tree'>
-        <taxa idref='alignment'/>
-    </tree>
-    <tree spec='beast.evolution.tree.RandomTree' id='coalescentSimulator' initial='@tree' taxa='@alignment'>
-        <populationModel spec='ConstantPopulation'>
-		<popSize spec='parameter.RealParameter' value='1'/>
-	</populationModel>
-    </tree>
-
-
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
-
-	    <init idref='coalescentSimulator'/>
-
-	    <distribution spec='CompoundDistribution' id='posterior'>
-    	    <distribution spec='CompoundDistribution' id='prior'>
-		        <distribution spec='beast.math.distributions.Prior' x='@hky.kappa' id='kappaPrior'>
-			        <distribution spec='beast.math.distributions.OneOnX'/>
-		        </distribution>
-		        <distribution spec='beast.math.distributions.Prior' id='mrcaPrior'>
-                    <x spec='beast.evolution.tree.MRCATime' tree='@tree' data='@alignment' id='HumanChimpMRCA'>
-                        <taxa spec='TaxonSet' id='human,chimp'><taxon spec='Taxon' id='human'/><taxon spec='Taxon' id='chimp'/></taxa>
-                    </x>
-			        <distribution spec='beast.math.distributions.Normal'>
-                        <parameter name='mean' value='0.02'/>
-                        <parameter name='sigma' value='0.02'/>
-                    </distribution>
-		        </distribution>
+                <distribution id="coalescent" spec="Coalescent">
+                    <treeIntervals spec='TreeIntervals' id='TreeIntervals'>
+                        <tree idref="tree"/>
+                    </treeIntervals>
+                    <populationModel spec="ConstantPopulation" id='ConstantPopulation'>
+                        <parameter name="popSize" idref="popSize"/>
+                    </populationModel>
+                </distribution>
             </distribution>
-          	<distribution id='likelihood' idref="treeLikelihood"/>
-	    </distribution>
 
-        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
-        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
-        <operator spec='Uniform' weight="10" tree="@tree"/>
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
-        <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
+            <distribution spec='TreeLikelihood' id="likelihood" data='@alignment' tree='@tree'>
+                <siteModel id="siteModel" spec='SiteModel'>
+                    <substModel spec='HKY' id="hky">
+                        <parameter name='kappa' idref='hky.kappa'/>
+                        <frequencies id='freqs' spec='Frequencies' frequencies='@hky.frequencies'/>
+                    </substModel>
+                </siteModel>
+            </distribution>
+        </distribution>
+
+        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@hky.kappa"/>
+        <operator id='frequenciesDelta' spec='DeltaExchangeOperator' delta="0.01" weight="0.1"
+                  parameter="@hky.frequencies"/>
+        <operator id='popSizeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popSize"/>
+        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" tree="@tree"/>
+        <operator spec='Uniform' weight="30" tree="@tree"/>
+        <operator spec='SubtreeSlide' weight="15" gaussian="true" size="1.7" tree="@tree"/>
+        <operator id='narrow' spec='Exchange' isNarrow='true' weight="15" tree="@tree"/>
+        <operator id='wide' spec='Exchange' isNarrow='false' weight="3" tree="@tree"/>
         <operator spec='WilsonBalding' weight="1" tree="@tree"/>
+        <operator spec='UpDownOperator' scaleFactor="0.75" weight="3" down="@tree"/>
 
-        <logger logEvery="10000" fileName="test.$(seed).log">
-	        <model idref='posterior'/>
+        <logger logEvery="1000" fileName="test.$(seed).log">
+            <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="prior"/>
-            <log idref="likelihood"/>
-            <log idref='hky.kappa'/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+            <log spec='beast.evolution.tree.MRCATime' tree='@tree' data='@alignment' id='HumanChimpMRCA'>
+                <taxa spec='TaxonSet' id='human,chimp'>
+                    <taxon spec='Taxon' id='human'/>
+                    <taxon spec='Taxon' id='chimp'/>
+                </taxa>
+            </log>
+            <log idref="popSize"/>
+            <log idref="hky.kappa"/>
+            <log idref="hky.frequencies"/>
+            <log idref="likelihood"/>
+            <log idref="coalescent"/>
         </logger>
-        <logger logEvery="10000" fileName="test.$(seed).trees">
+        <logger logEvery="1000" fileName="test.$(seed).trees">
             <log idref="tree"/>
         </logger>
-        <logger logEvery="10000">
-	        <model idref='posterior'/>
+        <logger logEvery="100000">
+            <model idref='posterior'/>
             <log idref="posterior"/>
-    	    <ESS spec='ESS' name='log' arg="@posterior"/>
             <log idref="prior"/>
-            <log idref="likelihood"/>
-            <log idref='hky.kappa'/>
-    	    <ESS spec='ESS' name='log' arg="@hky.kappa"/>
+            <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
             <log idref='HumanChimpMRCA'/>
+            <log idref="popSize"/>
+            <log idref="hky.kappa"/>
+            <log idref="hky.frequencies"/>
+            <log idref="likelihood"/>
+            <log idref="coalescent"/>
         </logger>
     </run>
 
