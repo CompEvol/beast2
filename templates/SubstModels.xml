@@ -1,0 +1,49 @@
+<beast version='2.0'>
+
+    <mergewith point='substitutionmodel'>
+        <!-- The WAG empirical amino acidmodel  -->
+        <input spec='WAG' id='$(n).WAG'/>
+    </mergewith>
+
+
+
+    <mergewith point='clockmodel'>
+        <!-- clock models -->
+	    <input spec='BirthDeathGernhard08Model' id="$(n).Yule" type='timesonly'>
+ 	    	<parameter name='birthDiffRate' id="$(n).birthRate" value="1.0" lower="0.0" upper="100.0"  estimate='false'/>
+        	<parameter name='relativeDeathRate' id='$(n).constantDeathRate' value='1.0' lower='0' upper='1' estimate='false'/>
+        	<tree idref='$(n).tree'/>
+    	</input>
+
+        <input spec='UCRelaxedClockModel' id="$(n).RelaxedClock">
+            <input id='$(n).lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
+                <parameter name='M' id='$(n).M' value="1" estimate='false'/>
+                <parameter name='S' id='$(n).S' value="0.5" lower="0" upper="5" estimate='false'/>
+            </input>
+            <parameter spec='parameter.IntegerParameter' name='rateCategories' id='$(n).rateCategories' dimension="11" value="1"/>
+            <input name='tree' idref="$(n).tree"/>
+        </input>
+
+        <input spec='RandomLocalClockModel' id="$(n).RandomLocalClock" ratesAreMultipliers="false">
+            <parameter spec='parameter.BooleanParameter' name='indicators' id='$(n).indicators' dimension="11" value="1"/>
+            <parameter name='rates' id='$(n).clockrates' dimension="11" value="1"/>
+            <tree idref="$(n).tree"/>
+        </input>
+
+        <populationModel spec="ExponentialGrowth" id="$(n).ExponentialGrowth">
+            <parameter name="popSize" id="$(n).popSize" value='1.0' estimate='false'/>
+            <parameter name="growthRate" id="$(n).growthRate" value='1.0' estimate='false'/>
+        </populationModel>
+    </mergewith>
+
+    <mergewith point='operators'>
+            <!-- clock model operators -->
+	        <operator id='$(n).birthRateScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).birthRate'/>
+	        <operator id='$(n).growthRatecaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).growthRate'/>
+            <operator id='$(n).clockRateScaler' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@$(n).clockrates"/>
+            <operator id="$(n).categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
+            <operator id="$(n).indicatorsBitFlip" spec="BitFlipOperator" weight="1" parameter="@$(n).indicators"/>
+    </mergewith>
+
+
+</beast>

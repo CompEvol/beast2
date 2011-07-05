@@ -115,7 +115,10 @@ public class Node extends Plugin {
 	}
 	public void setParent(Node parent) {
 		startEditing();
-		m_Parent = parent;
+		if (m_Parent != parent) {
+			m_Parent = parent;
+			m_bIsDirty = Tree.IS_FILTHY;
+		}
 	}
 
 	/** @return true if current node is root node **/
