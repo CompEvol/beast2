@@ -15,7 +15,7 @@ import beast.core.Input.Validate;
 		"so the sum of log probabilities of all elements of x is returned as the prior.")
 public class Prior extends Distribution {
 	public Input<Valuable> m_x = new Input<Valuable>("x","point at which the density is calculated", Validate.REQUIRED); 
-	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distribution","distribution used to calculate prior, e.g. normal, beta, gamma.", Validate.REQUIRED); 
+	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distr","distribution used to calculate prior, e.g. normal, beta, gamma.", Validate.REQUIRED); 
 
 	/** shadows m_distInput **/
 	ParametricDistribution m_dist;

@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+       namespace='beast.evolution.alignment:beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
 
 
     <!-- The sequence alignment                                                  -->
@@ -35,7 +35,11 @@
     </input>
 
     <!-- site model                                                              -->
-    <input spec='SiteModel' id="siteModel">
+    <input spec='SiteModel' id="siteModel" gammaCategoryCount='1'>
+<!--
+	<parameter name='shape' id='shape' value='0.5'/>
+	<parameter name='proportionInvariant' id='propInvar' value='0.2'/>
+-->
         <substModel idref='hky'/>
     </input>
 
@@ -52,20 +56,46 @@
     <tree spec='beast.util.ClusterTree' id='upgmatree' clusterType='upgma' initial='@tree'>
         <taxa idref='alignment'/>
     </tree>
+    <tree spec='beast.evolution.tree.RandomTree' id='coalescentSimulator' initial='@tree' taxa='@alignment'>
+        <populationModel spec='ConstantPopulation'>
+		<popSize spec='parameter.RealParameter' value='1'/>
+	</populationModel>
+    </tree>
+
 
 
     <run spec="MCMC" id="mcmc" chainLength="10000000">
+<!--
         <state storeEvery='100000'>
             <stateNode idref="hky.kappa"/>
             <stateNode idref="tree"/>
+            <stateNode idref="propInvar"/>
+            <stateNode idref="shape"/>
         </state>
-
-	<init idref='upgmatree'/>
-
-        <distribution id='likelihood' idref="treeLikelihood"/>
-    
+-->
+	<init idref='coalescentSimulator'/>
+	<distribution spec='CompoundDistribution' id='posterior'>
+<!--
+		<distribution spec='beast.math.distributions.Prior' x='@hky.kappa'>
+			<distribution spec='beast.math.distributions.OneOnX'/>
+		</distribution>
+-->
+        	<distribution id='likelihood' idref="treeLikelihood"/>
+	</distribution>
+<!--
+        <operator id='shapeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@shape"/>
+        <operator id='invarScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@propInvar"/>
+-->
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
+
+
+<!--
+        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
+        <operator id="Reheight" spec="NodeReheight2" tree="@tree" weight="5" scaleFactor='0.5'>
+        </operator>
+-->
+
         <operator spec='Uniform' weight="10" tree="@tree"/>
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>

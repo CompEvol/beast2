@@ -21,6 +21,10 @@ public class XMLElementNameTest extends TestCase {
 		// retrieve list of reserved names and their classes
 		XMLParser parser = new XMLParser();
 	    HashMap<String, String> sElement2ClassMap = parser.getElement2ClassMap();
+	    
+	    // allow 'parameter' for any of the various parameter derivatives, not just RealParameter
+        sElement2ClassMap.put("parameter", "beast.core.parameter.Parameter");
+	    
 	    // check each plugin
 		List<String> sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
 		List<String> sImproperInputs = new ArrayList<String>();
@@ -51,7 +55,7 @@ public class XMLElementNameTest extends TestCase {
 			System.err.println("Reserved element names used for wrong types in:\n" + sStr);
 		}
 		// not activated till problem with naming is solved
-		//assertTrue("Reserved element names used for wrong types in: " + sImproperInputs.toString(), sImproperInputs.size() == 0);
+		assertTrue("Reserved element names used for wrong types in: " + sImproperInputs.toString(), sImproperInputs.size() == 0);
 	}
 
 	/** true if type is a class equal to or derived from sBaseType **/

@@ -4,7 +4,10 @@ import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
+<<<<<<< .mine
+=======
 import beast.core.State;
+>>>>>>> .r339
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -22,7 +25,7 @@ public class MRCAPrior extends Distribution {
 			"set of taxa for which prior information is available", Validate.REQUIRED);
 	public Input<Boolean> m_bIsMonophyleticInput = new Input<Boolean>("monophyletic",
 			"whether the taxon set is monophyletic (forms a clade without other taxa) or nor. Default is false.", false);
-	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distribution",
+	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distr",
 			"distribution used to calculate prior over MRCA time, "
 					+ "e.g. normal, beta, gamma. If not specified, monophyletic must be true");
 

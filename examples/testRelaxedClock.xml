@@ -43,10 +43,10 @@
 
     <input spec='UCRelaxedClockModel' id="branchRates">
         <!--<parameter name='mutationRate'>1.0</parameter>-->
-        <input id='lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
+        <distr id='lognormal' spec="beast.math.distributions.LogNormalDistributionModel">
             <parameter name='M' id='M' value="1"/>
             <parameter name='S' id='S' value="0.5" lower="0" upper="5"/>
-        </input>
+        </distr>
         <parameter spec='IntegerParameter' name='rateCategories' id='rateCategories' dimension="11" value="1"/>
         <input name='tree' idref="tree"/>
     </input>

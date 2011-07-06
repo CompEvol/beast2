@@ -353,16 +353,16 @@
     <distribution id="posterior" spec="util.CompoundDistribution">
         <distribution id="prior" spec="util.CompoundDistribution">
             <distribution spec="beast.math.distributions.Prior" x="@populationMean">
-                <distribution offset="0.0" spec="beast.math.distributions.OneOnX"/>
+                <distr offset="0.0" spec="beast.math.distributions.OneOnX"/>
             </distribution>
             <distribution spec="beast.math.distributions.Prior">
                 <x arg="@indicators" id="indsSun" spec="util.Sum"/>
-                <distribution offset="0.0" spec="beast.math.distributions.Poisson">
+                <distr offset="0.0" spec="beast.math.distributions.Poisson">
                     <parameter dimension="1" estimate="true" lower="0.0" name="lambda" upper="0.0" value="0.69314718056"/>
-                </distribution>
+                </distr>
             </distribution>
             <distribution id="populationMeanPrior" spec="beast.math.distributions.Prior" x="@popSizes">
-                <distribution id="popPriorDist" lambda="@populationMean" offset="0.0" spec="beast.math.distributions.Exponential"/>
+                <distr id="popPriorDist" lambda="@populationMean" offset="0.0" spec="beast.math.distributions.Exponential"/>
             </distribution>
             <distribution id="coalescent" spec="util.CompoundDistribution">
                 <distribution id="treeModel000Coal" spec="Coalescent" treeIntervals="@treeModel000Intervals">
@@ -382,16 +382,16 @@
                 <distribution id="treeModel003Coal" populationModel="@demographic" spec="Coalescent" treeIntervals="@treeModel003Intervals"/>
             </distribution>
             <distribution spec="beast.math.distributions.Prior" x="@hky000.kappa">
-                <distribution meanInRealSpace="true" offset="0.0" spec="beast.math.distributions.LogNormalDistributionModel">
+                <distr meanInRealSpace="true" offset="0.0" spec="beast.math.distributions.LogNormalDistributionModel">
                     <parameter dimension="1" estimate="true" lower="0.0" name="M" upper="0.0" value="1.0"/>
                     <parameter dimension="1" estimate="true" lower="0.0" name="S" upper="0.0" value="1"/>
-                </distribution>
+                </distr>
             </distribution>
             <distribution spec="beast.math.distributions.Prior" x="@hky003.kappa">
-                <distribution meanInRealSpace="true" offset="0.0" spec="beast.math.distributions.LogNormalDistributionModel">
+                <distr meanInRealSpace="true" offset="0.0" spec="beast.math.distributions.LogNormalDistributionModel">
                     <parameter dimension="1" estimate="true" lower="0.0" name="M" upper="0.0" value="1.0"/>
                     <parameter dimension="1" estimate="true" lower="0.0" name="S" upper="0.0" value="1"/>
-                </distribution>
+                </distr>
             </distribution>
         </distribution>
         <distribution id="likelihood" spec="util.CompoundDistribution">

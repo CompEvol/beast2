@@ -163,18 +163,18 @@
 -->
             <!-- hyper priors for assorted parameters -->
             <distribution id='birthRatePrior' spec='distributions.Prior' x='@birthRate'>
-                <distribution id='OneOnX' spec='distributions.OneOnX'/>
+                <distr id='OneOnX' spec='distributions.OneOnX'/>
             </distribution>
 <!--
             <distribution id='relativeDeathRatePrior' spec='distributions.Prior' x='@relativeDeathRate'>
                 <distribution id="UniformRelDeathRate" spec='distributions.Uniform' lower='0' upper='1'/>
             </distribution>
 -->
-            <distribution id="popMean.prior26" spec="beast.math.distributions.Prior" x="@popMean" distribution='@OneOnX'/>
+            <distribution id="popMean.prior26" spec="beast.math.distributions.Prior" x="@popMean" distr='@OneOnX'/>
             <distribution id="kappa.prior26" spec="beast.math.distributions.Prior" x="@hky.kappa26">
-                <distribution id='logNormal' spec='beast.math.distributions.LogNormalDistributionModel' M="1.0" S="1.25" offset="0.0" meanInRealSpace="false"/>
+                <distr id='logNormal' spec='beast.math.distributions.LogNormalDistributionModel' M="1.0" S="1.25" offset="0.0" meanInRealSpace="false"/>
             </distribution>
-            <distribution id="kappa.prior29" spec="beast.math.distributions.Prior" x="@hky.kappa29"  distribution='@logNormal'/>
+            <distribution id="kappa.prior29" spec="beast.math.distributions.Prior" x="@hky.kappa29"  distr='@logNormal'/>
 
         </distribution>
         <distribution id="likelihood" spec="util.CompoundDistribution">
@@ -270,18 +270,18 @@ initial='@tree29' taxonset='@lineagetaxa' threshold='1e-12' />
     <operator gaussian="true" id="SubtreeSlide26" size="0.003" spec="SubtreeSlide" tree="@tree26" weight="15.0"/>
     <operator degreesOfFreedom="1" id="treeScaler26" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.85" spec="ScaleOperator" tree="@tree26" weight="6.0"/>
     <operator id="wide26" isNarrow="false" spec="Exchange" tree="@tree26" weight="1.0"/>
-<!--
     <operator id="narrow26" isNarrow="true" spec="Exchange" tree="@tree26" weight="15"/>
     <operator id="WilsonBalding26" spec="WilsonBalding" tree="@tree26" weight="3"/>
+<!--
 -->
     <operator id="Uniform26" spec="Uniform" tree="@tree26" weight="30.0"/>
 
     <operator gaussian="true" id="SubtreeSlide29" size="0.002" spec="SubtreeSlide" tree="@tree29" weight="15.0"/>
     <operator degreesOfFreedom="1" id="treeScaler29" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.85" spec="ScaleOperator" tree="@tree29" weight="6.0"/>
     <operator id="wide29" isNarrow="false" spec="Exchange" tree="@tree29" weight="1.0"/>
-<!--
     <operator id="narrow29" isNarrow="true" spec="Exchange" tree="@tree29" weight="15"/>
     <operator id="WilsonBalding29" spec="WilsonBalding" tree="@tree29" weight="3"/>
+<!--
 -->
     <operator id="Uniform29" spec="Uniform" tree="@tree29" weight="30.0"/>
 
@@ -306,7 +306,7 @@ initial='@tree29' taxonset='@lineagetaxa' threshold='1e-12' />
         <genetree idref='tree29'/>
     </operator>
 
-    <logger fileName="$(seed).log" id="Logger0" logEvery="1000" mode="autodetect" model="@posterior">
+    <logger fileName="z$(seed).log" id="Logger0" logEvery="1000" mode="autodetect" model="@posterior">
         <log idref="posterior"/>
         <log idref="prior"/>
         <log idref="speciesCoalescent"/>
@@ -326,15 +326,15 @@ initial='@tree29' taxonset='@lineagetaxa' threshold='1e-12' />
         <log id="TreeHeight29" spec="beast.evolution.tree.TreeHeightLogger" tree="@tree29"/>
     </logger>
 
-    <logger fileName="$(seed).sp.trees" id="Logger4" logEvery="1000" mode="tree">
+    <logger fileName="z$(seed).sp.trees" id="Logger4" logEvery="1000" mode="tree">
         <log spec='SpeciesTreeLogger' popSize='@popSize' tree="@speciesTree"/>
     </logger>
 
-    <logger fileName="$(seed).26.trees" id="Logger2" logEvery="1000" mode="autodetect">
+    <logger fileName="z$(seed).26.trees" id="Logger2" logEvery="1000" mode="autodetect">
         <log idref="tree26"/>
     </logger>
 
-    <logger fileName="$(seed).29.trees" id="Logger3" logEvery="1000" mode="autodetect">
+    <logger fileName="z$(seed).29.trees" id="Logger3" logEvery="1000" mode="autodetect">
         <log idref="tree29"/>
     </logger>
 

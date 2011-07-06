@@ -340,8 +340,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 				currentHeight = getMinimumInactiveHeight();
 				setCurrentHeight(currentHeight);
 			} else {
-				currentHeight = nextCoalescentHeight;
-				coalesceTwoActiveNodes(currentHeight);
+				currentHeight = coalesceTwoActiveNodes(currentHeight, nextCoalescentHeight);
 			}
 
 			// if (getNodeCount() > 1) {
@@ -410,7 +409,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	 * (randomly selected) active nodes and replaces them with the new node at
 	 * the top of the active list.
 	 */
-	private void coalesceTwoActiveNodes(double height) {
+	private double coalesceTwoActiveNodes(double fMinHeight, double height) {
 		int node1 = Randomizer.nextInt(activeNodeCount);
 		int node2 = node1;
 		while (node2 == node1) {
@@ -438,11 +437,74 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
 		activeNodeCount += 1;
 
+		// check if there is a calibration on this node
+		ParametricDistribution distr = getDistrConstraint(newNode);
+		if (distr != null) {
+			for (int i = 0; i < 1000; i++) {
+				try {
+					height = distr.sample(1)[0][0];
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (height > fMinHeight) {
+					break;
+				}
+			} 
+			if (height < fMinHeight) {
+				// TODO: failed, now what?
+				height = fMinHeight + 1e-12;
+			}
+			newNode.setHeight(height);
+		}
+
+
 		if (getMinimumInactiveHeight() < height) {
 			throw new RuntimeException(
 					"This should never happen! Somehow the current active node is older than the next inactive node!");
 		}
+		return height;
 	}
+	
+	private ParametricDistribution getDistrConstraint(Node node) {
+		for (int i = 0; i < m_distributions.size(); i++) {
+			if (m_distributions.get(i) != null) {
+				BitSet taxonSet = m_bTaxonSets.get(i);
+				if (traverse(node, taxonSet, taxonSet.cardinality(), new int[1]) == m_nTaxa + 127) {
+					return m_distributions.get(i);
+				}
+			}
+		}
+		return null;
+	}
+
+	int traverse(Node node, BitSet MRCATaxonSet, int nNrOfMRCATaxa, int[] nTaxonCount) {
+		if (node.isLeaf()) {
+			nTaxonCount[0]++;
+			if (MRCATaxonSet.get(node.getNr())) {
+				return 1;
+			} else {
+				return 0;
+			}
+		} else {
+			int iTaxons = traverse(node.m_left, MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
+			int nLeftTaxa = nTaxonCount[0]; 
+			nTaxonCount[0] = 0;
+			if (node.m_right != null) {
+				iTaxons += traverse(node.m_right, MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
+				int nRightTaxa = nTaxonCount[0]; 
+				nTaxonCount[0] = nLeftTaxa + nRightTaxa;
+			}
+			if (iTaxons == m_nTaxa + 127) {
+				iTaxons++;
+			}
+			if (iTaxons == nNrOfMRCATaxa) {
+				// we are at the MRCA, return magic nr
+				return m_nTaxa + 127;
+			}
+			return iTaxons ;
+		}
+	}
+	
 	
 	@Override
     public String [] getTaxaNames() {

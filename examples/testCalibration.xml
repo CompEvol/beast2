@@ -46,14 +46,14 @@
         <distribution spec='CompoundDistribution' id='posterior'>
             <distribution spec='CompoundDistribution' id='prior'>
                 <distribution id="hky.kappa.prior" spec="beast.math.distributions.Prior" x="@hky.kappa">
-                    <distribution id="LogNormalDistributionModel" M="1.0" S="1.25" meanInRealSpace="false"
+                    <distr id="LogNormalDistributionModel" M="1.0" S="1.25" meanInRealSpace="false"
                                   spec="beast.math.distributions.LogNormalDistributionModel"/>
                 </distribution>
                 <distribution id="hky.frequencies.prior" spec="beast.math.distributions.Prior" x="@hky.frequencies">
-                    <distribution id="Uniform" lower="0.0" upper="1.0" spec="beast.math.distributions.Uniform"/>
+                    <distr id="Uniform" lower="0.0" upper="1.0" spec="beast.math.distributions.Uniform"/>
                 </distribution>
                 <distribution id="popSize.prior" spec="beast.math.distributions.Prior" x="@popSize">
-                    <distribution id="OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
+                    <distr id="OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
                 </distribution>
 
                 <distribution id='mrcaPrior' spec='beast.math.distributions.MRCAPrior' tree='@tree' monophyletic='true'>
@@ -61,10 +61,10 @@
                         <taxon spec='Taxon' id='human'/>
                         <taxon spec='Taxon' id='chimp'/>
                     </taxonset>
-                    <distribution spec='beast.math.distributions.Normal'>
+                    <distr spec='beast.math.distributions.Normal'>
                         <parameter name='mean' value='6.0'/>
                         <parameter name='sigma' value='0.5'/>
-                    </distribution>
+                    </distr>
                 </distribution>
 
                 <distribution id="coalescent" spec="Coalescent">

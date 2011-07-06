@@ -17,7 +17,7 @@ import beast.math.distributions.ParametricDistribution;
 @Citation(value = "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088")
 public class UCRelaxedClockModel extends BranchRateModel.Base {
 
-    public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distribution", "the distribution governing the rates among branches", Input.Validate.REQUIRED);
+    public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches", Input.Validate.REQUIRED);
     public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
     public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
