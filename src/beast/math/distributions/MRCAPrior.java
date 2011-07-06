@@ -1,19 +1,18 @@
 package beast.math.distributions;
 
+import beast.core.Description;
+import beast.core.Distribution;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.State;
+import beast.evolution.alignment.TaxonSet;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.State;
-import beast.core.Input.Validate;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
 
 @Description("Prior over set of taxa, useful for defining monophyletic constraints and "
 		+ "distributions over MRCA times")
@@ -23,7 +22,7 @@ public class MRCAPrior extends Distribution {
 			"set of taxa for which prior information is available", Validate.REQUIRED);
 	public Input<Boolean> m_bIsMonophyleticInput = new Input<Boolean>("monophyletic",
 			"whether the taxon set is monophyletic (forms a clade without other taxa) or nor. Default is false.", false);
-	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distr",
+	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distribution",
 			"distribution used to calculate prior over MRCA time, "
 					+ "e.g. normal, beta, gamma. If not specified, monophyletic must be true");
 
