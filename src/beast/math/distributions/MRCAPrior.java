@@ -4,10 +4,7 @@ import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
-<<<<<<< .mine
-=======
 import beast.core.State;
->>>>>>> .r339
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
