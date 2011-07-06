@@ -33,6 +33,8 @@ import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.ParametricDistribution;
 import beast.util.HeapSort;
 import beast.util.Randomizer;
 
@@ -44,16 +46,101 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     public Input<Alignment> m_taxa = new Input<Alignment>("taxa","set of taxa to initialise tree with specified by alignment");
     public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset","set of taxa to initialise tree with specified by a taxonset", Validate.XOR, m_taxa);
     public Input<PopulationFunction> m_populationFunction = new Input<PopulationFunction>("populationModel","population function for generating coalescent???", Validate.REQUIRED);
-    
+    public Input<List<MRCAPrior>> m_calibrations = new Input<List<MRCAPrior>>("constraint", "specifies (monophyletic or height distribution) constraints on internal nodes", new ArrayList<MRCAPrior>());
+
+    // total nr of taxa
     int m_nTaxa;
+    // list of bitset representation of the taxon sets
+    List<BitSet> m_bTaxonSets;
+    // the first m_nIsMonophyletic of the m_bTaxonSets are monophyletic, while the remainder are not
+    int m_nIsMonophyletic;
+    // list of parametric distribution constraining the MRCA of taxon sets, null if not present
+    List<ParametricDistribution> m_distributions;
+    
+    List<Integer> [] m_children;
+
+    // number of the next internal node, used when creating new internal nodes
+    int m_nNextNodeNr;
     
     @Override
     public void initAndValidate() throws Exception {
-            initStateNodes();
-            super.initAndValidate();
+        List<String> sTaxa;
+        if (m_taxa.get() != null) {
+                sTaxa = m_taxa.get().getTaxaNames();
+        } else {
+                sTaxa = m_taxonset.get().asStringList();
+        }
+        m_nTaxa = sTaxa.size();
+
+        // find taxon sets we are dealing with
+        m_bTaxonSets = new ArrayList<BitSet>();
+        m_distributions = new ArrayList<ParametricDistribution>();
+        m_nIsMonophyletic = 0;
+        for (MRCAPrior prior : m_calibrations.get()) {
+    		TaxonSet taxonSet = prior.m_taxonset.get();
+    		BitSet bTaxa = new BitSet(m_nTaxa);
+    		for (String sTaxonID : taxonSet.asStringList()) {
+    			int iID = sTaxa.indexOf(sTaxonID);
+    			if (iID < 0) {
+    				throw new Exception("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
+    			}
+    			bTaxa.set(iID);
+    		}
+    		if (prior.m_bIsMonophyleticInput.get()) {
+    			m_bTaxonSets.add(m_nIsMonophyletic, bTaxa);
+    			m_distributions.add(m_nIsMonophyletic, prior.m_distInput.get());
+    			m_nIsMonophyletic++;
+    		} else {
+        		m_bTaxonSets.add(bTaxa);
+        		m_distributions.add(prior.m_distInput.get());
+    		}
+    	}
+    	
+    	// sort constraints such that if taxon set i is subset of taxon set j, then i < j
+        for (int i = 0; i < m_nIsMonophyletic; i++) {
+        	for (int j = i + 1; j < m_nIsMonophyletic; j++) {
+        		boolean bIsSubset = isSubset(m_bTaxonSets.get(i), m_bTaxonSets.get(j));
+    			// swap i & j if b1 subset of b2
+        		if (bIsSubset) {
+        			BitSet bTmp = m_bTaxonSets.get(i);
+        			m_bTaxonSets.set(i, m_bTaxonSets.get(j));
+        			m_bTaxonSets.set(j, bTmp);
+        			ParametricDistribution tmp = m_distributions.get(i);
+        			m_distributions.set(i, m_distributions.get(j));
+        			m_distributions.set(j, tmp);
+        		}
+			}
+        }
+        
+    	// build tree of mono constraints such that i is parent of j => j is subset of i
+//        int [] nParent = new int[m_nIsMonophyletic];
+        m_children = new List[m_nIsMonophyletic+1];
+        for (int i = 0; i < m_nIsMonophyletic+1; i++) {
+        	m_children[i] = new ArrayList<Integer>();
+        }        
+        for (int i = 0; i < m_nIsMonophyletic; i++) {
+        	int j = i+1;
+        	while (j < m_nIsMonophyletic && !isSubset(m_bTaxonSets.get(i), m_bTaxonSets.get(j))) {
+        		j++;
+        	}
+//        	nParent[i] = j;
+        	m_children[j].add(i);
+        }
+        
+        initStateNodes();
+        super.initAndValidate();
     }
 
-    @Override
+	// taxonset subset test
+    private boolean isSubset(BitSet bitSet, BitSet bitSet2) {
+		boolean bIsSubset = true;
+		for (int k = bitSet.nextSetBit(0); bIsSubset && k >= 0; k = bitSet.nextSetBit(k+1)) {
+			bIsSubset = bitSet2.get(k);
+		}
+		return bIsSubset;
+	}
+
+	@Override
     public void initStateNodes() {
             List<String> sTaxa;
             if (m_taxa.get() != null) {
@@ -61,14 +148,14 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             } else {
                     sTaxa = m_taxonset.get().asStringList();
             }
-            m_nTaxa = sTaxa.size();
             PopulationFunction popFunction = m_populationFunction.get();
 
+            m_nNextNodeNr = m_nTaxa;
             simulateTree(sTaxa, popFunction);
 
             nodeCount = 2*sTaxa.size()-1;
-        internalNodeCount = sTaxa.size()-1;
-        leafNodeCount = sTaxa.size();
+            internalNodeCount = sTaxa.size()-1;
+            leafNodeCount = sTaxa.size();
             initArrays();
             
             if (m_initial.get() != null) {
@@ -158,7 +245,35 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 		// }
 		// }
 
-		root = simulateCoalescent(candidates, demoFunction);
+		List<Node> allCandidates = new ArrayList<Node>();
+		allCandidates.addAll(candidates);
+		root = simulateCoalescent(m_nIsMonophyletic, allCandidates, candidates, demoFunction);
+	}
+
+	private Node simulateCoalescent(int iIsMonophyleticNode, List<Node> allCandidates, List<Node> candidates, PopulationFunction demoFunction) {
+		List<Node> remainingCandidates = new ArrayList<Node>();
+		BitSet taxaDone = new BitSet(m_nTaxa);
+		for (int iMonoNode : m_children[iIsMonophyleticNode]) {
+			// create list of leaf nodes for this monophyletic MRCA
+			List<Node> candidates2 = new ArrayList<Node>();
+			BitSet bTaxonSet = m_bTaxonSets.get(iMonoNode);
+			for (int k = bTaxonSet.nextSetBit(0); k >=0; k = bTaxonSet.nextSetBit(k+1)) {
+				candidates2.add(allCandidates.get(k));
+			}
+			
+			Node MRCA = simulateCoalescent(iMonoNode, allCandidates, candidates2, demoFunction);
+			remainingCandidates.add(MRCA);
+			taxaDone.or(bTaxonSet);
+		}
+		
+		for (Node node : candidates) {
+			if (!taxaDone.get(node.getNr())) {
+				remainingCandidates.add(node);
+			}
+		}
+		
+		Node MRCA = simulateCoalescent(remainingCandidates, demoFunction);
+		return MRCA;
 	}
 
 	/**
@@ -307,7 +422,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
 		Node newNode = new Node();
 //		System.err.println(2 * m_taxa.get().getNrTaxa() - nodeList.size());
-		newNode.setNr(2 * m_nTaxa - nodeList.size());
+		newNode.setNr(m_nNextNodeNr++);
 		newNode.setHeight(height);
 		newNode.m_left = left;
 		left.setParent(newNode);
@@ -328,8 +443,23 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 					"This should never happen! Somehow the current active node is older than the next inactive node!");
 		}
 	}
+	
+	@Override
+    public String [] getTaxaNames() {
+    	if (m_sTaxaNames == null) {
+            List<String> sTaxa;
+            if (m_taxa.get() != null) {
+                    sTaxa = m_taxa.get().getTaxaNames();
+            } else {
+                    sTaxa = m_taxonset.get().asStringList();
+            }
+            m_sTaxaNames = sTaxa.toArray(new String[0]);
+    	}
+    	return m_sTaxaNames;
+    }
 
 	final private ArrayList<Node> nodeList = new ArrayList<Node>();
 	private int activeNodeCount = 0;
 
+	
 }

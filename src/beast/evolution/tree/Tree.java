@@ -30,6 +30,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.evolution.alignment.TaxonSet;
 import beast.util.TreeParser;
 
 import java.io.PrintStream;
@@ -48,7 +49,8 @@ import java.util.List;
 public class Tree extends StateNode {
 	public Input<Tree> m_initial = new Input<Tree>("initial","tree to start with");
 	public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
-
+	public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset", "set of taxa that correspond to the leafs in the tree");
+	
     @Override
     public void initAndValidate() throws Exception {
     	if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
@@ -62,6 +64,17 @@ public class Tree extends StateNode {
     	if (m_trait.get() != null) {
     		adjustTreeToNodeHeights(root);
     	}
+    	if (nodeCount < 0) {
+    		// make dummy tree with a single root node
+    		root = new Node();
+    		root.m_iLabel = 0;
+    		root.m_fHeight = 0;
+    		root.m_tree = this;
+    		nodeCount = 1;
+    		internalNodeCount = 0;
+    		leafNodeCount = 1;
+    	}
+    	
     	if (nodeCount >= 0) {
     		initArrays();
     	}
@@ -172,8 +185,12 @@ public class Tree extends StateNode {
 
     public String [] getTaxaNames() {
     	if (m_sTaxaNames == null) {
-    		m_sTaxaNames = new String[getLeafNodeCount()];
-    		collectTaxaNames(getRoot());
+    		if (m_taxonset.get() != null) {
+    			m_sTaxaNames = m_taxonset.get().asStringList().toArray(new String[0]);
+    		} else {
+    			m_sTaxaNames = new String[getLeafNodeCount()];
+    			collectTaxaNames(getRoot());
+    		}
     	}
     	return m_sTaxaNames;
     }

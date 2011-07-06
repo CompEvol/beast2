@@ -13,7 +13,7 @@ public class Taxon extends Plugin {
 
 	
 	@Override
-	public void initAndValidate() {
+	public void initAndValidate() throws Exception {
 		
 	}
 }

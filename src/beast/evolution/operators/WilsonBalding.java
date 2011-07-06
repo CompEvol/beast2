@@ -135,7 +135,8 @@ public class WilsonBalding extends TreeOperator {
             // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
 
         	replace(jP, j, iP);
-            replace(iP, CiP, iP);
+            //replace(iP, CiP, iP);
+            replace(iP, CiP, j);
 
             // CiP is the new root
             CiP.setParent(null);

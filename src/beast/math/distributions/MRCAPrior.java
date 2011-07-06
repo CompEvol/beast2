@@ -49,7 +49,7 @@ public class MRCAPrior extends Distribution {
 			sTaxaNames.add(sTaxon);
 		}
 		// determine nr of taxa in taxon set
-		List<Taxon> set = m_taxonset.get().m_taxonset.get();
+		List<String> set = m_taxonset.get().asStringList();
 		m_nNrOfTaxa = set.size();
 		if (m_nNrOfTaxa <= 1) {
 			throw new Exception("At least two taxa are required in a taxon set");
@@ -57,8 +57,7 @@ public class MRCAPrior extends Distribution {
 
 		// determine which taxa are in the set
 		m_bTaxaSet = new boolean[sTaxaNames.size()];
-		for (Taxon taxon : set) {
-			String sTaxon = taxon.getID();
+		for (String sTaxon : set) {
 			int iTaxon = sTaxaNames.indexOf(sTaxon);
 			if (iTaxon < 0) {
 				throw new Exception("Cannot find taxon " + sTaxon + " in data");

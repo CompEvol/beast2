@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.evolution.alignment:beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+       namespace='beast.evolution:beast.evolution.alignment:beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
 
 
     <!-- The sequence alignment                                                  -->
@@ -27,16 +27,20 @@
     </data>
 
 
+
     <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
         <init spec='beast.evolution.tree.RandomTree' id='randomTree' initial='@tree' taxa='@alignment'>
             <populationModel spec='ConstantPopulation' popSize='@popSize'/>
+            <constraint idref='mrcaPrior'/>
         </init>
 
         <state>
             <stateNode spec='parameter.RealParameter' id="hky.kappa" value="2.0" lower="0.0"/>
             <stateNode spec='parameter.RealParameter' id="hky.frequencies" value="0.25" dimension="4" lower='0.0'/>
             <stateNode spec='parameter.RealParameter' id="popSize" value="17" lower="0.0"/>
-            <stateNode spec='beast.evolution.tree.Tree' id='tree'/>
+            <stateNode spec='beast.evolution.tree.Tree' id='tree'>
+                <taxonset spec='TaxonSet' alignment='@alignment'/>
+            </stateNode>
         </state>
 
         <distribution spec='CompoundDistribution' id='posterior'>
@@ -52,7 +56,11 @@
                     <distribution id="OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
                 </distribution>
 
-                <distribution spec='beast.math.distributions.MRCAPrior' tree='@tree' id='mrcaPrior2' taxonset='@human,chimp' monophyletic='true'>
+                <distribution id='mrcaPrior' spec='beast.math.distributions.MRCAPrior' tree='@tree' monophyletic='true'>
+                    <taxonset spec='TaxonSet' id='human,chimp'>
+                        <taxon spec='Taxon' id='human'/>
+                        <taxon spec='Taxon' id='chimp'/>
+                    </taxonset>
                     <distr spec='beast.math.distributions.Normal'>
                         <parameter name='mean' value='6.0'/>
                         <parameter name='sigma' value='0.5'/>
@@ -96,12 +104,7 @@
             <log idref="posterior"/>
             <log idref="prior"/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
-            <log spec='beast.evolution.tree.MRCATime' tree='@tree' data='@alignment' id='HumanChimpMRCA'>
-                <taxa spec='TaxonSet' id='human,chimp'>
-                    <taxon spec='Taxon' id='human'/>
-                    <taxon spec='Taxon' id='chimp'/>
-                </taxa>
-            </log>
+            <log spec='beast.evolution.tree.MRCATime' tree='@tree' data='@alignment' id='HumanChimpMRCA' taxa='@human,chimp' />
             <log idref="popSize"/>
             <log idref="hky.kappa"/>
             <log idref="hky.frequencies"/>
