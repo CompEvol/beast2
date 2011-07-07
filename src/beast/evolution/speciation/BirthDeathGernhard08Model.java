@@ -84,19 +84,9 @@ public class BirthDeathGernhard08Model extends YuleModel {
     
     @Override
     public double calculateTreeLogLikelihood(Tree tree) {
-        final int taxonCount = tree.getLeafNodeCount();
-        final double r = birthDiffRateParameter.get().getValue();
         final double a = relativeDeathRateParameter.get().getValue();
         final double rho = (sampleProbability.get() == null ? 1.0 : sampleProbability.get().getValue());
-        
-        double logL = logTreeProbability(taxonCount, r, rho, a);
-        
-        Node [] nodes = tree.getNodesAsArray();
-        for (int i = taxonCount; i < nodes.length; i++) {
-  		    logL += calcLogNodeProbability(nodes[i], r, rho, a, taxonCount);
-        }
-        
-        return logL;
+        return calculateTreeLogLikelihood(tree, rho, a);
     }
 
     private TreeType type;
@@ -108,7 +98,7 @@ public class BirthDeathGernhard08Model extends YuleModel {
     }
 
     /** scaling coefficient of tree **/
-    protected double logCoeff(int taxonCount) {
+    protected double logCoeff(final int taxonCount) {
         switch( type ) {
             case UNSCALED: break;
             case TIMESONLY: return logGamma(taxonCount + 1);
@@ -125,10 +115,10 @@ public class BirthDeathGernhard08Model extends YuleModel {
         return 0.0;
     }
     
-    @Override
-    public boolean includeExternalNodesInLikelihoodCalculation() {
-        return true;
-    }
+//    @Override
+//    public boolean includeExternalNodesInLikelihoodCalculation() {
+//        return true;
+//    }
     
     @Override
     protected boolean requiresRecalculation() {
