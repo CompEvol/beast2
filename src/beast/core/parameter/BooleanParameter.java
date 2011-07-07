@@ -81,13 +81,7 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
     Boolean getMin() {return false;}
 
     /** Valuable implementation follows **/
-    /** we need this here, because the base implementation (public T getValue()) fails
-     * for some reason
-     */
-    @Override
-    public Boolean getValue() {
-        return values[0];
-    }
+
     @Override public double getArrayValue() {return (values[0] ? 1 : 0);}
     @Override public double getArrayValue(int iValue) {return (values[iValue] ? 1 : 0);};
 

@@ -1,14 +1,10 @@
 package beast.math.distributions;
 
+import beast.core.*;
+import beast.core.Input.Validate;
+
 import java.util.List;
 import java.util.Random;
-
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.State;
-import beast.core.Valuable;
-import beast.core.Input.Validate;
 
 @Description("Produces prior (log) probability of value x." +
 		"If x is multidimensional, the components of x are assumed to be independent, " +
@@ -30,11 +26,6 @@ public class Prior extends Distribution {
 		Valuable pX = m_x.get();
 		logP = m_dist.calcLogP(pX);
 		return logP;
-	}
-	
-	@Override
-	public boolean requiresRecalculation() {
-		return true;
 	}
 
 	@Override public void sample(State state, Random random) {}

@@ -4,7 +4,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.State;
-import beast.core.CalculationNode;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.Binomial;
 
@@ -130,8 +129,9 @@ public class Coalescent extends TreeDistribution {
         return logL;
     }
 
-    @Override
-    protected boolean requiresRecalculation() {
-        return ((CalculationNode)popSize.get()).isDirtyCalculation() || super.requiresRecalculation();
-    }
+//    @Override
+//    protected boolean requiresRecalculation() {
+//        assert ((CalculationNode)popSize.get()).isDirtyCalculation() || super.requiresRecalculation();
+//        return true;
+//    }
 }
