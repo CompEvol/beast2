@@ -42,12 +42,5 @@ public class Exponential extends ParametricDistribution {
 		refresh();
 		return m_dist;
 	}
-
-//    @Override
-//    protected boolean requiresRecalculation() {
-//        final RealParameter lam = m_lambda.get();
-//        assert lam != null && lam.somethingIsDirty();
-//        return true;
-//    }
 	
 } // class Normal

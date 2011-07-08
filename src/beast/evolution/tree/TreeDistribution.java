@@ -32,6 +32,10 @@ public class TreeDistribution extends Distribution {
     @Override
     protected boolean requiresRecalculation() {
         final TreeIntervals ti = treeIntervals.get();
-        return (ti != null && ti.isDirtyCalculation()) || m_tree.get().somethingIsDirty();
+        if( ti != null ) {
+            boolean d = ti.isDirtyCalculation();   assert d;
+            return d;
+        }
+        return m_tree.get().somethingIsDirty();
     }
 }

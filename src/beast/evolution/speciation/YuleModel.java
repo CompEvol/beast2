@@ -105,10 +105,8 @@ public class YuleModel extends SpeciesTreeDistribution {
                 final double ca = 1 - a;
                 final double emrh = Math.exp(-mrh);
                 if( emrh != 1.0 ) {
-                  //l = (tree.getTaxonCount() - 2) * Math.log(r * ca * (1 + ca /(emrh - 1)));
                   l = (taxonCount - 2) * Math.log(r * ca * (1 + ca /(emrh - 1)));
                 } else {  // use exp(x)-1 = x for x near 0
-                  //l = (tree.getTaxonCount() - 2) * Math.log(ca * (r + ca/height));
                   l = (taxonCount - 2) * Math.log(ca * (r + ca/height));
                 }
             }

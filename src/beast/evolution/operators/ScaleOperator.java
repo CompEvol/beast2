@@ -155,7 +155,7 @@ public class ScaleOperator extends Operator {
                 hastingsRatio = -Math.log(scale);
 
                 // which position to scale
-                int index = -1;
+                int index;
                 final BooleanParameter indicators = m_indicator.get();
                 if ( indicators != null ) {
                     final int nDim = indicators.getDimension();

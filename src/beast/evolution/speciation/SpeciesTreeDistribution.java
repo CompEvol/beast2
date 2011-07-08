@@ -53,7 +53,7 @@ abstract public class SpeciesTreeDistribution extends TreeDistribution {
      */
 	@Override
     public double calculateLogP() {
-      	Tree tree = m_tree.get();
+      	final Tree tree = m_tree.get();
 	    logP = calculateTreeLogLikelihood(tree);
         return logP;
     } // calculateLogP
@@ -61,6 +61,7 @@ abstract public class SpeciesTreeDistribution extends TreeDistribution {
 	
 	/** 
      * Generic likelihood calculation
+     * @param tree
      * @return log-likelihood of density
      */
 	abstract double calculateTreeLogLikelihood(Tree tree);

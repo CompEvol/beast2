@@ -26,15 +26,14 @@
 package beast.evolution.speciation;
 
 
-
-import java.util.Arrays;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+
+import java.util.Arrays;
 
 import static org.apache.commons.math.special.Gamma.logGamma;
 
@@ -68,7 +67,7 @@ public class BirthDeathGernhard08Model extends YuleModel {
     @Override
     public void initAndValidate() throws Exception {
     	super.initAndValidate();
-    	String sType = m_pType.get().toLowerCase();
+    	final String sType = m_pType.get().toLowerCase();
     	if (sType.equals("unscaled")) {
     		type = TreeType.UNSCALED;
     	} else if (sType.equals("timesonly")) {
@@ -83,7 +82,7 @@ public class BirthDeathGernhard08Model extends YuleModel {
     }
     
     @Override
-    public double calculateTreeLogLikelihood(Tree tree) {
+    public double calculateTreeLogLikelihood(final Tree tree) {
         final double a = relativeDeathRateParameter.get().getValue();
         final double rho = (sampleProbability.get() == null ? 1.0 : sampleProbability.get().getValue());
         return calculateTreeLogLikelihood(tree, rho, a);
