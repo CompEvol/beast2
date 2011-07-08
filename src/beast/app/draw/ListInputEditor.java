@@ -188,7 +188,7 @@ public class ListInputEditor extends InputEditor {
         		(m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
         	Box expandBox = Box.createVerticalBox();
         	//box.add(itemBox);
-        	PluginPanel.addInputs(expandBox, plugin, this);
+        	PluginPanel.addInputs(expandBox, plugin, this, null);
         	System.err.print(expandBox.getComponentCount());
         	if (expandBox.getComponentCount() > 1) {
         		// only go here if it is worth showing expanded box

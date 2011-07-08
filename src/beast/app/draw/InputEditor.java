@@ -280,7 +280,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	}
 	
 
-    void refreshPanel() {
+    public void refreshPanel() {
         Component c = this;
         while (((Component) c).getParent() != null) {
         	c = ((Component) c).getParent();

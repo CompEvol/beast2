@@ -193,7 +193,7 @@ public class PluginPanel extends JPanel {
         }
 
         
-        addInputs(mainBox, m_plugin, null);
+        addInputs(mainBox, m_plugin, null, null);
         
 
         mainBox.add(Box.createVerticalStrut(5));
@@ -214,7 +214,7 @@ public class PluginPanel extends JPanel {
     }
 
     /** add all inputs of a plugin to a box **/
-    public static List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor) {
+    public static List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor, ValidateListener validateListener) {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
         List<InputEditor> editors = new ArrayList<InputEditor>();
@@ -231,6 +231,9 @@ public class PluginPanel extends JPanel {
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
 	                //box.add(Box.createVerticalGlue());
+	                if (validateListener != null) {
+	                	inputEditor.addValidationListener(validateListener);
+	                }
 	                editors.add(inputEditor);
             	}
             } catch (Exception e) {

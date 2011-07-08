@@ -167,18 +167,18 @@
 
             <!-- hyper priors for assorted parameters -->
             <distribution id='birthRatePrior' spec='distributions.Prior' x='@birthRate'>
-                <distribution id='OneOnX' spec='distributions.OneOnX'/>
+                <distr id='OneOnX' spec='distributions.OneOnX'/>
             </distribution>
 <!--
             <distribution id='relativeDeathRatePrior' spec='distributions.Prior' x='@relativeDeathRate'>
-                <distribution id="UniformRelDeathRate" spec='distributions.Uniform' lower='0' upper='1'/>
+                <distr id="UniformRelDeathRate" spec='distributions.Uniform' lower='0' upper='1'/>
             </distribution>
 -->
             <distribution id="popMean.prior" spec="beast.math.distributions.Prior" x="@popMean" distribution='@OneOnX'/>
 
             <plate var='n' range='#alignments'>
                 <distribution id="kappa.prior$(n)" spec="beast.math.distributions.Prior" x="@hky.kappa$(n)">
-                    <distribution id='logNormal$(n)' spec='beast.math.distributions.LogNormalDistributionModel' M="1.0" S="1.25" offset="0.0" meanInRealSpace="false"/>
+                    <distr id='logNormal$(n)' spec='beast.math.distributions.LogNormalDistributionModel' M="1.0" S="1.25" offset="0.0" meanInRealSpace="false"/>
                 </distribution>
             </plate>
 

@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class PluginInputEditor extends InputEditor {
+public class PluginInputEditor extends InputEditor implements ValidateListener {
     private static final long serialVersionUID = 1L;
     JComboBox m_selectPluginBox;
     SmallButton m_editPluginButton;
@@ -137,7 +137,7 @@ public class PluginInputEditor extends InputEditor {
         addComboBox(combobox, input, plugin);
         box.add(combobox);
        
-    	PluginPanel.addInputs(box, (Plugin) input.get(), this);
+    	PluginPanel.addInputs(box, (Plugin) input.get(), this, this);
 
         box.setBorder(new EtchedBorder());
         add(box);
@@ -150,7 +150,7 @@ public class PluginInputEditor extends InputEditor {
      * Furthermore, if expanded, update expanded inputs 
      */
     
-    void addComboBox(Box box, Input <?> input, Plugin plugin) {
+    protected void addComboBox(Box box, Input <?> input, Plugin plugin) {
         List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
         if (sAvailablePlugins.size() > 0) {
         	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {
@@ -258,7 +258,7 @@ public class PluginInputEditor extends InputEditor {
                         	}
                         	// add new items to Expansion Box
                         	if (plugin != null) {
-                        		PluginPanel.addInputs(m_expansionBox, plugin, _this);
+                        		PluginPanel.addInputs(m_expansionBox, plugin, _this, _this);
                         	}
                         } else {
                         	// it is not expanded, enable the edit button

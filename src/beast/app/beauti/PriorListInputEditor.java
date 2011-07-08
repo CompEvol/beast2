@@ -82,6 +82,7 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					refreshPanel();
 				}
 			});
         	itemBox.add(comboBox);

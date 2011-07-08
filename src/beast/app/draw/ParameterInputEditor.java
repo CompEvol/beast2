@@ -49,7 +49,7 @@ public class ParameterInputEditor extends PluginInputEditor {
     
     
 	@Override
-    void addComboBox(Box box, Input <?> input, Plugin plugin) {
+	protected void addComboBox(Box box, Input <?> input, Plugin plugin) {
 		Box paramBox = Box.createHorizontalBox();
 		RealParameter parameter = (RealParameter)input.get();
 		

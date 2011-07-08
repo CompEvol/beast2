@@ -16,7 +16,7 @@
     	</input>
 
         <input spec='UCRelaxedClockModel' id="$(n).RelaxedClock">
-            <input id='$(n).lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
+            <input id='$(n).lognormal' name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
                 <parameter name='M' id='$(n).M' value="1" estimate='false'/>
                 <parameter name='S' id='$(n).S' value="0.5" lower="0" upper="5" estimate='false'/>
             </input>

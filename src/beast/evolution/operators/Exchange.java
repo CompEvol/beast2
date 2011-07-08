@@ -91,6 +91,31 @@ public class Exchange extends TreeOperator {
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
     public double narrow(Tree tree) {
+//        Alternative implementation that has less risk of rejection due to
+//    	  selecting an invalid initial node
+//    	
+//        final int nInternalNodes = tree.getInternalNodeCount();
+//        if (nInternalNodes <= 1) {
+//            return Double.NEGATIVE_INFINITY;
+//        }
+//
+//        Node iGrandParent = tree.getNode(nInternalNodes + 1 + Randomizer.nextInt(nInternalNodes));
+//        while (iGrandParent.m_left.isLeaf() && iGrandParent.m_right.isLeaf()) {
+//                iGrandParent = tree.getNode(nInternalNodes + 1 + Randomizer.nextInt(nInternalNodes));
+//        }
+//        
+//        Node iParent = iGrandParent.m_left;
+//        Node iUncle = iGrandParent.m_right;
+//        if (iParent.getHeight() < iUncle.getHeight()) {
+//                iParent = iGrandParent.m_right;
+//                iUncle = iGrandParent.m_left;
+//        }
+//        
+//        Node i = (Randomizer.nextBoolean() ? iParent.m_left : iParent.m_right);
+//        exchangeNodes(i, iUncle, iParent, iGrandParent);
+//        return 0;
+//        
+
         final int nNodes = tree.getNodeCount();
         final Node root = tree.getRoot();
 

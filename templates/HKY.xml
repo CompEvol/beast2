@@ -237,7 +237,7 @@ TODO: Data panel: only allow selection of trees that are not initialisers
                         <populationModel spec="ConstantPopulation" id='$(n).ConstantPopulation' popSize='@$(n).popSize'/>
                     </distribution>
                     <distribution id='$(n).kappa.prior' spec='Prior' x='@$(n).hky.kappa'>
-                        <distribution spec="OneOnX"/>
+                        <distr spec="OneOnX"/>
                     </distribution>
                 </plate>
             </distribution>
