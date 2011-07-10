@@ -31,7 +31,8 @@
     <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
         <init spec='beast.evolution.tree.RandomTree' id='randomTree' initial='@tree' taxa='@alignment'>
             <populationModel spec='ConstantPopulation' popSize='@popSize'/>
-            <constraint idref='mrcaPrior'/>
+            <constraint idref='mrcaPrior2'/>
+            <constraint idref='mrcaPrior1'/>
         </init>
 
         <state>
@@ -56,16 +57,30 @@
                     <distr id="OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
                 </distribution>
 
-                <distribution id='mrcaPrior' spec='beast.math.distributions.MRCAPrior' tree='@tree' monophyletic='true'>
+                <distribution id='mrcaPrior1' spec='beast.math.distributions.MRCAPrior' tree='@tree' monophyletic='true'>
+                    <taxonset spec='TaxonSet' id='allButSiamang'>
+<!--
+-->
+                        <taxon spec='Taxon' idref='human'/>
+                        <taxon spec='Taxon' id='bonobo'/>
+                        <taxon spec='Taxon' idref='chimp'/>
+                        <taxon spec='Taxon' id='gorilla'/>
+                        <taxon spec='Taxon' id='orangutan'/>
+                    </taxonset>
+                    <distr idref='normalDistr'/>
+                </distribution>
+
+                <distribution id='mrcaPrior2' spec='beast.math.distributions.MRCAPrior' tree='@tree' monophyletic='true'>
                     <taxonset spec='TaxonSet' id='human,chimp'>
                         <taxon spec='Taxon' id='human'/>
                         <taxon spec='Taxon' id='chimp'/>
                     </taxonset>
-                    <distr spec='beast.math.distributions.Normal'>
+                    <distr id='normalDistr' spec='beast.math.distributions.Normal'>
                         <parameter name='mean' value='6.0'/>
                         <parameter name='sigma' value='0.5'/>
                     </distr>
                 </distribution>
+
 
                 <distribution id="coalescent" spec="Coalescent">
                     <treeIntervals spec='TreeIntervals' id='TreeIntervals'>

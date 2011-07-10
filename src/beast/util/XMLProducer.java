@@ -45,6 +45,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import java.io.FileWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;

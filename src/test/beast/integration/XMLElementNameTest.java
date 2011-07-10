@@ -2,7 +2,9 @@ package test.beast.integration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -15,9 +17,45 @@ import junit.framework.TestCase;
 
 
 public class XMLElementNameTest extends TestCase {
-	
+	/** test that Inputs have a unique name 
+	 * It can happen that a derived class uses the same Input name as one of its ancestors
+	 */
 	@Test
-	public void test_ReservedExamplesNames() {
+	public void test_NameUniqueness() {
+		List<String> sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+		List<String> sImproperInputs = new ArrayList<String>();
+		for (String sPlugin : sPluginNames) {
+			try {
+    			Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+    			List<Input<?>> inputs = plugin.listInputs();
+    			Set<String> sNames =new HashSet<String>();
+    			for (Input<?> input : inputs) {
+    				String sName = input.getName();
+    				if (sNames.contains(sName)) {
+                    	sImproperInputs.add(sPlugin + "." + sName);
+    					break;
+    				}
+    				sNames.add(sName);
+    				
+    			}
+        	} catch (InstantiationException e) {
+        		// ignore
+        	} catch (Exception e) {
+        		// ignore
+        	}
+		}
+		if (sImproperInputs.size() > 0) {
+			String sStr = sImproperInputs.toString();
+			sStr = sStr.replaceAll(",", "\n");
+			System.err.println("Input names are not unique:\n" + sStr);
+		}
+		// not activated till problem with naming is solved
+		assertTrue("Input names are not unique: " + sImproperInputs.toString(), sImproperInputs.size() == 0);
+	}	
+	
+	/** test that Inputs that use reserved names have the correct type **/
+	@Test
+	public void test_ReservedElementNames() {
 		// retrieve list of reserved names and their classes
 		XMLParser parser = new XMLParser();
 	    HashMap<String, String> sElement2ClassMap = parser.getElement2ClassMap();

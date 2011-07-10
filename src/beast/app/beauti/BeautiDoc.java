@@ -62,6 +62,7 @@ public class BeautiDoc extends Plugin {
     		mergeSequences(sTemplate);
         	connectModel();
         	save(sFileName);
+        	break;
     	}
     	case UNKNOWN:
     		System.exit(0);

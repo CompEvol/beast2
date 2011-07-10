@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Description(
         value = "Base class for all plug-ins, which is pretty much every class " +
@@ -36,6 +37,8 @@ import java.util.List;
         isInheritable = false
 )
 abstract public class Plugin {
+	/** set of plugins that have this plugin in one of its Inputs **/
+	public Set<Plugin> outputs = new HashSet<Plugin>();
 	
 	/* default constructor */
 	public Plugin() {}

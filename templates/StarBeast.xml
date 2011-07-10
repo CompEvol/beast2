@@ -98,8 +98,8 @@
     
 	<taxonset id='taxonsuperset' spec='beast.evolution.alignment.TaxonSet'/>
 
-    <tree spec='RandomTree' id='randomSpeciesTree' initial='@speciesTree'
-        taxonset='@taxonsuperset'>
+    <tree spec='RandomTree' id='randomSpeciesTree' initial='@speciesTree'>
+        <taxonset idref='taxonsuperset'/>
         <populationModel spec='ConstantPopulation'>
 		<popSize spec='parameter.RealParameter' value='1'/>
 	</populationModel>
@@ -174,7 +174,7 @@
                 <distr id="UniformRelDeathRate" spec='distributions.Uniform' lower='0' upper='1'/>
             </distribution>
 -->
-            <distribution id="popMean.prior" spec="beast.math.distributions.Prior" x="@popMean" distribution='@OneOnX'/>
+            <distribution id="popMean.prior" spec="beast.math.distributions.Prior" x="@popMean" distr='@OneOnX'/>
 
             <plate var='n' range='#alignments'>
                 <distribution id="kappa.prior$(n)" spec="beast.math.distributions.Prior" x="@hky.kappa$(n)">

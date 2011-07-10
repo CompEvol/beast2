@@ -33,6 +33,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import beast.app.BeastMCMC;
+import beast.app.beauti.BeautiInitDlg.ActionOnExit;
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.InputEditor;
 import beast.app.draw.ModelBuilder;
@@ -510,6 +511,9 @@ public class Beauti extends JTabbedPane {
 	        
 	        
 	        doc.initialize(dlg.m_endState, dlg.m_sXML, dlg.m_sTemplateXML, dlg.m_sOutputFileName);
+	        if (dlg.m_endState == ActionOnExit.WRITE_XML) {
+	        	return;
+	        }
 	
 	        final Beauti beauti = new Beauti(doc);
 

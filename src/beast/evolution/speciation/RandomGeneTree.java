@@ -36,10 +36,14 @@ public class RandomGeneTree extends RandomTree {
         double fLowestHeight = m_speciesTree.get().getRoot().getHeight();
 
         for(int attempts = 0; attempts < 1000; ++attempts) {
-            List<Node> rootNode = simulateCoalescent(nodes, demographic, fLowestHeight, Double.POSITIVE_INFINITY);
-            if( rootNode.size() == 1 ) {
-                return rootNode.get(0);
-            }
+        	try {
+	            List<Node> rootNode = simulateCoalescent(nodes, demographic, fLowestHeight, Double.POSITIVE_INFINITY);
+	            if( rootNode.size() == 1 ) {
+	                return rootNode.get(0);
+	            }
+        	} catch (ConstraintViolatedException e) {
+				// TODO: handle exception
+			}
         }
 
         throw new RuntimeException("failed to merge trees after 1000 tries!");

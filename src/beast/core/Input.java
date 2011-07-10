@@ -314,7 +314,7 @@ public class Input<T> {
             determineClass(plugin);
         }
         if (value instanceof String) {
-            setStringValue((String) value);
+            setStringValue((String) value, plugin);
         } else if (this.value != null && this.value instanceof List<?>) {
             if (theClass.isAssignableFrom(value.getClass())) {
                 @SuppressWarnings("rawtypes")
@@ -329,12 +329,21 @@ public class Input<T> {
 //                    }
 //                }
                 vector.add(value);
+                if (value instanceof Plugin) {
+                	((Plugin)value).outputs.add(plugin);
+                }
             } else {
                 throw new Exception("Input 101: type mismatch for input " + getName());
             }
 
         } else {
             if (theClass.isAssignableFrom(value.getClass())) {
+                if (value instanceof Plugin) {
+                	if (this.value != null) {
+                		((Plugin)this.value).outputs.remove(plugin);
+                	}
+                	((Plugin)value).outputs.add(plugin);
+                }
                 this.value = (T) value;
             } else {
                 throw new Exception("Input 102: type mismatch for input " + getName());
@@ -423,7 +432,7 @@ public class Input<T> {
      * @throws Exception when all conversions fail
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setStringValue(String sValue) throws Exception {
+    private void setStringValue(String sValue, Plugin plugin) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (theClass.equals(Integer.class)) {
             value = (T) new Integer(sValue);
@@ -452,6 +461,7 @@ public class Input<T> {
             } else {
                 value = (T) param;
             }
+            param.outputs.add(plugin);
             return;
         }
 
@@ -474,6 +484,9 @@ public class Input<T> {
                 ((List) value).add(o);
             } else {
                 value = (T) o;
+            }
+            if (o instanceof Plugin) {
+                ((Plugin) o).outputs.add(plugin);
             }
         } catch (Exception e) {
             throw new Exception("Input 103: type mismatch, cannot initialize input '" + getName() +

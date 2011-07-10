@@ -125,7 +125,7 @@ public class BeautiPanelConfig extends Plugin {
 	 */
 	public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
 		try {
-if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
+			if (m_parentPlugins != null && m_parentPlugins.size() > 0) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
 			
 			List<Plugin> plugins = new ArrayList<Plugin>();
 			m_parentPlugins = new ArrayList<Plugin>();
@@ -155,15 +155,14 @@ if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iP
 							}
 							//throw new Exception ("Don't know which element to pick from the list. List component should come with a condition. " + m_sPathComponents[i]);
 						} else {
-							if (m_sConditionalAttribute[i].equals("id")) {
-								for (int j = 0; j < list.size(); j++) {
-									Plugin plugin2 = (Plugin) list.get(j);
-									if (plugin2.getID().equals(m_sConditionalValue[i])) {
-										plugins.add(plugin2);
-										m_parentPlugins.add(plugin);
-										m_parentInputs.add(namedInput);
-										break;
-									}
+							for (int j = 0; j < list.size(); j++) {
+								Plugin plugin2 = (Plugin) list.get(j);
+								if ((m_sConditionalAttribute[i].equals("id") && plugin2.getID().equals(m_sConditionalValue[i])) ||
+								    (m_sConditionalAttribute[i].equals("type") && plugin2.getClass().getName().equals(m_sConditionalValue[i]))) {
+									plugins.add(plugin2);
+									m_parentPlugins.add(plugin);
+									m_parentInputs.add(namedInput);
+									break;
 								}
 							}
 						}
@@ -174,12 +173,14 @@ if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iP
 							m_parentPlugins.add(plugin);
 							m_parentInputs.add(namedInput);
 						} else {
-							if (m_sConditionalAttribute[i].equals("id")) {
-								if (plugin.getID().equals(m_sConditionalValue[i])) {
+							if ((m_sConditionalAttribute[i].equals("id") && plugin.getID().equals(m_sConditionalValue[i])) ||
+							    (m_sConditionalAttribute[i].equals("type") && plugin.getClass().getName().equals(m_sConditionalValue[i]))) {
+//							if (m_sConditionalAttribute[i].equals("id")) {
+//								if (plugin.getID().equals(m_sConditionalValue[i])) {
 									plugins.add(plugin);
 									m_parentPlugins.add(plugin);
 									m_parentInputs.add(namedInput);
-								}
+//								}
 							}
 						}
 					} else {
@@ -206,7 +207,7 @@ if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iP
 			}
 			m_input.setRule(Validate.REQUIRED);
 			syncTo(iPartition);
-if (m_parentPlugins != null) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
+			if (m_parentPlugins != null && m_parentPlugins.size() > 0) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
 			return m_input;
 		} catch (Exception e) {
 			System.err.println("Warning: could not find objects in path " + Arrays.toString(m_sPathComponents));

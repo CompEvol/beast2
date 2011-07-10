@@ -10,6 +10,7 @@ import javax.swing.JCheckBox;
 
 import beast.app.beauti.BeautiConfig;
 import beast.core.Input;
+import beast.core.Operator;
 import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
 
@@ -79,11 +80,31 @@ public class ParameterInputEditor extends PluginInputEditor {
 			});
 			paramBox.add(m_isEstimatedBox);
 			
+			// only show the estimate flag if there is an operator that works on this parameter
+			m_isEstimatedBox.setVisible(InputEditor.g_bExpertMode);
+			//m_editPluginButton.setVisible(false);
+			//m_bAddButtons = false;
+			for (Plugin plugin2 : ((Plugin)m_input.get()).outputs) {
+				if (plugin2 instanceof Operator) {
+					m_isEstimatedBox.setVisible(true);
+					//m_editPluginButton.setVisible(true);
+					break;
+				}
+			}
+			
 			
 			box.add(paramBox);
 		}
     }
 
+	@Override
+	protected void addValidationLabel() {
+		super.addValidationLabel();
+		// make edit button invisible (if it exists) when this parameter is not estimateable
+		if (m_editPluginButton != null) 
+			m_editPluginButton.setVisible(m_isEstimatedBox.isVisible());
+	}
+	
 	@Override
 	void refresh() {
 		RealParameter parameter = (RealParameter)m_input.get();
