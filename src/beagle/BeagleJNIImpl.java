@@ -264,8 +264,8 @@ public class BeagleJNIImpl implements Beagle {
         return details;
     }
 
-	@Override
-	public void setProportionInvariantCorrection(double[] proportionInvariantCorrection) {
-		BeagleJNIWrapper.INSTANCE.setProportionInvariantCorrection(instance, proportionInvariantCorrection);		
-	}
+//	@Override
+//	public void setProportionInvariantCorrection(double[] proportionInvariantCorrection) {
+//		BeagleJNIWrapper.INSTANCE.setProportionInvariantCorrection(instance, proportionInvariantCorrection);		
+//	}
 }

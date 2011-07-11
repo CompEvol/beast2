@@ -1,6 +1,5 @@
 package test.beast.app;
 
-import java.awt.HeadlessException;
 import java.io.File;
 
 import org.junit.Test;

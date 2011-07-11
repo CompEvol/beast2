@@ -368,5 +368,5 @@ public interface Beagle {
      * proportion invariant.
      * @param proportionInvariantCorrection
      */
-    void setProportionInvariantCorrection(double [] proportionInvariantCorrection);
+    //void setProportionInvariantCorrection(double [] proportionInvariantCorrection);
 }
