@@ -16,36 +16,54 @@ import org.apache.commons.math.MathException;
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
 import beast.core.Plugin;
+import beast.evolution.tree.TreeDistribution;
+import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.ParametricDistribution;
 
 public class ParametricDistributionInputEditor extends PluginInputEditor {
 
 	private static final long serialVersionUID = 1L;
+	boolean m_bUseDefaultBehavior;
 
 	@Override
 	public Class<?> type() {
+		//return ParametricDistributionInputEditor.class;
 		return ParametricDistribution.class;
 	}
 	
     @Override
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
-		m_bAddButtons = bAddButtons;
-        m_input = input;
-        m_plugin = plugin;
-    	if (input.get() != null) {
-    		super.init(input, plugin, EXPAND.TRUE, bAddButtons);
+    	m_bUseDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
+
+    	if (m_bUseDefaultBehavior) {
+    		super.init(input, plugin, bExpand, bAddButtons);
+    	} else {
+	    	m_bAddButtons = bAddButtons;
+	        m_input = input;
+	        m_plugin = plugin;
+	    	if (input.get() != null) {
+	    		super.init(input, plugin, EXPAND.TRUE, bAddButtons);
+	    	}
+	    	add(createGraph());
     	}
-    	add(createGraph());
     } // init
 
 
 	@Override
 	/** suppress combobox **/
-	protected void addComboBox(Box box, Input<?> input, Plugin plugin) {}    
+	protected void addComboBox(Box box, Input<?> input, Plugin plugin) {    
+		if (m_bUseDefaultBehavior) {
+			super.addComboBox(box, input, plugin);
+		}
+	}
 
 	@Override
 	/** suppress input label**/
-	protected void addInputLabel() {}
+	protected void addInputLabel() {
+		if (m_bUseDefaultBehavior) {
+			super.addInputLabel();
+		}
+	}
 
 	/** maps most significant digit to nr of ticks on graph **/ 
 	final static int [] NR_OF_TICKS = new int [] {0,10,8,6,8,10,6,7,8,9, 10};

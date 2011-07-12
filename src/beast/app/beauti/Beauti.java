@@ -539,7 +539,7 @@ public class Beauti extends JTabbedPane {
 			
 			beauti.setVisible(true);
 			beauti.refreshPanel();
-			JFrame frame = new JFrame("Beauti II");
+			JFrame frame = new JFrame("Beauti II: " + dlg.m_sTemplateName);
 			frame.setIconImage(BeautiPanel.getIcon(6, null).getImage());
 
 			JMenuBar menuBar = beauti.makeMenuBar(); 

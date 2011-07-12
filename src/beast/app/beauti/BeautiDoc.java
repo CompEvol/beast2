@@ -48,6 +48,7 @@ public class BeautiDoc extends Plugin {
 	}
 	
     void initialize(BeautiInitDlg.ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
+    	BeautiConfig.clear();
     	switch (endState) {
     	case SHOW_DETAILS_USE_TEMPLATE: {
     		mergeSequences(sTemplate);

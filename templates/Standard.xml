@@ -1,8 +1,8 @@
 <beast version='2.0'
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
+<!--        hidePanels='TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL'-->
     <beauticonfig spec='beast.app.beauti.BeautiConfig'
-        hidePanels='TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL'
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers'
         inlinePlugins ='beast.core.MCMC.distribution,
@@ -107,7 +107,10 @@
             hasPartitions="false" icon='9.png' forceExpansion='TRUE'
         />
 
-
+        <constraint spec='beast.app.beauti.InputConstraint' inputname='tree'>
+            <plate var='n' range='#alignments'><plugin idref='$(n).treeLikelihood'/> </plate>
+            <plate var='n' range='#alignments'><candidate idref='$(n).tree'/> </plate>
+        </constraint>
     </beauticonfig>
 
 <!--

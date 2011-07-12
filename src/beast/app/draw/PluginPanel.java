@@ -444,6 +444,12 @@ public class PluginPanel extends JPanel {
 	}
 
 	public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
+        List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
+        if (sPlugins != null) {
+        	return sPlugins;
+        }
+		
+		
         /* add ascendants to tabu list */
         if (sTabuList == null) {
             sTabuList = new ArrayList<String>();
@@ -456,7 +462,7 @@ public class PluginPanel extends JPanel {
         System.err.println(sTabuList);
 
         /* collect all plugins in the system, that are not in the tabu list*/
-        List<String> sPlugins = new ArrayList<String>();
+        sPlugins = new ArrayList<String>();
         for (Plugin plugin : g_plugins.values()) {
             if (input.getType().isAssignableFrom(plugin.getClass())) {
                 boolean bIsTabu = false;

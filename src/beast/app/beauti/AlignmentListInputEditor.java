@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
@@ -51,26 +52,42 @@ public class AlignmentListInputEditor extends ListInputEditor {
 //			public String getDescription() {return "Nexus file (*.nex)";}
 //		});
 		fileChooser.setDialogTitle("Load Sequence");
+		fileChooser.setMultiSelectionEnabled(true);
 		int rval = fileChooser.showOpenDialog(null);
 
 		if (rval == JFileChooser.APPROVE_OPTION) {
-			String sFileName = fileChooser.getSelectedFile().toString();
-			if (sFileName.lastIndexOf('/') > 0) {
-				Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-			}
-			if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
-				NexusParser parser = new NexusParser();
-				try {
-					parser.parseFile(sFileName);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Loading of " + sFileName + " failed: " + ex.getMessage());
-					return null;
+
+			File [] files = fileChooser.getSelectedFiles();
+			for (int i = 0; i < files.length; i++) {
+				String sFileName = files[i].getAbsolutePath();
+				if (sFileName.lastIndexOf('/') > 0) {
+					Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
 				}
-				return parser.m_alignment;
-			}
-			if (sFileName.toLowerCase().endsWith(".xml")) {
-				return getXMLData(sFileName);
+				Plugin plugin2 = null;
+				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
+					NexusParser parser = new NexusParser();
+					try {
+						parser.parseFile(sFileName);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Loading of " + sFileName + " failed: " + ex.getMessage());
+						return null;
+					}
+					plugin2 = parser.m_alignment;
+				}
+				if (sFileName.toLowerCase().endsWith(".xml")) {
+					plugin2 =  getXMLData(sFileName);
+				}
+				if (i < files.length - 1) {
+		            try {
+		           		m_input.setValue(plugin2, m_plugin);
+		            } catch (Exception ex) {
+		                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
+		            }
+		            addSingleItem(plugin2);
+				} else {
+					return plugin2;
+				}
 			}
 		}
 		return null;

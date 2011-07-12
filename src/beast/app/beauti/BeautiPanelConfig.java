@@ -233,7 +233,8 @@ public class BeautiPanelConfig extends Plugin {
 			if (m_bIsList) {			
 				List<Object> list = (List<Object>) m_input.get();
 				List<Object> targetList = ((List<Object>)input.get());
-				targetList.clear();
+				// TODO: only clear former members
+				targetList.clear(); 
 				targetList.addAll(list);
 			} else {
 				try {
@@ -243,11 +244,7 @@ public class BeautiPanelConfig extends Plugin {
 					e.printStackTrace();
 				}
 			}
-		} else {
-			int h = 3;
-			h++;
 		}
-		        
 	} 
 
 	/** initialise m_input, and either m_plugin or m_pluginList **/
