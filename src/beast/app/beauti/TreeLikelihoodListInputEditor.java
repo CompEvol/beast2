@@ -11,6 +11,7 @@ import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.likelihood.TreeLikelihood;
 
 public class TreeLikelihoodListInputEditor extends ListInputEditor {
@@ -35,15 +36,18 @@ public class TreeLikelihoodListInputEditor extends ListInputEditor {
 	@Override
     protected void addPluginItem(Box itemBox, Plugin plugin) {
     	TreeLikelihood likelihood = (TreeLikelihood) plugin;
+    	Alignment data = likelihood.m_data.get();
         // Label of name
-        String sName = plugin.getID();
+        String sName = "Alignment " + data.getID() + " (" + data.getNrTaxa() + " taxa " + data.getSiteCount() + " sites)";
         if (sName == null || sName.length() == 0) {
             sName = plugin.getClass().getName();
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
         JTextField entry= new JTextField(sName);
+        entry.setEditable(false);
         entry.setMinimumSize(new Dimension(200, 16));
         entry.setMaximumSize(new Dimension(200, 20));
+
         m_entries.add(entry);
         itemBox.add(entry);
         

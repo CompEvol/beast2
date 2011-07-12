@@ -12,6 +12,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
+import beast.math.distributions.MRCAPrior;
 
 @Description("Defines properties for custom panels in Beauti")
 public class BeautiPanelConfig extends Plugin {
@@ -277,5 +278,10 @@ public class BeautiPanelConfig extends Plugin {
 		}
 		return m_input.get().getClass().getName();
 	}
+
+//	public void addItem(Plugin plugin) {
+//		m_parentInputs.add(m_parentInputs.get(m_parentInputs.size()-1));
+//		m_parentPlugins.add(m_parentPlugins.get(m_parentPlugins.size()-1));
+//	}
 
 }

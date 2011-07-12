@@ -240,7 +240,7 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
     	m_comboBox.add(comboBox);
     	m_taxonButton.add(taxonButton);
     	itemBox.add(createGlue());
-    }
+    } // addPluginItem
 	
 	
 	/** class to deal with toggling monophyletic flag on an MRCAPrior **/
@@ -259,18 +259,28 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
 			}
 		}
 	}
+
 	
+	@Override
+	protected void addItem() {
+		super.addItem();
+
+	    Component c = this;
+	    while (((Component) c).getParent() != null) {
+	      	c = ((Component) c).getParent();
+	      	if (c instanceof BeautiPanel) {
+	      		BeautiPanel panel = (BeautiPanel) c;
+	      		BeautiPanelConfig cfgPanel = panel.m_config;
+	      		cfgPanel.sync(0);
+	      	}
+        }
+
+	} // addItem
+
+	@Override
     public Plugin pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
     	MRCAPrior prior = new MRCAPrior();
     	try {
-//            Component c = this;
-//            while (((Component) c).getParent() != null) {
-//            	c = ((Component) c).getParent();
-//            	if (c instanceof BeautiPanel) {
-//            		BeautiDoc doc = ((BeautiPanel) c).m_doc;
-//            		doc.m_priors.setValue(prior, doc);
-//            	}
-//            }
 
             List<Tree> trees = new ArrayList<Tree>();
 	    	for (StateNode node : PluginPanel.g_stateNodes) {

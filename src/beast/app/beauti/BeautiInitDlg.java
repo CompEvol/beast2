@@ -214,7 +214,6 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         Box radioBox = Box.createVerticalBox();
         // Create the radio buttons.
         JRadioButton firstButton = new JRadioButton(BeautiConfig.getButtonLabel(this, "Create new specification"));
-        //firstButton.setSelected(true);
 
         JRadioButton secondButton = new JRadioButton(BeautiConfig.getButtonLabel(this, "Load existing file"));
 
@@ -311,6 +310,13 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
         centralBox.add(m_loadExistingBox);
 
         validate(ValidationStatus.IS_VALID);
+
+        
+        
+        firstButton.setSelected(true);
+        m_createNewBox.setVisible(true);
+        m_loadExistingBox.setVisible(false);
+        
         return centralBox;
     }
     
@@ -419,7 +425,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 			if (files != null) {
 				for (File template : files ) {
 					String sFileName = template.getAbsolutePath();
-					if (sFileName.toLowerCase().endsWith(".xml")) {
+					if (sFileName.toLowerCase().endsWith(".xml") && containsBeautiSpec(sFileName)) {
 						m_sTemplates.put(nameFromFile(sFileName), sFileName);
 					}
 				}
@@ -559,6 +565,21 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 	void loadBeastFile() {
 		if (loadXmlFile(true)) {
 			
+		}
+	}
+	
+	/** check that sFileName is an XML file containing a beauticonfig element **/
+	boolean containsBeautiSpec(String sFileName) {
+		try {
+			File template = new File(sFileName);
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        //factory.setValidating(true);
+	        Document doc = factory.newDocumentBuilder().parse(template);
+	        doc.normalize();
+	        NodeList list = doc.getElementsByTagName("beauticonfig");
+	        return list.getLength() > 0;
+		} catch (Exception e) {
+			return false;
 		}
 	}
 	
