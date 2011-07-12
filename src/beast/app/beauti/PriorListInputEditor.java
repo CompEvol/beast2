@@ -16,10 +16,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 
+import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
 import beast.core.Distribution;
@@ -51,7 +51,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
 	@Override
 	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
-//		if (!InputEditor.g_bExpertMode) {
+//		if (!InputEditor.g_bExpertMode && ((List<?>) input.get()).size() > 0 && !(((List<?>) input.get()).get(0) instanceof MRCAPrior)) {
 //			m_buttonStatus = BUTTONSTATUS.NONE;
 //		}
 		m_comboBox = new ArrayList<JComboBox>();
@@ -233,6 +233,9 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
 			isEstimatedBox.addActionListener(new MRCAPriorActionListener(prior));
 			itemBox.add(isEstimatedBox);
         }
+        if (!(plugin instanceof MRCAPrior)) {
+        	m_delButton.get(m_delButton.size() - 1).setVisible(false);
+        }
     	comboBox.setMaximumSize(new Dimension(1024, 24));
     	m_comboBox.add(comboBox);
     	m_taxonButton.add(taxonButton);
@@ -260,7 +263,16 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
     public Plugin pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
     	MRCAPrior prior = new MRCAPrior();
     	try {
-	    	List<Tree> trees = new ArrayList<Tree>();
+//            Component c = this;
+//            while (((Component) c).getParent() != null) {
+//            	c = ((Component) c).getParent();
+//            	if (c instanceof BeautiPanel) {
+//            		BeautiDoc doc = ((BeautiPanel) c).m_doc;
+//            		doc.m_priors.setValue(prior, doc);
+//            	}
+//            }
+
+            List<Tree> trees = new ArrayList<Tree>();
 	    	for (StateNode node : PluginPanel.g_stateNodes) {
 	    		if (node instanceof Tree && ((Tree) node).m_initial.get() != null) {
 	    			trees.add((Tree) node);
@@ -291,14 +303,4 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
     	return prior;
     }
 
-    @Override
-    public void refreshPanel() {
-        Component c = this;
-        while (((Component) c).getParent() != null) {
-        	c = ((Component) c).getParent();
-        	if (c instanceof ListSelectionListener) {
-        		((ListSelectionListener) c).valueChanged(new ListSelectionEvent(this,0,0,false));
-        	}
-        }
-    }
 }

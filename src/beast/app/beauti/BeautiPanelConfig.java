@@ -155,15 +155,20 @@ public class BeautiPanelConfig extends Plugin {
 							}
 							//throw new Exception ("Don't know which element to pick from the list. List component should come with a condition. " + m_sPathComponents[i]);
 						} else {
+							int nMatches = 0;
 							for (int j = 0; j < list.size(); j++) {
 								Plugin plugin2 = (Plugin) list.get(j);
-								if ((m_sConditionalAttribute[i].equals("id") && plugin2.getID().equals(m_sConditionalValue[i])) ||
-								    (m_sConditionalAttribute[i].equals("type") && plugin2.getClass().getName().equals(m_sConditionalValue[i]))) {
+								if (matches(plugin2, m_sConditionalAttribute[i], m_sConditionalValue[i])) {
 									plugins.add(plugin2);
 									m_parentPlugins.add(plugin);
 									m_parentInputs.add(namedInput);
+									nMatches++;
 									break;
 								}
+							}
+							if (nMatches == 0) {
+								m_parentInputs.add(namedInput);
+								m_parentPlugins.add(plugin);
 							}
 						}
 					} else if (namedInput.get() instanceof Plugin) {
@@ -173,14 +178,12 @@ public class BeautiPanelConfig extends Plugin {
 							m_parentPlugins.add(plugin);
 							m_parentInputs.add(namedInput);
 						} else {
-							if ((m_sConditionalAttribute[i].equals("id") && plugin.getID().equals(m_sConditionalValue[i])) ||
-							    (m_sConditionalAttribute[i].equals("type") && plugin.getClass().getName().equals(m_sConditionalValue[i]))) {
-//							if (m_sConditionalAttribute[i].equals("id")) {
-//								if (plugin.getID().equals(m_sConditionalValue[i])) {
+							if (matches(plugin, m_sConditionalAttribute[i], m_sConditionalValue[i])) {
+//							if ((m_sConditionalAttribute[i].equals("id") && plugin.getID().equals(m_sConditionalValue[i])) ||
+//							    (m_sConditionalAttribute[i].equals("type") && plugin.getClass().getName().equals(m_sConditionalValue[i]))) {
 									plugins.add(plugin);
 									m_parentPlugins.add(plugin);
 									m_parentInputs.add(namedInput);
-//								}
 							}
 						}
 					} else {
@@ -215,6 +218,13 @@ public class BeautiPanelConfig extends Plugin {
 		return null;
 	} // resolveInputs
 	
+	private boolean matches(Plugin plugin2, String sConditionalAttribute, String sConditionalValue) {
+		if (sConditionalAttribute.equals("id") && plugin2.getID().equals(sConditionalValue)) return true;
+	    if (sConditionalAttribute.equals("type") && plugin2.getClass().getName().equals(sConditionalValue)) return true;
+	    if (sConditionalAttribute.equals("type!") && !plugin2.getClass().getName().equals(sConditionalValue)) return true;
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	public void sync(int iPartition) {
 		if (m_parentInputs.size() > 0) { 
@@ -232,7 +242,11 @@ public class BeautiPanelConfig extends Plugin {
 					e.printStackTrace();
 				}
 			}
+		} else {
+			int h = 3;
+			h++;
 		}
+		        
 	} 
 
 	/** initialise m_input, and either m_plugin or m_pluginList **/

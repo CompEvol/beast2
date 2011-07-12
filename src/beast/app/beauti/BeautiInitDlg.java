@@ -14,12 +14,14 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -75,6 +77,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
     String m_sXMLName;
     String m_sTemplateXML;
     String m_sTemplateName;
+    String m_sTemplateFileName;
 
 	public BeautiInitDlg(String [] args, BeautiDoc doc) {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -111,6 +114,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 				} else if (args[i].equals("-template")) {
 					String sFileName = args[i + 1];
 					processTemplate(sFileName);
+					m_sTemplateFileName = sFileName;
 					m_sTemplateName = nameFromFile(sFileName);
 					i += 2;
 				} else if (args[i].equals("-nex")) {
@@ -383,6 +387,10 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
     	String m_sTipText;
     	String m_sButtonText;
     	JButton m_button;
+
+    	JComboBox m_templates;
+    	Map<String,String> m_sTemplates;
+    		
     	boolean m_bBeastFile;
     	
     	public ButtonInputEditor() {}
@@ -396,12 +404,90 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		@Override
 		public Class<?> type() {return null;}
 		
+		final static String OTHER = "<other>";
+		
 		/** construct an editor consisting of a label and input entry **/
 		public void init(Input<?> input, Plugin plugin, EXPAND bExpand) {
 			m_input = input;
 			m_plugin = plugin;
 
 			addInputLabel(m_sLabel, m_sTipText);
+
+			m_sTemplates = new HashMap<String, String>();
+			File templates = new File("templates");
+			File [] files = templates.listFiles();
+			if (files != null) {
+				for (File template : files ) {
+					String sFileName = template.getAbsolutePath();
+					if (sFileName.toLowerCase().endsWith(".xml")) {
+						m_sTemplates.put(nameFromFile(sFileName), sFileName);
+					}
+				}
+			}
+			// deal with non-standard template passed as command line argument
+			if (m_sTemplateName != null && !m_sTemplates.containsKey(m_sTemplateName)) {
+				m_sTemplates.put(m_sTemplateName, m_sTemplateFileName);
+			}
+			int nTemplates = m_sTemplates.size();
+			String [] sTemplates = new String[nTemplates + 1];
+			sTemplates[nTemplates] = OTHER;
+			int k = 0;
+			for (String sTemplate : m_sTemplates.keySet()) {
+				sTemplates[k++] = sTemplate;
+			}
+			
+			m_templates = new JComboBox(sTemplates);
+			Dimension size = new Dimension(200, 20);
+			m_templates.setPreferredSize(size);
+			m_templates.setMaximumSize(size);
+			if (m_sTemplateName != null ) {
+				m_templates.setSelectedItem(m_sTemplateName);
+			} else {
+				// initialise with default template
+				m_templates.setSelectedItem(0);
+				m_sTemplateName = (String) m_templates.getSelectedItem();
+				if (m_sTemplateName.equals(OTHER)) {
+					m_sTemplateName = null;
+				} else {
+					m_sTemplateFileName = m_sTemplates.get(m_sTemplateName);
+					try {
+						processTemplate(m_sTemplateFileName);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			m_templates.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JComboBox comboBox = (JComboBox) e.getSource();
+                    String sSelected = (String) comboBox.getSelectedItem();
+                    if (sSelected.equals(OTHER)) {
+						loadTemplateFile();
+						m_sTemplateName = m_templateButton.getText();
+						m_sTemplates.put(m_sTemplateName, m_sTemplateFileName);
+						comboBox.addItem(m_sTemplateName);
+						m_templates.setSelectedItem(m_sTemplateName);
+                    } else {
+                    	m_sTemplateName = m_sTemplates.get(sSelected);
+                    	m_sTemplateFileName = m_sTemplates.get(m_sTemplateName);
+                    	try {
+	    					processTemplate(m_sTemplateFileName);
+	    					m_templateButton.setText(nameFromFile(m_sTemplateFileName));
+	    					if (m_doc.m_alignments.get().size()>0) {
+	    						m_startTemplateButton.setEnabled(true);
+	    						m_generateXMLButton.setEnabled(true);
+	    					}
+                    	} catch (Exception e2) {
+							System.err.println(e2.getMessage());
+						}
+                    }
+				}
+			});
+			add(m_templates);
+			
+			
 			m_button = new JButton(m_sButtonText);
 			//m_button.setMinimumSize(new Dimension(100,16));
 			//m_button.setPreferredSize(new Dimension(200,24));
@@ -428,6 +514,13 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 				}
 			});
 			add(m_button);
+			
+			if (m_bBeastFile) {
+				m_templates.setVisible(false);
+			} else {
+				m_button.setVisible(false);
+			}
+			
 			addValidationLabel();
 			m_validateLabel.setVisible(false);
 			add(Box.createGlue());
@@ -489,6 +582,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 					m_beastButton.setText(nameFromFile(sFileName));
 					m_startBeastButton.setEnabled(true);
 				} else {
+					m_sTemplateFileName = sFileName;
 					processTemplate(sFileName);
 					m_templateButton.setText(nameFromFile(sFileName));
 					if (m_doc.m_alignments.get().size()>0) {

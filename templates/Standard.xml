@@ -48,11 +48,13 @@
             hasPartitions="false" icon='0.png' forceExpansion='FALSE'
             type='beast.evolution.likelihood.TreeLikelihood'
         />
+<!--
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
             path='distribution/distribution[id="prior"]/distribution[type="beast.math.distributions.MRCAPrior"]'
             hasPartitions="false" icon='1.png' forceExpansion='FALSE'
             isVisible='true'
         />
+-->
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxan was sampled"
             path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
             hasPartitions="true" icon='2.png' forceExpansion='TRUE'
@@ -82,6 +84,19 @@
             hasPartitions="false" icon='7.png' forceExpansion='TRUE_START_COLLAPSED'
             type='beast.core.Distribution'
         />
+
+<!--
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MRCA Priors" tiptext="Priors over internal nodes in a tree"
+            path='distribution/distribution[id="prior"]/distribution[type=beast.math.distributions.MRCAPrior]'
+            hasPartitions="false" icon='2.png' forceExpansion='TRUE_START_COLLAPSED'
+            type='beast.core.Distribution'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
+            path='distribution/distribution[id="prior"]/distribution[type!=beast.math.distributions.MRCAPrior]'
+            hasPartitions="false" icon='7.png' forceExpansion='TRUE_START_COLLAPSED'
+            type='beast.core.Distribution'
+        />
+-->
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
             hasPartitions="false" icon='8.png' forceExpansion='TRUE_START_COLLAPSED'
