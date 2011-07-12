@@ -192,13 +192,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		System.err.print("BeautiPanel::valueChanged " + m_iPartition + " => ");
-		if (e != null) {
-//			if (m_iPartition == m_listOfPartitions.getSelectedIndex()) {
-//				return;
-//			}
+//		if (e != null) {
 			m_config.sync(m_iPartition);
-			m_iPartition = m_listOfPartitions.getSelectedIndex();
-		}
+			if (m_listOfPartitions != null) {
+				m_iPartition = m_listOfPartitions.getSelectedIndex();
+			}
+//		}
 		System.err.println(m_iPartition);
 		try {
 			refreshPanel();

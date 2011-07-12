@@ -307,6 +307,11 @@ public class Input<T> {
     @SuppressWarnings("unchecked")
     public void setValue(Object value, Plugin plugin) throws Exception {
         if (value == null) {
+           	if (this.value != null) {
+                if (value instanceof Plugin) {
+                	((Plugin)this.value).outputs.remove(plugin);
+                }
+           	}
             this.value = null;
             return;
         }

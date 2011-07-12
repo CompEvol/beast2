@@ -77,7 +77,6 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
     String m_sTemplateName;
 
 	public BeautiInitDlg(String [] args, BeautiDoc doc) {
-		setModalityType(DEFAULT_MODALITY_TYPE);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		m_doc = doc;
 		m_dlg = this;
@@ -88,6 +87,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		if (m_endState != ActionOnExit.UNKNOWN) {
 			dispose();
 		} else {
+			setModalityType(DEFAULT_MODALITY_TYPE);
 			setVisible(true);
 		}
 	}
@@ -441,7 +441,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
     
     public final static String ICONPATH = "beast/app/beauti/";
     
-	ImageIcon getIcon(String sIcon) {
+	public static ImageIcon getIcon(String sIcon) {
         String sIconLocation = ICONPATH + sIcon +".png";
         try {
 	        URL url = (URL)ClassLoader.getSystemResource(sIconLocation);

@@ -29,7 +29,12 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 	
     @Override
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
-    	super.init(input, plugin, EXPAND.TRUE, bAddButtons);
+		m_bAddButtons = bAddButtons;
+        m_input = input;
+        m_plugin = plugin;
+    	if (input.get() != null) {
+    		super.init(input, plugin, EXPAND.TRUE, bAddButtons);
+    	}
     	add(createGraph());
     } // init
 
@@ -52,12 +57,6 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 
 		@Override
 		public void paintComponent(java.awt.Graphics g) {
-			ParametricDistribution m_distr = (ParametricDistribution) m_input.get();
-			try {
-				m_distr.initAndValidate();
-			} catch (Exception e1) {
-				// ignore
-			}
 			final int width = getWidth();
 			final int height = getHeight();
 			final int graphoffset = 20; 
@@ -68,6 +67,16 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 			g.fillRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
 			g.setColor(Color.BLACK);
 			g.drawRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
+
+			ParametricDistribution m_distr = (ParametricDistribution) m_input.get();
+			if (m_distr == null) {
+				return;
+			}
+			try {
+				m_distr.initAndValidate();
+			} catch (Exception e1) {
+				// ignore
+			}
 			int nPoints = 100;
 			int [] xPoints = new int[nPoints];
 			int [] yPoints = new int[nPoints];

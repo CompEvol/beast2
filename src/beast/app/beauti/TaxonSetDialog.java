@@ -4,6 +4,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -28,9 +31,11 @@ public class TaxonSetDialog extends JDialog {
 	public boolean m_bOK = false;
 	TaxonSet m_taxonSet;
 	String m_sID;
-	//List<Taxon> m_taxa;
+	List<Taxon> m_candidates;
 	
 	JTextField m_IDEntry;
+
+	JTextField m_filterEntry;
 
 	JList m_listOfTaxonCandidates;
     DefaultListModel m_listModel1;
@@ -42,22 +47,30 @@ public class TaxonSetDialog extends JDialog {
 		// initialize state
 		m_taxonSet = taxonSet;
 		m_sID = taxonSet.getID();
-//		m_taxa = new ArrayList<Taxon>();
-//		for (Taxon taxon : taxonSet.m_taxonset.get()) {
-//			m_taxa.add(taxon);
-//		}
 		// create components
 		Box box = Box.createVerticalBox();
 		box.add(createIDBox());
+		box.add(createFilterBox());
 		box.add(createTaxonSelector());
 		box.add(Box.createVerticalGlue());
 		box.add(createCancelOKButtons());
 		
 		// initialise lists
-    	for (Taxon taxon : taxonSet.m_taxonset.get()) {
+		List<Taxon> taxonset = taxonSet.m_taxonset.get();
+		Comparator<Taxon> comparator = new Comparator<Taxon>() {
+			public int compare(Taxon o1, Taxon o2) {
+				return o1.getID().compareTo(o2.getID());
+			}
+		};
+		Collections.sort(taxonset, comparator);
+		m_candidates = new ArrayList<Taxon>();
+		m_candidates.addAll(candidates);
+		Collections.sort(m_candidates, comparator);
+		
+    	for (Taxon taxon : taxonset) {
     		m_listModel2.addElement(taxon);
     	}
-    	for (Taxon taxon : candidates) {
+    	for (Taxon taxon : m_candidates) {
     		m_listModel1.addElement(taxon);
     	}
     	for (int i = 0 ; i < m_listModel2.size(); i++) {
@@ -69,6 +82,51 @@ public class TaxonSetDialog extends JDialog {
 		setModal(true);
 	} // c'tor
 	
+	private Component createFilterBox() {
+		Box box = Box.createHorizontalBox();
+		JLabel label = new JLabel("Filter:");
+		box.add(label);
+		m_filterEntry = new JTextField();
+		Dimension size = new Dimension(100,20);
+		m_filterEntry.setMinimumSize(size);
+		m_filterEntry.setPreferredSize(size);
+		m_filterEntry.setSize(size);
+		m_filterEntry.setToolTipText("Enter regular expression to match taxa");
+		m_filterEntry.setMaximumSize(new Dimension(1024, 20));
+		box.add(m_filterEntry);
+		box.add(Box.createHorizontalGlue());
+		
+		m_filterEntry.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				processEntry();
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				processEntry();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				processEntry();
+			}
+		});
+		return box;
+	}
+	
+	private void processEntry() {
+		String sFilter = ".*" + m_filterEntry.getText() + ".*";
+		
+		m_listModel1.clear();
+		for (Taxon taxon : m_candidates) {
+			if (taxon.getID().matches(sFilter)) {
+				m_listModel1.addElement(taxon);
+			}
+    	}
+    	for (int i = 0 ; i < m_listModel2.size(); i++) {
+    		m_listModel1.removeElement(m_listModel2.get(i));
+    	}
+	}
+
 	Component createIDBox() {
 		Box box = Box.createHorizontalBox();
 		box.add(new JLabel("Taxon set label:"));

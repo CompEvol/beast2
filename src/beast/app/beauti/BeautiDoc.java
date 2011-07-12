@@ -19,6 +19,7 @@ import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TreeDistribution;
+import beast.math.distributions.MRCAPrior;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 
@@ -317,7 +318,7 @@ public class BeautiDoc extends Plugin {
 	void scrubPriors() {
 		List<Distribution> priors = m_priors.get();
 		for (int i = priors.size()-1; i>=0; i--) {
-			if (!(priors.get(i) instanceof TreeDistribution)) {
+			if (!(priors.get(i) instanceof TreeDistribution || priors.get(i) instanceof MRCAPrior)) {
 				priors.remove(i);
 			}
 		}

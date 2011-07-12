@@ -188,7 +188,10 @@ public class NexusParser {
 				break;
 			}
 			String [] sStrs = sStr.split("\\s+");
-			String sTaxon = sStrs[sStrs.length - 2];
+			String sTaxon = sStrs[0];
+			for (int k = 1; k < sStrs.length - 1; k++) {
+				sTaxon += sStrs[k];
+			}
 			sTaxon = sTaxon.replaceAll("'", "");
 			System.err.println(sTaxon);
 			String sData = sStrs[sStrs.length - 1];

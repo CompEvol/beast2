@@ -26,17 +26,41 @@
 package beast.app;
 
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
+import beast.app.beauti.Beauti;
+import beast.app.beauti.BeautiInitDlg;
+import beast.app.draw.ExtensionFileFilter;
 import beast.core.Logger;
 import beast.core.Runnable;
+import beast.evolution.alignment.Taxon;
 
 import beast.util.ClassloaderUtil;
 import beast.util.Randomizer;
@@ -47,6 +71,8 @@ import beast.util.XMLParserException;
  * See getUsage() for command line options.
  */
 public class BeastMCMC {
+	final public static String VERSION = "Release candidate";
+	
 	/** number of threads used to run the likelihood beast.core **/
 	static public int m_nThreads = 1;
 	/** thread pool **/
@@ -110,6 +136,15 @@ public class BeastMCMC {
 			e.printStackTrace();
 			throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
 		}
+		if (m_sFileName.equals("")) {
+			BeastStartDialog dlg = new BeastStartDialog();
+			if (dlg.m_bOK) {
+				parseArgs(dlg.getArgs());
+			}
+			return;
+		}
+		
+		
 		System.err.println("File: " + m_sFileName + " seed: " + m_nSeed + " threads: " + m_nThreads);
 		if (bResume) {
 			System.out.println("Resuming from file");
@@ -187,15 +222,194 @@ public class BeastMCMC {
 		System.exit(0);
 	} // run
 
+
+	/** class for starting Beast with a dialog **/
+	class BeastStartDialog extends JDialog {
+		private static final long serialVersionUID = 1L;
+		boolean m_bOK = false;
+		JTextField m_fileEntry;
+		JTextField m_seedEntry;
+		JCheckBox m_bUseGPU;
+		JComboBox m_mode;
+		
+		public BeastStartDialog() {
+			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			setModalityType(DEFAULT_MODALITY_TYPE);
+			init();
+			setVisible(true);
+		}
+		
+		String [] getArgs() {
+			List<String> sArgs = new ArrayList<String>();
+			sArgs.add("-seed");
+			sArgs.add(m_seedEntry.getText());
+			switch (m_mode.getSelectedIndex()) {
+			case 0: 
+				break;
+			case 1: 
+				sArgs.add("-overwrite");
+				break;
+			case 2: 
+				sArgs.add("-resume");
+				break;
+			}
+//			if (m_bUseGPU.isSelected()) {
+//				sArgs.add("-useGPU");
+//			}
+			sArgs.add(m_fileEntry.getText());
+			return sArgs.toArray(new String[0]);
+		}
+
+		void init() {
+			try {
+		        setTitle("Beast Start Dialog");
+		        Box box = Box.createVerticalBox();
+
+		        box.add(createHeader());
+		        box.add(Box.createVerticalStrut(10));
+		        box.add(createFileInput());
+		        box.add(Box.createVerticalStrut(10));
+		        box.add(Box.createVerticalBox());
+		        box.add(Box.createVerticalStrut(10));
+		        box.add(createSeedInput());
+//		        box.add(Box.createVerticalStrut(10));
+//		        box.add(createBeagleInput());
+		        box.add(Box.createVerticalStrut(10));
+		        box.add(createModeInput());
+		        
+		        box.add(Box.createVerticalGlue());
+		        box.add(createRunQuitButtons());
+		        add(box);
+		        setSize(new Dimension(600, 500));
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, "Could not create dialog: " + e.getMessage());
+			}
+		} // BeastStartDialog::init
+
+		private Component createHeader() {
+	        Box box = Box.createHorizontalBox();
+	        JLabel label = new JLabel(BeautiInitDlg.getIcon("../draw/icons/beast"));
+	        label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+	        box.add(label, BorderLayout.WEST);
+	        label = new JLabel("<html>BEAST 2.0<br>"+VERSION+"</html>");
+	        label.setHorizontalAlignment(JLabel.CENTER);
+	        box.add(label);
+			return box;
+		} // BeastStartDialog::createHeader
+
+		private Component createFileInput() {
+	        Box box = Box.createHorizontalBox();
+	        box.add(new JLabel("Beast XML File: "));
+			m_fileEntry = new JTextField();
+			Dimension size = new Dimension(300,20);
+			m_fileEntry.setMinimumSize(size);
+			m_fileEntry.setPreferredSize(size);
+			m_fileEntry.setSize(size);
+			m_fileEntry.setToolTipText("Enter file name of Beast 2 XML file");
+			m_fileEntry.setMaximumSize(new Dimension(1024, 20));
+			box.add(m_fileEntry);
+			//box.add(Box.createHorizontalGlue());
+			
+			JButton button = new JButton("Choose file");
+			button.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JFileChooser fileChooser = new JFileChooser(Beauti.m_sDir);
+					File file = new File(m_fileEntry.getText());
+					if (file.exists())
+						fileChooser.setSelectedFile(file);
+			        fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
+					fileChooser.setDialogTitle("Select Beast 2 XML file");
+					int rval = fileChooser.showOpenDialog(null);
+					if (rval == JFileChooser.APPROVE_OPTION) {
+						String sFileName = fileChooser.getSelectedFile().toString();
+						if (sFileName.lastIndexOf('/') > 0) {
+							Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+						}
+						m_fileEntry.setText(sFileName);
+					}
+				}
+			});
+			box.add(button);
+			
+			return box;
+		} // BeastStartDialog::createFileInput
+		
+		private Component createSeedInput() {
+	        Box box = Box.createHorizontalBox();
+	        box.add(new JLabel("Random number seed: "));
+			m_seedEntry = new JTextField("127");
+			m_seedEntry.setHorizontalAlignment(JTextField.RIGHT);
+			Dimension size = new Dimension(100,20);
+			m_seedEntry.setMinimumSize(size);
+			m_seedEntry.setPreferredSize(size);
+			m_seedEntry.setSize(size);
+			m_seedEntry.setToolTipText("Enter seed number used for initialising the random number generator");
+			m_seedEntry.setMaximumSize(new Dimension(1024, 20));
+			box.add(m_seedEntry);
+			box.add(Box.createHorizontalGlue());
+			return box;
+		} // BeastStartDialog::createSeedInput
+
+		private Component createBeagleInput() {
+	        Box box = Box.createHorizontalBox();
+	        m_bUseGPU = new JCheckBox("Use GPU through Beagle (if available)");
+	        box.add(m_bUseGPU);
+	        box.add(Box.createHorizontalGlue());
+			return box;
+		} // BeastStartDialog::createSeedInput
+
+
+		private Component createModeInput() {
+	        Box box = Box.createHorizontalBox();
+	        box.add(new JLabel("Mode of running: "));
+	        m_mode = new JComboBox(new String[] {"default: only write new log files",
+	        		"overwrite: overwrite log files",
+	        		"resume: appends log to existing files (if any)"});
+			Dimension size = new Dimension(350,20);
+			m_mode.setMinimumSize(size);
+			m_mode.setPreferredSize(size);
+			m_mode.setSize(size);
+			m_mode.setMaximumSize(size);
+
+	        m_mode.setSelectedIndex(0);
+	        box.add(m_mode);
+	        box.add(Box.createHorizontalGlue());
+			return box;
+		} // BeastStartDialog::createModeInput
+
+		Component createRunQuitButtons() {
+	        Box cancelOkBox = Box.createHorizontalBox();
+	        cancelOkBox.setBorder(new EtchedBorder());
+	        JButton okButton = new JButton("Run");
+	        okButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	m_bOK = true;
+	                dispose();
+	            }
+	        });
+	        JButton cancelButton = new JButton("Quit");
+	        cancelButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                dispose();
+	                System.exit(0);
+	            }
+	        });
+	        cancelOkBox.add(Box.createHorizontalGlue());
+	        cancelOkBox.add(cancelButton);
+	        cancelOkBox.add(Box.createHorizontalStrut(20));
+	        cancelOkBox.add(okButton);
+	        cancelOkBox.add(Box.createHorizontalStrut(20));
+	        return cancelOkBox;
+		} // BeastStartDialog::createRunQuitButtons
+		
+	} // class BeastStartDialog
+	
+	
+	
 	public static void main(String [] args) {
 		try {
-//            for (String packageName : PluginLoader.getAvailablePackages()) {
-//                List<Plugin> plugins = PluginLoader.loadPlugins(packageName);
-//                for (Plugin plugin : plugins) {
-//                    System.out.println("Plugin loaded: " + plugin.getDescription());
-//                }
-//            }
-
 			BeastMCMC app = new BeastMCMC();
 			app.parseArgs(args);
 

@@ -55,7 +55,7 @@ public class Beauti extends JTabbedPane {
     /**
      * current directory for opening files *
      */
-    static String m_sDir = System.getProperty("user.dir");
+    public static String m_sDir = System.getProperty("user.dir");
     /**
      * File extension for Beast specifications
      */
