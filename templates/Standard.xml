@@ -111,6 +111,17 @@
             <plate var='n' range='#alignments'><plugin idref='$(n).treeLikelihood'/> </plate>
             <plate var='n' range='#alignments'><candidate idref='$(n).tree'/> </plate>
         </constraint>
+
+        <plate var='n' range='#alignments'>
+            <constraint spec='beast.app.beauti.InputConstraint' inputname='frequencies'>
+                <plugin idref='$(n).freqs'/> 
+                <candidate idref='$(n).freqParameter'/>
+            </constraint>
+            <constraint spec='beast.app.beauti.InputConstraint' inputname='data'>
+                <plugin idref='$(n).freqs'/> 
+                <candidate idref='$(n)'/>
+            </constraint>
+        </plate>
     </beauticonfig>
 
 <!--
@@ -145,7 +156,7 @@ done: tree prior: select from tree priors instead of having a list?
 done: trait editor
 done: prior editor with dynamic graphs of prior distribution
 done: Data panel: remove delete button
-TODO: Data panel: only allow selection of trees that are not initialisers
+done: Data panel: only allow selection of trees that are not initialisers
 
 
 -->
@@ -162,7 +173,8 @@ TODO: Data panel: only allow selection of trees that are not initialisers
         <input spec='HKY' id='$(n).hky'>
             <kappa idref='$(n).hky.kappa'/>
             <frequencies id='$(n).freqs' spec='Frequencies'>
-                <data idref='$(n)'/>
+                <!--data idref='$(n)'/-->
+                <frequencies id='$(n).freqParameter' spec='parameter.RealParameter' dimension='4' value='0.25'/>
             </frequencies>
         </input>
 
@@ -189,36 +201,7 @@ TODO: Data panel: only allow selection of trees that are not initialisers
             </branchRateModel>
         </input>
 
-<!--
-	    <input spec='BirthDeathGernhard08Model' id="$(n).Yule" type='timesonly'>
- 	    	<parameter name='birthDiffRate' id="$(n).birthRate" value="1.0" lower="0.0" upper="100.0"  estimate='false'/>
-        	<parameter name='relativeDeathRate' id='$(n).constantDeathRate' value='1.0'  estimate='false'/>
-        	<tree idref='$(n).tree'/>
-    	</input>
-
-        <input spec='UCRelaxedClockModel' id="$(n).RelaxedClock">
-            <input id='$(n).lognormal' name='distribution' spec="beast.math.distributions.LogNormalDistributionModel">
-                <parameter name='M' id='$(n).M' value="1" estimate='false'/>
-                <parameter name='S' id='$(n).S' value="0.5" lower="0" upper="5" estimate='false'/>
-            </input>
-            <parameter spec='parameter.IntegerParameter' name='rateCategories' id='$(n).rateCategories' dimension="11" value="1"/>
-            <input name='tree' idref="$(n).tree"/>
-        </input>
-
-        <input spec='RandomLocalClockModel' id="$(n).RandomLocalClock" ratesAreMultipliers="false">
-            <parameter spec='parameter.BooleanParameter' name='indicators' id='$(n).indicators' dimension="11" value="1"/>
-            <parameter name='rates' id='$(n).clockrates' dimension="11" value="1"/>
-            <tree idref="$(n).tree"/>
-        </input>
-
-        <populationModel spec="ExponentialGrowth" id="$(n).ExponentialGrowth">
-            <parameter name="popSize" id="$(n).popSize" value='1.0' estimate='false'/>
-            <parameter name="growthRate" id="$(n).growthRate" value='1.0' estimate='false'/>
-        </populationModel>
--->
-
-
-        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0" estimate='false'/>
+        <parameter id="$(n).hky.kappa" value="1.0" lower="0.0" estimate='true'/>
 
         <tree spec='beast.evolution.tree.Tree' id='$(n).tree' initial='@$(n).RandomTree'>
 	        <trait id='$(n).datetrait' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
@@ -231,6 +214,14 @@ TODO: Data panel: only allow selection of trees that are not initialisers
         <tree spec='beast.evolution.tree.RandomTree' id='$(n).RandomTree' populationModel='@$(n).ConstantPopulation'  estimate='false' trait='@$(n).datetrait'  taxa='@$(n)'/>
     </plate>
 
+
+
+
+
+    <distr id="normal" offset="0.0" spec="beast.math.distributions.Normal">
+        <parameter name='mean' value='0'/>
+        <parameter name='sigma' value='1'/>
+    </distr>
 
 
 
@@ -261,6 +252,7 @@ TODO: Data panel: only allow selection of trees that are not initialisers
                     <distribution id='$(n).kappa.prior' spec='Prior' x='@$(n).hky.kappa'>
                         <distr spec="OneOnX"/>
                     </distribution>
+                    <mergepoint id='priors'/>
                 </plate>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
@@ -283,6 +275,9 @@ TODO: Data panel: only allow selection of trees that are not initialisers
             <operator id="$(n).categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
 -->
 
+
+            <operator id='$(n).FrequenciesExchanger' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@$(n).freqParameter"/>
+
             <operator id='$(n).treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@$(n).tree"/>
             <operator spec='Uniform' weight="10" tree="@$(n).tree"/>
             <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@$(n).tree"/>
@@ -297,6 +292,7 @@ TODO: Data panel: only allow selection of trees that are not initialisers
             <plate var='n' range='#alignments'>
                 <log idref='$(n).hky.kappa'/>
                 <log spec='beast.evolution.tree.TreeHeightLogger' tree='@$(n).tree'/>
+                <log idref="$(n).freqParameter"/>
             </plate>
         </logger>
         <plate var='n' range='#alignments'>

@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -16,10 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionListener;
 
-
-import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
 import beast.core.Distribution;
@@ -278,7 +276,7 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
 	} // addItem
 
 	@Override
-    public Plugin pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
+    public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
     	MRCAPrior prior = new MRCAPrior();
     	try {
 
@@ -310,7 +308,9 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
     	} catch (Exception e) {
 			// TODO: handle exception
 		}
-    	return prior;
+    	List<Plugin> selectedPlugins = new ArrayList<Plugin>();
+    	selectedPlugins.add(prior);
+    	return selectedPlugins;
     }
 
 }

@@ -4,6 +4,7 @@ package beast.app.beauti;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -36,7 +37,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 	
 	@Override
-	public Plugin pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
+	public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
+    	List<Plugin> selectedPlugins = new ArrayList<Plugin>();
 		JFileChooser fileChooser = new JFileChooser(Beauti.m_sDir);
 		
         fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
@@ -63,32 +65,39 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (sFileName.lastIndexOf('/') > 0) {
 					Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
 				}
-				Plugin plugin2 = null;
 				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
 					NexusParser parser = new NexusParser();
 					try {
 						parser.parseFile(sFileName);
+						if (parser.m_filteredAlignments.size() > 0) {
+							for (Alignment data : parser.m_filteredAlignments) {
+								selectedPlugins.add(data);
+							}
+						} else {
+							selectedPlugins.add(parser.m_alignment);
+						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Loading of " + sFileName + " failed: " + ex.getMessage());
 						return null;
 					}
-					plugin2 = parser.m_alignment;
 				}
 				if (sFileName.toLowerCase().endsWith(".xml")) {
-					plugin2 =  getXMLData(sFileName);
+					Plugin alignment =  getXMLData(sFileName);
+					selectedPlugins.add(alignment);
 				}
-				if (i < files.length - 1) {
-		            try {
-		           		m_input.setValue(plugin2, m_plugin);
-		            } catch (Exception ex) {
-		                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
-		            }
-		            addSingleItem(plugin2);
-				} else {
-					return plugin2;
-				}
+//				if (i < files.length - 1) {
+//		            try {
+//		           		m_input.setValue(plugin2, m_plugin);
+//		            } catch (Exception ex) {
+//		                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
+//		            }
+//		            addSingleItem(plugin2);
+//				} else {
+//					return plugin2;
+//				}
 			}
+			return selectedPlugins;
 		}
 		return null;
 	} // loadDataFile

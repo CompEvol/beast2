@@ -298,14 +298,16 @@ public class ListInputEditor extends InputEditor {
         for (int i = 0; i < m_entries.size(); i++) {
             sTabuList.add(m_entries.get(i).getText());
         }
-        Plugin plugin = pluginSelector(m_input, m_plugin, sTabuList);
-        if (plugin != null) {
-            try {
-           		m_input.setValue(plugin, m_plugin);
-            } catch (Exception ex) {
-                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
-            }
-            addSingleItem(plugin);
+        List<Plugin> plugins = pluginSelector(m_input, m_plugin, sTabuList);
+        if (plugins != null) {
+        	for (Plugin plugin : plugins) {
+	            try {
+	           		m_input.setValue(plugin, m_plugin);
+	            } catch (Exception ex) {
+	                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
+	            }
+	            addSingleItem(plugin);
+        	}
             checkValidation();
             updateState();
             repaint();
@@ -359,7 +361,8 @@ public class ListInputEditor extends InputEditor {
      * Suppress existing plug-ins with IDs from the tabu list.
      * Return null if nothing is selected.
      */
-    public Plugin pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
+    public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
+    	List<Plugin> selectedPlugins = new ArrayList<Plugin>();
         List<String> sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList);
         /* select a plugin **/
         String sClassName = null;
@@ -386,13 +389,15 @@ public class ListInputEditor extends InputEditor {
         }
         if (!sClassName.startsWith("new ")) {
             /* return existing plugin */
-            return (PluginPanel.g_plugins.get(sClassName));
+        	selectedPlugins.add(PluginPanel.g_plugins.get(sClassName));
+            return selectedPlugins;
         }
         /* create new plugin */
         try {
             Plugin plugin = (Plugin) Class.forName(sClassName.substring(4)).newInstance();
             PluginPanel.addPluginToMap(plugin);
-            return plugin;
+        	selectedPlugins.add(plugin);
+            return selectedPlugins;
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Could not select plugin: " +
                     ex.getClass().getName() + " " +

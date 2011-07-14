@@ -21,7 +21,7 @@ public class BeautiTest extends TestCase {
 			if (f.exists()) {
 				f.delete();
 			}
-			Beauti.main(("-template templates/HKY.xml -nex examples/nexus/dna.nex -out " + sFile + " -exitaction writexml").split(" "));
+			Beauti.main(("-template templates/Standard.xml -nex examples/nexus/dna.nex -out " + sFile + " -exitaction writexml").split(" "));
 			f = new File(sFile);
 			assertEquals(f.exists() && f.length() > 0, true);
 		}

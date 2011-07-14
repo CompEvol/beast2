@@ -17,8 +17,8 @@
 
         <input spec='UCRelaxedClockModel' id="$(n).RelaxedClock">
             <input id='$(n).lognormal' name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
-                <parameter name='M' id='$(n).M' value="1" estimate='false'/>
-                <parameter name='S' id='$(n).S' value="0.5" lower="0" upper="5" estimate='false'/>
+                <parameter name='M' id='$(n).ucld.mean' value="1" estimate='true'/>
+                <parameter name='S' id='$(n).ucld.stdev' value="0.5" lower="0" upper="5" estimate='true'/>
             </input>
             <parameter spec='parameter.IntegerParameter' name='rateCategories' id='$(n).rateCategories' dimension="11" value="1"/>
             <input name='tree' idref="$(n).tree"/>
@@ -36,6 +36,14 @@
         </populationModel>
     </mergewith>
 
+    <mergewith point='priors'>
+        <distribution id='$(n).ucld.stdev.prior' spec='Prior' x='@$(n).ucld.stdev'>
+            <distr spec="Exponential">
+                <lambda spec='parameter.RealParameter' value='0.333'/>
+            </distr>
+        </distribution>
+    </mergewith> 
+
     <mergewith point='operators'>
             <!-- clock model operators -->
 	        <operator id='$(n).birthRateScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).birthRate'/>
@@ -43,6 +51,9 @@
             <operator id='$(n).clockRateScaler' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@$(n).clockrates"/>
             <operator id="$(n).categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
             <operator id="$(n).indicatorsBitFlip" spec="BitFlipOperator" weight="1" parameter="@$(n).indicators"/>
+
+            <operator id='$(n).ucld.mean.Scaler' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@$(n).ucld.mean"/>
+            <operator id='$(n).ucld.stdev.Scaler' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@$(n).ucld.stdev"/>
     </mergewith>
 
 

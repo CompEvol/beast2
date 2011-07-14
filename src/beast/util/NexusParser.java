@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.TraitSet;
@@ -33,6 +34,7 @@ public class NexusParser {
 
 	/**Beast II objects reconstructed from the file**/
 	public Alignment m_alignment;
+	public List<Alignment> m_filteredAlignments = new ArrayList<Alignment>();
 	public TraitSet m_traitSet;
 	static Set<String> g_sequenceIDs;
 	static { g_sequenceIDs = new HashSet<String>();}
@@ -56,6 +58,8 @@ public class NexusParser {
 					m_alignment.setID(sFileName);
 				} else if (sStr.toLowerCase().matches("^\\s*begin\\s+calibration;\\s*$")) {
 					m_traitSet = parseCalibrationsBlock(fin);
+				} else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$")) {
+					parseAssumptionsBlock(fin);
 				}
 			}			
 		} catch (Exception e) {
@@ -187,14 +191,39 @@ public class NexusParser {
 			if (sStr.contains(";")) {
 				break;
 			}
-			String [] sStrs = sStr.split("\\s+");
-			String sTaxon = sStrs[0];
-			for (int k = 1; k < sStrs.length - 1; k++) {
-				sTaxon += sStrs[k];
+			
+			int iStart = 0, iEnd = 0; 
+			String sTaxon;
+			while (Character.isWhitespace(sStr.charAt(iStart))) {
+				iStart++;
 			}
-			sTaxon = sTaxon.replaceAll("'", "");
-			System.err.println(sTaxon);
-			String sData = sStrs[sStrs.length - 1];
+			if (sStr.charAt(iStart)=='\'' || sStr.charAt(iStart)=='\"') {
+				char c = sStr.charAt(iStart);
+				iStart++;
+				iEnd = iStart;
+				while (sStr.charAt(iEnd)!= c) {
+					iEnd++;
+				}
+				sTaxon = sStr.substring(iStart, iEnd);
+				iEnd++;
+			} else {
+				iEnd = iStart;
+				while (!Character.isWhitespace(sStr.charAt(iEnd))) {
+					iEnd++;
+				}
+				sTaxon = sStr.substring(iStart, iEnd);
+			}
+			String sData = sStr.substring(iEnd);
+			sData = sData.replaceAll("\\s", "");
+			
+//			String [] sStrs = sStr.split("\\s+");
+//			String sTaxon = sStrs[0];
+//			for (int k = 1; k < sStrs.length - 1; k++) {
+//				sTaxon += sStrs[k];
+//			}
+//			sTaxon = sTaxon.replaceAll("'", "");
+//			System.err.println(sTaxon);
+//			String sData = sStrs[sStrs.length - 1];
 			
 			if (seqMap.containsKey(sTaxon)) {
 				seqMap.put(sTaxon, seqMap.get(sTaxon) + sData);
@@ -237,6 +266,33 @@ public class NexusParser {
 		return alignment;
 	} // parseDataBlock
 	
+	
+	/** parse assumptions block 
+	begin assumptions;
+    	charset firsthalf = 1-449;
+    	charset secondhalf = 450-898;
+	end;
+	**/
+	void parseAssumptionsBlock(BufferedReader fin) throws Exception {
+		String sStr;
+		do {
+			sStr = nextLine(fin);
+			if (sStr.toLowerCase().matches("\\s*charset\\s.*")) {
+				sStr = sStr.replaceAll("^\\s+", "");
+				sStr = sStr.replaceAll(";", "");
+				String [] sStrs = sStr.split("\\s+");
+				String sID = sStrs[1];
+				String sRange = sStrs[sStrs.length-1];
+				FilteredAlignment alignment = new FilteredAlignment();
+				alignment.setID(sID);
+				alignment.m_alignmentInput.setValue(m_alignment, alignment);
+				alignment.m_sFilterInput.setValue(sRange, alignment);
+				alignment.initAndValidate();
+				m_filteredAlignments.add(alignment);
+			}
+		} while (!sStr.toLowerCase().contains("end;"));
+	}
+
 	private String generateSequenceID(String sTaxon) {
 		String sID = "seq_" + sTaxon;
 		int i = 0;

@@ -18,6 +18,7 @@ import beast.core.State;
 import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
 import beast.util.XMLParser;
@@ -117,9 +118,34 @@ public class BeautiDoc extends Plugin {
 			sAlignmentNames.add(alignment.getID());
 			alignment.setID(/*"alignment" + */alignment.getID());
 			sRange += alignment.getID() +",";
-			sAlignments += new XMLProducer().toRawXML(alignment);
 			n++;
 		}
+
+		for (Alignment alignment : m_alignments.get()) {
+			if (!(alignment instanceof FilteredAlignment)) {
+				sAlignments += new XMLProducer().toRawXML(alignment);
+			}
+		}
+		List<String> sDone = new ArrayList<String>();
+		for (Alignment alignment : m_alignments.get()) {
+			if (alignment instanceof FilteredAlignment) {
+				FilteredAlignment data = (FilteredAlignment) alignment;
+				Alignment baseData = data.m_alignmentInput.get();
+				String sBaseID = baseData.getID();
+				if (sDone.indexOf(sBaseID) < 0) {
+					sAlignments += new XMLProducer().toRawXML(baseData);
+					sDone.add(sBaseID);
+				}
+				// suppress alinmentInput
+				data.m_alignmentInput.setValue(null, data);
+				String sData = new XMLProducer().toRawXML(data);
+				// restore alinmentInput
+				data.m_alignmentInput.setValue(baseData, data);
+				sData = sData.replaceFirst("<data ", "<data data='@" + sBaseID +"' ");
+				sAlignments += sData;
+			}
+		}
+		
 		sRange = sRange.substring(0, sRange.length()-1)+"'";
 		
 		// process plates in template

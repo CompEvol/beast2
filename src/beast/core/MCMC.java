@@ -237,6 +237,9 @@ public class MCMC extends Runnable {
             fOldLogLikelihood = robustlyCalcPosterior(posterior);
         }
         System.err.println("Start likelihood: " + fOldLogLikelihood + " " + (nInitiliasiationAttemps > 1?"after " + nInitiliasiationAttemps + " initialisation attempts":""));
+        if (Double.isInfinite(fOldLogLikelihood)) {
+        	throw new Exception("Could not find a proper state to initialise. Perhaps try another seed.");
+        }
 
         // initialises log so that log file headers are written, etc.
         for (Logger log : m_loggers.get()) {

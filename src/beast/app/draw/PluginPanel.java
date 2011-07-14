@@ -92,8 +92,10 @@ public class PluginPanel extends JPanel {
 			                g_listInputEditorMap.put(baseType, sInputEditor);
 		                }
 	                }
+	            } catch (java.lang.InstantiationException e) {
+	            	// ingore input editors that are inner classes
 	            } catch (Exception e) {
-	                // ignore
+	                // print message
 	                System.err.println(e.getClass().getName() + ": " + e.getMessage());
 	            }
 	        }
@@ -444,6 +446,7 @@ public class PluginPanel extends JPanel {
 	}
 
 	public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
+//		List<String> sPlugins;
         List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
         if (sPlugins != null) {
         	return sPlugins;

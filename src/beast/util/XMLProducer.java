@@ -105,7 +105,9 @@ public class XMLProducer extends XMLParser {
             //return buf.toString();
             // beautify XML hierarchy
             String sXML = cleanUpXML(buf.toString(), m_sXMLBeutifyXSL);
-            String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
+            // TODO: fix m_sIDRefReplacementXSL script to deal with nested taxon sets
+            // String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
+            String sXML2 = sXML;
             sXML = findPlates(sXML2);
             // beatify by applying name spaces to spec attributes
             String [] sNameSpaces = DEFAULT_NAMESPACE.split(":");
@@ -138,7 +140,9 @@ public class XMLProducer extends XMLParser {
         try {
             String sXML0 = toRawXML(plugin);
             String sXML = cleanUpXML(sXML0, m_sSupressAlignmentXSL);
-            String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
+            // TODO: fix m_sIDRefReplacementXSL script to deal with nested taxon sets
+            //String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
+            String sXML2 = sXML;
             sXML = findPlates(sXML2);
             sXML = sXML.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>", "");
             sXML = sXML.replaceAll("\\n\\s*\\n", "\n");

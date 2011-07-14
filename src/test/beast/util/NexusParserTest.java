@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class NexusParserTest extends TestCase {
 
 	@Test
-	public void test_ThatNexusExamplesParse() {
+	public void testThatNexusExamplesParse() {
 		try {
 			String sDir = System.getProperty("user.dir") + "/examples/nexus";
 			System.out.println("Test Nexus Examples in " + sDir);
@@ -49,4 +49,17 @@ public class NexusParserTest extends TestCase {
 			System.out.println(e.getMessage());
 		}
 	}
-}
+	
+	
+	@Test
+	public void testAssumptionsParse() {
+		try {
+			String sFile = System.getProperty("user.dir") + "/examples/nexus/Primates.nex";
+			NexusParser parser = new NexusParser();
+			parser.parseFile(sFile);
+			assertEquals(2, parser.m_filteredAlignments.size());
+		} catch (Exception e) {
+			System.out.println("exception thrown ");
+			System.out.println(e.getMessage());
+		}
+	}}
