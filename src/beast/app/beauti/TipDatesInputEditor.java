@@ -5,10 +5,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -19,9 +23,15 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import beast.app.draw.PluginInputEditor;
+import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
+import beast.evolution.operators.TipDatesScaler;
 import beast.evolution.tree.TraitSet;
+import beast.evolution.tree.Tree;
+import beast.math.distributions.MRCAPrior;
 
 public class TipDatesInputEditor extends PluginInputEditor {
 	private static final long serialVersionUID = 1L;
@@ -49,14 +59,161 @@ public class TipDatesInputEditor extends PluginInputEditor {
         
         
         Box box = createVerticalBox();
-        
-        Box buttonBox = createButtonBox();
-        box.add(buttonBox);
-        Component listBox = createListBox();
-        box.add(listBox);
+        box.add(createButtonBox());
+        box.add(createListBox());
+        box.add(createSamplingBox());
         add(box);
     } // init
 
+    final static int NO_TIP_SAMPLING = 0;
+    final static int SAMPLE_TIPS_SAME_PRIOR = 1;
+    final static int SAMPLE_TIPS_MULTIPLE_PRIOR = 2;
+    final static String ALL_TAXA = "all";
+    int m_iMode = NO_TIP_SAMPLING;
+    
+	private Component createSamplingBox() {
+		Box samplingBox = Box.createHorizontalBox();
+		JComboBox comboBox = new JComboBox(new String[] {"no tips sampling", "sample tips with same prior"});// ,"sample tips with individual priors"});
+
+		// determine mode
+		m_iMode = NO_TIP_SAMPLING;
+		// count nr of TipDateScalers with weight > 0
+		for (Plugin plugin : m_traitSet.outputs) {
+			if (plugin instanceof Tree) {
+				for (Plugin plugin2 : plugin.outputs) {
+					if (plugin2 instanceof TipDatesScaler) {
+						TipDatesScaler operator = (TipDatesScaler) plugin2;
+						if (operator.m_pWeight.get() > 0) {
+							m_iMode = SAMPLE_TIPS_SAME_PRIOR;
+						}
+					}
+				}
+			}
+		}
+		m_iMode = Math.min(m_iMode, 2);
+		comboBox.setSelectedIndex(m_iMode);
+		comboBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectMode(e);
+			}
+		});
+		samplingBox.add(comboBox);
+
+		
+		List<Taxon> taxonsets = new ArrayList<Taxon>();
+		Taxon allTaxa = new Taxon();
+		allTaxa.setID(ALL_TAXA);
+		taxonsets.add(allTaxa);
+		for (Taxon taxon : PluginPanel.g_taxa) {
+			if (taxon instanceof TaxonSet) {
+				taxonsets.add(taxon);
+			}
+		}
+		JComboBox comboBox2 = new JComboBox(taxonsets.toArray());
+		
+        // find TipDatesSampler and set TaxonSet input
+		for (Plugin plugin : m_traitSet.outputs) {
+			if (plugin instanceof Tree) {
+				for (Plugin plugin2 : plugin.outputs) {
+					if (plugin2 instanceof TipDatesScaler) {
+						TipDatesScaler operator = (TipDatesScaler) plugin2;
+						Taxon set = operator.m_taxonsetInput.get();
+						if (set != null) {
+							comboBox2.setSelectedItem(set);
+						}
+					}
+				}
+			}
+		}
+		
+		
+		comboBox2.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectTaxonSet(e);
+			}
+		});
+		samplingBox.add(comboBox2);
+		
+		return samplingBox;
+	}
+
+	private void selectTaxonSet(ActionEvent e) {
+		JComboBox comboBox = (JComboBox) e.getSource();
+        Taxon taxonset = (Taxon) comboBox.getSelectedItem();
+        if (taxonset.getID().equals(ALL_TAXA)) {
+        	taxonset = null;
+        }
+        try {
+	        // find TipDatesSampler and set TaxonSet input
+			for (Plugin plugin : m_traitSet.outputs) {
+				if (plugin instanceof Tree) {
+					for (Plugin plugin2 : plugin.outputs) {
+						if (plugin2 instanceof TipDatesScaler) {
+							TipDatesScaler operator = (TipDatesScaler) plugin2;
+							operator.m_taxonsetInput.setValue(taxonset, operator);
+						}
+					}
+				}
+			}
+	
+	        // TODO: find MRACPriors and set TaxonSet inputs
+			for (Plugin plugin : m_traitSet.outputs) {
+				if (plugin instanceof Tree) {
+					for (Plugin plugin2 : plugin.outputs) {
+						if (plugin2 instanceof MRCAPrior) {
+							MRCAPrior prior = (MRCAPrior) plugin2;
+							if (prior.m_bOnlyUseTipsInput.get()) {
+								prior.m_taxonset.setValue(taxonset, prior);
+							}
+						}
+					}
+				}
+			}
+        } catch (Exception ex) {
+			// TODO: handle exception
+		}
+	}
+
+	private void selectMode(ActionEvent e) {
+		JComboBox comboBox = (JComboBox) e.getSource();
+        m_iMode = comboBox.getSelectedIndex();
+		try {
+			// clear
+    		for (Plugin plugin : m_traitSet.outputs) {
+        			if (plugin instanceof Tree) {
+        				for (Plugin plugin2 : plugin.outputs) {
+        					if (plugin2 instanceof TipDatesScaler) {
+        						TipDatesScaler operator = (TipDatesScaler) plugin2;
+        						switch (m_iMode) {
+        						case NO_TIP_SAMPLING :
+        							operator.m_pWeight.setValue(0.0, operator);
+        							break;
+        						case SAMPLE_TIPS_SAME_PRIOR :
+        							if (operator.getID().contains("allTipDatesScaler")) {
+        								operator.m_pWeight.setValue(1.0, operator);
+        							} else {
+        								operator.m_pWeight.setValue(0.0, operator);
+        							}
+        							break;
+        						case SAMPLE_TIPS_MULTIPLE_PRIOR :
+        							if (operator.getID().contains("allTipDatesScaler")) {
+        								operator.m_pWeight.setValue(0.0, operator);
+        							} else {
+        								operator.m_pWeight.setValue(0.1, operator);
+        							}
+        							break;
+        						}
+        					}
+        				}
+        			}
+    		}
+		} catch (Exception ex) {
+			// TODO: handle exception
+		}
+	}	
 	private Component createListBox() {
 		m_sTaxa = m_traitSet.m_taxa.get().getTaxaNames();
 		String [] columnData = new String[] {"Name", "Date","Height"};
@@ -262,6 +419,48 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		buttonBox.add(m_relativeToComboBox);
 		buttonBox.add(Box.createGlue());
 		
+		JButton guessButton = new JButton("Guess");
+		guessButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Pattern pattern = Pattern.compile(".*(\\d\\d\\d\\d).*");
+				String sTrait = "";
+				for (String sTaxon: m_sTaxa) {
+					Matcher matcher = pattern.matcher(sTaxon);
+					if (matcher.find()) {
+						String sMatch = matcher.group(1);
+						int nDate = Integer.parseInt(sMatch);
+						if (sTrait.length() > 0) {
+							sTrait += ",";
+						}
+						sTrait += sTaxon + "="+nDate;
+					}
+				}
+				try {
+					m_traitSet.m_traits.setValue(sTrait, m_traitSet);
+				} catch (Exception ex) {
+					// TODO: handle exception
+				}
+				refreshPanel();
+			}
+		});
+		buttonBox.add(guessButton);
+
+		
+		JButton clearButton = new JButton("Clear");
+		clearButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					m_traitSet.m_traits.setValue("", m_traitSet);
+				} catch (Exception ex) {
+					// TODO: handle exception
+				}
+				refreshPanel();
+			}
+		});
+		buttonBox.add(clearButton);
+
 		return buttonBox;
 	} // createButtonBox
 }

@@ -37,7 +37,7 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 	/** suppress combobox **/
 	protected void addComboBox(Box box, Input<?> input, Plugin plugin) {
 		Frequencies freqs = (Frequencies) input.get();
-		JComboBox comboBox = new JComboBox(new String[] {"Empirical","Estimated","All equal"});
+		JComboBox comboBox = new JComboBox(new String[] {"Estimated","Empirical","All equal"});
 		if (freqs.frequencies.get() != null) {
 			comboBox.setSelectedIndex(0);
 			m_freqsParameter = freqs.frequencies.get();

@@ -96,6 +96,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		box.add(Box.createVerticalGlue());
 		box.add(new JLabel(getIcon(iPanel, m_config)));
     	add(box, BorderLayout.WEST);
+    	if (m_listOfPartitions != null) {
+    		m_listOfPartitions.setSelectedIndex(m_iPartition);
+    	}
 	}
 	
     Box createList() {
@@ -104,7 +107,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		partitionBox.add(new JLabel("partition"));
         m_listModel = new DefaultListModel();
     	m_listOfPartitions = new JList(m_listModel);
-
+    	
     	Dimension size = new Dimension(100,300);
     	m_listOfPartitions.setFixedCellWidth(100);
 //    	m_listOfPartitions.setSize(size);

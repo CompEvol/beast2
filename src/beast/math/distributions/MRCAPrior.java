@@ -15,16 +15,20 @@ import java.util.List;
 import java.util.Random;
 
 @Description("Prior over set of taxa, useful for defining monophyletic constraints and "
-		+ "distributions over MRCA times")
+		+ "distributions over MRCA times or (sets of) tips of trees")
 public class MRCAPrior extends Distribution {
 	public Input<Tree> m_treeInput = new Input<Tree>("tree", "the tree containing the taxon set", Validate.REQUIRED);
 	public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset",
-			"set of taxa for which prior information is available", Validate.REQUIRED);
+			"set of taxa for which prior information is available");
 	public Input<Boolean> m_bIsMonophyleticInput = new Input<Boolean>("monophyletic",
 			"whether the taxon set is monophyletic (forms a clade without other taxa) or nor. Default is false.", false);
 	public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distr",
 			"distribution used to calculate prior over MRCA time, "
 					+ "e.g. normal, beta, gamma. If not specified, monophyletic must be true");
+	public Input<Boolean> m_bOnlyUseTipsInput = new Input<Boolean>("tipsonly",
+			"flag to indicate tip dates are to be used instead of the MRCA node. " +
+			"If set to true, the prior is applied to the height of all tips in the taxonset " +
+			"and the monophyletic flag is ignored. Default is false.", false);
 
 	/** shadow members **/
 	ParametricDistribution m_dist;
@@ -33,11 +37,14 @@ public class MRCAPrior extends Distribution {
 	int m_nNrOfTaxa = -1;
 	// array of flags to indicate which taxa are in the set
 	boolean[] m_bTaxaSet;
+	// array of indices of taxa
+	int [] m_iTaxa;
 	// stores time to be calculated
 	double m_fMRCATime = -1;
 	double m_fStoredMRCATime = -1;
 	// flag indicating taxon set is monophyletic
 	boolean m_bIsMonophyletic = false;
+	boolean m_bOnlyUseTips = false;
 	
 	@Override
 	public void initAndValidate() throws Exception {
@@ -48,30 +55,60 @@ public class MRCAPrior extends Distribution {
 			sTaxaNames.add(sTaxon);
 		}
 		// determine nr of taxa in taxon set
-		List<String> set = m_taxonset.get().asStringList();
-		m_nNrOfTaxa = set.size();
-		if (m_nNrOfTaxa <= 1) {
+		List<String> set = null;
+		if (m_taxonset.get() != null) {
+			set = m_taxonset.get().asStringList();
+			m_nNrOfTaxa = set.size();
+		} else {
+			// assume all taxa
+			m_nNrOfTaxa = sTaxaNames.size();
+		}
+
+		m_bOnlyUseTips = m_bOnlyUseTipsInput.get();
+		if (m_nNrOfTaxa == 1) {
+			// ignore test for Monophyletic when it only involves a tree tip 
+			m_bOnlyUseTips = true;
+		}
+		if (!m_bOnlyUseTips && m_nNrOfTaxa < 2) {
 			throw new Exception("At least two taxa are required in a taxon set");
+		}
+		if (!m_bOnlyUseTips && m_taxonset.get() == null) {
+			throw new Exception("Taxonset must be specified OR tipsonly be set to true");
 		}
 
 		// determine which taxa are in the set
-		m_bTaxaSet = new boolean[sTaxaNames.size()];
-		for (String sTaxon : set) {
-			int iTaxon = sTaxaNames.indexOf(sTaxon);
-			if (iTaxon < 0) {
-				throw new Exception("Cannot find taxon " + sTaxon + " in data");
+		if (m_taxonset.get() != null) {
+			m_bTaxaSet = new boolean[sTaxaNames.size()];
+			m_iTaxa = new int[m_nNrOfTaxa];
+			int k = 0;
+			for (String sTaxon : set) {
+				int iTaxon = sTaxaNames.indexOf(sTaxon);
+				if (iTaxon < 0) {
+					throw new Exception("Cannot find taxon " + sTaxon + " in data");
+				}
+				if (m_bTaxaSet[iTaxon]) {
+					throw new Exception("Taxon " + sTaxon + " is defined multiple times, while they should be unique");
+				}
+				m_bTaxaSet[iTaxon] = true;
+				m_iTaxa[k++] = iTaxon;
 			}
-			if (m_bTaxaSet[iTaxon]) {
-				throw new Exception("Taxon " + sTaxon + " is defined multiple times, while they should be unique");
-			}
-			m_bTaxaSet[iTaxon] = true;
 		}
 	}
 
 	@Override
 	public double calculateLogP() throws Exception {
 		logP = 0;
-		calcMRCAtime(m_tree.getRoot(), new int[1]);
+		if (m_bOnlyUseTips) {
+			// tip date
+			for (int i : m_iTaxa) {
+				m_fMRCATime = m_tree.getNode(i).getHeight();
+				logP += m_dist.logDensity(m_fMRCATime);
+			}
+			return logP;
+		} else {
+			// internal node
+			calcMRCAtime(m_tree.getRoot(), new int[1]);
+		}
 		if (m_bIsMonophyleticInput.get() && !m_bIsMonophyletic) {
 			return Double.NEGATIVE_INFINITY;
 		}
@@ -136,12 +173,36 @@ public class MRCAPrior extends Distribution {
     /** Loggable interface implementation follows **/
     @Override
 	public void init(PrintStream out) throws Exception {
-		out.print("logP(mrca("+getID()+"))\tmrcatime(" + getID() + ")\t");
+		if (m_bOnlyUseTips) {
+			if (m_dist != null) {
+				out.print("logP(mrca("+getID()+"))\t");
+			}
+			for (int i : m_iTaxa) {
+				out.print("height(" + m_tree.getTaxaNames()[i] + ")");
+			}
+		} else {
+			if (m_dist != null || m_bIsMonophyleticInput.get()) {
+				out.print("logP(mrca("+getID()+"))\t");
+			}
+			out.print("mrcatime(" + getID() + ")\t");
+		}
 	}
 
     @Override
 	public void log(int nSample, PrintStream out) {
-		out.print(getCurrentLogP() + "\t" + m_fMRCATime + "\t");
+		if (m_bOnlyUseTips) {
+			if (m_dist != null) {
+				out.print(getCurrentLogP() + "\t");
+			}
+			for (int i : m_iTaxa) {
+				out.print(m_tree.getNode(i).getHeight() + "\t");
+			}
+		} else {
+			if (m_dist != null || m_bIsMonophyleticInput.get()) {
+				out.print(getCurrentLogP() + "\t");
+			}
+			out.print(m_fMRCATime + "\t");
+		}
 	}
 
     @Override
@@ -152,10 +213,12 @@ public class MRCAPrior extends Distribution {
     /** Valuable interface implementation follows, first dimension is log likelihood, second the time **/
     @Override
 	public int getDimension() {return 2;}
+    
     @Override
 	public double getArrayValue() {
     	return logP;
     }
+    
     @Override
 	public double getArrayValue(int iDim) {
     	switch (iDim) {

@@ -254,6 +254,11 @@ done: Data panel: only allow selection of trees that are not initialisers
                     </distribution>
                     <mergepoint id='priors'/>
                 </plate>
+                <plate var='n' range='#alignments'>
+                    <distribution id='$(n).allTipDates' spec='MRCAPrior' tree='@$(n).tree' tipsonly='true'>
+                        <distr spec="beast.math.distributions.Uniform" lower='0'/>
+                    </distribution>
+                </plate>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
                 <plate var='n' range='#alignments'>
@@ -269,12 +274,11 @@ done: Data panel: only allow selection of trees that are not initialisers
             <operator id='$(n).mutationRateScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).mutationRate"/>
             <operator id='$(n).gammaShapeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@$(n).gammaShape"/>
 <!--
-            <operator id='$(n).clockRateScaler' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@$(n).clockrates"/>
-	        <operator id='$(n).birthRateScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).birthRate'/>
-	        <operator id='$(n).growthRatecaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@$(n).growthRate'/>
-            <operator id="$(n).categoriesRandomWalk" spec="IntUniformOperator" weight="1" parameter="@$(n).rateCategories"/>
+            <plate var='t' range='taxa(#alignments)'>
+                   <operator id='$(t).allTipDatesScaler' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@$(n).tree"/>
+            </plate>
 -->
-
+            <operator id='$(n).allTipDatesScaler' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@$(n).tree"/>
 
             <operator id='$(n).FrequenciesExchanger' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@$(n).freqParameter"/>
 

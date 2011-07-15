@@ -298,9 +298,8 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
 	    	}
 	    	prior.m_treeInput.setValue(trees.get(iTree), prior);
 	    	TaxonSet taxonset = new TaxonSet();
-	    	taxonset.setID("MRCA(???)");
+	    	PluginPanel.addPluginToMap(taxonset);
 	    	prior.m_taxonset.setValue(taxonset, prior);
-	    	prior.setID("MRCA(.)");
 	    	// this sets up the type
 	    	prior.m_distInput.setValue(new OneOnX(), prior);
 	    	// this removes the parametric distribution
