@@ -182,9 +182,9 @@ public class MRCAPrior extends Distribution {
 			}
 		} else {
 			if (m_dist != null || m_bIsMonophyleticInput.get()) {
-				out.print("logP(mrca("+getID()+"))\t");
+				out.print("logP(mrca("+m_taxonset.get().getID()+"))\t");
 			}
-			out.print("mrcatime(" + getID() + ")\t");
+			out.print("mrcatime(" + m_taxonset.get().getID() + ")\t");
 		}
 	}
 

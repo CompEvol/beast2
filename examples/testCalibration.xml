@@ -119,7 +119,7 @@
             <log idref="posterior"/>
             <log idref="prior"/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
-            <log spec='beast.evolution.tree.MRCATime' tree='@tree' data='@alignment' id='HumanChimpMRCA' taxa='@human,chimp' />
+            <log spec='beast.math.distributions.MRCAPrior' tree='@tree' id='HumanChimpMRCA' taxonset='@human,chimp' />
             <log idref="popSize"/>
             <log idref="hky.kappa"/>
             <log idref="hky.frequencies"/>
