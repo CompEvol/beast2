@@ -137,6 +137,8 @@ System.err.println(sSelected + " " + plugin2);
 	        		}
 	            	list.set(iItem, plugin2);
 System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
+					sync();
+					refreshPanel();
 				}
 			});
         	itemBox.add(comboBox);
@@ -262,19 +264,9 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
 	@Override
 	protected void addItem() {
 		super.addItem();
-
-	    Component c = this;
-	    while (((Component) c).getParent() != null) {
-	      	c = ((Component) c).getParent();
-	      	if (c instanceof BeautiPanel) {
-	      		BeautiPanel panel = (BeautiPanel) c;
-	      		BeautiPanelConfig cfgPanel = panel.m_config;
-	      		cfgPanel.sync(0);
-	      	}
-        }
-
+		sync();
 	} // addItem
-
+		
 	@Override
     public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
     	MRCAPrior prior = new MRCAPrior();
@@ -300,6 +292,7 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
 	    	TaxonSet taxonset = new TaxonSet();
 	    	PluginPanel.addPluginToMap(taxonset);
 	    	prior.m_taxonset.setValue(taxonset, prior);
+	    	prior.setID(taxonset.getID() + ".prior");
 	    	// this sets up the type
 	    	prior.m_distInput.setValue(new OneOnX(), prior);
 	    	// this removes the parametric distribution

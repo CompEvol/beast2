@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><beast namespace="beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" version="2.0">
 
+<!-- sample tip dates -->
 
     <data dataType="nucleotide" id="Primates">
         <sequence id="seq_Tarsius_syrichta" taxon="Tarsius_syrichta" totalcount="4" value="AAGTTTCATTGGAGCCACCACTCTTATAATTGCCCATGGCCTCACCTCCTCCCTATTATTTTGCCTAGCAAATACAAACTACGAACGAGTCCACAGTCGAACAATAGCACTAGCCCGTGGCCTTCAAACCCTATTACCTCTTGCAGCAACATGATGACTCCTCGCCAGCTTAACCAACCTGGCCCTTCCCCCAACAATTAATTTAATCGGTGAACTGTCCGTAATAATAGCAGCATTTTCATGGTCACACCTAACTATTATCTTAGTAGGCCTTAACACCCTTATCACCGCCCTATATTCCCTATATATACTAATCATAACTCAACGAGGAAAATACACATATCATATCAACAATATCATGCCCCCTTTCACCCGAGAAAATACATTAATAATCATACACCTATTTCCCTTAATCCTACTATCTACCAACCCCAAAGTAATTATAGGAACCATGTACTGTAAATATAGTTTAAACAAAACATTAGATTGTGAGTCTAATAATAGAAGCCCAAAGATTTCTTATTTACCAAGAAAGTA-TGCAAGAACTGCTAACTCATGCCTCCATATATAACAATGTGGCTTTCTT-ACTTTTAAAGGATAGAAGTAATCCATCGGTCTTAGGAACCGAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATTTATTTTCATCCTCCATTTTACTATCACTTACACTCTTAATTACCCCATTTATTATTACAACAACTAAAAAATATGAAACACATGCATACCCTTACTACGTAAAAAACTCTATCGCCTGCGCATTTATAACAAGCCTAGTCCCAATGCTCATATTTCTATACACAAATCAAGAAATAATCATTTCCAACTGACATTGAATAACGATTCATACTATCAAATTATGCCTAAGCTT"/>
@@ -84,10 +85,12 @@ M_fascicularis=1
     <operator id="narrow" isNarrow="true" spec="Exchange" tree="@tree" weight="1.0"/>
 
     <logger fileName="beast_$(seed).log" id="tracelog" logEvery="10000" mode="autodetect" model="@posterior">
-        <distribution idref="likelihood" name="log"/>
-        <parameter idref="hky.kappa" name="log"/>
+        <log idref="likelihood"/>
+        <log idref="hky.kappa"/>
         <log id="TreeHeightLogger0" spec="beast.evolution.tree.TreeHeightLogger" tree="@tree"/>
-        <parameter idref="freqParameter" name="log"/>
+        <log idref="freqParameter"/>
+        <log spec='beast.math.distributions.MRCAPrior' tree='@tree' id='TipDatesLogger' taxonset='@TaxonSet0' tipsonly='true'/>
+        <log spec='beast.math.distributions.MRCAPrior' tree='@tree' id='TipDatesLogger2' tipsonly='true'/>
     </logger>
 
     <logger fileName="beast_$(seed).trees" id="treelog" logEvery="10000" mode="autodetect">

@@ -52,6 +52,8 @@ public class BeautiPanelConfig extends Plugin {
 	
 	/** plugins associated with inputs **/
 	List<Plugin> m_inputs;
+	/** plugins associated with inputs before editing starts **/
+	List<Plugin> m_startInputs;
 	/** plugins that are parents, i.e. contain inputs of m_inputs **/
 	List<Plugin> m_parentPlugins;
 	List<Input<?>> m_parentInputs;
@@ -93,6 +95,7 @@ public class BeautiPanelConfig extends Plugin {
 			}
 		}
 		m_inputs = new ArrayList<Plugin>();
+		m_startInputs = new ArrayList<Plugin>();
 	    PluginPanel.getID(this);
 	}
 	
@@ -200,8 +203,10 @@ public class BeautiPanelConfig extends Plugin {
 				throw new Exception("multiple plugins match, but hasPartitions=false");
 			}
 			m_inputs.clear();
+			m_startInputs.clear();
 			for (Plugin plugin: plugins) {
 				m_inputs.add(plugin);
+				m_startInputs.add(plugin);
 			}
 			
 			if (!m_bIsList) {
@@ -233,8 +238,11 @@ public class BeautiPanelConfig extends Plugin {
 			if (m_bIsList) {			
 				List<Object> list = (List<Object>) m_input.get();
 				List<Object> targetList = ((List<Object>)input.get());
-				// TODO: only clear former members
-				targetList.clear(); 
+				//targetList.clear(); 
+				// only clear former members
+				for (Plugin plugin : m_startInputs) {
+					targetList.remove(plugin);
+				}
 				targetList.addAll(list);
 			} else {
 				try {

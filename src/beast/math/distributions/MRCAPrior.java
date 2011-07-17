@@ -77,9 +77,9 @@ public class MRCAPrior extends Distribution {
 		}
 
 		// determine which taxa are in the set
+		m_iTaxa = new int[m_nNrOfTaxa];
 		if (m_taxonset.get() != null) {
 			m_bTaxaSet = new boolean[sTaxaNames.size()];
-			m_iTaxa = new int[m_nNrOfTaxa];
 			int k = 0;
 			for (String sTaxon : set) {
 				int iTaxon = sTaxaNames.indexOf(sTaxon);
@@ -91,6 +91,10 @@ public class MRCAPrior extends Distribution {
 				}
 				m_bTaxaSet[iTaxon] = true;
 				m_iTaxa[k++] = iTaxon;
+			}
+		} else {
+			for (int i = 0; i < m_nNrOfTaxa; i++) {
+				m_iTaxa[i] = i;
 			}
 		}
 	}
@@ -178,7 +182,7 @@ public class MRCAPrior extends Distribution {
 				out.print("logP(mrca("+getID()+"))\t");
 			}
 			for (int i : m_iTaxa) {
-				out.print("height(" + m_tree.getTaxaNames()[i] + ")");
+				out.print("height(" + m_tree.getTaxaNames()[i] + ")\t");
 			}
 		} else {
 			if (m_dist != null || m_bIsMonophyleticInput.get()) {

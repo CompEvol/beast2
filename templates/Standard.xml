@@ -256,7 +256,7 @@ done: Data panel: only allow selection of trees that are not initialisers
                 </plate>
                 <plate var='n' range='#alignments'>
                     <distribution id='$(n).allTipDates' spec='MRCAPrior' tree='@$(n).tree' tipsonly='true'>
-                        <distr spec="beast.math.distributions.Uniform" lower='0'/>
+                        <distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/>
                     </distribution>
                 </plate>
             </distribution>

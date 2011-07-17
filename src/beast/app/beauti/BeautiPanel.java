@@ -41,7 +41,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     /** document that this panel applies to **/
     BeautiDoc m_doc;
     /** configuration for this panel **/
-    BeautiPanelConfig m_config;
+    public BeautiPanelConfig m_config;
     
     /** panel number **/
     int m_iPanel;

@@ -1,5 +1,7 @@
 package beast.app.draw;
 
+import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.BeautiPanelConfig;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -313,6 +315,19 @@ public class ListInputEditor extends InputEditor {
             repaint();
         }
 	} // addItem
+	
+	/** synchronise values in panel with current network **/
+	protected void sync() {
+	    Component c = this;
+	    while (((Component) c).getParent() != null) {
+	      	c = ((Component) c).getParent();
+	      	if (c instanceof BeautiPanel) {
+	      		BeautiPanel panel = (BeautiPanel) c;
+	      		BeautiPanelConfig cfgPanel = panel.m_config;
+	      		cfgPanel.sync(0);
+	      	}
+	    }
+	}
 	
 	protected Object editItem(Object o) {
 		int i = ((List<?>)m_input.get()).indexOf(o);
