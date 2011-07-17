@@ -66,7 +66,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 	}
 
 	/** maps most significant digit to nr of ticks on graph **/ 
-	final static int [] NR_OF_TICKS = new int [] {0,10,8,6,8,10,6,7,8,9, 10};
+	final static int [] NR_OF_TICKS = new int [] {5,10,8,6,8,10,6,7,8,9, 10};
 
 	/* class for drawing information for a parametric distribution **/
     class PDPanel extends JPanel {
@@ -119,7 +119,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 				f2 /= 10;
 				k++;
 			}
-			while (f < 1) {
+			while (f < 1 && f > 0) {
 				f *= 10;
 				f2 *= 10;
 				k--;
@@ -173,7 +173,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 				g.drawString(myFormatter.format(fMinValue + fXRange * i / NR_OF_TICKS_X), x + 2, graphoffset + nGraphHeight + 5 + 2);
 			}
 			for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
-					int y = graphoffset + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
+					int y = graphoffset + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y; 
 				g.drawLine(graphoffset - 5, y, graphoffset, y);
 				g.drawString(myFormatter.format(fYMax * i / NR_OF_TICKS_Y), 0, y + 3);
 			}
@@ -200,7 +200,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 				fY /= 10;
 				k++;
 			}
-			while (fY < 1) {
+			while (fY < 1 && fY > 0) {
 				fY *= 10;
 				k--;
 			}
