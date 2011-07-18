@@ -168,14 +168,6 @@ public interface PopulationFunction extends UnivariateRealFunction {
         // Cacheable IMPLEMENTATION
         // **************************************************************
 
-//        public void store(final int sample) {
-//            // empty - may be overridden
-//        }
-//
-//        public void restore(final int sample) {
-//            // empty - may be overridden
-//        }
-
         public void prepare() {
             // empty - may be overridden
         }

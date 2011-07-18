@@ -69,7 +69,9 @@ public class DeltaExchangeOperator extends Operator {
         RealParameter realparameter = parameterInput.get();
         IntegerParameter intparameter = intparameterInput.get();
 
-        final int dim = realparameter.getDimension();
+        
+        final int dim = (realparameter != null ? realparameter.getDimension() : intparameter.getDimension());
+
         final int dim1 = Randomizer.nextInt(dim);
         int dim2 = dim1;
         while (dim1 == dim2) {
