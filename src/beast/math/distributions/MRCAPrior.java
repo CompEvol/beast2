@@ -204,6 +204,8 @@ public class MRCAPrior extends Distribution {
 		} else {
 			if (m_dist != null || m_bIsMonophyleticInput.get()) {
 				out.print(getCurrentLogP() + "\t");
+			} else {
+				calcMRCAtime(m_tree.getRoot(), new int[1]);
 			}
 			out.print(m_fMRCATime + "\t");
 		}
