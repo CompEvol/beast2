@@ -228,7 +228,7 @@ public class XMLParser {
     /** extract all elements (runnable or not) from an XML fragment.
      * Useful for retrieving all non-runnable elements when a template
      * is instantiated by Beauti **/
-    public List<Plugin> parseTemplate(String sXML) throws Exception {
+    public List<Plugin> parseTemplate(String sXML, HashMap<String, Plugin> sIDMap) throws Exception {
         // parse the XML file into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
@@ -236,7 +236,7 @@ public class XMLParser {
         m_doc.normalize();
         processPlates();
         
-        m_sIDMap = new HashMap<String, Plugin>();
+        m_sIDMap = sIDMap;//new HashMap<String, Plugin>();
         m_LikelihoodMap = new HashMap<String, Integer[]>();
         m_sIDNodeMap = new HashMap<String, Node>();
 
@@ -449,25 +449,14 @@ public class XMLParser {
     void parseNameSpaceAndMap(Node topNode) throws XMLParserException {
         // process namespaces
         if (hasAtt(topNode, "namespace")) {
-            String sNameSpce = getAttribute(topNode, "namespace");
-            String[] sNameSpaces = sNameSpce.split(":");
-            // append dot after every non-zero namespace
-            m_sNameSpaces = new String[sNameSpaces.length + 1];
-            int i = 0;
-            for (String sNameSpace : sNameSpaces) {
-                if (sNameSpace.length() > 0) {
-                    if (sNameSpace.charAt(sNameSpace.length() - 1) != '.') {
-                        sNameSpace += '.';
-                    }
-                }
-                m_sNameSpaces[i++] = sNameSpace;
-            }
-            // make sure that the default namespace is in there
-            m_sNameSpaces[i] = "";
+            String sNameSpace = getAttribute(topNode, "namespace");
+            setNameSpace(sNameSpace);
         } else {
             // make sure that the default namespace is in there
-            m_sNameSpaces = new String[1];
-            m_sNameSpaces[0] = "";
+        	if (m_sNameSpaces == null) {
+	            m_sNameSpaces = new String[1];
+	            m_sNameSpaces[0] = "";
+        	}
         }
 
         // process map elements
@@ -504,7 +493,24 @@ public class XMLParser {
         }
     } // parseNameSpaceAndMap
 
-    void parseRunElement(Node topNode) throws Exception {
+    public void setNameSpace(String sNameSpaceStr) {
+        String[] sNameSpaces = sNameSpaceStr.split(":");
+        // append dot after every non-zero namespace
+        m_sNameSpaces = new String[sNameSpaces.length + 1];
+        int i = 0;
+        for (String sNameSpace : sNameSpaces) {
+            if (sNameSpace.length() > 0) {
+                if (sNameSpace.charAt(sNameSpace.length() - 1) != '.') {
+                    sNameSpace += '.';
+                }
+            }
+            m_sNameSpaces[i++] = sNameSpace;
+        }
+        // make sure that the default namespace is in there
+        m_sNameSpaces[i] = "";
+	}
+
+	void parseRunElement(Node topNode) throws Exception {
         // find mcmc element
         NodeList nodes = m_doc.getElementsByTagName(RUN_ELEMENT);
         if (nodes.getLength() == 0) {

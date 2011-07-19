@@ -90,7 +90,36 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         m_distributions = new ArrayList<ParametricDistribution>();
         m_sTaxonSetIDs = new ArrayList<String>();
         m_nIsMonophyletic = 0;
-        for (MRCAPrior prior : m_calibrations.get()) {
+        // pick up constraints from outputs, m_inititial input tree and output tree, if any
+        List<MRCAPrior> calibrations = m_calibrations.get();
+//    	for (Plugin plugin : outputs) {
+//        	// pick up constraints in outputs
+//    		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
+//    			calibrations.add((MRCAPrior) plugin);
+//    		} else  if (plugin instanceof Tree) {
+//            	// pick up constraints in outputs if output tree
+//    			Tree tree = (Tree) plugin;
+//    			if (tree.m_initial.get() == this) {
+//                	for (Plugin plugin2 : tree.outputs) {
+//                		if (plugin2 instanceof MRCAPrior && !calibrations.contains(plugin2)) {
+//                			calibrations.add((MRCAPrior) plugin2);
+//                		}                		
+//                	}
+//    			}
+//    		}
+//    		
+//    	}
+//    	// pick up constraints in m_initial tree
+//        if (m_initial.get() != null) {
+//        	for (Plugin plugin : m_initial.get().outputs) {
+//        		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
+//        			calibrations.add((MRCAPrior) plugin);
+//        		}
+//        	}
+//         }
+        
+        
+        for (MRCAPrior prior : calibrations) {
     		TaxonSet taxonSet = prior.m_taxonset.get();
     		BitSet bTaxa = new BitSet(m_nTaxa);
     		for (String sTaxonID : taxonSet.asStringList()) {

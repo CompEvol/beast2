@@ -188,6 +188,10 @@ public interface DataType {
     		return true;
     	}
     	
+    	@Override
+    	public String toString() {
+    		return getDescription();
+    	}
     } // class Base
 
 } // class DataType

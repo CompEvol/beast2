@@ -1,65 +1,299 @@
 package beast.app.beauti;
 
-
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.ListInputEditor;
+import beast.app.draw.SmallButton;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
+import beast.evolution.likelihood.TreeLikelihood;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 
 public class AlignmentListInputEditor extends ListInputEditor {
 	private static final long serialVersionUID = 1L;
 
+	/** alignments that form a partition. These can be FilteredAlignments **/
+	List<Alignment> m_alignments;
+	int m_nPartitions;
+	TreeLikelihood[] m_likelihoods;
+	Object[][] m_tableData;
+	JTable m_table;
+
+	String[] m_modelItems;
+
 	@Override
 	public Class<?> type() {
 		return List.class;
 	}
+
 	@Override
 	public Class<?> baseType() {
 		return Alignment.class;
 	}
-	
+
 	@Override
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
-		super.init(input, plugin, bExpand, bAddButtons);
-		//m_editButton.setVisible(false);
+		m_alignments = (List<Alignment>) input.get();
+		m_nPartitions = m_alignments.size();
+		//super.init(input, plugin, bExpand, false);
+        Box box = createVerticalBox();
+        box.add(createListBox());
+        box.add(Box.createVerticalGlue());
+        
+        
+        Box buttonBox = box.createHorizontalBox();
+        
+        m_addButton = new SmallButton("+", true);
+        m_addButton.setToolTipText("Add item to the list");
+        m_addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	addItem();
+            }
+        });
+        buttonBox.add(m_addButton);
+        buttonBox.add(Box.createHorizontalGlue());
+        box.add(buttonBox);
+        add(box);
+        
 	}
-	
+
+	@Override
+	protected void addInputLabel() {
+	}
+
+	void initTableData() {
+		m_likelihoods = new TreeLikelihood[m_nPartitions];
+		if (m_tableData == null) {
+			m_tableData = new Object[m_nPartitions][8];
+		}
+		for (int i = 0; i < m_nPartitions; i++) {
+			Alignment data = m_alignments.get(i);
+			// partition name
+			m_tableData[i][0] = data;
+
+			// alignment name
+			if (data instanceof FilteredAlignment) {
+				m_tableData[i][1] = ((FilteredAlignment) data).m_alignmentInput.get();
+			} else {
+				m_tableData[i][1] = data;
+			}
+			// # taxa
+			m_tableData[i][2] = data.getNrTaxa();
+			// # sites
+			m_tableData[i][3] = data.getSiteCount();
+			// Data type
+			m_tableData[i][4] = data.getDataType();
+			// site model
+			TreeLikelihood likelihood = null;
+			for (Plugin plugin : data.outputs) {
+				if (plugin instanceof TreeLikelihood) {
+					likelihood = (TreeLikelihood) plugin;
+					break;
+				}
+			}
+			assert (likelihood != null);
+			m_likelihoods[i] = likelihood;
+			m_tableData[i][5] = getPartition(likelihood.m_pSiteModel);
+			// clock model
+			m_tableData[i][6] = getPartition(likelihood.m_pBranchRateModel);
+			// tree
+			m_tableData[i][7] = getPartition(likelihood.m_tree);
+		}
+	}
+
+	private String getPartition(Input input) {
+		Plugin plugin = (Plugin) input.get();
+		String sID = plugin.getID();
+		sID = sID.substring(sID.indexOf('.') + 1);
+		return sID;
+	}
+
+	private Component createListBox() {
+		String[] columnData = new String[] { "Name", "File", "Taxa", "Sites", "Data Type", "Site Model", "Clock Model",
+				"Tree" };
+		initTableData();
+		// set up table.
+		// special features: background shading of rows
+		// custom editor allowing only Date column to be edited.
+		m_table = new JTable(m_tableData, columnData) {
+			private static final long serialVersionUID = 1L;
+
+			// method that induces table row shading
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int Index_row, int Index_col) {
+				Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+				// even index, selected or not selected
+				if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
+					comp.setBackground(new Color(237, 243, 255));
+				} else {
+					comp.setBackground(Color.white);
+				}
+				return comp;
+			}
+		};
+		m_table.setRowHeight(25);
+
+		// set up comboboxes
+		m_modelItems = new String[m_nPartitions];
+		for (int i = 0; i < m_nPartitions; i++) {
+			m_modelItems[i] = m_alignments.get(i).getID();
+		}
+		TableColumn col = m_table.getColumnModel().getColumn(5);
+		col.setCellEditor(new DefaultCellEditor(new JComboBox(m_modelItems)));
+		// If the cell should appear like a combobox in its
+		// non-editing state, also set the combobox renderer
+		col.setCellRenderer(new MyComboBoxRenderer(m_modelItems));
+		col = m_table.getColumnModel().getColumn(6);
+		col.setCellEditor(new DefaultCellEditor(new JComboBox(m_modelItems)));
+		col.setCellRenderer(new MyComboBoxRenderer(m_modelItems));
+		col = m_table.getColumnModel().getColumn(7);
+		col.setCellEditor(new DefaultCellEditor(new JComboBox(m_modelItems)));
+		col.setCellRenderer(new MyComboBoxRenderer(m_modelItems));
+		col = m_table.getColumnModel().getColumn(2);
+		col.setPreferredWidth(30);
+		col = m_table.getColumnModel().getColumn(3);
+		col.setPreferredWidth(30);
+		
+		// // set up editor that makes sure only doubles are accepted as entry
+		// // and only the Date column is editable.
+		// m_table.setDefaultEditor(Object.class, new TableCellEditor() {
+		// JTextField m_textField = new JTextField();
+		// int m_iRow, m_iCol;
+		// @Override
+		// public boolean stopCellEditing() {
+		// m_table.removeEditor();
+		// String sText = m_textField.getText();
+		// try {
+		// Double.parseDouble(sText);
+		// } catch (Exception e) {
+		// return false;
+		// }
+		// m_tableData[m_iRow][m_iCol] = sText;
+		// convertTableDataToTrait();
+		// convertTraitToTableData();
+		// return true;
+		// }
+		//
+		// @Override
+		// public boolean isCellEditable(EventObject anEvent) {
+		// return m_table.getSelectedColumn() == 1;
+		// }
+		//
+		//
+		// @Override
+		// public Component getTableCellEditorComponent(JTable table, Object
+		// value, boolean isSelected, int iRow, int iCol) {
+		// if (!isSelected) {
+		// return null;
+		// }
+		// m_iRow = iRow;
+		// m_iCol = iCol;
+		// m_textField.setText((String)value);
+		// return m_textField;
+		// }
+		//
+		// @Override
+		// public boolean shouldSelectCell(EventObject anEvent) {return false;}
+		// @Override
+		// public void removeCellEditorListener(CellEditorListener l) {}
+		// @Override
+		// public Object getCellEditorValue() {return null;}
+		// @Override
+		// public void cancelCellEditing() {}
+		// @Override
+		// public void addCellEditorListener(CellEditorListener l) {}
+		//
+		// });
+		JScrollPane scrollPane = new JScrollPane(m_table);
+		return scrollPane;
+	} // createListBox
+
+	public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
+		public MyComboBoxRenderer(String[] items) {
+			super(items);
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+			if (isSelected) {
+				setForeground(table.getSelectionForeground());
+				super.setBackground(table.getSelectionBackground());
+			} else {
+				setForeground(table.getForeground());
+				setBackground(table.getBackground());
+			}
+
+			// Select the current value
+			setSelectedItem(value);
+			return this;
+		}
+	}
+
+	@Override
+	protected void addSingleItem(Plugin plugin) {
+		initTableData();
+		repaint();
+	}
+
+	@Override
+	protected void addItem() {
+		List<Plugin> plugins = pluginSelector(m_input, m_plugin, null);
+		
+        Component c = this;
+        BeautiDoc doc = null;
+        while (((Component) c).getParent() != null) {
+        	c = ((Component) c).getParent();
+        	if (c instanceof BeautiPanel) {
+        		doc = ((BeautiPanel) c).m_doc;
+        	}
+        }
+		
+		if (plugins != null) {
+			for (Plugin plugin : plugins) {
+				doc.addAlignmentWithSubnet((Alignment) plugin);
+			}
+			refreshPanel();
+		}
+	} // addItem
+
 	@Override
 	public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
-    	List<Plugin> selectedPlugins = new ArrayList<Plugin>();
+		List<Plugin> selectedPlugins = new ArrayList<Plugin>();
 		JFileChooser fileChooser = new JFileChooser(Beauti.m_sDir);
-		
-        fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-        String [] exts = {".nex",".nxs"};
-        fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
 
-//		fileChooser.addChoosableFileFilter(new MyFileFilter() {
-//			public String getExtention(){return ".xml";}
-//			public String getDescription() {return "Beast xml file (*.xml)";}
-//		});
-//		fileChooser.addChoosableFileFilter(new MyFileFilter() {
-//			public String getExtention(){return ".nex";}
-//			public String getDescription() {return "Nexus file (*.nex)";}
-//		});
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
+		String[] exts = { ".nex", ".nxs" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
+
 		fileChooser.setDialogTitle("Load Sequence");
 		fileChooser.setMultiSelectionEnabled(true);
 		int rval = fileChooser.showOpenDialog(null);
 
 		if (rval == JFileChooser.APPROVE_OPTION) {
 
-			File [] files = fileChooser.getSelectedFiles();
+			File[] files = fileChooser.getSelectedFiles();
 			for (int i = 0; i < files.length; i++) {
 				String sFileName = files[i].getAbsolutePath();
 				if (sFileName.lastIndexOf('/') > 0) {
@@ -83,34 +317,24 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					}
 				}
 				if (sFileName.toLowerCase().endsWith(".xml")) {
-					Plugin alignment =  getXMLData(sFileName);
+					Plugin alignment = getXMLData(sFileName);
 					selectedPlugins.add(alignment);
 				}
-//				if (i < files.length - 1) {
-//		            try {
-//		           		m_input.setValue(plugin2, m_plugin);
-//		            } catch (Exception ex) {
-//		                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
-//		            }
-//		            addSingleItem(plugin2);
-//				} else {
-//					return plugin2;
-//				}
 			}
 			return selectedPlugins;
 		}
 		return null;
-	} // loadDataFile
-	
+	} // pluginSelector
+
 	static public Plugin getXMLData(String sFileName) {
 		XMLParser parser = new XMLParser();
 		try {
 			String sXML = "";
-    		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
-    		while (fin.ready()) {
-    			sXML += fin.readLine();
-    		}
-    		fin.close();
+			BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+			while (fin.ready()) {
+				sXML += fin.readLine();
+			}
+			fin.close();
 			Plugin runnable = parser.parseFragment(sXML, false);
 			return getAlignment(runnable);
 		} catch (Exception ex) {
@@ -119,7 +343,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			return null;
 		}
 	}
-	
+
 	static Plugin getAlignment(Plugin plugin) throws IllegalArgumentException, IllegalAccessException {
 		if (plugin instanceof Alignment) {
 			return plugin;
@@ -132,6 +356,5 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 		return null;
 	}
-
 
 } // class AlignmentListInputEditor

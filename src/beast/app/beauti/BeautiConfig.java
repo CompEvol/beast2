@@ -9,6 +9,7 @@ import java.util.Set;
 import beast.app.draw.InputEditor;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Plugin;
 
 @Description("Beauti configuration object, used to find Beauti configuration " +
@@ -39,6 +40,11 @@ public class BeautiConfig extends Plugin {
 	
 	public Input<List<InputConstraint>> m_inputConstraints = new Input<List<InputConstraint>>("constraint", "defines constraints on inputs", 
 			new ArrayList<InputConstraint>());
+
+	
+	public Input<BeautiSubTemplate> m_partitionTemplate = new Input<BeautiSubTemplate>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
+	public Input<List<BeautiSubTemplate>> m_subTemplates = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes", 
+			new ArrayList<BeautiSubTemplate>());
 
 	
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
@@ -179,7 +185,6 @@ public class BeautiConfig extends Plugin {
 	public static boolean menuIsInvisible(String sMenuName) {
 		return g_sDisabledMenus.contains(sMenuName);
 	}
-
 
 //	public static boolean hasDeleteButton(String sFullInputName) {
 //		if (!g_sEditButtonStatus.containsKey(sFullInputName)) {

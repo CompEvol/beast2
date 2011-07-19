@@ -59,7 +59,7 @@ public class MCMC extends Runnable {
 
     public Input<List<Operator>> operatorsInput =
             new Input<List<Operator>>("operator", "operator for generating proposals in MCMC state space",
-                    new ArrayList<Operator>(), Input.Validate.REQUIRED);
+                    new ArrayList<Operator>());//, Input.Validate.REQUIRED);
 
     public Input<List<Logger>> m_loggers =
             new Input<List<Logger>>("logger", "loggers for reporting progress of MCMC chain",

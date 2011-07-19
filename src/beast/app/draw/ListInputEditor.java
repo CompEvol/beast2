@@ -294,7 +294,7 @@ public class ListInputEditor extends InputEditor {
 		}
 	}
     
-    
+
 	protected void addItem() {
         List<String> sTabuList = new ArrayList<String>();
         for (int i = 0; i < m_entries.size(); i++) {

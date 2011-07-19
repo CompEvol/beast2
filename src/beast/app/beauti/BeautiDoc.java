@@ -3,6 +3,7 @@ package beast.app.beauti;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import beast.app.draw.PluginPanel;
@@ -18,7 +19,7 @@ import beast.core.State;
 import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.FilteredAlignment;
+import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.operators.TipDatesScaler;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
@@ -28,7 +29,11 @@ import beast.util.XMLProducer;
 
 @Description("Beauti document in doc-view pattern, not useful in models")
 public class BeautiDoc extends Plugin {
-	public Input<List<Alignment>> m_alignments = new Input<List<Alignment>>("alignment", "list of alignments or partitions", new ArrayList<Alignment>(), Validate.REQUIRED);
+	final static String STANDARD_TEMPLATE = "templates/Standard.xml";
+	
+	//public Input<List<Alignment>> m_alignments = new Input<List<Alignment>>("alignment", "list of alignments or partitions", new ArrayList<Alignment>(), Validate.REQUIRED);
+	public List<Alignment> m_alignments = new ArrayList<Alignment>();
+
 	public Input<beast.core.Runnable> m_mcmc = new Input<beast.core.Runnable>("runnable", "main entry of analysis", Validate.REQUIRED);
 
 	/** points to input that contains prior distribution, if any **/
@@ -48,6 +53,11 @@ public class BeautiDoc extends Plugin {
 	public BeautiDoc() {
 		setID("BeautiDoc");
 		m_potentialPriors = new ArrayList<Distribution>();
+
+		m_pPartitions = new List[3];
+		m_pPartitions[0] = new ArrayList();
+		m_pPartitions[1] = new ArrayList();
+		m_pPartitions[2] = new ArrayList();
 	}
 	
     void initialize(BeautiInitDlg.ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
@@ -92,125 +102,164 @@ public class BeautiDoc extends Plugin {
 		outfile.close();
 	} // save
 
-	List<String> extractSequences(String sXML) throws  Exception {
+	void extractSequences(String sXML) throws  Exception {
+		// load standard template
+		String sTemplateXML = BeautiInitDlg.load(STANDARD_TEMPLATE);
+		loadTemplate(sTemplateXML);
+		// parse file
 		XMLParser parser = new XMLParser();
-		List<Plugin> plugins = parser.parseTemplate(sXML);
-		List<String> sAlignmentNames = new ArrayList<String>();
-		for (Plugin plugin: plugins) {
-			PluginPanel.addPluginToMap(plugin);
-			if (plugin instanceof beast.core.Runnable) {
-				m_mcmc.setValue(plugin, this);
-			}
-			if (plugin instanceof beast.evolution.alignment.Alignment) {
-				sAlignmentNames.add(plugin.getID());
-			}
-		}
-		return sAlignmentNames;
+		Plugin MCMC = parser.parseFragment(sXML, true);
+		m_mcmc.setValue(MCMC, this);
+		PluginPanel.addPluginToMap(MCMC);
+		// extract alignments
+		determinePartitions();
 	}
 
+	
+	BeautiConfig m_beautiConfig;
+	
 	/** Merge sequence data with sXML specification. 
 	 **/
-	List<String> mergeSequences(String sXML) throws  Exception {
+	void mergeSequences(String sXML) throws  Exception {
+		loadTemplate(sXML);
 		// create XML for alignments
-		String sAlignments = "";
-		int n = 1;
-		String sRange="range='";
-		List<String> sAlignmentNames = new ArrayList<String>();
-		for (Alignment alignment : m_alignments.get()) {
-			sAlignmentNames.add(alignment.getID());
-			alignment.setID(/*"alignment" + */alignment.getID());
-			sRange += alignment.getID() +",";
-			n++;
+		for (Alignment alignment : m_alignments) {
+			m_beautiConfig.m_partitionTemplate.get().createSubNet(alignment, this);
 		}
-
-		for (Alignment alignment : m_alignments.get()) {
-			if (!(alignment instanceof FilteredAlignment)) {
-				sAlignments += new XMLProducer().toRawXML(alignment);
-			}
-		}
-		List<String> sDone = new ArrayList<String>();
-		for (Alignment alignment : m_alignments.get()) {
-			if (alignment instanceof FilteredAlignment) {
-				FilteredAlignment data = (FilteredAlignment) alignment;
-				Alignment baseData = data.m_alignmentInput.get();
-				String sBaseID = baseData.getID();
-				if (sDone.indexOf(sBaseID) < 0) {
-					sAlignments += new XMLProducer().toRawXML(baseData);
-					sDone.add(sBaseID);
-				}
-				// suppress alinmentInput
-				data.m_alignmentInput.setValue(null, data);
-				String sData = new XMLProducer().toRawXML(data);
-				// restore alinmentInput
-				data.m_alignmentInput.setValue(baseData, data);
-				sData = sData.replaceFirst("<data ", "<data data='@" + sBaseID +"' ");
-				sAlignments += sData;
-			}
-		}
+		determinePartitions();
 		
-		sRange = sRange.substring(0, sRange.length()-1)+"'";
-		
-		// process plates in template
-		int i  = -1;
-		do {
-			i = sXML.indexOf("<plate", i);
-			if (i >= 0) {
-				int j = sXML.indexOf("range='#alignments'");
-				int j2 = sXML.indexOf("range=\"#alignments\"");
-				if (j < 0 || (j2>=0 && j2 < j)) {
-					j = j2;
-				}
-				// sanity check: no close of elements encountered underway...
-				for (int k = i; k < j; k++) {
-					if (sXML.charAt(k) == '>') {
-						j = -1;
-					}
-				}
-				if ( j >= 0) {
-					sXML = sXML.substring(0, j) + sRange + sXML.substring(j+19);
-				}
-				i++;
-			}
-		} while (i >= 0);
-		
-		
-		if (sAlignmentNames.size() == 1) {
-			// process plates in template
-			i  = -1;
-			do {
-				i = sXML.indexOf("$(n).", i);
-				if ( i >= 0) {
-					sXML = sXML.substring(0, i) + sXML.substring(i+5);
-				}
-			} while (i >= 0);
-		}
-		
-		// merge in the alignments
-		i = sXML.indexOf("<data");
-		int j = sXML.indexOf("/>",i);
-		int k = sXML.indexOf("</data>",i);
-		if (j < 0 || (k > 0 && k < j)) {
-			j = k + 7;
-		}
-		sXML = sXML.substring(0, i) + sAlignments + sXML.substring(j);
-		
-		// parse the resulting XML
-		FileWriter outfile = new FileWriter("beast.xml");
-		outfile.write(sXML);
-		outfile.close();
-		
-		XMLParser parser = new XMLParser();
-		List<Plugin> plugins = parser.parseTemplate(sXML);
-		for (Plugin plugin: plugins) {
-			PluginPanel.addPluginToMap(plugin);
-			if (plugin instanceof beast.core.Runnable) {
-				m_mcmc.setValue(plugin, this);
-			}
-		}
-		return sAlignmentNames;
+//		// create XML for alignments
+//		String sAlignments = "";
+//		int n = 1;
+//		String sRange="range='";
+//		List<String> sAlignmentNames = new ArrayList<String>();
+//		for (Alignment alignment : m_alignments.get()) {
+//			sAlignmentNames.add(alignment.getID());
+//			alignment.setID(/*"alignment" + */alignment.getID());
+//			sRange += alignment.getID() +",";
+//			n++;
+//		}
+//
+//		for (Alignment alignment : m_alignments.get()) {
+//			if (!(alignment instanceof FilteredAlignment)) {
+//				sAlignments += new XMLProducer().toRawXML(alignment);
+//			}
+//		}
+//		List<String> sDone = new ArrayList<String>();
+//		for (Alignment alignment : m_alignments.get()) {
+//			if (alignment instanceof FilteredAlignment) {
+//				FilteredAlignment data = (FilteredAlignment) alignment;
+//				Alignment baseData = data.m_alignmentInput.get();
+//				String sBaseID = baseData.getID();
+//				if (sDone.indexOf(sBaseID) < 0) {
+//					sAlignments += new XMLProducer().toRawXML(baseData);
+//					sDone.add(sBaseID);
+//				}
+//				// suppress alinmentInput
+//				data.m_alignmentInput.setValue(null, data);
+//				String sData = new XMLProducer().toRawXML(data);
+//				// restore alinmentInput
+//				data.m_alignmentInput.setValue(baseData, data);
+//				sData = sData.replaceFirst("<data ", "<data data='@" + sBaseID +"' ");
+//				sAlignments += sData;
+//			}
+//		}
+//		
+//		sRange = sRange.substring(0, sRange.length()-1)+"'";
+//		
+//		// process plates in template
+//		int i  = -1;
+//		do {
+//			i = sXML.indexOf("<plate", i);
+//			if (i >= 0) {
+//				int j = sXML.indexOf("range='#alignments'");
+//				int j2 = sXML.indexOf("range=\"#alignments\"");
+//				if (j < 0 || (j2>=0 && j2 < j)) {
+//					j = j2;
+//				}
+//				// sanity check: no close of elements encountered underway...
+//				for (int k = i; k < j; k++) {
+//					if (sXML.charAt(k) == '>') {
+//						j = -1;
+//					}
+//				}
+//				if ( j >= 0) {
+//					sXML = sXML.substring(0, j) + sRange + sXML.substring(j+19);
+//				}
+//				i++;
+//			}
+//		} while (i >= 0);
+//		
+//		
+//		if (sAlignmentNames.size() == 1) {
+//			// process plates in template
+//			i  = -1;
+//			do {
+//				i = sXML.indexOf("$(n).", i);
+//				if ( i >= 0) {
+//					sXML = sXML.substring(0, i) + sXML.substring(i+5);
+//				}
+//			} while (i >= 0);
+//		}
+//		
+//		// merge in the alignments
+//		i = sXML.indexOf("<data");
+//		int j = sXML.indexOf("/>",i);
+//		int k = sXML.indexOf("</data>",i);
+//		if (j < 0 || (k > 0 && k < j)) {
+//			j = k + 7;
+//		}
+//		sXML = sXML.substring(0, i) + sAlignments + sXML.substring(j);
+//		
+//		// parse the resulting XML
+//		FileWriter outfile = new FileWriter("beast.xml");
+//		outfile.write(sXML);
+//		outfile.close();
+//		
+//		XMLParser parser = new XMLParser();
+//		List<Plugin> plugins = parser.parseTemplate(sXML, new HashMap<String, Plugin>());
+//		for (Plugin plugin: plugins) {
+//			PluginPanel.addPluginToMap(plugin);
+//			if (plugin instanceof beast.core.Runnable) {
+//				m_mcmc.setValue(plugin, this);
+//			}
+//		}
+//		return sAlignmentNames;
 	} // mergeSequences
 	
-	
+	void loadTemplate(String sXML) throws Exception {
+		// load the template and its beauti configuration parts
+		XMLParser parser = new XMLParser();
+		List<Plugin> plugins = parser.parseTemplate(sXML, new HashMap<String, Plugin>());
+		for (Plugin plugin : plugins) {
+			if (plugin instanceof beast.core.Runnable) {
+				m_mcmc.setValue(plugin, this);
+			} else if (plugin instanceof BeautiConfig) {
+				m_beautiConfig = (BeautiConfig) plugin;
+			} else {
+				System.err.println("template item " + plugin.getID() + " is ignored");
+			}
+			PluginPanel.addPluginToMap(plugin);
+		}
+	}
+
+	private void determinePartitions() {
+		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+		m_alignments.clear();
+		m_pPartitions[0].clear();
+		m_pPartitions[1].clear();
+		m_pPartitions[2].clear();
+		for (Distribution distr : likelihood.pDistributions.get()) {
+			if (distr instanceof TreeLikelihood) {
+				TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
+				m_alignments.add(treeLikelihoods.m_data.get());
+				m_pPartitions[0].add(treeLikelihoods.m_pSiteModel.get());
+				m_pPartitions[1].add(treeLikelihoods.m_pBranchRateModel.get());
+				m_pPartitions[2].add(treeLikelihoods.m_tree.get());
+			}
+		}
+	}
+
 	/** Connect all inputs to the relevant ancestors of m_runnable.
 	 * @throws Exception 
 	 *  **/ 
@@ -228,8 +277,8 @@ public class BeautiDoc extends Plugin {
 		}
 		
 		// collect priors from template
-		CompoundDistribution posteror = (CompoundDistribution) mcmc.posteriorInput.get();
-		m_priors = ((CompoundDistribution)posteror.pDistributions.get().get(0)).pDistributions;
+		CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
+		m_priors = prior.pDistributions;
 		List<Distribution> list = m_priors.get();
 		for (Distribution d : list) {
 			m_potentialPriors.add(d);
@@ -434,5 +483,58 @@ public class BeautiDoc extends Plugin {
 			}
 		}		
 	}
+
+	
+	/** [0] = sitemodel [1] = clock model [2] = tree **/
+	List<Plugin>[] m_pPartitions;
+	
+	public void addPlugin(Plugin plugin) throws Exception {
+		PluginPanel.addPluginToMap(plugin);
+//		m_sIDMap.put(plugin.getID(), plugin);
+//		for (Plugin plugin2 : plugin.listActivePlugins()) {
+//			addPlugin(plugin2);
+//		}
+	}
+
+	/** connect source plugin with target plugin **/ 
+	public void connect(Plugin srcPlugin, String sTargetID, String sInputName) throws Exception {
+		Plugin target = PluginPanel.g_plugins.get(sTargetID);
+//		Plugin target = m_sIDMap.get(sTargetID);
+		target.setInputValue(sInputName, srcPlugin);
+	}
+
+
+	public void addAlignmentWithSubnet(Alignment data) {
+		m_alignments.add(data);
+		m_beautiConfig.m_partitionTemplate.get().createSubNet(data, this);
+		// re-determine partitions
+		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+		m_pPartitions[0].clear();
+		m_pPartitions[1].clear();
+		m_pPartitions[2].clear();
+		for (Distribution distr : likelihood.pDistributions.get()) {
+			if (distr instanceof TreeLikelihood) {
+				TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
+				m_pPartitions[0].add(treeLikelihoods.m_pSiteModel.get());
+				m_pPartitions[1].add(treeLikelihoods.m_pBranchRateModel.get());
+				m_pPartitions[2].add(treeLikelihoods.m_tree.get());
+			}
+		}
+	}
+
+	public List<Plugin> getPartitions(String sType) {
+		if (sType == null) {
+			return m_pPartitions[2];
+		}
+		if (sType.contains("SiteModel")) {
+			return m_pPartitions[0];
+		}
+		if (sType.contains("BranchRateModel")) {
+			return m_pPartitions[1];
+		}
+		return m_pPartitions[2];
+	}
+
+
 
 } // class BeautiDoc

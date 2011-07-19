@@ -9,9 +9,11 @@ import beast.evolution.substitutionmodel.Blosum62;
 import beast.evolution.substitutionmodel.CPREV;
 import beast.evolution.substitutionmodel.Dayhoff;
 import beast.evolution.substitutionmodel.Frequencies;
+import beast.evolution.substitutionmodel.GTR;
 import beast.evolution.substitutionmodel.GeneralSubstitutionModel;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.JTT;
+import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.substitutionmodel.MTREV;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.WAG;
@@ -37,17 +39,12 @@ public class TreeLikelihoodTest extends TestCase {
 		// Set up JC69 model: uniform freqs, kappa = 1, 0 gamma categories	
 		Alignment data = BEASTTestCase.getAlignment();
 		Tree tree = BEASTTestCase.getTree(data);
+
+		JukesCantor JC = new JukesCantor();
+		JC.initAndValidate();
 		
-		Frequencies freqs = new Frequencies();
-		freqs.initByName("data", data, 
-						 "estimate", false);
-
-		HKY hky = new HKY();
-		hky.initByName("kappa", "1.0", 
-				       "frequencies",freqs);
-
 		SiteModel siteModel = new SiteModel();
-		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", hky);
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", JC);
 
 		TreeLikelihood likelihood = newTreeLikelihood();
 		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
@@ -72,7 +69,7 @@ public class TreeLikelihoodTest extends TestCase {
 
 		HKY hky = new HKY();
 		hky.initByName("kappa", "1.0", "frequencies", freqs);
-
+		
 		SiteModel siteModel = new SiteModel();
 		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", hky);
 
@@ -242,8 +239,8 @@ public class TreeLikelihoodTest extends TestCase {
 		Frequencies freqs = new Frequencies();
 		freqs.initByName("data", data); 
 
-		GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
-		gsm.initByName("rates", "1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", "frequencies", freqs);
+		GTR gsm = new GTR();
+		gsm.initByName("frequencies", freqs);
 
 		SiteModel siteModel = new SiteModel();
 		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1,

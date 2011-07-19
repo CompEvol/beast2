@@ -32,7 +32,6 @@ import beast.app.draw.SmallButton;
 import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Input;
 import beast.core.Plugin;
-import beast.evolution.alignment.Alignment;
 
 /** panel making up each of the tabs in Beauti **/
 public class BeautiPanel extends JPanel implements ListSelectionListener {
@@ -60,6 +59,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     /** component containing main input editor **/ 
 	Component m_centralComponent = null;
 
+	public BeautiPanel() {}
+	
     public BeautiPanel(int iPanel, BeautiDoc doc, BeautiPanelConfig config) throws Exception {
 		m_doc = doc;
 		m_iPanel = iPanel;
@@ -116,8 +117,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //    	m_listOfPartitions.setBounds(0, 0, 100, 100);
     	
     	m_listOfPartitions.addListSelectionListener(this);
-    	for (Alignment data : m_doc.m_alignments.get()) {
-    		m_listModel.addElement(data);
+    	for (Plugin partition : m_doc.getPartitions(m_config.m_sTypeInput.get())) {
+    		String sPartition = partition.getID();
+    		sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
+    		m_listModel.addElement(sPartition);
     	}
     	m_listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
     	partitionBox.add(m_listOfPartitions);
@@ -155,7 +158,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		m_doc.scrubAll(true);
 		refreshInputPanel();
 		if (m_listBox != null) {
-			m_listBox.setVisible(m_doc.m_alignments.get().size() > 1);
+			m_listBox.setVisible(m_doc.getPartitions(m_config.getType()).size() > 1);
 		}
 		g_currentPanel = this;
 	}

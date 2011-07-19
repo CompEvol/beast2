@@ -12,7 +12,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
-import beast.math.distributions.MRCAPrior;
+
 
 @Description("Defines properties for custom panels in Beauti")
 public class BeautiPanelConfig extends Plugin {
@@ -129,7 +129,7 @@ public class BeautiPanelConfig extends Plugin {
 	 */
 	public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
 		try {
-			if (m_parentPlugins != null && m_parentPlugins.size() > 0) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
+			if (m_parentPlugins != null && m_parentPlugins.size() > 0 && m_input != null) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
 			
 			List<Plugin> plugins = new ArrayList<Plugin>();
 			m_parentPlugins = new ArrayList<Plugin>();
@@ -200,7 +200,11 @@ public class BeautiPanelConfig extends Plugin {
 			}
 			// sanity check
 			if (!m_bIsList && !m_bHasPartitionsInput.get() && plugins.size() > 1) {
-				throw new Exception("multiple plugins match, but hasPartitions=false");
+				System.err.println("WARNING: multiple plugins match, but hasPartitions=false");
+				// this makes sure that all mathing plugins are available in one go
+				m_bIsList = true;
+				// this suppresses syncing
+				m_parentInputs.clear();
 			}
 			m_inputs.clear();
 			m_startInputs.clear();

@@ -104,7 +104,7 @@ public class XMLProducer extends XMLParser {
             buf.append(sEndBeast);
             //return buf.toString();
             // beautify XML hierarchy
-            String sXML = cleanUpXML(buf.toString(), m_sXMLBeutifyXSL);
+            String sXML = cleanUpXML(buf.toString(), m_sXMLBeuatifyXSL);
             // TODO: fix m_sIDRefReplacementXSL script to deal with nested taxon sets
             // String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
             String sXML2 = sXML;
@@ -126,7 +126,8 @@ public class XMLProducer extends XMLParser {
             	}
             	buf.append("\n\n-->\n\n");
             }
-        	sXML = sXML.replaceAll(sEndBeast, buf.toString() + sEndBeast);
+            int iEnd = sXML.indexOf(sEndBeast);
+        	sXML = sXML.substring(0, iEnd) + buf.toString() + sEndBeast;
             
             return sXML;
         } catch (Exception e) {
@@ -298,7 +299,7 @@ public class XMLProducer extends XMLParser {
 		}
     }
     
-    /** check if two XML nodes are the same, when sPattern1 is replaced by sPattern2 **/
+    /** check if two XML nodes are the same, when sPattern1 is replaced by sPattothersern2 **/
     boolean comparable(Node node1, Node node2, String sPattern1, String sPattern2) {
     	// compare name
     	if (!node1.getNodeName().equals(node2.getNodeName())) {
@@ -354,7 +355,7 @@ public class XMLProducer extends XMLParser {
      * XSL stylesheet for cleaning up bits and pieces of the vanilla XML
      * in order to make it more readable *
      */
-    String m_sXMLBeutifyXSL = "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns='http://www.w3.org/TR/xhtml1/strict'>\n" +
+    String m_sXMLBeuatifyXSL = "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xmlns='http://www.w3.org/TR/xhtml1/strict'>\n" +
             "\n" +
             "<xsl:output method='xml' indent='yes'/>\n" +
             "\n" +
