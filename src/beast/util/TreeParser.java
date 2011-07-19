@@ -56,7 +56,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     /**
      * if there is no translate block. This solves issues where the taxa labels are numbers e.g. in generated beast.tree data *
      */
-    public Input<Boolean> m_bIsLabelledNewick = new Input<Boolean>("IsLabelledNewick", "Is the newick tree labelled? Default=true.", true);
+    public Input<Boolean> m_bIsLabelledNewick = new Input<Boolean>("IsLabelledNewick", "Is the newick tree labelled? Default=false.", false);
 
 
     public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
@@ -271,7 +271,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         sStr = sStr.replaceAll("^\\s+", "");
         sStr = sStr.replaceAll("\\s+$", "");
 
-        //try {
+        try {
             m_chars = sStr.toCharArray();
             if (sStr == null || sStr.length() == 0) {
                 return null;
@@ -395,11 +395,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 processMetadata(tree);
             }
             return tree;
-        //}catch (Exception e) {
-        //    System.err.println(e.getClass().toString() + "/"+ e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
-        //    throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
-        //}
-        //return node;
+        }catch (Exception e) {
+            System.err.println(e.getClass().toString() + "/"+ e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
+            throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
+        }
+//        return node;
 	 }
 
 	@Override
