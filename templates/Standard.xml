@@ -139,30 +139,30 @@
             <plugin id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@tree.$(n)"/>
             <plugin id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@tree.$(n)"/>
 ]]></value>
-            <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' input='logger'/>
+            <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
 
-            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' input='distribution'/>
+            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
 
-            <connect spec='BeautiConnector' srcID='tree.$(n)' targetID='state' input='stateNode'/>
-            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='state' input='stateNode'/>
-            <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='state' input='stateNode'/>
-            <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='state' input='stateNode'/>
+            <connect spec='BeautiConnector' srcID='tree.$(n)' targetID='state' inputName='stateNode'/>
+            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='state' inputName='stateNode'/>
+            <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='state' inputName='stateNode'/>
+            <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='state' inputName='stateNode'/>
 
-            <connect spec='BeautiConnector' srcID='proportionInvariantScaler.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='mutationRateScaler.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='gammaShapeScaler.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='allTipDatesScaler.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='treeScaler.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='UniformOperator.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='SubtreeSlide.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='narrow.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='wide.$(n)' targetID='mcmc' input='operator'/>
-            <connect spec='BeautiConnector' srcID='WilsonBalding.$(n)' targetID='mcmc' input='operator'/>
+            <connect spec='BeautiConnector' srcID='proportionInvariantScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='mutationRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='gammaShapeScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='allTipDatesScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='treeScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='UniformOperator.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='SubtreeSlide.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='narrow.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='wide.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='WilsonBalding.$(n)' targetID='mcmc' inputName='operator'/>
 
-            <connect spec='BeautiConnector' srcID='TreeHeight.$(n)' targetID='tracelog' input='log'/>
-            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='tracelog' input='log'/>
-            <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='tracelog' input='log'/>
-            <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='tracelog' input='log'/>
+            <connect spec='BeautiConnector' srcID='TreeHeight.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='tracelog' inputName='log'/>
 
         </partitiontemplate>
 
