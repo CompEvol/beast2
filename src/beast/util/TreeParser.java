@@ -56,7 +56,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     /**
      * if there is no translate block. This solves issues where the taxa labels are numbers e.g. in generated beast.tree data *
      */
-    boolean m_bIsLabelledNewick = false;
+    public Input<Boolean> m_bIsLabelledNewick = new Input<Boolean>("IsLabelledNewick", "Is the newick tree labelled? Default=true.", true);
 
 
     public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
@@ -68,7 +68,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
 
 
-    /**
+    /**                            op
      * assure the class behaves properly, even when inputs are not specified *
      */
     @Override
@@ -79,7 +79,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             	m_sLabels = m_taxonset.get().asStringList();
         } else {
             m_sLabels = null;
-            m_bIsLabelledNewick = false;
+//            m_bIsLabelledNewick = false;
         }
         String sNewick = m_oNewick.get();
         if (sNewick == null || sNewick.equals("")) {
@@ -180,12 +180,13 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * If that does not work, look in list of labels to see whether it is there.
      */
     private int getLabelIndex(String sStr) throws Exception {
-        if (!m_bIsLabelledNewick) {
+        if (!m_bIsLabelledNewick.get()) {
             try {
             	int nIndex = Integer.parseInt(sStr) - m_nOffset.get();
             	checkTaxaIsAvailable(sStr, nIndex);
             	return nIndex; 
             } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
         for (int nIndex = 0; nIndex < m_sLabels.size(); nIndex++) {
@@ -270,7 +271,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         sStr = sStr.replaceAll("^\\s+", "");
         sStr = sStr.replaceAll("\\s+$", "");
 
-        try {
+        //try {
             m_chars = sStr.toCharArray();
             if (sStr == null || sStr.length() == 0) {
                 return null;
@@ -394,10 +395,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 processMetadata(tree);
             }
             return tree;
-        } catch (Exception e) {
-            System.err.println(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
-            throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
-        }
+        //}catch (Exception e) {
+        //    System.err.println(e.getClass().toString() + "/"+ e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
+        //    throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
+        //}
         //return node;
 	 }
 
