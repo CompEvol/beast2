@@ -73,36 +73,22 @@ public class PluginPanel extends JPanel {
     
 
     static {
-    	init();
+    	//init();
     } // finished registering input editors
     
     public static void init() {
         // register input editors
         g_inputEditorMap = new HashMap<Class<?>, String>();
         g_listInputEditorMap = new HashMap<Class<?>, String>();
-        String[] PACKAGE_DIRS = {"beast.app"};
+        String[] PACKAGE_DIRS = {"beast.app",};
         for(String sPackage : PACKAGE_DIRS) {
 	        List<String> sInputEditors = ClassDiscovery.find("beast.app.draw.InputEditor", sPackage);
-	        for (String sInputEditor : sInputEditors) {
-	            try {
-	                Class<?> _class = Class.forName(sInputEditor);
-	                InputEditor editor = (InputEditor) _class.newInstance();
-	                Class<?> [] types = editor.types();
-	                for (Class<?> type : types) {
-		                g_inputEditorMap.put(type, sInputEditor);
-		                if (editor instanceof ListInputEditor) {
-			                Class<?> baseType = ((ListInputEditor)editor).baseType();
-			                g_listInputEditorMap.put(baseType, sInputEditor);
-		                }
-	                }
-	            } catch (java.lang.InstantiationException e) {
-	            	// ingore input editors that are inner classes
-	            } catch (Exception e) {
-	                // print message
-	                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-	            }
-	        }
+	        registerInputEditors(sInputEditors.toArray(new String[0]));
         }
+        
+        String [] sKnownEditors = new String [] {"beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.beauti.TreeLikelihoodListInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", "beast.app.draw.ListInputEditorOrig", "beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
+        registerInputEditors(sKnownEditors);
+        
         m_position = new Point(0, 0);
         g_plugins = new HashMap<String, Plugin>();
         g_operators = new HashSet<Operator>();
@@ -112,7 +98,29 @@ public class PluginPanel extends JPanel {
         g_taxa = new HashSet<Taxon>();
     }
 
-    public PluginPanel(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins) {
+    private static void registerInputEditors(String[] sInputEditors) {
+        for (String sInputEditor : sInputEditors) {
+            try {
+                Class<?> _class = Class.forName(sInputEditor);
+                InputEditor editor = (InputEditor) _class.newInstance();
+                Class<?> [] types = editor.types();
+                for (Class<?> type : types) {
+	                g_inputEditorMap.put(type, sInputEditor);
+	                if (editor instanceof ListInputEditor) {
+		                Class<?> baseType = ((ListInputEditor)editor).baseType();
+		                g_listInputEditorMap.put(baseType, sInputEditor);
+	                }
+                }
+            } catch (java.lang.InstantiationException e) {
+            	// ingore input editors that are inner classes
+            } catch (Exception e) {
+                // print message
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+        }
+	}
+
+	public PluginPanel(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins) {
         //g_plugins = new HashMap<String, Plugin>();
         for (Plugin plugin2 : plugins) {
             String sID = getID(plugin2);
@@ -639,6 +647,7 @@ public class PluginPanel extends JPanel {
      * rudimentary test *
      */
     public static void main(String[] args) {
+    	init();
         PluginPanel pluginPanel = null;
         try {
             if (args.length == 0) {

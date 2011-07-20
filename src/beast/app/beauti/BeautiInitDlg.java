@@ -530,23 +530,23 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 //		}
 //	}
 
-	public final static String ICONPATH = "beast/app/beauti/";
-
-	public static ImageIcon getIcon(String sIcon) {
-		String sIconLocation = ICONPATH + sIcon + ".png";
-		try {
-			URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
-			if (url == null) {
-				System.err.println("Cannot find icon " + sIconLocation);
-				return null;
-			}
-			ImageIcon icon = new ImageIcon(url);
-			return icon;
-		} catch (Exception e) {
-			System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
-			return null;
-		}
-	}
+//	public final static String ICONPATH = "beast/app/beauti/";
+//
+//	public static ImageIcon getIcon(String sIcon) {
+//		String sIconLocation = ICONPATH + sIcon + ".png";
+//		try {
+//			URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
+//			if (url == null) {
+//				System.err.println("Cannot find icon " + sIconLocation);
+//				return null;
+//			}
+//			ImageIcon icon = new ImageIcon(url);
+//			return icon;
+//		} catch (Exception e) {
+//			System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+//			return null;
+//		}
+//	}
 
 	void loadTemplateFile() {
 		if (loadXmlFile(false)) {

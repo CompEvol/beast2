@@ -42,6 +42,7 @@ import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -289,7 +290,23 @@ public class BeastMCMC {
 
 		private Component createHeader() {
 	        Box box = Box.createHorizontalBox();
-	        JLabel label = new JLabel(BeautiInitDlg.getIcon("../draw/icons/beast"));
+
+	        String sIconLocation = "beast/app/draw/icons/beast.png";
+			ImageIcon icon = null;
+			try {
+				URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
+				if (url == null) {
+					System.err.println("Cannot find icon " + sIconLocation);
+					return null;
+				}
+				icon = new ImageIcon(url);
+			} catch (Exception e) {
+				System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+				return null;
+			}
+	        
+	        
+	        JLabel label = new JLabel(icon);
 	        label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 	        box.add(label, BorderLayout.WEST);
 	        label = new JLabel("<html>BEAST 2.0<br>"+VERSION+"</html>");

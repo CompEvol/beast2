@@ -35,6 +35,7 @@ import beast.core.Plugin;
  **/ 
 public abstract class InputEditor extends Box implements ValidateListener {
 	final public static String NO_VALUE = "<none>";
+	
 	public enum EXPAND {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM};
 	public enum BUTTONSTATUS {ALL,NONE,DELONLY,ADDONLY};
 

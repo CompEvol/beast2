@@ -36,6 +36,7 @@ import beast.core.Plugin;
 /** panel making up each of the tabs in Beauti **/
 public class BeautiPanel extends JPanel implements ListSelectionListener {
 	private static final long serialVersionUID = 1L;
+	public final static String ICONPATH = "beast/app/beauti/";
 	
     /** document that this panel applies to **/
     BeautiDoc m_doc;
@@ -129,9 +130,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     }
 
 	static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
-        String sIconLocation = BeautiInitDlg.ICONPATH + iPanel +".png";
+        String sIconLocation = ICONPATH + iPanel +".png";
         if (config != null) {
-        	sIconLocation = BeautiInitDlg.ICONPATH + config.getIcon();
+        	sIconLocation = ICONPATH + config.getIcon();
         }
         try {
 	        URL url = (URL)ClassLoader.getSystemResource(sIconLocation);
