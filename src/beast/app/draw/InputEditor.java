@@ -19,6 +19,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
 import beast.app.beauti.BeautiConfig;
+import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.BeautiPanelConfig;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -290,4 +292,17 @@ public abstract class InputEditor extends Box implements ValidateListener {
         }
     }
 
+	/** synchronise values in panel with current network **/
+	protected void sync() {
+	    Component c = this;
+	    while (((Component) c).getParent() != null) {
+	      	c = ((Component) c).getParent();
+	      	if (c instanceof BeautiPanel) {
+	      		BeautiPanel panel = (BeautiPanel) c;
+	      		BeautiPanelConfig cfgPanel = panel.m_config;
+	      		cfgPanel.sync(0);
+	      	}
+	    }
+	}
+	
 } // class InputEditor

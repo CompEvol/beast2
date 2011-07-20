@@ -4,6 +4,7 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -17,8 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
@@ -40,9 +39,7 @@ import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.PluginPanel;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
+
 
 public class Beauti extends JTabbedPane {
 	private static final long serialVersionUID = 1L;

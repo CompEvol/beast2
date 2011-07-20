@@ -661,7 +661,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 							Node mergeElement = nodes.item(iMergeElement);
 							String sMergePoint = mergeElement.getAttributes().getNamedItem("point").getNodeValue();
 							if (!sMergePoints.containsKey(sMergePoint)) {
-								System.err.println("Cannot find merge point named " + sMergePoint + "from "
+								System.err.println("Cannot find merge point named " + sMergePoint + " from "
 										+ template.getName() + " in template. MergeWith ignored.");
 							} else {
 								String sXML = "";

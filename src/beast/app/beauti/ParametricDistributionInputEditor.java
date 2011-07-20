@@ -35,7 +35,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
     	m_bUseDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
 
-    	if (m_bUseDefaultBehavior) {
+    	if (m_bUseDefaultBehavior && false) {
     		super.init(input, plugin, bExpand, bAddButtons);
     	} else {
 	    	m_bAddButtons = bAddButtons;

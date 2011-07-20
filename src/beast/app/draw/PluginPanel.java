@@ -1,11 +1,14 @@
 package beast.app.draw;
 
 
+
 import beast.app.beauti.BeautiConfig;
+import beast.app.beauti.BeautiSubTemplate;
 import beast.app.draw.InputEditor.BUTTONSTATUS;
 import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.MCMC;
 import beast.core.Operator;
@@ -52,7 +55,7 @@ public class PluginPanel extends JPanel {
     private boolean m_bOK = false;
     /* Set of plugins in the system.
       * These are the plugins that an input can be connected to **/
-    static public Map<String, Plugin> g_plugins = null;
+    static public HashMap<String, Plugin> g_plugins = null;
     static public Set<Operator> g_operators = null;
     static public Set<StateNode> g_stateNodes = null;
     static public Set<Loggable> g_loggers = null;
@@ -242,6 +245,7 @@ public class PluginPanel extends JPanel {
                 // ignore
                 System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
                         "input " + input.getName() + " could not be added.");
+                e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Could not add entry for " + input.getName());
             }
         }
@@ -321,7 +325,7 @@ public class PluginPanel extends JPanel {
             inputEditor = new PluginInputEditor();
         }
     	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-		System.err.println(sFullInputName);
+		//System.err.println(sFullInputName);
     	EXPAND expand = bForceExpansion;
     	if (BeautiConfig.g_inlinePlugins.contains(sFullInputName) || bForceExpansion == EXPAND.TRUE_START_COLLAPSED) {
     		expand = EXPAND.TRUE;
@@ -445,9 +449,19 @@ public class PluginPanel extends JPanel {
 //		PluginPanel.g_plugins.put(m_plugin.getID(), m_plugin);
 	}
 
+	public static List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, Plugin parent, List<String> sTabuList) {
+		Class<?> type = input.getType();
+        List<BeautiSubTemplate> candidates = BeautiConfig.getInputCandidates(parent, input, type);
+        if (input.getRule().equals(Validate.OPTIONAL)) {
+        	candidates.add(BeautiConfig.getNullTemplate());
+        }
+        return candidates;
+	}	
+
 	public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
-//		List<String> sPlugins;
-        List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
+		
+        //List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
+        List<String> sPlugins = new ArrayList<String>();
         if (sPlugins != null) {
         	return sPlugins;
         }
@@ -462,7 +476,7 @@ public class PluginPanel extends JPanel {
 		        sTabuList.add(plugin.getID());
 		    }
         }
-        System.err.println(sTabuList);
+        //System.err.println(sTabuList);
 
         /* collect all plugins in the system, that are not in the tabu list*/
         sPlugins = new ArrayList<String>();

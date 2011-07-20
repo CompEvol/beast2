@@ -1,14 +1,13 @@
 package beast.app.beauti;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JComboBox;
 
 import beast.app.draw.PluginInputEditor;
-import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
@@ -37,6 +36,7 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 	/** suppress combobox **/
 	protected void addComboBox(Box box, Input<?> input, Plugin plugin) {
 		Frequencies freqs = (Frequencies) input.get();
+		
 		JComboBox comboBox = new JComboBox(new String[] {"Estimated","Empirical","All equal"});
 		if (freqs.frequencies.get() != null) {
 			comboBox.setSelectedIndex(0);
@@ -77,17 +77,18 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
-				System.err.println(freqs.frequencies.get() + " " + freqs.m_data.get() + " " + freqs.m_bEstimate.get());
+				//System.err.println(freqs.frequencies.get() + " " + freqs.m_data.get() + " " + freqs.m_bEstimate.get());
 			}
 		});
 		box.add(comboBox);
 	}
 
 	private Plugin getCandidate(Input<?> input, Frequencies freqs) {
-		List<String> sCandidates = PluginPanel.getAvailablePlugins(input, freqs, null);
-		String sID = sCandidates.get(0);
-		Plugin plugin = PluginPanel.g_plugins.get(sID);
-		return plugin;
+		return BeautiDoc.g_doc.getPartition(freqs);
+//		List<String> sCandidates = PluginPanel.getAvailablePlugins(input, freqs, null);
+//		String sID = sCandidates.get(0);
+//		Plugin plugin = PluginPanel.g_plugins.get(sID);
+//		return plugin;
 	}
 
 

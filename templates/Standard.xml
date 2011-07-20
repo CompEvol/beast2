@@ -22,24 +22,41 @@
 	        beast.evolution.speciation.BirthDeathGernhard08Model.type,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.tree,
+	        beast.evolution.tree.Tree,
+	        beast.evolution.tree.Tree.trait,
+	        beast.evolution.tree.Tree.taxa,
+	        beast.evolution.tree.Tree.taxonset,
 	        beast.evolution.tree.RandomTree.trait,
+	        beast.evolution.tree.RandomTree.initial,
+	        beast.evolution.tree.RandomTree.taxa,
+	        beast.evolution.tree.RandomTree.taxonset,
+	        beast.evolution.tree.RandomTree.estimate,
 	        beast.util.TreeParser.initial,
 	        beast.util.TreeParser.taxa,
+	        beast.util.TreeParser.taxonset,
 	        beast.util.TreeParser.trait,
 	        beast.util.TreeParser.estimate,
 	        beast.util.ClusterTree.initial,
 	        beast.util.ClusterTree.taxa,
+	        beast.util.ClusterTree.taxonset,
 	        beast.util.ClusterTree.trait,
 	        beast.util.ClusterTree.estimate,
 	        beast.evolution.substitutionmodel.WAG.rates,
 	        beast.evolution.substitutionmodel.WAG.frequencies,
 	        beast.evolution.substitutionmodel.GTR.rates,
 	        beast.evolution.substitutionmodel.JukesCantor.frequencies,
-	        beast.core.Operator.weight,
             beast.math.distributions.Prior.x,
             beast.math.distributions.MRCAPrior.tree,
             beast.math.distributions.MRCAPrior.monophyletic,
-            beast.math.distributions.MRCAPrior.taxonset
+            beast.math.distributions.MRCAPrior.taxonset,
+            beast.evolution.branchratemodel.UCRelaxedClockModel.tree,
+            beast.evolution.branchratemodel.UCRelaxedClockModel.rateCategories,
+            beast.evolution.branchratemodel.RandomLocalClockModel.tree,
+            beast.evolution.branchratemodel.RandomLocalClockModel.meanRate,
+            beast.evolution.branchratemodel.RandomLocalClockModel.indicators,
+            beast.evolution.operators.ScaleOperator.indicator,
+	        beast.core.Operator.weight,
+            beast.core.Logger.model
             '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
     >
@@ -48,11 +65,6 @@
             path='distribution/distribution[id="likelihood"]/distribution/data'
             hasPartitions="false" icon='0.png' forceExpansion='FALSE'
             type='beast.evolution.alignment.Alignment'
-        />
-        <panel spec='BeautiPanelConfig' panelname="Data" tiptext="Aligned sequence data"
-            path='distribution/distribution[id="likelihood"]/distribution'
-            hasPartitions="false" icon='0.png' forceExpansion='FALSE'
-            type='beast.evolution.likelihood.TreeLikelihood'
         />
 		<panel spec='BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxon was sampled"
             path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
@@ -87,11 +99,12 @@
             hasPartitions="false" icon='9.png' forceExpansion='TRUE'
         />
 
-        <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood'>
+
+        <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <value spec='XML'>
 <![CDATA[
             <!-- site model                                                              -->
-            <plugin spec='SiteModel' id="siteModel.$(n)" gammaCategoryCount='0'>
+            <plugin spec='SiteModel' id="SiteModel.$(n)" gammaCategoryCount='0'>
                 <substModel spec='JukesCantor' id='JC69.$(n)'/>
                 <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.$(n)' value='0.0' estimate='false'/>
                 <mutationRate        spec='parameter.RealParameter' id='mutationRate.$(n)' value='1.0'        estimate='false'/>
@@ -100,14 +113,15 @@
 
             <plugin spec='TreeLikelihood' id="treeLikelihood.$(n)">
                 <data idref="data"/>
-                <tree idref="tree.$(n)"/>
-                <siteModel idref="siteModel.$(n)"/>
-                <branchRateModel spec='StrictClockModel' id='StrictClockModel.$(n)'>
+                <tree idref="Tree.$(n)"/>
+                <siteModel idref="SiteModel.$(n)"/>
+                <branchRateModel spec='StrictClockModel' id='StrictClock.$(n)'>
                     <clock.rate id='clockRate.$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
                 </branchRateModel>
             </plugin>
 
-            <plugin spec='beast.evolution.tree.Tree' id='tree.$(n)' initial='@RandomTree.$(n)'>
+            <!-- tree and its properties -->
+            <plugin spec='beast.evolution.tree.Tree' id='Tree.$(n)' initial='@RandomTree.$(n)'>
 	            <trait id='datetrait.$(n)' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
 		            value=''>
 		            <taxa idref='data'/>
@@ -120,30 +134,34 @@
 	            </populationModel>
             </plugin>
 
+            <!-- default tree prior -->
+            <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
+                <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0' estimate='false'/>
+            </plugin>
 
-            <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@tree.$(n)'/>
+            <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
             <plugin id='treelog.$(n)' spec='beast.core.Logger' logEvery="10000" fileName="beast.$(seed).trees">
-                <log idref="tree.$(n)"/>
+                <log idref="Tree.$(n)"/>
             </plugin>
 
             <plugin id='proportionInvariantScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@proportionInvariant.$(n)"/>
             <plugin id='mutationRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@mutationRate.$(n)"/>
             <plugin id='gammaShapeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@gammaShape.$(n)"/>
-            <plugin id='allTipDatesScaler.$(n)' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@tree.$(n)"/>
+            <plugin id='allTipDatesScaler.$(n)' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@Tree.$(n)"/>
 
-            <plugin id='treeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree.$(n)"/>
-            <plugin id='UniformOperator.$(n)' spec='Uniform' weight="10" tree="@tree.$(n)"/>
-            <plugin id='SubtreeSlide.$(n)' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree.$(n)"/>
-            <plugin id='narrow.$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@tree.$(n)"/>
-            <plugin id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@tree.$(n)"/>
-            <plugin id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@tree.$(n)"/>
+            <plugin id='treeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@Tree.$(n)"/>
+            <plugin id='UniformOperator.$(n)' spec='Uniform' weight="10" tree="@Tree.$(n)"/>
+            <plugin id='SubtreeSlide.$(n)' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@Tree.$(n)"/>
+            <plugin id='narrow.$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@Tree.$(n)"/>
+            <plugin id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.$(n)"/>
+            <plugin id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@Tree.$(n)"/>
 ]]></value>
             <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
 
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
 
-            <connect spec='BeautiConnector' srcID='tree.$(n)' targetID='state' inputName='stateNode'/>
+            <connect spec='BeautiConnector' srcID='Tree.$(n)' targetID='state' inputName='stateNode'/>
             <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='state' inputName='stateNode'/>
             <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='state' inputName='stateNode'/>
             <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='state' inputName='stateNode'/>
@@ -164,9 +182,52 @@
             <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='tracelog' inputName='log'/>
 
+            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/>
         </partitiontemplate>
 
+
+
+
+        <mergepoint id='commonTemplates'/>
+
+<!-- Tree initialisation -->
+<!-- Random tree -->
+
+        <subtemplate id='RandomTree' spec='BeautiSubTemplate' class='beast.evolution.tree.RandomTree' mainid='RandomTree.$(n)'>
+<value spec='XML'>
+<![CDATA[
+            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
+                <taxa spec='Alignment' idref='data'/>
+                <populationModel id='ConstantPopulation.$(n)' spec='ConstantPopulation'>
+            		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
+	            </populationModel>
+            </tree>
+]]></value>
+        </subtemplate>
+
+<!-- Cluster tree (for UPGMA) -->
+
+        <subtemplate id='UPGMATree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='UPGMATree.$(n)'>
+<value spec='XML'>
+<![CDATA[
+        <tree spec='beast.util.ClusterTree' id='UPGMATree.$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
+]]></value>
+        </subtemplate>
+
+<!-- Newick tree -->
+        <subtemplate id='NewickTree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='NewickTree.$(n)'>
+<value spec='XML'>
+<![CDATA[
+        <tree spec='beast.util.TreeParser' id='NewickTree.$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
+]]></value>
+        </subtemplate>
+
     </beauticonfig>
+
+
+
+
+<!-- framework for main model -->
 
     <run spec="MCMC" id="mcmc" chainLength="10000000">
 

@@ -1,7 +1,5 @@
 package beast.app.draw;
 
-import beast.app.beauti.BeautiPanel;
-import beast.app.beauti.BeautiPanelConfig;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -191,7 +189,7 @@ public class ListInputEditor extends InputEditor {
         	Box expandBox = Box.createVerticalBox();
         	//box.add(itemBox);
         	PluginPanel.addInputs(expandBox, plugin, this, null);
-        	System.err.print(expandBox.getComponentCount());
+        	//System.err.print(expandBox.getComponentCount());
         	if (expandBox.getComponentCount() > 1) {
         		// only go here if it is worth showing expanded box
 	        	expandBox.setBorder(BorderFactory.createEtchedBorder());
@@ -316,19 +314,7 @@ public class ListInputEditor extends InputEditor {
         }
 	} // addItem
 	
-	/** synchronise values in panel with current network **/
-	protected void sync() {
-	    Component c = this;
-	    while (((Component) c).getParent() != null) {
-	      	c = ((Component) c).getParent();
-	      	if (c instanceof BeautiPanel) {
-	      		BeautiPanel panel = (BeautiPanel) c;
-	      		BeautiPanelConfig cfgPanel = panel.m_config;
-	      		cfgPanel.sync(0);
-	      	}
-	    }
-	}
-	
+
 	protected Object editItem(Object o) {
 		int i = ((List<?>)m_input.get()).indexOf(o);
         Plugin plugin = (Plugin) ((List<?>)m_input.get()).get(i);
@@ -449,4 +435,5 @@ public class ListInputEditor extends InputEditor {
 	public void setButtonStatus(BUTTONSTATUS buttonStatus) {
 		m_buttonStatus = buttonStatus;
 	}
+
 } // class ListPluginInputEditor

@@ -388,7 +388,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 String sSelected = (String) m_unitsComboBox.getSelectedItem().toString();
                 try {
                 	m_traitSet.m_sUnits.setValue(sSelected, m_traitSet);
-                	System.err.println("Traitset is now: " + m_traitSet.m_sUnits.get());
+                	//System.err.println("Traitset is now: " + m_traitSet.m_sUnits.get());
                 } catch (Exception ex) {
 					ex.printStackTrace();
 				}

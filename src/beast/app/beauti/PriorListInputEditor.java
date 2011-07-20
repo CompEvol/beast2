@@ -83,7 +83,7 @@ public class PriorListInputEditor extends ListInputEditor {
 					JComboBox comboBox = (JComboBox) e.getSource();
                     String sSelected = (String) comboBox.getSelectedItem();
 	            	Plugin plugin2 = PluginPanel.g_plugins.get(sSelected);
-System.err.println("PRIOR" + sSelected + " " + plugin2);
+//System.err.println("PRIOR" + sSelected + " " + plugin2);
 	        		List list = (List) m_input.get();
 	        		int iItem = 0;
 	        		while (m_comboBox.get(iItem) != comboBox) {
@@ -112,30 +112,43 @@ System.err.println("PRIOR" + sSelected + " " + plugin2);
         	label.setMinimumSize(new Dimension(200,20));
         	label.setPreferredSize(new Dimension(200,20));
         	itemBox.add(label);
-            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
+//            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
+            
+            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(m_input, m_plugin, null);
+            comboBox = new JComboBox(sAvailablePlugins.toArray());
+
             for (int i = sAvailablePlugins.size()-1; i >= 0; i--) {
-            	Plugin plugin2 = PluginPanel.g_plugins.get(sAvailablePlugins.get(i));
-				if (!(plugin2 instanceof TreeDistribution)) {
+            	if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i).m_class)) {
 					sAvailablePlugins.remove(i);
 				}
             	
             }
-            comboBox = new JComboBox(sAvailablePlugins.toArray(new String[0]));
-        	comboBox.setSelectedItem(plugin.getID());
+
+            String sID = distr.getID();
+            sID = sID.substring(0, sID.indexOf('.'));
+            for (BeautiSubTemplate template : sAvailablePlugins) {
+            	if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
+            		comboBox.setSelectedItem(template);
+            	}
+            }
+            
         	comboBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					JComboBox comboBox = (JComboBox) e.getSource();
-                    String sSelected = (String) comboBox.getSelectedItem();
-	            	Plugin plugin2 = PluginPanel.g_plugins.get(sSelected);
-System.err.println(sSelected + " " + plugin2);
+
 	        		List list = (List) m_input.get();
 	        		int iItem = 0;
 	        		while (m_comboBox.get(iItem) != comboBox) {
 	        			iItem++;
 	        		}
+					BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
+					String sID = ((Plugin)list.get(iItem)).getID();
+                    String sPartition = sID.substring(sID.indexOf('.') + 1);
+					Plugin plugin2 = template.createSubNet(sPartition);
+//System.err.println(" " + plugin2);
 	            	list.set(iItem, plugin2);
-System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
+//System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
 					sync();
 					refreshPanel();
 				}
@@ -191,24 +204,28 @@ System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
 				}
 			});
         	
-            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(prior.m_distInput, prior, null);
-            sAvailablePlugins.add(NO_VALUE);
-//            JLabel label2 = new JLabel("calibration: ");
-//            itemBox.add(label2);
-            comboBox = new JComboBox(sAvailablePlugins.toArray(new String[0]));
+        	
+            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
+            comboBox = new JComboBox(sAvailablePlugins.toArray());
             
             if (prior.m_distInput.get() != null) {
-            	comboBox.setSelectedItem(prior.m_distInput.get().getID());
+            	String sID = prior.m_distInput.get().getID();
+            	sID = sID.replaceAll("[0-9]", "");
+            	for (BeautiSubTemplate template : sAvailablePlugins) {
+            		if (template.m_sClassInput.get().contains(sID)) {
+                    	comboBox.setSelectedItem(template);
+            		}
+            	}
             } else {
-            	comboBox.setSelectedItem(NO_VALUE);
+            	comboBox.setSelectedItem(BeautiConfig.NULL_TEMPLATE);
             }
            	comboBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					JComboBox comboBox = (JComboBox) e.getSource();
-                    String sSelected = (String) comboBox.getSelectedItem();
-	            	Plugin plugin2 = PluginPanel.g_plugins.get(sSelected);
-System.err.println("PRIOR" + sSelected + " " + plugin2);
+					BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
+					Plugin plugin2 = template.createSubNet("");
+//System.err.println("PRIOR" + plugin2);
 	        		List list = (List) m_input.get();
 	        		int iItem = 0;
 	        		while (m_comboBox.get(iItem) != comboBox) {

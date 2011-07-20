@@ -67,6 +67,8 @@ public class BeautiConfig extends Plugin {
 	public static List<BeautiPanelConfig> g_panels = new ArrayList<BeautiPanelConfig>();
 
 	public static HashMap<String, List<String>> g_constraintMap = new HashMap<String, List<String>>();
+
+	public static List<BeautiSubTemplate> g_subTemplates;
 	
 	@Override
 	public void initAndValidate() {
@@ -93,6 +95,7 @@ public class BeautiConfig extends Plugin {
 		}
 		InputEditor.g_bExpertMode = m_bIsExpertInput.get();
 		parseConstraints();
+		g_subTemplates = m_subTemplates.get();
 	}
 
 	public static void clear() {
@@ -121,12 +124,19 @@ public class BeautiConfig extends Plugin {
 		}
 	}
 	
-	public static List<String> getInputCandidates(Plugin plugin, Input<?> input) {
-		String sID = plugin.getID() + "." + input.getName();
-		if (g_constraintMap.containsKey(sID)) {
-			return g_constraintMap.get(sID);
+	public static List<BeautiSubTemplate> getInputCandidates(Plugin plugin, Input<?> input, Class<?> type) {
+		List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
+		for (BeautiSubTemplate template : g_subTemplates) {
+			if (type.isAssignableFrom(template.m_class)) {
+				candidates.add(template);
+			}
 		}
-		return null;
+		return candidates;
+//		String sID = plugin.getID() + "." + input.getName();
+//		if (g_constraintMap.containsKey(sID)) {
+//			return g_constraintMap.get(sID);
+//		}
+//		return null;
 	}
 
 	private void parseMap(String sStr, HashMap<String, String> stringMap) {
@@ -184,6 +194,14 @@ public class BeautiConfig extends Plugin {
 
 	public static boolean menuIsInvisible(String sMenuName) {
 		return g_sDisabledMenus.contains(sMenuName);
+	}
+
+	static BeautiSubTemplate NULL_TEMPLATE = new BeautiSubTemplate();
+	
+	public static BeautiSubTemplate getNullTemplate() {
+		NULL_TEMPLATE.setID("[none]");
+		NULL_TEMPLATE.m_class = Object.class;
+		return NULL_TEMPLATE;
 	}
 
 //	public static boolean hasDeleteButton(String sFullInputName) {

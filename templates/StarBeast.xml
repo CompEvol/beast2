@@ -1,7 +1,7 @@
 <beast version='2.0'
        namespace='beast.evolution.alignment:beast.evolution.tree:beast.math:beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
-<!--        hidePanels='TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL'-->
+<!--        
     <beauticonfig spec='beast.app.beauti.BeautiConfig'
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers'
@@ -44,14 +44,7 @@
             hasPartitions="false" icon='0.png' forceExpansion='FALSE'
             type='beast.evolution.likelihood.TreeLikelihood'
         />
-<!--
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
-            path='distribution/distribution[id="prior"]/distribution[id="SpeciesTreePopSizePrior"]/taxonset/taxon'
-            hasPartitions="false" icon='1.png' forceExpansion='FALSE'
-            isVisible='true'
-            type='beast.evolution.alignment.TaxonSet'
-        />
--->
+
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
             path='distribution/distribution[id="likelihood"]/distribution/siteModel'
             hasPartitions="true" icon='3.png' forceExpansion='TRUE'
@@ -60,12 +53,6 @@
             path='distribution/distribution[id="likelihood"]/distribution/branchRateModel'
             hasPartitions="true" icon='4.png' forceExpansion='TRUE'
         />
-<!--
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tree prior" tiptext="Tree prior"
-            path='distribution/distribution[id="prior"]/distribution[type="Tree"]'
-            hasPartitions="false" icon='5.png' forceExpansion='TRUE'
-        />
--->
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
             path='state/stateNode'
             hasPartitions="false" icon='6.png' forceExpansion='TRUE_START_COLLAPSED'
@@ -107,9 +94,6 @@
 	</populationModel>
     </tree>
 
-<!--
-<tree spec='beast.util.TreeParser' id='newickSpeciesTree' newick='' initial='@speciesTree' threshold='1e-12' taxonset='@taxonsuperset'/>
--->
 
 <plate var='n' range='#alignments'>
     <tree spec='RandomGeneTree' id='randomGeneTree$(n)' 
@@ -128,7 +112,6 @@
     </plate>
 
     <state id="State0" storeEvery="100000">
-        <!--parameter dimension="1" estimate="false" id="popSize" name="stateNode" value="1.0"/-->
         <parameter dimension="1" estimate="false" id="mutationRate" name="stateNode" value="1.0"/>
         <parameter dimension="1" estimate="false" id="clockRate" name="stateNode" value="1.0"/>
 
@@ -142,7 +125,6 @@
         <tree estimate="true" id="speciesTree" name="stateNode"/>
 
         <stateNode idref="birthRate"/>
-       	<!--stateNode idref="relativeDeathRate"/-->
         <parameter dimension="1" estimate="false" id="gammaShape" name="stateNode" value="1.0"/>
         <parameter dimension="1" estimate="false" id="proportionInvariant" lower="0.0" name="stateNode" upper="1.0" value="0.0"/>
     </state>
@@ -151,12 +133,10 @@
     <distribution id="posterior" spec="util.CompoundDistribution">
         <distribution id="prior" spec="util.CompoundDistribution">
 
-            <!-- gene tree priors -->
             <plate var='n' range='#alignments'>
                 <distribution id='tree.prior.$(n)' spec='GeneTreeForSpeciesTreeDistribution' tree='@$(n).tree' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
             </plate>
 
-            <!-- species tree priors -->
             <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' tree='@speciesTree' 
             		popFunction='constant' taxonset='@taxonsuperset'>
                 <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
@@ -167,15 +147,9 @@
                 <birthDiffRate spec='parameter.RealParameter' id="birthRate" value='213.2021' lower='0' upper='10000' />
             </distribution>
 
-            <!-- hyper priors for assorted parameters -->
             <distribution id='birthRatePrior' spec='distributions.Prior' x='@birthRate'>
                 <distr id='OneOnX' spec='distributions.OneOnX'/>
             </distribution>
-<!--
-            <distribution id='relativeDeathRatePrior' spec='distributions.Prior' x='@relativeDeathRate'>
-                <distr id="UniformRelDeathRate" spec='distributions.Uniform' lower='0' upper='1'/>
-            </distribution>
--->
             <distribution id="popMean.prior" spec="beast.math.distributions.Prior" x="@popMean" distr='@OneOnX'/>
 
             <plate var='n' range='#alignments'>
@@ -203,7 +177,6 @@
 
     <operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
     <operator degreesOfFreedom="1" id="birthRateScaler" scaleFactor="0.5" spec="ScaleOperator" parameter="@birthRate" weight="3"/>
-    <!--operator degreesOfFreedom="1" id="relDeathRateScaler" scaleFactor="0.5" spec="ScaleOperator" parameter="@relativeDeathRate" weight="1.0"/-->
     <operator degreesOfFreedom="1" id="psiScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popMean" weight="94"/>
 
     <plate var='n' range='#alignments'>
@@ -212,10 +185,8 @@
         <operator gaussian="true" id="SubtreeSlide$(n)" size="0.003" spec="SubtreeSlide" tree="@$(n).tree" weight="15.0"/>
         <operator degreesOfFreedom="1" id="treeScaler$(n)" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.85" spec="ScaleOperator" tree="@$(n).tree" weight="6.0"/>
         <operator id="wide$(n)" isNarrow="false" spec="Exchange" tree="@$(n).tree" weight="1.0"/>
-    <!--
         <operator id="narrow$(n)" isNarrow="true" spec="Exchange" tree="@$(n).tree" weight="15"/>
         <operator id="WilsonBalding$(n)" spec="WilsonBalding" tree="@$(n).tree" weight="3"/>
-    -->
         <operator id="Uniform$(n)" spec="Uniform" tree="@$(n).tree" weight="30.0"/>
     </plate>
 
@@ -238,7 +209,6 @@
     <logger fileName="$(seed).log" id="Trace.Logger0" logEvery="1000" mode="autodetect" model="@posterior">
         <log idref="posterior"/>
         <log idref="prior"/>
-        <!--log idref="speciesCoalescent"/-->
         <log idref="SpeciesTreePopSizePrior"/>
         <plate var='n' range='#alignments'>
             <log idref="tree.prior.$(n)"/>
@@ -247,7 +217,6 @@
         <log idref="likelihood"/>
         <log idref="popMean"/>
         <log idref="birthRate"/>
-        <!--log idref="relativeDeathRate"/-->
         <plate var='n' range='#alignments'>
             <log idref="hky.kappa$(n)"/>
         </plate>
@@ -277,17 +246,9 @@
 
 </run>
 
+-->
 
 </beast>
 
-<!-- StarBeast cannot handle tip dates yet
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxan was sampled"
-            path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
-            hasPartitions="true" icon='2.png' forceExpansion='TRUE'
-            isVisible='false'
-        />
--->
-<!--
 
--->
 

@@ -50,7 +50,11 @@ public class BeautiDoc extends Plugin {
 	boolean m_bAutoScrubState = true;
 	
 	
+	// RRB: hack to pass info to BeautiSubTemplate TODO: beautify this, since it prevents haveing multiple windows open
+	static BeautiDoc g_doc;
+	
 	public BeautiDoc() {
+		g_doc = this;
 		setID("BeautiDoc");
 		m_potentialPriors = new ArrayList<Distribution>();
 
@@ -83,6 +87,17 @@ public class BeautiDoc extends Plugin {
     		System.exit(0);
     	}
     }
+
+    Alignment getPartition(Plugin plugin) {
+		String sPartition = plugin.getID();
+		sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+		for (Alignment data : m_alignments) {
+			if (data.getID().equals(sPartition)) {
+				return data;
+			}
+		}
+		return null;
+	}
 
 	
 	/** see whether we have a valid model that can be saved at this point in time **/
@@ -388,7 +403,7 @@ public class BeautiDoc extends Plugin {
 			for (StateNode stateNode :  PluginPanel.g_stateNodes) {
 				if (posteriorPredecessors.contains(stateNode) && (stateNode.m_bIsEstimated.get() || bUseNotEstimatedStateNodes)) {
 					stateNodes.add(stateNode);
-					System.err.println(stateNode.getID());
+					//System.err.println(stateNode.getID());
 				}
 			}
 			for (int i = stateNodes.size() - 1; i >= 0; i--) {
@@ -411,6 +426,9 @@ public class BeautiDoc extends Plugin {
 			List<Distribution> priors = m_priors.get();
 			for (int i = priors.size()-1; i>=0; i--) {
 				Distribution prior = priors.get(i);
+				if (!m_potentialPriors.contains(prior)) {
+					m_potentialPriors.add(prior);
+				}
 				if (prior instanceof MRCAPrior) {
 					if (((MRCAPrior) prior).m_bOnlyUseTipsInput.get()) {
 						priors.remove(i);
@@ -498,9 +516,12 @@ public class BeautiDoc extends Plugin {
 
 	/** connect source plugin with target plugin **/ 
 	public void connect(Plugin srcPlugin, String sTargetID, String sInputName) throws Exception {
-		Plugin target = PluginPanel.g_plugins.get(sTargetID);
-//		Plugin target = m_sIDMap.get(sTargetID);
-		target.setInputValue(sInputName, srcPlugin);
+		try {
+			Plugin target = PluginPanel.g_plugins.get(sTargetID);
+			target.setInputValue(sInputName, srcPlugin);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
