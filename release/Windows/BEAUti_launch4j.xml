@@ -1,6 +1,10 @@
 <launch4jConfig>
   <headerType>gui</headerType>
   <icon>../common/icons/beauti.ico</icon>
+  <classPath>
+  	<mainClass>beast.app.beauti.Beauti</mainClass>
+  	<cp>./lib/beast.jar</cp>
+  </classPath>
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>

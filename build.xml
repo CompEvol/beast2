@@ -224,7 +224,8 @@
 			<fileset dir="${Windows_dir}/scripts"/>
 		</copy>
 		<copy file="${dist}/beauti.jar" todir="${Windows_package_dir}/lib"/>-->
-		<copy file="${dist}/*.jar" todir="${Windows_package_dir}/lib"/>
+		<copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib"/>
+		<copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib"/>
 		<!-- <copy file="${dist}/beast-beagle.jar" todir="${Windows_package_dir}/lib"/> 
 		<copy todir="${Windows_package_dir}/lib">
 			<fileset dir="${Windows_dir}/lib"/>
@@ -232,14 +233,14 @@
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Windows_package_dir}"/>
 		<copy file="${common_dir}/README.txt" todir="${Windows_package_dir}"/>
 
-		<!-- BEAUTi v?.?.?.exe 
+		<!-- BEAUTi v?.?.?.exe --> 
 		<launch4j configFile="${Windows_dir}/BEAUti_launch4j.xml"
-                      jar="${dist}/beauti.jar"
+                      jar="${dist}/beast.jar"
                               outfile="${Windows_package_dir}/${BEAUti_name} v${version}.exe"
                       fileVersion="${version_number}.0"
                       txtFileVersion="${version}"
                       productVersion="${version_number}.0"
-                      txtProductVersion="${version}"/>-->
+                      txtProductVersion="${version}"/>
 
 		<!-- BEAST v?.?.?.exe -->
 		<launch4j configFile="${Windows_dir}/BEAST_launch4j.xml"
