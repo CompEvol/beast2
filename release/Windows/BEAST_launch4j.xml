@@ -1,0 +1,17 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <icon>../common/icons/beast.ico</icon>
+  <cmdLine></cmdLine>
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>    
+  <versionInfo>
+    <fileDescription>BEAST2</fileDescription>    
+    <copyright>2011-2011</copyright>
+    <productName>BEAST2</productName>
+    <internalName>BEAST2</internalName>
+    <originalFilename>BEAST2.exe</originalFilename>    
+  </versionInfo>
+</launch4jConfig>

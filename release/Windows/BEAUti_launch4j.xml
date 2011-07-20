@@ -1,0 +1,16 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <icon>../common/icons/beauti.ico</icon>
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>    
+  <versionInfo>
+    <fileDescription>BEAUti2</fileDescription>
+    <copyright>2011-2011</copyright>
+    <productName>BEAUti2</productName>
+    <internalName>BEAUti2</internalName>
+    <originalFilename>BEAUti2.exe</originalFilename>    
+  </versionInfo>
+</launch4jConfig>
