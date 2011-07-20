@@ -156,6 +156,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //		if (g_currentPanel != null) {
 //			g_currentPanel.m_config.sync(m_iPartition);
 //		}
+		if (m_doc.m_alignments.size() == 0) {
+			return;
+		}
 		m_doc.scrubAll(true);
 		refreshInputPanel();
 		if (m_listBox != null) {

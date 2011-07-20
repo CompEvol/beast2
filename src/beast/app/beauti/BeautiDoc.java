@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import beast.evolution.operators.TipDatesScaler;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.Prior;
+import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 
@@ -64,9 +66,29 @@ public class BeautiDoc extends Plugin {
 		m_pPartitions[2] = new ArrayList();
 	}
 	
+	public void load(String sFileName) throws Exception {
+		String sXML = BeautiInitDlg.load(sFileName);
+		extractSequences(sXML);
+    	connectModel();
+	}
+
+	public void importNexus(String sFileName) throws Exception {
+		NexusParser parser = new NexusParser();
+		parser.parseFile(sFileName);
+		if (parser.m_filteredAlignments.size() > 0) {
+			for (Alignment data : parser.m_filteredAlignments) {
+				m_alignments.add(data);
+			}
+		} else {
+			m_alignments.add(parser.m_alignment);
+		}
+    	connectModel();
+	}
+
     void initialize(BeautiInitDlg.ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
     	BeautiConfig.clear();
     	switch (endState) {
+    	case UNKNOWN:
     	case SHOW_DETAILS_USE_TEMPLATE: {
     		mergeSequences(sTemplate);
         	connectModel();
@@ -83,8 +105,10 @@ public class BeautiDoc extends Plugin {
         	save(sFileName);
         	break;
     	}
-    	case UNKNOWN:
-    		System.exit(0);
+//    		// load standard template
+//    		String sTemplateXML = BeautiInitDlg.processTemplate(STANDARD_TEMPLATE);
+//    		loadTemplate(sTemplateXML);
+//    		connectModel();
     	}
     }
 
@@ -119,7 +143,7 @@ public class BeautiDoc extends Plugin {
 
 	void extractSequences(String sXML) throws  Exception {
 		// load standard template
-		String sTemplateXML = BeautiInitDlg.load(STANDARD_TEMPLATE);
+		String sTemplateXML = BeautiInitDlg.processTemplate(STANDARD_TEMPLATE);
 		loadTemplate(sTemplateXML);
 		// parse file
 		XMLParser parser = new XMLParser();
@@ -136,6 +160,9 @@ public class BeautiDoc extends Plugin {
 	/** Merge sequence data with sXML specification. 
 	 **/
 	void mergeSequences(String sXML) throws  Exception {
+		if (sXML == null) {
+			sXML = BeautiInitDlg.processTemplate(STANDARD_TEMPLATE);
+		}
 		loadTemplate(sXML);
 		// create XML for alignments
 		for (Alignment alignment : m_alignments) {
@@ -422,6 +449,9 @@ public class BeautiDoc extends Plugin {
 
 	/** collect priors that have predecessors in the State, i.e. a StateNode that is estimated **/
 	void scrubPriors() {
+		if (m_priors == null) {
+			return;
+		}
 		try {
 			List<Distribution> priors = m_priors.get();
 			for (int i = priors.size()-1; i>=0; i--) {
@@ -555,6 +585,8 @@ public class BeautiDoc extends Plugin {
 		}
 		return m_pPartitions[2];
 	}
+
+
 
 
 

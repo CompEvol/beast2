@@ -1,31 +1,17 @@
 package beast.app.beauti;
 
-//import java.awt.BorderLayout;
-//import java.awt.Dimension;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.HashMap;
-//import java.util.Map;
 
-//import javax.swing.BorderFactory;
 import javax.swing.Box;
-//import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-//import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-//import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-//import javax.swing.JRadioButton;
-//import javax.swing.border.EtchedBorder;
-//import javax.swing.border.TitledBorder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -39,12 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import beast.app.draw.ExtensionFileFilter;
-//import beast.app.draw.InputEditor;
-//import beast.app.draw.PluginPanel;
 import beast.app.draw.ValidateListener;
-//import beast.app.draw.InputEditor.EXPAND;
-//import beast.core.Input;
-//import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
@@ -67,7 +48,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 	JButton m_startTemplateButton;
 
 	BeautiDoc m_doc;
-	ActionOnExit m_endState = ActionOnExit.SHOW_DETAILS_USE_TEMPLATE;
+	ActionOnExit m_endState = ActionOnExit.UNKNOWN;
 	String m_sOutputFileName = "beast.xml";
 	String m_sXML;
 	String m_sXMLName;
@@ -110,7 +91,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 					i += 2;
 				} else if (args[i].equals("-template")) {
 					String sFileName = args[i + 1];
-					processTemplate(sFileName);
+					m_sTemplateXML = processTemplate(sFileName);
 					m_sTemplateFileName = sFileName;
 					m_sTemplateName = nameFromFile(sFileName);
 					i += 2;
@@ -596,7 +577,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 					m_startBeastButton.setEnabled(true);
 				} else {
 					m_sTemplateFileName = sFileName;
-					processTemplate(sFileName);
+					m_sTemplateXML = processTemplate(sFileName);
 					m_templateButton.setText(nameFromFile(sFileName));
 //					if (m_doc.m_alignments.get().size() > 0) {
 //						m_startTemplateButton.setEnabled(true);
@@ -618,18 +599,18 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		return false;
 	}
 
-	void processTemplate(String sFileName) throws Exception {
+	static String processTemplate(String sFileName) throws Exception {
 		final String MERGE_ELEMENT = "mergepoint";
 		File mainTemplate = new File(sFileName);
-		m_sTemplateXML = load(sFileName);
+		String sTemplateXML = load(sFileName);
 		// find merge points
 		int i = 0;
 		HashMap<String, String> sMergePoints = new HashMap<String, String>();
 		while (i >= 0) {
-			i = m_sTemplateXML.indexOf("<" + MERGE_ELEMENT, i + 1);
+			i = sTemplateXML.indexOf("<" + MERGE_ELEMENT, i + 1);
 			if (i > 0) {
-				int j = m_sTemplateXML.indexOf('>', i);
-				String sStr = m_sTemplateXML.substring(i, j);
+				int j = sTemplateXML.indexOf('>', i);
+				String sStr = sTemplateXML.substring(i, j);
 				sStr = sStr.replaceAll(".*id=", "");
 				char c = sStr.charAt(0);
 				sStr = sStr.replaceAll(c + "[^" + c + "]*$", "");
@@ -686,23 +667,23 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 			// merge XML
 			i = 0;
 			while (i >= 0) {
-				i = m_sTemplateXML.indexOf("<" + MERGE_ELEMENT, i + 1);
+				i = sTemplateXML.indexOf("<" + MERGE_ELEMENT, i + 1);
 				if (i > 0) {
-					int j = m_sTemplateXML.indexOf('>', i);
-					String sStr = m_sTemplateXML.substring(i, j);
+					int j = sTemplateXML.indexOf('>', i);
+					String sStr = sTemplateXML.substring(i, j);
 					sStr = sStr.replaceAll(".*id=", "");
 					char c = sStr.charAt(0);
 					sStr = sStr.replaceAll(c + "[^" + c + "]*$", "");
 					sStr = sStr.substring(1);
 					String sXML = sMergePoints.get(sStr);
-					m_sTemplateXML = m_sTemplateXML.substring(0, i) + sXML + m_sTemplateXML.substring(j + 1);
+					sTemplateXML = sTemplateXML.substring(0, i) + sXML + sTemplateXML.substring(j + 1);
 				}
 			}
 		}
-
+		return sTemplateXML;
 	}
 
-	void processBeautiConfig(Document doc) throws Exception {
+	static void processBeautiConfig(Document doc) throws Exception {
 		// find configuration elements, process and remove
 		NodeList nodes = doc.getElementsByTagName("beauticonfig");
         Node topNode = doc.getElementsByTagName("*").item(0);
@@ -717,7 +698,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		}
 	}
 
-	String nodeToString(Node node) throws TransformerException {
+	static String nodeToString(Node node) throws TransformerException {
 		TransformerFactory transFactory = TransformerFactory.newInstance();
 		Transformer transformer = transFactory.newTransformer();
 		StringWriter buffer = new StringWriter();
@@ -726,7 +707,7 @@ public class BeautiInitDlg extends JDialog implements ValidateListener {
 		return buffer.toString();
 	}
 
-	static public String load(String sFileName) throws IOException {
+	static String load(String sFileName) throws IOException {
 		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
 		StringBuffer buf = new StringBuffer();
 		String sStr = null;

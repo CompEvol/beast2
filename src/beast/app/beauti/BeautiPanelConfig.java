@@ -56,7 +56,7 @@ public class BeautiPanelConfig extends Plugin {
 	List<Plugin> m_startInputs;
 	/** plugins that are parents, i.e. contain inputs of m_inputs **/
 	List<Plugin> m_parentPlugins;
-	List<Input<?>> m_parentInputs;
+	List<Input<?>> m_parentInputs = new ArrayList();
 	/** flag to indicate we are dealing with a list input **/
 	boolean m_bIsList;
 

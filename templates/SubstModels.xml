@@ -157,7 +157,7 @@
                      <tree idref="Tree.$(n)"/>
                 </treeIntervals>
                 <populationModel spec="ConstantPopulation" id='ConstantPopulation.$(n)'>
-                     <parameter name="popSize" id="popSize.$(n)" value='1.0' estimate='false'/>
+                     <parameter name="popSize" id="cPopSize.$(n)" value='1.0' estimate='false'/>
                  </populationModel>
             </distribution>
 ]]></value>
@@ -173,7 +173,7 @@
                      <tree idref="Tree.$(n)"/>
                 </treeIntervals>
                 <populationModel spec="ExponentialGrowth" id="ExponentialGrowth.$(n)">
-                    <parameter name="popSize" id="popSize.$(n)" value='1.0' estimate='false'/>
+                    <parameter name="popSize" id="ePopSize.$(n)" value='1.0' estimate='false'/>
                     <parameter name="growthRate" id="growthRate.$(n)" value='1.0' estimate='false'/>
                 </populationModel>
             </distribution>
