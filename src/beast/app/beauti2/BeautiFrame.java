@@ -8,16 +8,10 @@
  */
 package beast.app.beauti2;
 
-import beast.app.beauti.*;
-import beast.app.beauti2.util.BEAUTiImporter;
-import beast.app.beauti2.util.TextUtil;
-import beast.app.util.OSType;
 import beast.app.util.Utils;
 import jam.framework.DocumentFrame;
 import jam.framework.Exportable;
 import jam.util.IconUtils;
-import jebl.evolution.io.ImportException;
-import jebl.evolution.io.NexusImporter;
 
 import javax.swing.*;
 import javax.swing.border.Border;
