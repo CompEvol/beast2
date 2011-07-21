@@ -248,13 +248,26 @@ public class Beauti extends JTabbedPane {
 
             public void actionPerformed(ActionEvent ae) {
         		JFileChooser fileChooser = new JFileChooser(m_sDir);
-        		fileChooser.addChoosableFileFilter(ef0);
         		fileChooser.addChoosableFileFilter(ef1);
+        		fileChooser.addChoosableFileFilter(ef0);
+        		fileChooser.setMultiSelectionEnabled(true);
         		fileChooser.setDialogTitle("Load Beast XML File");
+
         		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-        			String sFileName = fileChooser.getSelectedFile().toString();
         			try {
-            			m_doc.importNexus(sFileName);
+            			File[] files = fileChooser.getSelectedFiles();
+            			for (int i = 0; i < files.length; i++) {
+            				String sFileName = files[i].getAbsolutePath();
+            				if (sFileName.lastIndexOf('/') > 0) {
+            					Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+            				}
+            				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
+                    			m_doc.importNexus(sFileName);
+            				}
+            				if (sFileName.toLowerCase().endsWith(".xml")) {
+                    			m_doc.importXMLAlignment(sFileName);
+            				}
+            			}
         				a_save.setEnabled(true);
         				a_saveas.setEnabled(true);
         			} catch (Exception e) {
@@ -616,10 +629,15 @@ public class Beauti extends JTabbedPane {
 			beauti.setVisible(true);
 			beauti.refreshPanel();
 			JFrame frame = new JFrame("Beauti II: " + dlg.m_sTemplateName);
-			frame.setIconImage(BeautiPanel.getIcon(6, null).getImage());
+			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
 
 			JMenuBar menuBar = beauti.makeMenuBar(); 
 			frame.setJMenuBar(menuBar);
+			
+			if (dlg.m_sXML != null || doc.m_alignments.size()> 0) {
+				beauti.a_save.setEnabled(true);
+				beauti.a_saveas.setEnabled(true);
+			}
 			
 			frame.add(beauti);
 	        frame.setSize(800, 600);

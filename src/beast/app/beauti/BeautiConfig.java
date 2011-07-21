@@ -128,7 +128,13 @@ public class BeautiConfig extends Plugin {
 		List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
 		for (BeautiSubTemplate template : g_subTemplates) {
 			if (type.isAssignableFrom(template.m_class)) {
-				candidates.add(template);
+	        	try {
+	        		if (input.canSetValue(template.m_instance, plugin)) {
+	    				candidates.add(template);
+	        		}
+	        	} catch (Exception e) {
+					// ignore: cannot set value
+				}
 			}
 		}
 		return candidates;

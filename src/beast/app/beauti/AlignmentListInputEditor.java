@@ -22,8 +22,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.CellEditorListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -63,7 +61,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	JTable m_table;
 
 	String[] m_sPartitionNames;
-
+	BeautiDoc m_doc;
+	
 	@Override
 	public Class<?> type() {
 		return List.class;
@@ -102,7 +101,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	}
 
-	private Component createButtonBox() {
+	protected Component createButtonBox() {
 		Box box = Box.createHorizontalBox();
 		box.add(Box.createHorizontalGlue());
 		addLinkUnlinkPair(box, "Site Models");
@@ -200,7 +199,17 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			case CLOCKMODEL_COLUMN:
 			{
 				String sPartition = (String) m_tableData[iRow][CLOCKMODEL_COLUMN];
-				BranchRateModel clockModel = (BranchRateModel) PluginPanel.g_plugins.get("ClockModel." + sPartition);
+				if (m_doc == null) {
+				    Component c = this;
+				    while (((Component) c).getParent() != null) {
+				      	c = ((Component) c).getParent();
+				      	if (c instanceof BeautiPanel) {
+				      		m_doc = ((BeautiPanel) c).m_doc;
+				      	}
+				    }
+				}
+				BranchRateModel clockModel = m_doc.getClockModel(sPartition);
+					//(BranchRateModel) PluginPanel.g_plugins.get("ClockModel." + sPartition);
 				m_likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, m_likelihoods[iRow]);
 			}
 				break;
@@ -264,7 +273,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		return sID;
 	}
 
-	private Component createListBox() {
+	protected Component createListBox() {
 		String[] columnData = new String[] { "Name", "File", "Taxa", "Sites", "Data Type", "Site Model", "Clock Model",
 				"Tree" };
 		initTableData();
@@ -402,29 +411,6 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			for (int i = 0; i < m_nPartitions; i++) {
 				try {
 					updateModel(m_nColumn, i);
-//					switch (m_nColumn) {
-//						case SITEMODEL_COLUMN: 
-//						{
-//							String sPartition = (String) m_tableData[i][SITEMODEL_COLUMN];
-//							SiteModel siteModel = (SiteModel) PluginPanel.g_plugins.get("SiteModel." + sPartition);
-//							m_likelihoods[i].m_pSiteModel.setValue(siteModel, m_likelihoods[i]);
-//						}
-//							break;
-//						case CLOCKMODEL_COLUMN:
-//						{
-//							String sPartition = (String) m_tableData[i][CLOCKMODEL_COLUMN];
-//							BranchRateModel clockModel = (BranchRateModel) PluginPanel.g_plugins.get("ClockModel." + sPartition);
-//							m_likelihoods[i].m_pBranchRateModel.setValue(clockModel, m_likelihoods[i]);
-//						}
-//							break;
-//						case TREE_COLUMN:
-//						{
-//							String sPartition = (String) m_tableData[i][TREE_COLUMN];
-//							Tree tree = (Tree) PluginPanel.g_plugins.get("Tree." + sPartition);
-//							m_likelihoods[i].m_tree.setValue(tree, m_likelihoods[i]);
-//						}
-//							break;
-//					}
 				} catch (Exception ex) {
 					System.err.println(ex.getMessage());
 				}

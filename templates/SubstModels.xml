@@ -78,6 +78,19 @@
             <connect spec='BeautiConnector' srcID='rateGT.$(n)' targetID='tracelog' inputName='log'/>
         </subtemplate>
 
+
+<!-- empirical amino acid substitution models -->
+        <subtemplate id='Blosum62' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Blosum62' mainid='Blosum62.$(n)'><value spec='XML'><![CDATA[<plugin spec='Blosum62' id='Blosum62.$(n)'/>]]></value></subtemplate>
+        <subtemplate id='Dayhoff' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Dayhoff' mainid='Dayhoff.$(n)'><value spec='XML'><![CDATA[<plugin spec='Dayhoff' id='Dayhoff.$(n)'/>]]></value></subtemplate>
+        <subtemplate id='JTT' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.JTT' mainid='JTT.$(n)'><value spec='XML'><![CDATA[<plugin spec='JTT' id='JTT.$(n)'/>]]></value></subtemplate>
+        <subtemplate id='cpREV' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.CPREV' mainid='CPREV.$(n)'><value spec='XML'><![CDATA[<plugin spec='CPREV' id='CPREV.$(n)'/>]]></value></subtemplate>
+        <subtemplate id='mtREV' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.MTREV' mainid='MTREV.$(n)'><value spec='XML'><![CDATA[<plugin spec='MTREV' id='MTREV.$(n)'/>]]></value></subtemplate>
+        <subtemplate id='WAG' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.WAG' mainid='WAG.$(n)'><value spec='XML'><![CDATA[<plugin spec='WAG' id='WAG.$(n)'/>]]></value></subtemplate>
+
+
+
+
+
 <!-- Clock models -->
 
 <!-- Strickt clock -->

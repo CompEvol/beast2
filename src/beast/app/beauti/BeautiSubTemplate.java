@@ -27,6 +27,7 @@ public class BeautiSubTemplate extends Plugin {
 	public Input<List<BeautiConnector>> m_connections = new Input<List<BeautiConnector>>("connect","Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
 
 	Class<?> m_class = null;
+	Object m_instance;
 	String m_sXML = null;
 	String [] m_sSrcIDs;
 	String [] m_sTargetIDs;
@@ -36,6 +37,7 @@ public class BeautiSubTemplate extends Plugin {
 	@Override
 	public void initAndValidate() throws Exception {
 		m_class = Class.forName(m_sClassInput.get());
+		m_instance = m_class.newInstance();
 		m_sXML = m_sXMLInput.get().m_sValue.get();
 		m_sMainID = m_sMainInput.get();
 		// sanity check: make sure the XML is parseable

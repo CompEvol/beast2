@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import beast.app.draw.PluginPanel;
@@ -20,6 +21,7 @@ import beast.core.State;
 import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.operators.TipDatesScaler;
 import beast.evolution.tree.TreeDistribution;
@@ -43,6 +45,7 @@ public class BeautiDoc extends Plugin {
 	/** contains all Priors from the template **/
 	protected List<Distribution> m_potentialPriors;
 
+	protected List<BranchRateModel> m_clockModels;
 	/** contains all loggers from the template **/
 	List<List<Plugin>> m_loggerInputs;
 	
@@ -59,6 +62,7 @@ public class BeautiDoc extends Plugin {
 		g_doc = this;
 		setID("BeautiDoc");
 		m_potentialPriors = new ArrayList<Distribution>();
+		m_clockModels = new ArrayList<BranchRateModel>();
 
 		m_pPartitions = new List[3];
 		m_pPartitions[0] = new ArrayList();
@@ -77,14 +81,20 @@ public class BeautiDoc extends Plugin {
 		parser.parseFile(sFileName);
 		if (parser.m_filteredAlignments.size() > 0) {
 			for (Alignment data : parser.m_filteredAlignments) {
-				m_alignments.add(data);
+				addAlignmentWithSubnet(data);
 			}
 		} else {
-			m_alignments.add(parser.m_alignment);
+			addAlignmentWithSubnet(parser.m_alignment);
 		}
     	connectModel();
 	}
 
+	public void importXMLAlignment(String sFileName) throws Exception {
+		Alignment data = (Alignment) AlignmentListInputEditor.getXMLData(sFileName);
+		addAlignmentWithSubnet(data);
+    	connectModel();
+	}
+	
     void initialize(BeautiInitDlg.ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
     	BeautiConfig.clear();
     	switch (endState) {
@@ -135,7 +145,8 @@ public class BeautiDoc extends Plugin {
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
 		scrubAll(false);
-		String sXML = new XMLProducer().toXML(m_mcmc.get(), PluginPanel.g_plugins.values());
+		//String sXML = new XMLProducer().toXML(m_mcmc.get(), PluginPanel.g_plugins.values());
+		String sXML = new XMLProducer().toXML(m_mcmc.get(), new HashSet<Plugin>());
 		FileWriter outfile = new FileWriter(sFileName);
 		outfile.write(sXML);
 		outfile.close();
@@ -328,7 +339,39 @@ public class BeautiDoc extends Plugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		collectClockModels();
 	}	
+	
+	private void collectClockModels() {
+		// collect branch rate models from template
+		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+		int k = 0;
+		for (Distribution d : likelihood.pDistributions.get()) {
+			BranchRateModel.Base clockModel = ((TreeLikelihood)d).m_pBranchRateModel.get();
+			String sID = clockModel.getID();
+			sID = sID.substring(sID.indexOf('.')+1);
+			String sPartition = m_alignments.get(k).getID();
+			if (sID.equals(sPartition)) {
+				if (m_clockModels.size() <= k) {
+					m_clockModels.add(clockModel);
+				} else {
+					m_clockModels.set(k, clockModel);
+				}
+			}
+			k++;
+		}
+	}
+
+	BranchRateModel getClockModel(String sPartition) {
+		int k = 0;
+		for (Alignment data : m_alignments) {
+			if (data.getID().equals(sPartition)) {
+				return m_clockModels.get(k);
+			}
+			k++;
+		}
+		return null;
+	}
 	
 	void scrubAll(boolean bUseNotEstimatedStateNodes) {
 		try {
@@ -344,6 +387,7 @@ public class BeautiDoc extends Plugin {
 			if (m_bAutoScrubOperators) {
 				scrubOperators();
 			}
+			collectClockModels();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}

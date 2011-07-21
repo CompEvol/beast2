@@ -14,9 +14,12 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
+
+import com.sun.java.swing.plaf.motif.MotifBorders.BevelBorder;
 
 import beast.app.beauti.BeautiConfig;
 import beast.app.beauti.BeautiPanel;

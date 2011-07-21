@@ -72,7 +72,9 @@ import beast.util.XMLParserException;
  * See getUsage() for command line options.
  */
 public class BeastMCMC {
-	final public static String VERSION = "Release candidate";
+	final public static String VERSION = "2.0 Release candidate";
+	final public static String DEVELOPERS = "Beast 2 development team";
+	final public static String COPYRIGHT = "Beast 2 development team 2011";
 	
 	/** number of threads used to run the likelihood beast.core **/
 	static public int m_nThreads = 1;
@@ -309,7 +311,7 @@ public class BeastMCMC {
 	        JLabel label = new JLabel(icon);
 	        label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 	        box.add(label, BorderLayout.WEST);
-	        label = new JLabel("<html>BEAST 2.0<br>"+VERSION+"</html>");
+	        label = new JLabel("<html><center>BEAST<br>Version: "+VERSION + "<br>Developers: " + DEVELOPERS + "<br>Copyright: " + COPYRIGHT + "</html>");
 	        label.setHorizontalAlignment(JLabel.CENTER);
 	        box.add(label);
 			return box;

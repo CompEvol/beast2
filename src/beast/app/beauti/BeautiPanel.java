@@ -85,7 +85,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	    setLayout(new BorderLayout());
 	    m_config = config;
 	    refreshPanel();
-	    addParitionPanel(m_config.hasPartition(), iPanel);
+	    addParitionPanel(m_config.hasPartition(), m_iPanel);
 	} // c'tor
     
 	
@@ -118,17 +118,26 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //    	m_listOfPartitions.setBounds(0, 0, 100, 100);
     	
     	m_listOfPartitions.addListSelectionListener(this);
-    	for (Plugin partition : m_doc.getPartitions(m_config.m_sTypeInput.get())) {
-    		String sPartition = partition.getID();
-    		sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
-    		m_listModel.addElement(sPartition);
-    	}
+    	updateList();
     	m_listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
     	partitionBox.add(m_listOfPartitions);
     	partitionBox.setBorder(new EtchedBorder());
     	return partitionBox;
     }
 
+    void updateList() {
+//    	int iSelected = m_listOfPartitions.getSelectedIndex();
+    	m_listModel.clear();
+    	for (Plugin partition : m_doc.getPartitions(m_config.m_sTypeInput.get())) {
+    		String sPartition = partition.getID();
+    		sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
+    		m_listModel.addElement(sPartition);
+    	}
+//    	if (iSelected >= 0) {
+    		m_listOfPartitions.setSelectedIndex(m_iPartition);
+//    	}
+    }
+    
 	static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
         String sIconLocation = ICONPATH + iPanel +".png";
         if (config != null) {
@@ -160,6 +169,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			return;
 		}
 		m_doc.scrubAll(true);
+		
+		//updateList();
+
 		refreshInputPanel();
 		if (m_listBox != null) {
 			m_listBox.setVisible(m_doc.getPartitions(m_config.getType()).size() > 1);
@@ -205,7 +217,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		if (e != null) {
 			m_config.sync(m_iPartition);
 			if (m_listOfPartitions != null) {
-				m_iPartition = m_listOfPartitions.getSelectedIndex();
+				m_iPartition = Math.max(0, m_listOfPartitions.getSelectedIndex());
 			}
 		}
 		//System.err.println(m_iPartition);
