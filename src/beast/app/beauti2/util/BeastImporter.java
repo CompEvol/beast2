@@ -1,17 +1,17 @@
 package beast.app.beauti2.util;
 
-import beast.util.XMLParser;
-import jebl.evolution.alignments.Alignment;
-import jebl.evolution.sequences.Sequence;
-import jebl.evolution.taxa.Taxon;
-import org.jdom.*;
-import org.jdom.input.SAXBuilder;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.*;
+//import beast.util.XMLParser;
+//import jebl.evolution.alignments.Alignment;
+//import jebl.evolution.sequences.Sequence;
+//import jebl.evolution.taxa.Taxon;
+//import org.jdom.*;
+//import org.jdom.input.SAXBuilder;
+//
+//import java.io.IOException;
+//import java.io.Reader;
+//import java.text.DateFormat;
+//import java.text.ParseException;
+//import java.util.*;
 
 /**
  * @author Andrew Rambaut
