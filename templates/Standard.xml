@@ -73,40 +73,40 @@
 
         <panel spec='BeautiPanelConfig' panelname="Partitions" tiptext="Data Partitions"
             path='distribution/distribution[id="likelihood"]/distribution/data'
-            hasPartitions="false" icon='2220.png' forceExpansion='FALSE'
+            hasPartitions="none" icon='2220.png' forceExpansion='FALSE'
             type='beast.evolution.alignment.Alignment'
         />
 		<panel spec='BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxon was sampled"
             path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
-            hasPartitions="true" icon='2.png' forceExpansion='TRUE'
+            hasPartitions="Tree" icon='2.png' forceExpansion='TRUE'
             isVisible='true'
         />
 		<panel spec='BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
             path='distribution/distribution[id="likelihood"]/distribution/siteModel'
-            hasPartitions="true" icon='3.png' forceExpansion='TRUE'
+            hasPartitions="SiteModel" icon='3.png' forceExpansion='TRUE'
         />
 		<panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
             path='distribution/distribution[id="likelihood"]/distribution/branchRateModel'
-            hasPartitions="true" icon='4.png' forceExpansion='TRUE'
+            hasPartitions="ClockModel" icon='4.png' forceExpansion='TRUE'
         />
 		<panel spec='BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
             path='state/stateNode'
-            hasPartitions="false" icon='6.png' forceExpansion='TRUE_START_COLLAPSED'
+            hasPartitions="none" icon='6.png' forceExpansion='TRUE_START_COLLAPSED'
             isVisible='false'
         />
 		<panel spec='BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
-            hasPartitions="false" icon='7.png' forceExpansion='TRUE_START_COLLAPSED'
+            hasPartitions="none" icon='7.png' forceExpansion='TRUE_START_COLLAPSED'
             type='beast.core.Distribution'
         />
 		<panel spec='BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
-            hasPartitions="false" icon='8.png' forceExpansion='TRUE_START_COLLAPSED'
+            hasPartitions="none" icon='8.png' forceExpansion='TRUE_START_COLLAPSED'
             isVisible='false'
         />
 		<panel spec='BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
             path=''
-            hasPartitions="false" icon='9.png' forceExpansion='TRUE'
+            hasPartitions="none" icon='9.png' forceExpansion='TRUE'
         />
 
 

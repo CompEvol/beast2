@@ -3,32 +3,28 @@ package beast.app.beauti;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URL;
 
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import beast.app.draw.HelpBrowser;
+import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.BUTTONSTATUS;
 import beast.app.draw.PluginPanel;
-import beast.app.draw.SmallButton;
 import beast.app.draw.InputEditor.EXPAND;
 import beast.core.Input;
 import beast.core.Plugin;
@@ -50,12 +46,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     int m_iPartition = 0;
 
     /** box containing the list of partitions, to make (in)visible on update **/
-	Box m_listBox;
+    Box m_partitionBox;
 	/** list of partitions in m_listBox **/
 	JList m_listOfPartitions;
 	/** model for m_listOfPartitions **/
     DefaultListModel m_listModel;
-    
+
     
     /** component containing main input editor **/ 
 	Component m_centralComponent = null;
@@ -66,20 +62,20 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		m_doc = doc;
 		m_iPanel = iPanel;
 		
-        SmallButton helpButton2 = new SmallButton("?", true);
-        helpButton2.setToolTipText("Show help for this plugin");
-        helpButton2.addActionListener(new ActionListener() {
-            // implementation ActionListener
-            public void actionPerformed(ActionEvent e) {
-                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                HelpBrowser b = new HelpBrowser(m_config.getType());
-                b.setSize(800, 800);
-                b.setVisible(true);
-                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
-    	add(helpButton2);
+//        SmallButton helpButton2 = new SmallButton("?", true);
+//        helpButton2.setToolTipText("Show help for this plugin");
+//        helpButton2.addActionListener(new ActionListener() {
+//            // implementation ActionListener
+//            public void actionPerformed(ActionEvent e) {
+//                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+//                HelpBrowser b = new HelpBrowser(m_config.getType());
+//                b.setSize(800, 800);
+//                b.setVisible(true);
+//                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//            }
+//        });
+//    	add(helpButton2);
 		
 		
 	    setLayout(new BorderLayout());
@@ -88,12 +84,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	    addParitionPanel(m_config.hasPartition(), m_iPanel);
 	} // c'tor
     
-	
-    void addParitionPanel(boolean bHasPartion, int iPanel) {
+    void addParitionPanel(Partition bHasPartion, int iPanel) {
 		Box box = Box.createVerticalBox();
-    	if (bHasPartion) {
-    		m_listBox = createList(); 
-			box.add(m_listBox);
+    	if (bHasPartion != Partition.none) {
+			box.add(createList());
     	}
 		box.add(Box.createVerticalGlue());
 		box.add(new JLabel(getIcon(iPanel, m_config)));
@@ -104,9 +98,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	}
 	
     Box createList() {
-		Box partitionBox = Box.createVerticalBox();
-		partitionBox.setAlignmentX(LEFT_ALIGNMENT);
-		partitionBox.add(new JLabel("partition"));
+    	m_partitionBox = Box.createVerticalBox();
+		m_partitionBox.setAlignmentX(LEFT_ALIGNMENT);
+		m_partitionBox.add(new JLabel("partition"));
         m_listModel = new DefaultListModel();
     	m_listOfPartitions = new JList(m_listModel);
     	
@@ -120,22 +114,22 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     	m_listOfPartitions.addListSelectionListener(this);
     	updateList();
     	m_listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
-    	partitionBox.add(m_listOfPartitions);
-    	partitionBox.setBorder(new EtchedBorder());
-    	return partitionBox;
+    	m_partitionBox.add(m_listOfPartitions);
+    	m_partitionBox.setBorder(new EtchedBorder());
+    	return m_partitionBox;
     }
 
     void updateList() {
-//    	int iSelected = m_listOfPartitions.getSelectedIndex();
+    	if (m_listModel == null) {
+    		return;
+    	}
     	m_listModel.clear();
-    	for (Plugin partition : m_doc.getPartitions(m_config.m_sTypeInput.get())) {
+    	for (Plugin partition : m_doc.getPartitions(m_config.m_bHasPartitionsInput.get().toString())) {
     		String sPartition = partition.getID();
     		sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
     		m_listModel.addElement(sPartition);
     	}
-//    	if (iSelected >= 0) {
-    		m_listOfPartitions.setSelectedIndex(m_iPartition);
-//    	}
+  		m_listOfPartitions.setSelectedIndex(m_iPartition);
     }
     
 	static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
@@ -162,19 +156,14 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	static BeautiPanel g_currentPanel = null;
 	
 	void refreshPanel() throws Exception {
-//		if (g_currentPanel != null) {
-//			g_currentPanel.m_config.sync(m_iPartition);
-//		}
 		if (m_doc.m_alignments.size() == 0) {
 			return;
 		}
 		m_doc.scrubAll(true);
-		
-		//updateList();
 
 		refreshInputPanel();
-		if (m_listBox != null) {
-			m_listBox.setVisible(m_doc.getPartitions(m_config.getType()).size() > 1);
+		if (m_partitionBox != null) {
+			m_partitionBox.setVisible(m_doc.getPartitions(m_config.getType()).size() > 1);
 		}
 		g_currentPanel = this;
 	}

@@ -74,6 +74,7 @@ public class Beauti extends JTabbedPane {
 		Arrays.fill(m_bPaneIsVisible, true);
 		//m_panels = new BeautiPanel[NR_OF_PANELS];
 		m_doc = doc;
+		m_doc.setBeauti(this);
 	}
 
 	
@@ -176,7 +177,11 @@ public class Beauti extends JTabbedPane {
 
         protected void saveFile(String sFileName) {
             try {
-            	m_currentTab.m_config.sync(m_currentTab.m_iPartition);
+            	if (m_currentTab != null) {
+            		m_currentTab.m_config.sync(m_currentTab.m_iPartition);
+            	} else {
+            		m_panels[0].m_config.sync(0);
+            	}
                 m_doc.save(sFileName);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -228,6 +233,7 @@ public class Beauti extends JTabbedPane {
         				a_save.setEnabled(true);
         				a_saveas.setEnabled(true);
         			} catch (Exception e) {
+        				e.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Something went wrong loading the file: " + e.getMessage());
 					}
                 }
@@ -271,6 +277,7 @@ public class Beauti extends JTabbedPane {
         				a_save.setEnabled(true);
         				a_saveas.setEnabled(true);
         			} catch (Exception e) {
+        				e.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
 					}
                 }
@@ -426,11 +433,11 @@ public class Beauti extends JTabbedPane {
     void refreshPanel() {
 		try {
 			BeautiPanel panel = (BeautiPanel) getSelectedComponent();
-//			int i = 0;
-//			while (m_panels[i] != panel) {
-//				i++;
-//			}
-			panel.refreshPanel();
+			if (panel != null) {
+				m_doc.determinePartitions();
+				panel.updateList();
+				panel.refreshPanel();
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -560,6 +567,21 @@ public class Beauti extends JTabbedPane {
 		}
 	} // hidePanels
 	
+    void setUpPanels() throws Exception {
+    	// remove any existing tabs
+    	while (getTabCount() > 0) {
+    		removeTabAt(0);
+    	}
+    	// add panels according to BeautiConfig 
+		m_panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
+		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+			m_panels[ iPanel] = new BeautiPanel( iPanel, m_doc, panelConfig);
+			addTab(BeautiConfig.getButtonLabel(this, panelConfig.getName()), null, m_panels[ iPanel], panelConfig.getTipText());
+		}
+    }
+
+	
 	public static void main(String[] args) {
 		try {
         	BeastMCMC.loadExternalJars();
@@ -594,13 +616,8 @@ public class Beauti extends JTabbedPane {
 	
 	        final Beauti beauti = new Beauti(doc);
 
-			beauti.m_panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
-			for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-				BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
-				beauti.m_panels[ iPanel] = new BeautiPanel( iPanel, doc, panelConfig);
-				beauti.addTab(BeautiConfig.getButtonLabel(beauti, panelConfig.getName()), null, beauti.m_panels[ iPanel], panelConfig.getTipText());
-			}
-
+	        beauti.setUpPanels();
+			
 //			beauti.m_panels = new BeautiPanel[ BeautiConfig.g_panels.size()+1];
 //			beauti.m_panels[0] = new PartitionPanel(0, doc, null);
 //			beauti.addTab("Partitions", null, beauti.m_panels[0], "Specify data partitions");
@@ -618,10 +635,12 @@ public class Beauti extends JTabbedPane {
 			beauti.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					beauti.m_currentTab.m_config.sync(beauti.m_currentTab.m_iPartition);
-					BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
-					beauti.m_currentTab = panel;
-					beauti.refreshPanel();
+					if (beauti.m_currentTab != null) {
+						beauti.m_currentTab.m_config.sync(beauti.m_currentTab.m_iPartition);
+						BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
+						beauti.m_currentTab = panel;
+						beauti.refreshPanel();
+					}
 				}
 			});
 			
@@ -640,7 +659,7 @@ public class Beauti extends JTabbedPane {
 			}
 			
 			frame.add(beauti);
-	        frame.setSize(800, 600);
+	        frame.setSize(1024, 768);
 	        frame.setVisible(true);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		} catch (Exception e) {

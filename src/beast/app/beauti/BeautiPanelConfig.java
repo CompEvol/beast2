@@ -16,6 +16,9 @@ import beast.core.Plugin;
 
 @Description("Defines properties for custom panels in Beauti")
 public class BeautiPanelConfig extends Plugin {
+    public enum Partition {
+        none, SiteModel, ClockModel, Tree
+    }
 	
 	public Input<String> m_sNameInput = new Input<String>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
 	public Input<String> m_sTipTextInput = new Input<String>("tiptext", "tiptext shown when hovering over the tab", Validate.REQUIRED);
@@ -25,8 +28,9 @@ public class BeautiPanelConfig extends Plugin {
 			"distribution/distribution[id='prior'] for prior distributions." +
 			"distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
 	
-	public Input<Boolean> m_bHasPartitionsInput = new Input<Boolean>("hasPartitions", "flag to indicate the panel has" +
-			"a partition context (and hence a partition list), deafult false", false);
+
+	public Input<Partition> m_bHasPartitionsInput = new Input<Partition>("hasPartitions", "flag to indicate the panel has" +
+			"a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
 	
 	public Input<Boolean> m_bAddButtonsInput = new Input<Boolean>("addButtons", "flag to indicate buttons should be added, deafult true", true);
 	public Input<Boolean> m_bIsVisibleInput = new Input<Boolean>("isVisible", "flag to indicate panel is visible on startup, deafult true", true);
@@ -104,7 +108,7 @@ public class BeautiPanelConfig extends Plugin {
 		return m_sNameInput.get();
 	}
 	
-	public boolean hasPartition() {
+	public Partition hasPartition() {
 		return m_bHasPartitionsInput.get();
 	}
 	
@@ -199,8 +203,8 @@ public class BeautiPanelConfig extends Plugin {
 				m_type = Class.forName(m_sTypeInput.get());
 			}
 			// sanity check
-			if (!m_bIsList && !m_bHasPartitionsInput.get() && plugins.size() > 1) {
-				System.err.println("WARNING: multiple plugins match, but hasPartitions=false");
+			if (!m_bIsList && (m_bHasPartitionsInput.get() == Partition.none) && plugins.size() > 1) {
+				System.err.println("WARNING: multiple plugins match, but hasPartitions=none");
 				// this makes sure that all mathing plugins are available in one go
 				m_bIsList = true;
 				// this suppresses syncing

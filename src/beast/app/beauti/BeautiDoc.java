@@ -4,9 +4,11 @@ package beast.app.beauti;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import beast.app.draw.PluginPanel;
 import beast.core.Description;
@@ -54,9 +56,17 @@ public class BeautiDoc extends Plugin {
 	boolean m_bAutoScrubPriors = true;
 	boolean m_bAutoScrubState = true;
 	
+	/** [0] = sitemodel [1] = clock model [2] = tree **/
+	List<Plugin>[] m_pPartitionByAlignments;
+	List<Plugin>[] m_pPartition;
+	private List<Integer>[] m_nCurrentPartitions;
+	// partition names
+	List<String> m_sPartitionNames = new ArrayList<String>();
 	
 	// RRB: hack to pass info to BeautiSubTemplate TODO: beautify this, since it prevents haveing multiple windows open
+	// All globals need to be removed to make multiple document view work on Macs
 	static BeautiDoc g_doc;
+	Beauti m_beauti;
 	
 	public BeautiDoc() {
 		g_doc = this;
@@ -64,16 +74,25 @@ public class BeautiDoc extends Plugin {
 		m_potentialPriors = new ArrayList<Distribution>();
 		m_clockModels = new ArrayList<BranchRateModel>();
 
-		m_pPartitions = new List[3];
-		m_pPartitions[0] = new ArrayList();
-		m_pPartitions[1] = new ArrayList();
-		m_pPartitions[2] = new ArrayList();
+		m_pPartitionByAlignments = new List[3];
+		m_pPartition = new List[3];
+		m_nCurrentPartitions = new List[3];
+		for (int i = 0; i < 3; i++) {
+			m_pPartitionByAlignments[i] = new ArrayList();
+			m_pPartition[i] = new ArrayList();
+			m_nCurrentPartitions[i] = new ArrayList<Integer>();
+		}
 	}
 	
+	public void setBeauti(Beauti beauti) {
+		m_beauti = beauti;		
+	}
+
 	public void load(String sFileName) throws Exception {
 		String sXML = BeautiInitDlg.load(sFileName);
 		extractSequences(sXML);
     	connectModel();
+    	m_beauti.setUpPanels();
 	}
 
 	public void importNexus(String sFileName) throws Exception {
@@ -87,12 +106,14 @@ public class BeautiDoc extends Plugin {
 			addAlignmentWithSubnet(parser.m_alignment);
 		}
     	connectModel();
+    	m_beauti.setUpPanels();
 	}
 
 	public void importXMLAlignment(String sFileName) throws Exception {
 		Alignment data = (Alignment) AlignmentListInputEditor.getXMLData(sFileName);
 		addAlignmentWithSubnet(data);
     	connectModel();
+    	m_beauti.setUpPanels();
 	}
 	
     void initialize(BeautiInitDlg.ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
@@ -296,22 +317,6 @@ public class BeautiDoc extends Plugin {
 		}
 	}
 
-	private void determinePartitions() {
-		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
-		m_alignments.clear();
-		m_pPartitions[0].clear();
-		m_pPartitions[1].clear();
-		m_pPartitions[2].clear();
-		for (Distribution distr : likelihood.pDistributions.get()) {
-			if (distr instanceof TreeLikelihood) {
-				TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
-				m_alignments.add(treeLikelihoods.m_data.get());
-				m_pPartitions[0].add(treeLikelihoods.m_pSiteModel.get());
-				m_pPartitions[1].add(treeLikelihoods.m_pBranchRateModel.get());
-				m_pPartitions[2].add(treeLikelihoods.m_tree.get());
-			}
-		}
-	}
 
 	/** Connect all inputs to the relevant ancestors of m_runnable.
 	 * @throws Exception 
@@ -388,6 +393,11 @@ public class BeautiDoc extends Plugin {
 				scrubOperators();
 			}
 			collectClockModels();
+			
+			System.err.println("PARTITIONS:\n");
+			System.err.println(Arrays.toString(m_nCurrentPartitions));
+			
+			
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -577,8 +587,6 @@ public class BeautiDoc extends Plugin {
 	}
 
 	
-	/** [0] = sitemodel [1] = clock model [2] = tree **/
-	List<Plugin>[] m_pPartitions;
 	
 	public void addPlugin(Plugin plugin) throws Exception {
 		PluginPanel.addPluginToMap(plugin);
@@ -603,35 +611,107 @@ public class BeautiDoc extends Plugin {
 		m_alignments.add(data);
 		m_beautiConfig.m_partitionTemplate.get().createSubNet(data, this);
 		// re-determine partitions
+		determinePartitions();
+	}
+
+	void determinePartitions() {
 		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
-		m_pPartitions[0].clear();
-		m_pPartitions[1].clear();
-		m_pPartitions[2].clear();
+		m_sPartitionNames = new ArrayList<String>();
 		for (Distribution distr : likelihood.pDistributions.get()) {
 			if (distr instanceof TreeLikelihood) {
 				TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
-				m_pPartitions[0].add(treeLikelihoods.m_pSiteModel.get());
-				m_pPartitions[1].add(treeLikelihoods.m_pBranchRateModel.get());
-				m_pPartitions[2].add(treeLikelihoods.m_tree.get());
+				m_alignments.add(treeLikelihoods.m_data.get());
+				m_sPartitionNames.add(treeLikelihoods.m_data.get().getID());
 			}
 		}
+		
+		m_alignments.clear();
+		for (int i = 0; i < 3; i++) {
+			m_pPartitionByAlignments[i].clear();
+			m_pPartition[i].clear();
+			m_nCurrentPartitions[i].clear();
+		}
+		List<TreeLikelihood> treeLikelihoods = new ArrayList<TreeLikelihood>();
+		for (Distribution distr : likelihood.pDistributions.get()) {
+			if (distr instanceof TreeLikelihood) {
+				TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
+				m_alignments.add(treeLikelihood.m_data.get());
+				treeLikelihoods.add(treeLikelihood);
+			}
+		}
+		for (Distribution distr : likelihood.pDistributions.get()) {
+			if (distr instanceof TreeLikelihood) {
+				TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
+				try {
+					// sync SiteModel, ClockModel and Tree to any changes that may have occurred
+					// this should only affect the clock model in practice
+					int nPartition = getPartitionNr(treeLikelihood.m_pSiteModel.get());
+					TreeLikelihood treeLikelihood2 = treeLikelihoods.get(nPartition);
+					treeLikelihood.m_pSiteModel.setValue(treeLikelihood2.m_pSiteModel.get(), treeLikelihood);
+					m_nCurrentPartitions[0].add(nPartition);
+
+					nPartition = getPartitionNr(treeLikelihood.m_pBranchRateModel.get());
+					treeLikelihood2 = treeLikelihoods.get(nPartition);
+					treeLikelihood.m_pBranchRateModel.setValue(treeLikelihood2.m_pBranchRateModel.get(), treeLikelihood);
+					m_nCurrentPartitions[1].add(nPartition);
+
+					nPartition = getPartitionNr(treeLikelihood.m_tree.get());
+					treeLikelihood2 = treeLikelihoods.get(nPartition);
+					treeLikelihood.m_tree.setValue(treeLikelihood2.m_tree.get(), treeLikelihood);
+					m_nCurrentPartitions[2].add(nPartition);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				m_pPartitionByAlignments[0].add(treeLikelihood.m_pSiteModel.get());
+				m_pPartitionByAlignments[1].add(treeLikelihood.m_pBranchRateModel.get());
+				m_pPartitionByAlignments[2].add(treeLikelihood.m_tree.get());
+			}
+		}
+		
+		int nPartitions = m_sPartitionNames.size();
+		for (int i = 0; i < 3; i++) {
+			boolean [] bUsedPartition = new boolean[nPartitions];
+			for (int j = 0; j < nPartitions; j++) {
+				int iPartition = getPartitionNr(m_pPartitionByAlignments[i].get(j));
+				bUsedPartition[iPartition] = true;
+			}
+			for (int j = 0; j < nPartitions; j++) {
+				if (bUsedPartition[j]) {
+					m_pPartition[i].add(m_pPartitionByAlignments[i].get(j));
+				}
+			}			
+		}
+	}
+
+	int getPartitionNr(String sPartition) {
+		int nPartition = m_sPartitionNames.indexOf(sPartition);
+		return nPartition;
+	}
+	
+	int getPartitionNr(Plugin plugin) {
+		String sPartition = plugin.getID();
+		sPartition = sPartition.substring(sPartition.lastIndexOf('.')+1);
+		int nPartition = m_sPartitionNames.indexOf(sPartition);
+		return nPartition;
 	}
 
 	public List<Plugin> getPartitions(String sType) {
 		if (sType == null) {
-			return m_pPartitions[2];
+			return m_pPartition[2];
 		}
 		if (sType.contains("SiteModel")) {
-			return m_pPartitions[0];
+			return m_pPartition[0];
 		}
 		if (sType.contains("BranchRateModel")) {
-			return m_pPartitions[1];
+			return m_pPartition[1];
 		}
-		return m_pPartitions[2];
+		return m_pPartition[2];
 	}
 
-
-
-
+	public void setCurrentPartition(int iCol, int iRow, String sPartition) {
+		int nCurrentPartion = m_sPartitionNames.indexOf(sPartition);
+		m_nCurrentPartitions[iCol].set(iRow, nCurrentPartion);
+	}
 
 } // class BeautiDoc
