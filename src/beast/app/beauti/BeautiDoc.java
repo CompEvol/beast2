@@ -166,6 +166,7 @@ public class BeautiDoc extends Plugin {
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
 		scrubAll(false);
+		determinePartitions();
 		//String sXML = new XMLProducer().toXML(m_mcmc.get(), PluginPanel.g_plugins.values());
 		String sXML = new XMLProducer().toXML(m_mcmc.get(), new HashSet<Plugin>());
 		FileWriter outfile = new FileWriter(sFileName);
@@ -663,9 +664,12 @@ public class BeautiDoc extends Plugin {
 					e.printStackTrace();
 				}
 				
-				m_pPartitionByAlignments[0].add(treeLikelihood.m_pSiteModel.get());
-				m_pPartitionByAlignments[1].add(treeLikelihood.m_pBranchRateModel.get());
-				m_pPartitionByAlignments[2].add(treeLikelihood.m_tree.get());
+//				m_pPartitionByAlignments[0].add(treeLikelihood.m_pSiteModel.get());
+//				m_pPartitionByAlignments[1].add(treeLikelihood.m_pBranchRateModel.get());
+//				m_pPartitionByAlignments[2].add(treeLikelihood.m_tree.get());
+				m_pPartitionByAlignments[0].add(treeLikelihood);
+				m_pPartitionByAlignments[1].add(treeLikelihood);
+				m_pPartitionByAlignments[2].add(treeLikelihood);
 			}
 		}
 		
@@ -673,7 +677,7 @@ public class BeautiDoc extends Plugin {
 		for (int i = 0; i < 3; i++) {
 			boolean [] bUsedPartition = new boolean[nPartitions];
 			for (int j = 0; j < nPartitions; j++) {
-				int iPartition = getPartitionNr(m_pPartitionByAlignments[i].get(j));
+				int iPartition = m_nCurrentPartitions[i].get(j);//getPartitionNr(m_pPartitionByAlignments[i].get(j));
 				bUsedPartition[iPartition] = true;
 			}
 			for (int j = 0; j < nPartitions; j++) {
@@ -703,7 +707,7 @@ public class BeautiDoc extends Plugin {
 		if (sType.contains("SiteModel")) {
 			return m_pPartition[0];
 		}
-		if (sType.contains("BranchRateModel")) {
+		if (sType.contains("ClockModel")) {
 			return m_pPartition[1];
 		}
 		return m_pPartition[2];

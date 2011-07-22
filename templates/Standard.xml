@@ -77,16 +77,16 @@
             type='beast.evolution.alignment.Alignment'
         />
 		<panel spec='BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxon was sampled"
-            path='distribution/distribution[id="likelihood"]/distribution/tree/trait'
+            path='tree/trait'
             hasPartitions="Tree" icon='2.png' forceExpansion='TRUE'
             isVisible='true'
         />
 		<panel spec='BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
-            path='distribution/distribution[id="likelihood"]/distribution/siteModel'
+            path='siteModel'
             hasPartitions="SiteModel" icon='3.png' forceExpansion='TRUE'
         />
 		<panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
-            path='distribution/distribution[id="likelihood"]/distribution/branchRateModel'
+            path='branchRateModel'
             hasPartitions="ClockModel" icon='4.png' forceExpansion='TRUE'
         />
 		<panel spec='BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"

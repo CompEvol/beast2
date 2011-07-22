@@ -135,10 +135,16 @@ public class BeautiPanelConfig extends Plugin {
 		try {
 			if (m_parentPlugins != null && m_parentPlugins.size() > 0 && m_input != null) System.err.println("sync " + m_parentPlugins.get(iPartition) + "[?] = " + m_input.get());
 			
-			List<Plugin> plugins = new ArrayList<Plugin>();
+			List<Plugin> plugins;
+			if (m_bHasPartitionsInput.get() == Partition.none) {
+				plugins = new ArrayList<Plugin>();
+				plugins.add(doc.m_mcmc.get());
+			} else {
+				plugins = doc.getPartitions(m_bHasPartitionsInput.get().toString());
+			}
 			m_parentPlugins = new ArrayList<Plugin>();
 			m_parentInputs =  new ArrayList<Input<?>>();
-			plugins.add(doc.m_mcmc.get());
+			
 			m_parentPlugins.add(doc);
 			m_parentInputs.add(doc.m_mcmc);
 			m_type = doc.m_mcmc.getType();
