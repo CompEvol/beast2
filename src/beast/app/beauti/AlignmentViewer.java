@@ -1,111 +1,35 @@
 package beast.app.beauti;
 
+
 import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 import beast.evolution.alignment.Alignment;
 import beast.evolution.datatype.DataType;
 import beast.util.NexusParser;
-import java.beans.*;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.Dimension;
 
 public class AlignmentViewer extends JPanel {
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 *  Prevent the specified number of columns from scrolling horizontally in
-	 *  the scroll pane. The table must already exist in the scroll pane.
-	 *
-	 *  The functionality is accomplished by creating a second JTable (fixed)
-	 *  that will share the TableModel and SelectionModel of the main table.
-	 *  This table will be used as the row header of the scroll pane.
-	 */
-	public class FixedColumnTable implements ChangeListener, PropertyChangeListener
-	{
-		private JTable main;
-		private JTable fixed;
-		private JScrollPane scrollPane;
-
-		/*
-		 *  Specify the number of columns to be fixed and the scroll pane
-		 *  containing the table.
-		 */
-		public FixedColumnTable(int fixedColumns, JScrollPane scrollPane)
-		{
-			this.scrollPane = scrollPane;
-
-			main = ((JTable)scrollPane.getViewport().getView());
-			main.setAutoCreateColumnsFromModel( false );
-			main.addPropertyChangeListener( this );
-
-			//  Use the existing table to create a new table sharing
-			//  the DataModel and ListSelectionModel
-
-			fixed = new JTable();
-			fixed.setAutoCreateColumnsFromModel( false );
-			fixed.setModel( main.getModel() );
-			fixed.setSelectionModel( main.getSelectionModel() );
-			fixed.setFocusable( false );
-
-			//  Remove the fixed columns from the main table
-			//  and add them to the fixed table
-			for (int i = 0; i < fixedColumns; i++)
-			{
-		        TableColumnModel columnModel = main.getColumnModel();
-		        TableColumn column = columnModel.getColumn( 0 );
-	    	    columnModel.removeColumn( column );
-				fixed.getColumnModel().addColumn( column );
-			}
-
-			//  Add the fixed table to the scroll pane
-	        fixed.setPreferredScrollableViewportSize(fixed.getPreferredSize());
-			scrollPane.setRowHeaderView( fixed );
-			scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, fixed.getTableHeader());
-
-			// Synchronize scrolling of the row header with the main table
-			scrollPane.getRowHeader().addChangeListener( this );
-		}
-
-		@Override
-		public void stateChanged(ChangeEvent e)
-		{
-			//  Sync the scroll pane scrollbar with the row header
-
-			JViewport viewport = (JViewport) e.getSource();
-			scrollPane.getVerticalScrollBar().setValue(viewport.getViewPosition().y);
-		}
-
-		@Override
-		public void propertyChange(PropertyChangeEvent e)
-		{
-			//  Keep the fixed table in sync with the main table
-
-			if ("selectionModel".equals(e.getPropertyName()))
-			{
-				fixed.setSelectionModel( main.getSelectionModel() );
-			}
-
-			if ("model".equals(e.getPropertyName()))
-			{
-				fixed.setModel( main.getModel() );
-			}
-		}
-	}
+	Object[][] tableData;
+	Object[] columnData;
 
 	public AlignmentViewer(Alignment data) throws Exception {
 		int nSites = data.getSiteCount();
 		int nTaxa = data.getNrTaxa();
 		
 		// set up table content
-		Object[][] tableData = new Object[nTaxa][nSites+1];
+		tableData = new Object[nTaxa][nSites+1];
 		DataType dataType = data.getDataType();
 		for (int i = 0; i < nSites; i++) {
 			int iPattern = data.getPatternIndex(i);
@@ -122,7 +46,7 @@ public class AlignmentViewer extends JPanel {
 		}
 		
 		// set up column labels
-		Object[] columnData = new Object[nSites+1];
+		columnData = new Object[nSites+1];
 		Arrays.fill(columnData, '.');
 		columnData[0] = "taxon name";
 		for (int i = 0; i < nSites; i+= 10) {
@@ -131,21 +55,62 @@ public class AlignmentViewer extends JPanel {
 				columnData[i + j + 1] = s.charAt(j);
 			}
 		}
-		JTable table = new JTable(tableData, columnData);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.setShowGrid(false);
 		
-		TableColumn col = table.getColumnModel().getColumn(0);
-		col.setPreferredWidth(200);
-		for (int i = 0; i < nSites; i++) {
-			col = table.getColumnModel().getColumn(i+1);
-			col.setPreferredWidth(10);		
-		}
-		JScrollPane horizontalScrollPane = new JScrollPane(table);
+	    final TableModel fixedColumnModel = new AbstractTableModel() {
+	        public int getColumnCount() {
+	          return 1;
+	        }
 
-		add(horizontalScrollPane);
-		horizontalScrollPane.addPropertyChangeListener(new FixedColumnTable(1, horizontalScrollPane));
-		
+	        public String getColumnName(int column) {
+	          return columnData[column] + "";
+	        }
+
+	        public int getRowCount() {
+	          return tableData.length;
+	        }
+
+	        public Object getValueAt(int row, int column) {
+	          return tableData[row][column];
+	        }
+	      };
+
+	      final TableModel mainModel = new AbstractTableModel() {
+	        public int getColumnCount() {
+	          return columnData.length - 1;
+	        }
+
+	        public String getColumnName(int column) {
+	          return columnData[column + 1] + "";
+	        }
+
+	        public int getRowCount() {
+	          return tableData.length;
+	        }
+
+	        public Object getValueAt(int row, int column) {
+	          return tableData[row][column + 1];
+	        }
+	      };
+
+	      JTable fixedTable = new JTable(fixedColumnModel);
+	      fixedTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+	      JTable mainTable = new JTable(mainModel);
+	      mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+	      ListSelectionModel model = fixedTable.getSelectionModel();
+	      mainTable.setSelectionModel(model);
+
+	      JScrollPane scrollPane = new JScrollPane(mainTable);
+	      Dimension fixedSize = fixedTable.getPreferredSize();
+	      JViewport viewport = new JViewport();
+	      viewport.setView(fixedTable);
+	      viewport.setPreferredSize(fixedSize);
+	      viewport.setMaximumSize(fixedSize);
+	      scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, fixedTable.getTableHeader());
+	      scrollPane.setRowHeaderView(viewport);
+
+		add(scrollPane);
 	}
 
 	public static void main(String[] args) {
@@ -154,7 +119,7 @@ public class AlignmentViewer extends JPanel {
 			parser.parseFile(args[0]);
 			Alignment data = parser.m_alignment;
 			AlignmentViewer panel = new AlignmentViewer(data);
-			JFrame frame = new JFrame("Alignment Inspector");
+			JFrame frame = new JFrame("Alignment Viewer");
 			frame.getContentPane().add(panel);
 			frame.setSize(1024, 768);
 			panel.setPreferredSize(frame.getSize());
