@@ -38,9 +38,6 @@ public class BeautiConfig extends Plugin {
 			new ArrayList<BeautiPanelConfig>());
 	public Input<Boolean> m_bIsExpertInput = new Input<Boolean>("isExpert", "flag to indicate Beauti should start in expert mode", false);
 	
-	public Input<List<InputConstraint>> m_inputConstraints = new Input<List<InputConstraint>>("constraint", "defines constraints on inputs", 
-			new ArrayList<InputConstraint>());
-
 	
 	public Input<BeautiSubTemplate> m_partitionTemplate = new Input<BeautiSubTemplate>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
 	public Input<List<BeautiSubTemplate>> m_subTemplates = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes", 
@@ -65,8 +62,6 @@ public class BeautiConfig extends Plugin {
 	public static Set<String> g_sDisabledButtons = new HashSet<String>();
 
 	public static List<BeautiPanelConfig> g_panels = new ArrayList<BeautiPanelConfig>();
-
-	public static HashMap<String, List<String>> g_constraintMap = new HashMap<String, List<String>>();
 
 	public static List<BeautiSubTemplate> g_subTemplates;
 	
@@ -94,7 +89,6 @@ public class BeautiConfig extends Plugin {
 			}
 		}
 		InputEditor.g_bExpertMode = m_bIsExpertInput.get();
-		parseConstraints();
 		g_subTemplates = m_subTemplates.get();
 	}
 
@@ -107,21 +101,6 @@ public class BeautiConfig extends Plugin {
 		g_sDisabledMenus = new HashSet<String>();
 		g_sDisabledButtons = new HashSet<String>();
 		g_panels = new ArrayList<BeautiPanelConfig>();
-		g_constraintMap = new HashMap<String, List<String>>();
-	}
-
-	private void parseConstraints() {
-		List<InputConstraint> constraints = m_inputConstraints.get();
-		for (InputConstraint constraint : constraints) {
-			List<String> candidates = new ArrayList<String>();
-			for (Plugin candidate : constraint.m_candidates.get()) {
-				candidates.add(candidate.getID());
-			}
-			for (Plugin plugin : constraint.m_plugins.get()) {
-				String sID = plugin.getID() + "." + constraint.m_inputName.get();
-				g_constraintMap.put(sID, candidates);
-			}
-		}
 	}
 	
 	public static List<BeautiSubTemplate> getInputCandidates(Plugin plugin, Input<?> input, Class<?> type) {
@@ -138,11 +117,6 @@ public class BeautiConfig extends Plugin {
 			}
 		}
 		return candidates;
-//		String sID = plugin.getID() + "." + input.getName();
-//		if (g_constraintMap.containsKey(sID)) {
-//			return g_constraintMap.get(sID);
-//		}
-//		return null;
 	}
 
 	private void parseMap(String sStr, HashMap<String, String> stringMap) {
