@@ -32,13 +32,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import beast.app.BeastMCMC;
-import beast.app.beauti.BeautiInitDlg.ActionOnExit;
+import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.InputEditor;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.PluginPanel;
+import beast.evolution.alignment.Alignment;
+import beast.util.NexusParser;
 
 
 public class Beauti extends JTabbedPane {
@@ -62,6 +64,7 @@ public class Beauti extends JTabbedPane {
 
 	/** document in document-view pattern. BTW this class is the view */
     BeautiDoc m_doc;
+    JFrame m_frame;
     
     /** currently selected tab **/
     BeautiPanel m_currentTab;
@@ -76,11 +79,10 @@ public class Beauti extends JTabbedPane {
 		m_doc = doc;
 		m_doc.setBeauti(this);
 	}
-
 	
-	
-
-	
+	void setTitle() {
+		m_frame.setTitle("Beauti II: " + m_doc.m_sTemplateName + " " + m_sFileName);
+	}
 	
 	void toggleVisible(int nPanelNr) {
 		if (m_bPaneIsVisible[nPanelNr]) {
@@ -108,7 +110,9 @@ public class Beauti extends JTabbedPane {
 	}
 
 	
+    Action a_new = new ActionNew();
     Action a_load = new ActionLoad();
+    Action a_template = new ActionTemplate();
     Action a_import = new ActionImport();
     Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
@@ -170,6 +174,7 @@ public class Beauti extends JTabbedPane {
                 if (!m_sFileName.endsWith(FILE_EXT))
                 	m_sFileName = m_sFileName.concat(FILE_EXT);
                 saveFile(m_sFileName);
+                setTitle();
                 return true;
             }
             return false;
@@ -206,83 +211,120 @@ public class Beauti extends JTabbedPane {
         } // actionPerformed
     } // class ActionSaveAs    
 
+    class ActionNew extends MyAction {
+        private static final long serialVersionUID = 1;
+
+        public ActionNew() {
+            super("New", "Start new analysis", "new", "ctrl N");
+        } // c'tor
         
-        class ActionLoad extends MyAction {
-            private static final long serialVersionUID = 1;
-
-            public ActionLoad() {
-                super("Load", "Load Beast File", "load", "ctrl O");
-            } // c'tor
-
-            public ActionLoad(String sName, String sToolTipText, String sIcon,
-                              String sAcceleratorKey) {
-                super(sName, sToolTipText, sIcon, sAcceleratorKey);
-            } // c'tor
-
-            public void actionPerformed(ActionEvent ae) {
-        		JFileChooser fileChooser = new JFileChooser(m_sDir);
-        		fileChooser.addChoosableFileFilter(ef1);
-        		fileChooser.setDialogTitle("Load Beast XML File");
-        		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-        			m_sFileName = fileChooser.getSelectedFile().toString();
-                    if (m_sFileName.lastIndexOf('/') > 0) {
-                        m_sDir = m_sFileName.substring(0, m_sFileName.lastIndexOf('/'));
-                    }
-        			try {
-        				m_doc.load(m_sFileName);
-        				a_save.setEnabled(true);
-        				a_saveas.setEnabled(true);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Something went wrong loading the file: " + e.getMessage());
-					}
-                }
-            } // actionPerformed
+        public void actionPerformed(ActionEvent ae) {
+        	m_doc.newAnalysis();
+			a_save.setEnabled(false);
+			a_saveas.setEnabled(false);
         }
+    }
+    
+    class ActionLoad extends MyAction {
+        private static final long serialVersionUID = 1;
 
-        class ActionImport extends MyAction {
-            private static final long serialVersionUID = 1;
+        public ActionLoad() {
+            super("Load", "Load Beast File", "open", "ctrl O");
+        } // c'tor
 
-            public ActionImport() {
-                super("Import", "Import Alignment File", "import", "ctrl I");
-            } // c'tor
+        public ActionLoad(String sName, String sToolTipText, String sIcon,
+                          String sAcceleratorKey) {
+            super(sName, sToolTipText, sIcon, sAcceleratorKey);
+        } // c'tor
 
-            public ActionImport(String sName, String sToolTipText, String sIcon,
-                              String sAcceleratorKey) {
-                super(sName, sToolTipText, sIcon, sAcceleratorKey);
-            } // c'tor
-
-            public void actionPerformed(ActionEvent ae) {
-        		JFileChooser fileChooser = new JFileChooser(m_sDir);
-        		fileChooser.addChoosableFileFilter(ef1);
-        		fileChooser.addChoosableFileFilter(ef0);
-        		fileChooser.setMultiSelectionEnabled(true);
-        		fileChooser.setDialogTitle("Load Beast XML File");
-
-        		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-        			try {
-            			File[] files = fileChooser.getSelectedFiles();
-            			for (int i = 0; i < files.length; i++) {
-            				String sFileName = files[i].getAbsolutePath();
-            				if (sFileName.lastIndexOf('/') > 0) {
-            					Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-            				}
-            				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
-                    			m_doc.importNexus(sFileName);
-            				}
-            				if (sFileName.toLowerCase().endsWith(".xml")) {
-                    			m_doc.importXMLAlignment(sFileName);
-            				}
-            			}
-        				a_save.setEnabled(true);
-        				a_saveas.setEnabled(true);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
-					}
+        public void actionPerformed(ActionEvent ae) {
+    		JFileChooser fileChooser = new JFileChooser(m_sDir);
+    		fileChooser.addChoosableFileFilter(ef1);
+    		fileChooser.setDialogTitle("Load Beast XML File");
+    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+    			m_sFileName = fileChooser.getSelectedFile().toString();
+                if (m_sFileName.lastIndexOf('/') > 0) {
+                    m_sDir = m_sFileName.substring(0, m_sFileName.lastIndexOf('/'));
                 }
-            } // actionPerformed
-        }
+    			try {
+    				m_doc.loadXML(m_sFileName);
+    				a_save.setEnabled(true);
+    				a_saveas.setEnabled(true);
+    				setTitle();
+    			} catch (Exception e) {
+    				e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Something went wrong loading the file: " + e.getMessage());
+				}
+            }
+        } // actionPerformed
+    }
+
+    class ActionTemplate extends MyAction {
+        private static final long serialVersionUID = 1;
+
+        public ActionTemplate() {
+            super("Load Template", "Load Beast Analysis Template", "template", "ctrl T");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+    		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir")+"/templates");
+    		fileChooser.addChoosableFileFilter(ef1);
+    		fileChooser.setDialogTitle("Load Template XML File");
+    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+    			String sFileName = fileChooser.getSelectedFile().toString();
+    			try {
+    				m_doc.loadTemplate(sFileName);
+    			} catch (Exception e) {
+    				e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + e.getMessage());
+				}
+            }
+        } // actionPerformed
+    } // ActionTemplate
+
+    class ActionImport extends MyAction {
+        private static final long serialVersionUID = 1;
+
+        public ActionImport() {
+            super("Import Alignment", "Import Alignment File", "import", "ctrl I");
+        } // c'tor
+
+        public ActionImport(String sName, String sToolTipText, String sIcon,
+                          String sAcceleratorKey) {
+            super(sName, sToolTipText, sIcon, sAcceleratorKey);
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+    		JFileChooser fileChooser = new JFileChooser(m_sDir);
+    		fileChooser.addChoosableFileFilter(ef1);
+    		fileChooser.addChoosableFileFilter(ef0);
+    		fileChooser.setMultiSelectionEnabled(true);
+    		fileChooser.setDialogTitle("Load Beast XML File");
+
+    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+    			try {
+        			File[] files = fileChooser.getSelectedFiles();
+        			for (int i = 0; i < files.length; i++) {
+        				String sFileName = files[i].getAbsolutePath();
+        				if (sFileName.lastIndexOf('/') > 0) {
+        					Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+        				}
+        				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
+                			m_doc.importNexus(sFileName);
+        				}
+        				if (sFileName.toLowerCase().endsWith(".xml")) {
+                			m_doc.importXMLAlignment(sFileName);
+        				}
+        			}
+    				a_save.setEnabled(true);
+    				a_saveas.setEnabled(true);
+    			} catch (Exception e) {
+    				e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
+				}
+            }
+        } // actionPerformed
+    }
     
     class ActionQuit extends ActionSave {
         /**
@@ -448,8 +490,12 @@ public class Beauti extends JTabbedPane {
         JMenu fileMenu = new JMenu("File");
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
+        fileMenu.add(a_new);
         fileMenu.add(a_load);
         fileMenu.add(a_import);
+        fileMenu.addSeparator();
+        fileMenu.add(a_template);
+        fileMenu.addSeparator();
         fileMenu.add(a_save);
         fileMenu.add(a_saveas);
         fileMenu.addSeparator();
@@ -581,6 +627,7 @@ public class Beauti extends JTabbedPane {
 		}
     }
 
+
 	
 	public static void main(String[] args) {
 		try {
@@ -588,46 +635,14 @@ public class Beauti extends JTabbedPane {
 			
 			PluginPanel.init();
 			
-	        BeautiInitDlg dlg = null;
 	        BeautiDoc doc = new BeautiDoc();
-	        dlg = new BeautiInitDlg(args, doc);
-
-//			if (dlg.m_sTemplateXML.indexOf("spec='beast.evolution.alignment.TaxonSet'/>") > 0) {
-//				Set<String> candidates = new HashSet<String>();
-//				for (Alignment alignment : doc.m_alignments.get()) {
-//					for (String sName : alignment.getTaxaNames()) {
-//						candidates.add(sName);
-//					}
-//				}
-//				String sTaxonSet = "\n    <taxon spec='TaxonSet' id='all'>\n";
-//				for (String sName : candidates) {
-//					sTaxonSet += "        <taxon spec='Taxon' id='" + sName +"'/>\n";
-//				}
-//				sTaxonSet += "    </taxon>\n";
-//				dlg.m_sTemplateXML = dlg.m_sTemplateXML.replace("spec='beast.evolution.alignment.TaxonSet'/>", 
-//						"spec='beast.evolution.alignment.TaxonSet'>" + sTaxonSet + "</taxonset>");
-//			}
+	        if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
+               	return;
+            }
 	        
-	        
-	        doc.initialize(dlg.m_endState, dlg.m_sXML, dlg.m_sTemplateXML, dlg.m_sOutputFileName);
-	        if (dlg.m_endState == ActionOnExit.WRITE_XML) {
-	        	return;
-	        }
-	
 	        final Beauti beauti = new Beauti(doc);
 
 	        beauti.setUpPanels();
-			
-//			beauti.m_panels = new BeautiPanel[ BeautiConfig.g_panels.size()+1];
-//			beauti.m_panels[0] = new PartitionPanel(0, doc, null);
-//			beauti.addTab("Partitions", null, beauti.m_panels[0], "Specify data partitions");
-//			
-//			for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-//				BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
-//				beauti.m_panels[iPanel+1] = new BeautiPanel(iPanel+1, doc, panelConfig);
-//				beauti.addTab(BeautiConfig.getButtonLabel(beauti, panelConfig.getName()), null, beauti.m_panels[iPanel + 1], panelConfig.getTipText());
-//			}
-			
 			
 			beauti.m_currentTab = beauti.m_panels[0];
 			beauti.hidePanels();
@@ -647,13 +662,14 @@ public class Beauti extends JTabbedPane {
 			
 			beauti.setVisible(true);
 			beauti.refreshPanel();
-			JFrame frame = new JFrame("Beauti II: " + dlg.m_sTemplateName);
+			JFrame frame = new JFrame("Beauti II: " + doc.m_sTemplateName + " " + beauti.m_sFileName);
+			beauti.m_frame = frame;
 			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
 
 			JMenuBar menuBar = beauti.makeMenuBar(); 
 			frame.setJMenuBar(menuBar);
 			
-			if (dlg.m_sXML != null || doc.m_alignments.size()> 0) {
+			if (doc.m_sFileName != null || doc.m_alignments.size()> 0) {
 				beauti.a_save.setEnabled(true);
 				beauti.a_saveas.setEnabled(true);
 			}

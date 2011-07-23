@@ -6,15 +6,13 @@
 <!-- substitution models -->
 <!-- JC69 substitution model -->
         <subtemplate id='JC69' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.JukesCantor' mainid='JC69.$(n)'>
-<value spec='XML'>
 <![CDATA[
         <plugin spec='JukesCantor' id='JC69.$(n)'/>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- HKY substitution model -->
         <subtemplate id='HKY' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.HKY' mainid='hky.$(n)'>
-<value spec='XML'>
 <![CDATA[
         <plugin spec='HKY' id='hky.$(n)'>
             <parameter id="kappa.$(n)" name='kappa' value="1.0" lower="0.0" estimate='true'/>
@@ -30,7 +28,7 @@
             <distr spec="OneOnX"/>
         </plugin>
 
-]]></value>
+]]>
             <connect spec='BeautiConnector' srcID='KappaScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
 
@@ -39,7 +37,6 @@
 
 <!-- GTR substitution model -->
         <subtemplate id='GTR' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.HKY' mainid='gtr.$(n)'>
-<value spec='XML'>
 <![CDATA[
         <plugin spec='GTR' id='gtr.$(n)'>
             <parameter id="rateAC.$(n)" name='rateAC' value="1.0" lower="0.0" estimate='true'/>
@@ -60,7 +57,7 @@
         <operator id='RateCTCScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCT.$(n)"/>
         <operator id='RateGTCScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateGT.$(n)"/>
         <operator id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
-]]></value>
+]]>
             <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='RateACScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='RateAGScaler.$(n)' targetID='mcmc' inputName='operator'/>
@@ -80,12 +77,12 @@
 
 
 <!-- empirical amino acid substitution models -->
-        <subtemplate id='Blosum62' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Blosum62' mainid='Blosum62.$(n)'><value spec='XML'><![CDATA[<plugin spec='Blosum62' id='Blosum62.$(n)'/>]]></value></subtemplate>
-        <subtemplate id='Dayhoff' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Dayhoff' mainid='Dayhoff.$(n)'><value spec='XML'><![CDATA[<plugin spec='Dayhoff' id='Dayhoff.$(n)'/>]]></value></subtemplate>
-        <subtemplate id='JTT' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.JTT' mainid='JTT.$(n)'><value spec='XML'><![CDATA[<plugin spec='JTT' id='JTT.$(n)'/>]]></value></subtemplate>
-        <subtemplate id='cpREV' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.CPREV' mainid='CPREV.$(n)'><value spec='XML'><![CDATA[<plugin spec='CPREV' id='CPREV.$(n)'/>]]></value></subtemplate>
-        <subtemplate id='mtREV' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.MTREV' mainid='MTREV.$(n)'><value spec='XML'><![CDATA[<plugin spec='MTREV' id='MTREV.$(n)'/>]]></value></subtemplate>
-        <subtemplate id='WAG' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.WAG' mainid='WAG.$(n)'><value spec='XML'><![CDATA[<plugin spec='WAG' id='WAG.$(n)'/>]]></value></subtemplate>
+        <subtemplate id='Blosum62' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Blosum62' mainid='Blosum62.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='Blosum62' id='Blosum62.$(n)'/>]]></subtemplate>
+        <subtemplate id='Dayhoff' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Dayhoff' mainid='Dayhoff.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='Dayhoff' id='Dayhoff.$(n)'/>]]></subtemplate>
+        <subtemplate id='JTT' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.JTT' mainid='JTT.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='JTT' id='JTT.$(n)'/>]]></subtemplate>
+        <subtemplate id='cpREV' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.CPREV' mainid='CPREV.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='CPREV' id='CPREV.$(n)'/>]]></subtemplate>
+        <subtemplate id='mtREV' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.MTREV' mainid='MTREV.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='MTREV' id='MTREV.$(n)'/>]]></subtemplate>
+        <subtemplate id='WAG' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.WAG' mainid='WAG.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='WAG' id='WAG.$(n)'/>]]></subtemplate>
 
 
 
@@ -95,17 +92,15 @@
 
 <!-- Strickt clock -->
         <subtemplate id='StrictClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.StrictClockModel' mainid='StrictClock.$(n)'>
-<value spec='XML'>
 <![CDATA[
                 <branchRateModel spec='StrictClockModel' id='StrictClock.$(n)'>
                     <clock.rate id='clockRate.$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
                 </branchRateModel>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Relaxed clock -->
         <subtemplate id='RelaxedClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='RelaxedClock.$(n)'>
-<value spec='XML'>
 <![CDATA[
         <plugin spec='UCRelaxedClockModel' id="RelaxedClock.$(n)" tree='@Tree.$(n)'>
             <distr id='UCRClognormal.$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
@@ -119,7 +114,7 @@
         <operator id='ucldMeanScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldMean.$(n)"/>
         <operator id='ucldStdevScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldStdev.$(n)"/>
 
-]]></value>
+]]>
             <connect spec='BeautiConnector' srcID='CategoriesRandomWalk.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ucldMeanScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ucldStdevScaler.$(n)' targetID='mcmc' inputName='operator'/>
@@ -131,7 +126,6 @@
 
 <!-- Random local clock -->
         <subtemplate id='RandomLocalClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.RandomLocalClockModel' mainid='RandomLocalClock.$(n)'>
-<value spec='XML'>
 <![CDATA[
         <input spec='RandomLocalClockModel' id="RandomLocalClock.$(n)" ratesAreMultipliers="false" tree='@Tree.$(n)'>
             <parameter spec='parameter.BooleanParameter' name='indicators' id='Indicators.$(n)' value="1"/>
@@ -141,7 +135,7 @@
         <operator id="IndicatorsBitFlip.$(n)" spec="BitFlipOperator" weight="1" parameter="@Indicators.$(n)"/>
         <operator id='ClockRateScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@clockrates.$(n)"/>
 
-]]></value>
+]]>
             <connect spec='BeautiConnector' srcID='IndicatorsBitFlip.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
 
@@ -153,17 +147,15 @@
 <!-- tree priors -->
 <!-- Yule -->
         <subtemplate id='YuleModel' spec='BeautiSubTemplate' class='beast.evolution.speciation.YuleModel' mainid='YuleModel.$(n)'>
-<value spec='XML'>
 <![CDATA[
             <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
                 <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0'/>
             </plugin>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Coalescent for Constant population -->
         <subtemplate id='CoalescentConstantPopulation' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentConstant.$(n)'>
-<value spec='XML'>
 <![CDATA[
             <distribution id="CoalescentConstant.$(n)" spec="Coalescent">
                 <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)'>
@@ -173,13 +165,12 @@
                      <parameter name="popSize" id="cPopSize.$(n)" value='1.0' estimate='false'/>
                  </populationModel>
             </distribution>
-]]></value>
+]]>
         </subtemplate>
 
 
 <!-- Coalescent for Exponential population -->
         <subtemplate id='CoalescentExponentialPopulation' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentExponential.$(n)'>
-<value spec='XML'>
 <![CDATA[
             <distribution id="CoalescentExponential.$(n)" spec="Coalescent">
                 <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)'>
@@ -190,90 +181,82 @@
                     <parameter name="growthRate" id="growthRate.$(n)" value='1.0' estimate='false'/>
                 </populationModel>
             </distribution>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Parametric distributions, all without hyperpriors -->
 
 <!-- Uniform -->
         <subtemplate id='Uniform' spec='BeautiSubTemplate' class='beast.math.distributions.Uniform' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
         <distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Normal -->
         <subtemplate id='Normal' spec='BeautiSubTemplate' class='beast.math.distributions.Normal' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
     <distr offset="0.0" spec="beast.math.distributions.Normal">
         <parameter name='mean' value='0' estimate='false'/>
         <parameter name='sigma' value='1' estimate='false'/>
     </distr>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- OneOnX -->
         <subtemplate id='Jeffreys' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
         <distr spec="beast.math.distributions.OneOnX"/>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- lognormal -->
         <subtemplate id='LogNormal' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
         <distr name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
             <parameter name='M' value="1" estimate='false'/>
             <parameter name='S' value="0.5" lower="0" upper="5" estimate='false'/>
         </distr>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Exponential -->
         <subtemplate id='Exponential' spec='BeautiSubTemplate' class='beast.math.distributions.Exponential' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.Exponential">
             <parameter name='lambda' value="1" estimate='false'/>
         </distr>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Gamma -->
         <subtemplate id='Gamma' spec='BeautiSubTemplate' class='beast.math.distributions.Gamma' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.Gamma">
             <parameter name='alpha' value="2" estimate='false'/>
             <parameter name='beta' value="2" estimate='false'/>
         </distr>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Laplace -->
         <subtemplate id='Laplace' spec='BeautiSubTemplate' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
             <parameter name='mu' value="0" estimate='false'/>
             <parameter name='scale' value="1" estimate='false'/>
         </distr>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- InverseGamma -->
         <subtemplate id='InverseGamma' spec='BeautiSubTemplate' class='beast.math.distributions.InverseGamma' mainid='[top]'>
-<value spec='XML'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
             <parameter name='alpha' value="2" estimate='false'/>
             <parameter name='beta' value="2" estimate='false'/>
         </distr>
-]]></value>
+]]>
         </subtemplate>
 
 </mergewith>

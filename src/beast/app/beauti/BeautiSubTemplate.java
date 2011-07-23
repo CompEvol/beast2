@@ -23,7 +23,8 @@ import beast.util.XMLParser;
 public class BeautiSubTemplate extends Plugin {
 	public Input<String> m_sClassInput = new Input<String>("class","name of the class (with full class path) to be created", Validate.REQUIRED);
 	public Input<String> m_sMainInput = new Input<String>("mainid","specifies id of the main plugin to be created by the template", Validate.REQUIRED);
-	public Input<XML> m_sXMLInput = new Input<XML>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+	//public Input<XML> m_sXMLInput = new Input<XML>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+	public Input<String> m_sXMLInput = new Input<String>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
 	public Input<List<BeautiConnector>> m_connections = new Input<List<BeautiConnector>>("connect","Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
 
 	Class<?> m_class = null;
@@ -38,7 +39,7 @@ public class BeautiSubTemplate extends Plugin {
 	public void initAndValidate() throws Exception {
 		m_class = Class.forName(m_sClassInput.get());
 		m_instance = m_class.newInstance();
-		m_sXML = m_sXMLInput.get().m_sValue.get();
+		m_sXML = m_sXMLInput.get();//.m_sValue.get();
 		m_sMainID = m_sMainInput.get();
 		// sanity check: make sure the XML is parseable
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -52,7 +53,8 @@ public class BeautiSubTemplate extends Plugin {
         		m_sXML = m_sXML.substring(0, iStart) + m_sXML.substring(iEnd + 3);
         	}
         }
-        m_sXMLInput.get().m_sValue.setValue("<![CDATA[" + m_sXML + "]]>", m_sXMLInput.get());
+        //m_sXMLInput.get().m_sValue.setValue("<![CDATA[" + m_sXML + "]]>", m_sXMLInput.get());
+        m_sXMLInput.setValue("<![CDATA[" + m_sXML + "]]>", this);
         
 		int nConnectors = m_connections.get().size();
 		m_sSrcIDs = new String[nConnectors];

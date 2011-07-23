@@ -73,10 +73,24 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	public Class<?> baseType() {
 		return Alignment.class;
 	}
+	@Override
+	public Class<?>[] types() {
+		Class[] types = new Class[2];
+		types[0] = List.class;
+		types[1] = Alignment.class;
+		return types;
+	}
 
+	
 	@Override
 	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
-		m_alignments = (List<Alignment>) input.get();
+		if (input.get() instanceof List) {
+			m_alignments = (List<Alignment>) input.get();
+		} else {
+			// we just have a single Alignment
+			m_alignments = new ArrayList<Alignment>();
+			m_alignments.add((Alignment) input.get());
+		}
 		m_nPartitions = m_alignments.size();
 		// super.init(input, plugin, bExpand, false);
 		Box box = createVerticalBox();
@@ -86,7 +100,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(createListBox());
 		box.add(Box.createVerticalGlue());
 
-		Box buttonBox = box.createHorizontalBox();
+		Box buttonBox = Box.createHorizontalBox();
 
 		m_addButton = new SmallButton("+", true);
 		m_addButton.setToolTipText("Add item to the list");

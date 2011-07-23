@@ -41,7 +41,6 @@ import java.util.concurrent.Executors;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -52,16 +51,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
 import beast.app.beauti.Beauti;
-import beast.app.beauti.BeautiInitDlg;
 import beast.app.draw.ExtensionFileFilter;
 import beast.core.Logger;
 import beast.core.Runnable;
-import beast.evolution.alignment.Taxon;
 
 import beast.util.ClassloaderUtil;
 import beast.util.Randomizer;

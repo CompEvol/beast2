@@ -1,5 +1,6 @@
 package beast.util;
 
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -11,9 +12,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.FilteredAlignment;
-import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.TraitSet;
 
@@ -112,6 +111,7 @@ public class NexusParser {
 		return traitSet;
 	} // parseCalibrations
 	
+
 	/** parse data block and create Alignment **/
 	public Alignment parseDataBlock(BufferedReader fin) throws Exception {
 
@@ -231,6 +231,9 @@ public class NexusParser {
 				seqMap.put(sTaxon, sData);
 				sTaxa.add(sTaxon);
 			}
+		}
+		if (nTaxa > 0 && sTaxa.size() > nTaxa) {
+			throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
 		}
 		for (String sTaxon : sTaxa) {
 			String sData = seqMap.get(sTaxon);

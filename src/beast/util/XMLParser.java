@@ -752,6 +752,7 @@ public class XMLParser {
         // process element nodes
         NodeList children = node.getChildNodes();
         int nChildElements = 0;
+        String sText = "";
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
@@ -771,7 +772,13 @@ public class XMLParser {
                     setInput(node, parent, sName, childItem);
                 }
                 nChildElements++;
+            } else if (child.getNodeType() == Node.CDATA_SECTION_NODE ||
+            		child.getNodeType() == Node.TEXT_NODE) {
+            	sText += child.getTextContent();
             }
+        }
+        if (!sText.matches("\\s*")) {
+        	setInput(node, parent, "value", sText);
         }
 
         if (nChildElements == 0) {

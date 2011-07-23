@@ -111,7 +111,6 @@
 
 
         <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
-<value spec='XML'>
 <![CDATA[
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.$(n)" gammaCategoryCount='0'>
@@ -166,7 +165,7 @@
             <plugin id='narrow.$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@Tree.$(n)"/>
             <plugin id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.$(n)"/>
             <plugin id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@Tree.$(n)"/>
-]]></value>
+]]>
             <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
 
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
@@ -204,7 +203,6 @@
 <!-- Random tree -->
 
         <subtemplate id='RandomTree' spec='BeautiSubTemplate' class='beast.evolution.tree.RandomTree' mainid='RandomTree.$(n)'>
-<value spec='XML'>
 <![CDATA[
             <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
                 <taxa spec='Alignment' idref='data'/>
@@ -212,24 +210,22 @@
             		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
 	            </populationModel>
             </tree>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Cluster tree (for UPGMA) -->
 
         <subtemplate id='UPGMATree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='UPGMATree.$(n)'>
-<value spec='XML'>
 <![CDATA[
         <tree spec='beast.util.ClusterTree' id='UPGMATree.$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
-]]></value>
+]]>
         </subtemplate>
 
 <!-- Newick tree -->
         <subtemplate id='NewickTree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='NewickTree.$(n)'>
-<value spec='XML'>
 <![CDATA[
         <tree spec='beast.util.TreeParser' id='NewickTree.$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
-]]></value>
+]]>
         </subtemplate>
 
     </beauticonfig>
