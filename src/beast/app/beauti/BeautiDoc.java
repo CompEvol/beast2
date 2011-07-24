@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,7 +42,9 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.operators.TipDatesScaler;
+import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
+import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.Prior;
 import beast.util.NexusParser;
@@ -603,7 +604,7 @@ public class BeautiDoc extends Plugin {
 	 *  **/ 
 	void connectModel() throws Exception {
 		try {
-		MCMC mcmc = (MCMC) m_mcmc.get();
+		//MCMC mcmc = (MCMC) m_mcmc.get();
 		// build global list of loggers
 		m_loggerInputs = new ArrayList<List<Plugin>>();
 		for (Logger logger : ((MCMC)m_mcmc.get()).m_loggers.get()) {
@@ -618,8 +619,10 @@ public class BeautiDoc extends Plugin {
 		CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
 		m_priors = prior.pDistributions;
 		List<Distribution> list = m_priors.get();
-		for (Distribution d : list) {
-			m_potentialPriors.add(d);
+		for (Distribution prior2 : list) {
+			if (!(prior2 instanceof TreeDistribution)) {
+				m_potentialPriors.add(prior2);
+			}
 		}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -761,9 +764,9 @@ public class BeautiDoc extends Plugin {
 			List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
 			Plugin posterior = ((MCMC)m_mcmc.get()).posteriorInput.get();
 			collectPredecessors(posterior, posteriorPredecessors);
-			for (StateNode stateNode :  PluginPanel.g_stateNodes) {
-				if (posteriorPredecessors.contains(stateNode) && (stateNode.m_bIsEstimated.get() || bUseNotEstimatedStateNodes)) {
-					stateNodes.add(stateNode);
+			for (Plugin plugin :  posteriorPredecessors) {
+				if ((plugin instanceof StateNode) && (((StateNode)plugin).m_bIsEstimated.get() || bUseNotEstimatedStateNodes)) {
+					stateNodes.add((StateNode)plugin);
 					//System.err.println(stateNode.getID());
 				}
 			}
@@ -787,15 +790,30 @@ public class BeautiDoc extends Plugin {
 			return;
 		}
 		try {
+			List<Plugin> likelihoodPredecessors = new ArrayList<Plugin>();
+			Plugin likelihood = PluginPanel.g_plugins.get("likelihood");
+			collectPredecessors(likelihood, likelihoodPredecessors);
+
 			List<Distribution> priors = m_priors.get();
 			for (int i = priors.size()-1; i>=0; i--) {
 				Distribution prior = priors.get(i);
-				if (!m_potentialPriors.contains(prior)) {
+				if (!m_potentialPriors.contains(prior) && !(prior instanceof TreeDistribution)) {
 					m_potentialPriors.add(prior);
 				}
 				if (prior instanceof MRCAPrior) {
 					if (((MRCAPrior) prior).m_bOnlyUseTipsInput.get()) {
 						priors.remove(i);
+					}
+				} else if (prior instanceof TreeDistribution) {
+					TreeDistribution distr = (TreeDistribution) prior;
+					Tree tree = distr.m_tree.get();
+					TreeIntervals intervals = distr.treeIntervals.get();
+					if ((tree != null && !likelihoodPredecessors.contains(tree)) ||
+						(intervals != null && !likelihoodPredecessors.contains(intervals))) {
+						priors.remove(i);
+						if (!m_potentialPriors.contains(prior)) {
+							m_potentialPriors.add(prior);
+						}
 					}
 				} else if (!(prior instanceof TreeDistribution)) {
 					priors.remove(i);
@@ -822,7 +840,16 @@ public class BeautiDoc extends Plugin {
 									}
 								}
 							}
-						} else if (!(prior instanceof TreeDistribution) && !(prior instanceof MRCAPrior) && stateNodes.contains(plugin)) {
+						} else if (prior instanceof TreeDistribution) {
+							TreeDistribution distr = (TreeDistribution) prior;
+							Tree tree = distr.m_tree.get();
+							TreeIntervals intervals = distr.treeIntervals.get();
+							if ((tree != null && likelihoodPredecessors.contains(tree)) ||
+								 (intervals != null && likelihoodPredecessors.contains(intervals))) {
+								priors.add(prior);
+								m_potentialPriors.remove(prior);
+							}
+						} else if (!(prior instanceof MRCAPrior) && stateNodes.contains(plugin)) {
 							priors.add(prior);
 						}
 						break;
@@ -868,9 +895,35 @@ public class BeautiDoc extends Plugin {
 
 	
 	
-	public void addPlugin(Plugin plugin) throws Exception {
+	public void addPlugin(final Plugin plugin) throws Exception {
+//    	SwingUtilities.invokeLater(new Runnable() {
+//		@Override
+//		public void run() {
+//		
 		PluginPanel.addPluginToMap(plugin);
-//		m_sIDMap.put(plugin.getID(), plugin);
+        try {
+            for (Input<?> input : plugin.listInputs()) {
+                if (input.get() != null) {
+                    if (input.get() instanceof Plugin) {
+                    	PluginPanel.addPluginToMap((Plugin) input.get());
+                    }
+                    if (input.get() instanceof List<?>) {
+                        for (Object o : (List<?>) input.get()) {
+                            if (o instanceof Plugin) {
+                            	PluginPanel.addPluginToMap((Plugin) o);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+            System.err.println(e.getClass().getName() + " " + e.getMessage());
+        }		
+		
+//    	}});
+
+	//		m_sIDMap.put(plugin.getID(), plugin);
 //		for (Plugin plugin2 : plugin.listActivePlugins()) {
 //			addPlugin(plugin2);
 //		}
@@ -965,6 +1018,9 @@ public class BeautiDoc extends Plugin {
 				}
 			}			
 		}
+		
+		System.err.println("PARTITIONS0:\n");
+		System.err.println(Arrays.toString(m_nCurrentPartitions));
 	}
 
 	int getPartitionNr(String sPartition) {

@@ -14,18 +14,16 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EtchedBorder;
-
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.BUTTONSTATUS;
-import beast.app.draw.PluginPanel;
 import beast.app.draw.InputEditor.EXPAND;
+import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -43,7 +41,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     int m_iPanel;
     
     /** partition currently on display **/
-    int m_iPartition = 0;
+    public int m_iPartition = 0;
 
     /** box containing the list of partitions, to make (in)visible on update **/
     Box m_partitionBox;

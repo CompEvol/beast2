@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -151,6 +153,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(unlinkSModelButton);
 		box.add(Box.createHorizontalGlue());
 	}
+	
 	private int columnLabelToNr(String sColumn) {
 		int nColumn;
 		if (sColumn.contains("Tree")) {
@@ -181,7 +184,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		int [] nSelected = getTableRowSelection();
 		for (int i = 1; i < nSelected.length; i++) {
 			int iRow = nSelected[i];
-			m_tableData[iRow][nColumn] = m_doc.m_sPartitionNames.get(iRow);
+			m_tableData[iRow][nColumn] = getDoc().m_sPartitionNames.get(iRow);
 			try {
 				updateModel(nColumn, iRow);
 			} catch (Exception ex) {
@@ -201,8 +204,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 		return nSelected;
 	}
-	
-	void updateModel(int nColumn, int iRow) throws Exception {
+
+	BeautiDoc getDoc() {
 		if (m_doc == null) {
 		    Component c = this;
 		    while (((Component) c).getParent() != null) {
@@ -212,6 +215,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		      	}
 		    }
 		}
+		return m_doc;
+	}
+	
+	void updateModel(int nColumn, int iRow) throws Exception {
+		getDoc();
 		String sPartition = (String) m_tableData[iRow][nColumn];
 		TreeLikelihood treeLikelihood = (TreeLikelihood) PluginPanel.g_plugins.get("treeLikelihood." + sPartition);
 		switch (nColumn) {
@@ -424,6 +432,41 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 
 		});
+		
+		// show alignment viewer when double clicking a row
+		m_table.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() > 1) {
+					try {
+						int iAlignmemt = m_table.rowAtPoint(e.getPoint());
+						AlignmentViewer viewer = new AlignmentViewer(m_alignments.get(iAlignmemt));
+						viewer.showInDialog();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		
 		JScrollPane scrollPane = new JScrollPane(m_table);
 		return scrollPane;
 	} // createListBox

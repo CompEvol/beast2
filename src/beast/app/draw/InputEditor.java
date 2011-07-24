@@ -304,7 +304,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	      	if (c instanceof BeautiPanel) {
 	      		BeautiPanel panel = (BeautiPanel) c;
 	      		BeautiPanelConfig cfgPanel = panel.m_config;
-	      		cfgPanel.sync(0);
+	      		cfgPanel.sync(panel.m_iPartition);
 	      	}
 	    }
 	}

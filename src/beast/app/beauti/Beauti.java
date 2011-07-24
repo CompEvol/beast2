@@ -39,8 +39,6 @@ import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.PluginPanel;
-import beast.evolution.alignment.Alignment;
-import beast.util.NexusParser;
 
 
 public class Beauti extends JTabbedPane {

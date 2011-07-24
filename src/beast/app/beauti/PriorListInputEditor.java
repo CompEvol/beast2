@@ -21,7 +21,9 @@ import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
 import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.Logger;
 import beast.core.Plugin;
+import beast.core.State;
 import beast.core.StateNode;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -74,21 +76,34 @@ public class PriorListInputEditor extends ListInputEditor {
         	label.setPreferredSize(new Dimension(200,20));
         	itemBox.add(label);
 
-            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(prior.m_distInput, prior, null);
-            comboBox = new JComboBox(sAvailablePlugins.toArray(new String[0]));
-        	comboBox.setSelectedItem(prior.m_distInput.get().getID());
+            //List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(prior.m_distInput, prior, null);
+            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
+            comboBox = new JComboBox(sAvailablePlugins.toArray());
+            
+            String sID = prior.m_distInput.get().getID();
+            sID = sID.substring(0, sID.indexOf('.'));
+            for (BeautiSubTemplate template : sAvailablePlugins) {
+        		if (template.m_sClassInput.get() != null && template.m_sClassInput.get().contains(sID)) {
+            		comboBox.setSelectedItem(template);
+            	}
+            }
            	comboBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					JComboBox comboBox = (JComboBox) e.getSource();
-                    String sSelected = (String) comboBox.getSelectedItem();
-	            	Plugin plugin2 = PluginPanel.g_plugins.get(sSelected);
-//System.err.println("PRIOR" + sSelected + " " + plugin2);
+
 	        		List list = (List) m_input.get();
 	        		int iItem = 0;
 	        		while (m_comboBox.get(iItem) != comboBox) {
 	        			iItem++;
 	        		}
+					BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
+					String sID = ((Plugin)list.get(iItem)).getID();
+                    String sPartition = sID.substring(sID.indexOf('.') + 1);
+					Plugin plugin2 = template.createSubNet(sPartition);
+
+					
+					//System.err.println(" " + plugin2);
 	            	Prior prior = (Prior) list.get(iItem);
 	            	try {
 						prior.m_distInput.setValue(plugin2, prior);
@@ -96,7 +111,26 @@ public class PriorListInputEditor extends ListInputEditor {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					sync();
 					refreshPanel();
+					
+//					JComboBox comboBox = (JComboBox) e.getSource();
+//                    String sSelected = (String) comboBox.getSelectedItem();xx
+//	            	Plugin plugin2 = PluginPanel.g_plugins.get(sSelected);
+////System.err.println("PRIOR" + sSelected + " " + plugin2);
+//	        		List list = (List) m_input.get();
+//	        		int iItem = 0;
+//	        		while (m_comboBox.get(iItem) != comboBox) {
+//	        			iItem++;
+//	        		}
+//	            	Prior prior = (Prior) list.get(iItem);
+//	            	try {
+//						prior.m_distInput.setValue(plugin2, prior);
+//					} catch (Exception e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//					refreshPanel();
 				}
 			});
         	itemBox.add(comboBox);
@@ -210,9 +244,9 @@ public class PriorListInputEditor extends ListInputEditor {
             
             if (prior.m_distInput.get() != null) {
             	String sID = prior.m_distInput.get().getID();
-            	sID = sID.replaceAll("[0-9]", "");
+            	sID = sID.substring(0, sID.indexOf('.'));
             	for (BeautiSubTemplate template : sAvailablePlugins) {
-            		if (template.m_sClassInput.get().contains(sID)) {
+            		if (template.m_sClassInput.get() != null && template.m_sClassInput.get().contains(sID)) {
                     	comboBox.setSelectedItem(template);
             		}
             	}
@@ -289,7 +323,8 @@ public class PriorListInputEditor extends ListInputEditor {
     	try {
 
             List<Tree> trees = new ArrayList<Tree>();
-	    	for (StateNode node : PluginPanel.g_stateNodes) {
+            State state = (State) PluginPanel.g_plugins.get("state");
+	    	for (StateNode node : state.stateNodeInput.get()) {
 	    		if (node instanceof Tree && ((Tree) node).m_initial.get() != null) {
 	    			trees.add((Tree) node);
 	    		}
@@ -305,14 +340,24 @@ public class PriorListInputEditor extends ListInputEditor {
     				sTreeIDs, trees.get(0));
 	    	}
 	    	prior.m_treeInput.setValue(trees.get(iTree), prior);
-	    	TaxonSet taxonset = new TaxonSet();
-	    	PluginPanel.addPluginToMap(taxonset);
-	    	prior.m_taxonset.setValue(taxonset, prior);
-	    	prior.setID(taxonset.getID() + ".prior");
+	    	TaxonSet taxonSet = new TaxonSet();
+
+	    	TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, PluginPanel.g_taxa);
+	        dlg.setVisible(true);
+	        if (!dlg.m_bOK) {
+	        	return null;
+	        }
+        	taxonSet = dlg.m_taxonSet;
+	    	PluginPanel.addPluginToMap(taxonSet);
+	    	prior.m_taxonset.setValue(taxonSet, prior);
+	    	prior.setID(taxonSet.getID() + ".prior");
 	    	// this sets up the type
 	    	prior.m_distInput.setValue(new OneOnX(), prior);
 	    	// this removes the parametric distribution
     		prior.m_distInput.setValue(null, prior);
+    		
+    		Logger logger = (Logger) PluginPanel.g_plugins.get("tracelog");
+    		logger.m_pLoggers.setValue(prior, logger);
     	} catch (Exception e) {
 			// TODO: handle exception
 		}

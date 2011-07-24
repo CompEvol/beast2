@@ -57,6 +57,13 @@
         <operator id='RateCTCScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCT.$(n)"/>
         <operator id='RateGTCScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateGT.$(n)"/>
         <operator id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
+
+        <prior id='RateACPrior.$(n)' spec='Prior' x='@rateAC.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
+        <prior id='RateAGPrior.$(n)' spec='Prior' x='@rateAG.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
+        <prior id='RateATPrior.$(n)' spec='Prior' x='@rateAT.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
+        <prior id='RateCGPrior.$(n)' spec='Prior' x='@rateCG.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
+        <prior id='RateCTPrior.$(n)' spec='Prior' x='@rateCT.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
+        <prior id='RateGTPrior.$(n)' spec='Prior' x='@rateGT.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
 ]]>
             <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='RateACScaler.$(n)' targetID='mcmc' inputName='operator'/>
@@ -66,13 +73,20 @@
             <connect spec='BeautiConnector' srcID='RateCTScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='RateGTScaler.$(n)' targetID='mcmc' inputName='operator'/>
 
-            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rateAC.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rateAG.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rateAT.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rateCG.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rateCT.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rateGT.$(n)' targetID='tracelog' inputName='log'/>
+
+            <connect spec='BeautiConnector' srcID='RateACPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='RateAGPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='RateATPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='RateCGPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='RateCTPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='RateGTPrior.$(n)' targetID='prior' inputName='distribution'/>
         </subtemplate>
 
 
@@ -204,14 +218,14 @@
         </subtemplate>
 
 <!-- OneOnX -->
-        <subtemplate id='Jeffreys' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
+        <subtemplate id='OneOnX' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
 <![CDATA[
         <distr spec="beast.math.distributions.OneOnX"/>
 ]]>
         </subtemplate>
 
 <!-- lognormal -->
-        <subtemplate id='LogNormal' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
+        <subtemplate id='LogNormalDistributionModel' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
 <![CDATA[
         <distr name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
             <parameter name='M' value="1" estimate='false'/>
@@ -240,7 +254,8 @@
         </subtemplate>
 
 <!-- Laplace -->
-        <subtemplate id='Laplace' spec='BeautiSubTemplate' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
+<!-- TODO: IMPLEMENT beast.math.distributions.LaplaceDistribution.getDistribution() before uncommenting this
+        <subtemplate id='LaplaceDistribution' spec='BeautiSubTemplate' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
             <parameter name='mu' value="0" estimate='false'/>
@@ -248,6 +263,7 @@
         </distr>
 ]]>
         </subtemplate>
+-->
 
 <!-- InverseGamma -->
         <subtemplate id='InverseGamma' spec='BeautiSubTemplate' class='beast.math.distributions.InverseGamma' mainid='[top]'>
