@@ -2,6 +2,9 @@
 # Script that copies all files from src directory to src2 directory
 # and extracts @Description and Input.description info into comments
 # so that javadoc has access to them.
+#
+# build.xml has a javadoc target, which runs this script before running
+# javadoc on the output. Results are stored in release/common/doc/develop/javadoc/
 
 use Cwd;
 

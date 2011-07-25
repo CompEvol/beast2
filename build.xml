@@ -137,9 +137,17 @@
 		<echo message="JUnit test report finished." />
 	</target>
 
+	<target name="doc" description="Create Developer Docs for Beast II" depends='javadoc'>
+		<copy file="doc/tutorial.slides.part1.pdf" tofile="release/common/doc/develop/" />
+		<copy file="doc/tutorial.slides.part2.pdf" tofile="release/common/doc/develop/" />
+		<!-- part 3 needs updating -->
+		<!--copy file="doc/tutorial.slides.part3.pdf" tofile="release/common/doc/develop/" /-->
+	</target>
+
 	<target name="javadoc" description="Create Javadocs for Beast II" depends='docPreProcess'>
-		<mkdir dir="beast2/javadoc/" />
-		<javadoc destdir="beast2/javadoc/">
+		<mkdir dir="release/common/doc/develop/" />
+		<mkdir dir="release/common/doc/develop/javadoc/" />
+		<javadoc destdir="release/common/doc/develop/javadoc/">
 			<fileset dir="src2/" includes="beast/core/**/*.java" />
 			<fileset dir="src2/" includes="beast/util/**/*.java" />
 			<fileset dir="src2/" includes="beast/math/**/*.java" />
