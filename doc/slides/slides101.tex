@@ -1,6 +1,6 @@
 \nonstopmode
 \documentclass{beamer}
-\def\part{3}
+\def\part{2}
 \usepackage{listings}
 \usepackage{fancyvrb}
 
@@ -853,9 +853,9 @@ and {\tt Node} can be ignored.
 \item Return {\tt Double.NEGATIVE\_INFINITY} if the proposal is invalid/doomed
 (don't throw Exceptions).
 \item Implement {\tt optimize()} if auto-optimization applies.
-\item
-Note: use {\tt\bf \color{red}m\_parameter.get(this)} in {\tt proposal()} not {\tt \color{blue}m\_parameter.get()}
-{\bf iff you want to change the value of the {\tt StateNode}}
+%\item
+%Note: use {\tt\bf \color{red}m\_parameter.get(this)} in {\tt proposal()} not {\tt \color{blue}m\_parameter.get()}
+%{\bf iff you want to change the value of the {\tt StateNode}}
 \end{itemize}
 
 
@@ -877,6 +877,7 @@ Note: use {\tt\bf \color{red}m\_parameter.get(this)} in {\tt proposal()} not {\t
 \end{frame}
 
 
+\if0
 \begin{frame}[containsverbatim]{Shadowing inputs}
 
 Never shadow a StateNode
@@ -899,6 +900,7 @@ and others is fine.
 
 
 \end{frame}
+\fi
 
 \begin{frame}[containsverbatim]{Input rule of base class is not what you want.}
 
@@ -922,8 +924,17 @@ on construction by e.g. the XMLParser.
 ...but a CalculationNode can easily find out.\vskip 0.5cm
 
 Then, in the {\tt initAndValidate()} method of the {\tt CalculationNode},
-create a new Parameter {\tt X}, and use {\tt m\_input.get().assignFrom(X)}
+call {\tt parameter.setDimension(x)}
 
+
+\end{frame}
+
+\begin{frame}[containsverbatim]{Input parameter {\em value} is unknown...}
+
+...but a CalculationNode can easily find out.\vskip 0.5cm
+
+Then, in the {\tt initAndValidate()} method of the {\tt CalculationNode},
+create a new Parameter X, and use m_input.get().assignFromWithoutID(X)
 
 \begin{lstlisting}[language=java]
 @Override
@@ -938,11 +949,8 @@ public void initAndValidate() throws Exception {
 		positions.setValue(i, iPosX);
 	}
 
-    // make sure we maintain the correct ID
-	positions.setID(m_positionsX.get().getID());
-
     // copy values to the input
-	m_positions.get().assignFrom(positions);
+	m_positions.get().assignFromWithoutID(positions);
 	
 }
 \end{lstlisting}
@@ -975,63 +983,14 @@ If {\tt Input}s are not public, they cannot get values assigned by for
 instance the {\tt XMLParser}.\vskip1cm
 
 \pause
-2. {\bf\color{red} { \tt Operator} calls {\tt input.get()} instead of {\tt input.get(this)}.}
 
-When an {\tt Operator} does a proposal, it should change a {\tt StateNode}.
-This {\tt StateNode} needs to be one of its inputs. So, to get the {\tt StateNode}
-normally a call to {\tt input.get()} would give the value. However, for the
-{\tt State} to know that a {\tt StateNode} changes, the method {\tt input.get(this);}
-should be called.
-
-Note that this only applies to the {\tt proposal()} method, not to {\tt initAndValidate()}
-(though it does not hurt in the latter) since only in {\tt proposal()} a {\tt StateNode}
-should be changed.
-
-\end{frame}
-
-\begin{frame}[containsverbatim]{Common errors}
-3. {\bf\color{red} Shadow a {\tt StateNode} in a {\tt CalculationNode}.}
-
-It is tempting to use a pattern like this:
-
-\color{blue}\begin{lstlisting}[language=java]
-public Input<RealParamater> m_p = new Input<>...;
-    private RealParameter m_pShadow;
-
-    public void initAndValidate() {
-        m_pShadow = m_p.get();
-    }
-    
-    double calculateSomethingOld() {
-        // uses non-current value
-        return m_pShadow.getValue() * 2.0;
-    }
-
-    double calculateSomethingNew() {
-        // uses current value
-        return m_p.get().getValue() * 2.0;
-    }
-\end{lstlisting}
-
-\color{black}
-in a Plugin. However, {\tt StateNode}s like {\tt RealParameter} can change their
-value and the {\tt m\_p.get()} may return a different object next time it is called.
-So, the method {\tt calculateSomethingOld()} above may return the same initial value
-every time, while {\tt calculateSomethingNew()} above uses the current values of
-parameter {\tt m\_p} and follows the changes of {\tt m\_p} when it changes in the State.
-
-To ensure always a current version of the {\tt StateNode} is available, call
-{\tt get()} every time at the start of a method.
-\end{frame}
-
-\begin{frame}{Common errors}
-4. {\bf\color{red} Type of input is a template class (other than {\tt List}).}
+2. {\bf\color{red} Type of input is a template class (other than {\tt List}).}
 
 Thanks to limitations of Java introspection and the way Beast II is set up, Inputs should be 
 of a type that is concrete, and apart from {\tt List<T>} no template class should be used.\vskip1cm
 
 \pause
-5. {\bf\color{red} Store/restore do not call {\tt super.store()}/{\tt super.restore()}.}
+3. {\bf\color{red} Store/restore do not call {\tt super.store()}/{\tt super.restore()}.}
 
 Obviously, not calling store/restore on super classes may result in unexpected behavior.
 
@@ -1055,85 +1014,6 @@ of the MCMC loop.
 \fi
 \if \part 2
 
-
-
-\section{Errata Part I}
-
-\begin{frame}{was: Common errors}
-
-2. {\bf\color{red} { \tt Operator} calls {\tt input.get()} instead of {\tt input.get(this)}.}
-
-When an {\tt Operator} does a proposal, it should change a {\tt StateNode}.
-This {\tt StateNode} needs to be one of its inputs. So, to get the {\tt StateNode}
-normally a call to {\tt input.get()} would give the value. However, for the
-{\tt State} to know that a {\tt StateNode} changes, the method {\tt input.get(this);}
-should be called.
-
-Note that this only applies to the {\tt proposal()} method, not to {\tt initAndValidate()}
-(though it does not hurt in the latter) since only in {\tt proposal()} a {\tt StateNode}
-should be changed.
-\pause
-\pgfputat{\pgfxy(-4,0)}{\pgfbox[left,base]{\pgfimage[width=\textwidth]{cross.png}}}\vskip0.5cm
-
-{\bf\color{green}You can happily get all you like  
-\color{red} and set what you like on StateNodes that are in the State}
-
-\end{frame}
-
-\begin{frame}[containsverbatim]{was: Common errors}
-3. {\bf\color{red} Shadow a {\tt StateNode} in a {\tt CalculationNode}.}
-
-It is tempting to use a pattern like this:
-
-\color{blue}\begin{lstlisting}[language=java]
-public Input<RealParamater> m_p = new Input<>...;
-    private RealParameter m_pShadow;
-
-    public void initAndValidate() {
-        m_pShadow = m_p.get();
-    }
-    
-    double calculateSomethingOld() {
-        // uses non-current value
-        return m_pShadow.getValue() * 2.0;
-    }
-
-    double calculateSomethingNew() {
-        // uses current value
-        return m_p.get().getValue() * 2.0;
-    }
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[containsverbatim]{was: Common errors}
-3. {\bf\color{red} Shadow a {\tt StateNode} in a {\tt CalculationNode}.}
-
-It is tempting to use a pattern like this:
-
-\color{blue}\begin{lstlisting}[language=java]
-public Input<RealParamater> m_p = new Input<>...;
-    private RealParameter m_pShadow;
-
-    public void initAndValidate() {
-        m_pShadow = m_p.get();
-    }
-    
-    double calculateSomethingOld() {
-        // uses non-current value
-        return m_pShadow.getValue() * 2.0;
-    }
-
-    double calculateSomethingNew() {
-        // uses current value
-        return m_p.get().getValue() * 2.0;
-    }
-\end{lstlisting}\vskip0.5cm
-
-{\bf\color{green}You can happily shadow anything you like}
-
-\pgfputat{\pgfxy(0,1)}{\pgfbox[left,base]{\pgfimage[width=\textwidth]{cross.png}}}
-
-\end{frame}
 
 
 
@@ -1666,6 +1546,8 @@ XML documentation provided through
 o Sequence generator, for simulation studies\\\vskip0.5cm
 o Sequence with XML merging through Beauti, handy for scripting\\\vskip0.5cm
 o XMLParser to beautify XML\\\vskip0.5cm
+o Alignment viewer: navigate an alignment\\\vskip0.5cm
+o Log analyser: prints statistics of a trace log from command line \\\vskip0.5cm
 %\includegraphics[width=\textwidth]{hkymodel2.png}
 \end{frame}
 
@@ -1681,7 +1563,7 @@ o XMLParser to beautify XML\\\vskip0.5cm
 Usage: BeastMCMC [options] <Beast.xml>
 where <Beast.xml> the name of a file specifying a Beast run
 and the following options are allowed:
--resume : read state that was stored at the end of the last run from file  and append log file
+-resume : read state that was stored at the end of the last run from file and append log file
 -overwrite : overwrite existing log files (if any). By default, existing files will not be overwritten.
 -seed [<int>|random] : sets random number seed (default 127), or picks a random seed
 -threads <int> : sets number of threads (default 1)
