@@ -54,6 +54,9 @@ public class Node extends Plugin {
 	/** The Tree that this node is a part of.
 	 * This allows e.g. access to the State containing the Tree **/ 
 	protected Tree m_tree;
+	public Tree getTree() {
+		return m_tree;
+	}
 
 	@Override
 	public void initAndValidate() throws Exception {

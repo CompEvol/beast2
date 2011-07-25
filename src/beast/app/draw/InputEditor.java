@@ -303,8 +303,8 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	      	c = ((Component) c).getParent();
 	      	if (c instanceof BeautiPanel) {
 	      		BeautiPanel panel = (BeautiPanel) c;
-	      		BeautiPanelConfig cfgPanel = panel.m_config;
-	      		cfgPanel.sync(panel.m_iPartition);
+	      		BeautiPanelConfig cfgPanel = panel.config;
+	      		cfgPanel.sync(panel.iPartition);
 	      	}
 	    }
 	}

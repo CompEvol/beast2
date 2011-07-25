@@ -29,8 +29,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
         categories = categoryInput.get();
         categories.setLower(0);
-        categories.setUpper(tree.getNodeCount() - 1);
-        categories.setDimension(tree.getNodeCount());
+        categories.setUpper(categories.getDimension() - 1);
         
         distribution = rateDistInput.get();
 
@@ -42,15 +41,22 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     }
 
     public double getRateForBranch(Node node) {
-
+    	if (node.isRoot()) {
+        	// root has no rate
+    		return 1;
+    	}
+    	
         if (recompute) {
             prepare();
             recompute = false;
         }
 
-        assert !node.isRoot() : "root node doesn't have a rate!";
-
         int nodeNumber = node.getNr();
+
+        if (nodeNumber == categories.getDimension()) {
+        	// root node has nr less than #categories, so use that nr
+    		nodeNumber = node.getTree().getRoot().getNr();
+        }
 
         int rateCategory = categories.getValue(nodeNumber);
 

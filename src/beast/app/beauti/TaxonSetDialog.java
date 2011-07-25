@@ -28,25 +28,25 @@ import beast.evolution.alignment.TaxonSet;
 
 public class TaxonSetDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
-	public boolean m_bOK = false;
-	TaxonSet m_taxonSet;
-	String m_sID;
-	List<Taxon> m_candidates;
+	public boolean isOK = false;
+	TaxonSet taxonSet;
+	String sID;
+	List<Taxon> _candidates;
 	
-	JTextField m_IDEntry;
+	JTextField idEntry;
 
-	JTextField m_filterEntry;
+	JTextField filterEntry;
 
-	JList m_listOfTaxonCandidates;
-    DefaultListModel m_listModel1;
-	JList m_listOfTaxonSet;
-    DefaultListModel m_listModel2;
+	JList listOfTaxonCandidates;
+    DefaultListModel listModel1;
+	JList listOfTaxonSet;
+    DefaultListModel listModel2;
 
 	
 	public TaxonSetDialog(TaxonSet taxonSet, Set<Taxon> candidates) {
 		// initialize state
-		m_taxonSet = taxonSet;
-		m_sID = taxonSet.getID();
+		this.taxonSet = taxonSet;
+		sID = taxonSet.getID();
 		// create components
 		Box box = Box.createVerticalBox();
 		box.add(createIDBox());
@@ -63,18 +63,18 @@ public class TaxonSetDialog extends JDialog {
 			}
 		};
 		Collections.sort(taxonset, comparator);
-		m_candidates = new ArrayList<Taxon>();
-		m_candidates.addAll(candidates);
-		Collections.sort(m_candidates, comparator);
+		_candidates = new ArrayList<Taxon>();
+		_candidates.addAll(candidates);
+		Collections.sort(_candidates, comparator);
 		
     	for (Taxon taxon : taxonset) {
-    		m_listModel2.addElement(taxon);
+    		listModel2.addElement(taxon);
     	}
-    	for (Taxon taxon : m_candidates) {
-    		m_listModel1.addElement(taxon);
+    	for (Taxon taxon : _candidates) {
+    		listModel1.addElement(taxon);
     	}
-    	for (int i = 0 ; i < m_listModel2.size(); i++) {
-    		m_listModel1.removeElement(m_listModel2.get(i));
+    	for (int i = 0 ; i < listModel2.size(); i++) {
+    		listModel1.removeElement(listModel2.get(i));
     	}
 
 		add(box);
@@ -86,17 +86,17 @@ public class TaxonSetDialog extends JDialog {
 		Box box = Box.createHorizontalBox();
 		JLabel label = new JLabel("Filter:");
 		box.add(label);
-		m_filterEntry = new JTextField();
+		filterEntry = new JTextField();
 		Dimension size = new Dimension(100,20);
-		m_filterEntry.setMinimumSize(size);
-		m_filterEntry.setPreferredSize(size);
-		m_filterEntry.setSize(size);
-		m_filterEntry.setToolTipText("Enter regular expression to match taxa");
-		m_filterEntry.setMaximumSize(new Dimension(1024, 20));
-		box.add(m_filterEntry);
+		filterEntry.setMinimumSize(size);
+		filterEntry.setPreferredSize(size);
+		filterEntry.setSize(size);
+		filterEntry.setToolTipText("Enter regular expression to match taxa");
+		filterEntry.setMaximumSize(new Dimension(1024, 20));
+		box.add(filterEntry);
 		box.add(Box.createHorizontalGlue());
 		
-		m_filterEntry.getDocument().addDocumentListener(new DocumentListener() {
+		filterEntry.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				processEntry();
@@ -114,37 +114,37 @@ public class TaxonSetDialog extends JDialog {
 	}
 	
 	private void processEntry() {
-		String sFilter = ".*" + m_filterEntry.getText() + ".*";
+		String sFilter = ".*" + filterEntry.getText() + ".*";
 		
-		m_listModel1.clear();
-		for (Taxon taxon : m_candidates) {
+		listModel1.clear();
+		for (Taxon taxon : _candidates) {
 			if (taxon.getID().matches(sFilter)) {
-				m_listModel1.addElement(taxon);
+				listModel1.addElement(taxon);
 			}
     	}
-    	for (int i = 0 ; i < m_listModel2.size(); i++) {
-    		m_listModel1.removeElement(m_listModel2.get(i));
+    	for (int i = 0 ; i < listModel2.size(); i++) {
+    		listModel1.removeElement(listModel2.get(i));
     	}
 	}
 
 	Component createIDBox() {
 		Box box = Box.createHorizontalBox();
 		box.add(new JLabel("Taxon set label:"));
-		m_IDEntry = new JTextField();
-		m_IDEntry.setText(m_sID);
-		box.add(m_IDEntry);
-		m_IDEntry.getDocument().addDocumentListener(new DocumentListener() {
+		idEntry = new JTextField();
+		idEntry.setText(sID);
+		box.add(idEntry);
+		idEntry.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				m_sID = m_IDEntry.getText();
+				sID = idEntry.getText();
 			}
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				m_sID = m_IDEntry.getText();
+				sID = idEntry.getText();
 			}
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				m_sID = m_IDEntry.getText();
+				sID = idEntry.getText();
 			}
 		});
 		
@@ -156,10 +156,10 @@ public class TaxonSetDialog extends JDialog {
 		Box box = Box.createHorizontalBox();
 		
 		// list of taxa to select from
-		m_listModel1 = new DefaultListModel();
-		m_listOfTaxonCandidates = new JList(m_listModel1);
-		m_listOfTaxonCandidates.setBorder(BorderFactory.createEtchedBorder());
-        JScrollPane scroller = new JScrollPane(m_listOfTaxonCandidates);
+		listModel1 = new DefaultListModel();
+		listOfTaxonCandidates = new JList(listModel1);
+		listOfTaxonCandidates.setBorder(BorderFactory.createEtchedBorder());
+        JScrollPane scroller = new JScrollPane(listOfTaxonCandidates);
 		box.add(scroller);
 		
 		// add buttons to select/deselect taxa
@@ -168,12 +168,12 @@ public class TaxonSetDialog extends JDialog {
 		JButton selectButton = new JButton(">>");
 		selectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	int [] nSelected = m_listOfTaxonCandidates.getSelectedIndices();
+            	int [] nSelected = listOfTaxonCandidates.getSelectedIndices();
             	for (int i : nSelected) {
-            		m_listModel2.addElement(m_listModel1.get(i));
+            		listModel2.addElement(listModel1.get(i));
             	}
-            	for (int i = 0 ; i < m_listModel2.size(); i++) {
-            		m_listModel1.removeElement(m_listModel2.get(i));
+            	for (int i = 0 ; i < listModel2.size(); i++) {
+            		listModel1.removeElement(listModel2.get(i));
             	}
             }
         });
@@ -181,12 +181,12 @@ public class TaxonSetDialog extends JDialog {
 		JButton deselectButton = new JButton("<<");
 		deselectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	int [] nSelected = m_listOfTaxonSet.getSelectedIndices();
+            	int [] nSelected = listOfTaxonSet.getSelectedIndices();
             	for (int i : nSelected) {
-            		m_listModel1.addElement(m_listModel2.get(i));
+            		listModel1.addElement(listModel2.get(i));
             	}
-            	for (int i = 0 ; i < m_listModel1.size(); i++) {
-            		m_listModel2.removeElement(m_listModel1.get(i));
+            	for (int i = 0 ; i < listModel1.size(); i++) {
+            		listModel2.removeElement(listModel1.get(i));
             	}
             }
         });
@@ -195,10 +195,10 @@ public class TaxonSetDialog extends JDialog {
 		box.add(buttonBox);
 		
 		// list of taxa in taxon set
-		m_listModel2 = new DefaultListModel();
-		m_listOfTaxonSet = new JList(m_listModel2);
-		m_listOfTaxonSet.setBorder(BorderFactory.createEtchedBorder());
-        JScrollPane scroller2 = new JScrollPane(m_listOfTaxonSet);
+		listModel2 = new DefaultListModel();
+		listOfTaxonSet = new JList(listModel2);
+		listOfTaxonSet.setBorder(BorderFactory.createEtchedBorder());
+        JScrollPane scroller2 = new JScrollPane(listOfTaxonSet);
 		box.add(scroller2);
 		return box;
 	} // createTaxonSelector
@@ -209,15 +209,15 @@ public class TaxonSetDialog extends JDialog {
         JButton okButton = new JButton("Ok");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	m_taxonSet.setID(m_sID);
-            	List<Taxon> taxa = m_taxonSet.m_taxonset.get();
+            	taxonSet.setID(sID);
+            	List<Taxon> taxa = taxonSet.m_taxonset.get();
             	while (taxa.size() > 0) {
             		taxa.remove(0);
             	}
-            	for (int i = 0 ; i < m_listModel2.size(); i++) {
-            		taxa.add((Taxon) m_listModel2.get(i));
+            	for (int i = 0 ; i < listModel2.size(); i++) {
+            		taxa.add((Taxon) listModel2.get(i));
             	}
-            	m_bOK = true;
+            	isOK = true;
                 dispose();
             }
         });

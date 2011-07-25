@@ -115,11 +115,11 @@
         <subtemplate id='RelaxedClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='RelaxedClock.$(n)'>
 <![CDATA[
         <plugin spec='UCRelaxedClockModel' id="RelaxedClock.$(n)" tree='@Tree.$(n)'>
-            <distr id='UCRClognormal.$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
+            <distr id='LogNormalDistributionModel.$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
                 <parameter name='M' id='ucldMean.$(n)' value="1" estimate='true'/>
                 <parameter name='S' id='ucldStdev.$(n)' value="0.5" lower="0" upper="5" estimate='true'/>
             </distr>
-            <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1"/>
+            <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1" dimension='10'/>
         </plugin>
 
         <operator id="CategoriesRandomWalk.$(n)" spec="IntUniformOperator" weight="1" parameter="@rateCategories.$(n)"/>
@@ -139,6 +139,8 @@
             <connect spec='BeautiConnector' srcID='ucldMean.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='ucldStdev.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rateCategories.$(n)' targetID='tracelog' inputName='log'/>
+
+            <connect spec='BeautiConnector' srcID='ucldStdevrior.$(n)' targetID='prior' inputName='distribution'/>
         </subtemplate>
 
 <!-- Random local clock -->
@@ -168,20 +170,47 @@
             <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
                 <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0'/>
             </plugin>
+
             <prior id='YuleBirthRatePrior.$(n)' spec='Prior' x='@birthRate.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+
   		    <scale id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
 ]]>
             <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
         </subtemplate>
+
+
+<!-- Birth Death model according to Gernhard'08 -->
+        <subtemplate id='BirthDeathModel' spec='BeautiSubTemplate' class='beast.evolution.speciation.BirthDeathGernhard08Model' mainid='BirthDeath.$(n)'>
+<![CDATA[
+            <distribution id="BirthDeath.$(n)" spec="speciation.BirthDeathGernhard08Model" tree='@Tree.$(n)'>
+                <birthDiffRate spec='parameter.RealParameter' id="birthRate2.$(n)" value='1' lower='0' upper='10000' />
+            	<relativeDeathRate spec='parameter.RealParameter' id="relativeDeathRate2.$(n)" value='0.5' lower='0' upper='1' />
+            </distribution>
+
+            <prior id='BirthRatePrior.$(n)' spec='Prior' x='@birthRate2.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+            <prior id='DeathRatePrior.$(n)' spec='Prior' x='@relativeDeathRate2.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
+
+  		    <scale id='BirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.$(n)"/>
+  		    <scale id='DeathRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.$(n)"/>
+]]>
+            <connect spec='BeautiConnector' srcID='BirthDeath.$(n)' targetID='prior' inputName='distribution'/>
+
+            <connect spec='BeautiConnector' srcID='BirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='DeathRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+
+            <connect spec='BeautiConnector' srcID='BirthRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='DeathRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+        </subtemplate>
+
+
 
 <!-- Coalescent for Constant population -->
         <subtemplate id='CoalescentConstantPopulation' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentConstant.$(n)'>
 <![CDATA[
             <distribution id="CoalescentConstant.$(n)" spec="Coalescent">
-                <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)'>
-                     <tree idref="Tree.$(n)"/>
-                </treeIntervals>
+                <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)' tree='@Tree.$(n)'/>
                 <populationModel spec="ConstantPopulation" id='ConstantPopulation.$(n)'>
                      <parameter name="popSize" id="cPopSize.$(n)" value='1.0' estimate='false'/>
                  </populationModel>
@@ -194,14 +223,26 @@
         <subtemplate id='CoalescentExponentialPopulation' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentExponential.$(n)'>
 <![CDATA[
             <distribution id="CoalescentExponential.$(n)" spec="Coalescent">
-                <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)'>
-                     <tree idref="Tree.$(n)"/>
-                </treeIntervals>
+                <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)' tree='@Tree.$(n)'/>
                 <populationModel spec="ExponentialGrowth" id="ExponentialGrowth.$(n)">
                     <parameter name="popSize" id="ePopSize.$(n)" value='1.0' estimate='false'/>
                     <parameter name="growthRate" id="growthRate.$(n)" value='1.0' estimate='false'/>
                 </populationModel>
             </distribution>
+]]>
+        </subtemplate>
+
+
+<!-- Coalescent for Exponential population -->
+        <subtemplate id='CoalescentBayesianSkyline' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentBayesianSkyline.$(n)'>
+<![CDATA[
+                <distribution id="CoalescentBayesianSkyline.$(n)" spec="Coalescent">
+                <treeIntervals spec='TreeIntervals' id='BSPTreeIntervals.$(n)' tree='@Tree.$(n)'/>
+                    <populationModel id='BayesianSkyline.$(n)' spec='BayesianSkyline' treeIntervals='@BSPTreeIntervals.$(n)'>
+                        <parameter name='popSizes' id='bPopSizes.$(n)' dimension="5" value="380.0" lower="0.0" upper="380000.0"/>
+                        <groupSizes spec='parameter.IntegerParameter' id='bGroupSizes.$(n)' dimension='5' value='1'/>
+                    </populationModel>
+                </distribution>
 ]]>
         </subtemplate>
 
@@ -275,7 +316,7 @@
 <!-- InverseGamma -->
         <subtemplate id='InverseGamma' spec='BeautiSubTemplate' class='beast.math.distributions.InverseGamma' mainid='[top]'>
 <![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
+        <distr offset="0.0" spec="beast.math.distributions.InverseGamma">
             <parameter name='alpha' value="2" estimate='false'/>
             <parameter name='beta' value="2" estimate='false'/>
         </distr>

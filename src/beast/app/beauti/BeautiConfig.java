@@ -15,32 +15,32 @@ import beast.core.Plugin;
 @Description("Beauti configuration object, used to find Beauti configuration " +
 		"information from Beauti template files.")
 public class BeautiConfig extends Plugin {
-	public Input<String> m_inlineInput = new Input<String>("inlinePlugins","comma separated list of inputs that should " +
+	public Input<String> inlineInput = new Input<String>("inlinePlugins","comma separated list of inputs that should " +
 			"go inline, e.g. beast.evolution.sitemodel.SiteModel.substModel");
-	public Input<String> m_collapsedInput = new Input<String>("collapsedPlugins","comma separated list of inputs that should " +
+	public Input<String> collapsedInput = new Input<String>("collapsedPlugins","comma separated list of inputs that should " +
 		"go inline, but are initially collapsed, e.g. beast.core.MCMC.logger");
-	public Input<String> m_suppressInputs = new Input<String>("suppressPlugins","comma separated list of inputs that should " +
+	public Input<String> suppressInputs = new Input<String>("suppressPlugins","comma separated list of inputs that should " +
 			"be suppressed. e.g. beast.core.MCMC.operator");
-	public Input<String> m_inputLabelMap = new Input<String>("inputLabelMap","comma separated list of inputs and their " +
+	public Input<String> inputLabelMap = new Input<String>("inputLabelMap","comma separated list of inputs and their " +
 			"display labels separated by a '=', e.g. beast.core.MCMC.logger=Loggers ");
 //	public Input<String> m_hidePanels = new Input<String>("hidePanels","comma separated list of panes that should not" +
 //			"be displayed when starting beauti, e.g. TAXON_SETS_PANEL,TIP_DATES_PANEL");
-	public Input<String> m_buttonLabelMap = new Input<String>("buttonLabelMap","comma separated list of buttons in dialogs and their " +
+	public Input<String> buttonLabelMap = new Input<String>("buttonLabelMap","comma separated list of buttons in dialogs and their " +
 			"display labels separated by a '=', e.g. beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters");
-	public Input<String> m_disableMenus = new Input<String>("disableMenus","comma separated list of menus that should " +
+	public Input<String> disableMenus = new Input<String>("disableMenus","comma separated list of menus that should " +
 			"not be visible, e.g., View.Show Data Panel,Mode");
-	public Input<String> m_disableButtons = new Input<String>("disableButtons","comma separated list of buttons that should " +
+	public Input<String> disableButtons = new Input<String>("disableButtons","comma separated list of buttons that should " +
 			"not be visible, e.g., beast.app.beauti.BeautiInitDlg.Analysis template:");
 //	public Input<String> m_editButtonStatus = new Input<String>("editButtonStatus","comma separated list of list-inputs with custom " +
 //	"button status. One of 'none', 'addonly' 'delonly' +, e.g., beast.core.MCMC.operator=addonly");
 
-	public Input<List<BeautiPanelConfig>> m_panels = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties", 
+	public Input<List<BeautiPanelConfig>> panels = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties", 
 			new ArrayList<BeautiPanelConfig>());
-	public Input<Boolean> m_bIsExpertInput = new Input<Boolean>("isExpert", "flag to indicate Beauti should start in expert mode", false);
+	public Input<Boolean> bIsExpertInput = new Input<Boolean>("isExpert", "flag to indicate Beauti should start in expert mode", false);
 	
 	
-	public Input<BeautiSubTemplate> m_partitionTemplate = new Input<BeautiSubTemplate>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
-	public Input<List<BeautiSubTemplate>> m_subTemplates = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes", 
+	public Input<BeautiSubTemplate> partitionTemplate = new Input<BeautiSubTemplate>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
+	public Input<List<BeautiSubTemplate>> subTemplates = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes", 
 			new ArrayList<BeautiSubTemplate>());
 
 	
@@ -67,29 +67,29 @@ public class BeautiConfig extends Plugin {
 	
 	@Override
 	public void initAndValidate() {
-		parseSet(m_inlineInput.get(), null, g_inlinePlugins);
-		parseSet(m_collapsedInput.get(), null, g_collapsedPlugins);
+		parseSet(inlineInput.get(), null, g_inlinePlugins);
+		parseSet(collapsedInput.get(), null, g_collapsedPlugins);
 		g_inlinePlugins.addAll(g_collapsedPlugins);
 //		parseSet(m_hidePanels.get(), "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL", g_sHidePanels);
-		parseSet(m_suppressInputs.get(), null, g_suppressPlugins);
-		parseSet(m_disableMenus.get(), null, g_sDisabledMenus);
-		parseSet(m_disableButtons.get(), null, g_sDisabledButtons);
+		parseSet(suppressInputs.get(), null, g_suppressPlugins);
+		parseSet(disableMenus.get(), null, g_sDisabledMenus);
+		parseSet(disableButtons.get(), null, g_sDisabledButtons);
 		
-		parseMap(m_inputLabelMap.get(), g_inputLabelMap);
-		parseMap(m_buttonLabelMap.get(), g_buttonLabelMap);
+		parseMap(inputLabelMap.get(), g_inputLabelMap);
+		parseMap(buttonLabelMap.get(), g_buttonLabelMap);
 //		parseMap(m_editButtonStatus.get(), g_sEditButtonStatus);
-		for (BeautiPanelConfig panel : m_panels.get()) {
+		for (BeautiPanelConfig panel : panels.get()) {
 			g_panels.add(panel);
 			// check for duplicates
 			for (BeautiPanelConfig panel2 : g_panels) {
-				if (panel2.m_sNameInput.get().equals(panel.m_sNameInput.get()) && panel2!=panel) {
+				if (panel2.sNameInput.get().equals(panel.sNameInput.get()) && panel2!=panel) {
 					g_panels.remove(g_panels.size()-1);
 					break;
 				}
 			}
 		}
-		InputEditor.g_bExpertMode = m_bIsExpertInput.get();
-		g_subTemplates = m_subTemplates.get();
+		InputEditor.g_bExpertMode = bIsExpertInput.get();
+		g_subTemplates = subTemplates.get();
 	}
 
 	public static void clear() {
@@ -106,9 +106,9 @@ public class BeautiConfig extends Plugin {
 	public static List<BeautiSubTemplate> getInputCandidates(Plugin plugin, Input<?> input, Class<?> type) {
 		List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
 		for (BeautiSubTemplate template : g_subTemplates) {
-			if (type.isAssignableFrom(template.m_class)) {
+			if (type.isAssignableFrom(template._class)) {
 	        	try {
-	        		if (input.canSetValue(template.m_instance, plugin)) {
+	        		if (input.canSetValue(template.instance, plugin)) {
 	    				candidates.add(template);
 	        		}
 	        	} catch (Exception e) {
@@ -180,7 +180,7 @@ public class BeautiConfig extends Plugin {
 	
 	public static BeautiSubTemplate getNullTemplate() {
 		NULL_TEMPLATE.setID("[none]");
-		NULL_TEMPLATE.m_class = Object.class;
+		NULL_TEMPLATE._class = Object.class;
 		return NULL_TEMPLATE;
 	}
 

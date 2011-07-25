@@ -94,10 +94,10 @@ public class TaxonSetInputEditor extends ListInputEditor {
 		TaxonSet taxonset = (TaxonSet) ((List<?>)m_input.get()).get(i);
         TaxonSetDialog dlg = new TaxonSetDialog(taxonset, PluginPanel.g_taxa);
         dlg.setVisible(true);
-        if (dlg.m_bOK) {
+        if (dlg.isOK) {
         	//m_labels.get(i).setText(dlg.m_taxonSet.getID());
-        	m_entries.get(i).setText(dlg.m_taxonSet.getID());
-        	o = dlg.m_taxonSet;
+        	m_entries.get(i).setText(dlg.taxonSet.getID());
+        	o = dlg.taxonSet;
         }
         PluginPanel.m_position.x -= 20;
         PluginPanel.m_position.y -= 20;

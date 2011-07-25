@@ -175,7 +175,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
             }
             sID = sID.substring(0, sID.indexOf('.'));
             for (BeautiSubTemplate template : availableTemplates) {
-            	if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
+            	if (template.matchesName(sID)) {
             		m_selectPluginBox.setSelectedItem(template);
             	}
             }

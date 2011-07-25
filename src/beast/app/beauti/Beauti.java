@@ -50,48 +50,48 @@ public class Beauti extends JTabbedPane {
     /**
      * name of current file, used for saving (as opposed to saveAs) *
      */
-    String m_sFileName = "";
+    String sFileName = "";
     /**
      * current directory for opening files *
      */
-    public static String m_sDir = System.getProperty("user.dir");
+    public static String g_sDir = System.getProperty("user.dir");
     /**
      * File extension for Beast specifications
      */
     static public final String FILE_EXT = ".xml";
 
 	/** document in document-view pattern. BTW this class is the view */
-    BeautiDoc m_doc;
-    JFrame m_frame;
+    BeautiDoc doc;
+    JFrame frame;
     
     /** currently selected tab **/
-    BeautiPanel m_currentTab;
+    BeautiPanel currentTab;
     
-	boolean [] m_bPaneIsVisible;
-	BeautiPanel [] m_panels;
+	boolean [] bPaneIsVisible;
+	BeautiPanel [] panels;
 
 	public Beauti(BeautiDoc doc) {
-		m_bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
-		Arrays.fill(m_bPaneIsVisible, true);
+		bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
+		Arrays.fill(bPaneIsVisible, true);
 		//m_panels = new BeautiPanel[NR_OF_PANELS];
-		m_doc = doc;
-		m_doc.setBeauti(this);
+		this.doc = doc;
+		this.doc.setBeauti(this);
 	}
 	
 	void setTitle() {
-		m_frame.setTitle("Beauti II: " + m_doc.m_sTemplateName + " " + m_sFileName);
+		frame.setTitle("Beauti II: " + this.doc.sTemplateName + " " + sFileName);
 	}
 	
 	void toggleVisible(int nPanelNr) {
-		if (m_bPaneIsVisible[nPanelNr]) {
-			m_bPaneIsVisible[nPanelNr] = false;
+		if (bPaneIsVisible[nPanelNr]) {
+			bPaneIsVisible[nPanelNr] = false;
 			int nTabNr = tabNrForPanel(nPanelNr);
 			removeTabAt(nTabNr);
 		} else {
-			m_bPaneIsVisible[nPanelNr] = true;
+			bPaneIsVisible[nPanelNr] = true;
 			int nTabNr = tabNrForPanel(nPanelNr);
 				BeautiPanelConfig panel = BeautiConfig.g_panels.get(nPanelNr);
-				insertTab(BeautiConfig.getButtonLabel(this, panel.m_sNameInput.get()), null, m_panels[nPanelNr], panel.m_sTipTextInput.get(), nTabNr);
+				insertTab(BeautiConfig.getButtonLabel(this, panel.sNameInput.get()), null, panels[nPanelNr], panel.sTipTextInput.get(), nTabNr);
 //			}
 			setSelectedIndex(nTabNr);
 		}
@@ -100,7 +100,7 @@ public class Beauti extends JTabbedPane {
 	int tabNrForPanel(int nPanelNr) {
 		int k = 0;
 		for (int i = 0; i < nPanelNr; i++) {
-			if (m_bPaneIsVisible[i]) {
+			if (bPaneIsVisible[i]) {
 				k++;
 			}
 		}
@@ -136,11 +136,11 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            if (!m_sFileName.equals("")) {
-                if (!m_doc.validateModel()) {
+            if (!sFileName.equals("")) {
+                if (!doc.validateModel()) {
                     return;
                 }
-                saveFile(m_sFileName);
+                saveFile(sFileName);
 //                m_doc.isSaved();
             } else {
                 if (saveAs()) {
@@ -150,28 +150,28 @@ public class Beauti extends JTabbedPane {
         } // actionPerformed
 
         boolean saveAs() {
-            if (!m_doc.validateModel()) {
+            if (!doc.validateModel()) {
                 return false;
             }
-            JFileChooser fc = new JFileChooser(m_sDir);
+            JFileChooser fc = new JFileChooser(g_sDir);
             fc.addChoosableFileFilter(ef1);
             fc.setDialogTitle("Save Model As");
-            if (!m_sFileName.equals("")) {
+            if (!sFileName.equals("")) {
                 // can happen on actionQuit
-                fc.setSelectedFile(new File(m_sFileName));
+                fc.setSelectedFile(new File(sFileName));
             }
             int rval = fc.showSaveDialog(null);
 
             if (rval == JFileChooser.APPROVE_OPTION) {
                 // System.out.println("Saving to file \""+
                 // f.getAbsoluteFile().toString()+"\"");
-                m_sFileName = fc.getSelectedFile().toString();
-                if (m_sFileName.lastIndexOf('/') > 0) {
-                    m_sDir = m_sFileName.substring(0, m_sFileName.lastIndexOf('/'));
+                sFileName = fc.getSelectedFile().toString();
+                if (sFileName.lastIndexOf('/') > 0) {
+                    g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
                 }
-                if (!m_sFileName.endsWith(FILE_EXT))
-                	m_sFileName = m_sFileName.concat(FILE_EXT);
-                saveFile(m_sFileName);
+                if (!sFileName.endsWith(FILE_EXT))
+                	sFileName = sFileName.concat(FILE_EXT);
+                saveFile(sFileName);
                 setTitle();
                 return true;
             }
@@ -180,12 +180,12 @@ public class Beauti extends JTabbedPane {
 
         protected void saveFile(String sFileName) {
             try {
-            	if (m_currentTab != null) {
-            		m_currentTab.m_config.sync(m_currentTab.m_iPartition);
+            	if (currentTab != null) {
+            		currentTab.config.sync(currentTab.iPartition);
             	} else {
-            		m_panels[0].m_config.sync(0);
+            		panels[0].config.sync(0);
             	}
-                m_doc.save(sFileName);
+                doc.save(sFileName);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -217,7 +217,7 @@ public class Beauti extends JTabbedPane {
         } // c'tor
         
         public void actionPerformed(ActionEvent ae) {
-        	m_doc.newAnalysis();
+        	doc.newAnalysis();
 			a_save.setEnabled(false);
 			a_saveas.setEnabled(false);
         }
@@ -236,16 +236,16 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-    		JFileChooser fileChooser = new JFileChooser(m_sDir);
+    		JFileChooser fileChooser = new JFileChooser(g_sDir);
     		fileChooser.addChoosableFileFilter(ef1);
     		fileChooser.setDialogTitle("Load Beast XML File");
     		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-    			m_sFileName = fileChooser.getSelectedFile().toString();
-                if (m_sFileName.lastIndexOf('/') > 0) {
-                    m_sDir = m_sFileName.substring(0, m_sFileName.lastIndexOf('/'));
+    			sFileName = fileChooser.getSelectedFile().toString();
+                if (sFileName.lastIndexOf('/') > 0) {
+                    g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
                 }
     			try {
-    				m_doc.loadXML(m_sFileName);
+    				doc.loadXML(sFileName);
     				a_save.setEnabled(true);
     				a_saveas.setEnabled(true);
     				setTitle();
@@ -271,7 +271,7 @@ public class Beauti extends JTabbedPane {
     		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
     			String sFileName = fileChooser.getSelectedFile().toString();
     			try {
-    				m_doc.loadTemplate(sFileName);
+    				doc.loadTemplate(sFileName);
     			} catch (Exception e) {
     				e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + e.getMessage());
@@ -293,7 +293,7 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-    		JFileChooser fileChooser = new JFileChooser(m_sDir);
+    		JFileChooser fileChooser = new JFileChooser(g_sDir);
     		fileChooser.addChoosableFileFilter(ef1);
     		fileChooser.addChoosableFileFilter(ef0);
     		fileChooser.setMultiSelectionEnabled(true);
@@ -305,13 +305,13 @@ public class Beauti extends JTabbedPane {
         			for (int i = 0; i < files.length; i++) {
         				String sFileName = files[i].getAbsolutePath();
         				if (sFileName.lastIndexOf('/') > 0) {
-        					Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+        					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
         				}
         				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
-                			m_doc.importNexus(sFileName);
+                			doc.importNexus(sFileName);
         				}
         				if (sFileName.toLowerCase().endsWith(".xml")) {
-                			m_doc.importXMLAlignment(sFileName);
+                			doc.importXMLAlignment(sFileName);
         				}
         			}
     				a_save.setEnabled(true);
@@ -336,7 +336,7 @@ public class Beauti extends JTabbedPane {
 
         public void actionPerformed(ActionEvent ae) {
 //            if (!m_doc.m_bIsSaved) {
-        	if (m_doc.validateModel()) {
+        	if (doc.validateModel()) {
                 int result = JOptionPane.showConfirmDialog(null,
                         "Do you want to save the Beast specification?",
                         "Save before closing?",
@@ -361,8 +361,8 @@ public class Beauti extends JTabbedPane {
 		int m_iPanel;
 		
     	ViewPanelCheckBoxMenuItem(int iPanel) {
-    		super("Show " +	BeautiConfig.g_panels.get(iPanel).m_sNameInput.get() + " panel", 
-    				BeautiConfig.g_panels.get(iPanel).m_bIsVisibleInput.get());
+    		super("Show " +	BeautiConfig.g_panels.get(iPanel).sNameInput.get() + " panel", 
+    				BeautiConfig.g_panels.get(iPanel).bIsVisibleInput.get());
     		m_iPanel = iPanel;
     		if (m_viewPanelCheckBoxMenuItems == null) {
     			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[ BeautiConfig.g_panels.size()];
@@ -384,8 +384,8 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	for(int nPanelNr = 0; nPanelNr < m_bPaneIsVisible.length; nPanelNr++) {
-        		if (!m_bPaneIsVisible[nPanelNr]) {
+        	for(int nPanelNr = 0; nPanelNr < bPaneIsVisible.length; nPanelNr++) {
+        		if (!bPaneIsVisible[nPanelNr]) {
         			toggleVisible(nPanelNr);
         			m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
         		}
@@ -414,7 +414,7 @@ public class Beauti extends JTabbedPane {
 
         public void actionPerformed(ActionEvent ae) {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            HelpBrowser b = new HelpBrowser(m_currentTab.m_config.getType());
+            HelpBrowser b = new HelpBrowser(currentTab.config.getType());
             b.setSize(800, 800);
             b.setVisible(true);
             b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -430,7 +430,7 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	String sCitations = m_doc.m_mcmc.get().getCitations();
+        	String sCitations = doc.mcmc.get().getCitations();
         	try {
 	            StringSelection stringSelection = new StringSelection( sCitations );
 	            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -462,7 +462,7 @@ public class Beauti extends JTabbedPane {
             frame.add(modelBuilder, BorderLayout.CENTER);
             frame.add(modelBuilder.m_jTbTools2, BorderLayout.NORTH);
             modelBuilder.setEditable(false);
-            modelBuilder.m_doc.init(m_doc.m_mcmc.get());
+            modelBuilder.m_doc.init(doc.mcmc.get());
             modelBuilder.setDrawingFlag();
             frame.setSize(600, 800);
             frame.setVisible(true);
@@ -474,7 +474,7 @@ public class Beauti extends JTabbedPane {
 		try {
 			BeautiPanel panel = (BeautiPanel) getSelectedComponent();
 			if (panel != null) {
-				m_doc.determinePartitions();
+				this.doc.determinePartitions();
 				panel.updateList();
 				panel.refreshPanel();
 			}
@@ -513,34 +513,34 @@ public class Beauti extends JTabbedPane {
 		modeMenu.add(viewEditTree);
 		modeMenu.addSeparator();
 
-		final JCheckBoxMenuItem autoScrubPriors = new JCheckBoxMenuItem("Automatic scrub priors", m_doc.m_bAutoScrubPriors);
+		final JCheckBoxMenuItem autoScrubPriors = new JCheckBoxMenuItem("Automatic scrub priors", this.doc.bAutoScrubPriors);
 		autoScrubPriors.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				m_doc.m_bAutoScrubPriors = autoScrubPriors.getState();
+				doc.bAutoScrubPriors = autoScrubPriors.getState();
 				refreshPanel();
 			}
 		});
 		modeMenu.add(autoScrubPriors);
-		final JCheckBoxMenuItem autoScrubState = new JCheckBoxMenuItem("Automatic scrub state", m_doc.m_bAutoScrubState);
+		final JCheckBoxMenuItem autoScrubState = new JCheckBoxMenuItem("Automatic scrub state", this.doc.bAutoScrubState);
 		autoScrubState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				m_doc.m_bAutoScrubState = autoScrubState.getState();
+				doc.bAutoScrubState = autoScrubState.getState();
 				refreshPanel();
 			}
 		});
 		modeMenu.add(autoScrubState);
-		final JCheckBoxMenuItem autoScrubOperators = new JCheckBoxMenuItem("Automatic scrub operators", m_doc.m_bAutoScrubOperators);
+		final JCheckBoxMenuItem autoScrubOperators = new JCheckBoxMenuItem("Automatic scrub operators", this.doc.bAutoScrubOperators);
 		autoScrubOperators.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				m_doc.m_bAutoScrubOperators = autoScrubOperators.getState();
+				doc.bAutoScrubOperators = autoScrubOperators.getState();
 				refreshPanel();
 			}
 		});
 		modeMenu.add(autoScrubOperators);
-		final JCheckBoxMenuItem autoScrubLoggers = new JCheckBoxMenuItem("Automatic scrub loggers", m_doc.m_bAutoScrubLoggers);
+		final JCheckBoxMenuItem autoScrubLoggers = new JCheckBoxMenuItem("Automatic scrub loggers", this.doc.bAutoScrubLoggers);
 		autoScrubLoggers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				m_doc.m_bAutoScrubLoggers = autoScrubLoggers.getState();
+				doc.bAutoScrubLoggers = autoScrubLoggers.getState();
 				refreshPanel();
 			}
 		});
@@ -620,19 +620,19 @@ public class Beauti extends JTabbedPane {
     	} else {
     		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
     			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
-    			m_bPaneIsVisible[iPanel] = panelConfig.m_bIsVisibleInput.get();
+    			bPaneIsVisible[iPanel] = panelConfig.bIsVisibleInput.get();
     		}    		
     	}
     	// add panels according to BeautiConfig 
-		m_panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
+		panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
 		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
 			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
-			m_panels[ iPanel] = new BeautiPanel( iPanel, m_doc, panelConfig);
-			addTab(BeautiConfig.getButtonLabel(this, panelConfig.getName()), null, m_panels[ iPanel], panelConfig.getTipText());
+			panels[ iPanel] = new BeautiPanel( iPanel, this.doc, panelConfig);
+			addTab(BeautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[ iPanel], panelConfig.getTipText());
 		}
 		
 		for (int iPanel = BeautiConfig.g_panels.size() - 1; iPanel >= 0; iPanel--) {
-			if (!m_bPaneIsVisible[iPanel]) {
+			if (!bPaneIsVisible[iPanel]) {
 				removeTabAt(iPanel);
 			}
 		}
@@ -655,19 +655,19 @@ public class Beauti extends JTabbedPane {
 
 	        beauti.setUpPanels();
 			
-			beauti.m_currentTab = beauti.m_panels[0];
+			beauti.currentTab = beauti.panels[0];
 			beauti.hidePanels();
 
 			beauti.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					if (beauti.m_currentTab == null) {
-						beauti.m_currentTab = beauti.m_panels[0];
+					if (beauti.currentTab == null) {
+						beauti.currentTab = beauti.panels[0];
 					}
-					if (beauti.m_currentTab != null) {
-						beauti.m_currentTab.m_config.sync(beauti.m_currentTab.m_iPartition);
+					if (beauti.currentTab != null) {
+						beauti.currentTab.config.sync(beauti.currentTab.iPartition);
 						BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
-						beauti.m_currentTab = panel;
+						beauti.currentTab = panel;
 						beauti.refreshPanel();
 					}
 				}
@@ -676,14 +676,14 @@ public class Beauti extends JTabbedPane {
 			
 			beauti.setVisible(true);
 			beauti.refreshPanel();
-			JFrame frame = new JFrame("Beauti II: " + doc.m_sTemplateName + " " + beauti.m_sFileName);
-			beauti.m_frame = frame;
+			JFrame frame = new JFrame("Beauti II: " + doc.sTemplateName + " " + beauti.sFileName);
+			beauti.frame = frame;
 			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
 
 			JMenuBar menuBar = beauti.makeMenuBar(); 
 			frame.setJMenuBar(menuBar);
 			
-			if (doc.m_sFileName != null || doc.m_alignments.size()> 0) {
+			if (doc.sFileName != null || doc.alignments.size()> 0) {
 				beauti.a_save.setEnabled(true);
 				beauti.a_saveas.setEnabled(true);
 			}

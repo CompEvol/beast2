@@ -21,57 +21,59 @@ import beast.util.XMLParser;
 @Description("Template that specifies which sub-net needs to be created when " +
 		"a plugin of a paricular class is created.")
 public class BeautiSubTemplate extends Plugin {
-	public Input<String> m_sClassInput = new Input<String>("class","name of the class (with full class path) to be created", Validate.REQUIRED);
-	public Input<String> m_sMainInput = new Input<String>("mainid","specifies id of the main plugin to be created by the template", Validate.REQUIRED);
-	//public Input<XML> m_sXMLInput = new Input<XML>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
-	public Input<String> m_sXMLInput = new Input<String>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
-	public Input<List<BeautiConnector>> m_connections = new Input<List<BeautiConnector>>("connect","Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
+	public Input<String> sClassInput = new Input<String>("class","name of the class (with full class path) to be created", Validate.REQUIRED);
+	public Input<String> sMainInput = new Input<String>("mainid","specifies id of the main plugin to be created by the template", Validate.REQUIRED);
+	//public Input<XML> sXMLInput = new Input<XML>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+	public Input<String> sXMLInput = new Input<String>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+	public Input<List<BeautiConnector>> connections = new Input<List<BeautiConnector>>("connect","Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
 
-	Class<?> m_class = null;
-	Object m_instance;
-	String m_sXML = null;
-	String [] m_sSrcIDs;
-	String [] m_sTargetIDs;
-	String [] m_sTargetInputs;
-	String m_sMainID = "";
+	Class<?> _class = null;
+	Object instance;
+	String sXML = null;
+	String [] sSrcIDs;
+	String [] sTargetIDs;
+	String [] sTargetInputs;
+	String sMainID = "";
+	String sShortClassName;
 	
 	@Override
 	public void initAndValidate() throws Exception {
-		m_class = Class.forName(m_sClassInput.get());
-		m_instance = m_class.newInstance();
-		m_sXML = m_sXMLInput.get();//.m_sValue.get();
-		m_sMainID = m_sMainInput.get();
+		_class = Class.forName(sClassInput.get());
+		sShortClassName = sClassInput.get().substring(sClassInput.get().lastIndexOf('.')+1);
+		instance = _class.newInstance();
+		sXML = sXMLInput.get();//.m_sValue.get();
+		sMainID = sMainInput.get();
 		// sanity check: make sure the XML is parseable
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast>" + m_sXML + "</beast>")));
+        factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast>" + sXML + "</beast>")));
         // make sure there are no comments in the XML: this screws up any XML when saved to file
-        if (m_sXML.contains("<!--")){
-        	while (m_sXML.contains("<!--")) {
-        		int iStart = m_sXML.indexOf("<!--");
+        if (sXML.contains("<!--")){
+        	while (sXML.contains("<!--")) {
+        		int iStart = sXML.indexOf("<!--");
         		// next line is guaranteed to find something, things we already checked this is valid XML
-        		int iEnd = m_sXML.indexOf("-->", iStart);
-        		m_sXML = m_sXML.substring(0, iStart) + m_sXML.substring(iEnd + 3);
+        		int iEnd = sXML.indexOf("-->", iStart);
+        		sXML = sXML.substring(0, iStart) + sXML.substring(iEnd + 3);
         	}
         }
         //m_sXMLInput.get().m_sValue.setValue("<![CDATA[" + m_sXML + "]]>", m_sXMLInput.get());
-        m_sXMLInput.setValue("<![CDATA[" + m_sXML + "]]>", this);
+        sXMLInput.setValue("<![CDATA[" + sXML + "]]>", this);
         
-		int nConnectors = m_connections.get().size();
-		m_sSrcIDs = new String[nConnectors];
-		m_sTargetIDs = new String[nConnectors];
-		m_sTargetInputs = new String[nConnectors];
+		int nConnectors = connections.get().size();
+		sSrcIDs = new String[nConnectors];
+		sTargetIDs = new String[nConnectors];
+		sTargetInputs = new String[nConnectors];
 		for (int i = 0; i < nConnectors; i++) {
-			BeautiConnector connector = m_connections.get().get(i);
-			m_sSrcIDs[i] = connector.m_sSourceID.get();
-			m_sTargetIDs[i] = connector.m_sTargetID.get();
-			m_sTargetInputs[i] = connector.m_sInputName.get();
+			BeautiConnector connector = connections.get().get(i);
+			sSrcIDs[i] = connector.sSourceID.get();
+			sTargetIDs[i] = connector.sTargetID.get();
+			sTargetInputs[i] = connector.sInputName.get();
 		}
 	}
 
 
 
 	public Plugin createSubNet(String sPartition) {
-		if (m_sXML == null) {
+		if (sXML == null) {
 			// this is the NULL_TEMPLATE
 			return null;
 		}
@@ -87,37 +89,37 @@ public class BeautiSubTemplate extends Plugin {
 	
 	private Plugin createSubNet(String sPartition, BeautiDoc doc, HashMap<String, Plugin> sIDMap) {
 		// wrap in a beast element with appropriate name spaces
-		String sXML = "<beast version='2.0' \n" +
+		String _sXML = "<beast version='2.0' \n" +
        "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
-	        m_sXML +
+	        sXML +
 	   "</beast>\n"; 
 	   
 		// resolve alignment references
-		sXML = sXML.replaceAll("idref=[\"']data['\"]", "idref='" + sPartition + "'");
+		_sXML = _sXML.replaceAll("idref=[\"']data['\"]", "idref='" + sPartition + "'");
 		// ensure uniqueness of IDs
-		sXML = sXML.replaceAll("\\$\\(n\\)", sPartition);
+		_sXML = _sXML.replaceAll("\\$\\(n\\)", sPartition);
 
 		XMLParser parser = new XMLParser();
 		List<Plugin> plugins = null;
 		try {
-			plugins = parser.parseTemplate(sXML, sIDMap);
+			plugins = parser.parseTemplate(_sXML, sIDMap);
 			for (Plugin plugin : plugins) {
 				doc.addPlugin(plugin);
 			}
-			for (int i = 0; i < m_sSrcIDs.length; i++) {
-				Plugin src = sIDMap.get(m_sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));
-				doc.connect(src, m_sTargetIDs[i].replaceAll("\\$\\(n\\)", sPartition), m_sTargetInputs[i]);
+			for (int i = 0; i < sSrcIDs.length; i++) {
+				Plugin src = sIDMap.get(sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));
+				doc.connect(src, sTargetIDs[i].replaceAll("\\$\\(n\\)", sPartition), sTargetInputs[i]);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		if (m_sMainID.equals("[top]")) {
+		if (sMainID.equals("[top]")) {
 			return plugins.get(0);
 		}
 		
-		String sID = m_sMainID;
+		String sID = sMainID;
 		sID = sID.replaceAll("\\$\\(n\\)", sPartition);
 		Plugin plugin = PluginPanel.g_plugins.get(sID);
 		//System.err.println(new XMLProducer().toXML(plugin));
@@ -125,7 +127,7 @@ public class BeautiSubTemplate extends Plugin {
 	}
 
 	public String getMainID() {
-		return m_sMainID;
+		return sMainID;
 	}
 
 
@@ -134,5 +136,17 @@ public class BeautiSubTemplate extends Plugin {
 		String sID = getID();
 		sID = sID.replaceAll("([a-z])([A-Z])", "$1 $2");
 		return sID;
+	}
+
+
+
+	public boolean matchesName(String sID) {
+		if (getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
+			return true;
+		}
+		if (sShortClassName != null && sShortClassName.equals(sID)) {
+			return true;
+		}
+		return false;
 	}
 }

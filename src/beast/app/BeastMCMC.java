@@ -329,7 +329,7 @@ public class BeastMCMC {
 			button.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JFileChooser fileChooser = new JFileChooser(Beauti.m_sDir);
+					JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 					File file = new File(m_fileEntry.getText());
 					if (file.exists())
 						fileChooser.setSelectedFile(file);
@@ -339,7 +339,7 @@ public class BeastMCMC {
 					if (rval == JFileChooser.APPROVE_OPTION) {
 						String sFileName = fileChooser.getSelectedFile().toString();
 						if (sFileName.lastIndexOf('/') > 0) {
-							Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+							Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
 						}
 						m_fileEntry.setText(sFileName);
 					}

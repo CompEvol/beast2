@@ -18,9 +18,9 @@ public class AlignmentViewer extends JPanel {
 
 	Object[][] tableData;
 	Object[] columnData;
-	boolean m_bUseColor = false;
+	boolean useColor = false;
 	// flag to indicate that the most frequently occurring character is shown as a dot
-	boolean m_bUseDots = true;
+	boolean useDots = true;
 	Alignment m_alignment;
 	Map<Character,Color> m_customColorMap = new HashMap<Character, Color>();
 	
@@ -172,7 +172,7 @@ public class AlignmentViewer extends JPanel {
 	 * and the second for the others 
 	 * **/
 	private Object[][] setupColorMap() {
-		if (m_bUseColor) {
+		if (useColor) {
 			String [][] colorMap = new String[2][256];
 			for (int k = 'A'; k < 'Z'; k++) {
 				int i = k - 'A';
@@ -188,7 +188,7 @@ public class AlignmentViewer extends JPanel {
 				colorMap[0][c] = "<html><font color='#" + Integer.toString(color.getRGB(), 16) + "'><b>.</b></html>"; 
 				colorMap[1][c] = "<html><font color='#" + Integer.toString(color.getRGB(), 16) + "'><b>" + c + "</font></html>"; 
 			}
-			if (!m_bUseDots) {
+			if (!this.useDots) {
 				colorMap[0] = colorMap[1];
 			}
 			return colorMap;
@@ -198,7 +198,7 @@ public class AlignmentViewer extends JPanel {
 				colorMap[0][i] = '.'; 
 				colorMap[1][i] = (char)i; 
 			}
-			if (!m_bUseDots) {
+			if (!this.useDots) {
 				colorMap[0] = colorMap[1];
 			}
 			return colorMap;
@@ -225,31 +225,31 @@ public class AlignmentViewer extends JPanel {
 		dlg.add(this);
 		
 		Box buttonBox = Box.createHorizontalBox(); 
-		JCheckBox useDots = new JCheckBox("Use dots", true);
-		useDots.addActionListener(new ActionListener() {
+		JCheckBox useDotsCheckBox = new JCheckBox("Use dots", true);
+		useDotsCheckBox.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox useColor = (JCheckBox) e.getSource();
-				m_bUseDots = useColor.isSelected();
+				useDots = useColor.isSelected();
 				updateTableData();
 				repaint();
 			}
 		});
-		buttonBox.add(useDots);
+		buttonBox.add(useDotsCheckBox);
 		
-		JCheckBox hasColor = new JCheckBox("Use Color");
-		hasColor.addActionListener(new ActionListener() {
+		JCheckBox useColorCheckBox = new JCheckBox("Use Color");
+		useColorCheckBox.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox hasColor = (JCheckBox) e.getSource();
-				m_bUseColor = hasColor.isSelected();
+				useColor = hasColor.isSelected();
 				updateTableData();
 				repaint();
 			}
 		});
-		buttonBox.add(hasColor);
+		buttonBox.add(useColorCheckBox);
 		dlg.add(buttonBox, BorderLayout.SOUTH);		
 		
 		dlg.setSize(1024, 600);

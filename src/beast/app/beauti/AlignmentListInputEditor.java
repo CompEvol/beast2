@@ -57,14 +57,14 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	final static int TREE_COLUMN = 7;
 	
 	/** alignments that form a partition. These can be FilteredAlignments **/
-	List<Alignment> m_alignments;
-	int m_nPartitions;
-	TreeLikelihood[] m_likelihoods;
-	Object[][] m_tableData;
-	JTable m_table;
+	List<Alignment> alignments;
+	int nPartitions;
+	TreeLikelihood[] likelihoods;
+	Object[][] tableData;
+	JTable table;
 
 //	List<String> m_sPartitionNames;
-	BeautiDoc m_doc;
+	BeautiDoc doc;
 	
 	@Override
 	public Class<?> type() {
@@ -87,13 +87,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	@Override
 	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		if (input.get() instanceof List) {
-			m_alignments = (List<Alignment>) input.get();
+			alignments = (List<Alignment>) input.get();
 		} else {
 			// we just have a single Alignment
-			m_alignments = new ArrayList<Alignment>();
-			m_alignments.add((Alignment) input.get());
+			alignments = new ArrayList<Alignment>();
+			alignments.add((Alignment) input.get());
 		}
-		m_nPartitions = m_alignments.size();
+		nPartitions = alignments.size();
 		// super.init(input, plugin, bExpand, false);
 		Box box = createVerticalBox();
 		box.add(Box.createVerticalStrut(5));
@@ -135,7 +135,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			public void actionPerformed(ActionEvent e) {
 				JButton button = (JButton) e.getSource();
 				link(columnLabelToNr(button.getText()));
-				m_table.repaint();
+				table.repaint();
 			}
 
 		});
@@ -146,7 +146,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			public void actionPerformed(ActionEvent e) {
 				JButton button = (JButton) e.getSource();
 				unlink(columnLabelToNr(button.getText()));
-				m_table.repaint();
+				table.repaint();
 			}
 
 		});
@@ -171,7 +171,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		int [] nSelected = getTableRowSelection();
 		for (int i = 1; i < nSelected.length; i++) {
 			int iRow = nSelected[i];
-			m_tableData[iRow][nColumn] = m_tableData[nSelected[0]][nColumn];
+			tableData[iRow][nColumn] = tableData[nSelected[0]][nColumn];
 			try {
 				updateModel(nColumn, iRow);
 			} catch (Exception ex) {
@@ -184,7 +184,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		int [] nSelected = getTableRowSelection();
 		for (int i = 1; i < nSelected.length; i++) {
 			int iRow = nSelected[i];
-			m_tableData[iRow][nColumn] = getDoc().m_sPartitionNames.get(iRow);
+			tableData[iRow][nColumn] = getDoc().sPartitionNames.get(iRow);
 			try {
 				updateModel(nColumn, iRow);
 			} catch (Exception ex) {
@@ -194,11 +194,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	int [] getTableRowSelection() {
-		int [] nSelected = m_table.getSelectedRows();
+		int [] nSelected = table.getSelectedRows();
 		if (nSelected.length == 0) {
 			// select all
-			nSelected = new int[m_nPartitions];
-			for (int i = 0; i < m_nPartitions; i++) {
+			nSelected = new int[nPartitions];
+			for (int i = 0; i < nPartitions; i++) {
 				nSelected[i] = i;
 			}
 		}
@@ -206,34 +206,34 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	BeautiDoc getDoc() {
-		if (m_doc == null) {
+		if (doc == null) {
 		    Component c = this;
 		    while (((Component) c).getParent() != null) {
 		      	c = ((Component) c).getParent();
 		      	if (c instanceof BeautiPanel) {
-		      		m_doc = ((BeautiPanel) c).m_doc;
+		      		doc = ((BeautiPanel) c).doc;
 		      	}
 		    }
 		}
-		return m_doc;
+		return doc;
 	}
 	
 	void updateModel(int nColumn, int iRow) throws Exception {
 		getDoc();
-		String sPartition = (String) m_tableData[iRow][nColumn];
+		String sPartition = (String) tableData[iRow][nColumn];
 		TreeLikelihood treeLikelihood = (TreeLikelihood) PluginPanel.g_plugins.get("treeLikelihood." + sPartition);
 		switch (nColumn) {
 			case SITEMODEL_COLUMN: 
 			{
-				if (m_doc.getPartitionNr(sPartition) != iRow) {
-					m_likelihoods[iRow].m_pSiteModel.setValue(treeLikelihood.m_pSiteModel.get(), m_likelihoods[iRow]);
+				if (doc.getPartitionNr(sPartition) != iRow) {
+					this.likelihoods[iRow].m_pSiteModel.setValue(treeLikelihood.m_pSiteModel.get(), this.likelihoods[iRow]);
 				} else {
 					SiteModel siteModel = (SiteModel) PluginPanel.g_plugins.get("SiteModel." + sPartition);
-					m_likelihoods[iRow].m_pSiteModel.setValue(siteModel, m_likelihoods[iRow]);
+					this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
 				}
 				sPartition = treeLikelihood.m_pSiteModel.get().getID();
 				sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
-				m_doc.setCurrentPartition(0, iRow, sPartition);
+				doc.setCurrentPartition(0, iRow, sPartition);
 			}
 				break;
 			case CLOCKMODEL_COLUMN:
@@ -241,32 +241,32 @@ public class AlignmentListInputEditor extends ListInputEditor {
 //				String sPartition = (String) m_tableData[iRow][CLOCKMODEL_COLUMN];
 //				BranchRateModel clockModel = m_doc.getClockModel(sPartition);
 					//(BranchRateModel) PluginPanel.g_plugins.get("ClockModel." + sPartition);
-				if (m_doc.getPartitionNr(sPartition) != iRow) {
-					m_likelihoods[iRow].m_pBranchRateModel.setValue(treeLikelihood.m_pBranchRateModel.get(), m_likelihoods[iRow]);
+				if (doc.getPartitionNr(sPartition) != iRow) {
+					this.likelihoods[iRow].m_pBranchRateModel.setValue(treeLikelihood.m_pBranchRateModel.get(), this.likelihoods[iRow]);
 				} else {
-					BranchRateModel clockModel = m_doc.getClockModel(sPartition);
-					m_likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, m_likelihoods[iRow]);
+					BranchRateModel clockModel = doc.getClockModel(sPartition);
+					this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
 				}
 				sPartition = treeLikelihood.m_pBranchRateModel.get().getID();
 				sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
-				m_doc.setCurrentPartition(1, iRow, sPartition);
+				doc.setCurrentPartition(1, iRow, sPartition);
 			}
 				break;
 			case TREE_COLUMN:
 			{
-				if (m_doc.getPartitionNr(sPartition) != iRow) {
-					m_likelihoods[iRow].m_tree.setValue(treeLikelihood.m_tree.get(), m_likelihoods[iRow]);
+				if (doc.getPartitionNr(sPartition) != iRow) {
+					this.likelihoods[iRow].m_tree.setValue(treeLikelihood.m_tree.get(), this.likelihoods[iRow]);
 				} else {
 //				String sPartition = (String) m_tableData[iRow][TREE_COLUMN];
 					Tree tree = (Tree) PluginPanel.g_plugins.get("Tree." + sPartition);
-					m_likelihoods[iRow].m_tree.setValue(tree, m_likelihoods[iRow]);
+					this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
 				}
 				sPartition = treeLikelihood.m_tree.get().getID();
 				sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
-				m_doc.setCurrentPartition(2, iRow, sPartition);
+				doc.setCurrentPartition(2, iRow, sPartition);
 			}
 		}
-		m_tableData[iRow][nColumn] = sPartition;
+		tableData[iRow][nColumn] = sPartition;
 	}
 	
 	@Override
@@ -274,38 +274,38 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	void initTableData() {
-		m_likelihoods = new TreeLikelihood[m_nPartitions];
-		if (m_tableData == null) {
-			m_tableData = new Object[m_nPartitions][8];
+		this.likelihoods = new TreeLikelihood[nPartitions];
+		if (tableData == null) {
+			tableData = new Object[nPartitions][8];
 		}
 		CompoundDistribution likelihoods = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
 		
-		for (int i = 0; i < m_nPartitions; i++) {
-			Alignment data = m_alignments.get(i);
+		for (int i = 0; i < nPartitions; i++) {
+			Alignment data = alignments.get(i);
 			// partition name
-			m_tableData[i][NAME_COLUMN] = data;
+			tableData[i][NAME_COLUMN] = data;
 
 			// alignment name
 			if (data instanceof FilteredAlignment) {
-				m_tableData[i][FILE_COLUMN] = ((FilteredAlignment) data).m_alignmentInput.get();
+				tableData[i][FILE_COLUMN] = ((FilteredAlignment) data).m_alignmentInput.get();
 			} else {
-				m_tableData[i][FILE_COLUMN] = data;
+				tableData[i][FILE_COLUMN] = data;
 			}
 			// # taxa
-			m_tableData[i][TAXA_COLUMN] = data.getNrTaxa();
+			tableData[i][TAXA_COLUMN] = data.getNrTaxa();
 			// # sites
-			m_tableData[i][SITES_COLUMN] = data.getSiteCount();
+			tableData[i][SITES_COLUMN] = data.getSiteCount();
 			// Data type
-			m_tableData[i][TYPE_COLUMN] = data.getDataType();
+			tableData[i][TYPE_COLUMN] = data.getDataType();
 			// site model
 			TreeLikelihood likelihood = (TreeLikelihood) likelihoods.pDistributions.get().get(i);
 			assert (likelihood != null);
-			m_likelihoods[i] = likelihood;
-			m_tableData[i][SITEMODEL_COLUMN] = getPartition(likelihood.m_pSiteModel);
+			this.likelihoods[i] = likelihood;
+			tableData[i][SITEMODEL_COLUMN] = getPartition(likelihood.m_pSiteModel);
 			// clock model
-			m_tableData[i][CLOCKMODEL_COLUMN] = getPartition(likelihood.m_pBranchRateModel);
+			tableData[i][CLOCKMODEL_COLUMN] = getPartition(likelihood.m_pBranchRateModel);
 			// tree
-			m_tableData[i][TREE_COLUMN] = getPartition(likelihood.m_tree);
+			tableData[i][TREE_COLUMN] = getPartition(likelihood.m_tree);
 		}
 	}
 
@@ -323,7 +323,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		// set up table.
 		// special features: background shading of rows
 		// custom editor allowing only Date column to be edited.
-		m_table = new JTable(m_tableData, columnData) {
+		table = new JTable(tableData, columnData) {
 			private static final long serialVersionUID = 1L;
 
 			// method that induces table row shading
@@ -341,18 +341,18 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				return comp;
 			}
 		};
-		m_table.setRowHeight(25);
-		m_table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		m_table.setColumnSelectionAllowed(false);
-		m_table.setRowSelectionAllowed(true);
+		table.setRowHeight(25);
+		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		table.setColumnSelectionAllowed(false);
+		table.setRowSelectionAllowed(true);
 
 		
 		// set up comboboxes
-		String [] sPartitionNames = new String[m_nPartitions];
-		for (int i = 0; i < m_nPartitions; i++) {
-			sPartitionNames[i] = m_alignments.get(i).getID();
+		String [] sPartitionNames = new String[nPartitions];
+		for (int i = 0; i < nPartitions; i++) {
+			sPartitionNames[i] = alignments.get(i).getID();
 		}
-		TableColumn col = m_table.getColumnModel().getColumn(SITEMODEL_COLUMN);
+		TableColumn col = table.getColumnModel().getColumn(SITEMODEL_COLUMN);
 		JComboBox siteModelComboBox = new JComboBox(sPartitionNames);
 		siteModelComboBox.addActionListener(new ComboActionListener(SITEMODEL_COLUMN));
 
@@ -360,7 +360,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		// If the cell should appear like a combobox in its
 		// non-editing state, also set the combobox renderer
 		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
-		col = m_table.getColumnModel().getColumn(CLOCKMODEL_COLUMN);
+		col = table.getColumnModel().getColumn(CLOCKMODEL_COLUMN);
 		
 		JComboBox clockModelComboBox = new JComboBox(sPartitionNames);
 		clockModelComboBox.addActionListener(new ComboActionListener(CLOCKMODEL_COLUMN));
@@ -368,39 +368,39 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		
 		col.setCellEditor(new DefaultCellEditor(clockModelComboBox));
 		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
-		col = m_table.getColumnModel().getColumn(TREE_COLUMN);
+		col = table.getColumnModel().getColumn(TREE_COLUMN);
 
 		JComboBox treeComboBox = new JComboBox(sPartitionNames);
 		treeComboBox.addActionListener(new ComboActionListener(TREE_COLUMN));
 		col.setCellEditor(new DefaultCellEditor(treeComboBox));
 		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
-		col = m_table.getColumnModel().getColumn(TAXA_COLUMN);
+		col = table.getColumnModel().getColumn(TAXA_COLUMN);
 		col.setPreferredWidth(30);
-		col = m_table.getColumnModel().getColumn(SITES_COLUMN);
+		col = table.getColumnModel().getColumn(SITES_COLUMN);
 		col.setPreferredWidth(30);
 
 		// // set up editor that makes sure only doubles are accepted as entry
 		// // and only the Date column is editable.
-		m_table.setDefaultEditor(Object.class, new TableCellEditor() {
+		table.setDefaultEditor(Object.class, new TableCellEditor() {
 			JTextField m_textField = new JTextField();
 			int m_iRow, m_iCol;
 
 			@Override
 			public boolean stopCellEditing() {
-				m_table.removeEditor();
+				table.removeEditor();
 				String sText = m_textField.getText();
 				try {
 					Double.parseDouble(sText);
 				} catch (Exception e) {
 					return false;
 				}
-				m_tableData[m_iRow][m_iCol] = sText;
+				tableData[m_iRow][m_iCol] = sText;
 				return true;
 			}
 
 			@Override
 			public boolean isCellEditable(EventObject anEvent) {
-				return m_table.getSelectedColumn() == 1;
+				return table.getSelectedColumn() == 1;
 			}
 
 			@Override
@@ -434,7 +434,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		});
 		
 		// show alignment viewer when double clicking a row
-		m_table.addMouseListener(new MouseListener() {
+		table.addMouseListener(new MouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -456,8 +456,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() > 1) {
 					try {
-						int iAlignmemt = m_table.rowAtPoint(e.getPoint());
-						AlignmentViewer viewer = new AlignmentViewer(m_alignments.get(iAlignmemt));
+						int iAlignmemt = table.rowAtPoint(e.getPoint());
+						AlignmentViewer viewer = new AlignmentViewer(alignments.get(iAlignmemt));
 						viewer.showInDialog();
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
@@ -467,7 +467,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 		});
 		
-		JScrollPane scrollPane = new JScrollPane(m_table);
+		JScrollPane scrollPane = new JScrollPane(table);
 		return scrollPane;
 	} // createListBox
 
@@ -479,7 +479,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		};
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			for (int i = 0; i < m_nPartitions; i++) {
+			for (int i = 0; i < nPartitions; i++) {
 				try {
 					updateModel(m_nColumn, i);
 				} catch (Exception ex) {
@@ -525,7 +525,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		while (((Component) c).getParent() != null) {
 			c = ((Component) c).getParent();
 			if (c instanceof BeautiPanel) {
-				doc = ((BeautiPanel) c).m_doc;
+				doc = ((BeautiPanel) c).doc;
 			}
 		}
 
@@ -540,7 +540,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	@Override
 	public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
 		List<Plugin> selectedPlugins = new ArrayList<Plugin>();
-		JFileChooser fileChooser = new JFileChooser(Beauti.m_sDir);
+		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
 		String[] exts = { ".nex", ".nxs" };
@@ -556,7 +556,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			for (int i = 0; i < files.length; i++) {
 				String sFileName = files[i].getAbsolutePath();
 				if (sFileName.lastIndexOf('/') > 0) {
-					Beauti.m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
 				}
 				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
 					NexusParser parser = new NexusParser();

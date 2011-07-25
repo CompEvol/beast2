@@ -16,8 +16,8 @@ import beast.core.StateNode;
 
 public class OperatorListInputEditor extends ListInputEditor {
 	private static final long serialVersionUID = 1L;
-	List<JTextField> m_textFields = new ArrayList<JTextField>(); 
-	List<Operator> m_operators = new ArrayList<Operator>();
+	List<JTextField> textFields = new ArrayList<JTextField>(); 
+	List<Operator> operators = new ArrayList<Operator>();
 
 	@Override
 	public Class<?> type() {
@@ -68,8 +68,8 @@ public class OperatorListInputEditor extends ListInputEditor {
     	OperatorDocumentListener(Operator operator, JTextField weightEntry) {
     		m_operator = operator;
     		m_weightEntry = weightEntry;
-    		m_textFields.add(weightEntry); 
-    		m_operators.add(operator);
+    		textFields.add(weightEntry); 
+    		operators.add(operator);
     	}
 		@Override
 		public void removeUpdate(DocumentEvent e) {
@@ -97,10 +97,10 @@ public class OperatorListInputEditor extends ListInputEditor {
 	@Override
     protected void updateState() {
 		super.updateState();
-		for (int i = 0; i < m_textFields.size(); i++) {
-			m_textFields.get(i).setText(m_operators.get(i).m_pWeight.get() + "");
+		for (int i = 0; i < textFields.size(); i++) {
+			textFields.get(i).setText(operators.get(i).m_pWeight.get() + "");
 			//m_labels.get(i).setText(getLabel(m_operators.get(i)));
-			m_entries.get(i).setText(getLabel(m_operators.get(i)));
+			m_entries.get(i).setText(getLabel(operators.get(i)));
 		}
     }
 	

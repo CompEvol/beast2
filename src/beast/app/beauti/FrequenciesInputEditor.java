@@ -15,11 +15,11 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.substitutionmodel.Frequencies;
 
 public class FrequenciesInputEditor extends PluginInputEditor {
-	RealParameter m_freqsParameter;
-	Alignment m_alignment;
+	RealParameter freqsParameter;
+	Alignment alignment;
 
 	private static final long serialVersionUID = 1L;
-	boolean m_bUseDefaultBehavior;
+	boolean bUseDefaultBehavior;
 
 	@Override
 	public Class<?> type() {
@@ -40,16 +40,16 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 		JComboBox comboBox = new JComboBox(new String[] {"Estimated","Empirical","All equal"});
 		if (freqs.frequencies.get() != null) {
 			comboBox.setSelectedIndex(0);
-			m_freqsParameter = freqs.frequencies.get();
-			m_alignment = (Alignment) getCandidate(freqs.m_data, freqs);
+			freqsParameter = freqs.frequencies.get();
+			alignment = (Alignment) getCandidate(freqs.m_data, freqs);
 		} else if (freqs.m_bEstimate.get()) {
 			comboBox.setSelectedIndex(1);
-			m_alignment = freqs.m_data.get();
-			m_freqsParameter = (RealParameter) getCandidate(freqs.frequencies, freqs);
+			alignment = freqs.m_data.get();
+			freqsParameter = (RealParameter) getCandidate(freqs.frequencies, freqs);
 		} else {
 			comboBox.setSelectedIndex(2);
-			m_alignment = freqs.m_data.get();
-			m_freqsParameter = (RealParameter) getCandidate(freqs.frequencies, freqs);
+			alignment = freqs.m_data.get();
+			freqsParameter = (RealParameter) getCandidate(freqs.frequencies, freqs);
 		}
 		comboBox.addActionListener(new ActionListener() {
 			@Override
@@ -60,17 +60,17 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 				try {
 				switch (iSelected) {
 					case 0:
-						freqs.frequencies.setValue(m_freqsParameter, freqs);
+						freqs.frequencies.setValue(freqsParameter, freqs);
 						freqs.m_data.setValue(null, freqs);
 						break;
 					case 1:
 						freqs.frequencies.setValue(null, freqs);
-						freqs.m_data.setValue(m_alignment, freqs);
+						freqs.m_data.setValue(alignment, freqs);
 						freqs.m_bEstimate.setValue(true, freqs);
 						break;
 					case 2:
 						freqs.frequencies.setValue(null, freqs);
-						freqs.m_data.setValue(m_alignment, freqs);
+						freqs.m_data.setValue(alignment, freqs);
 						freqs.m_bEstimate.setValue(false, freqs);
 						break;
 					}

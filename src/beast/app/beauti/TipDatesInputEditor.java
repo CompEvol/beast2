@@ -42,12 +42,12 @@ public class TipDatesInputEditor extends PluginInputEditor {
         return TraitSet.class;
     }
 
-	TraitSet m_traitSet;
-	JComboBox m_unitsComboBox;
-	JComboBox m_relativeToComboBox;
-	List<String> m_sTaxa;
-	Object[][] m_tableData;
-	JTable m_table;
+	TraitSet traitSet;
+	JComboBox unitsComboBox;
+	JComboBox relativeToComboBox;
+	List<String> sTaxa;
+	Object[][] tableData;
+	JTable table;
 	
 	
     @Override
@@ -55,7 +55,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
-        m_traitSet = (TraitSet) m_input.get();
+        traitSet = (TraitSet) m_input.get();
         
         
         Box box = createVerticalBox();
@@ -78,7 +78,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		// determine mode
 		m_iMode = NO_TIP_SAMPLING;
 		// count nr of TipDateScalers with weight > 0
-		for (Plugin plugin : m_traitSet.outputs) {
+		for (Plugin plugin : traitSet.outputs) {
 			if (plugin instanceof Tree) {
 				for (Plugin plugin2 : plugin.outputs) {
 					if (plugin2 instanceof TipDatesScaler) {
@@ -113,7 +113,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		JComboBox comboBox2 = new JComboBox(taxonsets.toArray());
 		
         // find TipDatesSampler and set TaxonSet input
-		for (Plugin plugin : m_traitSet.outputs) {
+		for (Plugin plugin : traitSet.outputs) {
 			if (plugin instanceof Tree) {
 				for (Plugin plugin2 : plugin.outputs) {
 					if (plugin2 instanceof TipDatesScaler) {
@@ -148,7 +148,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         }
         try {
 	        // find TipDatesSampler and set TaxonSet input
-			for (Plugin plugin : m_traitSet.outputs) {
+			for (Plugin plugin : traitSet.outputs) {
 				if (plugin instanceof Tree) {
 					for (Plugin plugin2 : plugin.outputs) {
 						if (plugin2 instanceof TipDatesScaler) {
@@ -160,7 +160,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 			}
 	
 	        // TODO: find MRACPriors and set TaxonSet inputs
-			for (Plugin plugin : m_traitSet.outputs) {
+			for (Plugin plugin : traitSet.outputs) {
 				if (plugin instanceof Tree) {
 					for (Plugin plugin2 : plugin.outputs) {
 						if (plugin2 instanceof MRCAPrior) {
@@ -182,7 +182,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         m_iMode = comboBox.getSelectedIndex();
 		try {
 			// clear
-    		for (Plugin plugin : m_traitSet.outputs) {
+    		for (Plugin plugin : traitSet.outputs) {
         			if (plugin instanceof Tree) {
         				for (Plugin plugin2 : plugin.outputs) {
         					if (plugin2 instanceof TipDatesScaler) {
@@ -215,14 +215,14 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		}
 	}	
 	private Component createListBox() {
-		m_sTaxa = m_traitSet.m_taxa.get().getTaxaNames();
+		sTaxa = traitSet.m_taxa.get().getTaxaNames();
 		String [] columnData = new String[] {"Name", "Date","Height"};
-		m_tableData = new Object[m_sTaxa.size()][3];
+		tableData = new Object[sTaxa.size()][3];
 		convertTraitToTableData();
 		// set up table.
 		// special features: background shading of rows
 		// custom editor allowing only Date column to be edited.
-		m_table = new JTable(m_tableData, columnData) {
+		table = new JTable(tableData, columnData) {
 			private static final long serialVersionUID = 1L;
 
 			// method that induces table row shading 
@@ -241,19 +241,19 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		
 		// set up editor that makes sure only doubles are accepted as entry
 		// and only the Date column is editable.
-		m_table.setDefaultEditor(Object.class, new TableCellEditor() {
+		table.setDefaultEditor(Object.class, new TableCellEditor() {
 			JTextField m_textField = new JTextField();
 			int m_iRow, m_iCol;
 			@Override
 			public boolean stopCellEditing() {
-				m_table.removeEditor();
+				table.removeEditor();
 				String sText = m_textField.getText();
 				try {
 					Double.parseDouble(sText);
 				} catch (Exception e) {
 					return false;
 				}
-				m_tableData[m_iRow][m_iCol] = sText;
+				tableData[m_iRow][m_iCol] = sText;
 				convertTableDataToTrait();
 				convertTraitToTableData();
 				return true;
@@ -261,7 +261,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		
 			@Override
 			public boolean isCellEditable(EventObject anEvent) {
-				return m_table.getSelectedColumn() == 1;
+				return table.getSelectedColumn() == 1;
 			}
 			
 			
@@ -288,18 +288,18 @@ public class TipDatesInputEditor extends PluginInputEditor {
 			public void addCellEditorListener(CellEditorListener l) {}
 		
 		});				
-		JScrollPane scrollPane = new JScrollPane(m_table);
+		JScrollPane scrollPane = new JScrollPane(table);
 		return scrollPane;
 	} // createListBox
 
 	/* synchronise table with data from traitSet Plugin */
 	private void convertTraitToTableData() {
-		for (int i = 0; i < m_tableData.length; i++) {
-			m_tableData[i][0] = m_sTaxa.get(i);
-			m_tableData[i][1] = "0";
-			m_tableData[i][2] = "0";
+		for (int i = 0; i < tableData.length; i++) {
+			tableData[i][0] = sTaxa.get(i);
+			tableData[i][1] = "0";
+			tableData[i][2] = "0";
 		}
-        String[] sTraits = m_traitSet.m_traits.get().split(",");
+        String[] sTraits = traitSet.m_traits.get().split(",");
         for (String sTrait : sTraits) {
             sTrait = sTrait.replaceAll("\\s+", " ");
             String[] sStrs = sTrait.split("=");
@@ -308,31 +308,31 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 //throw new Exception("could not parse trait: " + sTrait);
             }
             String sTaxonID = normalize(sStrs[0]);
-            int iTaxon = m_sTaxa.indexOf(sTaxonID);
+            int iTaxon = sTaxa.indexOf(sTaxonID);
 //            if (iTaxon < 0) {
 //                throw new Exception("Trait (" + sTaxonID + ") is not a known taxon. Spelling error perhaps?");
 //            }
-            m_tableData[iTaxon][0] = sTaxonID;
-            m_tableData[iTaxon][1] = normalize(sStrs[1]);
+            tableData[iTaxon][0] = sTaxonID;
+            tableData[iTaxon][1] = normalize(sStrs[1]);
         }
-        if (m_traitSet.m_sTraitName.get().equals("date-forward")) {
-        	for (int i = 0; i < m_tableData.length; i++) {
-        		m_tableData[i][2] =  m_tableData[i][1];
+        if (traitSet.m_sTraitName.get().equals("date-forward")) {
+        	for (int i = 0; i < tableData.length; i++) {
+        		tableData[i][2] =  tableData[i][1];
         	}
         } else {
             Double fMaxDate = 0.0;
-        	for (int i = 0; i < m_tableData.length; i++) {
-        		fMaxDate = Math.max(fMaxDate, parseDouble((String)m_tableData[i][1]));
+        	for (int i = 0; i < tableData.length; i++) {
+        		fMaxDate = Math.max(fMaxDate, parseDouble((String)tableData[i][1]));
         	}
-        	for (int i = 0; i < m_tableData.length; i++) {
-        		m_tableData[i][2] =  fMaxDate - parseDouble((String)m_tableData[i][1]);
+        	for (int i = 0; i < tableData.length; i++) {
+        		tableData[i][2] =  fMaxDate - parseDouble((String)tableData[i][1]);
         	}
         }
         
-        if (m_table != null) {
-		    for (int i = 0; i < m_tableData.length; i++) {
-				m_table.setValueAt(m_tableData[i][1], i, 1);
-				m_table.setValueAt(m_tableData[i][2], i, 2);
+        if (table != null) {
+		    for (int i = 0; i < tableData.length; i++) {
+				table.setValueAt(tableData[i][1], i, 1);
+				table.setValueAt(tableData[i][2], i, 2);
 			}
         }
 	} // convertTraitToTableData
@@ -360,14 +360,14 @@ public class TipDatesInputEditor extends PluginInputEditor {
 	/** synchronise traitSet Plugin with table data*/
 	private void convertTableDataToTrait() {
 		String sTrait = "";
-		for (int i = 0; i < m_tableData.length; i++) {
-			sTrait += m_sTaxa.get(i) + "=" + m_tableData[i][1];
-			if (i < m_tableData.length - 1) {
+		for (int i = 0; i < tableData.length; i++) {
+			sTrait += sTaxa.get(i) + "=" + tableData[i][1];
+			if (i < tableData.length - 1) {
 				sTrait += ",\n";
 			}
 		}
 		try {
-			m_traitSet.m_traits.setValue(sTrait, m_traitSet);
+			traitSet.m_traits.setValue(sTrait, traitSet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -380,43 +380,43 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		JLabel label = new JLabel("Dates specified as: ");
 		label.setMaximumSize(new Dimension(1024, 20));
 		buttonBox.add(label);
-		m_unitsComboBox = new JComboBox(TraitSet.Units.values());
-		m_unitsComboBox.setSelectedItem(m_traitSet.m_sUnits.get());
-		m_unitsComboBox.addActionListener(new ActionListener() {
+		unitsComboBox = new JComboBox(TraitSet.Units.values());
+		unitsComboBox.setSelectedItem(traitSet.m_sUnits.get());
+		unitsComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-                String sSelected = (String) m_unitsComboBox.getSelectedItem().toString();
+                String sSelected = (String) unitsComboBox.getSelectedItem().toString();
                 try {
-                	m_traitSet.m_sUnits.setValue(sSelected, m_traitSet);
+                	traitSet.m_sUnits.setValue(sSelected, traitSet);
                 	//System.err.println("Traitset is now: " + m_traitSet.m_sUnits.get());
                 } catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
 		});
-		m_unitsComboBox.setMaximumSize(new Dimension(1024, 20));
-		buttonBox.add(m_unitsComboBox);
+		unitsComboBox.setMaximumSize(new Dimension(1024, 20));
+		buttonBox.add(unitsComboBox);
 		
-		m_relativeToComboBox = new JComboBox(new String[]{"Since some time in the past",  "Before the present"});
-		m_relativeToComboBox.setSelectedItem(m_traitSet.m_sTraitName.get());
-		m_relativeToComboBox.addActionListener(new ActionListener() {
+		relativeToComboBox = new JComboBox(new String[]{"Since some time in the past",  "Before the present"});
+		relativeToComboBox.setSelectedItem(traitSet.m_sTraitName.get());
+		relativeToComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String sSelected = "date-forward";
-                if (m_relativeToComboBox.getSelectedIndex() == 0) {
+                if (relativeToComboBox.getSelectedIndex() == 0) {
                 	sSelected = "date-backward";
                 }
                 try {
-                	m_traitSet.m_sTraitName.setValue(sSelected, m_traitSet);
-                	System.err.println("Relative position is now: " + m_traitSet.m_sTraitName.get());
+                	traitSet.m_sTraitName.setValue(sSelected, traitSet);
+                	System.err.println("Relative position is now: " + traitSet.m_sTraitName.get());
                 } catch (Exception ex) {
 					ex.printStackTrace();
 				}
                 convertTraitToTableData();
 			}
 		});
-		m_relativeToComboBox.setMaximumSize(new Dimension(1024, 20));
-		buttonBox.add(m_relativeToComboBox);
+		relativeToComboBox.setMaximumSize(new Dimension(1024, 20));
+		buttonBox.add(relativeToComboBox);
 		buttonBox.add(Box.createGlue());
 		
 		JButton guessButton = new JButton("Guess");
@@ -425,7 +425,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 			public void actionPerformed(ActionEvent e) {
 				Pattern pattern = Pattern.compile(".*(\\d\\d\\d\\d).*");
 				String sTrait = "";
-				for (String sTaxon: m_sTaxa) {
+				for (String sTaxon: sTaxa) {
 					Matcher matcher = pattern.matcher(sTaxon);
 					if (matcher.find()) {
 						String sMatch = matcher.group(1);
@@ -437,7 +437,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 					}
 				}
 				try {
-					m_traitSet.m_traits.setValue(sTrait, m_traitSet);
+					traitSet.m_traits.setValue(sTrait, traitSet);
 				} catch (Exception ex) {
 					// TODO: handle exception
 				}
@@ -452,7 +452,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					m_traitSet.m_traits.setValue("", m_traitSet);
+					traitSet.m_traits.setValue("", traitSet);
 				} catch (Exception ex) {
 					// TODO: handle exception
 				}

@@ -23,7 +23,7 @@ import beast.math.distributions.ParametricDistribution;
 public class ParametricDistributionInputEditor extends PluginInputEditor {
 
 	private static final long serialVersionUID = 1L;
-	boolean m_bUseDefaultBehavior;
+	boolean useDefaultBehavior;
 
 	@Override
 	public Class<?> type() {
@@ -33,9 +33,9 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 	
     @Override
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
-    	m_bUseDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
+    	useDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
 
-    	if (m_bUseDefaultBehavior && false) {
+    	if (useDefaultBehavior && false) {
     		super.init(input, plugin, bExpand, bAddButtons);
     	} else {
 	    	m_bAddButtons = bAddButtons;
@@ -52,7 +52,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 	@Override
 	/** suppress combobox **/
 	protected void addComboBox(Box box, Input<?> input, Plugin plugin) {    
-		if (m_bUseDefaultBehavior) {
+		if (useDefaultBehavior) {
 			super.addComboBox(box, input, plugin);
 		}
 	}
@@ -60,7 +60,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 	@Override
 	/** suppress input label**/
 	protected void addInputLabel() {
-		if (m_bUseDefaultBehavior) {
+		if (useDefaultBehavior) {
 			super.addInputLabel();
 		}
 	}
@@ -126,7 +126,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 			}
 			f = Math.ceil(f);
 			f2 = Math.floor(f2);
-			final int NR_OF_TICKS_X = NR_OF_TICKS[(int) f];
+//			final int NR_OF_TICKS_X = NR_OF_TICKS[(int) f];
 			for (int i = 0; i < k; i++) {
 				f *= 10;
 				f2 *= 10;
@@ -137,7 +137,11 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 			}
 			double fAdjXRange = f;
 
-			fMinValue = f2; fXRange = fAdjXRange;
+			fXRange = fXRange + fMinValue - f2;
+			fXRange = adjust(fXRange);
+			final int NR_OF_TICKS_X = m_nTicks;
+			
+			fMinValue = f2; //fXRange = fAdjXRange;
 			
 			double fYMax = 0;
 			for (int i = 0; i < nPoints; i++) {
@@ -189,6 +193,9 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 				}
 			} catch (MathException e) {
 				g.drawString("Quantiles not available", graphoffset, graphoffset + nGraphHeight + 20);
+			} catch (Exception e) {
+				// probably something wrong with the parameters of the parametric distribution
+				g.drawString("Improper parameters", graphoffset, graphoffset + nGraphHeight + 20);
 			}
 		};
     
