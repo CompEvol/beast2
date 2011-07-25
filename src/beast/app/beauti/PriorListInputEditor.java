@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
+import beast.app.draw.SmallButton;
+import beast.app.draw.InputEditor.BUTTONSTATUS;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Logger;
@@ -56,7 +58,16 @@ public class PriorListInputEditor extends ListInputEditor {
 		m_comboBox = new ArrayList<JComboBox>();
 		m_taxonButton = new ArrayList<JButton>();
 		super.init(input, plugin, bExpand, bAddButtons);
-	}
+
+        m_addButton = new SmallButton("+", true);
+        m_addButton.setToolTipText("Add item to the list");
+        m_addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	addItem();
+            }
+        });
+        add(m_addButton);
+    }
 	
 	
     /** add components to box that are specific for the plugin.
@@ -208,22 +219,7 @@ public class PriorListInputEditor extends ListInputEditor {
 	        		MRCAPrior prior = (MRCAPrior) list.get(iItem);
 	            	try {
 	            		TaxonSet taxonset = prior.m_taxonset.get();
-	            		Set<Taxon> candidates = new HashSet<Taxon>();
-	            		for (String sTaxon : prior.m_treeInput.get().getTaxaNames()) {
-	            			Taxon taxon = null;
-	            			for (Taxon taxon2 : PluginPanel.g_taxa) {
-	            				if (taxon2.getID().equals(sTaxon)) {
-	            					taxon = taxon2;
-	            					break;
-	            				}
-	            			}
-	            			if (taxon == null) {
-	            				taxon = new Taxon();
-	            				taxon.setID(sTaxon);
-	            				PluginPanel.g_taxa.add(taxon);
-	            			}
-	            			candidates.add(taxon);
-	            		}
+	            		Set<Taxon> candidates = getTaxonCandidates(prior);
 	            		TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates);
 	                    dlg.setVisible(true);
 	                    if (dlg.m_bOK) {
@@ -238,6 +234,16 @@ public class PriorListInputEditor extends ListInputEditor {
 				}
 			});
         	
+        	
+        	if (prior.m_distInput.getType() == null) {
+        		try {
+        			prior.m_distInput.setValue(new OneOnX(), prior);
+        			prior.m_distInput.setValue(null, prior);
+        		} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		
+        	}
         	
             List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
@@ -293,6 +299,26 @@ public class PriorListInputEditor extends ListInputEditor {
     } // addPluginItem
 	
 	
+	
+	Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
+		Set<Taxon> candidates = new HashSet<Taxon>();
+		for (String sTaxon : prior.m_treeInput.get().getTaxaNames()) {
+			Taxon taxon = null;
+			for (Taxon taxon2 : PluginPanel.g_taxa) {
+				if (taxon2.getID().equals(sTaxon)) {
+					taxon = taxon2;
+					break;
+				}
+			}
+			if (taxon == null) {
+				taxon = new Taxon();
+				taxon.setID(sTaxon);
+				PluginPanel.g_taxa.add(taxon);
+			}
+			candidates.add(taxon);
+		}
+		return candidates;
+	}
 	/** class to deal with toggling monophyletic flag on an MRCAPrior **/
 	class MRCAPriorActionListener implements ActionListener {
 		MRCAPrior m_prior;
@@ -315,6 +341,7 @@ public class PriorListInputEditor extends ListInputEditor {
 	protected void addItem() {
 		super.addItem();
 		sync();
+		refreshPanel();
 	} // addItem
 		
 	@Override
@@ -323,9 +350,10 @@ public class PriorListInputEditor extends ListInputEditor {
     	try {
 
             List<Tree> trees = new ArrayList<Tree>();
+            BeautiDoc.g_doc.scrubState(true);
             State state = (State) PluginPanel.g_plugins.get("state");
 	    	for (StateNode node : state.stateNodeInput.get()) {
-	    		if (node instanceof Tree && ((Tree) node).m_initial.get() != null) {
+	    		if (node instanceof Tree) { // && ((Tree) node).m_initial.get() != null) {
 	    			trees.add((Tree) node);
 	    		}
 	    	}
@@ -339,10 +367,13 @@ public class PriorListInputEditor extends ListInputEditor {
     				JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
     				sTreeIDs, trees.get(0));
 	    	}
+	    	if (iTree < 0) {
+	    		return null;
+	    	}
 	    	prior.m_treeInput.setValue(trees.get(iTree), prior);
 	    	TaxonSet taxonSet = new TaxonSet();
 
-	    	TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, PluginPanel.g_taxa);
+	    	TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior));
 	        dlg.setVisible(true);
 	        if (!dlg.m_bOK) {
 	        	return null;
@@ -363,6 +394,7 @@ public class PriorListInputEditor extends ListInputEditor {
 		}
     	List<Plugin> selectedPlugins = new ArrayList<Plugin>();
     	selectedPlugins.add(prior);
+    	g_collapsedIDs.add(prior.getID());
     	return selectedPlugins;
     }
 

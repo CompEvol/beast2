@@ -76,11 +76,13 @@
             hasPartitions="none" icon='2220.png' forceExpansion='FALSE'
             type='beast.evolution.alignment.Alignment'
         />
+
 		<panel spec='BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxon was sampled"
             path='tree/trait'
             hasPartitions="Tree" icon='2.png' forceExpansion='TRUE'
-            isVisible='true'
+            isVisible='false'
         />
+
 		<panel spec='BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
             path='siteModel'
             hasPartitions="SiteModel" icon='3.png' forceExpansion='TRUE'
@@ -130,13 +132,16 @@
             </plugin>
 
             <!-- tree and its properties -->
-            <plugin spec='beast.evolution.tree.Tree' id='Tree.$(n)' initial='@RandomTree.$(n)'>
-	            <trait id='datetrait.$(n)' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
+            <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
+            <plugin spec='beast.evolution.tree.Tree' id='Tree.$(n)' taxonset='@TaxonSet.$(n)'>
+	            <!--trait id='datetrait.$(n)' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
 		            value=''>
 		            <taxa idref='data'/>
-	            </trait>
+	            </trait-->
             </plugin>
-            <plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
+
+            <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.$(n)'-->
+            <plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' initial='@Tree.$(n)'>
                 <taxa spec='Alignment' idref='data'/>
                 <populationModel id='ConstantPopulation.$(n)' spec='ConstantPopulation'>
             		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
@@ -145,28 +150,34 @@
 
             <!-- default tree prior -->
             <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
-                <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0' estimate='false'/>
+                <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0' estimate='true'/>
             </plugin>
 
             <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
-            <plugin id='treelog.$(n)' spec='beast.core.Logger' logEvery="10000" fileName="beast.$(seed).trees">
+            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="10000" fileName="beast.$(seed).trees" mode='tree'>
                 <log idref="Tree.$(n)"/>
-            </plugin>
+            </logger>
 
-            <plugin id='proportionInvariantScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@proportionInvariant.$(n)"/>
-            <plugin id='mutationRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@mutationRate.$(n)"/>
-            <plugin id='gammaShapeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@gammaShape.$(n)"/>
-            <plugin id='allTipDatesScaler.$(n)' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@Tree.$(n)"/>
+            <operator id='proportionInvariantScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@proportionInvariant.$(n)"/>
+            <operator id='mutationRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@mutationRate.$(n)"/>
+            <operator id='gammaShapeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@gammaShape.$(n)"/>
+            <operator id='allTipDatesScaler.$(n)' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@Tree.$(n)"/>
 
-            <plugin id='treeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@Tree.$(n)"/>
-            <plugin id='UniformOperator.$(n)' spec='Uniform' weight="10" tree="@Tree.$(n)"/>
-            <plugin id='SubtreeSlide.$(n)' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@Tree.$(n)"/>
-            <plugin id='narrow.$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@Tree.$(n)"/>
-            <plugin id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.$(n)"/>
-            <plugin id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@Tree.$(n)"/>
+            <operator id='treeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@Tree.$(n)"/>
+            <operator id='UniformOperator.$(n)' spec='Uniform' weight="10" tree="@Tree.$(n)"/>
+            <operator id='SubtreeSlide.$(n)' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@Tree.$(n)"/>
+            <operator id='narrow.$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@Tree.$(n)"/>
+            <operator id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.$(n)"/>
+            <operator id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@Tree.$(n)"/>
+
+            <prior id='YuleBirthRatePrior.$(n)' spec='Prior' x='@birthRate.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' /></prior>
+            <prior id='GammaShapePrior.$(n)' spec='Prior' x='@gammaShape.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+  		    <operator id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
+
 ]]>
             <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
+            <connect spec='BeautiConnector' srcID='RandomTree.$(n)' targetID='mcmc' inputName='init'/>
 
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
 
@@ -185,6 +196,7 @@
             <connect spec='BeautiConnector' srcID='narrow.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='wide.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='WilsonBalding.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
 
             <connect spec='BeautiConnector' srcID='TreeHeight.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='tracelog' inputName='log'/>
@@ -192,6 +204,8 @@
             <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='tracelog' inputName='log'/>
 
             <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='GammaShapePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
         </partitiontemplate>
 
 

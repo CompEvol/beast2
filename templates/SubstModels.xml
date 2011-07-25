@@ -24,9 +24,7 @@
         <plugin id='KappaScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@kappa.$(n)"/>
         <plugin id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
 
-        <plugin id='KappaPrior.$(n)' spec='Prior' x='@kappa.$(n)'>
-            <distr spec="OneOnX"/>
-        </plugin>
+        <plugin id='KappaPrior.$(n)' spec='Prior' x='@kappa.$(n)'><distr spec="OneOnX"/></plugin>
 
 ]]>
             <connect spec='BeautiConnector' srcID='KappaScaler.$(n)' targetID='mcmc' inputName='operator'/>
@@ -128,6 +126,11 @@
         <operator id='ucldMeanScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldMean.$(n)"/>
         <operator id='ucldStdevScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldStdev.$(n)"/>
 
+        <prior id='ucldStdevrior.$(n)' spec='Prior' x='@ucldStdev.$(n)'>
+            <distr spec="beast.math.distributions.Exponential">
+                <parameter name='lambda' value="0.3333" estimate='false'/>
+            </distr>
+        </prior>
 ]]>
             <connect spec='BeautiConnector' srcID='CategoriesRandomWalk.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ucldMeanScaler.$(n)' targetID='mcmc' inputName='operator'/>
@@ -165,7 +168,11 @@
             <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
                 <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0'/>
             </plugin>
+            <prior id='YuleBirthRatePrior.$(n)' spec='Prior' x='@birthRate.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+  		    <scale id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
 ]]>
+            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
         </subtemplate>
 
 <!-- Coalescent for Constant population -->
@@ -218,14 +225,14 @@
         </subtemplate>
 
 <!-- OneOnX -->
-        <subtemplate id='OneOnX' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
+        <subtemplate id='1/X' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
 <![CDATA[
         <distr spec="beast.math.distributions.OneOnX"/>
 ]]>
         </subtemplate>
 
 <!-- lognormal -->
-        <subtemplate id='LogNormalDistributionModel' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
+        <subtemplate id='LogNormal' spec='BeautiSubTemplate' class='beast.math.distributions.LogNormalDistributionModel' mainid='[top]'>
 <![CDATA[
         <distr name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
             <parameter name='M' value="1" estimate='false'/>

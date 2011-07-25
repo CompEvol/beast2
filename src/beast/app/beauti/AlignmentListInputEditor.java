@@ -173,7 +173,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			int iRow = nSelected[i];
 			m_tableData[iRow][nColumn] = m_tableData[nSelected[0]][nColumn];
 			try {
-				updateModel(nColumn, i);
+				updateModel(nColumn, iRow);
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
 			}

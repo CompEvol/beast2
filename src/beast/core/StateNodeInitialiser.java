@@ -17,7 +17,7 @@ import java.util.List;
 public interface StateNodeInitialiser {
 	
 	/** called just once to set up start state **/
-	void initStateNodes();
+	void initStateNodes() throws Exception;
 	
 	/** @return list of StateNodes that are initialised
 	 * This information is used to ensure StateNode are not 

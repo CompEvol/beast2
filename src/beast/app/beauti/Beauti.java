@@ -603,18 +603,25 @@ public class Beauti extends JTabbedPane {
     // hide panels as indicated in the hidepanels attribute in the XML template,
     // or use default tabs to hide otherwise.
 	void hidePanels() {
-		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
-			if (!panelConfig.m_bIsVisibleInput.get()) {
-				toggleVisible(iPanel);
-			}
-		}
+//		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+//			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+//			if (!panelConfig.m_bIsVisibleInput.get()) {
+//				toggleVisible(iPanel);
+//			}
+//		}
 	} // hidePanels
 	
     void setUpPanels() throws Exception {
     	// remove any existing tabs
-    	while (getTabCount() > 0) {
-    		removeTabAt(0);
+    	if (getTabCount() > 0) {
+	    	while (getTabCount() > 0) {
+	    		removeTabAt(0);
+	    	}
+    	} else {
+    		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+    			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+    			m_bPaneIsVisible[iPanel] = panelConfig.m_bIsVisibleInput.get();
+    		}    		
     	}
     	// add panels according to BeautiConfig 
 		m_panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
@@ -622,6 +629,12 @@ public class Beauti extends JTabbedPane {
 			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
 			m_panels[ iPanel] = new BeautiPanel( iPanel, m_doc, panelConfig);
 			addTab(BeautiConfig.getButtonLabel(this, panelConfig.getName()), null, m_panels[ iPanel], panelConfig.getTipText());
+		}
+		
+		for (int iPanel = BeautiConfig.g_panels.size() - 1; iPanel >= 0; iPanel--) {
+			if (!m_bPaneIsVisible[iPanel]) {
+				removeTabAt(iPanel);
+			}
 		}
     }
 
@@ -648,6 +661,9 @@ public class Beauti extends JTabbedPane {
 			beauti.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
+					if (beauti.m_currentTab == null) {
+						beauti.m_currentTab = beauti.m_panels[0];
+					}
 					if (beauti.m_currentTab != null) {
 						beauti.m_currentTab.m_config.sync(beauti.m_currentTab.m_iPartition);
 						BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();

@@ -28,6 +28,7 @@ package beast.evolution.tree;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.Plugin;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
@@ -90,122 +91,6 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         m_distributions = new ArrayList<ParametricDistribution>();
         m_sTaxonSetIDs = new ArrayList<String>();
         m_nIsMonophyletic = 0;
-        // pick up constraints from outputs, m_inititial input tree and output tree, if any
-        List<MRCAPrior> calibrations = m_calibrations.get();
-//    	for (Plugin plugin : outputs) {
-//        	// pick up constraints in outputs
-//    		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
-//    			calibrations.add((MRCAPrior) plugin);
-//    		} else  if (plugin instanceof Tree) {
-//            	// pick up constraints in outputs if output tree
-//    			Tree tree = (Tree) plugin;
-//    			if (tree.m_initial.get() == this) {
-//                	for (Plugin plugin2 : tree.outputs) {
-//                		if (plugin2 instanceof MRCAPrior && !calibrations.contains(plugin2)) {
-//                			calibrations.add((MRCAPrior) plugin2);
-//                		}                		
-//                	}
-//    			}
-//    		}
-//    		
-//    	}
-//    	// pick up constraints in m_initial tree
-//        if (m_initial.get() != null) {
-//        	for (Plugin plugin : m_initial.get().outputs) {
-//        		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
-//        			calibrations.add((MRCAPrior) plugin);
-//        		}
-//        	}
-//         }
-        
-        
-        for (MRCAPrior prior : calibrations) {
-    		TaxonSet taxonSet = prior.m_taxonset.get();
-    		BitSet bTaxa = new BitSet(m_nTaxa);
-    		for (String sTaxonID : taxonSet.asStringList()) {
-    			int iID = sTaxa.indexOf(sTaxonID);
-    			if (iID < 0) {
-    				throw new Exception("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
-    			}
-    			bTaxa.set(iID);
-    		}
-			ParametricDistribution distr = prior.m_distInput.get();
-			Bound bounds = new Bound();
-			if (distr != null) {
-				bounds.m_fLower = distr.inverseCumulativeProbability(0.0); 
-				bounds.m_fUpper = distr.inverseCumulativeProbability(1.0); 
-			}
-
-			if (prior.m_bIsMonophyleticInput.get()) {
-				// add any monophyletic constraint
-    			m_bTaxonSets.add(m_nIsMonophyletic, bTaxa);
-    			m_distributions.add(m_nIsMonophyletic, distr);
-    			m_bounds.add(m_nIsMonophyletic, bounds);
-    			m_nIsMonophyletic++;
-    		} else {
-    			// only calibrations with finite bounds are added
-    			if (!Double.isInfinite(bounds.m_fLower) || !Double.isInfinite(bounds.m_fUpper)) {
-	        		m_bTaxonSets.add(bTaxa);
-	        		m_distributions.add(distr);
-	    			m_bounds.add(bounds);
-    			}
-    		}
-    	}
-    	
-        // assume all calibration constraints are MonoPhyletic
-        // TODO: verify that this is a reasonable assumption
-        m_nIsMonophyletic = m_bTaxonSets.size();
-        
-        
-    	// sort constraints such that if taxon set i is subset of taxon set j, then i < j
-        for (int i = 0; i < m_nIsMonophyletic; i++) {
-        	for (int j = i + 1; j < m_nIsMonophyletic; j++) {
-        		boolean bIntersects = intersects(m_bTaxonSets.get(i), m_bTaxonSets.get(j));
-        		if (bIntersects) {
-	        		boolean bIsSubset = isSubset(m_bTaxonSets.get(j), m_bTaxonSets.get(i));
-	        		boolean bIsSubset2 = isSubset(m_bTaxonSets.get(i), m_bTaxonSets.get(j));
-	                // sanity check: make sure either 
-	                // o taxonset1 is subset of taxonset2 OR 
-	                // o taxonset1 is superset of taxonset2 OR 
-	                // o taxonset1 does not intersect taxonset2
-	        		if (!(bIsSubset || bIsSubset2)) {
-	        			throw new Exception("333: Don't know how to generate a Random Tree for taxon sets that intersect, " +
-	        					"but are not inclusive. Taxonset " + m_sTaxonSetIDs.get(i) + " and " + m_sTaxonSetIDs.get(j));
-	        		}
-	        		// swap i & j if b1 subset of b2
-	        		if (bIsSubset) {
-	        			swap(m_bTaxonSets, i, j);
-	        			swap(m_distributions, i, j);
-	        			swap(m_bounds, i, j);
-	        			swap(m_sTaxonSetIDs, i, j);
-	        		}
-        		}
-			}
-        }
-        
-    	// build tree of mono constraints such that i is parent of j => j is subset of i
-        int [] nParent = new int[m_nIsMonophyletic];
-        m_children = new List[m_nIsMonophyletic+1];
-        for (int i = 0; i < m_nIsMonophyletic+1; i++) {
-        	m_children[i] = new ArrayList<Integer>();
-        }        
-        for (int i = 0; i < m_nIsMonophyletic; i++) {
-        	int j = i+1;
-        	while (j < m_nIsMonophyletic && !isSubset(m_bTaxonSets.get(i), m_bTaxonSets.get(j))) {
-        		j++;
-        	}
-        	nParent[i] = j;
-        	m_children[j].add(i);
-        }
-        
-        // make sure upper bounds of a child does not exceed the upper bound of its parent
-        for (int i = 0; i < m_nIsMonophyletic; i++) {
-        	if (nParent[i] < m_nIsMonophyletic) {
-        		if (m_bounds.get(i).m_fUpper > m_bounds.get(nParent[i]).m_fUpper) {
-        			m_bounds.get(i).m_fUpper = m_bounds.get(nParent[i]).m_fUpper - 1e-100;
-        		}
-        	}
-        }
         
         initStateNodes();
         super.initAndValidate();
@@ -238,13 +123,131 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	}
 
 	@Override
-    public void initStateNodes() {
-            List<String> sTaxa;
-            if (m_taxa.get() != null) {
-                    sTaxa = m_taxa.get().getTaxaNames();
-            } else {
-                    sTaxa = m_taxonset.get().asStringList();
-            }
+    public void initStateNodes() throws Exception {
+        List<String> sTaxa;
+        if (m_taxa.get() != null) {
+                sTaxa = m_taxa.get().getTaxaNames();
+        } else {
+                sTaxa = m_taxonset.get().asStringList();
+        }
+        // pick up constraints from outputs, m_inititial input tree and output tree, if any
+        List<MRCAPrior> calibrations = m_calibrations.get();
+//    	for (Plugin plugin : outputs) {
+//    	// pick up constraints in outputs
+//		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
+//			calibrations.add((MRCAPrior) plugin);
+//		} else  if (plugin instanceof Tree) {
+//        	// pick up constraints in outputs if output tree
+//			Tree tree = (Tree) plugin;
+//			if (tree.m_initial.get() == this) {
+//            	for (Plugin plugin2 : tree.outputs) {
+//            		if (plugin2 instanceof MRCAPrior && !calibrations.contains(plugin2)) {
+//            			calibrations.add((MRCAPrior) plugin2);
+//            		}                		
+//            	}
+//			}
+//		}
+//		
+//	}
+	// pick up constraints in m_initial tree
+    if (m_initial.get() != null) {
+    	for (Plugin plugin : m_initial.get().outputs) {
+    		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
+    			calibrations.add((MRCAPrior) plugin);
+    		}
+    	}
+     }
+    
+    
+    for (MRCAPrior prior : calibrations) {
+		TaxonSet taxonSet = prior.m_taxonset.get();
+		BitSet bTaxa = new BitSet(m_nTaxa);
+		for (String sTaxonID : taxonSet.asStringList()) {
+			int iID = sTaxa.indexOf(sTaxonID);
+			if (iID < 0) {
+				throw new Exception("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
+			}
+			bTaxa.set(iID);
+		}
+		ParametricDistribution distr = prior.m_distInput.get();
+		Bound bounds = new Bound();
+		if (distr != null) {
+			bounds.m_fLower = distr.inverseCumulativeProbability(0.0); 
+			bounds.m_fUpper = distr.inverseCumulativeProbability(1.0); 
+		}
+
+		if (prior.m_bIsMonophyleticInput.get()) {
+			// add any monophyletic constraint
+			m_bTaxonSets.add(m_nIsMonophyletic, bTaxa);
+			m_distributions.add(m_nIsMonophyletic, distr);
+			m_bounds.add(m_nIsMonophyletic, bounds);
+			m_nIsMonophyletic++;
+		} else {
+			// only calibrations with finite bounds are added
+			if (!Double.isInfinite(bounds.m_fLower) || !Double.isInfinite(bounds.m_fUpper)) {
+        		m_bTaxonSets.add(bTaxa);
+        		m_distributions.add(distr);
+    			m_bounds.add(bounds);
+			}
+		}
+	}
+	
+    // assume all calibration constraints are MonoPhyletic
+    // TODO: verify that this is a reasonable assumption
+    m_nIsMonophyletic = m_bTaxonSets.size();
+    
+    
+	// sort constraints such that if taxon set i is subset of taxon set j, then i < j
+    for (int i = 0; i < m_nIsMonophyletic; i++) {
+    	for (int j = i + 1; j < m_nIsMonophyletic; j++) {
+    		boolean bIntersects = intersects(m_bTaxonSets.get(i), m_bTaxonSets.get(j));
+    		if (bIntersects) {
+        		boolean bIsSubset = isSubset(m_bTaxonSets.get(j), m_bTaxonSets.get(i));
+        		boolean bIsSubset2 = isSubset(m_bTaxonSets.get(i), m_bTaxonSets.get(j));
+                // sanity check: make sure either 
+                // o taxonset1 is subset of taxonset2 OR 
+                // o taxonset1 is superset of taxonset2 OR 
+                // o taxonset1 does not intersect taxonset2
+        		if (!(bIsSubset || bIsSubset2)) {
+        			throw new Exception("333: Don't know how to generate a Random Tree for taxon sets that intersect, " +
+        					"but are not inclusive. Taxonset " + m_sTaxonSetIDs.get(i) + " and " + m_sTaxonSetIDs.get(j));
+        		}
+        		// swap i & j if b1 subset of b2
+        		if (bIsSubset) {
+        			swap(m_bTaxonSets, i, j);
+        			swap(m_distributions, i, j);
+        			swap(m_bounds, i, j);
+        			swap(m_sTaxonSetIDs, i, j);
+        		}
+    		}
+		}
+    }
+    
+	// build tree of mono constraints such that i is parent of j => j is subset of i
+    int [] nParent = new int[m_nIsMonophyletic];
+    m_children = new List[m_nIsMonophyletic+1];
+    for (int i = 0; i < m_nIsMonophyletic+1; i++) {
+    	m_children[i] = new ArrayList<Integer>();
+    }        
+    for (int i = 0; i < m_nIsMonophyletic; i++) {
+    	int j = i+1;
+    	while (j < m_nIsMonophyletic && !isSubset(m_bTaxonSets.get(i), m_bTaxonSets.get(j))) {
+    		j++;
+    	}
+    	nParent[i] = j;
+    	m_children[j].add(i);
+    }
+    
+    // make sure upper bounds of a child does not exceed the upper bound of its parent
+    for (int i = 0; i < m_nIsMonophyletic; i++) {
+    	if (nParent[i] < m_nIsMonophyletic) {
+    		if (m_bounds.get(i).m_fUpper > m_bounds.get(nParent[i]).m_fUpper) {
+    			m_bounds.get(i).m_fUpper = m_bounds.get(nParent[i]).m_fUpper - 1e-100;
+    		}
+    	}
+    }
+
+    
             PopulationFunction popFunction = m_populationFunction.get();
 
             simulateTree(sTaxa, popFunction);

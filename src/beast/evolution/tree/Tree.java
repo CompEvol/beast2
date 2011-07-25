@@ -61,18 +61,44 @@ public class Tree extends StateNode {
             leafNodeCount = other.leafNodeCount;
     	}
     	
+    	if (nodeCount < 0) {
+    		if (m_taxonset.get() != null) {
+    			// make a caterpillar
+    			List<String> sTaxa = m_taxonset.get().asStringList();
+    			Node left = new Node();
+    			left.m_iLabel = 0;
+    			left.m_fHeight = 0;
+    			for (int i = 1; i < sTaxa.size(); i++) {
+    				Node right = new Node();
+    				right.m_iLabel = i;
+    				right.m_fHeight = 0;
+    				Node parent = new Node();
+    				parent.m_iLabel = sTaxa.size() + i - 1;
+    				parent.m_fHeight = i;
+    				left.m_Parent = parent;
+    				parent.m_left = left;
+    				right.m_Parent = parent;
+    				parent.m_right = right;
+    				left = parent;
+    			}
+    			root = left;
+    			leafNodeCount = sTaxa.size();
+    			nodeCount = leafNodeCount * 2 - 1;
+    			internalNodeCount = leafNodeCount - 1;
+    			
+    		} else {
+        		// make dummy tree with a single root node
+        		root = new Node();
+	    		root.m_iLabel = 0;
+	    		root.m_fHeight = 0;
+	    		root.m_tree = this;
+	    		nodeCount = 1;
+	    		internalNodeCount = 0;
+	    		leafNodeCount = 1;
+    		}
+    	}
     	if (m_trait.get() != null) {
     		adjustTreeToNodeHeights(root);
-    	}
-    	if (nodeCount < 0) {
-    		// make dummy tree with a single root node
-    		root = new Node();
-    		root.m_iLabel = 0;
-    		root.m_fHeight = 0;
-    		root.m_tree = this;
-    		nodeCount = 1;
-    		internalNodeCount = 0;
-    		leafNodeCount = 1;
     	}
     	
     	if (nodeCount >= 0) {

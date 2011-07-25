@@ -6,6 +6,8 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import beast.evolution.alignment.Alignment;
 import beast.evolution.datatype.DataType;
@@ -16,9 +18,20 @@ public class AlignmentViewer extends JPanel {
 
 	Object[][] tableData;
 	Object[] columnData;
-	boolean m_bUSeColor = false;
+	boolean m_bUseColor = false;
+	// flag to indicate that the most frequently occurring character is shown as a dot
+	boolean m_bUseDots = true;
 	Alignment m_alignment;
+	Map<Character,Color> m_customColorMap = new HashMap<Character, Color>();
 	
+	/** define which character maps to which color **/
+	public void setCustomColorMap(Map<Character, Color> colorMap) {
+		for (char c: m_customColorMap.keySet()) {
+			m_customColorMap.put(c, colorMap.get(c));
+		}
+	}
+
+	/** constructor processes alignment and sets up table with first column fixed **/
 	public AlignmentViewer(Alignment data) throws Exception {
 		m_alignment = data;
 		int nSites = data.getSiteCount();
@@ -121,26 +134,9 @@ public class AlignmentViewer extends JPanel {
 		
 		setLayout(new BorderLayout());
 		add(scrollPane, BorderLayout.CENTER);
-		
-		JCheckBox hasColor = new JCheckBox("Use Color");
-		hasColor.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JCheckBox hasColor = (JCheckBox) e.getSource();
-				m_bUSeColor = hasColor.isSelected();
-				try {
-					updateTableData();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				repaint();
-			}
-		});
-		add(hasColor, BorderLayout.SOUTH);
 	}
 
-	char [] updateTableData() throws Exception {
+	private char [] updateTableData() {
 		int nSites = m_alignment.getSiteCount();
 		int nTaxa = m_alignment.getNrTaxa();
 
@@ -148,25 +144,35 @@ public class AlignmentViewer extends JPanel {
 		DataType dataType = m_alignment.getDataType();
 		char[] headerChar = new char[nSites];
 		Object [][] colorMap = setupColorMap();
-		for (int i = 0; i < nSites; i++) {
-			int iPattern = m_alignment.getPatternIndex(i);
-			int[] pattern = m_alignment.getPattern(iPattern);
-			String sPattern = dataType.state2string(pattern);
-			headerChar[i] = mostFrequentCharInPattern(sPattern);
-			for (int j = 0; j < nTaxa; j++) {
-				char c = sPattern.charAt(j);
-				if (c == headerChar[i]) {
-					tableData[j][i + 1] = colorMap[0][c];
-				} else {
-					tableData[j][i + 1] = colorMap[1][c];
+		try {
+			for (int i = 0; i < nSites; i++) {
+				int iPattern = m_alignment.getPatternIndex(i);
+				int[] pattern = m_alignment.getPattern(iPattern);
+				String sPattern = dataType.state2string(pattern);
+				headerChar[i] = mostFrequentCharInPattern(sPattern);
+				for (int j = 0; j < nTaxa; j++) {
+					char c = sPattern.charAt(j);
+					if (c == headerChar[i]) {
+						tableData[j][i + 1] = colorMap[0][c];
+					} else {
+						tableData[j][i + 1] = colorMap[1][c];
+					}
 				}
 			}
+		} catch (Exception e) {
+			// ignore
 		}
 		return headerChar;
 	}
 	
+	/** determine content of table cells. 
+	 * Without color, only Characters are displayed, which can be a bit faster than using color
+	 * With color, the color is encoded in HTML
+	 * @return an array of 2x256 where the first entry is for the most frequently occurring character, 
+	 * and the second for the others 
+	 * **/
 	private Object[][] setupColorMap() {
-		if (m_bUSeColor) {
+		if (m_bUseColor) {
 			String [][] colorMap = new String[2][256];
 			for (int k = 'A'; k < 'Z'; k++) {
 				int i = k - 'A';
@@ -177,12 +183,23 @@ public class AlignmentViewer extends JPanel {
 				colorMap[0][k] = "<html><font color='#" + Integer.toString(nColor, 16) + "'><b>.</b></html>"; 
 				colorMap[1][k] = "<html><font color='#" + Integer.toString(nColor, 16) + "'><b>" + ((char)k) + "</font></html>"; 
 			}
+			for (char c: m_customColorMap.keySet()) {
+				Color color = m_customColorMap.get(c);
+				colorMap[0][c] = "<html><font color='#" + Integer.toString(color.getRGB(), 16) + "'><b>.</b></html>"; 
+				colorMap[1][c] = "<html><font color='#" + Integer.toString(color.getRGB(), 16) + "'><b>" + c + "</font></html>"; 
+			}
+			if (!m_bUseDots) {
+				colorMap[0] = colorMap[1];
+			}
 			return colorMap;
 		} else {
 			Character [][] colorMap = new Character[2][256];
 			for (int i = 0; i < 256; i++) {
 				colorMap[0][i] = '.'; 
 				colorMap[1][i] = (char)i; 
+			}
+			if (!m_bUseDots) {
+				colorMap[0] = colorMap[1];
 			}
 			return colorMap;
 		}
@@ -206,6 +223,35 @@ public class AlignmentViewer extends JPanel {
 	public void showInDialog() {
 		JDialog dlg = new JDialog();
 		dlg.add(this);
+		
+		Box buttonBox = Box.createHorizontalBox(); 
+		JCheckBox useDots = new JCheckBox("Use dots", true);
+		useDots.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox useColor = (JCheckBox) e.getSource();
+				m_bUseDots = useColor.isSelected();
+				updateTableData();
+				repaint();
+			}
+		});
+		buttonBox.add(useDots);
+		
+		JCheckBox hasColor = new JCheckBox("Use Color");
+		hasColor.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox hasColor = (JCheckBox) e.getSource();
+				m_bUseColor = hasColor.isSelected();
+				updateTableData();
+				repaint();
+			}
+		});
+		buttonBox.add(hasColor);
+		dlg.add(buttonBox, BorderLayout.SOUTH);		
+		
 		dlg.setSize(1024, 600);
 		dlg.setModal(true);
 		dlg.setVisible(true);
