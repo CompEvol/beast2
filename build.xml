@@ -201,6 +201,7 @@
 	<property name="Mac_dir" value="${release_dir}/Mac" />
 	<property name="Linux_dir" value="${release_dir}/Linux" />
 	<property name="Windows_dir" value="${release_dir}/Windows" />
+	<property name="beast1_dir" value="${common_dir}/beast1" />
 
 	<property name="Mac_package_dir" value="${Mac_dir}/${BEAST_name}" />
 	<property name="Linux_package_dir" value="${Linux_dir}/${BEAST_name}" />
@@ -296,8 +297,11 @@
                               productVersion="${version}.0"
                               txtProductVersion="${version}"/>      -->
 
-		<copy file="${Windows_dir}/LogCombiner.exe" todir="${Windows_package_dir}" />
-		<copy file="${Windows_dir}/TreeAnnotator.exe" todir="${Windows_package_dir}" />
+		<copy todir="${Windows_package_dir}/templates/">
+			<fileset dir="templates/" />
+		</copy>
+		<copy file="${beast1_dir}/LogCombiner.exe" todir="${Windows_package_dir}" />
+		<copy file="${beast1_dir}/TreeAnnotator.exe" todir="${Windows_package_dir}" />
 
 		<zip destfile="${Windows_dir}/${BEAST_name} v${version}.zip">
 			<zipfileset dir="${Windows_package_dir}" prefix="${BEAST_name}" />
@@ -330,12 +334,16 @@
 
 		<copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
 		<copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
-		<copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" />
-		<copy file="${dist}/beauti.jar" todir="${Linux_package_dir}/lib" />
+		<!-- <copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" /> 
+		<copy file="${dist}/beauti.jar" todir="${Linux_package_dir}/lib" /> -->
 		<copy file="${dist}/beast.jar" todir="${Linux_package_dir}/lib" />
+		<copy file="${dist}/beast.src.jar" todir="${Linux_package_dir}/lib" />
 		<!-- <copy file="${dist}/beast-beagle.jar" todir="${Linux_package_dir}/lib"/> -->
 		<copy todir="${Linux_package_dir}/lib">
 			<fileset dir="${Linux_dir}/lib" />
+		</copy>
+		<copy todir="${Linux_package_dir}/templates/">
+			<fileset dir="templates/" />
 		</copy>
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Linux_package_dir}" />
 		<copy file="${common_dir}/README.txt" todir="${Linux_package_dir}" />
@@ -384,6 +392,7 @@
 		<copy todir="${Mac_package_dir}/lib">
 			<fileset dir="${Mac_dir}/lib" />
 		</copy> -->
+
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Mac_package_dir}" />
 		<copy file="${common_dir}/README.txt" todir="${Mac_package_dir}" />
 
@@ -436,18 +445,19 @@
 			<javaproperty name="java.library.path" value="$JAVAROOT" />
 		</jarbundler>
 
-		<!--	<jarbundler dir="${Mac_package_dir}"
+		<!-- ant copy will not redirect the source, so that have to re-bundler it -->
+		<jarbundler dir="${Mac_package_dir}"
 		            name="${LogCombiner_name}"
 		            mainclass="dr.app.tools.LogCombiner"
-		            icon="${common_dir}/icons/utility.icns"
+		            icon="${beast1_dir}/utility.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments=""
-		            version="${version}"
+		            version="1.6.1"
 		            infostring="${LogCombiner_name}, ${copyright}"
 		            bundleid="dr.app.tools.logcombiner">
-			<jarfileset dir="${Mac_package_dir}/lib">
-				<include name="**/beast.jar" />
+			<jarfileset dir="${beast1_dir}">
+				<include name="**/beast161.jar" />
 			</jarfileset>
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
@@ -456,21 +466,21 @@
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${TreeAnnotator_name}"
 		            mainclass="dr.app.tools.TreeAnnotator"
-		            icon="${common_dir}/icons/utility.icns"
+		            icon="${beast1_dir}/utility.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments=""
-		            version="${version}"
+		            version="1.6.1"
 		            infostring="${TreeAnnotator_name}, ${copyright}"
 		            bundleid="dr.app.tools.treeannotator">
-			<jarfileset dir="${Mac_package_dir}/lib">
-				<include name="**/beast.jar" />
+			<jarfileset dir="${beast1_dir}">
+				<include name="**/beast161.jar" />
 			</jarfileset>
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
 		</jarbundler>
 
-		<jarbundler dir="${Mac_package_dir}"
+		<!--	<jarbundler dir="${Mac_package_dir}"
 		            name="${TreeStat_name}"
 		            mainclass="dr.app.treestat.TreeStatApp"
 		            icon="${common_dir}/icons/TreeStat.icns"
@@ -486,6 +496,10 @@
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
 		</jarbundler> -->
+
+		<copy todir="${Mac_package_dir}/templates/">
+			<fileset dir="templates/" />
+		</copy>
 
 		<echo message="Building disk image." />
 
