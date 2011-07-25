@@ -523,14 +523,14 @@
 
 		<jarbundler dir="${Mac_package_dir}"
 		            name="DensiTree"
-		            mainclass="dr.app.tools.TreeAnnotator"
+		            mainclass="viz.DensiTree"
 		            icon="${tools_dir}/DensiTree.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments=""
 		            version="2.0"
 		            infostring="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
-		            bundleid="dr.app.tools.treeannotator">
+		            bundleid="viz.DensiTree">
 			<jarfileset dir="${tools_dir}">
 				<include name="**/DensiTree.jar" />
 			</jarfileset>
