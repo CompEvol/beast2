@@ -202,6 +202,7 @@
 	<property name="Linux_dir" value="${release_dir}/Linux" />
 	<property name="Windows_dir" value="${release_dir}/Windows" />
 	<property name="beast1_dir" value="${common_dir}/beast1" />
+	<property name="tools_dir" value="${common_dir}/tools" />
 
 	<property name="Mac_package_dir" value="${Mac_dir}/${BEAST_name}" />
 	<property name="Linux_package_dir" value="${Linux_dir}/${BEAST_name}" />
@@ -222,13 +223,17 @@
 		         classname="net.sf.launch4j.ant.Launch4jTask"
 		         classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
-		<!--<copy todir="${Windows_package_dir}/doc">
-			<fileset dir="${common_dir}/doc"/>
+		<copy todir="${Windows_package_dir}/doc">
+			<fileset dir="${common_dir}/doc" />
 		</copy>
-		<copy todir="${Windows_package_dir}/examples">
-			<fileset dir="examples/release"/>
+		<copy todir="${Windows_package_dir}/examples/">
+			<fileset dir="examples/">
+				<include name="*.xml" />
+				<include name="nexus/**" />
+				<exclude name="benchmark/**" />
+			</fileset>
 		</copy>
-		<copy todir="${Windows_package_dir}/native">
+		<!--<copy todir="${Windows_package_dir}/native">
 			<fileset dir="${common_dir}/native"/>
 		</copy>
 		<copy todir="${Windows_package_dir}/bin">
@@ -297,6 +302,14 @@
                               productVersion="${version}.0"
                               txtProductVersion="${version}"/>      -->
 
+		<launch4j configFile="${tools_dir}/DensiTree_launch4j.xml"
+		          jar="${tools_dir}/DensiTree.jar"
+		          outfile="${Windows_package_dir}/DensiTree.exe"
+		          fileVersion="2.0.0.0"
+		          txtFileVersion="2.0.0.0"
+		          productVersion="2.0.0.0"
+		          txtProductVersion="2.0.0.0" />
+
 		<copy todir="${Windows_package_dir}/templates/">
 			<fileset dir="templates/" />
 		</copy>
@@ -318,18 +331,19 @@
 		<mkdir dir="${Linux_package_dir}" />
 
 		<copy todir="${Linux_package_dir}/bin">
-			<fileset dir="${Linux_dir}/scripts" />
+			<fileset dir="${Linux_dir}/bin" />
 		</copy>
 		<chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
 
 		<copy todir="${Linux_package_dir}/doc">
 			<fileset dir="${common_dir}/doc" />
 		</copy>
-		<copy todir="${Linux_package_dir}/examples">
-			<fileset dir="examples/release" />
-		</copy>
-		<copy todir="${Linux_package_dir}/native">
-			<fileset dir="${common_dir}/native" />
+		<copy todir="${Linux_package_dir}/examples/">
+			<fileset dir="examples/">
+				<include name="*.xml" />
+				<include name="nexus/**" />
+				<exclude name="benchmark/**" />
+			</fileset>
 		</copy>
 
 		<copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
@@ -338,10 +352,16 @@
 		<copy file="${dist}/beauti.jar" todir="${Linux_package_dir}/lib" /> -->
 		<copy file="${dist}/beast.jar" todir="${Linux_package_dir}/lib" />
 		<copy file="${dist}/beast.src.jar" todir="${Linux_package_dir}/lib" />
-		<!-- <copy file="${dist}/beast-beagle.jar" todir="${Linux_package_dir}/lib"/> -->
+		<!-- <copy file="${dist}/beast-beagle.jar" todir="${Linux_package_dir}/lib"/> 
 		<copy todir="${Linux_package_dir}/lib">
 			<fileset dir="${Linux_dir}/lib" />
-		</copy>
+		</copy>-->
+
+		<copy file="${beast1_dir}/beast161.jar" todir="${Linux_package_dir}/lib" />
+
+		<copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
+		<copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
+
 		<copy todir="${Linux_package_dir}/templates/">
 			<fileset dir="templates/" />
 		</copy>
@@ -370,18 +390,22 @@
 		<!-- Create the release directory -->
 		<mkdir dir="${Mac_package_dir}" />
 
-		<!-- 		<copy todir="${Mac_package_dir}/bin">
-			<fileset dir="${Mac_dir}/scripts" />
+		<copy todir="${Mac_package_dir}/bin">
+			<fileset dir="${Linux_dir}/bin" />
 		</copy>
 		<chmod dir="${Mac_package_dir}/bin" perm="755" includes="**/**" />
 
 		<copy todir="${Mac_package_dir}/doc">
 			<fileset dir="${common_dir}/doc" />
 		</copy>
-		<copy todir="${Mac_package_dir}/examples">
-			<fileset dir="examples/release" />
+		<copy todir="${Mac_package_dir}/examples/">
+			<fileset dir="examples/">
+				<include name="*.xml" />
+				<include name="nexus/**" />
+				<exclude name="benchmark/**" />
+			</fileset>
 		</copy>
-		<copy todir="${Mac_package_dir}/native">
+		<!-- <copy todir="${Mac_package_dir}/native">
 			<fileset dir="${common_dir}/native" />
 		</copy>
 
@@ -496,6 +520,23 @@
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
 		</jarbundler> -->
+
+		<jarbundler dir="${Mac_package_dir}"
+		            name="DensiTree"
+		            mainclass="dr.app.tools.TreeAnnotator"
+		            icon="${tools_dir}/DensiTree.icns"
+		            jvmversion="1.6+"
+		            vmoptions="-Xmx1024M"
+		            arguments=""
+		            version="2.0"
+		            infostring="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
+		            bundleid="dr.app.tools.treeannotator">
+			<jarfileset dir="${tools_dir}">
+				<include name="**/DensiTree.jar" />
+			</jarfileset>
+			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
+			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
+		</jarbundler>
 
 		<copy todir="${Mac_package_dir}/templates/">
 			<fileset dir="templates/" />

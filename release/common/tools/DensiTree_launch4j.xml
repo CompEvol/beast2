@@ -1,0 +1,16 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <icon>../common/tools/DensiTree.ico</icon>  
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>    
+  <versionInfo>
+    <fileDescription>DensiTree</fileDescription>
+    <copyright>http://compevol.auckland.ac.nz/software/DensiTree/</copyright>
+    <productName>DensiTree</productName>
+    <internalName>DensiTree</internalName>
+    <originalFilename>DensiTree.exe</originalFilename>    
+  </versionInfo>
+</launch4jConfig>
