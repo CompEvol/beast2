@@ -51,7 +51,7 @@ public class Dirichlet extends ParametricDistribution {
 		public double logDensity(double x) {
 			return Double.NaN;
 		}
-	} // class OneOnXImpl
+	} // class DirichletImpl
 	
 	
 	

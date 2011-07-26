@@ -69,6 +69,10 @@ public class MCMC extends Runnable {
     	new Input<List<StateNodeInitialiser>>("init", "one or more state node initilisers used for determining " +
     			"the start state of the chain", 
     			new ArrayList<StateNodeInitialiser>());
+    
+    public Input<Boolean> sampleFromPrior = new Input<Boolean>("sampleFromPrior","whether to ignore the likelihood when sampling (default false). " +
+    		"The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", false);
+    
     /** Alternative representation of operatorsInput that allows random selection
      * of operators and calculation of statistics.
      */
@@ -102,6 +106,22 @@ public class MCMC extends Runnable {
             operatorSet.addOperator(op);
         }
 
+        if (sampleFromPrior.get()) {
+        	// remove plugin with id likelihood from posterior, if it is a CompoundDistribution
+        	if (posteriorInput.get() instanceof CompoundDistribution) {
+        		CompoundDistribution posterior = (CompoundDistribution) posteriorInput.get();
+        		List<Distribution> distrs = posterior.pDistributions.get();
+        		for (int i = distrs.size()-1; i >= 0; i--) {
+        			Distribution distr = distrs.get(i);
+        			String sID = distr.getID(); 
+        			if (sID != null && sID.equals("likelihood")) {
+        				distrs.remove(distr);
+        			}
+        		}
+        	}
+        }
+        
+        
         // StateNode initialisation
         HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
         for (StateNodeInitialiser initialiser : m_initilisers.get()) {
