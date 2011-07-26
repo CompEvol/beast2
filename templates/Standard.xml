@@ -17,11 +17,9 @@
 	        beast.core.MCMC.state,
 	        beast.core.MCMC.distribution,
 	        beast.core.MCMC.init,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.relativeDeathRate,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.type,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.tree,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
 	        beast.evolution.tree.Tree,
 	        beast.evolution.tree.Tree.trait,
 	        beast.evolution.tree.Tree.taxa,
@@ -61,6 +59,7 @@
             beast.math.distributions.MRCAPrior.taxonset,
             beast.evolution.branchratemodel.UCRelaxedClockModel.tree,
             beast.evolution.branchratemodel.UCRelaxedClockModel.rateCategories,
+			beast.evolution.branchratemodel.UCRelaxedClockModel.distr,
             beast.evolution.branchratemodel.RandomLocalClockModel.tree,
             beast.evolution.branchratemodel.RandomLocalClockModel.meanRate,
             beast.evolution.branchratemodel.RandomLocalClockModel.indicators,
@@ -174,6 +173,8 @@
             <prior id='YuleBirthRatePrior.$(n)' spec='Prior' x='@birthRate.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' /></prior>
             <prior id='GammaShapePrior.$(n)' spec='Prior' x='@gammaShape.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
   		    <operator id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
+			<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
+			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
 
 ]]>
             <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
@@ -197,6 +198,7 @@
             <connect spec='BeautiConnector' srcID='wide.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='WilsonBalding.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
 
             <connect spec='BeautiConnector' srcID='TreeHeight.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='tracelog' inputName='log'/>

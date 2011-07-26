@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.xml.sax.InputSource;
 
+import beast.app.beauti.BeautiConnector.ConnectCondition;
 import beast.app.draw.PluginPanel;
 import beast.core.Description;
 import beast.core.Input;
@@ -33,6 +34,7 @@ public class BeautiSubTemplate extends Plugin {
 	String [] sSrcIDs;
 	String [] sTargetIDs;
 	String [] sTargetInputs;
+	ConnectCondition [] conditions;
 	String sMainID = "";
 	String sShortClassName;
 	
@@ -62,11 +64,14 @@ public class BeautiSubTemplate extends Plugin {
 		sSrcIDs = new String[nConnectors];
 		sTargetIDs = new String[nConnectors];
 		sTargetInputs = new String[nConnectors];
+		conditions = new ConnectCondition[nConnectors];
+
 		for (int i = 0; i < nConnectors; i++) {
 			BeautiConnector connector = connections.get().get(i);
 			sSrcIDs[i] = connector.sSourceID.get();
 			sTargetIDs[i] = connector.sTargetID.get();
 			sTargetInputs[i] = connector.sInputName.get();
+			conditions[i] = connector.connectCondition.get(); 
 		}
 	}
 
@@ -108,7 +113,30 @@ public class BeautiSubTemplate extends Plugin {
 			}
 			for (int i = 0; i < sSrcIDs.length; i++) {
 				Plugin src = sIDMap.get(sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));
-				doc.connect(src, sTargetIDs[i].replaceAll("\\$\\(n\\)", sPartition), sTargetInputs[i]);
+				String sTargetID = sTargetIDs[i].replaceAll("\\$\\(n\\)", sPartition);
+				switch (conditions[i]) {
+				case always:
+					doc.connect(src, sTargetID, sTargetInputs[i]);
+					break;
+				case ifunlinked:
+					Plugin plugin = PluginPanel.g_plugins.get(sTargetID);
+					Input<?> input = plugin.getInput(sTargetInputs[i]);
+					if (input.get() == null) {
+						// no value set yet, so connect
+						doc.connect(src, sTargetID, sTargetInputs[i]);
+					} else if (input.get() instanceof List) {
+						// check if the src is already in the list of plugins in the target input
+						List<?> list = (List) input.get();
+						if (!list.contains(src)) {
+							doc.connect(src, sTargetID, sTargetInputs[i]);
+						}
+					} else if (input.get() != src) {
+						// it is not a list-input, so just check equality of value and src
+						doc.connect(src, sTargetID, sTargetInputs[i]);
+					}
+					break;
+				}
+				
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

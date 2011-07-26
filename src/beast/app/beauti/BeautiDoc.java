@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -736,6 +737,30 @@ public class BeautiDoc extends Plugin {
 				}
 			}
 		}
+		// sort potential priors by ID
+		final Map<String, String> map = new HashMap<String, String>();
+		for (Operator operator : operators0) {
+			String sStateNodes = "";
+	        try {
+	        	for (Plugin plugin2 : operator.listActivePlugins()) {
+	        		if (plugin2 instanceof StateNode && ((StateNode) plugin2).m_bIsEstimated.get()) {
+	        			sStateNodes += plugin2.getID() + " "; 
+	        		}
+	        	}
+	        } catch (Exception e) {
+				// ignore
+			}
+	        map.put(operator.getID(), sStateNodes+operator.getID());
+		}
+		
+		
+		Collections.sort(operators0, new Comparator<Operator>() {
+			@Override
+			public int compare(Operator o1, Operator o2) {
+				return map.get(o1.getID()).compareTo(map.get(o2.getID()));
+			}
+		});
+
 	}
 
 	/** remove loggers of StateNodes that have no impact on the posterior **/

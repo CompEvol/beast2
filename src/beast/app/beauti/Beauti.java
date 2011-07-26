@@ -545,7 +545,15 @@ public class Beauti extends JTabbedPane {
 			}
 		});
 		modeMenu.add(autoScrubLoggers);
-        
+
+		final JCheckBoxMenuItem muteSound = new JCheckBoxMenuItem("Mute sound", false);
+		muteSound.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				BeautiPanel.soundIsPlaying = muteSound.getState();
+				refreshPanel();
+			}
+		});
+		modeMenu.add(muteSound);
         
         
         JMenu viewMenu = new JMenu("View");

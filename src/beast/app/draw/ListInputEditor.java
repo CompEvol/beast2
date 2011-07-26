@@ -1,8 +1,10 @@
 package beast.app.draw;
 
+
 import beast.core.Input;
 import beast.core.Plugin;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -17,7 +19,20 @@ import java.util.Set;
 
 public class ListInputEditor extends InputEditor {
     private static final long serialVersionUID = 1L;
-
+    static Image DOWN_ICON;
+    static Image LEFT_ICON;
+    {
+    	try {
+			java.net.URL downURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "down.png");
+			DOWN_ICON = ImageIO.read(downURL);
+			java.net.URL leftURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "left.png");
+			LEFT_ICON = ImageIO.read(leftURL);
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    
     protected BUTTONSTATUS m_buttonStatus = BUTTONSTATUS.ALL;
 
     /**
@@ -192,7 +207,7 @@ public class ListInputEditor extends InputEditor {
         	//System.err.print(expandBox.getComponentCount());
         	if (expandBox.getComponentCount() > 1) {
         		// only go here if it is worth showing expanded box
-	        	expandBox.setBorder(BorderFactory.createEtchedBorder());
+	        	//expandBox.setBorder(BorderFactory.createMatteBorder(1, 5, 1, 1, Color.gray));
 	        	//itemBox = box;
 	        	Box box2 = Box.createVerticalBox();
 	        	box2.add(itemBox);
@@ -207,16 +222,26 @@ public class ListInputEditor extends InputEditor {
         	}
 	        editButton.addActionListener(new ExpandActionListener(expandBox, plugin) {
 	            public void actionPerformed(ActionEvent e) {
+	            	SmallButton editButton = (SmallButton) e.getSource();
 	            	m_box.setVisible(!m_box.isVisible());
 	            	if (m_box.isVisible()) {
+		            	editButton.setImg(DOWN_ICON);
 	            		g_collapsedIDs.remove(m_plugin.getID());
 	            	} else {
+		            	editButton.setImg(LEFT_ICON);
 	            		g_collapsedIDs.add(m_plugin.getID());
 	            	}
 	            }
 	        });
 	        String sID = plugin.getID();
 	        expandBox.setVisible(!g_collapsedIDs.contains(sID));
+	        if (expandBox.isVisible()) {
+	        	editButton.setImg(DOWN_ICON);
+	        } else {
+	        	editButton.setImg(LEFT_ICON);
+	        }
+
+	        
         } else {
         	if (PluginPanel.countInputs(plugin) == 0) {
         		editButton.setVisible(false);

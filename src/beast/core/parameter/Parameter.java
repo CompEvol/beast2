@@ -194,6 +194,13 @@ public abstract class Parameter<T> extends StateNode {
 //	        System.exit(1);
 //	    }
     }
+    
+    public void swap(int iLeft, int iRight) {
+    	startEditing(null);
+    	T tmp = values[iLeft];
+    	values[iLeft] = values[iRight];
+    	values[iRight] = tmp;
+    }
 
     /*public void setValueQuietly(int dim, T value){
         values[dim] = value;

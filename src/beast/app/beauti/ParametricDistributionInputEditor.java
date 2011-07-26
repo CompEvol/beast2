@@ -230,7 +230,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 		panel.setPreferredSize(size);
 		panel.setMinimumSize(size);
 		Box box = Box.createHorizontalBox();
-		box.setBorder(BorderFactory.createEtchedBorder());
+		box.setBorder(BorderFactory.createEmptyBorder());
 		box.add(panel);
 		return box;
 	}

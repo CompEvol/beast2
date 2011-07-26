@@ -38,4 +38,4 @@ public class IntUniformOperator extends Operator {
         // nothing to optimise
     }
 
-} // class IntRandomWalkOperator
+} // class IntUniformOperator

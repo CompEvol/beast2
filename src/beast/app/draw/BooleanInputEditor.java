@@ -3,6 +3,7 @@ package beast.app.draw;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.JCheckBox;
 
 import beast.app.beauti.BeautiConfig;
@@ -42,6 +43,7 @@ public class BooleanInputEditor extends InputEditor {
 			}
 		});
 		add(m_entry);
+		add(Box.createHorizontalGlue());
 	} // c'tor
 	
 } // class BooleanInputEditor

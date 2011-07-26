@@ -201,15 +201,28 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
 	}
 	
+	
+	public static boolean soundIsPlaying = false;
 	public static synchronized void playSound(final String url) {
 	    new Thread(new Runnable() {
 	      public void run() {
 	        try {
+	        	synchronized (this) {
+	        		if (soundIsPlaying) {
+	        			return;
+	        		} 
+            		soundIsPlaying = true;
+				}
 	          Clip clip = AudioSystem.getClip();
 	          AudioInputStream inputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/beast/app/beauti/" + url));
 	          clip.open(inputStream);
 	          clip.start(); 
+	          Thread.sleep(500);
+	        	synchronized (this) {
+	        		soundIsPlaying = false;
+				}
 	        } catch (Exception e) {
+        		soundIsPlaying = false;
 	          System.err.println(e.getMessage());
 	        }
 	      }

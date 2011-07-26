@@ -108,7 +108,12 @@
                 <branchRateModel spec='StrictClockModel' id='StrictClock.$(n)'>
                     <clock.rate id='clockRate.$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
                 </branchRateModel>
+
+				<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
+   			    <!-- need updown operator for clockRate?!? Also in Standard.xml -->
 ]]>
+
+            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
         </subtemplate>
 
 <!-- Relaxed clock -->
@@ -119,28 +124,39 @@
                 <parameter name='M' id='ucldMean.$(n)' value="1" estimate='true'/>
                 <parameter name='S' id='ucldStdev.$(n)' value="0.5" lower="0" upper="5" estimate='true'/>
             </distr>
-            <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1" dimension='10'/>
+            <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1" dimension='10' estimate='true'/>
         </plugin>
 
-        <operator id="CategoriesRandomWalk.$(n)" spec="IntUniformOperator" weight="1" parameter="@rateCategories.$(n)"/>
         <operator id='ucldMeanScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldMean.$(n)"/>
         <operator id='ucldStdevScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldStdev.$(n)"/>
+        <operator id="CategoriesRandomWalk.$(n)" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@rateCategories.$(n)"/>
+		<operator id='CategoriesSwapOperator.$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@rateCategories.$(n)'/>
+		<operator id='CategoriesUniform.$(n)' spec='UniformOperator' weight="10" intparameter='@rateCategories.$(n)'/>
+
+		<upDownOperator id='relaxedUpDownOperator.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+			<up idref="ucldMean.$(n)"/>
+			<down idref="Tree.$(n)"/>
+		</upDownOperator>
 
         <prior id='ucldStdevrior.$(n)' spec='Prior' x='@ucldStdev.$(n)'>
             <distr spec="beast.math.distributions.Exponential">
                 <parameter name='lambda' value="0.3333" estimate='false'/>
             </distr>
         </prior>
+
+
+		<log id='rate.$(n)' spec='RateStatistic' tree='@Tree.$(n)' branchratemodel='@RelaxedClock.$(n)'/>
 ]]>
-            <connect spec='BeautiConnector' srcID='CategoriesRandomWalk.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ucldMeanScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ucldStdevScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='CategoriesRandomWalk.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='CategoriesSwapOperator.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='CategoriesUniform.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='relaxedUpDownOperator.$(n)' targetID='mcmc' inputName='operator'/>
 
             <connect spec='BeautiConnector' srcID='ucldMean.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='ucldStdev.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rateCategories.$(n)' targetID='tracelog' inputName='log'/>
-
-            <connect spec='BeautiConnector' srcID='ucldStdevrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='rate.$(n)' targetID='tracelog' inputName='log'/>
         </subtemplate>
 
 <!-- Random local clock -->
@@ -324,5 +340,53 @@
         </subtemplate>
 
 </mergewith>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Tree initialisation -->
+<!-- Random tree -->
+
+        <subtemplate id='RandomTree' spec='BeautiSubTemplate' class='beast.evolution.tree.RandomTree' mainid='RandomTree.$(n)'>
+<![CDATA[
+            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
+                <taxa spec='Alignment' idref='data'/>
+                <populationModel id='ConstantPopulation.$(n)' spec='ConstantPopulation'>
+            		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
+	            </populationModel>
+            </tree>
+]]>
+        </subtemplate>
+
+<!-- Cluster tree (for UPGMA) -->
+
+        <subtemplate id='UPGMATree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='UPGMATree.$(n)'>
+<![CDATA[
+        <tree spec='beast.util.ClusterTree' id='UPGMATree.$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
+]]>
+        </subtemplate>
+
+<!-- Newick tree -->
+        <subtemplate id='NewickTree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='NewickTree.$(n)'>
+<![CDATA[
+        <tree spec='beast.util.TreeParser' id='NewickTree.$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
+]]>
+        </subtemplate>
 
 </beast>

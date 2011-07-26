@@ -111,13 +111,22 @@ public class MCMC extends Runnable {
         	if (posteriorInput.get() instanceof CompoundDistribution) {
         		CompoundDistribution posterior = (CompoundDistribution) posteriorInput.get();
         		List<Distribution> distrs = posterior.pDistributions.get();
-        		for (int i = distrs.size()-1; i >= 0; i--) {
+        		int nDistr = distrs.size();
+        		for (int i = 0; i < nDistr; i++) {
         			Distribution distr = distrs.get(i);
         			String sID = distr.getID(); 
         			if (sID != null && sID.equals("likelihood")) {
         				distrs.remove(distr);
+        				break;
         			}
         		}
+        		if (distrs.size() == nDistr) {
+        			throw new Exception("Sample from prior flag is set, but distribution with id 'likelihood' is " +
+        					"not an input to posterior.");
+        		}
+        	} else {
+        		throw new Exception("Don't know how to cample from prior since posterior is not a compound distribution. " +
+        				"Suggestion: set sampleFromPrior flag to false.");
         	}
         }
         

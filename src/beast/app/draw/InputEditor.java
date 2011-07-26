@@ -309,4 +309,8 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	    }
 	}
 	
+	@Override public void setBorder(Border border) {
+        // No border
+    }
+	
 } // class InputEditor

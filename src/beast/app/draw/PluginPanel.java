@@ -86,7 +86,7 @@ public class PluginPanel extends JPanel {
 	        registerInputEditors(sInputEditors.toArray(new String[0]));
         }
         
-        String [] sKnownEditors = new String [] {"beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", "beast.app.draw.ListInputEditorOrig", "beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
+        String [] sKnownEditors = new String [] {"beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", "beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
         registerInputEditors(sKnownEditors);
         
         m_position = new Point(0, 0);
@@ -137,10 +137,6 @@ public class PluginPanel extends JPanel {
     /** add plugin to plugin map and update related maps 
      * @return true if it was already registered **/
     static public boolean registerPlugin(String sID, Plugin plugin) {
-    	if (g_plugins.containsKey(sID) && g_plugins.get(sID) == plugin) {
-    		return true;
-    	}
-    	g_plugins.put(sID, plugin);
     	if (plugin instanceof Operator) {
     		g_operators.add((Operator)plugin);
     	}
@@ -156,6 +152,10 @@ public class PluginPanel extends JPanel {
     	if (plugin instanceof Taxon) {
     		g_taxa.add((Taxon)plugin);
     	}
+    	if (g_plugins.containsKey(sID) && g_plugins.get(sID) == plugin) {
+    		return true;
+    	}
+    	g_plugins.put(sID, plugin);
 		return false;
     }
 
@@ -363,7 +363,7 @@ public class PluginPanel extends JPanel {
     		}
     	}
         inputEditor.init(input, plugin,  expand, bAddButtons);
-        inputEditor.setBorder(new EtchedBorder());
+        inputEditor.setBorder(BorderFactory.createEmptyBorder());
 		inputEditor.setVisible(true);
 		return inputEditor;
     } // createInputEditor
@@ -443,7 +443,7 @@ public class PluginPanel extends JPanel {
         
 
         Box vbox = Box.createVerticalBox();
-        vbox.setBorder(new EtchedBorder());
+        vbox.setBorder(BorderFactory.createEmptyBorder());
         vbox.add(Box.createVerticalStrut(10));
         vbox.add(box);
         vbox.add(Box.createVerticalStrut(10));

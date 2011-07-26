@@ -9,9 +9,12 @@ import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
@@ -21,6 +24,11 @@ public class SmallButton extends JButton {
 	private static final long serialVersionUID = 1L;
 	/** flag to indicate the button is pressed */
 	protected boolean m_bPressed = false; 
+
+	Image image = null;
+	public void setImg(Image image) {
+		this.image = image;
+	}
 
 	public SmallButton(String label, boolean bIsEnabled) {
 		super(label);
@@ -38,6 +46,10 @@ public class SmallButton extends JButton {
 	 * paints the SmallButton
 	 */
 	public void paint(Graphics g) {
+		if (image != null) {
+			g.drawImage(image, 0, 0, null);
+			return;
+		}
 		//super.paint(g);
 		int s=14;
 		if (isEnabled()) {
