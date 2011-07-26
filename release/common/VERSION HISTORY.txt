@@ -10,4 +10,20 @@ All issues can be viewed at http://code.google.com/p/beast2/issues/list
 Version 2.0.a released on 26th July 2011
 
 	New Features:
-        
+	
+    Allows resuming an MCMC chain. Handy when the chain turns out to
+    converge slower than expected.
+
+    Real time tracking of ESSs while running a chain.
+
+    Beauti allows reloading files, so that small changes do not require any
+    XML editing.
+
+    For developers, code is better documented, and only the most relevant
+    classes are part of Beast 2 (i.e. no experimental research code), making
+    it easier to learn.
+
+    Easily extendible: for example, the BeastII add-on supports multi chain
+    MCMC, some experimental likelihood calculations that are potentially
+    faster than the base implementation, and a spread sheet GUI for
+    manipulating models.    
