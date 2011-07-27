@@ -92,6 +92,8 @@
 				<include name="beagle/**/*.class" />
 				<include name="org/**/*.class" />
 			</fileset>
+			<zipgroupfileset dir="${lib}" includes="jebl.jar" />
+			<zipgroupfileset dir="${lib}" includes="jam.jar" />
 		</jar>
 		<jar jarfile="${dist}/beast.src.jar">
 			<fileset dir="${src}">
@@ -439,7 +441,7 @@
 		            icon="${common_dir}/icons/beast.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
-		            arguments=""
+		            arguments="-window -working -options"
 		            version="${version}"
 		            infostring="${BEAST_name}, ${copyright}"
 		            bundleid="${main_class_BEAST}">
