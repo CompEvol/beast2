@@ -26,6 +26,8 @@
 package beast.app;
 
 
+import jam.util.IconUtils;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -47,14 +49,20 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 
+import beagle.BeagleFlag;
+import beast.app.beastapp.BeastDialog;
+import beast.app.beastapp.BeastMain;
+import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.Beauti;
 import beast.app.draw.ExtensionFileFilter;
+import beast.app.util.Version;
 import beast.core.Logger;
 import beast.core.Runnable;
 
@@ -78,7 +86,7 @@ public class BeastMCMC {
 	/** random number seed used to initialise Randomizer **/
 	long m_nSeed = 127;
 	/** name of SnAP specification file **/
-	String m_sFileName = "";//"examples/testCoalescent.xml";
+	String m_sFileName = "";
 	/** MCMC object to execute **/
 	Runnable m_runnable;
 	/** External jar loader path. This takes the form of directories separated by colons. **/
@@ -119,6 +127,9 @@ public class BeastMCMC {
 					} else if (args[i].equals("-beastlib")) {
 						m_sJarPath = args[i + 1];
 						i += 2;
+					} else if (args[i].equals("-prefix")) {
+			            System.setProperty("file.name.prefix", args[i+1].trim());
+						i += 2;
 					}
 					if (i == iOld) {
 						if (i == args.length-1) {
@@ -135,10 +146,72 @@ public class BeastMCMC {
 			throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
 		}
 		if (m_sFileName.equals("")) {
-			BeastStartDialog dlg = new BeastStartDialog();
-			if (dlg.m_bOK) {
-				parseArgs(dlg.getArgs());
-			}
+	    	List<String> MCMCargs = new ArrayList<String>();
+			Version version = new BeastVersion();
+            String titleString = "<html><center><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
+            "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
+            javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");
+            String nameString = "BEAST " + version.getVersionString();
+
+            BeastDialog dialog = new BeastDialog(new JFrame(), titleString, icon);
+
+            if (!dialog.showDialog(nameString, m_nSeed)) {
+            	return;
+            }
+
+		    switch (dialog.getLogginMode()) {
+		    case 0:/* do not ovewrite */ break;
+		    case 1: MCMCargs.add("-overwrite"); break;
+		    case 2: MCMCargs.add("-resume"); break;
+		    }
+		    MCMCargs.add("-seed");
+		    MCMCargs.add(dialog.getSeed() + "");    
+		
+		    if (dialog.getThreadPoolSize() > 0) {
+		        MCMCargs.add("-threads");
+		        MCMCargs.add(dialog.getThreadPoolSize()+"");
+		    }
+		
+		    boolean useBeagle = dialog.useBeagle();
+		    boolean beagleShowInfo = false;
+	        long beagleFlags = 0;
+		    if (useBeagle) {
+		        beagleShowInfo = dialog.showBeagleInfo();
+		        if (dialog.preferBeagleCPU()) {
+		            beagleFlags |= BeagleFlag.PROCESSOR_CPU.getMask();
+		        }
+		        if (dialog.preferBeagleSSE()) {
+		            beagleFlags |= BeagleFlag.VECTOR_SSE.getMask();
+		        }
+		        if (dialog.preferBeagleGPU()) {
+		            beagleFlags |= BeagleFlag.PROCESSOR_GPU.getMask();
+		        }
+		        if (dialog.preferBeagleDouble()) {
+		            beagleFlags |= BeagleFlag.PRECISION_DOUBLE.getMask();
+		        }
+		        if (dialog.preferBeagleSingle()) {
+		            beagleFlags |= BeagleFlag.PRECISION_SINGLE.getMask();
+		        }
+		    }
+	        if (beagleFlags != 0) {
+	            System.setProperty("beagle.preferred.flags", Long.toString(beagleFlags));
+	        }		
+	        if (!useBeagle) {
+	            System.setProperty("java.only", "true");
+	        }
+	        
+	        File inputFile = dialog.getInputFile();
+		    if (!beagleShowInfo && inputFile == null) {
+		        System.err.println("No input file specified");
+		        System.exit(0);
+		    }
+			MCMCargs.add(inputFile.getAbsolutePath());
+		    
+//			BeastStartDialog dlg = new BeastStartDialog();
+//			if (dlg.m_bOK) {
+//				parseArgs(dlg.getArgs());
+//			}
+		    parseArgs(MCMCargs.toArray(new String[0]));
 			return;
 		}
 		
@@ -179,6 +252,7 @@ public class BeastMCMC {
 				"-overwrite : overwrite existing log files (if any). By default, existing files will not be overwritten.\n" +
 				"-seed [<int>|random] : sets random number seed (default 127), or picks a random seed\n" +
 				"-threads <int> : sets number of threads (default 1)\n" +
+				"-prefix <name> : use name as prefix for all log files\n" +
 				"-beastlib <path> : Colon separated list of directories. All jar files in the path are loaded. (default 'beastlib')";
 	} // getUsage
 

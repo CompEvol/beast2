@@ -148,27 +148,44 @@ public class MCMC extends Runnable {
         }
 
         // State initialisation
+        HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
+        for (Operator op : operatorsInput.get()) {
+        	for (Plugin o : op.listActivePlugins()) {
+        		if (o instanceof StateNode) {
+        			operatorStateNodes.add((StateNode) o);
+        		}
+        	}
+        }
         if (m_startState.get() != null) {
 	        this.state = m_startState.get();
         } else {
-            // create state from scratch
+            // create state from scratch by collecting StateNode inputs from Operators
             this.state = new State();
-            HashSet<StateNode> stateNodes = new HashSet<StateNode>();
-            for (Operator op : operatorsInput.get()) {
-            	for (Plugin o : op.listActivePlugins()) {
-            		if (o instanceof StateNode) {
-            			stateNodes.add((StateNode) o);
-            		}
-            	}
-            }
-            for (StateNode stateNode : stateNodes) {
+            for (StateNode stateNode : operatorStateNodes) {
             	this.state.stateNodeInput.setValue(stateNode, this.state);
             }
             this.state.m_storeEvery.setValue(m_storeEvery.get(), this.state);
         }
         this.state.initialise();
         this.state.setPosterior(posteriorInput.get());
-        
+
+        // sanity check: all operator state nodes should be in the state
+    	List<StateNode> stateNodes = this.state.stateNodeInput.get();
+        for (Operator op : operatorsInput.get()) {
+        	for (Plugin o : op.listActivePlugins()) {
+        		if (o instanceof StateNode) {
+        			if (!stateNodes.contains((StateNode) o)) {
+        				throw new Exception("Operator " + op.getID() + " has a statenode " + o.getID() + " in its inputs that is missing from the state.");
+        			}
+        		}
+        	}
+        }
+        // sanity check: all state nodes should be operated on
+        for (StateNode stateNode : stateNodes) {
+        	if (!operatorStateNodes.contains(stateNode)) {
+        		System.out.println("Warning: state contains a node " + stateNode.getID() + " for which there is no operator.");
+        	}
+        }
     } // init
 
     public void log(int nSample) {

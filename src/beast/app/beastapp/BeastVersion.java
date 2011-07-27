@@ -26,7 +26,7 @@ public class BeastVersion implements Version {
 
     private static final boolean IS_PRERELEASE = true;
 
-    private static final String REVISION = "$Rev: 3910 $";
+    private static final String REVISION = "$Revision$";
 
     public String getVersion() {
         return VERSION;
@@ -60,15 +60,16 @@ public class BeastVersion implements Version {
                 "",
                 "Downloads, Help & Resources:",
 
-                "\thttp://beast.bio.ed.ac.uk",
+                "\thttp://beast2.cs.auckland.ac.nz",
                 "",
                 "Source code distributed under the GNU Lesser General Public License:",
-                "\thttp://code.google.com/p/beast-mcmc",
+                "\thttp://code.google.com/p/beast2",
                 "",
                 "BEAST developers:",
                 "\tAlex Alekseyenko, Erik Bloomquist, Joseph Heled, Sebastian Hoehna, ",
                 "\tPhilippe Lemey, Wai Lok Sibon Li, Gerton Lunter, Sidney Markowitz, ",
-                "\tVladimir Minin, Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie",
+                "\tVladimir Minin, Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, ",
+                "\tWalter Xie, Denise Kuehnert",
                 "",
                 "Thanks to:",
                 "\tRoald Forsberg, Beth Shapiro and Korbinian Strimmer"};
@@ -85,17 +86,19 @@ public class BeastVersion implements Version {
                         "<a href=\"mailto:a.rambaut@ed.ac.uk\">a.rambaut@ed.ac.uk</a></p>" +
                         "<p>David Geffen School of Medicine, University of California, Los Angeles<br>" +
                         "<a href=\"mailto:msuchard@ucla.edu\">msuchard@ucla.edu</a></p>" +
-                        "<p><a href=\"http://beast.bio.ed.ac.uk\">http://beast.bio.ed.ac.uk</a></p>" +
+                        "<p><a href=\"http://beast2.cs.auckland.ac.nz\">http://beast2.cs.auckland.ac.nz</a></p>" +
                         "<p>Source code distributed under the GNU LGPL:<br>" +
                         "<a href=\"http://beast2.googlecode.com/\">http://beast2.googlecode.com/</a></p>" +
                         "<p>BEAST developers:<br>" +
                         "Alex Alekseyenko, Erik Bloomquist, Joseph Heled, Sebastian Hoehna, Philippe Lemey,<br>" +
                         "Wai Lok Sibon Li, Gerton Lunter, Sidney Markowitz, Vladimir Minin,<br>" +
-                        "Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie</p>" +
+                        "Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie,<br>" +
+                        "Denise Kuehnert</p>" +
                         "<p>Thanks to Roald Forsberg, Beth Shapiro and Korbinian Strimmer</p>";
     }
 
     public String getBuildString() {
-        return "r" + REVISION.split(" ")[1];
+    	return REVISION;
+        //return "r" + REVISION.split(" ")[1];
     }
 }

@@ -685,11 +685,11 @@ public class BeautiDoc extends Plugin {
 			if (bAutoScrubPriors) {
 				scrubPriors();
 			}
-			if (bAutoScrubLoggers) {
-				scrubLoggers();
-			}
 			if (bAutoScrubOperators) {
 				scrubOperators();
+			}
+			if (bAutoScrubLoggers) {
+				scrubLoggers();
 			}
 			scrubInits();
 			collectClockModels();
@@ -767,6 +767,8 @@ public class BeautiDoc extends Plugin {
 	void scrubLoggers() {
 		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
 		collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
+
+		List<StateNode> stateNodes = ((State) PluginPanel.g_plugins.get("state")).stateNodeInput.get();
 		List<Logger> loggers = ((MCMC) mcmc.get()).m_loggers.get();
 		for (int k = 0; k < loggers.size(); k++) {
 			Logger logger = loggers.get(k);
@@ -779,21 +781,57 @@ public class BeautiDoc extends Plugin {
 					loggerInput.add(o);
 				}
 			}
-			// add loggers that have predecessors in posteriorPredecessors
-			for (Plugin newlogger : loggerInput) {
-				List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
-				collectPredecessors(newlogger, loggerPredecessors);
-				for (Plugin plugin : loggerPredecessors) {
-					if (posteriorPredecessors.contains(plugin)) {
+//			// add loggers that have predecessors in posteriorPredecessors
+//			for (Plugin newlogger : loggerInput) {
+//				List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
+//				collectPredecessors(newlogger, loggerPredecessors);
+//				for (Plugin plugin : loggerPredecessors) {
+//					if (posteriorPredecessors.contains(plugin)) {
+//						loggers0.add(newlogger);
+//						break;
+//					}
+//				}
+//			}
+
+			// add loggers that have all StateNode predecessors in the State
+            HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
+            try {
+	            for (Operator op : ((MCMC)mcmc.get()).operatorsInput.get()) {
+	            	for (Plugin o : op.listActivePlugins()) {
+	            		if (o instanceof StateNode) {
+	            			stateNodes.add((StateNode) o);
+	            		}
+	            	}
+	            }
+            } catch (Exception e) {
+				// TODO: handle exception
+			}
+            
+            for (Plugin newlogger : loggerInput) {
+				if (newlogger instanceof StateNode) {
+					if (stateNodes.contains(newlogger) && operatorStateNodes.contains(newlogger)) {
+						// check there is an operator that operates on this StateNode
 						loggers0.add(newlogger);
-						break;
+					}
+				} else {
+					List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
+					collectPredecessors(newlogger, loggerPredecessors);
+					boolean bMatch = true;
+					for (Plugin plugin : loggerPredecessors) {
+						if (plugin instanceof StateNode && ! stateNodes.contains(plugin)) {
+							bMatch = false;
+							break;
+						}
+					}
+					if (bMatch) {
+						loggers0.add(newlogger);
 					}
 				}
 			}
+		
 		}
 
 		// find obsolete tree loggers
-		List<StateNode> stateNodes = ((State) PluginPanel.g_plugins.get("state")).stateNodeInput.get();
 		// check whether all initialisers are still needed
 		for (int i = loggers.size() - 1; i >= 0; i--) {
 			List<Plugin> initPredecessors = new ArrayList<Plugin>();

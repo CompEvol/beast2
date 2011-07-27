@@ -120,8 +120,8 @@
         <subtemplate id='RelaxedClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='RelaxedClock.$(n)'>
 <![CDATA[
         <plugin spec='UCRelaxedClockModel' id="RelaxedClock.$(n)" tree='@Tree.$(n)'>
-            <distr id='LogNormalDistributionModel.$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
-                <parameter name='M' id='ucldMean.$(n)' value="1" estimate='true'/>
+            <distr id='LogNormalDistributionModel.$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel" meanInRealSpace='true'>
+                <parameter name='M' id='ucldMean.$(n)' value="0.5" estimate='true' lower='0' upper='1'/>
                 <parameter name='S' id='ucldStdev.$(n)' value="0.5" lower="0" upper="5" estimate='true'/>
             </distr>
             <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1" dimension='10' estimate='true'/>
@@ -293,7 +293,7 @@
 <![CDATA[
         <distr name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
             <parameter name='M' value="1" estimate='false'/>
-            <parameter name='S' value="0.5" lower="0" upper="5" estimate='false'/>
+            <parameter name='S' value="1.25" lower="0" upper="5" estimate='false'/>
         </distr>
 ]]>
         </subtemplate>

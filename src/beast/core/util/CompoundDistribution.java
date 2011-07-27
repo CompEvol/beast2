@@ -24,14 +24,19 @@
 */
 package beast.core.util;
 
+import beast.app.BeastMCMC;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Distribution;
 import beast.core.State;
+import beast.evolution.tree.Node;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 @Description("Takes a collection of distributions, typically a number of likelihoods " +
         "and priors and combines them into the compound of these distributions " +
@@ -43,25 +48,101 @@ public class CompoundDistribution extends Distribution {
             new Input<List<Distribution>>("distribution",
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
                     new ArrayList<Distribution>()); 
+    public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads","calculated the distributions in parallel using threads (default false)", false);
 
+    /** flag to indicate threads should be used. Only effective if the useThreadsInput is 
+     * true and BeasMCMC.nrOfThreads > 1 */
+    boolean useThreads;
+    
+    @Override
+    public void initAndValidate() throws Exception {
+    	super.initAndValidate();
+    	useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
+    }
+    
+    
     /** Distribution implementation follows **/
     @Override
     public double calculateLogP() throws Exception {
         logP = 0;
-        for(Distribution dists : pDistributions.get()) {
-        	if (dists.isDirtyCalculation()) {
-        		logP += dists.calculateLogP();
-        	} else {
-        		logP += dists.getCurrentLogP();
-        	}
-            if (Double.isInfinite(logP) || Double.isNaN(logP)) {
-            	return logP;
-            }
+        if (useThreads) {
+        	logP = calculateLogPUsingThreads();
+        } else {
+	        for(Distribution dists : pDistributions.get()) {
+	        	if (dists.isDirtyCalculation()) {
+	        		logP += dists.calculateLogP();
+	        	} else {
+	        		logP += dists.getCurrentLogP();
+	        	}
+	            if (Double.isInfinite(logP) || Double.isNaN(logP)) {
+	            	return logP;
+	            }
+	        }
         }
         return logP;
     }
 
-    @Override
+	class CoreRunnable implements Runnable {
+		Distribution distr;
+		
+		CoreRunnable(Distribution core) {
+				distr = core;
+		}
+
+        public void run() {
+  		  	try {
+	        	if (distr.isDirtyCalculation()) {
+	        		logP += distr.calculateLogP();
+	        	} else {
+	        		logP += distr.getCurrentLogP();
+	        	}
+  		  	} catch (Exception e) {
+  		  		System.err.println("Something went wrong in a calculation of " + distr.getID());
+				e.printStackTrace();
+				System.exit(0);
+			}
+  		    m_nCountDown.countDown();
+        }
+
+	} // CoreRunnable
+
+	CountDownLatch m_nCountDown;
+	
+    private double calculateLogPUsingThreads() throws Exception {
+		try {
+
+			int nrOfDirtyDistrs = 0;
+	        for(Distribution dists : pDistributions.get()) {
+	        	if (dists.isDirtyCalculation()) {
+	        		nrOfDirtyDistrs++;
+	        	}
+	        }			
+			m_nCountDown = new CountDownLatch(nrOfDirtyDistrs);
+			// kick off the threads
+	        for(Distribution dists : pDistributions.get()) {
+	        	if (dists.isDirtyCalculation()) {
+	        		CoreRunnable coreRunnable = new CoreRunnable(dists);
+	        		BeastMCMC.g_exec.execute(coreRunnable);
+	        	}
+	    	}
+			m_nCountDown.await();
+			logP = 0;
+	        for(Distribution distr : pDistributions.get()) {
+        		logP += distr.getCurrentLogP();
+	        }
+	        return logP;
+		} catch (RejectedExecutionException e) {
+			useThreads = false;
+			System.err.println("Stop using threads: " + e.getMessage());
+			// refresh thread pool
+			BeastMCMC.g_exec = Executors.newFixedThreadPool(BeastMCMC.m_nThreads);
+			return calculateLogP();
+		}
+    }
+    
+
+
+	@Override
     public void sample(State state, Random random) {
         for(Distribution distribution : pDistributions.get()) {
             distribution.sample(state, random);

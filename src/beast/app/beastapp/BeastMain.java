@@ -237,7 +237,8 @@ public class BeastMain {
                         new Arguments.StringOption("prefix", "PREFIX", "Specify a prefix for all output log filenames"),
                         new Arguments.Option("overwrite", "Allow overwriting of log files"),
                         new Arguments.Option("resume", "Allow appending of log files"),
-                        //new Arguments.IntegerOption("errors", "Specify maximum number of numerical errors before stopping"),
+                        // RRB: not sure what effect this option has
+                        new Arguments.IntegerOption("errors", "Specify maximum number of numerical errors before stopping"),
                         new Arguments.IntegerOption("threads", "The number of computational threads to use (default auto)"),
                         new Arguments.Option("java", "Use Java only, no native implementations"),
                         new Arguments.Option("beagle", "Use beagle library if available"),
@@ -355,13 +356,13 @@ public class BeastMain {
             }
         }
 
-//        int maxErrorCount = 0;
-//        if (arguments.hasOption("errors")) {
-//            maxErrorCount = arguments.getIntegerOption("errors");
-//            if (maxErrorCount < 0) {
-//                maxErrorCount = 0;
-//            }
-//        }
+        int maxErrorCount = 0;
+        if (arguments.hasOption("errors")) {
+            maxErrorCount = arguments.getIntegerOption("errors");
+            if (maxErrorCount < 0) {
+                maxErrorCount = 0;
+            }
+        }
 
         BeastConsoleApp consoleApp = null;
 
@@ -498,7 +499,7 @@ public class BeastMain {
 
         }
 
-        if (threadCount >= 0) {
+        if (threadCount > 0) {
             System.setProperty("thread.count", String.valueOf(threadCount));
             MCMCargs.add("-threads");
             MCMCargs.add(threadCount + "");
@@ -520,8 +521,8 @@ public class BeastMain {
         	MCMCargs.add(inputFile.getAbsolutePath());
             beastMCMC.parseArgs(MCMCargs.toArray(new String[0]));
             
-            new BeastMain(beastMCMC, consoleApp, 0 /* maxErrorCount */);
-        } catch (RuntimeException rte) {
+            new BeastMain(beastMCMC, consoleApp, maxErrorCount);
+       } catch (RuntimeException rte) {
             if (window) {
                 // This sleep for 2 seconds is to ensure that the final message
                 // appears at the end of the console.
