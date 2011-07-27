@@ -26,7 +26,7 @@ public class BeastVersion implements Version {
 
     private static final boolean IS_PRERELEASE = true;
 
-    private static final String REVISION = "$Revision$";
+    private static final String REVISION = "$Rev$";
 
     public String getVersion() {
         return VERSION;
@@ -98,7 +98,6 @@ public class BeastVersion implements Version {
     }
 
     public String getBuildString() {
-    	return REVISION;
-        //return "r" + REVISION.split(" ")[1];
+        return "r" + REVISION.split(" ")[1];
     }
 }
