@@ -139,8 +139,8 @@ public class BeagleJNIWrapper {
                                             final double[] outLogLikelihoods);
 
     
-    public native void setProportionInvariantCorrection(final int instance,
-    		double[] proportionInvariantCorrection);
+//    public native void setProportionInvariantCorrection(final int instance,
+//    		double[] proportionInvariantCorrection);
     
     /* Library loading routines */
 

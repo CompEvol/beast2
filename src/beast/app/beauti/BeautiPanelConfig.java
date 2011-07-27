@@ -312,6 +312,9 @@ public class BeautiPanelConfig extends Plugin {
 		if (bIsList) {
 			return inputs.get(0).getClass().getName();
 		}
+		if (_input == null) {
+			return null;
+		}
 		return _input.get().getClass().getName();
 	}
 

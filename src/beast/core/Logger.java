@@ -152,6 +152,9 @@ public class Logger extends Plugin {
                 sFileName = sFileName.replace("$(seed)", Randomizer.getSeed() + "");
                 m_pFileName.setValue(sFileName, this);
             }
+            if (System.getProperty("file.name.prefix") != null) {
+            	sFileName = System.getProperty("file.name.prefix") + sFileName;
+            }
             switch (FILE_MODE) {
             case FILE_ONLY_NEW :// only open file if the file does not already exists
             case FILE_ONLY_NEW_OR_EXIT:

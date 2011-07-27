@@ -86,7 +86,7 @@ public class BeastMCMC {
 
 	/** parse command line arguments, and load file if specified
 	 * @throws Exception **/
-	void parseArgs(String[] args) throws Exception {
+	public void parseArgs(String[] args) throws Exception {
 		int i = 0;
 		boolean bResume = false;
 		try {
@@ -109,7 +109,7 @@ public class BeastMCMC {
                         if(args[i+1].equals("random")){
                             m_nSeed = Randomizer.getSeed();
                         }else{
-						    m_nSeed = Integer.parseInt(args[i + 1]);
+						    m_nSeed = Long.parseLong(args[i + 1]);
                         }
 						i += 2;
 					

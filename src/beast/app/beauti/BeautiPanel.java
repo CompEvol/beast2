@@ -130,7 +130,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     		sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
     		listModel.addElement(sPartition);
     	}
-  		listOfPartitions.setSelectedIndex(iPartition);
+    	if (iPartition >= 0 && listModel.size() > 0)
+    		listOfPartitions.setSelectedIndex(iPartition);
     }
     
 	static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
@@ -163,7 +164,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		doc.scrubAll(true);
 
 		refreshInputPanel();
-		if (partitionBox != null) {
+		if (partitionBox != null && config.getType() != null) {
 			partitionBox.setVisible(doc.getPartitions(config.getType()).size() > 1);
 		}
 		g_currentPanel = this;
@@ -247,6 +248,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			repaint();
 			
 			// hack to ensure m_centralComponent is repainted RRB: is there a better way???
+			if (Frame.getFrames().length == 0) {
+				// happens at startup
+				return;
+			}
 			Frame frame = Frame.getFrames()[Frame.getFrames().length - 1];
 			frame.setSize(frame.getSize());
 			//Frame frame = frames[frames.length - 1];
