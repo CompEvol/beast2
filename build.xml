@@ -92,7 +92,6 @@
 				<include name="beagle/**/*.class" />
 				<include name="org/**/*.class" />
 			</fileset>
-			<zipgroupfileset dir="${lib}" includes="jebl.jar" />
 			<zipgroupfileset dir="${lib}" includes="jam.jar" />
 		</jar>
 		<jar jarfile="${dist}/beast.src.jar">
