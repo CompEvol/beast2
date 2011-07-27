@@ -42,11 +42,8 @@ import java.util.List;
 
 @Description("Logs results of a calculation processes on regular intervals.")
 public class Logger extends Plugin {
-    static final String COMPOUND_MODE = "compound";
-    static final String TREE_MODE = "tree";
-    static final String AUTOMATIC_DETECT_MODE = "autodetect";
     /** currently supported modes **/
-	String[] MODES = {AUTOMATIC_DETECT_MODE, COMPOUND_MODE, TREE_MODE};
+	public enum LOGMODE {autodetect, compound, tree}
 
     public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",
                     "Element in a log. This can be any plug in that is Loggable.",
@@ -57,7 +54,7 @@ public class Logger extends Plugin {
     public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
     		"If specified, XML will be produced for the model, commented out by # at the start of a line. " +
     		"Alignments are suppressed. This way, the log file documents itself. ");
-    public Input<String> m_sMode = new Input<String>("mode", "logging mode, one of " + Arrays.toString(MODES), AUTOMATIC_DETECT_MODE, MODES);
+    public Input<LOGMODE> m_sMode = new Input<LOGMODE>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
     
     
     /** list of loggers, if any */
@@ -96,18 +93,18 @@ public class Logger extends Plugin {
         }
 
         // determine logging mode
-        String sMode = m_sMode.get();
-        if (sMode.equals(AUTOMATIC_DETECT_MODE)) {
+        LOGMODE sMode = m_sMode.get();
+        if (sMode.equals(LOGMODE.autodetect)) {
         	m_mode = COMPOUND_LOGGER;
         	if ( nLoggers==1 && m_loggers[0] instanceof Tree) {
         		m_mode = TREE_LOGGER;
         	}
-        } else if (sMode.equals(TREE_MODE)) {
+        } else if (sMode.equals(LOGMODE.tree)) {
         	m_mode = TREE_LOGGER;
-        } else if (sMode.equals(TREE_MODE)) {
+        } else if (sMode.equals(LOGMODE.tree)) {
         	m_mode = COMPOUND_LOGGER;
         } else {
-        	throw new Exception("Mode '" + sMode +"' is not supported. Choose one of " + Arrays.toString(MODES));
+        	throw new Exception("Mode '" + sMode +"' is not supported. Choose one of " + LOGMODE.values());
         }
 
         if (m_pEvery.get() != null) {

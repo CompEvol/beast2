@@ -34,6 +34,7 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Logger;
+import beast.core.Logger.LOGMODE;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.Plugin;
@@ -772,15 +773,16 @@ public class BeautiDoc extends Plugin {
 		List<Logger> loggers = ((MCMC) mcmc.get()).m_loggers.get();
 		for (int k = 0; k < loggers.size(); k++) {
 			Logger logger = loggers.get(k);
-			List<Plugin> loggerInput = loggerInputs.get(k);
-			// clear logger & add to global list of loggers if not already there
-			List<Plugin> loggers0 = logger.m_pLoggers.get();
-			for (int i = loggers0.size() - 1; i >= 0; i--) {
-				Plugin o = loggers0.remove(i);
-				if (!loggerInput.contains(o)) {
-					loggerInput.add(o);
+			if (!logger.m_sMode.get().equals(LOGMODE.tree)) {
+				List<Plugin> loggerInput = loggerInputs.get(k);
+				// clear logger & add to global list of loggers if not already there
+				List<Plugin> loggers0 = logger.m_pLoggers.get();
+				for (int i = loggers0.size() - 1; i >= 0; i--) {
+					Plugin o = loggers0.remove(i);
+					if (!loggerInput.contains(o)) {
+						loggerInput.add(o);
+					}
 				}
-			}
 //			// add loggers that have predecessors in posteriorPredecessors
 //			for (Plugin newlogger : loggerInput) {
 //				List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
@@ -793,72 +795,63 @@ public class BeautiDoc extends Plugin {
 //				}
 //			}
 
-			// add loggers that have all StateNode predecessors in the State
-            HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
-            try {
-	            for (Operator op : ((MCMC)mcmc.get()).operatorsInput.get()) {
-	            	for (Plugin o : op.listActivePlugins()) {
-	            		if (o instanceof StateNode) {
-	            			stateNodes.add((StateNode) o);
-	            		}
-	            	}
-	            }
-            } catch (Exception e) {
-				// TODO: handle exception
-			}
-            
-            for (Plugin newlogger : loggerInput) {
-				if (newlogger instanceof StateNode) {
-					if (stateNodes.contains(newlogger) && operatorStateNodes.contains(newlogger)) {
-						// check there is an operator that operates on this StateNode
-						loggers0.add(newlogger);
-					}
-				} else {
-					List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
-					collectPredecessors(newlogger, loggerPredecessors);
-					boolean bMatch = true;
-					for (Plugin plugin : loggerPredecessors) {
-						if (plugin instanceof StateNode && ! stateNodes.contains(plugin)) {
-							bMatch = false;
-							break;
+				// add loggers that have all StateNode predecessors in the State
+	            HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
+	            try {
+		            for (Operator op : ((MCMC)mcmc.get()).operatorsInput.get()) {
+		            	for (Plugin o : op.listActivePlugins()) {
+		            		if (o instanceof StateNode) {
+		            			stateNodes.add((StateNode) o);
+		            		}
+		            	}
+		            }
+	            } catch (Exception e) {
+					// TODO: handle exception
+				}
+	            
+	            for (Plugin newlogger : loggerInput) {
+					if (newlogger instanceof StateNode) {
+						if (stateNodes.contains(newlogger) && operatorStateNodes.contains(newlogger)) {
+							// check there is an operator that operates on this StateNode
+							loggers0.add(newlogger);
+						}
+					} else {
+						List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
+						collectPredecessors(newlogger, loggerPredecessors);
+						boolean bMatch = false;
+						for (Plugin plugin : loggerPredecessors) {
+							if (plugin instanceof StateNode) { // && ! stateNodes.contains(plugin)) {
+								bMatch = true;
+								break;
+							}
+						}
+						if (bMatch) {
+							loggers0.add(newlogger);
 						}
 					}
-					if (bMatch) {
-						loggers0.add(newlogger);
-					}
 				}
-			}
-		
+			}		
 		}
 
 		// find obsolete tree loggers
-		// check whether all initialisers are still needed
 		for (int i = loggers.size() - 1; i >= 0; i--) {
-			List<Plugin> initPredecessors = new ArrayList<Plugin>();
-			collectPredecessors((Plugin) loggers.get(i), initPredecessors);
-			boolean bFound = false;
-			for (Plugin plugin : initPredecessors) {
-				if (stateNodes.contains(plugin)) {
-					bFound = true;
-					break;
+			Logger logger = loggers.get(i);
+			if (logger.m_sMode.get().equals(LOGMODE.tree)) {
+				Object tree = logger.m_pLoggers.get().get(0);
+				if (!stateNodes.contains(tree)) {
+					loggers.remove(i);
+					potentitalLoggers.add(logger);
 				}
 			}
-			if (!bFound) {
-				Logger init = loggers.get(i);
-				loggers.remove(i);
-				potentitalLoggers.add(init);
-			}
 		}
-		// check whether any potential initialiser is needed
+		// check whether any potential logger is needed
 		for (int i = potentitalLoggers.size() - 1; i >= 0; i--) {
-			List<Plugin> initPredecessors = new ArrayList<Plugin>();
-			collectPredecessors((Plugin) potentitalLoggers.get(i), initPredecessors);
-			for (Plugin plugin : initPredecessors) {
-				if (stateNodes.contains(plugin)) {
-					Logger init = potentitalLoggers.get(i);
-					loggers.add(init);
+			Logger logger = potentitalLoggers.get(i);
+			if (logger.m_sMode.get().equals(LOGMODE.tree)) {
+				Object tree = logger.m_pLoggers.get().get(0);
+				if (stateNodes.contains(tree)) {
+					loggers.add(logger);
 					potentitalLoggers.remove(i);
-					break;
 				}
 			}
 		}

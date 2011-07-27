@@ -157,6 +157,8 @@
             <connect spec='BeautiConnector' srcID='ucldMean.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='ucldStdev.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='rate.$(n)' targetID='tracelog' inputName='log'/>
+
+            <connect spec='BeautiConnector' srcID='ucldStdevrior.$(n)' targetID='prior' inputName='distribution'/>
         </subtemplate>
 
 <!-- Random local clock -->
