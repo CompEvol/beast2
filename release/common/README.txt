@@ -96,14 +96,12 @@ FAQ -       <http://beast2.cs.auckland.ac.nz/index.php/FAQ>
 Tutorials - <http://beast2.cs.auckland.ac.nz/index.php/Main_Page#BEAST_2_Tutorials>
 
 BEAST arguments:
-     -seed           "Specify a random number generator seed"
-     -batch        ""
-     -resume       ""
-     -overwrite      "Allow overwriting of log files"
-     -threads        "The number of computational threads to use (default auto)"
-     -beastlib         "Use beagle library if available"     
-     -help"          "Print this information and stop"
-
+     -seed [<int>|random]        "sets random number seed (default 127), or picks a random seed"
+     -resume                     "read state that was stored at the end of the last run from file and append log file"
+     -overwrite                  "overwrite existing log files (if any). By default, existing files will not be overwritten"
+     -threads <int>              "sets number of threads (default 1)"
+     -beastlib <path>            "Colon separated list of directories. All jar files in the path are loaded. (default 'beastlib')"     
+     
 For example:
 
      java -jar lib/beast.jar -seed 123456 -overwrite input.xml
