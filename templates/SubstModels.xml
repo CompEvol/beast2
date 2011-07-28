@@ -112,6 +112,7 @@
 				<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
    			    <!-- need updown operator for clockRate?!? Also in Standard.xml -->
 ]]>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode'/>
 
             <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
         </subtemplate>

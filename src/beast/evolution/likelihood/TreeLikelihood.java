@@ -27,11 +27,17 @@
 
 package beast.evolution.likelihood;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.BranchRateModel;
@@ -40,12 +46,6 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 @Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model using " +
 		"a variant of the 'peeling algorithm'. For details, see" +
@@ -140,7 +140,7 @@ public class TreeLikelihood extends Distribution {
         } else {
             m_likelihoodCore = new BeerLikelihoodCore(nStateCount);
         }
-        System.err.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
+        System.out.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
         m_fProportionInvariant = m_siteModel.getProportianInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
@@ -406,15 +406,15 @@ public class TreeLikelihood extends Distribution {
     	}
         m_nHasDirt = Tree.IS_CLEAN;
 
-        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_FILTHY;
-            return true;
-        }
         if (m_data.get().isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
             return true;
         }
         if (m_siteModel.isDirtyCalculation()) {
+            m_nHasDirt = Tree.IS_DIRTY;
+            return true;
+        }
+        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_DIRTY;
             return true;
         }

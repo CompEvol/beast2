@@ -12,11 +12,13 @@ import beast.evolution.tree.Node;
 @Description("Defines a mean rate for each branch in the beast.tree.")
 public class StrictClockModel extends BranchRateModel.Base {
 
-    public Input<RealParameter> muParameter = new Input<RealParameter>("clock.rate", "the clock rate (defaults to 1.0)");
+    public Input<RealParameter> muParameterInput = new Input<RealParameter>("clock.rate", "the clock rate (defaults to 1.0)");
 
+    RealParameter muParameter;
+    
     @Override
     public void initAndValidate() throws Exception {
-    	RealParameter muParameter = this.muParameter.get();
+    	muParameter = muParameterInput.get();
         if (muParameter != null) {
         	muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);
             mu = muParameter.getValue();
@@ -30,15 +32,21 @@ public class StrictClockModel extends BranchRateModel.Base {
 
     @Override
     public boolean requiresRecalculation() {
-    	/* Suppose muParameter is not specified, then this
-    	 * method is never called, so no need to check muParameter.get() == null.
-    	 */
-    	if (muParameter.get().somethingIsDirty()) {
-    		mu = muParameter.get().getValue();
-        	return true;
-    	}
-    	return false;
+		mu = muParameter.getValue();
+		return true;
     }
 
+    @Override
+    protected void restore() {
+		mu = muParameter.getValue();
+    	super.restore();
+    }
+
+    @Override
+    protected void store() {
+		mu = muParameter.getValue();
+    	super.store();
+    }
+    
     private double mu = 1.0;
 }
