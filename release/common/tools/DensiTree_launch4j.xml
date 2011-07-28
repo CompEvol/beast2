@@ -1,6 +1,6 @@
 <launch4jConfig>
   <headerType>gui</headerType>
-  <icon>../common/tools/DensiTree.ico</icon>  
+  <icon>./DensiTree.ico</icon>  
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>

@@ -96,11 +96,26 @@ FAQ -       <http://beast2.cs.auckland.ac.nz/index.php/FAQ>
 Tutorials - <http://beast2.cs.auckland.ac.nz/index.php/Main_Page#BEAST_2_Tutorials>
 
 BEAST arguments:
-     -seed [<int>|random]        "sets random number seed (default 127), or picks a random seed"
-     -resume                     "read state that was stored at the end of the last run from file and append log file"
-     -overwrite                  "overwrite existing log files (if any). By default, existing files will not be overwritten"
-     -threads <int>              "sets number of threads (default 1)"
-     -beastlib <path>            "Colon separated list of directories. All jar files in the path are loaded. (default 'beastlib')"     
+     -window         "Provide a console window"
+     -options        "Display an options dialog"
+     -working        "Change working directory to input file's directory"
+     -seed           "Specify a random number generator seed"
+     -prefix         "Specify a prefix for all output log filenames"
+     -overwrite      "Allow overwriting of log files"
+     -errors         "Specify maximum number of numerical errors before stopping"
+     -threads        "The number of computational threads to use (default auto)"
+     -java           "Use Java only, no native implementations"
+     -beagle         "Use beagle library if available"
+     -beagle_info          "BEAGLE: show information on available resources"
+     -beagle_order         "BEAGLE: set order of resource use"
+     -beagle_instances     "BEAGLE: divide site patterns amongst instances"
+     -beagle_CPU           "BEAGLE: use CPU instance"
+     -beagle_GPU           "BEAGLE: use GPU instance if available"
+     -beagle_SSE           "BEAGLE: use SSE extensions if available"
+     -beagle_single        "BEAGLE: use single precision if available"
+     -beagle_double        "BEAGLE: use double precision if available"
+     -beagle_scaling       "BEAGLE: specify scaling scheme to use"
+     -help"                "Print this information and stop"
      
 For example:
 
