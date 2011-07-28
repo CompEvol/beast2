@@ -877,6 +877,7 @@ and {\tt Node} can be ignored.
 \end{frame}
 
 
+
 \if0
 \begin{frame}[containsverbatim]{Shadowing inputs}
 
@@ -934,7 +935,7 @@ call {\tt parameter.setDimension(x)}
 ...but a CalculationNode can easily find out.\vskip 0.5cm
 
 Then, in the {\tt initAndValidate()} method of the {\tt CalculationNode},
-create a new Parameter X, and use m_input.get().assignFromWithoutID(X)
+create a new Parameter X, and use {\tt input.get().assignFromWithoutID(X)}
 
 \begin{lstlisting}[language=java]
 @Override
@@ -996,9 +997,10 @@ Obviously, not calling store/restore on super classes may result in unexpected b
 
 \end{frame}
 
+
 \begin{frame}{Uncommon errors}
 \begin{itemize}
-\item Forgot to set {\tt m_bNeedsUpdate} flag in {\tt requiresRecalculation()}. This way
+\item Forgot to set {\tt m\_bNeedsUpdate} flag in {\tt requiresRecalculation()}. This way
 the {\tt CalculationNode} will never update its internal state and will always return the
 same (initially calculated) result.
 \item always return {\tt false} from {\tt requiresRecalculation()}. This way {\tt CalculationNode}s 
@@ -1008,7 +1010,6 @@ Both issues will not be picked up during the debugging phase
 of the MCMC loop.
 
 \end{frame}
-
 
 
 \fi
@@ -1573,6 +1574,8 @@ and the following options are allowed:
 
 \fi
 
+
+
 \if \part 3
 
 \begin{frame}[containsverbatim]{What is Beauti 2}
@@ -1914,6 +1917,7 @@ Go forth and develop new Plugins \\and Beauti templates now!\vskip1cm
 \end{center}
 \end{frame}
 
+\fi
 
 \end{document}
 
