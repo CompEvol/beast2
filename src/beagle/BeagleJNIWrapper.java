@@ -149,8 +149,10 @@ public class BeagleJNIWrapper {
         String osName = System.getProperty("os.name").toLowerCase();
         String osArch = System.getProperty("os.arch").toLowerCase();
         if (osName.startsWith("windows")) {
+            if(osArch.contains("64")) return "hmsbeagle64";
             if(osArch.equals("i386")) return "hmsbeagle32";
             if(osArch.startsWith("amd64")||osArch.startsWith("x86_64")) return "hmsbeagle64";
+            return "hmsbeagle32";
         }
         return "hmsbeagle-jni";
     }
