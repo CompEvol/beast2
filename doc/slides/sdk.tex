@@ -6,7 +6,7 @@
 \newtheorem{figcaption}[figure]{Figure}
 
 
-\title{Beast II SDK: version 0.1}
+\title{Beast II SDK: version 0.2}
 
 %\subtitle{}
 
@@ -400,13 +400,6 @@ store and restore.
 To create a new Operator, implement the {\tt public double proposal()} method, 
 which changes one of more {\tt StateNode}s and returns the Hasting ratio of the proposal.
 
-%\begin{center}{\huge WARNING}\end{center}
-%
-%When retrieving a {\tt StateNode} to operate on, use {\tt Input.get(this)} instead of
-%{\tt Input.get()}. 
-%
-%The latter will {\em not} notify the {\tt State} and changes can be lost or not
-%propagate through at all.
 
 \subsubsection{Loggable\label{ssec.logger}}
 
@@ -527,54 +520,6 @@ Idref inline using @ sign.
 If {\tt Input}s are not public, they cannot get values assigned by for
 instance the {\tt XMLParser}.
 
-\if0
-% this is obsolete now
-\subsubsection{{\tt Operator} calls {\tt input.get()} instead of {\tt input.get(this)}.}
-
-When an {\tt Operator} does a proposal, it should change a {\tt StateNode}.
-This {\tt StateNode} needs to be one of its inputs. So, to get the {\tt StateNode}
-normally a call to {\tt input.get()} would give the value. However, for the
-{\tt State} to know that a {\tt StateNode} changes, the method {\tt input.get(this);}
-should be called.
-
-Note that this only applies to the {\tt proposal()} method, not to {\tt initAndValidate()}
-(though it does not hurt in the latter) since only in {\tt proposal()} a {\tt StateNode}
-should be changed.
-
-% this is obsolete now
-\subsubsection{Shadow a {\tt StateNode} in a {\tt CalculationNode}.}
-
-It is tempting to use a pattern like this:
-
-{\color{blue}\begin{lstlisting}[language=java]
-public Input<RealParamater> m_p = new Input<>...;
-    private RealParameter m_pShadow;
-
-    public void initAndValidate() {
-        m_pShadow = m_p.get();
-    }
-    
-    double calculateSomethingOld() {
-        // uses non-current value
-        return m_pShadow.getValue() * 2.0;
-    }
-
-    double calculateSomethingNew() {
-        // uses current value
-        return m_p.get().getValue() * 2.0;
-    }
-\end{lstlisting}}
-
-in a Plugin. However, {\tt StateNode}s like {\tt RealParameter} can change their
-value and the {\tt m\_p.get()} may return a different object next time it is called.
-So, the method {\tt calculateSomethingOld()} above may return the same initial value
-every time, while {\tt calculateSomethingNew()} above uses the current values of
-parameter {\tt m\_p} and follows the changes of {\tt m\_p} when it changes in the State.
-
-To ensure always a current version of the {\tt StateNode} is available, call
-{\tt get()} every time at the start of a method.
-\fi
-
 \subsubsection{Type of input is a template class (other than {\tt List}).}
 
 Thanks to limitations of Java introspection and the way Beast II is set up, Inputs should be 
@@ -598,7 +543,6 @@ add a constructor
 \end{lstlisting}}
 Note that the constructor needs to be public, to prevent IllegalAccessExceptions
 on construction by e.g. the XMLParser.
-
 
 \subsubsection{Log header on screen seems to have rubbish in there.}
 
@@ -678,12 +622,12 @@ Fill in repository URL, say 'http://myaddon.googlecode.com/svn/trunk'\\
 Put a full stop in 'Local module directory (optional)'\\
 4. set up build triggers\\
 Click 'Build after other projects are built'\\
-Fill in 'BEAST_2_Trunk' under 'Projects names'\\
+Fill in 'BEAST\_2\_Trunk' under 'Projects names'\\
 Click 'Poll SCM'\\
 Fill in '* * * * *' under 'Schedule'\\
 5 Add build step\\
 Click "Add build step" button, select 'Invoke Ant'\\
-Fill in the target, e.g., build_jar_all_BEAST\\
+Fill in the target, e.g., build\_jar\_all\_BEAST\\
 6 Add Post-build actions\\
 Click 'Publish JUnit test result report'\\
 Fill in 'Test report XMLs' with 'build/junitreport/*.xml'\\
