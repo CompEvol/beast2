@@ -26,6 +26,7 @@ package beast.util;
 
 
 import beast.core.*;
+import beast.core.Input.Validate;
 import beast.core.Runnable;
 //import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.Parameter;
@@ -161,8 +162,6 @@ public class XMLParser {
     final static String RUN_ELEMENT = "run";
     final static String PLATE_ELEMENT = "plate";
     
-
-
     Runnable m_runnable;
     State m_state;
     /**
@@ -190,6 +189,11 @@ public class XMLParser {
      */
     boolean m_bInitialize = true;
     
+    /** when parsing XML, missing inputs can be assigned default values through
+     * a RequiredInputProvider
+     */
+    RequiredInputProvider requiredInputProvider = null;
+
     public XMLParser() {
         m_sElement2ClassMap = new HashMap<String, String>();
         m_sElement2ClassMap.put(DISTRIBUTION_ELEMENT, LIKELIHOOD_CLASS);
@@ -791,6 +795,18 @@ public class XMLParser {
                 }
             }
         }
+
+        // fill in missing inputs, if an input provider is available
+        if (requiredInputProvider != null) {
+        	for (Input<?> input : parent.listInputs()) {
+        		if (input.get() == null && input.getRule() == Validate.REQUIRED) {
+        			Object o = requiredInputProvider.createInput(parent, input);
+        			if (o != null) {
+        				input.setValue(o, parent);
+        			}
+        		}
+        	}
+        }
     } // setInputs
 
     void setInput(Node node, Plugin plugin, String sName, Plugin plugin2) throws XMLParserException {
@@ -892,6 +908,14 @@ public class XMLParser {
         return false;
     }
 
+    public interface RequiredInputProvider {
+    	Object createInput(Plugin plugin, Input<?> input);
+    }
+
+    public void setRequiredInputProvider(RequiredInputProvider provider) {
+    	requiredInputProvider = provider;
+    }
+
     /** parses file and formats it using the XMLProducer **/
     public static void main(String [] args) {
     	try {
@@ -909,4 +933,5 @@ public class XMLParser {
 		}
     }
     
+
 } // classXMLParser

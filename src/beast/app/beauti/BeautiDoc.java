@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -54,9 +55,10 @@ import beast.math.distributions.Prior;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
+import beast.util.XMLParser.RequiredInputProvider;
 
 @Description("Beauti document in doc-view pattern, not useful in models")
-public class BeautiDoc extends Plugin {
+public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	final static String STANDARD_TEMPLATE = "templates/Standard.xml";
 
 	public enum ActionOnExit {
@@ -1137,6 +1139,34 @@ public class BeautiDoc extends Plugin {
 		}
 	}
 
+	/** disconnect source plugin with target plugin **/
+	public void disconnect(Plugin srcPlugin, String sTargetID, String sInputName) throws Exception {
+		try {
+			Plugin target = PluginPanel.g_plugins.get(sTargetID);
+			Input input = target.getInput(sInputName);
+			Object o = input.get();
+			if (o instanceof List) {
+				List list = (List) o;
+				for (int i = 0; i < list.size(); i++) {
+					if (list.get(i) == srcPlugin) {
+						list.remove(i);
+					}
+				}
+				srcPlugin.outputs.remove(target);
+			} else {
+				input.setValue(null, target);
+			}
+			
+			potentialPriors.remove(srcPlugin);
+			potentitalInits.remove(srcPlugin);
+			if (srcPlugin instanceof Logger) {
+				potentitalLoggers.remove((Logger) srcPlugin);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void addAlignmentWithSubnet(Alignment data) {
 		alignments.add(data);
 		m_beautiConfig.partitionTemplate.get().createSubNet(data, this);
@@ -1250,6 +1280,24 @@ public class BeautiDoc extends Plugin {
 	public void setCurrentPartition(int iCol, int iRow, String sPartition) {
 		int nCurrentPartion = sPartitionNames.indexOf(sPartition);
 		nCurrentPartitions[iCol].set(iRow, nCurrentPartion);
+	}
+
+	@Override
+	public Object createInput(Plugin plugin, Input<?> input) {
+		for (BeautiSubTemplate template : m_beautiConfig.g_subTemplates) {
+			try {
+				if (input.canSetValue(template.instance, plugin)) {
+					String sPartition = plugin.getID();
+					sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+					Object o = template.createSubNet(sPartition, plugin, input);
+					return o;
+				}
+			} catch (Exception e) {
+				// ignore, cannot set value
+			}
+		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 } // class BeautiDoc

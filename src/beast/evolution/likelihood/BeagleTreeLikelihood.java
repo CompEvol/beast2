@@ -228,7 +228,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                         }
                     }
                     sb.append("    with instance flags: ").append(instanceDetails.toString());
-                    System.err.println(sb.toString());
+                    System.out.println(sb.toString());
                 } else {
                 	System.err.println("  Error retrieving BEAGLE resource for instance: " + instanceDetails.toString());
                 	beagle = null;

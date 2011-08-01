@@ -115,7 +115,7 @@
 <![CDATA[
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.$(n)" gammaCategoryCount='0'>
-                <substModel spec='JukesCantor' id='JC69.$(n)'/>
+                <!--substModel spec='JukesCantor' id='JC69.$(n)'/-->
                 <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.$(n)' value='0.0' estimate='false'/>
                 <mutationRate        spec='parameter.RealParameter' id='mutationRate.$(n)' value='1.0'        estimate='false'/>
                 <shape               spec='parameter.RealParameter' id='gammaShape.$(n)' value='1.0'         estimate='false'/>

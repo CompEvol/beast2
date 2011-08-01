@@ -30,6 +30,9 @@
             <connect spec='BeautiConnector' srcID='KappaScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
 
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='kappa.$(n)' targetID='tracelog' inputName='log'/>
+
             <connect spec='BeautiConnector' srcID='KappaPrior.$(n)' targetID='prior' inputName='distribution'/>
         </subtemplate>
 

@@ -112,14 +112,18 @@ public class PriorListInputEditor extends ListInputEditor {
 					BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
 					String sID = ((Plugin)list.get(iItem)).getID();
                     String sPartition = sID.substring(sID.indexOf('.') + 1);
-					Plugin plugin2 = template.createSubNet(sPartition);
-
 					Prior prior = (Prior) list.get(iItem);
-	            	try {
-						prior.m_distInput.setValue(plugin2, prior);
+					try {
+						template.createSubNet(sPartition, prior, prior.m_distInput);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
+//
+//	            	try {
+//						prior.m_distInput.setValue(plugin2, prior);
+//					} catch (Exception e1) {
+//						e1.printStackTrace();
+//					}
 					sync();
 					refreshPanel();
 				}
@@ -174,10 +178,18 @@ public class PriorListInputEditor extends ListInputEditor {
 					BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
 					String sID = ((Plugin)list.get(iItem)).getID();
                     String sPartition = sID.substring(sID.indexOf('.') + 1);
-					Plugin plugin2 = template.createSubNet(sPartition);
-System.err.println("NEW SUBNET " + plugin2);
-	            	list.set(iItem, plugin2);
-System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
+
+                    try {
+						template.createSubNet(sPartition, list, iItem);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                    
+//                    Plugin plugin2 = template.createSubNet(sPartition);
+//System.err.println("NEW SUBNET " + plugin2);
+//	            	list.set(iItem, plugin2);
+//System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
 					sync();
 					refreshPanel();
 					}
@@ -250,18 +262,23 @@ System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
 				public void actionPerformed(ActionEvent e) {
 					JComboBox comboBox = (JComboBox) e.getSource();
 					BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
-					Plugin plugin2 = template.createSubNet("");
-//System.err.println("PRIOR" + plugin2);
 	        		List list = (List) m_input.get();
 	        		int iItem = 0;
 	        		while (comboBoxes.get(iItem) != comboBox) {
 	        			iItem++;
 	        		}
 	        		MRCAPrior prior = (MRCAPrior) list.get(iItem);
-	            	try {
-						prior.m_distInput.setValue(plugin2, prior);
+
+//System.err.println("PRIOR" + plugin2);
+//	            	try {
+//						prior.m_distInput.setValue(plugin2, prior);
+//					} catch (Exception e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+					try {
+						Plugin plugin2 = template.createSubNet("", prior, prior.m_distInput);
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					refreshPanel();

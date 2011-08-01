@@ -88,7 +88,7 @@ public interface SiteModelInterface {
 		@Description(value = "Non-functional base implementation of a site model", isInheritable=false)
 		public abstract class Base extends CalculationNode implements SiteModelInterface {
 		    public Input<SubstitutionModel.Base> m_pSubstModel =
-	            new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", new HKY(), Validate.REQUIRED);
+	            new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", null, Validate.REQUIRED);
 
 		    public boolean canSetSubstModel(Object o) throws Exception {
 				SubstitutionModel substModel = (SubstitutionModel) o;

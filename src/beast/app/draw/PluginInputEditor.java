@@ -198,11 +198,11 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
 
                     if (sSelected.equals(NO_VALUE)) {
                         plugin = null;
-                    } else if (PluginPanel.g_plugins.containsKey(sNewID)) {
-                    	plugin = PluginPanel.g_plugins.get(sNewID);
+//                    } else if (PluginPanel.g_plugins.containsKey(sNewID)) {
+//                    	plugin = PluginPanel.g_plugins.get(sNewID);
                     } else {
-                    	plugin = sSelected.createSubNet(sPartition);
                         try {
+                        	plugin = sSelected.createSubNet(sPartition, m_plugin, m_input);
                             //PluginPanel.addPluginToMap(plugin);
                             // tricky: try to connect up new inputs with old inputs of existing name
 //                            Plugin oldPlugin = (Plugin) m_input.get();
