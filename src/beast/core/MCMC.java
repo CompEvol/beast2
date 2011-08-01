@@ -242,13 +242,13 @@ public class MCMC extends Runnable {
 
 
     
-    double logAlpha;
-    boolean bDebug;
-    double fOldLogLikelihood; 
-    double fNewLogLikelihood; 
-    int nBurnIn;
-    int nChainLength;
-    Distribution posterior;
+    protected double logAlpha;
+    protected boolean bDebug;
+    protected double fOldLogLikelihood; 
+    protected double fNewLogLikelihood; 
+    protected int nBurnIn;
+    protected int nChainLength;
+    protected Distribution posterior;
     
     @Override
     public void run() throws Exception {
@@ -308,7 +308,7 @@ public class MCMC extends Runnable {
 
     
     /** main MCMC loop **/ 
-    void doLoop() throws Exception {
+    protected void doLoop() throws Exception {
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
             state.store(iSample);
 
@@ -374,7 +374,7 @@ public class MCMC extends Runnable {
     
     /** report posterior and subcomponents recursively, for debugging 
      * incorrectly recalculated posteriors **/ 
-    private void reportLogLikelihoods(Distribution distr, String sTab) {
+    protected  void reportLogLikelihoods(Distribution distr, String sTab) {
 		System.err.println(sTab + "P(" + distr.getID() + ") = " + distr.logP + " (was " + distr.storedLogP +")");
 		if (distr instanceof CompoundDistribution) {
 			for (Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
@@ -383,7 +383,7 @@ public class MCMC extends Runnable {
 		}
 	}
 
-	void callUserFunction(int iSample) {}
+    protected void callUserFunction(int iSample) {}
 
     
     /** Calculate posterior by setting all StateNodes and CalculationNodes dirty.
