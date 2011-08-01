@@ -131,22 +131,24 @@ public class MCMC extends Runnable {
         }
         
         
-        // StateNode initialisation
-        HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
-        for (StateNodeInitialiser initialiser : m_initilisers.get()) {
-        	// make sure that the initialiser does not re-initialises a StateNode
-        	List<StateNode> list = initialiser.getInitialisedStateNodes();
-        	for (StateNode stateNode : list) {
-        		if (initialisedStateNodes.contains(stateNode)) {
-        			throw new Exception("Trying to initialise stateNode (id=" + stateNode.getID() + ") more than once. " +
-        					"Remove an initialiser from MCMC to fix this.");
-        		}
-        	}
-        	initialisedStateNodes.addAll(list);
-        	// do the initialisation
-        	//initialiser.initStateNodes();
+        // StateNode initialisation, only required when the state is not read from file
+        if (m_bRestoreFromFile) {
+	        HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
+	        for (StateNodeInitialiser initialiser : m_initilisers.get()) {
+	        	// make sure that the initialiser does not re-initialises a StateNode
+	        	List<StateNode> list = initialiser.getInitialisedStateNodes();
+	        	for (StateNode stateNode : list) {
+	        		if (initialisedStateNodes.contains(stateNode)) {
+	        			throw new Exception("Trying to initialise stateNode (id=" + stateNode.getID() + ") more than once. " +
+	        					"Remove an initialiser from MCMC to fix this.");
+	        		}
+	        	}
+	        	initialisedStateNodes.addAll(list);
+	        	// do the initialisation
+	        	//initialiser.initStateNodes();
+	        }
         }
-
+        
         // State initialisation
         HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
         for (Operator op : operatorsInput.get()) {
@@ -272,7 +274,7 @@ public class MCMC extends Runnable {
 
         // do the sampling
         logAlpha = 0;
-        bDebug = true;
+        bDebug = Boolean.valueOf(System.getProperty("beast.debug"));
         fOldLogLikelihood = robustlyCalcPosterior(posterior); 
         
         int nInitiliasiationAttemps = 0;

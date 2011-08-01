@@ -109,6 +109,8 @@ public class BeastMCMC {
 					} else if (args[i].equals("-resume")) {
 						bResume = true;
 						Logger.FILE_MODE = Logger.FILE_APPEND;
+			        	System.setProperty("beast.resume","true");
+			        	System.setProperty("beast.debug","false");
 						i += 1;
 					} else if (args[i].equals("-overwrite")) {
 						Logger.FILE_MODE = Logger.FILE_OVERWRITE;

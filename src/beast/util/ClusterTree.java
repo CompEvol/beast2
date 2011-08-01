@@ -75,6 +75,14 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
 	@Override
 	public void initAndValidate() throws Exception {
+		
+        if (Boolean.valueOf(System.getProperty("beast.resume")) && 
+        		(m_bIsEstimated.get() || (m_initial.get() != null && m_initial.get().m_bIsEstimated.get()))) {
+        	// don't bother creating a tree, if it is read from file anyway 
+    		super.initAndValidate();
+        	return;
+        }
+		
 		String sType = m_sClusterType.get().toLowerCase();
 		if (sType.equals(M_SINGLE)) {m_nLinkType = SINGLE;}
 		else if (sType.equals(M_COMPLETE)) {m_nLinkType = COMPLETE;}
@@ -703,7 +711,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 	@Override
 	public void initStateNodes() {
 		if (m_initial.get() != null) {
-			m_initial.get().assignFrom(this);
+			m_initial.get().assignFromWithoutID(this);
 		}
 	}
 
