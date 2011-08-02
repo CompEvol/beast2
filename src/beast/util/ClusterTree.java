@@ -61,7 +61,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 	final static String M_WARD = "ward";
 	final static String M_ADJCOMPLETE = "adjcomplete";
 	final static String M_NEIGHBORJOINING = "neighborjoining";
-	double EPSILON = 1e-20;
+	double EPSILON = 1e-10;
 	
 	final static String [] TYPES = {M_SINGLE, M_AVERAGE,	M_COMPLETE,	M_UPGMA,	M_MEAN,	M_CENTROID,	M_WARD,	M_ADJCOMPLETE,	M_NEIGHBORJOINING };
 
@@ -221,6 +221,13 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 					node.m_right = m_right.toNode();
 				}
 			}
+			if (node.getHeight() < node.m_left.getHeight() + EPSILON) {
+				node.setHeight(node.m_left.getHeight() + EPSILON);
+			}
+			if (node.getHeight() < node.m_right.getHeight() + EPSILON) {
+				node.setHeight(node.m_right.getHeight() + EPSILON);
+			}
+			
 			node.m_right.setParent(node);
 			node.m_left.setParent(node);
 			return node;

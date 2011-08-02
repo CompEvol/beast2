@@ -108,8 +108,7 @@ public class WilsonBalding extends TreeOperator {
 
         final Node CiP = getOtherChild(iP, i);
 
-
-        Node PiP = CiP.getParent();
+        Node PiP = iP.getParent();
 
         newMinAge = Math.max(i.getHeight(), j.getHeight());
         newRange = jP.getHeight() - newMinAge;
@@ -117,6 +116,15 @@ public class WilsonBalding extends TreeOperator {
         oldMinAge = Math.max(i.getHeight(), CiP.getHeight());
         oldRange = PiP.getHeight() - oldMinAge;
         fHastingsRatio = newRange / Math.abs(oldRange);
+        
+        if (oldRange == 0 || newRange == 0) {
+        	// This happens when some branch lengths are zero.
+        	// If oldRange = 0, fHastingsRatio == Double.POSITIVE_INFINITY and 
+        	// node i can be catapulted anywhere in the tree, resulting in 
+        	// very bad trees that are always accepted.
+        	// For symmetry, newRange = 0 should therefore be ruled out as well
+            return Double.NEGATIVE_INFINITY;
+        }
 
         //update
         if (j.isRoot()) {

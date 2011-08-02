@@ -5,6 +5,7 @@ package beast.core;
  * like calculation of ESS, posterior of a distribution or in the SpreadSheet interface
  * where the possibilities of calculations are limitless. 
  *  **/
+// RRB: Should be renamed Statistic?
 public interface Valuable {
 
 	/** @return dimension of the Valuable **/
