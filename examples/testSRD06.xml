@@ -71,9 +71,7 @@
                 <populationModel id="firstAndSecondSites.ConstantPopulation" spec="ConstantPopulation">
                     <parameter dimension="1" estimate="false" id="firstAndSecondSites.popSize" name="popSize" value="1.0"/>
                 </populationModel>
-                <trait id="firstAndSecondSites.datetrait" spec="beast.evolution.tree.TraitSet" taxa="@firstAndSecondSites" traitname="date" units="year" value=""/>
             </tree>
-            <trait idref="firstAndSecondSites.datetrait"/>
         </tree>
         <parameter dimension="4" estimate="true" id="thirdSites.freqParameter" name="stateNode" value="0.25"/>
         <parameter dimension="1" estimate="true" id="thirdSites.hky.kappa" lower="0.0" name="stateNode" value="1.0"/>

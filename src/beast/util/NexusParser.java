@@ -105,7 +105,9 @@ public class NexusParser {
 		}
 		sText = sText.substring(0, sText.length()-2);
 		traitSet.m_traits.setValue(sText, traitSet);
-		traitSet.m_taxa.setValue(m_alignment, traitSet);
+		TaxonSet taxa = new TaxonSet();
+		taxa.initByName("alignment", m_alignment);
+		traitSet.m_taxa.setValue(taxa, traitSet);
 		
 		traitSet.initAndValidate();
 		return traitSet;
