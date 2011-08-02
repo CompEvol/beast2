@@ -118,7 +118,7 @@
 		D4Thai78   = 1978,
 		D4Thai84   = 1984
 		'>
-		<taxa idref='alignment'/>
+		<taxa spec='beast.evolution.alignment.TaxonSet' alignment='@alignment'/>
 	</trait>
         <input name='taxa' idref='alignment'/>
     </tree>

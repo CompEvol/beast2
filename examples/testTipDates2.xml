@@ -51,7 +51,6 @@
         </distribution>
     </distribution>
 
-
     
 <run chainLength="10000000" id="mcmc" preBurnin="0" spec="MCMC" storeEvery="-1">
     <state id="State0" storeEvery="100000">
@@ -63,9 +62,10 @@
                     <parameter dimension="1" estimate="false" id="popSize" name="popSize" value="1.0"/>
                 </populationModel>
             </tree>
-                <trait id="datetrait" spec="beast.evolution.tree.TraitSet" taxa="@Primates" traitname="date" units="year">
+                <trait id="datetrait" spec="beast.evolution.tree.TraitSet" traitname="date" units="year">
 Lemur_catta=1,
 M_fascicularis=1
+					<taxa spec='beast.evolution.alignment.TaxonSet' alignment='@Primates'/>
                 </trait>
         </tree>
         <parameter dimension="1" estimate="true" id="hky.kappa" lower="0.0" name="stateNode" value="1.0"/>

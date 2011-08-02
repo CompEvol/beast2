@@ -77,9 +77,9 @@
         />
 
 		<panel spec='BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxon was sampled"
-            path='tree/trait'
+            path='tree'
             hasPartitions="Tree" icon='2.png' forceExpansion='TRUE'
-            isVisible='false'
+            isVisible='true'
         />
 
 		<panel spec='BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"

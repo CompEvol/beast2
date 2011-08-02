@@ -8,6 +8,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,7 @@ public class TraitSet extends Plugin {
     public Input<Units> m_sUnits = new Input<Units>("units", "name of the units in which values are posed, " +
             "used for conversion to a real value. This can be " + Arrays.toString(Units.values()) + " (default 'year')", Units.year, Units.values());
     public Input<String> m_traits = new Input<String>("value", "traits encoded as taxon=value pairs separated by commas", Validate.REQUIRED);
-    public Input<Alignment> m_taxa = new Input<Alignment>("taxa", "contains list of taxa to map traits to", Validate.REQUIRED);
+    public Input<TaxonSet> m_taxa = new Input<TaxonSet>("taxa", "contains list of taxa to map traits to", Validate.REQUIRED);
 
     final static String DATE_TRAIT = "date";
     final static String DATE_FORWARD_TRAIT = "date-forward";
@@ -54,7 +55,7 @@ public class TraitSet extends Plugin {
         // first, determine taxon numbers associated with traits
         // The Taxon number is the index in the alignment, and
         // used as node number in a tree.
-        List<String> sLabels = m_taxa.get().getTaxaNames();
+        List<String> sLabels = m_taxa.get().asStringList();
         String[] sTraits = m_traits.get().split(",");
         m_sValues = new String[sLabels.size()];
         m_fValues = new double[sLabels.size()];

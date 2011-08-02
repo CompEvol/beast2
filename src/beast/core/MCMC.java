@@ -316,6 +316,7 @@ public class MCMC extends Runnable {
             //System.out.print("\n" + iSample + " " + operator.getName()+ ":");
             double fLogHastingsRatio = operator.proposal();
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
+            	
             	state.storeCalculationNodes();
                 state.checkCalculationNodesDirtiness();
 
@@ -389,7 +390,7 @@ public class MCMC extends Runnable {
     /** Calculate posterior by setting all StateNodes and CalculationNodes dirty.
      * Clean everything afterwards.
      */
-    protected double robustlyCalcPosterior(Distribution posterior) throws Exception {
+    public double robustlyCalcPosterior(Distribution posterior) throws Exception {
         state.store(-1);
         state.setEverythingDirty(true);
     	//state.storeCalculationNodes();

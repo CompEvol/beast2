@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -39,9 +41,10 @@ public class TipDatesInputEditor extends PluginInputEditor {
 	
 	@Override
     public Class<?> type() {
-        return TraitSet.class;
+        return Tree.class;
     }
 
+	Tree tree;
 	TraitSet traitSet;
 	JComboBox unitsComboBox;
 	JComboBox relativeToComboBox;
@@ -53,16 +56,54 @@ public class TipDatesInputEditor extends PluginInputEditor {
     @Override
     public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
-        m_input = input;
-        m_plugin = plugin;
-        traitSet = (TraitSet) m_input.get();
-        
-        
-        Box box = createVerticalBox();
-        box.add(createButtonBox());
-        box.add(createListBox());
-        box.add(createSamplingBox());
-        add(box);
+    	tree = (Tree) input.get();
+    	if (tree != null) {
+            m_input = tree.m_trait;
+            m_plugin = tree;
+	        traitSet = tree.m_trait.get();
+	        
+	        Box box = createVerticalBox();
+	        
+	        JCheckBox useTipDates = new JCheckBox("Use tip dates", traitSet != null);
+	        useTipDates.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox checkBox = (JCheckBox) e.getSource();
+					try {
+						Container comp = checkBox.getParent();
+						comp.removeAll();
+						if (checkBox.isSelected()) {
+							if (traitSet == null) {
+								traitSet = new TraitSet();
+								traitSet.initByName("traitname", "date",
+													"taxa", tree.m_taxonset.get(),
+													"value", "");
+							}
+							m_input.setValue(traitSet, m_plugin);
+							comp.add(checkBox);
+							comp.add(createButtonBox());
+							comp.add(createListBox());
+							comp.add(createSamplingBox());
+						} else {
+							m_input.setValue(null, m_plugin);
+							comp.add(checkBox);
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					
+				}
+			});
+	        box.add(useTipDates);
+	        
+	        if (traitSet != null) {
+		        box.add(createButtonBox());
+		        box.add(createListBox());
+		        box.add(createSamplingBox());
+	        }
+	        add(box);
+    	}
     } // init
 
     final static int NO_TIP_SAMPLING = 0;
@@ -215,7 +256,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		}
 	}	
 	private Component createListBox() {
-		sTaxa = traitSet.m_taxa.get().getTaxaNames();
+		sTaxa = traitSet.m_taxa.get().asStringList();
 		String [] columnData = new String[] {"Name", "Date","Height"};
 		tableData = new Object[sTaxa.size()][3];
 		convertTraitToTableData();
