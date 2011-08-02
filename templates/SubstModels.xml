@@ -16,7 +16,7 @@
 <![CDATA[
         <plugin spec='HKY' id='hky.$(n)'>
             <parameter id="kappa.$(n)" name='kappa' value="1.0" lower="0.0" estimate='true'/>
-            <frequencies id='freqs.$(n)' spec='Frequencies'>
+            <frequencies id='estimatedFreqs.$(n)' spec='Frequencies'>
                 <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25'/>
             </frequencies>
         </plugin>
@@ -101,6 +101,30 @@
 
 
 
+<!-- frequency models -->
+        <subtemplate id='Estimated' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Frequencies' mainid='estimatedFreqs.$(n)'>
+<![CDATA[
+            <frequencies id='estimatedFreqs.$(n)' spec='Frequencies'>
+                <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25'/>
+            </frequencies>
+
+	        <plugin id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
+]]>
+            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log'/>
+        </subtemplate>
+
+        <subtemplate id='Empirical' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Frequencies' mainid='empiricalFreqs.$(n)'>
+<![CDATA[
+            <frequencies id='empiricalFreqs.$(n)' spec='Frequencies' data='@$(n)' estimate='true'/>
+]]>
+        </subtemplate>
+
+        <subtemplate id='AllEqual' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Frequencies' mainid='equalFreqs.$(n)'>
+<![CDATA[
+            <frequencies id='equalFreqs.$(n)' spec='Frequencies' data='@$(n)' estimate='false'/>
+]]>
+        </subtemplate>
 
 
 <!-- Clock models -->

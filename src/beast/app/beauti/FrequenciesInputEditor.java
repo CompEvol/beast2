@@ -23,7 +23,8 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 
 	@Override
 	public Class<?> type() {
-		return Frequencies.class;
+		return ActionEvent.class;
+		//return Frequencies.class;
 	}
 	
     @Override

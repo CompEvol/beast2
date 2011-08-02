@@ -803,7 +803,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		            for (Operator op : ((MCMC)mcmc.get()).operatorsInput.get()) {
 		            	for (Plugin o : op.listActivePlugins()) {
 		            		if (o instanceof StateNode) {
-		            			stateNodes.add((StateNode) o);
+		            			operatorStateNodes.add((StateNode) o);
 		            		}
 		            	}
 		            }
@@ -915,7 +915,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			for (Plugin plugin : posteriorPredecessors) {
 				if ((plugin instanceof StateNode)
 						&& (((StateNode) plugin).m_bIsEstimated.get() || bUseNotEstimatedStateNodes)) {
-					stateNodes.add((StateNode) plugin);
+					if (!stateNodes.contains(plugin)) {
+						stateNodes.add((StateNode) plugin);
+					}
 					// System.err.println(stateNode.getID());
 				}
 			}
@@ -1162,6 +1164,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (srcPlugin instanceof Logger) {
 				potentitalLoggers.remove((Logger) srcPlugin);
 			}
+			PluginPanel.g_operators.remove(srcPlugin);
+			PluginPanel.g_distributions.remove(srcPlugin);
+			PluginPanel.g_loggers.remove(srcPlugin);
+			PluginPanel.g_taxa.remove(srcPlugin);
+			for (List<Plugin> logger : loggerInputs) {
+				logger.remove(srcPlugin);
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

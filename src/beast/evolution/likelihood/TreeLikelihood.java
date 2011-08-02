@@ -425,6 +425,7 @@ public class TreeLikelihood extends Distribution {
     public void store() {
     	if (m_beagle != null) {
     		m_beagle.store();
+            super.store();
     		return;
     	}
     	if (m_likelihoodCore != null) {
@@ -438,6 +439,7 @@ public class TreeLikelihood extends Distribution {
     public void restore() {
     	if (m_beagle != null) {
     		m_beagle.restore();
+            super.restore();
     		return;
     	}
     	if (m_likelihoodCore != null) {

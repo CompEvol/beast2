@@ -103,6 +103,10 @@ public class BeautiSubTemplate extends Plugin {
 			}
 		}
 
+		if (template == null) {
+			throw new Exception("Cannot find template for removing " + plugin.getID());
+		}
+		
 		// disconnect all connection points in the template
 		for (int i = 0; i < template.sSrcIDs.length; i++) {
 			Plugin src = PluginPanel.g_plugins.get(template.sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));
