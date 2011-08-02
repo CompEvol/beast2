@@ -378,7 +378,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
 	    	TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior));
 	        dlg.setVisible(true);
-	        if (!dlg.isOK) {
+	        if (!dlg.isOK || dlg.taxonSet.getID() == null) {
 	        	return null;
 	        }
         	taxonSet = dlg.taxonSet;
