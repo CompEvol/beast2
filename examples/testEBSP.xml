@@ -553,12 +553,13 @@
         <log idref="popSizes"/>
     </logger>
 
+<!--
     <logger fileName="demographic.$(seed).log" logEvery="5000" mode="autodetect">
         <log idref='popSizes'/>
         <log idref='indicators'/>
         <log idref="demographic"/>
     </logger>
-
+-->
     <logger fileName="treeModel000.$(seed).trees" logEvery="5000" mode="autodetect">
         <log idref="treeModel000"/>
     </logger>
