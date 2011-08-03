@@ -76,7 +76,8 @@ public class Logger extends Plugin {
     PrintStream m_out;
 
     /** keep track of time taken between logs to estimate speed **/
-    long m_nStartLogTime;
+    long m_nStartLogTime = -5;
+    int m_nStartSample;
 
     
     @Override
@@ -110,8 +111,6 @@ public class Logger extends Plugin {
         if (m_pEvery.get() != null) {
             m_nEvery = m_pEvery.get();
         }
-
-        m_nStartLogTime = System.currentTimeMillis();
     } // initAndValidate
 
     
@@ -273,16 +272,25 @@ public class Logger extends Plugin {
             m_logger.log(nSample, m_out);
         }
         if (m_out == System.out) {
-            long nLogTime = System.currentTimeMillis();
-            int nSecondsPerMSamples = (int) ((nLogTime - m_nStartLogTime) * 1000.0 / (nSample - m_nSampleOffset + 1.0));
-            String sTimePerMSamples =
-                    (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
-                            (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
-                            (nSecondsPerMSamples % 60 + "s");
-//            if (nSecondsPerMSamples < 600) {
-//            	sTimePerMSamples += (nLogTime - m_nStartLogTime) % 1000; 
-//            }
-            m_out.print(sTimePerMSamples + "/Msamples");
+        	if (m_nStartLogTime < 0) {
+        		if (nSample - m_nSampleOffset > 6000) {
+            		m_nStartLogTime++;
+                	if (m_nStartLogTime == 0) {
+                		m_nStartLogTime = System.currentTimeMillis();
+                		m_nStartSample = nSample;
+                	}
+        		}
+                m_out.print("--");
+        	} else {
+        	
+	            long nLogTime = System.currentTimeMillis();
+	            int nSecondsPerMSamples = (int) ((nLogTime - m_nStartLogTime) * 1000.0 / (nSample - m_nStartSample + 1.0));
+	            String sTimePerMSamples =
+	                    (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
+	                            (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
+	                            (nSecondsPerMSamples % 60 + "s");
+	            m_out.print(sTimePerMSamples + "/Msamples");
+        	}
         }
         m_out.println();
     } // log

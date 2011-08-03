@@ -293,7 +293,10 @@ public class BeastMCMC {
 		m_runnable.run();
 		g_exec.shutdown();
 		g_exec.shutdownNow();
-		System.exit(0);
+        if (System.getProperty("beast.useWindow") == null) {
+        	// this indicates no window is open
+        	System.exit(0);
+        }
 	} // run
 
 

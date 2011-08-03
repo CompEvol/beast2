@@ -372,6 +372,7 @@ public class BeastMain {
             System.setProperty("com.apple.macos.useScreenMenuBar", "true");
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("apple.awt.showGrowBox", "true");
+            System.setProperty("beast.useWindow", "true");
 
             javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");
 

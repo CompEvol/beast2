@@ -68,6 +68,7 @@
             beast.core.Logger.model
             '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
+        disableMenus='Mode'
     >
 
         <panel spec='BeautiPanelConfig' panelname="Partitions" tiptext="Data Partitions"

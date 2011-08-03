@@ -406,7 +406,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param nMatrixCount         the number of matrices (i.e., number of categories)
      * @param bIntegrateCategories whether sites are being integrated over all matrices
      */
-    public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories) {
+    public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories, boolean bUseAmbiguities) {
 
         this.m_nNodes = nNodeCount;
         this.m_nPatterns = nPatternCount;
@@ -799,95 +799,95 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     }
 
 
-	@Override
-    public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials) {
-		int u = 0;
-		double [] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
-		for (int k = 0; k < m_nPatterns; k++) {
-			for (int l = 0; l < m_nMatrices; l++) {
-				for (int i = 0; i < m_nStates; i++) {
-					fPseudoPartials[u] = fInPartials[u] * fFrequencies[i];
-					u++;
-				}
-			}
-		}
-    }
-	@Override
-    public void calcNodePsuedoRootPartials(double[] fInPseudoPartials, int iNode, double [] fOutPseudoPartials) {
-		double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
-		double [] fOldPartials = m_fPartials[m_iStoredPartials[iNode]][iNode];
-		int nMaxK = m_nPatterns * m_nMatrices * m_nStates; 
-		for (int k = 0; k < nMaxK; k++) {
-			fOutPseudoPartials[k] = fInPseudoPartials[k] * fPartials[k] / fOldPartials[k];
-		}
-	}
-    
-	@Override
-    public void calcPsuedoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials) {
-		int v = 0;
-		int u = 0;
-		double [] fMatrices = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
-		for (int k = 0; k < m_nPatterns; k++) {
-			for (int l = 0; l < m_nMatrices; l++) {
-				for (int i = 0; i < m_nStates; i++) {
-					int w = 0;
-					double fSum = 0;
-					for (int j = 0; j < m_nStates; j++) {
-					      fSum += fParentPseudoPartials[u+j] * fMatrices[w + i];
-					      w+=m_nStates;
-					}
-					fPseudoPartials[v] = fSum;
-					v++;
-//					int w = l * m_nMatrixSize;
+//	@Override
+//    public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials) {
+//		int u = 0;
+//		double [] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+//		for (int k = 0; k < m_nPatterns; k++) {
+//			for (int l = 0; l < m_nMatrices; l++) {
+//				for (int i = 0; i < m_nStates; i++) {
+//					fPseudoPartials[u] = fInPartials[u] * fFrequencies[i];
+//					u++;
+//				}
+//			}
+//		}
+//    }
+//	@Override
+//    public void calcNodePsuedoRootPartials(double[] fInPseudoPartials, int iNode, double [] fOutPseudoPartials) {
+//		double [] fPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+//		double [] fOldPartials = m_fPartials[m_iStoredPartials[iNode]][iNode];
+//		int nMaxK = m_nPatterns * m_nMatrices * m_nStates; 
+//		for (int k = 0; k < nMaxK; k++) {
+//			fOutPseudoPartials[k] = fInPseudoPartials[k] * fPartials[k] / fOldPartials[k];
+//		}
+//	}
+//    
+//	@Override
+//    public void calcPsuedoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials) {
+//		int v = 0;
+//		int u = 0;
+//		double [] fMatrices = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+//		for (int k = 0; k < m_nPatterns; k++) {
+//			for (int l = 0; l < m_nMatrices; l++) {
+//				for (int i = 0; i < m_nStates; i++) {
+//					int w = 0;
 //					double fSum = 0;
 //					for (int j = 0; j < m_nStates; j++) {
-//					      fSum += fParentPseudoPartials[u+j] * fMatrices[w+j];
+//					      fSum += fParentPseudoPartials[u+j] * fMatrices[w + i];
+//					      w+=m_nStates;
 //					}
 //					fPseudoPartials[v] = fSum;
 //					v++;
-				}
-				u += m_nStates;
-			}
-		}
-    }
-
-
-    @Override
-    void integratePartialsP(double [] fInPartials, double [] fProportions, double [] m_fRootPartials) {
-		int nMaxK = m_nPatterns * m_nStates;
-		for (int k = 0; k < nMaxK; k++) {
-			m_fRootPartials[k] = fInPartials[k] * fProportions[0];
-		}
-
-		for (int l = 1; l < m_nMatrices; l++) {
-			int n = nMaxK * l;
-			for (int k = 0; k < nMaxK; k++) {
-				m_fRootPartials[k] += fInPartials[n+k] * fProportions[l];
-			}
-		}
-    } // integratePartials
-
-	/**
-	 * Calculates pattern log likelihoods at a node.
-	 * @param fPartials the partials used to calculate the likelihoods
-	 * @param fFrequencies an array of state frequencies
-	 * @param fOutLogLikelihoods an array into which the likelihoods will go
-	 */
-    @Override
-	public void calculateLogLikelihoodsP(double[] fPartials,double[] fOutLogLikelihoods)
-	{
-        int v = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
-            double sum = 0.0;
-			for (int i = 0; i < m_nStates; i++) {
-				sum += fPartials[v];
-				v++;
-			}
-            fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
-		}
-	}
-	
-	
-	//    @Override
-//    LikelihoodCore feelsGood() {return null;}
+////					int w = l * m_nMatrixSize;
+////					double fSum = 0;
+////					for (int j = 0; j < m_nStates; j++) {
+////					      fSum += fParentPseudoPartials[u+j] * fMatrices[w+j];
+////					}
+////					fPseudoPartials[v] = fSum;
+////					v++;
+//				}
+//				u += m_nStates;
+//			}
+//		}
+//    }
+//
+//
+//    @Override
+//    void integratePartialsP(double [] fInPartials, double [] fProportions, double [] m_fRootPartials) {
+//		int nMaxK = m_nPatterns * m_nStates;
+//		for (int k = 0; k < nMaxK; k++) {
+//			m_fRootPartials[k] = fInPartials[k] * fProportions[0];
+//		}
+//
+//		for (int l = 1; l < m_nMatrices; l++) {
+//			int n = nMaxK * l;
+//			for (int k = 0; k < nMaxK; k++) {
+//				m_fRootPartials[k] += fInPartials[n+k] * fProportions[l];
+//			}
+//		}
+//    } // integratePartials
+//
+//	/**
+//	 * Calculates pattern log likelihoods at a node.
+//	 * @param fPartials the partials used to calculate the likelihoods
+//	 * @param fFrequencies an array of state frequencies
+//	 * @param fOutLogLikelihoods an array into which the likelihoods will go
+//	 */
+//    @Override
+//	public void calculateLogLikelihoodsP(double[] fPartials,double[] fOutLogLikelihoods)
+//	{
+//        int v = 0;
+//		for (int k = 0; k < m_nPatterns; k++) {
+//            double sum = 0.0;
+//			for (int i = 0; i < m_nStates; i++) {
+//				sum += fPartials[v];
+//				v++;
+//			}
+//            fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
+//		}
+//	}
+//	
+//	
+//	//    @Override
+////    LikelihoodCore feelsGood() {return null;}
 } // class BeerLikelihoodCore

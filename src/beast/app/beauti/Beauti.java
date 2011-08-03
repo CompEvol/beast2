@@ -32,6 +32,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import beast.app.BeastMCMC;
+import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.InputEditor;
@@ -401,7 +402,8 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            JOptionPane.showMessageDialog(null, "Beauti 2\n\n2011", "About Message", JOptionPane.PLAIN_MESSAGE);
+        	BeastVersion version = new BeastVersion();
+            JOptionPane.showMessageDialog(null, version.getCredits(), "About Beauti 2", JOptionPane.PLAIN_MESSAGE, BeautiPanel.getIcon(0, null));
         }
     } // class ActionAbout
 

@@ -198,7 +198,7 @@ public class TreeLikelihood extends Distribution {
                 nodeCount,
                 m_data.get().getPatternCount(),
                 m_siteModel.getCategoryCount(),
-                true
+                true, m_useAmbiguities.get()
         );
 
         int extNodeCount = nodeCount / 2 + 1;

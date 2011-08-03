@@ -3,7 +3,7 @@
 <roundrectangle roundx='16' roundy='16' label='MCMC' fillcolor='200 100 200' id='id1' x='-188' y='222' w='123' h='67'/>
 <roundrectangle roundx='16' roundy='16' label='Data' fillcolor='200 100 200' id='id2' x='4' y='444' w='123' h='67'/>
 <roundrectangle roundx='16' roundy='16' label='State' fillcolor='200 100 200' id='id3' x='6' y='212' w='123' h='67'/>
-<roundrectangle roundx='16' roundy='16' label='Uncertainty' fillcolor='200 100 200' id='id4' x='7' y='318' w='123' h='67'/>
+<roundrectangle roundx='16' roundy='16' label='Distribution' fillcolor='200 100 200' id='id4' x='7' y='318' w='123' h='67'/>
 <roundrectangle roundx='16' roundy='16' label='Operator' fillcolor='200 100 200' id='id5' x='14' y='102' w='123' h='67'/>
 <roundrectangle roundx='16' roundy='16' label='Input' fillcolor='100 200 200' id='id6' x='-354' y='222' w='123' h='67'/>
 <roundrectangle roundx='16' roundy='16' label='Log' fillcolor='200 100 200' id='id7' x='17' y='-1' w='123' h='67'/>
