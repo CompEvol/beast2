@@ -33,11 +33,14 @@ import java.util.List;
 import java.util.ArrayList;
 
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.distance.Distance;
+import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -69,10 +72,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 			"Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE +")", M_AVERAGE, TYPES);
 	public Input<Alignment> m_pData = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering", Validate.REQUIRED);
 	public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
+	public Input<Distance> distanceInput = new Input<Distance>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
 
 	/** Whether the distance represent node height (if false) or branch length (if true). */
 	protected boolean m_bDistanceIsBranchLength = false;
-
+	Distance distance;
+	
 	@Override
 	public void initAndValidate() throws Exception {
 		
@@ -83,6 +88,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         	return;
         }
 		
+        distance = distanceInput.get();
+        if (distance == null) {
+        	distance = new JukesCantorDistance();
+        }
+        distance.setPatterns(m_pData.get());
+        
 		String sType = m_sClusterType.get().toLowerCase();
 		if (sType.equals(M_SINGLE)) {m_nLinkType = SINGLE;}
 		else if (sType.equals(M_COMPLETE)) {m_nLinkType = COMPLETE;}
@@ -261,17 +272,11 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 		}
 	}
 
-	// TODO: calculate distance through external class
-	// return Hamming distance
+	// return distance according to distance metric
 	double distance(int iTaxon1, int iTaxon2) {
-		double fDist = 0;
-		for (int i = 0; i < m_pData.get().getPatternCount(); i++) {
-			if (m_pData.get().getPattern(iTaxon1, i) != m_pData.get().getPattern(iTaxon2, i)) {
-				fDist += m_pData.get().getPatternWeight(i);
-			}
-		}
-		return fDist / m_pData.get().getSiteCount();
+		return distance.calculatePairwiseDistance(iTaxon1, iTaxon2);
 	} // distance
+
 	// 1-norm
 	double distance(double [] nPattern1, double [] nPattern2) {
 		double fDist = 0;
