@@ -138,61 +138,6 @@
 		<echo message="JUnit test report finished." />
 	</target>
 
-	<target name="doc" description="Create Developer Docs for Beast II" depends='javadoc'>
-		<copy file="doc/tutorial.slides.part1.pdf" tofile="release/common/doc/develop/" />
-		<copy file="doc/tutorial.slides.part2.pdf" tofile="release/common/doc/develop/" />
-		<!-- part 3 needs updating -->
-		<!--copy file="doc/tutorial.slides.part3.pdf" tofile="release/common/doc/develop/" /-->
-	</target>
-
-	<target name="javadoc" description="Create Javadocs for Beast II" depends='docPreProcess'>
-		<mkdir dir="release/common/doc/develop/" />
-		<mkdir dir="release/common/doc/develop/javadoc/" />
-		<javadoc destdir="release/common/doc/develop/javadoc/">
-			<fileset dir="src2/" includes="beast/core/**/*.java" />
-			<fileset dir="src2/" includes="beast/util/**/*.java" />
-			<fileset dir="src2/" includes="beast/math/**/*.java" />
-			<fileset dir="src2/" includes="beast/evolution/**/*.java" />
-		</javadoc>
-	</target>
-
-	<!-- run perl script that extracts @Description and Input.description info for javadoc -->
-	<target name="docPreProcess">
-		<exec executable="perl" dir="${basedir}">
-			<arg value="scripts/doc.pl" />
-		</exec>
-	</target>
-
-
-	<!-- zip up everything that goes in the SDK -->
-	<target name="sdk" description="Create Beast II SDK" depends="dist_all_BEAST,javadoc">
-		<!-- Put the SDK in ${dist} into the beastsdk.zip file -->
-		<copy file="doc/README" tofile="beast2/README" />
-		<copy file="doc/LICENSE" tofile="beast2/LICENSE" />
-		<copy file="doc/slides/sdk.pdf" tofile="beast2/Beast.II.Getting.Started.pdf" />
-		<copy file="${dist}/beast.jar" tofile="beast2/beast.jar" />
-		<delete file="${dist}/beastsdk.zip" />
-
-		<jar jarfile="${dist}/beastsdk.zip">
-			<fileset dir="">
-				<include name="beast2/README" />
-				<include name="beast2/LICENSE" />
-				<include name="beast2/Beast.II.Getting.Started.pdf" />
-				<include name="beast2/javadoc/**/*.*" />
-				<include name="beast2/beast.jar" />
-			</fileset>
-		</jar>
-
-		<!-- clean up -->
-		<delete file="beast2/README" />
-		<delete file="beast2/LICENSE" />
-		<delete file="beast2/beast.jar" />
-		<delete includeemptydirs="true">
-			<fileset dir="beast2/javadoc/" includes="**/*" />
-		</delete>
-		<delete dir="beast2/javadoc" />
-		<delete dir="beast2" />
-	</target>
 
 	<!-- Release -->
 	<property name="version" value="2.0.a" />
@@ -232,9 +177,6 @@
 		         classname="net.sf.launch4j.ant.Launch4jTask"
 		         classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
-		<copy todir="${Windows_package_dir}/doc">
-			<fileset dir="${common_dir}/doc" />
-		</copy>
 		<copy todir="${Windows_package_dir}/examples/">
 			<fileset dir="examples/">
 				<include name="*.xml" />
@@ -244,6 +186,9 @@
 		</copy>
 		<!--<copy todir="${Windows_package_dir}/native">
 			<fileset dir="${common_dir}/native"/>
+		</copy>
+		<copy todir="${Windows_package_dir}/doc">
+			<fileset dir="${common_dir}/doc" />
 		</copy>
 		<copy todir="${Windows_package_dir}/bin">
 			<fileset dir="${Windows_dir}/scripts"/>
@@ -257,6 +202,7 @@
 		</copy>-->
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Windows_package_dir}" />
 		<copy file="${common_dir}/README.txt" todir="${Windows_package_dir}" />
+		<copy file="${common_dir}/LICENSE.txt" todir="${Windows_package_dir}" />
 
 		<!-- BEAUTi v?.?.?.exe -->
 		<launch4j configFile="${Windows_dir}/BEAUti_launch4j.xml"
@@ -344,9 +290,9 @@
 		</copy>
 		<chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
 
-		<copy todir="${Linux_package_dir}/doc">
+		<!--<copy todir="${Linux_package_dir}/doc">
 			<fileset dir="${common_dir}/doc" />
-		</copy>
+		</copy>-->
 		<copy todir="${Linux_package_dir}/examples/">
 			<fileset dir="examples/">
 				<include name="*.xml" />
@@ -376,6 +322,7 @@
 		</copy>
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Linux_package_dir}" />
 		<copy file="${common_dir}/README.txt" todir="${Linux_package_dir}" />
+		<copy file="${common_dir}/LICENSE.txt" todir="${Linux_package_dir}" />
 
 		<!-- Only works under Unix or NonStop Kernel (Tandem) -->
 		<!-- <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**"/>
@@ -404,9 +351,6 @@
 		</copy>
 		<chmod dir="${Mac_package_dir}/bin" perm="755" includes="**/**" />
 
-		<copy todir="${Mac_package_dir}/doc">
-			<fileset dir="${common_dir}/doc" />
-		</copy>
 		<copy todir="${Mac_package_dir}/examples/">
 			<fileset dir="examples/">
 				<include name="*.xml" />
@@ -417,7 +361,10 @@
 		<!-- <copy todir="${Mac_package_dir}/native">
 			<fileset dir="${common_dir}/native" />
 		</copy>
-
+<copy todir="${Mac_package_dir}/doc">
+			<fileset dir="${common_dir}/doc" />
+		</copy>
+		
 		<copy file="${dist}/beauti.jar" todir="${Mac_package_dir}/lib" /> -->
 		<copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
 		<copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
@@ -428,6 +375,7 @@
 
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Mac_package_dir}" />
 		<copy file="${common_dir}/README.txt" todir="${Mac_package_dir}" />
+		<copy file="${common_dir}/LICENSE.txt" todir="${Mac_package_dir}" />
 
 		<taskdef name="jarbundler"
 		         classname="net.sourceforge.jarbundler.JarBundler"
@@ -569,6 +517,56 @@
 		<echo message="Mac version release is finished." />
 	</target>
 
+	<target name="doc" description="Create Developer Docs for Beast II" depends='javadoc'>
+		<copy file="doc/tutorial.slides.part1.pdf" tofile="release/common/doc/develop/" />
+		<copy file="doc/tutorial.slides.part2.pdf" tofile="release/common/doc/develop/" />
+		<!-- part 3 needs updating -->
+		<!--copy file="doc/tutorial.slides.part3.pdf" tofile="release/common/doc/develop/" /-->
+	</target>
+
+	<target name="javadoc" description="Create Javadocs for Beast II" depends='docPreProcess'>
+		<mkdir dir="${common_dir}/javadoc/" />
+		<javadoc destdir="${common_dir}/javadoc/">
+			<fileset dir="src2/" includes="beast/core/**/*.java" />
+			<fileset dir="src2/" includes="beast/util/**/*.java" />
+			<fileset dir="src2/" includes="beast/math/**/*.java" />
+			<fileset dir="src2/" includes="beast/evolution/**/*.java" />
+		</javadoc>
+	</target>
+
+	<!-- run perl script that extracts @Description and Input.description info for javadoc -->
+	<target name="docPreProcess">
+		<exec executable="perl" dir="${basedir}">
+			<arg value="scripts/doc.pl" />
+		</exec>
+	</target>
+
+	<property name="sdk_dir" value="${release_dir}/${BEAST_name}_SDK" />
+
+	<!-- zip up everything that goes in the SDK -->
+	<target name="sdk" description="Create Beast II SDK" depends="dist_all_BEAST,javadoc">
+
+		<delete file="${release_dir}/${BEAST_name}_SDK_v${version}.zip" />
+
+		<copy file="doc/slides/sdk.pdf" tofile="${common_dir}/Beast_II_Getting_Started.pdf" />
+
+		<zip destfile="${release_dir}/${BEAST_name}_SDK_v${version}.zip">
+			<fileset dir="${common_dir}">
+				<include name="**/*.txt" />
+				<include name="**/*.pdf" />
+				<include name="javadoc/**/*.*" />
+			</fileset>
+			<fileset dir="${dist}">
+				<include name="beast.jar" />
+				<include name="beast.src.jar" />
+			</fileset>
+		</zip>
+
+		<!-- clean up -->
+		<delete file="${common_dir}/Beast_II_Getting_Started.pdf" />
+
+		<echo message="SDK release is finished." />
+	</target>
 
 </project>
 

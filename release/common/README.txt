@@ -169,7 +169,20 @@ Source code distributed under the GNU Lesser General Public License:
 <http://code.google.com/p/beast2/>
 
 ___________________________________________________________________________
-8) ACKNOWLEDGMENTS
+8) SDK FOR PLUGIN DEVELOPERS
+
+east II SDK Readme:
+
+Beast.II.Getting.Started.pdf: Contains description and hints on how to get started with the SDK
+
+LICENSE: LGPL 
+
+beast.jar: Beast II library
+
+javadoc/: class documentation
+
+___________________________________________________________________________
+9) ACKNOWLEDGMENTS
 
 Thanks for supplying code or assisting with the creation
 or testing of Beast 2 development team.
