@@ -171,13 +171,11 @@ Source code distributed under the GNU Lesser General Public License:
 ___________________________________________________________________________
 8) SDK FOR PLUGIN DEVELOPERS
 
-east II SDK Readme:
-
 Beast.II.Getting.Started.pdf: Contains description and hints on how to get started with the SDK
 
 LICENSE: LGPL 
 
-beast.jar: Beast II library
+beast.jar: Beast 2 library
 
 javadoc/: class documentation
 

@@ -517,14 +517,14 @@
 		<echo message="Mac version release is finished." />
 	</target>
 
-	<target name="doc" description="Create Developer Docs for Beast II" depends='javadoc'>
+	<target name="doc" description="Create Developer Docs for Beast 2" depends='javadoc'>
 		<copy file="doc/tutorial.slides.part1.pdf" tofile="release/common/doc/develop/" />
 		<copy file="doc/tutorial.slides.part2.pdf" tofile="release/common/doc/develop/" />
 		<!-- part 3 needs updating -->
 		<!--copy file="doc/tutorial.slides.part3.pdf" tofile="release/common/doc/develop/" /-->
 	</target>
 
-	<target name="javadoc" description="Create Javadocs for Beast II" depends='docPreProcess'>
+	<target name="javadoc" description="Create Javadocs for Beast 2" depends='docPreProcess'>
 		<mkdir dir="${common_dir}/javadoc/" />
 		<javadoc destdir="${common_dir}/javadoc/">
 			<fileset dir="src2/" includes="beast/core/**/*.java" />
@@ -532,6 +532,9 @@
 			<fileset dir="src2/" includes="beast/math/**/*.java" />
 			<fileset dir="src2/" includes="beast/evolution/**/*.java" />
 		</javadoc>
+		
+		<!-- clean up -->
+		<delete dir="src2/"/>
 	</target>
 
 	<!-- run perl script that extracts @Description and Input.description info for javadoc -->
@@ -544,13 +547,13 @@
 	<property name="sdk_dir" value="${release_dir}/${BEAST_name}_SDK" />
 
 	<!-- zip up everything that goes in the SDK -->
-	<target name="sdk" description="Create Beast II SDK" depends="dist_all_BEAST,javadoc">
+	<target name="sdk" description="Create Beast 2 SDK" depends="dist_all_BEAST,javadoc">
 
-		<delete file="${release_dir}/${BEAST_name}_SDK_v${version}.zip" />
+		<delete file="${release_dir}/${BEAST_name}_v${version}_SDK.zip" />
 
-		<copy file="doc/slides/sdk.pdf" tofile="${common_dir}/Beast_II_Getting_Started.pdf" />
+		<copy file="doc/slides/sdk.pdf" tofile="${common_dir}/Beast_2_Getting_Started.pdf" />
 
-		<zip destfile="${release_dir}/${BEAST_name}_SDK_v${version}.zip">
+		<zip destfile="${release_dir}/${BEAST_name}_v${version}_SDK.zip">
 			<fileset dir="${common_dir}">
 				<include name="**/*.txt" />
 				<include name="**/*.pdf" />
@@ -563,7 +566,7 @@
 		</zip>
 
 		<!-- clean up -->
-		<delete file="${common_dir}/Beast_II_Getting_Started.pdf" />
+		<delete file="${common_dir}/Beast_2_Getting_Started.pdf" />
 
 		<echo message="SDK release is finished." />
 	</target>
