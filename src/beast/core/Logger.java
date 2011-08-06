@@ -309,4 +309,10 @@ public class Logger extends Plugin {
         }
     } // close
 
+
+
+	public static int getSampleOffset() {
+		return m_nSampleOffset;
+	}
+
 } // class Logger
