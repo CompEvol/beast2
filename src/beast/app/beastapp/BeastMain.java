@@ -443,7 +443,7 @@ public class BeastMain {
         	if (arguments.hasOption("overwrite")) {
         		MCMCargs.add("-overwrite");	
         	} else if (arguments.hasOption("resume")) {
-        		MCMCargs.add("-overwrite");	
+        		MCMCargs.add("-resume");	
         	}
         }
 
