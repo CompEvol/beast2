@@ -291,8 +291,17 @@ public class PriorListInputEditor extends ListInputEditor {
 			isEstimatedBox.setToolTipText(prior.m_bIsMonophyleticInput.getTipText());
 			isEstimatedBox.addActionListener(new MRCAPriorActionListener(prior));
 			itemBox.add(isEstimatedBox);
+        } else {
+        	String sText = plugin.getID();
+        	JLabel label = new JLabel(sText);
+        	label.setMinimumSize(new Dimension(200,20));
+        	label.setPreferredSize(new Dimension(200,20));
+        	itemBox.add(label);
+
+        	comboBox = new JComboBox();
+        	comboBox.setVisible(false);
         }
-        if (!(plugin instanceof MRCAPrior)) {
+        if (!(plugin instanceof MRCAPrior) && m_buttonStatus != BUTTONSTATUS.NONE && m_buttonStatus != BUTTONSTATUS.ADDONLY) {
         	m_delButton.get(m_delButton.size() - 1).setVisible(false);
         }
     	comboBox.setMaximumSize(new Dimension(1024, 24));

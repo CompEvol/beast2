@@ -53,7 +53,9 @@ import beast.evolution.tree.Tree;
 		"<br/>o mean link, " +
 		"<br/>o centroid, " +
 		"<br/>o Ward and " +
-		"<br/>o adjusted complete link")
+		"<br/>o adjusted complete link " +
+		"<br/>o neighborjoining " +
+		"<br/>o neighborjoining2 - corrects tree for tip data, unlike plain neighborjoining")
 public class ClusterTree extends Tree implements StateNodeInitialiser {
 	final static String M_SINGLE = "single";
 	final static String M_AVERAGE = "average";
@@ -64,9 +66,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 	final static String M_WARD = "ward";
 	final static String M_ADJCOMPLETE = "adjcomplete";
 	final static String M_NEIGHBORJOINING = "neighborjoining";
+	final static String M_NEIGHBORJOINING2 = "neighborjoining2";
 	double EPSILON = 1e-10;
 	
-	final static String [] TYPES = {M_SINGLE, M_AVERAGE,	M_COMPLETE,	M_UPGMA,	M_MEAN,	M_CENTROID,	M_WARD,	M_ADJCOMPLETE,	M_NEIGHBORJOINING };
+	final static String [] TYPES = {M_SINGLE, M_AVERAGE,	M_COMPLETE,	M_UPGMA,	M_MEAN,	M_CENTROID,	M_WARD,	M_ADJCOMPLETE,	M_NEIGHBORJOINING,	M_NEIGHBORJOINING2 };
 
 	public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
 			"Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE +")", M_AVERAGE, TYPES);
@@ -104,6 +107,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 		else if (sType.equals(M_WARD)) {m_nLinkType = WARD;}
 		else if (sType.equals(M_ADJCOMPLETE)) {m_nLinkType = ADJCOMLPETE;}
 		else if (sType.equals(M_NEIGHBORJOINING)) {m_nLinkType = NEIGHBOR_JOINING;m_bDistanceIsBranchLength = true;}
+		else if (sType.equals(M_NEIGHBORJOINING2)) {m_nLinkType = NEIGHBOR_JOINING2;m_bDistanceIsBranchLength = true;}
 		else {
 			System.out.println("Warning: unrecognized cluster type. Using Average/UPGMA.");
 			m_nLinkType = AVERAGE;
@@ -112,8 +116,18 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 		setRoot(root);
 		root.labelInternalNodes((getNodeCount()+1)/2);
 		super.initAndValidate();
+		if (m_nLinkType == NEIGHBOR_JOINING2) {
+			// set tip dates to zero
+			Node [] nodes = getNodesAsArray();
+			for (int i = 0; i < getLeafNodeCount(); i++) {
+				nodes[i].setHeight(0);
+			}
+			super.initAndValidate();
+		}
+		
 		initStateNodes();
 	}
+	
 
 	Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		return (Node) Class.forName(m_oNodeType.get()).newInstance();
@@ -129,6 +143,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 	final static int WARD = 5;
 	final static int ADJCOMLPETE = 6;
 	final static int NEIGHBOR_JOINING = 7;
+	final static int NEIGHBOR_JOINING2 = 8;
 
 	/**
 	 * Holds the Link type used calculate distance between clusters
@@ -311,7 +326,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
 		// used for keeping track of hierarchy
 		NodeX [] clusterNodes = new NodeX[nTaxa];
-		if (m_nLinkType == NEIGHBOR_JOINING) {
+		if (m_nLinkType == NEIGHBOR_JOINING || m_nLinkType == NEIGHBOR_JOINING2) {
 			neighborJoining(nClusters, nClusterID, clusterNodes);
 		} else {
 			doLinkClustering(nClusters, nClusterID, clusterNodes);
@@ -531,6 +546,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 		switch (m_nLinkType) {
 		case SINGLE:
 		case NEIGHBOR_JOINING:
+		case NEIGHBOR_JOINING2:
 		case CENTROID:
 		case COMPLETE:
 		case ADJCOMLPETE:

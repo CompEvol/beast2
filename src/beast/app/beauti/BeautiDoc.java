@@ -655,17 +655,19 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		int k = 0;
 		for (Distribution d : likelihood.pDistributions.get()) {
 			BranchRateModel.Base clockModel = ((TreeLikelihood) d).m_pBranchRateModel.get();
-			String sID = clockModel.getID();
-			sID = sID.substring(sID.indexOf('.') + 1);
-			String sPartition = alignments.get(k).getID();
-			if (sID.equals(sPartition)) {
-				if (clockModels.size() <= k) {
-					clockModels.add(clockModel);
-				} else {
-					clockModels.set(k, clockModel);
+			if (clockModel != null) {
+				String sID = clockModel.getID();
+				sID = sID.substring(sID.indexOf('.') + 1);
+				String sPartition = alignments.get(k).getID();
+				if (sID.equals(sPartition)) {
+					if (clockModels.size() <= k) {
+						clockModels.add(clockModel);
+					} else {
+						clockModels.set(k, clockModel);
+					}
 				}
+				k++;
 			}
-			k++;
 		}
 	}
 
@@ -1009,6 +1011,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 								priors.add(prior);
 								potentialPriors.remove(prior);
 							}
+						} else if (!(prior instanceof Prior)) {
+							priors.add(prior);
+							potentialPriors.remove(prior);
 						} else if (!(prior instanceof MRCAPrior) && stateNodes.contains(plugin)) {
 							// priors.add(prior);
 						}
@@ -1191,7 +1196,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (distr instanceof TreeLikelihood) {
 				TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
 				alignments.add(treeLikelihoods.m_data.get());
-				sPartitionNames.add(treeLikelihoods.m_data.get().getID());
+				String sID = treeLikelihoods.m_data.get().getID();
+				sID = sID.substring(sID.lastIndexOf(".")+1);
+				sPartitionNames.add(sID);
 			}
 		}
 
@@ -1221,12 +1228,17 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					treeLikelihood.m_pSiteModel.setValue(treeLikelihood2.m_pSiteModel.get(), treeLikelihood);
 					nCurrentPartitions[0].add(nPartition);
 
-					nPartition = getPartitionNr(treeLikelihood.m_pBranchRateModel.get());
-					treeLikelihood2 = treeLikelihoods.get(nPartition);
-					treeLikelihood.m_pBranchRateModel
-							.setValue(treeLikelihood2.m_pBranchRateModel.get(), treeLikelihood);
-					nCurrentPartitions[1].add(nPartition);
-
+					BranchRateModel rateModel = treeLikelihood.m_pBranchRateModel.get();
+					if (rateModel != null) {
+						nPartition = getPartitionNr((Plugin) rateModel);
+						treeLikelihood2 = treeLikelihoods.get(nPartition);
+						treeLikelihood.m_pBranchRateModel
+								.setValue(treeLikelihood2.m_pBranchRateModel.get(), treeLikelihood);
+						nCurrentPartitions[1].add(nPartition);
+					} else {
+						nCurrentPartitions[1].add(0);
+					}
+					
 					nPartition = getPartitionNr(treeLikelihood.m_tree.get());
 					treeLikelihood2 = treeLikelihoods.get(nPartition);
 					treeLikelihood.m_tree.setValue(treeLikelihood2.m_tree.get(), treeLikelihood);

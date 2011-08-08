@@ -10,7 +10,8 @@ import beast.evolution.datatype.DataType;
 @Description("Provides distance between two sequences in an alignment")
 public class Distance extends Plugin {
 	
-    public static final double MAX_DISTANCE = 1000.0;
+    //public static final double MAX_DISTANCE = 1000.0;
+    public static final double MAX_DISTANCE = 5.0;
 
     @Override
     public void initAndValidate() throws Exception {
