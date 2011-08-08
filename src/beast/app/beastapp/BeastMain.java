@@ -439,6 +439,12 @@ public class BeastMain {
                 return;
             }
 
+        } else {
+        	if (arguments.hasOption("overwrite")) {
+        		MCMCargs.add("-overwrite");	
+        	} else if (arguments.hasOption("resume")) {
+        		MCMCargs.add("-overwrite");	
+        	}
         }
 
         if (beagleShowInfo) {
