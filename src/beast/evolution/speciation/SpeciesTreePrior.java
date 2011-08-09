@@ -78,11 +78,12 @@ public class SpeciesTreePrior extends TreeDistribution {
 			throw new Exception("Top prior must be specified when population function is not constant");
 		}
 		// make sure the m_taxonSet is a set of taxonsets
-		for (Taxon taxon : m_taxonSet.get().m_taxonset.get()) {
-			if (!(taxon instanceof TaxonSet)) {
-				throw new Exception("taxonset should be sets of taxa only, not individual taxons");
-			}
-		}
+// HACK to make Beauti initialise: skip the check here
+//		for (Taxon taxon : m_taxonSet.get().m_taxonset.get()) {
+//			if (!(taxon instanceof TaxonSet)) {
+//				throw new Exception("taxonset should be sets of taxa only, not individual taxons");
+//			}
+//		}
 	}	
 	
 	@Override

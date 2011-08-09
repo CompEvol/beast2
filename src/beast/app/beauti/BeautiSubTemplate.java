@@ -164,7 +164,7 @@ public class BeautiSubTemplate extends Plugin {
 	
 	Plugin createSubNet(Alignment data, BeautiDoc doc) {
 		String sPartition = data.getID();
-		HashMap<String, Plugin> sIDMap = new HashMap<String, Plugin>();
+		HashMap<String, Plugin> sIDMap = PluginPanel.g_plugins;//new HashMap<String, Plugin>();
 		sIDMap.put(sPartition, data);
 		return createSubNet(sPartition, doc, sIDMap);
 	}	
@@ -185,7 +185,7 @@ public class BeautiSubTemplate extends Plugin {
 		parser.setRequiredInputProvider(doc);
 		List<Plugin> plugins = null;
 		try {
-			plugins = parser.parseTemplate(_sXML, sIDMap);
+			plugins = parser.parseTemplate(_sXML, sIDMap, false);
 			for (Plugin plugin : plugins) {
 				doc.addPlugin(plugin);
 			}

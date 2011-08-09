@@ -104,6 +104,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	Beauti beauti;
 
 	String sTemplateName = null;
+	String m_sTemplateFileName = STANDARD_TEMPLATE;
 	String sFileName = null;
 
 	public BeautiDoc() {
@@ -117,7 +118,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		String m_sOutputFileName = "beast.xml";
 		String m_sXML = null;
 		String m_sTemplateXML = null;
-		String m_sTemplateFileName;
 
 		int i = 0;
 		try {
@@ -237,7 +237,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			clear();
 			PluginPanel.init();
 			BeautiConfig.clear();
-			String sXML = processTemplate(STANDARD_TEMPLATE);
+			String sXML = processTemplate(m_sTemplateFileName);
 			loadTemplate(sXML);
 			beauti.setUpPanels();
 		} catch (Exception e) {
@@ -290,6 +290,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			break;
 		}
 		case SHOW_DETAILS_USE_XML_SPEC: {
+			if (sTemplate == null) {
+				sTemplate = processTemplate(STANDARD_TEMPLATE);
+			}
+			loadTemplate(sTemplate);
 			extractSequences(sXML);
 			connectModel();
 			break;
@@ -472,8 +476,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	void extractSequences(String sXML) throws Exception {
 		// load standard template
-		String sTemplateXML = processTemplate(STANDARD_TEMPLATE);
-		loadTemplate(sTemplateXML);
+		if (m_beautiConfig == null) {
+			String sTemplateXML = processTemplate(STANDARD_TEMPLATE);
+			loadTemplate(sTemplateXML);
+		}
 		// parse file
 		XMLParser parser = new XMLParser();
 		Plugin MCMC = parser.parseFragment(sXML, true);
@@ -603,7 +609,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	void loadTemplate(String sXML) throws Exception {
 		// load the template and its beauti configuration parts
 		XMLParser parser = new XMLParser();
-		List<Plugin> plugins = parser.parseTemplate(sXML, new HashMap<String, Plugin>());
+		List<Plugin> plugins = parser.parseTemplate(sXML, new HashMap<String, Plugin>(), true);
 		for (Plugin plugin : plugins) {
 			if (plugin instanceof beast.core.Runnable) {
 				mcmc.setValue(plugin, this);

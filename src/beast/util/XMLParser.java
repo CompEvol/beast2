@@ -232,7 +232,8 @@ public class XMLParser {
     /** extract all elements (runnable or not) from an XML fragment.
      * Useful for retrieving all non-runnable elements when a template
      * is instantiated by Beauti **/
-    public List<Plugin> parseTemplate(String sXML, HashMap<String, Plugin> sIDMap) throws Exception {
+    public List<Plugin> parseTemplate(String sXML, HashMap<String, Plugin> sIDMap, boolean bInitialize) throws Exception {
+    	m_bInitialize = bInitialize;
         // parse the XML file into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);

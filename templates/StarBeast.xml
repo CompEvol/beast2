@@ -108,6 +108,9 @@
 
         <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
+
+		    <distribution id='treePrior.$(n)' spec='GeneTreeForSpeciesTreeDistribution' tree='@Tree.$(n)' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
+
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.$(n)" gammaCategoryCount='0'>
                 <substModel spec='JukesCantor' id='JC69.$(n)'/>
@@ -135,12 +138,9 @@
             </plugin>
 
             <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.$(n)'-->
-            <plugin spec='beast.evolution.tree.RandomGeneTree' id='RandomGeneTree.$(n)' estimate='false' initial='@Tree.$(n)' speciesTree='@speciesTree'>
-                <taxa spec='Alignment' idref='data'/>
-                <populationModel id='ConstantPopulation.$(n)' spec='ConstantPopulation'>
-            		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
-	            </populationModel>
-            </plugin>
+			<tree spec='RandomGeneTree' id='randomGeneTree.$(n)' initial='@Tree.$(n)' speciesTree='@speciesTree' taxa='@$(n)'>
+				<populationModel id='RGTPopulationModel.$(n)' spec='ConstantPopulation'><popSize id='RGTPopSize.$(n)' spec='parameter.RealParameter' value='1'/></populationModel>
+			</tree>
 
             <!-- default tree prior -->
             <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
@@ -171,10 +171,14 @@
 			<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
 
+
+
+
 ]]>
             <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
-            <connect spec='BeautiConnector' srcID='RandomTree.$(n)' targetID='mcmc' inputName='init'/>
+            <connect spec='BeautiConnector' srcID='RandomGeneTree.$(n)' targetID='mcmc' inputName='init'/>
 
+            <connect spec='BeautiConnector' srcID='treePrior.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
 
             <connect spec='BeautiConnector' srcID='Tree.$(n)' targetID='state' inputName='stateNode'/>
@@ -205,26 +209,21 @@
             <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
         </partitiontemplate>
 
-
-
-
         <mergepoint id='commonTemplates'/>
 
     </beauticonfig>
 
 
-	<tree spec='Tree' id='speciesTree'/>
+	<taxonset spec='beast.evolution.alignment.TaxonSet' id='taxonsuperset'>
+		<taxon spec='beast.evolution.alignment.TaxonSet' id='dummyTaxonSet'>
+			<taxon spec='beast.evolution.alignment.Taxon' id='dummyTaxon'/>
+		</taxon>
+	</taxonset>
 
-    <!-- species tree priors -->
-    <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' tree='@speciesTree' 
-    		popFunction='constant' taxonset='@taxonsuperset'>
-        <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
-        <parameter name='gammaParameter' id='popMean' value='0.004'/>
-    </distribution>
+	<tree spec='beast.evolution.tree.Tree' id='speciesTree' taxonset='@taxonsuperset'/>
 
 
 <!-- framework for main model -->
-
     <run spec="MCMC" id="mcmc" chainLength="10000000">
 
         <state storeEvery='100000' id='state'>
@@ -232,6 +231,15 @@
 
         <distribution spec="CompoundDistribution" id="posterior">
             <distribution spec="CompoundDistribution" id="prior">
+			    <!-- species tree priors -->
+			    <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' tree='@speciesTree' 
+			    		popFunction='constant' taxonset='@taxonsuperset'>
+			        <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
+			        <parameter name='gammaParameter' id='popMean' value='0.004'/>
+			    </distribution>
+		        <distribution id="SpeciesTreeDivergenceTimesPrior" spec="speciation.YuleModel" tree='@speciesTree'>
+		            <birthDiffRate spec='parameter.RealParameter' id="birthRate" value='213.2021' lower='0' upper='10000' />
+		        </distribution>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
             </distribution>
@@ -256,10 +264,10 @@
 </beast>
 
 
+<!--        
 <beast version='2.0'
        namespace='beast.evolution.alignment:beast.evolution.tree:beast.math:beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
-<!--        
     <beauticonfig spec='beast.app.beauti.BeautiConfig'
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers'
@@ -504,9 +512,9 @@
 
 </run>
 
--->
 
 </beast>
 
+-->
 
 
