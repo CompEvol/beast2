@@ -28,8 +28,15 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         tree = treeInput.get();
 
         categories = categoryInput.get();
+        int nCategoryCount = tree.getNodeCount() - 1;
+        categories.setDimension(nCategoryCount);
+        Integer [] iCategories = new Integer[nCategoryCount];
+        for (int i = 0; i < nCategoryCount; i++) {
+        	iCategories[i] = i;
+        }
+        IntegerParameter other = new IntegerParameter(iCategories);
+        categories.assignFrom(other);
         categories.setLower(0);
-        categories.setDimension(tree.getNodeCount() - 1);
         categories.setUpper(categories.getDimension() - 1);
         
         distribution = rateDistInput.get();
