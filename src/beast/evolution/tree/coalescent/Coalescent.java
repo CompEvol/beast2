@@ -30,6 +30,7 @@ public class Coalescent extends TreeDistribution {
 		if (intervals == null) {
 			throw new Exception("Expected treeIntervals to be specified");
 		}
+		calculateLogP();
 	}
 
     
