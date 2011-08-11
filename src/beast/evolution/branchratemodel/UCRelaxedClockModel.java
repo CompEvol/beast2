@@ -35,7 +35,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	iCategories[i] = i;
         }
         IntegerParameter other = new IntegerParameter(iCategories);
-        categories.assignFrom(other);
+        categories.assignFromWithoutID(other);
         categories.setLower(0);
         categories.setUpper(categories.getDimension() - 1);
         
