@@ -58,6 +58,9 @@ public class CompoundDistribution extends Distribution {
     public void initAndValidate() throws Exception {
     	super.initAndValidate();
     	useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
+        for(Distribution dists : pDistributions.get()) {
+        	logP += dists.calculateLogP();
+        }
     }
     
     
