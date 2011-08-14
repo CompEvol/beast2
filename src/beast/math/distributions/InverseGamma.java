@@ -43,6 +43,7 @@ public class InverseGamma extends ParametricDistribution {
 	
 	@Override
 	public Distribution getDistribution() {
+		refresh();
 		return m_dist;
 	}	
 	
