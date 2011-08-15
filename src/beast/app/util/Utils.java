@@ -1,5 +1,6 @@
 package beast.app.util;
 
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 
@@ -65,6 +67,60 @@ public class Utils {
     public static File getCWD() {
         final String f = System.getProperty("user.dir");
         return new File(f);
+    }
+    
+    
+    public static void loadUIManager() {
+        boolean lafLoaded = false;
+
+        if (jam.mac.Utils.isMacOSX()) {
+            System.setProperty("apple.awt.graphics.UseQuartz", "true");
+            System.setProperty("apple.awt.antialiasing","true");
+            System.setProperty("apple.awt.rendering","VALUE_RENDER_QUALITY");
+
+            System.setProperty("apple.laf.useScreenMenuBar","true");
+            System.setProperty("apple.awt.draggableWindowBackground","true");
+            System.setProperty("apple.awt.showGrowBox","true");
+
+            try {
+
+                try {
+                    // We need to do this using dynamic class loading to avoid other platforms
+                    // having to link to this class. If the Quaqua library is not on the classpath
+                    // it simply won't be used.
+                    Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+                    Method method = qm.getMethod("setExcludedUIs", Set.class);
+
+                    Set<String> excludes = new HashSet<String>();
+                    excludes.add("Button");
+                    excludes.add("ToolBar");
+                    method.invoke(null, excludes);
+
+                }
+                catch (Throwable e) {
+                }
+
+                //set the Quaqua Look and Feel in the UIManager
+                UIManager.setLookAndFeel(
+                        "ch.randelshofer.quaqua.QuaquaLookAndFeel"
+                );
+                lafLoaded = true;
+
+            } catch (Exception e) {
+
+            }
+
+            UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
+            UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
+        }
+        
+        try {
+
+            if (!lafLoaded) {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+        } catch (Exception e) {
+        }
     }
 
 }

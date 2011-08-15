@@ -16,10 +16,10 @@ public class StringInputEditor extends InputEditor {
 	@Override
 	void setUpEntry() {
 		super.setUpEntry();
-		Dimension size = new Dimension(200,20);
-		m_entry.setMinimumSize(size);
-		m_entry.setPreferredSize(size);
-		m_entry.setSize(size);
+		//Dimension size = new Dimension(200,20);
+		//m_entry.setMinimumSize(size);
+//		m_entry.setPreferredSize(size);
+//		m_entry.setSize(size);
 	}
 
 } // class StringInputEditor

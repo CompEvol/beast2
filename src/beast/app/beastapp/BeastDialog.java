@@ -166,6 +166,10 @@ public class BeastDialog {
 
         dialog.setVisible(true);
 
+        if (optionPane.getValue() == null) {
+        	System.exit(0);
+        }
+
         return optionPane.getValue().equals("Run");
     }
 

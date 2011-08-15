@@ -848,9 +848,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			Logger logger = loggers.get(i);
 			if (logger.m_sMode.get().equals(LOGMODE.tree)) {
 				Object tree = logger.m_pLoggers.get().get(0);
-				if (!stateNodes.contains(tree)) {
-					loggers.remove(i);
-					potentitalLoggers.add(logger);
+				if (tree instanceof StateNode) {
+					if (!stateNodes.contains(tree)) {
+						loggers.remove(i);
+						potentitalLoggers.add(logger);
+					}
 				}
 			}
 		}

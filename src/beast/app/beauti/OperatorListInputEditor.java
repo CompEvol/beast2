@@ -34,7 +34,7 @@ public class OperatorListInputEditor extends ListInputEditor {
         
         JTextField entry = new JTextField(getLabel(operator));
         entry.setMinimumSize(new Dimension(200, 16));
-        entry.setMaximumSize(new Dimension(200, 20));
+        //entry.setMaximumSize(new Dimension(200, 20));
         m_entries.add(entry);
         itemBox.add(Box.createRigidArea(new Dimension(5,1)));
         itemBox.add(entry);
@@ -53,8 +53,8 @@ public class OperatorListInputEditor extends ListInputEditor {
         weightEntry.getDocument().addDocumentListener(new OperatorDocumentListener(operator, weightEntry));    
         Dimension size = new Dimension(50, 16);
         weightEntry.setMinimumSize(size);
-        weightEntry.setPreferredSize(size);
-        weightEntry.setMaximumSize(size);
+        //weightEntry.setPreferredSize(size);
+        weightEntry.setMaximumSize(new Dimension(50, 50));
         itemBox.add(weightEntry);
         
     }

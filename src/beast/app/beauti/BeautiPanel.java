@@ -180,9 +180,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	        Box box = Box.createVerticalBox();
 	        box.add(inputEditor);
 	        // RRB: is there a better way than just pooring in glue at the bottom?
-	        for (int i = 0; i < 30; i++) {
-	        	box.add(Box.createGlue());
-	        }
+	        //for (int i = 0; i < 30; i++) {
+	        
+	        	box.add(Box.createVerticalStrut(1024 - inputEditor.getPreferredSize().height));
+	        //}
 	        JScrollPane scroller = new JScrollPane(box);
 	        centralComponent = scroller;
 	    } else {

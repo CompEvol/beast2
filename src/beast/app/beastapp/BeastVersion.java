@@ -15,7 +15,7 @@ import beast.app.util.Version;
  * @author Alexei Drummond
  * @author Andrew Rambaut
  */
-public class BeastVersion implements Version {
+public class BeastVersion extends Version {
 
     /**
      * Version string: assumed to be in format x.x.x

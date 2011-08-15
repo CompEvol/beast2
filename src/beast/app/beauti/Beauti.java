@@ -40,6 +40,7 @@ import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.PluginPanel;
+import beast.app.util.Utils;
 
 
 public class Beauti extends JTabbedPane {
@@ -653,7 +654,7 @@ public class Beauti extends JTabbedPane {
 	public static void main(String[] args) {
 		try {
         	BeastMCMC.loadExternalJars();
-			
+			Utils.loadUIManager();
 			PluginPanel.init();
 			
 	        BeautiDoc doc = new BeautiDoc();

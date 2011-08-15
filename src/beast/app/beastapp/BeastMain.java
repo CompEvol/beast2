@@ -6,6 +6,7 @@ import beast.app.BeastMCMC;
 import beast.app.util.Arguments;
 import beast.app.util.ErrorLogHandler;
 import beast.app.util.MessageLogHandler;
+import beast.app.util.Utils;
 import beast.app.util.Version;
 import beast.util.Randomizer;
 import beast.util.XMLParserException;
@@ -223,6 +224,7 @@ public class BeastMain {
     //Main method
     public static void main(String[] args) throws java.io.IOException {
     	List<String> MCMCargs = new ArrayList<String>();
+    	Utils.loadUIManager();
 
         Arguments arguments = new Arguments(
                 new Arguments.Option[]{
@@ -398,7 +400,7 @@ public class BeastMain {
             BeastDialog dialog = new BeastDialog(new JFrame(), titleString, icon);
 
             if (!dialog.showDialog(nameString, seed)) {
-                return;
+               	System.exit(0);
             }
 
 //            if (dialog.allowOverwrite()) {

@@ -185,7 +185,7 @@ public class BeautiSubTemplate extends Plugin {
 		parser.setRequiredInputProvider(doc);
 		List<Plugin> plugins = null;
 		try {
-			plugins = parser.parseTemplate(_sXML, sIDMap, false);
+			plugins = parser.parseTemplate(_sXML, sIDMap, true);
 			for (Plugin plugin : plugins) {
 				doc.addPlugin(plugin);
 			}

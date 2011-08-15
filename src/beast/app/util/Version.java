@@ -7,17 +7,30 @@ package beast.app.util;
  * @author Andrew Rambaut
  * @version $Id: Version.java,v 1.13 2005/07/11 14:06:25 rambaut Exp $
  */
-public interface Version {
+public abstract class Version {
 
-    String getVersion();
+	public abstract String getVersion();
 
-	String getVersionString();
+	public abstract String getVersionString();
 
-	String getBuildString();
+	public abstract String getBuildString();
 
-	String getDateString();
+	public abstract String getDateString();
 
-    String[] getCredits();
+	public abstract String[] getCredits();
 
-    String getHTMLCredits();
+	public String getHTMLCredits() {
+    	String sStr = "";
+    	for (String s : getCredits()) {
+    		if (s.contains("@")) {
+    			sStr += "<a href=\"mailto:" + s + "\">" + s + "</a><br>";
+    		} if (s.contains("http")) {
+    			sStr += "<a href=\"" + s + "\">" + s + "</a><br>";
+    		} else {
+    			sStr += "<p>" + s + "</p>";
+    		}
+    	}
+    	return sStr;
+
+    }
 }

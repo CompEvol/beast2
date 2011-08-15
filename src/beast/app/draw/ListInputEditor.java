@@ -271,10 +271,10 @@ public class ListInputEditor extends InputEditor {
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
         JTextField entry = new JTextField(sName);
-        Dimension size = new Dimension(200, 20);
-        entry.setMinimumSize(size);
-        entry.setMaximumSize(size);
-        entry.setPreferredSize(size);
+        //Dimension size = new Dimension(200, 20);
+        //entry.setMinimumSize(size);
+//        entry.setMaximumSize(size);
+//        entry.setPreferredSize(size);
         //entry.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(0xed,0xed,0xed)));
 //        entry.setBorder(BorderFactory.createCompoundBorder(
 //        		BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(0xed,0xed,0xed)),

@@ -80,14 +80,15 @@ public class PluginPanel extends JPanel {
         // register input editors
         g_inputEditorMap = new HashMap<Class<?>, String>();
         g_listInputEditorMap = new HashMap<Class<?>, String>();
+        
+        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
+        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
+        registerInputEditors(sKnownEditors);
         String[] PACKAGE_DIRS = {"beast.app",};
         for(String sPackage : PACKAGE_DIRS) {
 	        List<String> sInputEditors = ClassDiscovery.find("beast.app.draw.InputEditor", sPackage);
 	        registerInputEditors(sInputEditors.toArray(new String[0]));
         }
-        
-        String [] sKnownEditors = new String [] {"beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", "beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
-        registerInputEditors(sKnownEditors);
         
         m_position = new Point(0, 0);
         g_plugins = new HashMap<String, Plugin>();
@@ -418,10 +419,10 @@ public class PluginPanel extends JPanel {
 
 
 		m_identry = new JTextField();
-		Dimension size = new Dimension(100,22);
-		m_identry.setMinimumSize(size);
-		m_identry.setPreferredSize(size);
-		m_identry.setMaximumSize(size);
+		//Dimension size = new Dimension(100,22);
+		//m_identry.setMinimumSize(size);
+//		m_identry.setPreferredSize(size);
+//		m_identry.setMaximumSize(size);
         m_identry.setText(m_plugin.getID());
         m_identry.setToolTipText("Name/ID that uniquely identifies this item");
         

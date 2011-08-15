@@ -89,10 +89,10 @@ public class TaxonSetDialog extends JDialog {
 		filterEntry = new JTextField();
 		Dimension size = new Dimension(100,20);
 		filterEntry.setMinimumSize(size);
-		filterEntry.setPreferredSize(size);
-		filterEntry.setSize(size);
+		//filterEntry.setPreferredSize(size);
+		//filterEntry.setSize(size);
 		filterEntry.setToolTipText("Enter regular expression to match taxa");
-		filterEntry.setMaximumSize(new Dimension(1024, 20));
+		filterEntry.setMaximumSize(new Dimension(1024, 50));
 		box.add(filterEntry);
 		box.add(Box.createHorizontalGlue());
 		

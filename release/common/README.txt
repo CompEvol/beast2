@@ -43,7 +43,7 @@ ___________________________________________________________________________
 2) INSTALLING BEAST
 
 BEAST requires a Java Virtual Machine to run. Many systems will already
-have this installed. It requires at least version 1.5 of Java to run. The
+have this installed. It requires at least version 1.6 of Java to run. The
 latest versions of Java can be downloaded from:
 
 <http://java.sun.com/>

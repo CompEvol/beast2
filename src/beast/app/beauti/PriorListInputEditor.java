@@ -37,6 +37,7 @@ import beast.math.distributions.Prior;
 
 public class PriorListInputEditor extends ListInputEditor {
 	private static final long serialVersionUID = 1L;
+	static Dimension PREFERRED_SIZE = new Dimension(200,20);
 
 	List<JComboBox> comboBoxes;
 	JComboBox currentComboBox;
@@ -85,8 +86,8 @@ public class PriorListInputEditor extends ListInputEditor {
         	Prior prior = (Prior) plugin;
         	String sText = /*plugin.getID() + ": " +*/ ((Plugin)prior.m_x.get()).getID();
         	JLabel label = new JLabel(sText);
-        	label.setMinimumSize(new Dimension(200,20));
-        	label.setPreferredSize(new Dimension(200,20));
+        	label.setMinimumSize(PREFERRED_SIZE);
+        	label.setPreferredSize(PREFERRED_SIZE);
         	itemBox.add(label);
 
             List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
@@ -138,8 +139,8 @@ public class PriorListInputEditor extends ListInputEditor {
         		sText += distr.treeIntervals.get().m_tree.get().getID();
         	}
         	JLabel label = new JLabel(sText);
-        	label.setMinimumSize(new Dimension(200,20));
-        	label.setPreferredSize(new Dimension(200,20));
+        	label.setMinimumSize(PREFERRED_SIZE);
+        	label.setPreferredSize(PREFERRED_SIZE);
         	itemBox.add(label);
 //            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
             
@@ -202,8 +203,8 @@ public class PriorListInputEditor extends ListInputEditor {
         	String sText = prior.getID();
         	
         	taxonButton = new JButton(sText);
-        	taxonButton.setMinimumSize(new Dimension(200,20));
-        	taxonButton.setPreferredSize(new Dimension(200,20));
+        	taxonButton.setMinimumSize(PREFERRED_SIZE);
+        	taxonButton.setPreferredSize(PREFERRED_SIZE);
         	itemBox.add(taxonButton);
         	taxonButton.addActionListener(new ActionListener() {
 				@Override
@@ -294,8 +295,8 @@ public class PriorListInputEditor extends ListInputEditor {
         } else {
         	String sText = plugin.getID();
         	JLabel label = new JLabel(sText);
-        	label.setMinimumSize(new Dimension(200,20));
-        	label.setPreferredSize(new Dimension(200,20));
+        	label.setMinimumSize(PREFERRED_SIZE);
+        	label.setPreferredSize(PREFERRED_SIZE);
         	itemBox.add(label);
 
         	comboBox = new JComboBox();
