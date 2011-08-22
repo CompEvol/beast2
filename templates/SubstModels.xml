@@ -17,7 +17,7 @@
         <plugin spec='HKY' id='hky.$(n)'>
             <parameter id="kappa.$(n)" name='kappa' value="1.0" lower="0.0" estimate='true'/>
             <frequencies id='estimatedFreqs.$(n)' spec='Frequencies'>
-                <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25'/>
+                <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
             </frequencies>
         </plugin>
 
@@ -47,7 +47,7 @@
             <parameter id="rateCT.$(n)" name='rateCT' value="1.0" lower="0.0" estimate='true'/>
             <parameter id="rateGT.$(n)" name='rateGT' value="1.0" lower="0.0" estimate='false'/>
             <frequencies id='freqs.$(n)' spec='Frequencies'>
-                <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25'/>
+                <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
             </frequencies>
         </plugin>
 
@@ -105,7 +105,7 @@
         <subtemplate id='Estimated' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Frequencies' mainid='estimatedFreqs.$(n)'>
 <![CDATA[
             <frequencies id='estimatedFreqs.$(n)' spec='Frequencies'>
-                <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25'/>
+                <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
             </frequencies>
 
 	        <plugin id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
