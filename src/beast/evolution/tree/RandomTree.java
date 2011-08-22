@@ -85,13 +85,6 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
         m_nTaxa = sTaxa.size();
 
-        // find taxon sets we are dealing with
-        m_bTaxonSets = new ArrayList<BitSet>();
-        m_bounds = new ArrayList<Bound>();
-        m_distributions = new ArrayList<ParametricDistribution>();
-        m_sTaxonSetIDs = new ArrayList<String>();
-        m_nIsMonophyletic = 0;
-        
         initStateNodes();
         super.initAndValidate();
     }
@@ -124,6 +117,13 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
 	@Override
     public void initStateNodes() throws Exception {
+        // find taxon sets we are dealing with
+        m_bTaxonSets = new ArrayList<BitSet>();
+        m_bounds = new ArrayList<Bound>();
+        m_distributions = new ArrayList<ParametricDistribution>();
+        m_sTaxonSetIDs = new ArrayList<String>();
+        m_nIsMonophyletic = 0;
+
         List<String> sTaxa;
         if (m_taxa.get() != null) {
                 sTaxa = m_taxa.get().getTaxaNames();
