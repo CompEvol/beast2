@@ -266,8 +266,6 @@ public class MCMC extends Runnable {
         }
         long tStart = System.currentTimeMillis();
 
-        System.err.println("Start state:");
-        System.err.println(state.toString());
 
         state.setEverythingDirty(true);
         posterior = posteriorInput.get();
@@ -275,15 +273,18 @@ public class MCMC extends Runnable {
         // do the sampling
         logAlpha = 0;
         bDebug = Boolean.valueOf(System.getProperty("beast.debug"));
-        fOldLogLikelihood = robustlyCalcPosterior(posterior); 
         
         int nInitiliasiationAttemps = 0;
-        while (Double.isInfinite(fOldLogLikelihood) && nInitiliasiationAttemps++ < 10) {
+        do {
             for (StateNodeInitialiser initialiser : m_initilisers.get()) {
             	initialiser.initStateNodes();
             }
             fOldLogLikelihood = robustlyCalcPosterior(posterior);
-        }
+        } while (Double.isInfinite(fOldLogLikelihood) && nInitiliasiationAttemps++ < 10);
+
+        System.err.println("Start state:");
+        System.err.println(state.toString());
+
         System.err.println("Start likelihood: " + fOldLogLikelihood + " " + (nInitiliasiationAttemps > 1?"after " + nInitiliasiationAttemps + " initialisation attempts":""));
         if (Double.isInfinite(fOldLogLikelihood)) {
         	throw new Exception("Could not find a proper state to initialise. Perhaps try another seed.");
@@ -345,7 +346,7 @@ public class MCMC extends Runnable {
                 state.setEverythingDirty(false);
             } else {
                 // operation failed
-                if (iSample > 0) {
+                if (iSample >= 0) {
                     operator.reject();
                 }
                 state.restore();
@@ -353,7 +354,7 @@ public class MCMC extends Runnable {
             }
             log(iSample);
             
-            if (bDebug && iSample % 3 == 0 || iSample % 10000 == 0) { 
+            if (bDebug && iSample % 1 == 0 || iSample % 10000 == 0) { 
             	// check that the posterior is correctly calculated at every third
             	// sample, as long as we are in debug mode
                 double fLogLikelihood = robustlyCalcPosterior(posterior); 

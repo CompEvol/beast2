@@ -145,6 +145,12 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     }
     
     @Override
+    protected void store() {
+    	recompute = true;
+    	super.store();
+    }
+
+    @Override
     protected void restore() {
     	recompute = true;
     	super.restore();

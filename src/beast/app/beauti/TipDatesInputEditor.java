@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -464,13 +465,18 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		guessButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Pattern pattern = Pattern.compile(".*(\\d\\d\\d\\d).*");
+				String sPattern = ".*(\\d\\d\\d\\d).*";
+				sPattern = JOptionPane.showInputDialog(null, "Pattern to match", sPattern);
+				if (sPattern == null) {
+					return;
+				}
+				Pattern pattern = Pattern.compile(sPattern);
 				String sTrait = "";
 				for (String sTaxon: sTaxa) {
 					Matcher matcher = pattern.matcher(sTaxon);
 					if (matcher.find()) {
 						String sMatch = matcher.group(1);
-						int nDate = Integer.parseInt(sMatch);
+						double nDate = Double.parseDouble(sMatch);
 						if (sTrait.length() > 0) {
 							sTrait += ",";
 						}

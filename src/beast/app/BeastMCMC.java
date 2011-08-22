@@ -293,10 +293,6 @@ public class BeastMCMC {
 		m_runnable.run();
 		g_exec.shutdown();
 		g_exec.shutdownNow();
-        if (System.getProperty("beast.useWindow") == null) {
-        	// this indicates no window is open
-        	System.exit(0);
-        }
 	} // run
 
 
@@ -503,6 +499,7 @@ public class BeastMCMC {
 	
 	public static void main(String [] args) {
 		try {
+        	System.setProperty("beast.debug","true");
 			BeastMCMC app = new BeastMCMC();
 			app.parseArgs(args);
 
@@ -514,6 +511,10 @@ public class BeastMCMC {
 			e.printStackTrace();
 			System.out.println(BeastMCMC.getUsage());
 		}
+        if (System.getProperty("beast.useWindow") == null) {
+        	// this indicates no window is open
+        	System.exit(0);
+        }
 	} // main
 
 } // BeastMCMC
