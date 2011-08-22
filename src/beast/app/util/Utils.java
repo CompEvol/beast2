@@ -117,7 +117,8 @@ public class Utils {
         try {
 
             if (!lafLoaded) {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                UIManager.setLookAndFeel("javax.swing.plaf.metal");
+                		//UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
         }

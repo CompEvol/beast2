@@ -340,6 +340,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			for (File template : files) {
 				if (!template.getAbsolutePath().equals(mainTemplate.getAbsolutePath())
 						&& template.getName().toLowerCase().endsWith(".xml")) {
+					String sXML2 = load(template.getAbsolutePath());
+					if (!sXML2.contains("<mergepoint ")) {
 					try {
 
 						DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -373,6 +375,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
 							System.err.println(e.getMessage());
 						}
+					}
 					}
 				}
 			}
