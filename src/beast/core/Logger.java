@@ -334,15 +334,14 @@ public class Logger extends Plugin {
     private String prettifyLogLine(String logContent) {
     	String [] sStrs = logContent.split("\t");
     	logContent = "";
-    	int k = 0;
     	for (String sStr : sStrs) {
-    		logContent += prettifyLogEntry(sStr, logContent.length() - 14 * k++);
+    		logContent += prettifyLogEntry(sStr);
     	}
 		return logContent;
 	}
 
-	private String prettifyLogEntry(String sStr, int nOverShoot) {
-		if (sStr.contains(".")) {
+	private String prettifyLogEntry(String sStr) {
+		if (sStr.matches("[\\d-E]+\\.[\\d-E]+")) {
 			// format as double
 			if (sStr.contains("E")) {
 				return "              ".substring(sStr.length()) + sStr;
@@ -350,20 +349,24 @@ public class Logger extends Plugin {
 			String s1 = sStr.substring(0, sStr.indexOf("."));
 			String s2 = sStr.substring(sStr.indexOf(".") + 1);
 			while (s2.length() < 4) {
-				s2 = s2 + "0";
+				s2 = s2 + " ";
 			}
 			s2 = s2.substring(0, 4);
 			sStr = s1 + "." + s2;
-			sStr = "              ".substring(sStr.length()) + sStr;
-		} else if (sStr.length() < 14) {
+			sStr = "               ".substring(sStr.length()) + sStr;
+		} else if (sStr.length() < 15) {
 			// format integer, boolean
-				sStr = "              ".substring(sStr.length()) + sStr;
+				sStr = "               ".substring(sStr.length()) + sStr;
 		} else {
 			sStr = " " + sStr;
 		}
+		int nOverShoot = sStr.length() - 15;
 		while (nOverShoot > 0 && sStr.length() > 2 && sStr.charAt(1)==' ') {
 			sStr = sStr.substring(1);
 			nOverShoot--;
+		}
+		if (nOverShoot > 0) {
+			sStr = sStr.substring(0, 8) + "_" + sStr.substring(sStr.length() - 6);
 		}
 		return sStr;
 	}
