@@ -31,13 +31,14 @@ import beast.util.Randomizer;
 import beast.util.XMLProducer;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Description("Logs results of a calculation processes on regular intervals.")
@@ -128,11 +129,29 @@ public class Logger extends Plugin {
 	        	m_out.println(sXML);
 	        	m_out.println("#");
 	        }
+        	ByteArrayOutputStream baos = null;
+        	PrintStream tmp = null;
+            if (m_out == System.out) {
+            	tmp = m_out;
+            	baos = new ByteArrayOutputStream();
+            	m_out = new PrintStream(baos);
+            }
 	        if (m_mode == COMPOUND_LOGGER) {
 	            m_out.print("Sample\t");
 	        }
 	        for(Loggable m_logger : m_loggers) {
 	            m_logger.init(m_out);
+	        }
+	        
+	        if (tmp == System.out) {
+				m_out = tmp;
+	        	try {
+					String logContent = baos.toString("ASCII");
+					logContent = prettifyLogLine(logContent);
+					m_out.print(logContent);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
 	        }
 	        m_out.println();
     	}
@@ -265,13 +284,28 @@ public class Logger extends Plugin {
         	}
         	nSample += m_nSampleOffset;
         }
+    	ByteArrayOutputStream baos = null;
+    	PrintStream tmp = null;
+        if (m_out == System.out) {
+        	tmp = m_out;
+        	baos = new ByteArrayOutputStream();
+        	m_out = new PrintStream(baos);
+        }
         if (m_mode == COMPOUND_LOGGER) {
             m_out.print((nSample)+ "\t");
         }
         for(Loggable m_logger : m_loggers) {
             m_logger.log(nSample, m_out);
         }
-        if (m_out == System.out) {
+        if (tmp == System.out) {
+			m_out = tmp;
+        	try {
+				String logContent = baos.toString("ASCII");
+				logContent = prettifyLogLine(logContent);
+				m_out.print(logContent);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
         	if (m_nStartLogTime < 0) {
         		if (nSample - m_nSampleOffset > 6000) {
             		m_nStartLogTime++;
@@ -280,7 +314,7 @@ public class Logger extends Plugin {
                 		m_nStartSample = nSample;
                 	}
         		}
-                m_out.print("--");
+                m_out.print(" --");
         	} else {
         	
 	            long nLogTime = System.currentTimeMillis();
@@ -289,7 +323,7 @@ public class Logger extends Plugin {
 	                    (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
 	                            (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
 	                            (nSecondsPerMSamples % 60 + "s");
-	            m_out.print(sTimePerMSamples + "/Msamples");
+	            m_out.print(" " + sTimePerMSamples + "/Msamples");
         	}
         }
         m_out.println();
@@ -297,7 +331,46 @@ public class Logger extends Plugin {
 
 
     
-    /** stop logging, produce end of log message and close file (if necessary) **/
+    private String prettifyLogLine(String logContent) {
+    	String [] sStrs = logContent.split("\t");
+    	logContent = "";
+    	int k = 0;
+    	for (String sStr : sStrs) {
+    		logContent += prettifyLogEntry(sStr, logContent.length() - 14 * k++);
+    	}
+		return logContent;
+	}
+
+	private String prettifyLogEntry(String sStr, int nOverShoot) {
+		if (sStr.contains(".")) {
+			// format as double
+			if (sStr.contains("E")) {
+				return "              ".substring(sStr.length()) + sStr;
+			}
+			String s1 = sStr.substring(0, sStr.indexOf("."));
+			String s2 = sStr.substring(sStr.indexOf(".") + 1);
+			while (s2.length() < 4) {
+				s2 = s2 + "0";
+			}
+			s2 = s2.substring(0, 4);
+			sStr = s1 + "." + s2;
+			sStr = "              ".substring(sStr.length()) + sStr;
+		} else if (sStr.length() < 14) {
+			// format integer, boolean
+				sStr = "              ".substring(sStr.length()) + sStr;
+		} else {
+			sStr = " " + sStr;
+		}
+		while (nOverShoot > 0 && sStr.length() > 2 && sStr.charAt(1)==' ') {
+			sStr = sStr.substring(1);
+			nOverShoot--;
+		}
+		return sStr;
+	}
+
+
+
+	/** stop logging, produce end of log message and close file (if necessary) **/
     public void close() {
         for(Loggable m_logger : m_loggers) {
             m_logger.close(m_out);

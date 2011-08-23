@@ -286,7 +286,7 @@ public class MCMC extends Runnable {
         System.err.println(state.toString());
 
         System.err.println("Start likelihood: " + fOldLogLikelihood + " " + (nInitiliasiationAttemps > 1?"after " + nInitiliasiationAttemps + " initialisation attempts":""));
-        if (Double.isInfinite(fOldLogLikelihood)) {
+        if (Double.isInfinite(fOldLogLikelihood) || Double.isNaN(fOldLogLikelihood)) {
         	throw new Exception("Could not find a proper state to initialise. Perhaps try another seed.");
         }
 

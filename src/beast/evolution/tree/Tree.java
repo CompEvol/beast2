@@ -484,6 +484,11 @@ public class Tree extends StateNode {
 		String sNewick = node.getTextContent();
 		TreeParser parser = new TreeParser();
 		try {
+			parser.m_nThreshold.setValue(1e-10, parser);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		try {
 			parser.m_nOffset.setValue(0, parser);
 			setRoot(parser.parseNewick(sNewick));
 		} catch (Exception e) {
