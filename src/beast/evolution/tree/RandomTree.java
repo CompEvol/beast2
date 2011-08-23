@@ -298,6 +298,12 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 					for (Node node : candidates) {
 						node.setMetaData(m_trait.get().getTraitName(), m_trait.get().getValue(node.getNr()));
 					}
+				} else if (m_initial.get() != null && m_initial.get().m_trait.get() != null) {
+					// set tip dates
+					TraitSet trait = m_initial.get().m_trait.get();
+					for (Node node : candidates) {
+						node.setMetaData(trait.getTraitName(), trait.getValue(node.getNr()));
+					}
 				}
 		
 				// TODO: deal with dated taxa
