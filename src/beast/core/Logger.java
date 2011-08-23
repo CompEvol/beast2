@@ -343,7 +343,7 @@ public class Logger extends Plugin {
 	private String prettifyLogEntry(String sStr) {
 		if (sStr.matches("[\\d-E]+\\.[\\d-E]+")) {
 			// format as double
-			if (sStr.contains("E")) {
+			if (sStr.contains("E") && sStr.length() <14) {
 				return "              ".substring(sStr.length()) + sStr;
 			}
 			String s1 = sStr.substring(0, sStr.indexOf("."));
