@@ -109,7 +109,7 @@ public class State extends Plugin {
     
     /** Maps the changed states node code to 
      * the set of calculation nodes that is potentially affected by an operation **/
-    private HashMap<BitSet, List<CalculationNode>> m_map;
+    private HashMap<String, List<CalculationNode>> m_map;
     
     @Override
     public void initAndValidate() {
@@ -139,9 +139,10 @@ public class State extends Plugin {
         
         // set up datastructure for encoding which StateNodes change by an operation
     	m_changedStateNodeCode = new BitSet(stateNode.length);
-        m_map = new HashMap<BitSet, List<CalculationNode>>();
+   		m_changedStateNodeCode.clear();
+        m_map = new HashMap<String, List<CalculationNode>>();
         // add the empty list for the case none of the StateNodes have changed
-    	m_map.put(m_changedStateNodeCode, new ArrayList<CalculationNode>());
+    	m_map.put(m_changedStateNodeCode.toString(), new ArrayList<CalculationNode>());
     } // initAndValidate
     
     
@@ -422,7 +423,8 @@ public class State extends Plugin {
     
     /** return current set of calculation nodes based on the set of StateNodes that have changed **/ 
     private List<CalculationNode> getCurrentCalculationNodes() {
-    	List<CalculationNode> calcNodes = m_map.get(m_changedStateNodeCode);
+    	String sChangedStateNodeCode = m_changedStateNodeCode.toString();
+    	List<CalculationNode> calcNodes = m_map.get(sChangedStateNodeCode);
     	if (calcNodes != null) {
     		// the list is pre-calculated
     		return calcNodes;
@@ -435,7 +437,7 @@ public class State extends Plugin {
 			System.exit(1);
 		}
 
-    	m_map.put(m_changedStateNodeCode, calcNodes);
+    	m_map.put(sChangedStateNodeCode, calcNodes);
     	
     	System.err.print(m_changedStateNodeCode + ":");
     	for (CalculationNode node : calcNodes) {
