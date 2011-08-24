@@ -15,7 +15,7 @@ import beast.evolution.tree.Tree;
 // }
 
 @Description("Pure birth model (i.e. no deaths)")	 
-public class YuleModel extends SpeciesTreeDistribution {
+public class YuleModel extends UltrametricSpeciationModel {
     public Input<RealParameter> birthDiffRateParameter = 
             new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
     public Input<Boolean> m_pConditionlOnRoot =
@@ -28,27 +28,24 @@ public class YuleModel extends SpeciesTreeDistribution {
     	super.initAndValidate();
     	conditionalOnRoot = m_pConditionlOnRoot.get();
     }
+    
+    public double getR() {
+        return birthDiffRateParameter.get().getValue();
+    }
 
+    public double getA() {
+        return 0;
+    }
+
+    public double getRho() {
+        return 1.0;
+    }
+    
     @Override
-    public double calculateTreeLogLikelihood(final Tree tree) {
-        return calculateTreeLogLikelihood(tree, 1, 0);
+    public boolean includeExternalNodesInLikelihoodCalculation() {
+        return false;
     }
-
-    protected double calculateTreeLogLikelihood(final Tree tree, final double rho, final double a) {
-        final int taxonCount = tree.getLeafNodeCount();
-        final double r = birthDiffRateParameter.get().getValue();
-
-        double logL = logTreeProbability(taxonCount, r, rho, a);
-
-        final Node [] nodes = tree.getNodesAsArray();
-        for (int i = taxonCount; i < nodes.length; i++) {
-            assert ( ! nodes[i].isLeaf() );
-            logL += calcLogNodeProbability(nodes[i], r, rho, a, taxonCount);
-        }
-
-        return logL;
-    }
-
+    
     /** calculate contribution of the tree to the log likelihood
      *
      * @param taxonCount
@@ -57,7 +54,12 @@ public class YuleModel extends SpeciesTreeDistribution {
      * @param a  death/birth rates ratio
      * @return
      **/
-    protected double logTreeProbability(final int taxonCount, double r, double rho, double a) {
+    @Override
+    protected double logTreeProbability(final int taxonCount) {
+        double r = getR();
+        double a = getA();
+        double rho = getRho(); 
+        
         double c1 = logCoeff(taxonCount);
         if( ! conditionalOnRoot ) {
             c1 += (taxonCount - 1) * Math.log(r * rho) + taxonCount * Math.log(1 - a);
@@ -83,7 +85,12 @@ public class YuleModel extends SpeciesTreeDistribution {
      * @param taxonCount
      * @return
      **/
-    protected double calcLogNodeProbability(Node node, double r, double rho, double a, int taxonCount) {
+    @Override
+    protected double logNodeProbability(Node node, int taxonCount) {
+        double r = getR();
+        double a = getA();
+        double rho = getRho(); 
+        
         final double height = node.getHeight();
         final double mrh = -r * height;
 
@@ -114,12 +121,10 @@ public class YuleModel extends SpeciesTreeDistribution {
         }
     } // calcLogNodeProbability
 
-//    public boolean includeExternalNodesInLikelihoodCalculation() {
-//        return false;
-//    }
-    
     @Override
     protected boolean requiresRecalculation() {
     	return super.requiresRecalculation() || birthDiffRateParameter.get().somethingIsDirty();
     }
+
+
 }
