@@ -42,9 +42,11 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         distribution = rateDistInput.get();
 
         rates = new double[categories.getDimension()];
+        storedRates = new double[categories.getDimension()];
         for (int i = 0; i < rates.length; i++) {
             rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
         }
+        System.arraycopy(rates, 0, storedRates, 0, rates.length);
         normalize = normalizeInput.get();
     }
 
@@ -127,10 +129,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     protected boolean requiresRecalculation() {
     	recompute = false;
 
-        if (treeInput.get().somethingIsDirty()) {
-        	recompute = true;
-            return true;
-        }
+//        if (treeInput.get().somethingIsDirty()) {
+//        	recompute = true;
+//            return true;
+//        }
         // rateDistInput cannot be dirty?!?
         if (rateDistInput.get().isDirtyCalculation()) {
         	recompute = true;
@@ -138,7 +140,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         }
         // NOT processed as trait on the tree, so DO mark as dirty
         if (categoryInput.get().somethingIsDirty()) {
-        	recompute = true;
+        	//recompute = true;
         	return true;
         }
         return recompute;
@@ -146,12 +148,15 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     public void store() {
+        System.arraycopy(rates, 0, storedRates, 0, rates.length);
     	super.store();
     }
     @Override
     public void restore() {
+    	double [] tmp = rates;
+    	rates = storedRates;
+    	storedRates = tmp;
     	super.restore();
-    	recompute = true;
     }
     
     ParametricDistribution distribution;
@@ -162,6 +167,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     private boolean recompute = true;
     private double normalizeBranchRateTo = Double.NaN;
     private double[] rates;
+    private double[] storedRates;
     private double scaleFactor = 1.0;
 
 }
