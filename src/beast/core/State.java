@@ -28,7 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -96,20 +96,57 @@ public class State extends Plugin {
     private List<CalculationNode> [] m_stateNodeOutputs;
     
     /** Code that represents configuration of StateNodes that have changed
-     * during an operation. Currently implemented as BitSet, but there are
-     * possibly more efficient implementations possible.
-     * TODO: investigate.
+     * during an operation. 
      *  
-     * Every time an operation requests a StateNode, a bit for that StateNode
-     * is set.
+     * Every time an operation requests a StateNode, an entry is added to changeStateNodes
+     * nChangeStateNodes records how many StateNodes are changed.
      * The code is reset when the state is stored, and every time a StateNode
-     * is requested by an operator, the code is updated.
+     * is requested by an operator, changeStateNodes is updated.
      */
-    private BitSet m_changedStateNodeCode;
+    private int [] changeStateNodes;
+    private int nChangedStateNodes;
     
     /** Maps the changed states node code to 
      * the set of calculation nodes that is potentially affected by an operation **/
-    private HashMap<String, List<CalculationNode>> m_map;
+    Trie trie;
+    
+    /** class for quickly finding which calculation nodes need to be updated
+     * due to state-node changes */
+    class Trie {
+    	List<CalculationNode> list;
+    	Trie [] children;
+    	Trie() {
+    		children = new Trie[stateNode.length];
+    	}
+    	
+    	/** get entry from Trie, return null if no entry is present yet **/
+    	List<CalculationNode> get(int iPos) {
+    		if (iPos == 0) {
+    			return list;
+    		}
+    		Trie child = children[changeStateNodes[iPos - 1]];
+    		if (child == null) {
+    			return null;
+    		}
+    		return child.get(iPos - 1);
+    	}
+    	
+    	/** set entry int Trie, create new entries if no entry is present yet **/
+    	void set(List<CalculationNode> list, int iPos) {
+    		if (iPos == 0) {
+    			this.list = list;
+    			return;
+    		}
+    		Trie child = children[changeStateNodes[iPos - 1]];
+    		if (child == null) {
+    			child = new Trie();
+    			children[changeStateNodes[iPos - 1]] = child;
+    		}
+    		child.set(list, iPos - 1);
+    	}
+    }
+    
+    
     
     @Override
     public void initAndValidate() {
@@ -137,12 +174,13 @@ public class State extends Plugin {
         // grab the interval for storing the state to file
         m_nStoreEvery = m_storeEvery.get();
         
-        // set up datastructure for encoding which StateNodes change by an operation
-    	m_changedStateNodeCode = new BitSet(stateNode.length);
-   		m_changedStateNodeCode.clear();
-        m_map = new HashMap<String, List<CalculationNode>>();
-        // add the empty list for the case none of the StateNodes have changed
-    	m_map.put(m_changedStateNodeCode.toString(), new ArrayList<CalculationNode>());
+        // set up data structure for encoding which StateNodes change by an operation
+   		changeStateNodes = new int[stateNode.length];
+   		//Arrays.fill(changeStateNodes, -1);
+   		nChangedStateNodes = 0;
+   		trie = new Trie();
+   		// add the empty list for the case none of the StateNodes have changed
+   		trie.list = new ArrayList<CalculationNode>();
     } // initAndValidate
     
     
@@ -163,7 +201,12 @@ public class State extends Plugin {
      * method on the input associated with this StateNode.
      */
     protected StateNode getEditableStateNode(int nID, Operator operator) {
-   		m_changedStateNodeCode.set(nID);
+    	for (int i = 0; i < nChangedStateNodes; i++) {
+    		if (changeStateNodes[i] == nID) {
+    			return stateNode[nID];
+    		}
+    	}
+    	changeStateNodes[nChangedStateNodes++] = nID;
         return stateNode[nID];
     }
 
@@ -177,7 +220,8 @@ public class State extends Plugin {
      * @param nSample chain state number
      **/
     public void store(int nSample) {
-   		m_changedStateNodeCode.clear();
+    	//Arrays.fill(changeStateNodes, -1);
+    	nChangedStateNodes = 0;
     	
     	if (m_nStoreEvery> 0 && nSample % m_nStoreEvery == 0 && nSample > 0) {
     		storeToFile();
@@ -188,8 +232,8 @@ public class State extends Plugin {
      * This assigns the state to the stored state.
      * NB this does not affect any Inputs connected to any stateNode. **/
     public void restore() {
-    	for (int i = m_changedStateNodeCode.nextSetBit(0); i >= 0; i = m_changedStateNodeCode.nextSetBit(i+1)) {
-    		stateNode[i].restore();
+    	for (int i = 0; i < nChangedStateNodes; i++) {
+    		stateNode[changeStateNodes[i]].restore();
     	}
     }
 
@@ -353,10 +397,10 @@ public class State extends Plugin {
         
         if (isDirty) {
         	// happens only during debugging and start of MCMC chain
-        	m_changedStateNodeCode.clear();// = new BitSet(stateNode.length);
         	for (int i = 0; i < stateNode.length; i++) {
-        		m_changedStateNodeCode.set(i);
+        		changeStateNodes[i] = i;
         	}
+        	nChangedStateNodes = stateNode.length;
         }
     }
 
@@ -423,8 +467,7 @@ public class State extends Plugin {
     
     /** return current set of calculation nodes based on the set of StateNodes that have changed **/ 
     private List<CalculationNode> getCurrentCalculationNodes() {
-    	String sChangedStateNodeCode = m_changedStateNodeCode.toString();
-    	List<CalculationNode> calcNodes = m_map.get(sChangedStateNodeCode);
+    	List<CalculationNode> calcNodes = trie.get(nChangedStateNodes);
     	if (calcNodes != null) {
     		// the list is pre-calculated
     		return calcNodes;
@@ -437,9 +480,9 @@ public class State extends Plugin {
 			System.exit(1);
 		}
 
-    	m_map.put(sChangedStateNodeCode, calcNodes);
+    	trie.set(calcNodes, nChangedStateNodes);
     	
-    	System.err.print(m_changedStateNodeCode + ":");
+    	System.err.print(Arrays.toString(changeStateNodes) + ":");
     	for (CalculationNode node : calcNodes) {
     		System.err.print(node.m_sID + " ");
     	}
@@ -455,38 +498,40 @@ public class State extends Plugin {
      */
     private List<CalculationNode> calculateCalcNodePath() throws Exception {
     	List<CalculationNode> calcNodes = new ArrayList<CalculationNode>();
-    	for (int i = 0; i < stateNode.length; i++) {
-    		if (m_changedStateNodeCode.get(i)) {
-    			// go grab the path to the Runnable
-    			// first the outputs of the StateNodes that is changed
-    			boolean bProgress = false;
-    			for (CalculationNode node : m_stateNodeOutputs[i]) {
-    				if (!calcNodes.contains(node)) {
-    					calcNodes.add(node);
-    	    			bProgress = true;
-    				}
-    			}
-    			// next the path following the outputs
-    			while (bProgress) {
-    				bProgress = false;
-    				// loop over plugins, till no more plugins can be added
-    				// efficiency is no issue here
-    				for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
-    					CalculationNode node = calcNodes.get(iCalcNode);
-    					for (Plugin output : m_outputMap.get(node)) {
-    						if (output instanceof CalculationNode) {
-    							CalculationNode calcNode = (CalculationNode) output;
-    							if (!calcNodes.contains(calcNode)) {
-    								calcNodes.add(calcNode);
-    								bProgress = true;
-    							}
-    						} else {
-    							throw new Exception ("DEVELOPER ERROR: found a non-CalculatioNode on path between StateNode and Runnable");
-    						}
-    					}
-    				}
-    			}
-    		}
+//    	for (int i = 0; i < stateNode.length; i++) {
+//    		if (m_changedStateNodeCode.get(i)) {
+    	for (int k = 0; k < nChangedStateNodes; k++) {
+    		int i = changeStateNodes[k];
+			// go grab the path to the Runnable
+			// first the outputs of the StateNodes that is changed
+			boolean bProgress = false;
+			for (CalculationNode node : m_stateNodeOutputs[i]) {
+				if (!calcNodes.contains(node)) {
+					calcNodes.add(node);
+	    			bProgress = true;
+				}
+			}
+			// next the path following the outputs
+			while (bProgress) {
+				bProgress = false;
+				// loop over plugins, till no more plugins can be added
+				// efficiency is no issue here
+				for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
+					CalculationNode node = calcNodes.get(iCalcNode);
+					for (Plugin output : m_outputMap.get(node)) {
+						if (output instanceof CalculationNode) {
+							CalculationNode calcNode = (CalculationNode) output;
+							if (!calcNodes.contains(calcNode)) {
+								calcNodes.add(calcNode);
+								bProgress = true;
+							}
+						} else {
+							throw new Exception ("DEVELOPER ERROR: found a non-CalculatioNode on path between StateNode and Runnable");
+						}
+					}
+				}
+			}
+//    		}
     	}
     	
     	// put calc nodes in partial order
