@@ -27,6 +27,7 @@ package beast.evolution.tree;
 
 import beast.core.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Description("Nodes in building binary beast.tree data structure.")
@@ -122,6 +123,24 @@ public class Node extends Plugin {
 			m_Parent = parent;
 			m_bIsDirty = Tree.IS_FILTHY;
 		}
+	}
+	
+	/**
+	 * get all child node under this node, if this node is leaf then list.szie() = 0.
+	 * @return
+	 */
+	public List<Node> getAllChildNodes() {
+	    List<Node> childNodes = new ArrayList<Node>();
+	    if (!this.isLeaf()) getAllChildNodes(childNodes);
+	    return childNodes;
+	}
+	// recursive
+	public void getAllChildNodes(List<Node> childNodes) {
+	    childNodes.add(this);
+	    if (!this.isLeaf()) {	     
+	        m_right.getAllChildNodes(childNodes);
+	        m_left.getAllChildNodes(childNodes);
+	    }
 	}
 
 	/** @return true if current node is root node **/
