@@ -184,6 +184,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     public void store() {
         storedUpdateMatrix = updateMatrix;
         storedEigenDecomposition = eigenDecomposition.copy();
+//        System.arraycopy(relativeRates, 0, storedRelativeRates, 0, relativeRates.length);
+        
         super.store();
     }
 
@@ -196,9 +198,9 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         updateMatrix = storedUpdateMatrix;
 
         // To restore all this stuff just swap the pointers...
-        double[] tmp1 = storedRelativeRates;
-        storedRelativeRates = relativeRates;
-        relativeRates = tmp1;
+//        double[] tmp1 = storedRelativeRates;
+//        storedRelativeRates = relativeRates;
+//        relativeRates = tmp1;
 
         EigenDecomposition tmp = storedEigenDecomposition;
         storedEigenDecomposition = eigenDecomposition;
