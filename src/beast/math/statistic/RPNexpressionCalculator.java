@@ -11,7 +11,7 @@ import java.util.Stack;
  *   - variables are statistics of 1 dimension.
  *   - Four basic operations (easy to extend, though)
  *
- * @author Joseph Heled in beast1, migrated to beast2 by Denise KŸhnert
+ * @author Joseph Heled in beast1, migrated to beast2 by Denise Kuehnert
  *         Date: 10/05/2008
  */
 @Description("RPN calculator to evaluate simple expressions of parameters - evaluating the expressions from RPNCalculator")

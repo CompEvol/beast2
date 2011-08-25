@@ -20,7 +20,7 @@ import java.io.PrintStream;
  * The expressions are in RPN, so no parsing issues. whitspace separated. Variables (other statistics),
  * constants and operations. Currently just the basic four, but easy to extend.
  *
- * @author Joseph Heled in beast1, migrated to beast2 by Denise KŸhnert
+ * @author Joseph Heled in beast1, migrated to beast2 by Denise Kuehnert
  */
 @Description("RPN calculator to evaluate simple expressions of parameters")
 public class RPNcalculator extends CalculationNode implements Loggable {
