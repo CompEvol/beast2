@@ -89,6 +89,11 @@ public class TraitSet extends Plugin {
             fMaxValue = Math.max(fMaxValue, fValue);
         }
 
+        if (m_sTraitName.get().equals(DATE_FORWARD_TRAIT) || m_sTraitName.get().equals(DATE_TRAIT)) {
+            for (int i = 0; i < sLabels.size(); i++) {
+                m_fValues[i] = fMaxValue - m_fValues[i];
+            }
+        }
         if (m_sTraitName.get().equals(DATE_BACKWARD_TRAIT)) {
             for (int i = 0; i < sLabels.size(); i++) {
                 m_fValues[i] = m_fValues[i] - fMinValue;

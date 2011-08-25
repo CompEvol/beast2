@@ -24,11 +24,11 @@
 */
 package beast.core;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -152,7 +152,7 @@ public class State extends Plugin {
     public void initAndValidate() {
     }
     
-    public void initialise() {
+    public void initialise() {    	
         stateNode = stateNodeInput.get().toArray(new StateNode[0]);
 
         for (int i = 0; i < stateNode.length; i++) {
@@ -482,11 +482,11 @@ public class State extends Plugin {
 
     	trie.set(calcNodes, nChangedStateNodes);
     	
-    	System.err.print(Arrays.toString(changeStateNodes) + ":");
-    	for (CalculationNode node : calcNodes) {
-    		System.err.print(node.m_sID + " ");
-    	}
-    	System.err.println();
+//    	System.err.print(Arrays.toString(changeStateNodes) + ":");
+//    	for (CalculationNode node : calcNodes) {
+//    		System.err.print(node.m_sID + " ");
+//    	}
+//    	System.err.println();
     	
     	return calcNodes;
     } // getCurrentCalculationNodes
