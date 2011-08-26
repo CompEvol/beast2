@@ -59,7 +59,7 @@ public class LogAnalyser {
 		while (fin.ready()) {
 			sStr = fin.readLine();
 			int i = 0;
-			if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9].*")) // {
+			if (sStr.indexOf('#') < 0 && sStr.matches("[0-9].*")) // {
 				//nData++;
 				if (++nData >= 0) //{
 					for (String sStr2 : sStr.split("\\s")) {

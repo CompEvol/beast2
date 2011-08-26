@@ -151,6 +151,7 @@ abstract public class Plugin {
                 buf.append("\n\n");
             }
             bDone.add(getID());
+            return buf.toString();
         }
         try {
             for (Plugin plugin : listActivePlugins()) {

@@ -28,7 +28,7 @@ public class BayesianSkyline extends PopulationFunction.Abstract {
                     "N0 will be out by a factor of 2.", Validate.REQUIRED);
     public Input<IntegerParameter> groupSizeParamInput = new Input<IntegerParameter>("groupSizes", "the group sizes parameter", Validate.REQUIRED);
     //public Input<Tree> treeInput = new Input<Tree>("tree", "The tree containing coalescent node times for use in defining BSP.");
-    public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals", "The intervals of teh tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
+    public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals", "The intervals of the tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
 
     Valuable popSizes;
     IntegerParameter groupSizes;
