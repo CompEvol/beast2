@@ -14,7 +14,7 @@ public class Uniform extends ParametricDistribution {
 	
     UniformImpl distr = new UniformImpl();
     
-    double m_fLower, m_fUpper;
+    double m_fLower, m_fUpper, m_fDensity;
 	
 	@Override 
 	public void initAndValidate() throws Exception {
@@ -24,6 +24,11 @@ public class Uniform extends ParametricDistribution {
 			throw new Exception("Upper value should be higher than lower value");
 		}
 		distr.setBounds(m_fLower,m_fUpper);
+		if (Double.isInfinite(m_fLower) || Double.isInfinite(m_fUpper)) {
+			m_fDensity = 1.0;
+		} else {
+			m_fDensity = 1.0/(m_fUpper - m_fLower);
+		}
 	}
 
 
@@ -63,7 +68,7 @@ public class Uniform extends ParametricDistribution {
 		@Override
 		public double density(double x) {
 			if (x >= lower && x <= upper) {
-				return 1;
+				return m_fDensity;
 			} else {
 				return 0;
 			}
