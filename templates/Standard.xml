@@ -65,7 +65,10 @@
             beast.evolution.branchratemodel.RandomLocalClockModel.indicators,
             beast.evolution.operators.ScaleOperator.indicator,
 	        beast.core.Operator.weight,
-            beast.core.Logger.model
+            beast.core.Logger.model,
+            beast.evolution.tree.coalescent.BayesianSkyline.treeIntervals,
+            beast.evolution.tree.coalescent.BayesianSkyline.groupSizes,
+            beast.evolution.tree.coalescent.BayesianSkyline.popSizes
             '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
         disableMenus='Mode'

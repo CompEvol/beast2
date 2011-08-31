@@ -282,14 +282,24 @@
 <!-- Coalescent for Exponential population -->
         <subtemplate id='CoalescentBayesianSkyline' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentBayesianSkyline.$(n)'>
 <![CDATA[
-                <distribution id="CoalescentBayesianSkyline.$(n)" spec="Coalescent">
+            <distribution spec="BayesianSkyline" id='BayesianSkyline.$(n)'>
+                <parameter name='popSizes' id='bPopSizes.$(n)' dimension="1" value="380.0" lower="0.0" upper="380000.0" estimate='true'/>
+                <groupSizes spec='parameter.IntegerParameter' id='bGroupSizes.$(n)' dimension='1' value='1' estimate='true'/>
                 <treeIntervals spec='TreeIntervals' id='BSPTreeIntervals.$(n)' tree='@Tree.$(n)'/>
-                    <populationModel id='BayesianSkyline.$(n)' spec='BayesianSkyline' treeIntervals='@BSPTreeIntervals.$(n)'>
-                        <parameter name='popSizes' id='bPopSizes.$(n)' dimension="5" value="380.0" lower="0.0" upper="380000.0"/>
-                        <groupSizes spec='parameter.IntegerParameter' id='bGroupSizes.$(n)' dimension='5' value='1'/>
-                    </populationModel>
-                </distribution>
+            </distribution>
+
+		    <operator id='popSizesScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="15" parameter="@bPopSizes.$(n)"/>
+		    <operator id='groupSizesDelta.$(n)' spec='DeltaExchangeOperator' delta="1" weight="3" integer="true"
+		              intparameter="@bGroupSizes.$(n)"/>
+
 ]]>
+            <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='bPopSizes.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='bGroupSizes.$(n)' targetID='tracelog' inputName='log'/>
+
+            <connect spec='BeautiConnector' srcID='popSizesScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='groupSizesDelta.$(n)' targetID='mcmc' inputName='operator'/>
         </subtemplate>
 
 <!-- Parametric distributions, all without hyperpriors -->
@@ -370,23 +380,6 @@
         </subtemplate>
 
 </mergewith>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
