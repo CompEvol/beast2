@@ -279,7 +279,7 @@
         </subtemplate>
 
 
-<!-- Coalescent for Exponential population -->
+<!-- Coalescent for Bayesian skyline -->
         <subtemplate id='CoalescentBayesianSkyline' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentBayesianSkyline.$(n)'>
 <![CDATA[
             <distribution spec="BayesianSkyline" id='BayesianSkyline.$(n)'>
@@ -288,12 +288,18 @@
                 <treeIntervals spec='TreeIntervals' id='BSPTreeIntervals.$(n)' tree='@Tree.$(n)'/>
             </distribution>
 
+            <distribution id='MarkovChainedPopSizes.$(n)' spec="beast.math.distributions.MarkovChainDistribution" 
+				jeffreys="true"
+				parameter="@skyline.popSize"/>
+
 		    <operator id='popSizesScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="15" parameter="@bPopSizes.$(n)"/>
 		    <operator id='groupSizesDelta.$(n)' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
 		              intparameter="@bGroupSizes.$(n)"/>
 
 ]]>
             <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='MarkovChainedPopSizes.$(n)' targetID='prior' inputName='distribution'/>
+
             <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='bPopSizes.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='bGroupSizes.$(n)' targetID='tracelog' inputName='log'/>

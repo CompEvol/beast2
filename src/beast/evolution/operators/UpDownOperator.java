@@ -22,6 +22,7 @@ public class UpDownOperator extends Operator {
 			"zero or more items to scale upwards", new ArrayList<StateNode>());
 	public Input<List<StateNode>> m_down = new Input<List<StateNode>>("down",
 			"zero or more items to scale downwards", new ArrayList<StateNode>());
+    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise","flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
 
 	double m_fScaleFactor;
 
@@ -71,9 +72,11 @@ public class UpDownOperator extends Operator {
 	 */
 	@Override
 	public void optimize(double logAlpha) {
-        double fDelta = calcDelta(logAlpha);
-        fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
-        m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+		if (m_bOptimise.get()) {
+	        double fDelta = calcDelta(logAlpha);
+	        fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
+	        m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+		}
 	}
 
     @Override

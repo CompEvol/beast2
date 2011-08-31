@@ -70,6 +70,7 @@ public class SubtreeSlide extends TreeOperator {
 
     public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
     public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
+    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise","flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
 
     // shadows m_size
     double m_fSize;
@@ -234,9 +235,11 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public void optimize(double logAlpha) {
-        double fDelta = calcDelta(logAlpha);
-        fDelta += Math.log(m_fSize);
-        m_fSize = Math.exp(fDelta);
+    	if (m_bOptimise.get()) {
+	        double fDelta = calcDelta(logAlpha);
+	        fDelta += Math.log(m_fSize);
+	        m_fSize = Math.exp(fDelta);
+    	}
     }
 
     @Override

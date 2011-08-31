@@ -105,7 +105,6 @@
 
     <distribution spec="CompoundDistribution" id="posterior">
         <distribution spec="CompoundDistribution" id="prior">
-<!--	
             <distribution id="hky.kappa.prior" spec="beast.math.distributions.Prior" x="@hky.kappa">
                 <distr id="LogNormalDistributionModel" M="1.0" S="1.25" meanInRealSpace="false"
                               spec="beast.math.distributions.LogNormalDistributionModel"/>
@@ -113,7 +112,6 @@
             <distribution id="hky.frequencies.prior" spec="beast.math.distributions.Prior" x="@hky.frequencies">
                 <distr id="Uniform" lower="0.0" upper="1.0" spec="beast.math.distributions.Uniform"/>
             </distribution>
--->
 
             <distribution spec="BayesianSkyline" id='skyline'>
                 <popSizes idref="skyline.popSize"/>
@@ -122,6 +120,10 @@
                     <tree idref="tree"/>
                 </treeIntervals>
             </distribution>
+
+            <distribution id='eml1' spec="beast.math.distributions.MarkovChainDistribution" 
+				jeffreys="true"
+				parameter="@skyline.popSize"/>
         </distribution>
 
 		<distribution spec='TreeLikelihood' id="likelihood">
@@ -177,7 +179,7 @@
         <operator spec='WilsonBalding' weight="3" tree="@tree"/>
 
 
-        <logger logEvery="1000" fileName="test.$(seed).log">
+        <logger logEvery="1000" fileName="MarkovChained.$(seed).log">
             <log idref="posterior"/>
             <log idref="siteModel.alpha"/>
             <log idref="clock.rate"/>
@@ -187,9 +189,10 @@
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree' id='treeModel.rootHeight'/>
             <log idref="likelihood"/>
             <log idref="skyline"/>
+            <log idref="eml1"/>
         </logger>
 
-        <logger logEvery="1000" fileName="test.$(seed).trees">
+        <logger logEvery="1000" fileName="MarkovChained.$(seed).trees">
 			<log idref="tree"/>
 		</logger>              
 
