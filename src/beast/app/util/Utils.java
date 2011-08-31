@@ -124,4 +124,14 @@ public class Utils {
         }
     }
 
+    public static boolean isMac() {
+        return jam.mac.Utils.isMacOSX();//System.getProperty("os.name").startsWith("Windows");
+     }
+    public static boolean isWindows() {
+       return System.getProperty("os.name").toLowerCase().startsWith("windows");
+    }
+    public static boolean isLinux() {
+        return System.getProperty("os.name").toLowerCase().startsWith("linux");
+     }
+
 }

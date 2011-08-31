@@ -153,12 +153,17 @@ public class BeastMain {
                 rex.printStackTrace(System.err);
             }
             */
-        } catch (Exception ex) {
+		} catch (XMLParserException e) {
+			System.out.println(e.getMessage());
+			//e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 //            infoLogger.warning("Error running file: " + fileName);
-            infoLogger.severe("Fatal exception: " + ex.getMessage());
-            System.err.println("Fatal exception: " + ex.getMessage());
-            ex.printStackTrace(System.err);
-        }
+//            infoLogger.severe("Fatal exception: " + ex.getMessage());
+//            System.err.println("Fatal exception: " + ex.getMessage());
+//            ex.printStackTrace(System.err);
+//        }
     }
 
     static String getFileNameByDialog(String title) {

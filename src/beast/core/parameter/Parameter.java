@@ -284,7 +284,7 @@ public abstract class Parameter<T> extends StateNode {
             out.print(getID() + "\t");
         } else {
             for (int iValue = 0; iValue < nValues; iValue++) {
-                out.print(getID() + iValue + "\t");
+                out.print(getID() + (iValue + 1) + "\t");
             }
         }
     }

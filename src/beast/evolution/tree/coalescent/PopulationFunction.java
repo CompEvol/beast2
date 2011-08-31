@@ -186,6 +186,15 @@ public interface PopulationFunction extends UnivariateRealFunction {
         public double value(double x) {
             return 1.0 / getPopSize(x);
         }
+
+        /**
+         * Default implementation
+         * @param t
+         * @return log(demographic at t)
+         */
+        public double getLogDemographic(double t) {
+            return Math.log(getPopSize(t));
+        }
     }
 
     public static class Utils {

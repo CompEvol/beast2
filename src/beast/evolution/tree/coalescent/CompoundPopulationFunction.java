@@ -2,12 +2,14 @@ package beast.evolution.tree.coalescent;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Loggable;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.IntervalType;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.evolution.tree.coalescent.TreeIntervals;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.List;
  *         Date: 26/08/2010
  */
 @Description("An effective population size function based on coalecent times from a set of trees.")
-public class CompoundPopulationFunction extends PopulationFunction.Abstract {
+public class CompoundPopulationFunction extends PopulationFunction.Abstract implements Loggable {
 
     public Input<RealParameter> popSizeParameterInput = new Input<RealParameter>("populationSizes",
             "population value at each point.", Input.Validate.REQUIRED);
@@ -571,4 +573,24 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract {
         shadow.reset();
         super.accept();
     }
+
+	@Override
+	public void init(PrintStream out) throws Exception {
+		// interval sizes
+		for (int i = 0; i < alltimes.length; i++) {
+			out.print(getID() +".times." + i + "\t");
+		}
+	}
+
+	@Override
+	public void log(int nSample, PrintStream out) {
+		// interval sizes
+		for (int i = 0; i < alltimes.length; i++) {
+			out.print(alltimes[i] + "\t");
+		}
+	}
+
+	@Override
+	public void close(PrintStream out) {
+	}
 }
