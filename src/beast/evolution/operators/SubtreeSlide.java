@@ -238,4 +238,29 @@ public class SubtreeSlide extends TreeOperator {
         fDelta += Math.log(m_fSize);
         m_fSize = Math.exp(fDelta);
     }
+
+    @Override
+    public double getCoercableParameterValue() {
+        return m_fSize;
+    }
+
+    @Override
+    public String getPerformanceSuggestion() {
+        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double targetProb = getTargetAcceptanceProbability();
+
+        double ratio = prob / targetProb;
+
+        if (ratio > 2.0) ratio = 2.0;
+        if (ratio < 0.5) ratio = 0.5;
+
+        double newDelta = m_fSize * ratio;
+
+        if (prob < 0.10) {
+            return "Try decreasing size to about " + newDelta;
+        } else if (prob > 0.40) {
+            return "Try increasing size to about " + newDelta;
+        } else return "";
+    }
+    
 }

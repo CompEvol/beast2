@@ -7,6 +7,7 @@ import beast.core.Operator;
 import beast.core.StateNode;
 import beast.util.Randomizer;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,9 +71,33 @@ public class UpDownOperator extends Operator {
 	 */
 	@Override
 	public void optimize(double logAlpha) {
-		Double fDelta = calcDelta(logAlpha);
-		fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
-		m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+        double fDelta = calcDelta(logAlpha);
+        fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
+        m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
 	}
 
+    @Override
+    public double getCoercableParameterValue() {
+        return m_fScaleFactor;
+    }
+
+    @Override
+    public String getPerformanceSuggestion() {
+        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double targetProb = getTargetAcceptanceProbability();
+
+        double ratio = prob / targetProb;
+        if (ratio > 2.0) ratio = 2.0;
+        if (ratio < 0.5) ratio = 0.5;
+
+        // new scale factor
+        double sf = Math.pow(m_fScaleFactor, ratio);
+
+        DecimalFormat formatter = new DecimalFormat("#.###");
+        if (prob < 0.10) {
+            return "Try setting scaleFactor to about " + formatter.format(sf);
+        } else if (prob > 0.40) {
+            return "Try setting scaleFactor to about " + formatter.format(sf);
+        } else return "";
+    }
 } // class UpDownOperator

@@ -24,11 +24,15 @@
 */
 package beast.evolution.operators;
 
+
+import java.text.DecimalFormat;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
@@ -54,6 +58,7 @@ public class ScaleOperator extends Operator {
     public Input<BooleanParameter> m_indicator = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
     		"of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
     		"it is assumed all dimensions are allowed to be scaled.");
+    public Input<Boolean> m_pRootOnly = new Input<Boolean>("rootOnly","scale root of a tree only, ignored if tree is not specified (default false)", false);
 
     /**  shadows input **/
     double m_fScaleFactor;
@@ -103,9 +108,19 @@ public class ScaleOperator extends Operator {
 
             if (m_bIsTreeScaler) {
                 Tree tree = m_pTree.get(this);
-                // scale the beast.tree
-                final int nInternalNodes = tree.scale(scale);
-                return Math.log(scale) * (nInternalNodes - 2);
+            	if (m_pRootOnly.get()) {
+                    Node root = tree.getRoot();
+                    double fNewHeight = root.getHeight() * scale;
+                    if (fNewHeight < Math.max(root.m_left.getHeight(), root.m_right.getHeight())) {
+                    	return Double.NEGATIVE_INFINITY;
+                    }
+                    root.setHeight(fNewHeight);
+                    return -Math.log(scale);
+            	} else {
+                    // scale the beast.tree
+                    final int nInternalNodes = tree.scale(scale);
+                    return Math.log(scale) * (nInternalNodes - 2);
+            	}
             }
 
             // not a tree scaler, so scale a parameter
@@ -223,9 +238,33 @@ public class ScaleOperator extends Operator {
     @Override
     public void optimize(double logAlpha) {
         double fDelta = calcDelta(logAlpha);
-//        //double fScaleFactor = m_pScaleFactor.get();
         fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
         m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
     }
 
+    @Override
+    public double getCoercableParameterValue() {
+        return m_fScaleFactor;
+    }
+    
+    @Override
+    public String getPerformanceSuggestion() {
+        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double targetProb = getTargetAcceptanceProbability();
+
+        double ratio = prob / targetProb;
+        if (ratio > 2.0) ratio = 2.0;
+        if (ratio < 0.5) ratio = 0.5;
+
+        // new scale factor
+        double sf = Math.pow(m_fScaleFactor, ratio);
+
+        DecimalFormat formatter = new DecimalFormat("#.###");
+        if (prob < 0.10) {
+            return "Try setting scaleFactor to about " + formatter.format(sf);
+        } else if (prob > 0.40) {
+            return "Try setting scaleFactor to about " + formatter.format(sf);
+        } else return "";
+    }
+    
 } // class ScaleOperator

@@ -289,7 +289,7 @@
             </distribution>
 
 		    <operator id='popSizesScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="15" parameter="@bPopSizes.$(n)"/>
-		    <operator id='groupSizesDelta.$(n)' spec='DeltaExchangeOperator' delta="1" weight="3" integer="true"
+		    <operator id='groupSizesDelta.$(n)' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
 		              intparameter="@bGroupSizes.$(n)"/>
 
 ]]>

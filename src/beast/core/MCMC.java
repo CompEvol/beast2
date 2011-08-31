@@ -233,7 +233,7 @@ public class MCMC extends Runnable {
 
         /** report operator statistics **/
         public void showOperatorRates(PrintStream out) {
-            out.println("Operator                                        #accept\t#reject\t#total\tacceptance rate");
+            out.println("Operator                                                              Tuning\t#accept\t#reject\t#total\tacceptance rate");
             for (int i = 0; i < m_operators.size(); i++) {
                 out.println(m_operators.get(i));
             }
@@ -354,7 +354,7 @@ public class MCMC extends Runnable {
             }
             log(iSample);
             
-            if (bDebug && iSample % 1 == 0 || iSample % 10000 == 0) { 
+            if (bDebug && iSample % 3 == 0 || iSample % 10000 == 0) { 
             	// check that the posterior is correctly calculated at every third
             	// sample, as long as we are in debug mode
                 double fLogLikelihood = robustlyCalcPosterior(posterior); 

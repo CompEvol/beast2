@@ -25,6 +25,8 @@
  */
 package beast.core;
 
+import java.text.DecimalFormat;
+
 import beast.core.Input.Validate;
 
 
@@ -61,14 +63,22 @@ public abstract class Operator extends Plugin {
 
 
 	/** keep statistics of how often this operator was used, accepted or rejected **/
-	int m_nNrRejected = 0;
-	int m_nNrAccepted = 0;
+	protected int m_nNrRejected = 0;
+	protected int m_nNrAccepted = 0;
+	int m_nNrRejectedForCorrection = 0;
+	int m_nNrAcceptedForCorrection = 0;
 	public void accept() {
 		m_nNrAccepted++;
+		if (g_autoOptimizeDelay >= AUTO_OPTIMIZE_DELAY) {
+			m_nNrAcceptedForCorrection++;
+		}
 	}
 
 	public void reject() {
 		m_nNrRejected++;
+		if (g_autoOptimizeDelay >= AUTO_OPTIMIZE_DELAY) {
+			m_nNrRejectedForCorrection++;
+		}
 	}
 
 	/** called after every invocation of this operator to see whether
@@ -83,16 +93,17 @@ public abstract class Operator extends Plugin {
 	/** @return  change of value of a parameter for MCMC chain optimisation
      * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
      **/
-	static int g_autoOptimizeDelay = 0;
+	final static protected int AUTO_OPTIMIZE_DELAY = 10000;
+	static protected int g_autoOptimizeDelay = 0;
 	protected double calcDelta(double logAlpha) {
 		// do no optimisation for the first N optimisable operations
-		if (g_autoOptimizeDelay < 100000) {
+		if (g_autoOptimizeDelay < AUTO_OPTIMIZE_DELAY) {
 			g_autoOptimizeDelay++;
 			return 0;
 		}
         final double target = getTargetAcceptanceProbability();
 
-        final double deltaP = ((1.0 / (m_nNrRejected + m_nNrAccepted + 1.0)) * (Math.exp(Math.min(logAlpha, 0)) - target));
+        final double deltaP = ((1.0 / (m_nNrRejectedForCorrection + m_nNrAcceptedForCorrection + 1.0)) * (Math.exp(Math.min(logAlpha, 0)) - target));
 
         if (deltaP > -Double.MAX_VALUE && deltaP < Double.MAX_VALUE) {
             return deltaP;
@@ -106,14 +117,34 @@ public abstract class Operator extends Plugin {
         return 0.234;
     }
     
-	public String toString() {
+	/** @return value change through automatic operator optimisation
+     **/
+    public double getCoercableParameterValue() {
+        return Double.NaN;
+    }
+
+    /** return directions on how to set operator parameters, if any **/
+    public String getPerformanceSuggestion() {
+        return "";
+    }
+
+    public String toString() {
 		String sName = getName();
-		if (sName.length() < 40) {
-			sName +=  "                                        ".substring(sName.length(), 40);
+		if (sName.length() < 70) {
+			sName +=  "                                                                      ".substring(sName.length(), 70);
 		}
+		DecimalFormat format = new DecimalFormat("#.###");
+		if (!Double.isNaN(getCoercableParameterValue())) {
+			String sStr = getCoercableParameterValue() + "";
+			sName += sStr.substring(0, Math.min(sStr.length(), 5));
+		} else {
+			sName += "     ";
+		}
+		sName += " ";
 		return sName + "\t" + m_nNrAccepted + "\t" + m_nNrRejected + "\t" +
 		(m_nNrAccepted + m_nNrRejected) + "\t" +
-		((m_nNrAccepted+0.0)/(m_nNrAccepted + m_nNrRejected));
+		format.format(((m_nNrAccepted+0.0)/(m_nNrAccepted + m_nNrRejected))) +
+		" " + getPerformanceSuggestion();
 	}
 
 } // class Operator

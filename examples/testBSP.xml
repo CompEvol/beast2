@@ -151,23 +151,31 @@
         </state>
 
         <distribution idref="posterior"/>
-        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@hky.kappa"/>
-        <operator id='clockRateScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@clock.rate"/>
-        <operator id='shapeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@siteModel.alpha"/>
+        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="1" parameter="@hky.kappa"/>
+        <operator id='shapeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="1" parameter="@siteModel.alpha"/>
+        <operator id='clockRateScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@clock.rate"/>
+
+        <operator id='upDown' spec='UpDownOperator' scaleFactor="0.77" weight="3" up="@clock.rate" down='@tree'/>
+
+        <operator id='popSizesScaler' spec='ScaleOperator' scaleFactor="0.75" weight="15" parameter="@skyline.popSize"/>
+
+        <operator id='groupSizesDelta' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
+                  intparameter="@skyline.groupSize"/>
+
 <!--
         <operator id='frequenciesDelta' spec='DeltaExchangeOperator' delta="0.01" weight="0.1"
                   parameter="@hky.frequencies"/>
 -->
-        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" tree="@tree"/>
+        <operator id='treeRootScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" tree="@tree" rootOnly='true'/>
         <operator spec='Uniform' weight="30" tree="@tree"/>
-        <operator spec='SubtreeSlide' weight="15" gaussian="true" size="38" tree="@tree"/>
+<!--
+        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" tree="@tree"/>
+-->
+        <operator spec='SubtreeSlide' weight="15" gaussian="true" size="3.8" tree="@tree"/>
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="15" tree="@tree"/>
         <operator id='wide' spec='Exchange' isNarrow='false' weight="3" tree="@tree"/>
         <operator spec='WilsonBalding' weight="3" tree="@tree"/>
 
-        <operator id='popSizesScaler' spec='ScaleOperator' scaleFactor="0.75" weight="15" parameter="@skyline.popSize"/>
-        <operator id='groupSizesDelta' spec='DeltaExchangeOperator' delta="1" weight="3" integer="true"
-                  intparameter="@skyline.groupSize"/>
 
         <logger logEvery="1000" fileName="test.$(seed).log">
             <log idref="posterior"/>
