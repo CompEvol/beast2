@@ -73,7 +73,7 @@ M_fascicularis=1
 
     <distribution idref="posterior"/>
 
-    <operator id="TipDatesScaler" scaleFactor="0.01" spec="TipDatesScaler" taxonset="@TaxonSet0" tree="@tree" weight="1.0"/>
+    <operator id="TipDatesRandomWalker" windowSize="1" spec="TipDatesRandomWalker" taxonset="@TaxonSet0" tree="@tree" weight="1.0"/>
 
     <operator degreesOfFreedom="1" id="treeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" tree="@tree" weight="1.0"/>
     <operator id="Uniform2" spec="Uniform" tree="@tree" weight="10.0"/>

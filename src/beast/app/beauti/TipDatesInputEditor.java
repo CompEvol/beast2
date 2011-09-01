@@ -234,14 +234,14 @@ public class TipDatesInputEditor extends PluginInputEditor {
         							operator.m_pWeight.setValue(0.0, operator);
         							break;
         						case SAMPLE_TIPS_SAME_PRIOR :
-        							if (operator.getID().contains("allTipDatesScaler")) {
+        							if (operator.getID().contains("allTipDatesRandomWalker")) {
         								operator.m_pWeight.setValue(1.0, operator);
         							} else {
         								operator.m_pWeight.setValue(0.0, operator);
         							}
         							break;
         						case SAMPLE_TIPS_MULTIPLE_PRIOR :
-        							if (operator.getID().contains("allTipDatesScaler")) {
+        							if (operator.getID().contains("allTipDatesRandomWalker")) {
         								operator.m_pWeight.setValue(0.0, operator);
         							} else {
         								operator.m_pWeight.setValue(0.1, operator);

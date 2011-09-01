@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beast version='2.0'
-       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+       namespace='beast.math:beast.evolution.alignment:beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
 
 <!-- 17 taxa, 1485 sites, 138 patterns -->
 <data dataType="nucleotide" id="alignment">
@@ -89,81 +89,109 @@
         <input name='substModel' idref='hky'/>
     </input>
 
-    <input spec='TreeLikelihood' id="treeLikelihood">
-        <input name='data' idref="alignment"/>
-        <input name='tree' idref="tree"/>
-        <input name='siteModel' idref="siteModel"/>
-    </input>
 
     <parameter id="hky.kappa" value="1.0" lower="0.0"/>
 
     <tree spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
-	<trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
-		value='
-		D4Brazi82  = 1982,
-		D4ElSal83  = 1983,
-		D4ElSal94  = 1994,
-		D4Indon76  = 1976,
-		D4Indon77  = 1977,
-		D4Mexico84 = 1984,
-		D4NewCal81 = 1981,
-		D4Philip64 = 1964,
-		D4Philip56 = 1956,
-		D4Philip84 = 1984,
-		D4PRico86  = 1986,
-		D4SLanka78 = 1978,
-		D4Tahiti79 = 1979,
-		D4Tahiti85 = 1985,
-		D4Thai63   = 1963,
-		D4Thai78   = 1978,
-		D4Thai84   = 1984
-		'>
-		<taxa spec='beast.evolution.alignment.TaxonSet' alignment='@alignment'/>
-	</trait>
+		<trait spec='beast.evolution.tree.TraitSet' traitname='date-forward' units='year'
+			value='
+			D4Brazi82  = 1982,
+			D4ElSal83  = 1983,
+			D4ElSal94  = 1994,
+			D4Indon76  = 1976,
+			D4Indon77  = 1977,
+			D4Mexico84 = 1984,
+			D4NewCal81 = 1981,
+			D4Philip64 = 1964,
+			D4Philip56 = 1956,
+			D4Philip84 = 1984,
+			D4PRico86  = 1986,
+			D4SLanka78 = 1978,
+			D4Tahiti79 = 1979,
+			D4Tahiti85 = 1985,
+			D4Thai63   = 1963,
+			D4Thai78   = 1978,
+			D4Thai84   = 1984
+			'>
+			<taxa spec='TaxonSet' alignment='@alignment'/>
+		</trait>
         <input name='taxa' idref='alignment'/>
     </tree>
 
+    <distribution id="posterior" spec="util.CompoundDistribution">
+        <distribution id="prior" spec="util.CompoundDistribution">
+            <distribution id="coalescent" spec="Coalescent">
+                <populationModel id="ConstantPopulation" spec="ConstantPopulation">
+                    <parameter dimension="1" estimate="false" id="popSize" name="popSize" value="1.0"/>
+                </populationModel>
+                <treeIntervals id="TreeIntervals" spec="TreeIntervals" tree="@tree"/>
+            </distribution>
 
-    <run spec="MCMC" id="mcmc" chainLength="1000000"> <!--autoOptimize="true"-->
+            <distribution id="tipDates" monophyletic="false" spec="distributions.MRCAPrior" tipsonly="true" tree="@tree">
+                <taxonset id="TaxonSet0" spec="TaxonSet">
+                    <taxon id="D4PRico86" spec="Taxon"/>
+                </taxonset>
+                <distr id="Uniform0" lower="1985" offset="0.0" spec="distributions.Uniform" upper="1987"/>
+            </distribution>
+
+            <distribution id="tipDates2" monophyletic="false" spec="distributions.MRCAPrior" tipsonly="true" tree="@tree">
+                <taxonset id="TaxonSet1" spec="TaxonSet">
+                    <taxon id="D4ElSal94" spec="Taxon"/>
+                </taxonset>
+                <distr id="Noraml0" offset="0.0" spec="distributions.Normal" mean="1994" sigma="1"/>
+            </distribution>
+
+            <distribution id="kappa.prior" spec="distributions.Prior" x="@hky.kappa">
+                <distr id="OneOnX0" offset="0.0" spec="distributions.OneOnX"/>
+            </distribution>
+        </distribution>
+        <distribution id="likelihood" spec="util.CompoundDistribution">
+			<distribution spec='TreeLikelihood' id="treeLikelihood">
+				<input name='data' idref="alignment"/>
+				<input name='tree' idref="tree"/>
+				<input name='siteModel' idref="siteModel"/>
+                <branchRateModel id="StrictClockModel" spec="beast.evolution.branchratemodel.StrictClockModel">
+                    <parameter dimension="1" estimate="false" id="clockRate" name="clock.rate" value="1.0"/>
+                </branchRateModel>
+		    </distribution>
+		</distribution>
+	</distribution>
+
+    <run spec="MCMC" id="mcmc" chainLength="1000000">
         <state>
             <input name='stateNode' idref="hky.kappa"/>
+            <input name='stateNode' idref="clockRate"/>
             <input name='stateNode' idref="tree"/>
         </state>
 
-        <distribution id='likelihood' idref="treeLikelihood"/>
+        <distribution idref="posterior"/>
 
-        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
-            <parameter idref="hky.kappa"/>
-        </operator>
-        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
-            <tree idref="tree"/>
-        </operator>
-        <operator spec='Uniform' weight="10">
-            <tree idref="tree"/>
-        </operator>
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
-            <tree idref="tree"/>
-        </operator>
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
-            <tree idref="tree"/>
-        </operator>
-        <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
-            <tree idref="tree"/>
-        </operator>
-        <operator spec='WilsonBalding' weight="1">
-            <tree idref="tree"/>
-        </operator>
+	    <operator id="TipDatesRandomWalker" windowSize="1" spec="TipDatesRandomWalker" taxonset="@TaxonSet0" tree="@tree" weight="1.0"/>
+	    <operator id="TipDatesRandomWalker2" windowSize="1" spec="TipDatesRandomWalker" taxonset="@TaxonSet1" tree="@tree" weight="1.0"/>
 
-        <logger logEvery="10000" fileName="test.$(seed).log">
+        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
+        <operator id='clockRateScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@clockRate"/>
+
+        <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree='@tree'/>
+        <operator spec='Uniform' weight="10" tree='@tree'/>
+        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree='@tree'/>
+        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree='@tree'/>
+        <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree='@tree'/>
+        <operator spec='WilsonBalding' weight="1" tree='@tree'/>
+
+        <logger logEvery="1000" fileName="test.$(seed).log">
             <log idref="likelihood"/>
-            <log idref="hky.kappa"/>
+			<log idref='tipDates'/>
+			<log idref='tipDates2'/>
+			<log idref='hky.kappa'/>
+			<log idref='clockRate'/>
+            <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
         <logger logEvery="10000" fileName="test.$(seed).trees">
             <log idref="tree"/>
         </logger>
         <logger logEvery="10000">
             <log idref="likelihood"/>
-            <log idref="hky.kappa"/>
         </logger>
 
     </run>

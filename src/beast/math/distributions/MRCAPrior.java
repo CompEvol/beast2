@@ -105,7 +105,7 @@ public class MRCAPrior extends Distribution {
 		if (m_bOnlyUseTips) {
 			// tip date
 			for (int i : m_iTaxa) {
-				m_fMRCATime = m_tree.getNode(i).getHeight();
+				m_fMRCATime = m_tree.getNode(i).getDate();
 				logP += m_dist.logDensity(m_fMRCATime);
 			}
 			return logP;
@@ -144,7 +144,7 @@ public class MRCAPrior extends Distribution {
 				nTaxonCount[0] = nLeftTaxa + nRightTaxa;
 				if (iTaxons == m_nNrOfTaxa) {
 					// we are at the MRCA, so record the height
-					m_fMRCATime = node.getHeight();
+					m_fMRCATime = node.getDate();
 					m_bIsMonophyletic = (nTaxonCount[0] == m_nNrOfTaxa);
 					return iTaxons + 1;
 				}
@@ -199,7 +199,7 @@ public class MRCAPrior extends Distribution {
 				out.print(getCurrentLogP() + "\t");
 			}
 			for (int i : m_iTaxa) {
-				out.print(m_tree.getNode(i).getHeight() + "\t");
+				out.print(m_tree.getNode(i).getDate() + "\t");
 			}
 		} else {
 			if (m_dist != null || m_bIsMonophyleticInput.get()) {

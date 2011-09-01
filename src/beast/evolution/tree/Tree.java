@@ -552,4 +552,10 @@ public class Tree extends StateNode {
     	m_bHasStartedEditing = false;
     }
     
+	public double getDate(double fHeight) {
+		if (m_trait.get() == null) {
+			return fHeight;
+		}
+		return m_trait.get().getDate(fHeight);
+	}
 } // class Tree

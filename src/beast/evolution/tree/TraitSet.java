@@ -45,6 +45,8 @@ public class TraitSet extends Plugin {
      * double representation of taxa value *
      */
     double[] m_fValues;
+    double m_fMinValue;
+    double m_fMaxValue;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -82,22 +84,22 @@ public class TraitSet extends Plugin {
         }
 
         // find extremes
-        double fMinValue = m_fValues[0];
-        double fMaxValue = m_fValues[0];
+        m_fMinValue = m_fValues[0];
+        m_fMaxValue = m_fValues[0];
         for (double fValue : m_fValues) {
-            fMinValue = Math.min(fMinValue, fValue);
-            fMaxValue = Math.max(fMaxValue, fValue);
+            m_fMinValue = Math.min(m_fMinValue, fValue);
+            m_fMaxValue = Math.max(m_fMaxValue, fValue);
         }
 
         if (m_sTraitName.get().equals(DATE_TRAIT) || m_sTraitName.get().equals(DATE_FORWARD_TRAIT)) {
             for (int i = 0; i < sLabels.size(); i++) {
-                m_fValues[i] = fMaxValue - m_fValues[i];
+                m_fValues[i] = m_fMaxValue - m_fValues[i];
             }
         }
 
         if (m_sTraitName.get().equals(DATE_BACKWARD_TRAIT)) {
             for (int i = 0; i < sLabels.size(); i++) {
-                m_fValues[i] = m_fValues[i] - fMinValue;
+                m_fValues[i] = m_fValues[i] - m_fMinValue;
             }
         }
 
@@ -149,5 +151,16 @@ public class TraitSet extends Plugin {
         }
         return sStr;
     }
+
+	public double getDate(double fHeight) {
+        if (m_sTraitName.get().equals(DATE_TRAIT) || m_sTraitName.get().equals(DATE_FORWARD_TRAIT)) {
+        	return m_fMaxValue - fHeight;
+        }
+
+        if (m_sTraitName.get().equals(DATE_BACKWARD_TRAIT)) {
+        	return m_fMinValue + fHeight;
+        }
+        return fHeight;
+	}
 
 } // class TraitSet

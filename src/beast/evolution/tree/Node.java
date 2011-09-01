@@ -73,6 +73,11 @@ public class Node extends Plugin {
 	public void setNr(int iLabel) {m_iLabel = iLabel;}
 
 	public double getHeight() {return m_fHeight;}
+
+	public double getDate() {
+		return m_tree.getDate(m_fHeight);
+	}
+
 	public void setHeight(double fHeight) {
 		startEditing();
 		m_fHeight = fHeight;
@@ -455,4 +460,5 @@ public class Node extends Plugin {
 			m_tree.startEditing(null);
 		}
 	}
+	
 } // class Node

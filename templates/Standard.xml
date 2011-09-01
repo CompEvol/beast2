@@ -165,7 +165,8 @@
             <operator id='proportionInvariantScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@proportionInvariant.$(n)"/>
             <operator id='mutationRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@mutationRate.$(n)"/>
             <operator id='gammaShapeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@gammaShape.$(n)"/>
-            <operator id='allTipDatesScaler.$(n)' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@Tree.$(n)"/>
+<!--            <operator id='allTipDatesScaler.$(n)' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@Tree.$(n)"/>-->
+            <operator id='allTipDatesRandomWalker.$(n)' spec='TipDatesRandomWalker' windowSize="1" weight="0" tree="@Tree.$(n)"/>
 
             <operator id='treeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@Tree.$(n)"/>
             <operator id='UniformOperator.$(n)' spec='Uniform' weight="10" tree="@Tree.$(n)"/>
@@ -196,7 +197,7 @@
             <connect spec='BeautiConnector' srcID='proportionInvariantScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='mutationRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='gammaShapeScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='allTipDatesScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='allTipDatesRandomWalker.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='treeScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='UniformOperator.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='SubtreeSlide.$(n)' targetID='mcmc' inputName='operator'/>
