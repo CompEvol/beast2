@@ -260,27 +260,28 @@ public class MCMC extends Runnable {
 
         nBurnIn = m_oBurnIn.get();
         nChainLength = m_oChainLength.get();
+        int nInitiliasiationAttemps = 0;
+        state.setEverythingDirty(true);
+        posterior = posteriorInput.get();
+
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
         	nBurnIn = 0;
+            fOldLogLikelihood = robustlyCalcPosterior(posterior);
+        } else {
+            do {
+                for (StateNodeInitialiser initialiser : m_initilisers.get()) {
+                	initialiser.initStateNodes();
+                }
+                fOldLogLikelihood = robustlyCalcPosterior(posterior);
+            } while (Double.isInfinite(fOldLogLikelihood) && nInitiliasiationAttemps++ < 10);
         }
         long tStart = System.currentTimeMillis();
-
-
-        state.setEverythingDirty(true);
-        posterior = posteriorInput.get();
 
         // do the sampling
         logAlpha = 0;
         bDebug = Boolean.valueOf(System.getProperty("beast.debug"));
         
-        int nInitiliasiationAttemps = 0;
-        do {
-            for (StateNodeInitialiser initialiser : m_initilisers.get()) {
-            	initialiser.initStateNodes();
-            }
-            fOldLogLikelihood = robustlyCalcPosterior(posterior);
-        } while (Double.isInfinite(fOldLogLikelihood) && nInitiliasiationAttemps++ < 10);
 
         System.err.println("Start state:");
         System.err.println(state.toString());
