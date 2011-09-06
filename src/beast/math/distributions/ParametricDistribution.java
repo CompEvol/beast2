@@ -100,6 +100,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     
     /**
      * Return the probability density for a particular point.
+     * NB this does not take offset in account 
      * @param x  The point at which the density should be computed.
      * @return  The pdf at point x.
      */    
@@ -115,6 +116,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     }
 
     @Override
+    /** NB logDensity does not take offset in account **/
     public double logDensity(double x) {
     	org.apache.commons.math.distribution.Distribution dist = getDistribution();
     	if (dist instanceof ContinuousDistribution) {
