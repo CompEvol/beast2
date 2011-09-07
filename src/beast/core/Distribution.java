@@ -35,8 +35,8 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     /**
      * current and stored log probability/log likelihood/log distribution *
      */
-    protected double logP = 0;
-    protected double storedLogP = 0;
+    protected double logP = Double.NaN;
+    protected double storedLogP = Double.NaN;
 
     /**
      * @return the normalised probability (density) for this distribution.

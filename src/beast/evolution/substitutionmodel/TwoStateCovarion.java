@@ -24,18 +24,29 @@ public class TwoStateCovarion extends GeneralSubstitutionModel {
     	m_frequencies = frequenciesInput.get();
         updateMatrix = true;
         m_nStates = m_frequencies.getFreqs().length;
-        relativeRates = new double[6];
-        storedRelativeRates = new double[6];
+        relativeRates = new double[12];
+        storedRelativeRates = new double[12];
+        eigenSystem = new DefaultEigenSystem(m_nStates);
+        m_rateMatrix = new double[m_nStates][m_nStates];
     }
-    
+
     @Override
-    public void setupRateMatrix() {
+    protected void setupRelativeRates() {
     	relativeRates[0] = m_alpha.get().getValue();
         relativeRates[1] = m_switchingParameter.get().getValue();
         relativeRates[2] = 0.0;
-        relativeRates[3] = 0.0;
-        relativeRates[4] = m_switchingParameter.get().getValue();
-        relativeRates[5] = 1.0;
+
+        relativeRates[3] = relativeRates[0];
+        relativeRates[4] = 0.0;
+        relativeRates[5] = m_switchingParameter.get().getValue();
+
+        relativeRates[6] = relativeRates[1];
+        relativeRates[7] = relativeRates[4];
+        relativeRates[8] = 1.0;
+
+        relativeRates[9] = relativeRates[2];
+        relativeRates[10] = relativeRates[5];
+        relativeRates[11] = relativeRates[8];
     }	
 
 	@Override

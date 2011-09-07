@@ -114,6 +114,7 @@ public class MRCAPrior extends Distribution {
 			calcMRCAtime(m_tree.getRoot(), new int[1]);
 		}
 		if (m_bIsMonophyleticInput.get() && !m_bIsMonophyletic) {
+			logP = Double.NEGATIVE_INFINITY;
 			return Double.NEGATIVE_INFINITY;
 		}
 		if (m_dist != null) {
