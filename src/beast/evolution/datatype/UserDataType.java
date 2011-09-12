@@ -9,9 +9,9 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType.Base;
 
-@Description("User defined datatype")
+@Description("User defined datatype. Allows custom symbols to map onto statesets.")
 public class UserDataType extends Base {
-	public Input<Integer> m_nStateCountInput = new Input<Integer>("states", "number of states", Validate.REQUIRED);
+	public Input<Integer> m_nStateCountInput = new Input<Integer>("states", "total number of states", Validate.REQUIRED);
 	public Input<String> m_sCodeMapInput = new Input<String>("codeMap", "mapping of codes to states. " +
 			"A comma separated string of codes with a subset of states. " +
 			"A state set is a space separates list of zero based integers, up to the number of states, " +

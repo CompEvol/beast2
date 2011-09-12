@@ -5,6 +5,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.TwoStateCovarion;
 
 
 /**
@@ -28,7 +29,7 @@ import beast.evolution.datatype.DataType;
 public class BinaryCovarion extends GeneralSubstitutionModel {
 	public Input<RealParameter> m_alpha = new Input<RealParameter>("alpha","the rate of evolution in slow mode", Validate.REQUIRED);
 	public Input<RealParameter> m_switchRate = new Input<RealParameter>("switchRate","the rate of flipping between slow and fast modes", Validate.REQUIRED);
-	public Input<RealParameter> m_frequenciesInput = new Input<RealParameter>("frequencies","the frequencies of the visible states", Validate.REQUIRED);
+	public Input<RealParameter> m_frequenciesInput = new Input<RealParameter>("vfrequencies","the frequencies of the visible states", Validate.REQUIRED);
 	public Input<RealParameter> m_hfrequencies = new Input<RealParameter>("hfrequencies","the frequencies of the hidden rates", Validate.REQUIRED);
 	
     private RealParameter alpha;

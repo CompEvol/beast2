@@ -599,7 +599,7 @@ public class TreeLikelihoodTest extends TestCase {
 		RealParameter frequencies = new RealParameter("0.683 0.317");
 		RealParameter hfrequencies = new RealParameter("0.5 0.5");
 		BinaryCovarion covarion = new BinaryCovarion();
-		covarion.initByName("alpha", alpha, "switchRate", switchRate, "frequencies", frequencies , "hfrequencies", hfrequencies);
+		covarion.initByName("alpha", alpha, "switchRate", switchRate, "vfrequencies", frequencies , "hfrequencies", hfrequencies);
 		
 		SiteModel siteModel = new SiteModel();
 		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", covarion);
