@@ -111,11 +111,12 @@ public interface DataType {
             			}
                 		sequence.add(nState);
             		}
-            	} else {
-            		// multi-character codes
-            	
+            	} else	if (m_nCodeLength > 1) {
+            		// multi-character codes of fixed length
+            		
 	            	// use code map to resolve state codes
 	            	Map<String, Integer> map = new HashMap<String, Integer>();
+            		// fixed length code
 	            	for (int i = 0; i < m_sCodeMap.length(); i+=m_nCodeLength) {
 	            		String sCode = m_sCodeMap.substring(i, i + m_nCodeLength);
 	            		map.put(sCode, i/m_nCodeLength);
@@ -129,6 +130,22 @@ public interface DataType {
 	        				throw new Exception("Unknown code found in sequence: " + sCode);
 	            		}            		
 	            	}
+	            } else {
+            		// variable length code of strings
+            		String [] sCodes = m_sCodeMap.toUpperCase().split(",");
+            		for (String sCode : sData.split(",")) {
+            			boolean bFound = false;
+            			for (int iCode = 0; iCode < sCodes.length - 1; iCode++) {
+            				if (sCode.equals(sCodes[iCode])) {
+                    			sequence.add(iCode);
+                    			bFound = true;
+                    			break;
+            				}
+            			}
+            			if (!bFound) {
+            				throw new Exception("Could not find code " + sCode + " in codemap");
+            			}
+            		}
             	}
             }
             return sequence;

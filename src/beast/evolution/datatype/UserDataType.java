@@ -12,6 +12,7 @@ import beast.evolution.datatype.DataType.Base;
 @Description("User defined datatype. Allows custom symbols to map onto statesets.")
 public class UserDataType extends Base {
 	public Input<Integer> m_nStateCountInput = new Input<Integer>("states", "total number of states", Validate.REQUIRED);
+	public Input<Integer> m_nCodeLengthInput = new Input<Integer>("codelength", "length of code, if negative a variable length code is assumed, default 1", 1);
 	public Input<String> m_sCodeMapInput = new Input<String>("codeMap", "mapping of codes to states. " +
 			"A comma separated string of codes with a subset of states. " +
 			"A state set is a space separates list of zero based integers, up to the number of states, " +
@@ -20,7 +21,7 @@ public class UserDataType extends Base {
 	@Override
 	public void initAndValidate() throws Exception {
 		m_nStateCount = m_nStateCountInput.get();
-		m_nCodeLength = 1;
+		m_nCodeLength = m_nCodeLengthInput.get();
 		
 		String sCodeMap = m_sCodeMapInput.get();
 		String [] sStrs = sCodeMap.split(",");
@@ -31,11 +32,15 @@ public class UserDataType extends Base {
 			String [] sStrs2 = sStr.split("=");
 			// parse the code
 			String sCode = sStrs2[0].replaceAll("\\s", "");
-			if (sCode.length() > 1) {
-				throw new Exception("Code is too large " + sCode);
-			}
+
 			m_sCodeMap += sCode;
-			
+			if (m_nCodeLength > 0) {
+				if (sCode.length() != m_nCodeLength) {
+					throw new Exception ("Invalide code '" + sCode + "'. Expected code of length " + m_nCodeLength);
+				}
+			} else {
+				m_sCodeMap += ",";
+			}
 			// parse the state set
 			List<Integer> stateSet = new ArrayList<Integer>();
 			sStrs2 = sStrs2[1].split("\\s+");

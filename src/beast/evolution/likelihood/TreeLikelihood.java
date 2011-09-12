@@ -303,7 +303,7 @@ public class TreeLikelihood extends Distribution {
         return logP;
     }
 
-    private void calcLogP() throws Exception {
+    void calcLogP() throws Exception {
         logP = 0.0;
         if (m_bAscertainedSitePatterns) {
             double ascertainmentCorrection = ((AscertainedAlignment)m_data.get()).getAscertainmentCorrection(m_fPatternLogLikelihoods);
