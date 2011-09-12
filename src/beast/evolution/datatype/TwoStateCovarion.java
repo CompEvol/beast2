@@ -6,8 +6,8 @@ import beast.evolution.datatype.DataType.Base;
 @Description("Datatype for two state covarion sequences")
 public class TwoStateCovarion extends Base {
 	int [][] x = {
-			{0},  // 0
-			{1},  // 1
+			{0,2},  // 0
+			{1,3},  // 1
 			{0},  // a
 			{1},  // b
 			{2},  // c

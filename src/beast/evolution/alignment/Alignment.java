@@ -74,8 +74,8 @@ public class Alignment extends CalculationNode {
     public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
     //public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
     public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + m_sTypes, NUCLEOTIDE, m_sTypes.toArray(new String[0]));
-    public Input<DataType.Base> m_userDataType = new Input<DataType.Base>("userDataType", "non-standard, user specified data type", Validate.XOR, m_sDataType);
-
+    public Input<DataType.Base> m_userDataType = new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
+    public Input<Boolean> m_bStripInvariantSites = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
 
     /** list of taxa names defined through the sequences in the alignment **/
     protected List<String> m_sTaxaNames = new ArrayList<String>();
@@ -130,7 +130,7 @@ public class Alignment extends CalculationNode {
     @Override
     public void initAndValidate() throws Exception {
     	// determine data type, either user defined or one of the standard ones
-        if( m_sDataType.get() == null ) {
+        if( m_userDataType.get() != null ) {
         	m_dataType = m_userDataType.get();
         } else {
 	        if (m_sTypes.indexOf(m_sDataType.get()) < 0) {
@@ -305,6 +305,30 @@ public class Alignment extends CalculationNode {
         System.out.println(getNrTaxa() + " taxa");
         System.out.println(getSiteCount() + " sites");
         System.out.println(getPatternCount() + " patterns");
+        
+        
+        if (m_bStripInvariantSites.get()) {
+            // don't add patterns that are invariant, e.g. all gaps
+        	System.err.print("Stripping invariant sites");
+	        for (int i = 0; i < nPatterns; i++) {
+	        	int [] nPattern = m_nPatterns[i];
+	        	int iValue = nPattern[0];
+	        	boolean bIsInvariant = true;
+	        	for (int k = 1; k < nPattern.length; k++) {
+	        		if (nPattern[k] != iValue) {
+	        			bIsInvariant = false;
+	        			break;
+	        		}
+	        	}
+	        	if (bIsInvariant) {
+	                m_nWeight[i] = 0;
+	                System.err.print(" <" + iValue+"> ");
+	        	}
+	        }
+	        System.err.println();
+        }
+
+        
     } // calcPatterns
 
 

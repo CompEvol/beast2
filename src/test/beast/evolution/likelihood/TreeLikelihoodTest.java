@@ -2,9 +2,13 @@ package test.beast.evolution.likelihood;
 
 
 import junit.framework.TestCase;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
+import beast.evolution.datatype.UserDataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.BinaryCovarion;
 import beast.evolution.substitutionmodel.Blosum62;
 import beast.evolution.substitutionmodel.CPREV;
 import beast.evolution.substitutionmodel.Dayhoff;
@@ -15,6 +19,7 @@ import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.JTT;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.substitutionmodel.MTREV;
+import beast.evolution.substitutionmodel.MutationDeathModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.WAG;
 import beast.evolution.tree.Tree;
@@ -540,4 +545,73 @@ public class TreeLikelihoodTest extends TestCase {
 		aminoacidModelTestIG(mtRev, -371.0038574147396);
 	
 	}
+
+    @Test
+	public void testSDolloLikelihood() throws Exception {
+    	UserDataType dataType = new UserDataType();
+    	dataType.initByName("states", 2, "codeMap", "0=1, 1=0, ?=0 1, -=0 1");
+        Alignment data = new Alignment();
+        
+        Sequence German_ST = new Sequence("German_ST", BEASTTestCase.German_ST.m_sData.get());
+        Sequence Dutch_List = new Sequence("Dutch_List", BEASTTestCase.Dutch_List.m_sData.get());;
+        Sequence English_ST = new Sequence("English_ST", BEASTTestCase.English_ST.m_sData.get());;
+        Sequence French = new Sequence("French", BEASTTestCase.French.m_sData.get());;
+        Sequence Italian = new Sequence("Italian", BEASTTestCase.Italian.m_sData.get());;
+        Sequence Spanish = new Sequence("Spanish", BEASTTestCase.Spanish.m_sData.get());;
+        
+        
+        data.initByName("sequence", German_ST, "sequence", Dutch_List, "sequence", English_ST, "sequence", French, "sequence", Italian, "sequence", Spanish,
+                "userDataType", dataType
+        );
+    	
+		Tree tree = BEASTTestCase.getTree(data, "((English_ST:0.22743347188019544,(German_ST:0.10557648379843088,Dutch_List:0.10557648379843088):0.12185698808176457):1.5793160946109988,(Spanish:0.11078392189606047,(Italian:0.10119772534558173,French:0.10119772534558173):0.009586196550478737):1.6959656445951337)");
+
+		RealParameter frequencies = new RealParameter("1 0");
+		Frequencies freqs = new Frequencies();
+		freqs.initByName("frequencies", frequencies);
+		
+		RealParameter deathprob = new RealParameter("1.7");
+		MutationDeathModel SDollo = new MutationDeathModel();
+		SDollo.initByName("deathprob", deathprob, "frequencies", freqs);
+		
+		SiteModel siteModel = new SiteModel();
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", SDollo);
+
+		TreeLikelihood likelihood = newTreeLikelihood();
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
+
+		double fLogP = 0;
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel, "useAmbiguities" ,true);
+		fLogP = likelihood.calculateLogP();
+		// beast1 xml gives -3551.6436
+		assertEquals(fLogP, -3551.6436270344648, BEASTTestCase.PRECISION);
+	}
+    
+
+    @Test
+	public void testBinaryCovarionLikelihood() throws Exception {
+		Alignment data = BEASTTestCase.getCovarionAlignment();
+		Tree tree = BEASTTestCase.getTree(data, "((English_ST:0.22743347188019544,(German_ST:0.10557648379843088,Dutch_List:0.10557648379843088):0.12185698808176457):1.5793160946109988,(Spanish:0.11078392189606047,(Italian:0.10119772534558173,French:0.10119772534558173):0.009586196550478737):1.6959656445951337)");
+
+
+		RealParameter alpha = new RealParameter("0.284");
+		RealParameter switchRate = new RealParameter("0.829");
+		RealParameter frequencies = new RealParameter("0.683 0.317");
+		RealParameter hfrequencies = new RealParameter("0.5 0.5");
+		BinaryCovarion covarion = new BinaryCovarion();
+		covarion.initByName("alpha", alpha, "switchRate", switchRate, "frequencies", frequencies , "hfrequencies", hfrequencies);
+		
+		SiteModel siteModel = new SiteModel();
+		siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", covarion);
+
+		TreeLikelihood likelihood = newTreeLikelihood();
+		likelihood.initByName("data",data, "tree",tree, "siteModel", siteModel);
+
+		double fLogP = 0;
+		likelihood.initByName("useAmbiguities", true, "data",data, "tree",tree, "siteModel", siteModel);
+		fLogP = likelihood.calculateLogP();
+		// beast1 xml gives -1730.5363
+		assertEquals(fLogP, -1730.53631739, BEASTTestCase.PRECISION);
+	}
+
 } // class TreeLikelihoodTest
