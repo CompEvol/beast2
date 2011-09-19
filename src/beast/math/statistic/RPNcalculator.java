@@ -17,58 +17,85 @@ import java.io.PrintStream;
 /**
  *  A statistic based on evaluating simple expressions.
  *
- * The expressions are in RPN, so no parsing issues. whitspace separated. Variables (other statistics),
+ * The expressions are in RPN, so no parsing issues. whitespace separated. Variables (other statistics),
  * constants and operations. Currently just the basic four, but easy to extend.
  *
  * @author Joseph Heled in beast1, migrated to beast2 by Denise Kuehnert
  */
-@Description("RPN calculator to evaluate simple expressions of parameters")
+@Description("RPN calculator to evaluate simple expressions of parameters (Reverse Polish notation is a mathematical notation wherein every operator follows its operands)")
 public class RPNcalculator extends CalculationNode implements Loggable {
 
 
     public Input<String> str_expression = new Input<String>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
     public Input<List<Parameter>> parameters = new Input<List<Parameter>>("parameter", "Parameters needed for the calculations", new ArrayList<Parameter>());
 
-    private RPNexpressionCalculator expression;
+    private RPNexpressionCalculator[] expressions;
     private List<String> names;
 
-    private Map<String, Double> variables;
-    RPNexpressionCalculator.GetVariable vars;
+    private Map variables;
+    RPNexpressionCalculator.GetVariable[] vars;
+    int dim;
 
-    public void initAndValidate(){
+    public void initAndValidate() throws Exception{
 
-        variables = new HashMap<String, Double>();
         names = new ArrayList<String>();
+        dim = parameters.get().get(0).getDimension();
+
+        int pdim;
 
         for (Parameter p : parameters.get()){
 
-            names.add(p.toString());
-            variables.put(p.getID(), Double.parseDouble(p.getValue().toString()));
+            pdim = p.getDimension();
 
+            if (pdim != dim && dim!=1 && pdim!=1){
+                throw new Exception("error: all parameters have to have same length or be of dimension 1.");
+            }
+            if (pdim > dim) dim = pdim;
+
+            expressions = new RPNexpressionCalculator[dim];
+            names.add(p.toString());
+
+            for (int i=0; i<pdim;i++){
+
+                variables = new HashMap<String, Double[]>();
+
+                variables.put(p.getID(), p.getValues());
+            }
         }
 
-        vars = new RPNexpressionCalculator.GetVariable() {
-            public double get(String name) {
-                return variables.get(name);
+        vars = new RPNexpressionCalculator.GetVariable[dim];
+
+        for (int i=0; i<dim;i++){
+            final int index = i;
+            vars[i] = new RPNexpressionCalculator.GetVariable() {
+                public double get(String name) {
+                    Double[] values =  ((Double[]) variables.get(name));
+                    return values[values.length > 1 ? index : 0];
+                }
+            };
+        }
+
+        String err;
+        for (int i=0; i<dim;i++){
+            expressions[i] = new RPNexpressionCalculator(str_expression.get());
+
+            err = expressions[i].validate();
+            if( err != null ) {
+                throw new RuntimeException("Error in expression: " + err);
             }
-        };
-
-        expression = new RPNexpressionCalculator(str_expression.get());
-
-        String err = this.expression.validate();
-        if( err != null ) {
-            throw new RuntimeException("Error in expression: " + err);
         }
     }
 
     private void updateValues(){
         for (Parameter p : parameters.get()){
-            variables.put(p.getID(), Double.parseDouble(p.getValue().toString()));
+            for (int i=0; i<p.getDimension();i++){
+                variables.put(p.getID(), p.getValues());
+            }
         }
     }
 
     public int getDimension() {
-        return 1;
+        return dim;
     }
 
     public String getDimensionName(int dim) {
@@ -76,26 +103,40 @@ public class RPNcalculator extends CalculationNode implements Loggable {
     }
 
     /** @return the value of the expression */
-	public double getStatisticValue() {
+    public double getStatisticValue(int i) {
         updateValues();
-        return expression.evaluate(vars);
-	}
+        return expressions[i].evaluate(vars[i]);
+    }
 
 
     @Override
     public void init(PrintStream out) throws Exception {
+        if (dim==1)
             out.print(this.getID() + "\t");
+        else
+            for (int i=0; i<dim; i++)
+                out.print(this.getID() + "_" + i + "\t");
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
-            out.print(getStatisticValue() + "\t");
+        for (int i=0; i<dim; i++)
+            out.print(getStatisticValue(i) + "\t");
     }
 
     @Override
     public void close(PrintStream out){
         // nothing to do
     }
+
+    public List<String> getArguments() {
+        List<String> arguments = new ArrayList<String>();
+        for (Parameter par : parameters.get()){
+            arguments.add(par.getID());
+        }
+        return arguments;
+    }
+
 
 
 }

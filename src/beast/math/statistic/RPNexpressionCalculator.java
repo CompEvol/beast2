@@ -14,10 +14,10 @@ import java.util.Stack;
  * @author Joseph Heled in beast1, migrated to beast2 by Denise Kuehnert
  *         Date: 10/05/2008
  */
-@Description("RPN calculator to evaluate simple expressions of parameters - evaluating the expressions from RPNCalculator")
+@Description("RPN calculator to evaluate simple expressions of parameters - evaluating the expressions from RPNCalculator (Reverse Polish notation is a mathematical notation wherein every operator follows its operands)")
 public class RPNexpressionCalculator {
     /**
-     * Interfave for variable access by name
+     * Interface for variable access by name
      */
     public interface GetVariable {
         /**
