@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.PrintStream;
 
-
 /**
  *  A statistic based on evaluating simple expressions.
  *
@@ -69,8 +68,10 @@ public class RPNcalculator extends CalculationNode implements Loggable {
             final int index = i;
             vars[i] = new RPNexpressionCalculator.GetVariable() {
                 public double get(String name) {
-                    Double[] values =  ((Double[]) variables.get(name));
-                    return values[values.length > 1 ? index : 0];
+                    Object[] values =  ((Object[]) variables.get(name));
+                    if (values[0] instanceof Boolean)
+                        return ((Boolean)values[values.length > 1 ? index : 0]?1.:0.);
+                    return (Double) values[values.length > 1 ? index : 0];
                 }
             };
         }

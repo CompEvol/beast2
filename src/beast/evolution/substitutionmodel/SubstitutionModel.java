@@ -59,6 +59,9 @@ public interface SubstitutionModel {
     /** return frequencies for root distribution **/
     double [] getFrequencies();
 
+    public int getStateCount();
+
+
     /**
      * This function returns the Eigen decomposition of the instantaneous rate matrix if available.
      * Such Eigen decomposition may not be available because the substitution model changes over time,
@@ -90,6 +93,9 @@ public interface SubstitutionModel {
         /** shadows frequencies, or can be set by subst model **/
         Frequencies m_frequencies;
 
+        /** number of states **/
+        int m_nStates;
+
         @Override
         public void initAndValidate() throws Exception {
         	m_frequencies = frequenciesInput.get();
@@ -99,6 +105,12 @@ public interface SubstitutionModel {
     	public double[] getFrequencies() {
     		return m_frequencies.getFreqs();
     	}
+
+        @Override
+        public int getStateCount(){
+            return m_nStates;
+        }
+
 
         @Override
         public boolean canReturnComplexDiagonalization() {

@@ -56,6 +56,8 @@ public class HKY extends SubstitutionModel.Base {
     public void initAndValidate() throws Exception {
     	super.initAndValidate();
     	kappa.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+
+        m_nStates = STATE_COUNT;
     }
 
     @Override

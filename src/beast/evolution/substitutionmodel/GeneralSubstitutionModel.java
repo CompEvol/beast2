@@ -44,8 +44,6 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
             		"rate matrix). Entry i specifies the rate of from i%n to floor(i/(n-1)) where " +
             		"n is the number of states.", Validate.REQUIRED);
 
-    /** number of states **/
-    int m_nStates;
     /** a square m_nStates x m_nStates matrix containing current rates  **/
     double [][] m_rateMatrix;
     
