@@ -17,5 +17,5 @@ public abstract class Runnable extends Plugin {
     protected boolean m_bRestoreFromFile = false;
 
     /** name of the file store the state in **/
-    protected String m_sStateFile;
+    protected String m_sStateFile = "state.backup.xml";
 }
