@@ -252,6 +252,11 @@ public class ScaleOperator extends Operator {
     }
     
     @Override
+    public void setCoercableParameterValue(double fValue) {
+    	m_fScaleFactor = fValue;
+    }
+    
+    @Override
     public String getPerformanceSuggestion() {
         double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
         double targetProb = getTargetAcceptanceProbability();

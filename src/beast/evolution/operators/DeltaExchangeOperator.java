@@ -1,12 +1,14 @@
 package beast.evolution.operators;
 
+
+import java.text.DecimalFormat;
+
 import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.Input;
 import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.IntegerParameter;
-import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
 /**
@@ -140,6 +142,16 @@ public class DeltaExchangeOperator extends Operator {
         return logq;
     }
 
+    @Override
+    public double getCoercableParameterValue() {
+        return delta;
+    }
+    
+    @Override
+    public void setCoercableParameterValue(double fValue) {
+    	delta = fValue;
+    }    
+    
     /**
      * called after every invocation of this operator to see whether
      * a parameter can be optimised for better acceptance hence faster
@@ -156,5 +168,25 @@ public class DeltaExchangeOperator extends Operator {
             delta = Math.exp(fDelta);
         }
 
+    }
+
+    @Override
+    public final String getPerformanceSuggestion() {
+        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double targetProb = getTargetAcceptanceProbability();
+
+        double ratio = prob / targetProb;
+        if (ratio > 2.0) ratio = 2.0;
+        if (ratio < 0.5) ratio = 0.5;
+
+        // new scale factor
+        double newDelta = delta * ratio;
+
+        DecimalFormat formatter = new DecimalFormat("#.###");
+        if (prob < 0.10) {
+            return "Try setting delta to about " + formatter.format(newDelta);
+        } else if (prob > 0.40) {
+            return "Try setting delta to about " + formatter.format(newDelta);
+        } else return "";
     }
 }

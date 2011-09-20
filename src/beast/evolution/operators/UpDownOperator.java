@@ -83,6 +83,11 @@ public class UpDownOperator extends Operator {
     public double getCoercableParameterValue() {
         return m_fScaleFactor;
     }
+    
+    @Override
+    public void setCoercableParameterValue(double fValue) {
+    	m_fScaleFactor = fValue;
+    }
 
     @Override
     public String getPerformanceSuggestion() {

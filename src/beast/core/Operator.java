@@ -117,10 +117,15 @@ public abstract class Operator extends Plugin {
         return 0.234;
     }
     
-	/** @return value change through automatic operator optimisation
+	/** @return value changed through automatic operator optimisation
      **/
     public double getCoercableParameterValue() {
         return Double.NaN;
+    }
+
+	/** set value that changed through automatic operator optimisation
+     **/
+    public void setCoercableParameterValue(double fValue) {
     }
 
     /** return directions on how to set operator parameters, if any **/

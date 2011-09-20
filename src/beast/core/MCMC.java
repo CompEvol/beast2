@@ -25,13 +25,20 @@
 package beast.core;
 
 
+
 import beast.core.util.CompoundDistribution;
 import beast.util.Randomizer;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
 
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
@@ -238,6 +245,51 @@ public class MCMC extends Runnable {
                 out.println(m_operators.get(i));
             }
         }
+
+		public void storeToFile() throws Exception {
+			// appends state of operator set to state file
+			File aFile = new File(m_sStateFile);
+			PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(aFile, true)));
+			out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
+            for (int i = 0; i < m_operators.size(); i++) {
+            	Operator operator = m_operators.get(i); 
+                out.println(operator.getID() + " " + m_fCumulativeProbs[i] + " " + operator.getCoercableParameterValue() + " " 
+                		+ operator.m_nNrAccepted + " " + operator.m_nNrRejected +  " " 
+                		+ operator.m_nNrAcceptedForCorrection + " " + operator.m_nNrRejectedForCorrection);
+            }
+			out.println("-->");
+			out.close();
+		}
+
+		public void restoreFromFile() throws Exception  {
+			// reads state of operator set from state file
+			String sXML = "";
+			BufferedReader fin = new BufferedReader(new FileReader(m_sStateFile));
+			while (fin.ready()) {
+				sXML += fin.readLine() + "\n";
+			}
+			fin.close();
+			sXML = sXML.substring(sXML.indexOf("</itsabeastystatewerein>") + 25);
+			String [] sStrs = sXML.split("\n");
+            for (int i = 0; i < m_operators.size(); i++) {
+            	String [] sStrs2 = sStrs[i+2].split(" ");
+            	Operator operator = m_operators.get(i);
+            	if ((operator.getID() == null && sStrs2[0].equals("null")) ||operator.getID().equals(sStrs2[0])) {
+            		m_fCumulativeProbs[i] = Double.parseDouble(sStrs2[1]);
+	            	if (!sStrs2[2].equals("NaN")) {
+	            		operator.setCoercableParameterValue(Double.parseDouble(sStrs2[2]));
+	            	}
+	            	operator.m_nNrAccepted = Integer.parseInt(sStrs2[3]);
+	            	operator.m_nNrRejected = Integer.parseInt(sStrs2[4]);
+	    			Operator.g_autoOptimizeDelay = operator.m_nNrAccepted + operator.m_nNrRejected;  
+	            	operator.m_nNrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
+	            	operator.m_nNrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
+            	} else {
+            		throw new Exception("Cannot resume: operator order or set changed from previous run");
+            	}
+            }
+            showOperatorRates(System.err);
+		}
     } // class OperatorSet
 
 
@@ -266,6 +318,7 @@ public class MCMC extends Runnable {
 
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
+            operatorSet.restoreFromFile();
         	nBurnIn = 0;
             fOldLogLikelihood = robustlyCalcPosterior(posterior);
         } else {
@@ -307,6 +360,7 @@ public class MCMC extends Runnable {
         System.err.println("End likelihood: " + fOldLogLikelihood);
         System.err.println(state);
         state.storeToFile();
+        operatorSet.storeToFile();
     } // run;
 
     

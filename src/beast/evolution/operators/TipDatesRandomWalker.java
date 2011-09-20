@@ -1,5 +1,6 @@
 package beast.evolution.operators;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class TipDatesRandomWalker extends TreeOperator {
     double windowSize = 1;
     boolean m_bUseGaussian;
 
+    /** whether to reflect random values from boundaries or absorb **/ 
+    boolean reflectValue = true;
+    
     @Override
     public void initAndValidate() throws Exception {
         windowSize = windowSizeInput.get();
@@ -71,8 +75,13 @@ public class TipDatesRandomWalker extends TreeOperator {
         	newValue += Randomizer.nextDouble() * 2 * windowSize - windowSize;
         }
 
-        if (newValue > node.getParent().getHeight()) {
-        	return Double.NEGATIVE_INFINITY;
+        
+        if (newValue > node.getParent().getHeight()) { // || newValue < 0.0) {
+            if (reflectValue) {
+            	newValue = reflectValue(newValue, 0.0, node.getParent().getHeight());
+            }  else {
+            	return Double.NEGATIVE_INFINITY;
+            }
         }
         if (newValue == value) {
         	// this saves calculating the posterior
@@ -83,6 +92,63 @@ public class TipDatesRandomWalker extends TreeOperator {
         return 0.0;
     }
 
+    
+    public double reflectValue(double value, double lower, double upper) {
+
+        double newValue = value;
+
+        if (value < lower) {
+            if (Double.isInfinite(upper)) {
+                // we are only going to reflect once as the upper bound is at infinity...
+                newValue = lower + (lower - value);
+            } else {
+                double remainder = lower - value;
+
+                int widths = (int)Math.floor(remainder / (upper - lower));
+                remainder -= (upper - lower) * widths;
+
+                // even reflections
+                if (widths % 2 == 0) {
+                    newValue = lower + remainder;
+                    // odd reflections
+                } else {
+                    newValue = upper - remainder;
+                }
+            }
+        } else if (value > upper) {
+            if (Double.isInfinite(lower)) {
+                // we are only going to reflect once as the lower bound is at -infinity...
+                newValue = upper - (newValue - upper);
+            } else {
+
+                double remainder = value - upper;
+
+                int widths = (int)Math.floor(remainder / (upper - lower));
+                remainder -= (upper - lower) * widths;
+
+                // even reflections
+                if (widths % 2 == 0) {
+                    newValue = upper - remainder;
+                    // odd reflections
+                } else {
+                    newValue = lower + remainder;
+                }
+            }
+        }
+
+        return newValue;
+    }
+
+
+    @Override
+    public double getCoercableParameterValue() {
+        return windowSize;
+    }
+    
+    @Override
+    public void setCoercableParameterValue(double fValue) {
+    	windowSize = fValue;
+    }
 
     @Override
     public void optimize(double logAlpha) {
@@ -92,4 +158,23 @@ public class TipDatesRandomWalker extends TreeOperator {
         windowSize = Math.exp(fDelta);
     }
 
+    @Override
+    public final String getPerformanceSuggestion() {
+        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double targetProb = getTargetAcceptanceProbability();
+
+        double ratio = prob / targetProb;
+        if (ratio > 2.0) ratio = 2.0;
+        if (ratio < 0.5) ratio = 0.5;
+
+        // new scale factor
+        double newWindowSize = windowSize * ratio;
+
+        DecimalFormat formatter = new DecimalFormat("#.###");
+        if (prob < 0.10) {
+            return "Try setting window size to about " + formatter.format(newWindowSize);
+        } else if (prob > 0.40) {
+            return "Try setting window size to about " + formatter.format(newWindowSize);
+        } else return "";
+    }
 }

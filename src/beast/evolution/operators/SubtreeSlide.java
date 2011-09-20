@@ -248,6 +248,11 @@ public class SubtreeSlide extends TreeOperator {
     }
 
     @Override
+    public void setCoercableParameterValue(double fValue) {
+    	m_fSize = fValue;
+    }
+    
+    @Override
     public String getPerformanceSuggestion() {
         double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
         double targetProb = getTargetAcceptanceProbability();

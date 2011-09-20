@@ -1,5 +1,7 @@
 package beast.evolution.operators;
 
+import java.text.DecimalFormat;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -56,6 +58,18 @@ public class RealRandomWalkOperator extends Operator {
         return 0.0;
     }
 
+    
+    
+    @Override
+    public double getCoercableParameterValue() {
+        return windowSize;
+    }
+    
+    @Override
+    public void setCoercableParameterValue(double fValue) {
+    	windowSize = fValue;
+    }
+    
     /**
      * called after every invocation of this operator to see whether
      * a parameter can be optimised for better acceptance hence faster
@@ -63,6 +77,7 @@ public class RealRandomWalkOperator extends Operator {
      *
      * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
      */
+    @Override
     public void optimize(double logAlpha) {
         // must be overridden by operator implementation to have an effect
         double fDelta = calcDelta(logAlpha);
@@ -71,4 +86,23 @@ public class RealRandomWalkOperator extends Operator {
         windowSize = Math.exp(fDelta);
     }
 
+    @Override
+    public final String getPerformanceSuggestion() {
+        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double targetProb = getTargetAcceptanceProbability();
+
+        double ratio = prob / targetProb;
+        if (ratio > 2.0) ratio = 2.0;
+        if (ratio < 0.5) ratio = 0.5;
+
+        // new scale factor
+        double newWindowSize = windowSize * ratio;
+
+        DecimalFormat formatter = new DecimalFormat("#.###");
+        if (prob < 0.10) {
+            return "Try setting window size to about " + formatter.format(newWindowSize);
+        } else if (prob > 0.40) {
+            return "Try setting window size to about " + formatter.format(newWindowSize);
+        } else return "";
+    }
 } // class IntRandomWalkOperator
