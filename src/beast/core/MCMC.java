@@ -271,7 +271,7 @@ public class MCMC extends Runnable {
 			fin.close();
 			sXML = sXML.substring(sXML.indexOf("</itsabeastystatewerein>") + 25);
 			String [] sStrs = sXML.split("\n");
-            for (int i = 0; i < m_operators.size(); i++) {
+            for (int i = 0; i < m_operators.size() && i + 2 < sStrs.length; i++) {
             	String [] sStrs2 = sStrs[i+2].split(" ");
             	Operator operator = m_operators.get(i);
             	if ((operator.getID() == null && sStrs2[0].equals("null")) ||operator.getID().equals(sStrs2[0])) {
