@@ -86,7 +86,8 @@ public interface SubstitutionModel {
     boolean canHandleDataType(DataType dataType) throws Exception;
     
     /** basic implementation of a SubstitutionModel bringing together relevant super class**/
-    public abstract class Base extends CalculationNode implements SubstitutionModel {
+    @Description(value="Base implementation of a substitution model.", isInheritable = false)
+	public abstract class Base extends CalculationNode implements SubstitutionModel {
         public Input<Frequencies> frequenciesInput =
                 new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
 

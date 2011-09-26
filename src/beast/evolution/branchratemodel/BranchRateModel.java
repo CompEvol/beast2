@@ -12,6 +12,7 @@ public interface BranchRateModel {
 
     public double getRateForBranch(Node node);
 
+    @Description(value="Base implementation of a clock model.", isInheritable = false)
     public abstract class Base extends CalculationNode implements BranchRateModel {
         // empty at the moment but brings together the required interfaces
     }
