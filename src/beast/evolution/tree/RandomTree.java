@@ -130,6 +130,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         } else {
                 sTaxa = m_taxonset.get().asStringList();
         }
+        
         // pick up constraints from outputs, m_inititial input tree and output tree, if any
         List<MRCAPrior> calibrations = m_calibrations.get();
 //    	for (Plugin plugin : outputs) {
@@ -181,6 +182,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 			m_bTaxonSets.add(m_nIsMonophyletic, bTaxa);
 			m_distributions.add(m_nIsMonophyletic, distr);
 			m_bounds.add(m_nIsMonophyletic, bounds);
+			m_sTaxonSetIDs.add(prior.getID());
 			m_nIsMonophyletic++;
 		} else {
 			// only calibrations with finite bounds are added
@@ -188,6 +190,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         		m_bTaxonSets.add(bTaxa);
         		m_distributions.add(distr);
     			m_bounds.add(bounds);
+    			m_sTaxonSetIDs.add(prior.getID());
 			}
 		}
 	}

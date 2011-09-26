@@ -142,7 +142,7 @@ public class TraitSet extends Plugin {
     /**
      * remove start and end spaces
      */
-    private String normalize(String sStr) {
+    String normalize(String sStr) {
         if (sStr.charAt(0) == ' ') {
             sStr = sStr.substring(1);
         }

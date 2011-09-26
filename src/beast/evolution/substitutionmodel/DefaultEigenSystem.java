@@ -48,14 +48,18 @@ public class DefaultEigenSystem implements EigenSystem {
         return new EigenDecomposition(flatEvec, flatIevc, Eval);
     }
 
-    // Eigenvalues, eigenvectors, and inverse eigenvectors
+    /* real part of eigenvalues **/
     private double[] Eval;
+    /* eigenvectors **/
     private double[][] Evec;
+    /* inverse eigenvectors **/
     private double[][] Ievc;
 
     private int[] ordr;
+    /* imaginary part of eigenvalues **/
     private double[] evali;
-
+    
+    /* transforms a real general matrix to upper Hessenberg form */
     private void elmhes(double[][] a, int[] ordr, int n) {
         int m, j, i;
         double y, x;
@@ -118,7 +122,8 @@ public class DefaultEigenSystem implements EigenSystem {
         cr = (ars * brs + ais * bis) / s;
         ci = (ais * brs - ars * bis) / s;
     }
-
+    
+    /* computes eigenvalues and eigenvectors of a real upper Hessenberg matrix */
     private void hqr2(int n, int low, int hgh, double[][] h, double[][] zz,
               double[] wr, double[] wi) throws ArithmeticException {
         int i, j, k, l = 0, m, en, na, itn, its;
@@ -512,6 +517,7 @@ public class DefaultEigenSystem implements EigenSystem {
         }
     }
 
+    /* accumulates similarity transformations used by ELMHES */
     private void eltran(double[][] a, double[][] zz, int[] ordr, int n) {
         int i, j, m;
 

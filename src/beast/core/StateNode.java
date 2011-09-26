@@ -153,7 +153,7 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
      * The index of the parameter for identifying this StateNode 
      * in the State.
      */
-    protected int index = -1;
+    public int index = -1;
     public int getIndex() {return index;}
     
     /** should be called before an Operator proposes a new State **/
