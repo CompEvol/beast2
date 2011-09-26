@@ -45,8 +45,8 @@ public class BeastDialog {
 
         //this.frame = frame;
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
+//        JPanel panel = new JPanel(new BorderLayout());
+//        panel.setOpaque(false);
 
         final JLabel titleText = new JLabel(titleString);
         titleText.setIcon(icon);

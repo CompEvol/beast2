@@ -47,11 +47,19 @@
 
 package beast.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -62,6 +70,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * This class is used for discovering classes that implement a certain
@@ -73,6 +83,182 @@ import java.util.jar.JarFile;
  */
 public class ClassDiscovery {
   public final static String[] IMPLEMENTATION_DIR = {"beast","snap"};
+
+  
+  /** return URLs containing list of downloadable add-ons **/
+  public static String [] getAddOnURL() {
+	  return new String [] {"http://beast2.cs.auckland.ac.nz/index.php/Add-ons"};
+  }
+  
+  /** create list of addons. 
+   * The list is downloaded from a beast2 wiki page and parsed. 
+   * @return list of addons, encoded as pairs of description, urls.
+   * @throws Exception
+   */
+  public static List<List<String>> getAddOns() throws Exception {
+      List<List<String>> addOns = new ArrayList<List<String>>();
+      String [] sURLs = getAddOnURL();
+      
+      for (String sURL : sURLs) {
+	      URL url = new URL(sURL);
+	      InputStream is = url.openStream();  // throws an IOException
+	      DataInputStream dis = new DataInputStream(new BufferedInputStream(is));
+	
+	      StringBuffer buf = new StringBuffer();
+	      String sLine = "";
+	      while ((sLine= dis.readLine()) != null) {
+	    	  buf.append(sLine);
+	      }
+	      is.close();
+	      String sText = buf.toString();
+	      // parse WIKI xml for add-ons
+	      sText = sText.substring(sText.indexOf("<!-- bodytext -->") + 18);
+	      String [] sStrs = sText.split("</p>");
+	      for (int i = 0; i < sStrs.length - 1; i++) {
+	    	  List<String> addOn = new ArrayList<String>();
+	    	  sText = sStrs[i];
+	    	  sText = sText.replaceAll("<p>", "");
+	    	  String [] sStr2 = sText.split("<");
+	    	  addOn.add(sStr2[0]);
+	    	  sStr2 = sStr2[1].split("\"");
+	    	  addOn.add(sStr2[1]);
+	    	  addOns.add(addOn);
+	      }
+      }
+      return addOns;
+  }
+  
+  /** download and unzip add-on from URL provided 
+   * It is assumed the add-on consists of a zip file containing directories
+   * /lib with jars used by the add on
+   * /templates with beauti XML templates 
+   * @param sURL
+   * @throws Exception
+   */
+  public static void installAddOn(String sURL) throws Exception {
+	  if (!sURL.toLowerCase().endsWith(".zip")) {
+		  throw new Exception("Add-on should be packaged in a zip file");
+	  }
+	  String sName = URL2AddOnName(sURL);
+	  
+	  // create directory
+	  URL templateURL = new URL(sURL);
+	  ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
+	  String sDir = getAddOnDir() + "/" + sName;
+	  File dir = new File(sDir);
+	  if (!dir.exists()) {
+		  if (!dir.mkdirs()) {
+			  throw new Exception("Could not create template directory " + sDir);
+		  }
+	  }
+	  // grab file from URL
+	  String sZipFile = sDir + "/" + sName + ".zip";
+	  FileOutputStream fos = new FileOutputStream(sZipFile);
+	  fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+	  
+	  // unzip archive
+	  doUnzip(sZipFile, sDir);
+  }
+  
+  public static void uninstallAddOn(String sURL) throws Exception {
+	  if (!sURL.toLowerCase().endsWith(".zip")) {
+		  throw new Exception("Add-on should be packaged in a zip file");
+	  }
+	  String sName = URL2AddOnName(sURL);
+	  String sDir = getAddOnDir() + "/" + sName;
+	  File dir = new File(sDir);
+	  deleteRecursively(dir);
+  }
+  
+  private static void deleteRecursively(File file) {
+	  if (file.isDirectory()) {
+		  File [] files = file.listFiles();
+		  for (File f : files) {
+			  deleteRecursively(f);
+		  }
+	  }
+	  file.delete();
+  }
+
+public static String URL2AddOnName(String sURL) {
+	  String sName = sURL.substring(sURL.lastIndexOf("/") + 1);
+	  if (sName.contains(".")) {
+		  sName = sName.substring(0, sName.indexOf("."));
+	  }
+	  return sName;
+  }
+  
+  
+  /** unzip zip archive **/
+  public static void doUnzip(String inputZip, String destinationDirectory)
+          throws IOException {
+      int BUFFER = 2048;
+      File sourceZipFile = new File(inputZip);
+      File unzipDestinationDirectory = new File(destinationDirectory);
+
+      // Open Zip file for reading
+      ZipFile zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
+
+      // Create an enumeration of the entries in the zip file
+      Enumeration<?> zipFileEntries = zipFile.entries();
+
+      // Process each entry
+      while (zipFileEntries.hasMoreElements()) {
+          // grab a zip file entry
+          ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+
+          String currentEntry = entry.getName();
+
+          File destFile = new File(unzipDestinationDirectory + "/" + currentEntry);
+
+          // grab file's parent directory structure
+          File destinationParent = destFile.getParentFile();
+
+          // create the parent directory structure if needed
+          destinationParent.mkdirs();
+
+          try {
+              // extract file if not a directory
+              if (!entry.isDirectory()) {
+                  BufferedInputStream is =
+                          new BufferedInputStream(zipFile.getInputStream(entry));
+                  int currentByte;
+                  // establish buffer for writing file
+                  byte data[] = new byte[BUFFER];
+
+                  // write the current file to disk
+                  FileOutputStream fos = new FileOutputStream(destFile);
+                  BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
+
+                  // read and write until last byte is encountered
+                  while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+                      dest.write(data, 0, currentByte);
+                  }
+                  dest.flush();
+                  dest.close();
+                  is.close();
+              }
+          } catch (IOException ioe) {
+              ioe.printStackTrace();
+          }
+      }
+      zipFile.close();
+  }
+
+  
+  
+  /** return directory where to install add-ons **/
+  public static String getAddOnDir() {
+	  return System.getProperty("user.home") + "/.beast2";
+  }
+  
+  /** return list of directories that may contain add-ons **/
+  public static List<String> getBeastDirectories() {
+	  List<String> sDirs = new ArrayList<String>();
+	  sDirs.add(System.getProperty("user.dir"));
+	  sDirs.add(System.getProperty("user.home") + "/.beast2");
+	  return sDirs;
+  }
 
   /** whether to output some debug information. */
   public final static boolean VERBOSE = false;
@@ -656,6 +842,20 @@ public class ClassDiscovery {
    * @param args	the commandline arguments
    */
   public static void main(String[] args) {
+	  try {
+//		  installAddOn("http://snap-mcmc.googlecode.com/files/snap.addon.zip");
+//		  uninstallAddOn("http://snap-mcmc.googlecode.com/files/snap.addon.zip");
+		  doUnzip("/home/remco/.beast2/snap/snap.zip","/home/remco/.beast2/snap");
+	  List<List<String>> s = getAddOns();
+		System.exit(0);
+	  } catch (Exception e) {
+		e.printStackTrace();
+		System.exit(0);
+	}
+	  
+	  
+	  
+	  
     List<String>      	list;
     List<String> 		packages;
     int         	i;

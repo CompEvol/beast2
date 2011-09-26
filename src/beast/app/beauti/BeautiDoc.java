@@ -424,7 +424,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		return buffer.toString();
 	}
 
-	String load(String sFileName) throws IOException {
+	static public String load(String sFileName) throws IOException {
 		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
 		StringBuffer buf = new StringBuffer();
 		String sStr = null;

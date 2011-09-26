@@ -17,8 +17,11 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -41,6 +44,7 @@ import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.PluginPanel;
 import beast.app.util.Utils;
+import beast.util.ClassDiscovery;
 
 
 public class Beauti extends JTabbedPane {
@@ -113,6 +117,7 @@ public class Beauti extends JTabbedPane {
     Action a_new = new ActionNew();
     Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
+    Action a_addOn = new ActionAddOn();
     Action a_import = new ActionImport();
     Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
@@ -263,7 +268,7 @@ public class Beauti extends JTabbedPane {
         private static final long serialVersionUID = 1;
 
         public ActionTemplate() {
-            super("Load Template", "Load Beast Analysis Template", "template", "ctrl T");
+            super("Other Template", "Load Beast Analysis Template From File", "template", "");
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -281,6 +286,29 @@ public class Beauti extends JTabbedPane {
             }
         } // actionPerformed
     } // ActionTemplate
+
+    
+    class ActionAddOn extends MyAction {
+        private static final long serialVersionUID = 1;
+
+        public ActionAddOn() {
+            super("Manage Add-ons", "Manage Add-ons", "addon", "");
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+        	JAddOnDialog dlg = new JAddOnDialog();
+        	dlg.setVisible(true);
+        	// refresh template menu item
+        	templateMenu.removeAll();
+    		List<AbstractAction> templateActions = getTemplateActions();
+    		for (AbstractAction a: templateActions) {
+    			templateMenu.add(a);
+    		}
+    		templateMenu.addSeparator();
+    		templateMenu.add(a_template);
+
+        } // actionPerformed
+    }
 
     class ActionImport extends MyAction {
         private static final long serialVersionUID = 1;
@@ -486,6 +514,7 @@ public class Beauti extends JTabbedPane {
 		}
     }
     
+    JMenu templateMenu;
     public JMenuBar makeMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -495,7 +524,15 @@ public class Beauti extends JTabbedPane {
         fileMenu.add(a_load);
         fileMenu.add(a_import);
         fileMenu.addSeparator();
-        fileMenu.add(a_template);
+		templateMenu = new JMenu("Template");
+		fileMenu.add(templateMenu);
+		List<AbstractAction> templateActions = getTemplateActions();
+		for (AbstractAction a: templateActions) {
+			templateMenu.add(a);
+		}
+		templateMenu.addSeparator();
+		templateMenu.add(a_template);
+		fileMenu.add(a_addOn);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
         fileMenu.add(a_saveas);
@@ -589,7 +626,72 @@ public class Beauti extends JTabbedPane {
         return menuBar;
     } // makeMenuBar
 	
-    void setMenuVisibiliy(String sParentName, Component c) {
+    
+    class TemplateAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		
+		String m_sFileName;
+		
+    	public TemplateAction(File file) {
+    		super("xx");
+    		m_sFileName = file.getAbsolutePath();
+    		String sName = m_sFileName.substring(m_sFileName.lastIndexOf("/") + 1, m_sFileName.length() - 4);
+    		putValue(Action.NAME, sName);
+    	}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				doc.loadTemplate(sFileName);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + ex.getMessage());
+			}
+		}
+    }
+    
+    private List<AbstractAction> getTemplateActions() {
+    	List<AbstractAction> actions = new ArrayList<AbstractAction>();
+    	List<String> sBeastDirectories = ClassDiscovery.getBeastDirectories();
+    	for (String sDir : sBeastDirectories) {
+    		File dir = new File(sDir + "/templates");
+    		getTemplateActionForDir(dir, actions);
+    		// inspect sub-dirs, one level deep only, on 'templates' directories
+    		dir = new File(sDir);
+    		if (dir.exists() && dir.isDirectory()) {
+    			File [] files = dir.listFiles();
+    			for (File f : files) {
+    				if (f.isDirectory()) {
+    		    		dir = new File(f.getAbsolutePath() + "/templates");
+    		    		getTemplateActionForDir(dir, actions);
+    				}
+    			}
+    		}
+    	}
+    	return actions;
+	}
+
+	private void getTemplateActionForDir(File dir, List<AbstractAction> actions) {
+		if (dir.exists() && dir.isDirectory()) {
+			File[] files = dir.listFiles();
+			if (files != null) {
+				for (File template : files) {
+					if (template.getName().toLowerCase().endsWith(".xml")) {
+						try {
+						String sXML2 = BeautiDoc.load(template.getAbsolutePath());
+						if (sXML2.contains("<mergepoint ")) {
+							actions.add(new TemplateAction(template));
+						}
+						} catch (Exception e) {
+							System.err.println(e.getMessage());
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void setMenuVisibiliy(String sParentName, Component c) {
     	String sName = "";
     	if (c instanceof JMenu) {
     		sName = ((JMenu)c).getText();
