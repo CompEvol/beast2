@@ -44,7 +44,7 @@ import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.PluginPanel;
 import beast.app.util.Utils;
-import beast.util.ClassDiscovery;
+import beast.util.AddOnManager;
 
 
 public class Beauti extends JTabbedPane {
@@ -296,7 +296,7 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	JAddOnDialog dlg = new JAddOnDialog();
+        	JAddOnDialog dlg = new JAddOnDialog(frame);
         	dlg.setVisible(true);
         	// refresh template menu item
         	templateMenu.removeAll();
@@ -652,21 +652,21 @@ public class Beauti extends JTabbedPane {
     
     private List<AbstractAction> getTemplateActions() {
     	List<AbstractAction> actions = new ArrayList<AbstractAction>();
-    	List<String> sBeastDirectories = ClassDiscovery.getBeastDirectories();
+    	List<String> sBeastDirectories = AddOnManager.getBeastDirectories();
     	for (String sDir : sBeastDirectories) {
     		File dir = new File(sDir + "/templates");
     		getTemplateActionForDir(dir, actions);
-    		// inspect sub-dirs, one level deep only, on 'templates' directories
-    		dir = new File(sDir);
-    		if (dir.exists() && dir.isDirectory()) {
-    			File [] files = dir.listFiles();
-    			for (File f : files) {
-    				if (f.isDirectory()) {
-    		    		dir = new File(f.getAbsolutePath() + "/templates");
-    		    		getTemplateActionForDir(dir, actions);
-    				}
-    			}
-    		}
+//    		// inspect sub-dirs, one level deep only, on 'templates' directories
+//    		dir = new File(sDir);
+//    		if (dir.exists() && dir.isDirectory()) {
+//    			File [] files = dir.listFiles();
+//    			for (File f : files) {
+//    				if (f.isDirectory()) {
+//    		    		dir = new File(f.getAbsolutePath() + "/templates");
+//    		    		getTemplateActionForDir(dir, actions);
+//    				}
+//    			}
+//    		}
     	}
     	return actions;
 	}
@@ -755,7 +755,7 @@ public class Beauti extends JTabbedPane {
 	
 	public static void main(String[] args) {
 		try {
-        	BeastMCMC.loadExternalJars();
+			AddOnManager.loadExternalJars();
 			Utils.loadUIManager();
 			PluginPanel.init();
 			

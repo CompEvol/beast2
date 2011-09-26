@@ -30,7 +30,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
-import beast.util.ClassDiscovery;
+import beast.util.AddOnManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class Alignment extends CalculationNode {
 
 	static {
 		// build up list of data types
-		List<String> m_sDataTypes = ClassDiscovery.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+		List<String> m_sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
 		for (String sDataType : m_sDataTypes) {
 			try {
 				DataType dataType = (DataType) Class.forName(sDataType).newInstance();
@@ -137,7 +137,7 @@ public class Alignment extends CalculationNode {
 	            throw new Exception("data type + '" + m_sDataType.get() +"' cannot be found. " +
 	            		"Choose one of " + m_sTypes.toArray(new String[0]));
 	        }
-			List<String> sDataTypes = ClassDiscovery.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+			List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
 			for (String sDataType : sDataTypes) {
 				DataType dataType = (DataType) Class.forName(sDataType).newInstance();
 				if (m_sDataType.get().equals(dataType.getDescription())) {

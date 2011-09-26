@@ -28,7 +28,7 @@ package beast.app.draw;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.Runnable;
-import beast.util.ClassDiscovery;
+import beast.util.AddOnManager;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 import org.w3c.dom.Node;
@@ -79,7 +79,7 @@ public class Document {
 
     public Document() {
         // load all parsers
-        List<String> sPlugInNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+        List<String> sPlugInNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
         m_sPlugInNames = sPlugInNames.toArray(new String[0]);
     } // c'tor
 

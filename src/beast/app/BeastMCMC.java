@@ -66,7 +66,7 @@ import beast.app.util.Version;
 import beast.core.Logger;
 import beast.core.Runnable;
 
-import beast.util.ClassloaderUtil;
+import beast.util.AddOnManager;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLParserException;
@@ -89,8 +89,6 @@ public class BeastMCMC {
 	String m_sFileName = "";
 	/** MCMC object to execute **/
 	Runnable m_runnable;
-	/** External jar loader path. This takes the form of directories separated by colons. **/
-	static String m_sJarPath = (System.getenv("beastlib") != null ? System.getenv("beastlib") : "beastlib");
 
 	/** parse command line arguments, and load file if specified
 	 * @throws Exception **/
@@ -126,9 +124,10 @@ public class BeastMCMC {
                     } else if (args[i].equals("-threads")) {
 						m_nThreads = Integer.parseInt(args[i + 1]);
 						i += 2;
-					} else if (args[i].equals("-beastlib")) {
-						m_sJarPath = args[i + 1];
-						i += 2;
+// use BEAST environment variable to set Beast directories as colon separated list						
+//					} else if (args[i].equals("-beastlib")) {
+//						ClassDiscovery.setJarPath(args[i + 1]);
+//						i += 2;
 					} else if (args[i].equals("-prefix")) {
 			            System.setProperty("file.name.prefix", args[i+1].trim());
 						i += 2;
@@ -222,29 +221,13 @@ public class BeastMCMC {
 		if (bResume) {
 			System.out.println("Resuming from file");
 		}
-		loadExternalJars();
+		AddOnManager.loadExternalJars();
 		// parse xml
 		Randomizer.setSeed(m_nSeed);
 		m_runnable = new XMLParser().parseFile(m_sFileName);
 		m_runnable.setStateFile(m_sFileName+".state", bResume);
 	} // parseArgs
 
-	// load external jars first
-	public static void loadExternalJars() throws Exception {
-		String [] sJarDirs = m_sJarPath.split(":");
-		for (String sJarDir : sJarDirs) {
-			File jarDir = new File(sJarDir);
-			if (jarDir.isDirectory()) {
-				for (String sFile : jarDir.list()) {
-					if (sFile.endsWith(".jar")) {
-						@SuppressWarnings("deprecation")
-						URL url = new File(jarDir.getAbsolutePath() + "/" + sFile).toURL();
-						ClassloaderUtil.addURL(url);
-					}
-				}
-			}
-		}
-	} //loadExternalJars
 	
 	public static String getUsage() {
 		return 	"Usage: BeastMCMC [options] <Beast.xml>\n" +

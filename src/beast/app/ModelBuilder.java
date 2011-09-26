@@ -25,6 +25,7 @@
 package beast.app;
 
 
+import beast.util.AddOnManager;
 import beast.util.Randomizer;
 
 import javax.imageio.ImageIO;
@@ -48,7 +49,7 @@ public class ModelBuilder extends JPanel {
     public static void main(String args[]) {
         Randomizer.setSeed(127);
         try {
-        	BeastMCMC.loadExternalJars();
+        	AddOnManager.loadExternalJars();
         } catch (Exception e) {
             e.printStackTrace();// ignore
         }

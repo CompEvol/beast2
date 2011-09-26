@@ -13,13 +13,11 @@ import beast.core.Loggable;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.Plugin;
-import beast.core.StateNode;
 import beast.evolution.alignment.Taxon;
-import beast.util.ClassDiscovery;
+import beast.util.AddOnManager;
 import beast.util.XMLProducer;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -81,12 +79,12 @@ public class PluginPanel extends JPanel {
         g_inputEditorMap = new HashMap<Class<?>, String>();
         g_listInputEditorMap = new HashMap<Class<?>, String>();
         
-        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
-        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
-        registerInputEditors(sKnownEditors);
+//        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
+//        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
+//        registerInputEditors(sKnownEditors);
         String[] PACKAGE_DIRS = {"beast.app",};
         for(String sPackage : PACKAGE_DIRS) {
-	        List<String> sInputEditors = ClassDiscovery.find("beast.app.draw.InputEditor", sPackage);
+	        List<String> sInputEditors = AddOnManager.find("beast.app.draw.InputEditor", sPackage);
 	        registerInputEditors(sInputEditors.toArray(new String[0]));
         }
         
@@ -512,7 +510,7 @@ public class PluginPanel extends JPanel {
         }
         /* add all plugin-classes of type assignable to the input */
         if (InputEditor.g_bExpertMode) {
-        	List<String> sClasses = ClassDiscovery.find(input.getType(), "beast");
+        	List<String> sClasses = AddOnManager.find(input.getType(), "beast");
 	        for (String sClass : sClasses) {
 	        	try {
 	        		Object o = Class.forName(sClass).newInstance();

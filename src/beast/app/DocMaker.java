@@ -30,7 +30,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.Plugin;
-import beast.util.ClassDiscovery;
+import beast.util.AddOnManager;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -93,7 +93,7 @@ public class DocMaker {
 
     public DocMaker() {
         // find plug ins to document
-        m_sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+        m_sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
         /** determine hierarchical relation between plug-ins **/
         m_isa = new HashMap<String, String[]>();
         m_ancestors = new HashMap<String, List<String>>();
@@ -507,7 +507,7 @@ public class DocMaker {
     public static void main(String[] args) {
         try {
             System.err.println("Producing documentation...");
-            BeastMCMC.loadExternalJars();
+            AddOnManager.loadExternalJars();
             DocMaker b = new DocMaker(args);
             b.generateDocs();
             System.err.println("Done!!!");

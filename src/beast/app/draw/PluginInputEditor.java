@@ -5,7 +5,7 @@ import beast.app.beauti.BeautiSubTemplate;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.Input.Validate;
-import beast.util.ClassDiscovery;
+import beast.util.AddOnManager;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -444,7 +444,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
 //    }
 
     String[] getAvailablePlugins() {
-        List<String> sPlugins = ClassDiscovery.find(m_input.getType(), "beast");
+        List<String> sPlugins = AddOnManager.find(m_input.getType(), "beast");
         return sPlugins.toArray(new String[0]);
     } // getAvailablePlugins
 

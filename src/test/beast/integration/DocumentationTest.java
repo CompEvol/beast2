@@ -10,7 +10,7 @@ import org.junit.Test;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Plugin;
-import beast.util.ClassDiscovery;
+import beast.util.AddOnManager;
 
 public class DocumentationTest extends TestCase {
 
@@ -18,7 +18,7 @@ public class DocumentationTest extends TestCase {
 	 * everything is at least moderately well documented. **/
 	@Test
 	public void testDescriptions() {
-		List<String> sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+		List<String> sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
 		List<String> sUndocumentedPlugins = new ArrayList<String>();
 		for (String sPlugin : sPluginNames) {
 			try {
@@ -47,7 +47,7 @@ public class DocumentationTest extends TestCase {
 	 * to facilitate proper documentation. **/
 	@Test
 	public void testInputTipText() {
-		List<String> sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+		List<String> sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
 		List<String> sUndocumentedInputs = new ArrayList<String>();
 		for (String sPlugin : sPluginNames) {
 			try {

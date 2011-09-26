@@ -663,7 +663,7 @@ public class XMLParser {
     	if(sClass.contains(".")) {
     		sName = sClass.substring(sClass.lastIndexOf('.') + 1);
     	}
-        List<String> sPluginNames = ClassDiscovery.find(beast.core.Plugin.class, ClassDiscovery.IMPLEMENTATION_DIR);
+        List<String> sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
         int nBestDistance = Integer.MAX_VALUE;
         String sClosest = null;
         for (String sPlugin : sPluginNames) {
