@@ -129,21 +129,21 @@ public class Tree extends StateNode {
      * If this leads to internal branch lengths becoming negative, the internal nodes are
      * moved as well.
      */
+	final static double EPSILON = 0.0000001;
 	protected void adjustTreeToNodeHeights(Node node) {
 		if (node.isLeaf()) {
 			node.setMetaData(m_trait.get().getTraitName(), m_trait.get().getValue(node.getNr()));
 		} else {
 			adjustTreeToNodeHeights(node.m_left);
 			adjustTreeToNodeHeights(node.m_right);
-			if (node.m_fHeight < node.m_left.getHeight()) {
-				node.m_fHeight = node.m_left.getHeight() + 0.000001;
+			if (node.m_fHeight < node.m_left.getHeight() + EPSILON) {
+				node.m_fHeight = node.m_left.getHeight() + EPSILON;
 			}
-			if (node.m_fHeight < node.m_right.getHeight()) {
-				node.m_fHeight = node.m_right.getHeight() + 0.000001;
+			if (node.m_fHeight < node.m_right.getHeight() + EPSILON) {
+				node.m_fHeight = node.m_right.getHeight() + EPSILON;
 			}
 		}
 	}
-
     
     /** state of dirtiness of a node in the tree
      * DIRTY means a property on the node has changed, but not the topology

@@ -76,6 +76,12 @@ public class Beauti extends JTabbedPane {
 	boolean [] bPaneIsVisible;
 	BeautiPanel [] panels;
 
+	/** menu for switching templates **/
+    JMenu templateMenu;
+	/** menu for making showing/hiding tabs **/
+    JMenu viewMenu;
+
+	
 	public Beauti(BeautiDoc doc) {
 		bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
 		Arrays.fill(bPaneIsVisible, true);
@@ -278,7 +284,7 @@ public class Beauti extends JTabbedPane {
     		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
     			String sFileName = fileChooser.getSelectedFile().toString();
     			try {
-    				doc.loadTemplate(sFileName);
+    				doc.loadNewTemplate(sFileName);
     			} catch (Exception e) {
     				e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + e.getMessage());
@@ -514,7 +520,6 @@ public class Beauti extends JTabbedPane {
 		}
     }
     
-    JMenu templateMenu;
     public JMenuBar makeMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -596,22 +601,11 @@ public class Beauti extends JTabbedPane {
 		modeMenu.add(muteSound);
         
         
-        JMenu viewMenu = new JMenu("View");
+        viewMenu = new JMenu("View");
         menuBar.add(viewMenu);
         viewMenu.setMnemonic('V');
-		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem( iPanel);
-        	viewPanelAction.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
-                	viewPanelAction.doAction();
-                }
-            });
-        	viewMenu.add(viewPanelAction);
-		}
+        setUpViewMenu();
         
-        
-        viewMenu.addSeparator();
-    	viewMenu.add(a_viewall);
 
         JMenu helpMenu = new JMenu("Help");
         menuBar.add(helpMenu);
@@ -627,7 +621,23 @@ public class Beauti extends JTabbedPane {
     } // makeMenuBar
 	
     
-    class TemplateAction extends AbstractAction {
+    void setUpViewMenu() {
+    	viewMenu.removeAll();
+		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem( iPanel);
+        	viewPanelAction.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) {
+                	viewPanelAction.doAction();
+                }
+            });
+        	viewMenu.add(viewPanelAction);
+		}
+        viewMenu.addSeparator();
+    	viewMenu.add(a_viewall);
+	}
+
+
+	class TemplateAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 		
 		String m_sFileName;
@@ -642,7 +652,11 @@ public class Beauti extends JTabbedPane {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				doc.loadTemplate(sFileName);
+				if (JOptionPane.showConfirmDialog(frame, "Changing templates means the information input so far will be lost. " +
+						"Are you sure you want to change templates?", "Are you sure?", JOptionPane.YES_NO_CANCEL_OPTION) == 
+							JOptionPane.YES_OPTION) {
+    				doc.loadNewTemplate(m_sFileName);
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + ex.getMessage());
@@ -656,17 +670,6 @@ public class Beauti extends JTabbedPane {
     	for (String sDir : sBeastDirectories) {
     		File dir = new File(sDir + "/templates");
     		getTemplateActionForDir(dir, actions);
-//    		// inspect sub-dirs, one level deep only, on 'templates' directories
-//    		dir = new File(sDir);
-//    		if (dir.exists() && dir.isDirectory()) {
-//    			File [] files = dir.listFiles();
-//    			for (File f : files) {
-//    				if (f.isDirectory()) {
-//    		    		dir = new File(f.getAbsolutePath() + "/templates");
-//    		    		getTemplateActionForDir(dir, actions);
-//    				}
-//    			}
-//    		}
     	}
     	return actions;
 	}

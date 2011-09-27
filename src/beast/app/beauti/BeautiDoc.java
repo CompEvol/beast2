@@ -240,6 +240,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			String sXML = processTemplate(m_sTemplateFileName);
 			loadTemplate(sXML);
 			beauti.setUpPanels();
+			beauti.setUpViewMenu();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -253,10 +254,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	public void loadNewTemplate(String sFileName) throws Exception {
-		String sXML = processTemplate(sFileName);
-		extractSequences(sXML);
-		connectModel();
-		beauti.setUpPanels();
+		m_sTemplateFileName = sFileName;
+		newAnalysis();
+//		BeautiConfig.clear();
+//		PluginPanel.init();
+//		String sXML = processTemplate(sFileName);
+//		extractSequences(sXML);
+//		connectModel();
+//		beauti.setUpPanels();
 	}
 
 	public void importNexus(String sFileName) throws Exception {
@@ -612,6 +617,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	void loadTemplate(String sXML) throws Exception {
 		// load the template and its beauti configuration parts
 		XMLParser parser = new XMLParser();
+		PluginPanel.init();
 		List<Plugin> plugins = parser.parseTemplate(sXML, new HashMap<String, Plugin>(), true);
 		for (Plugin plugin : plugins) {
 			if (plugin instanceof beast.core.Runnable) {
