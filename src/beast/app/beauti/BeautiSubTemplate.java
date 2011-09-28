@@ -30,14 +30,16 @@ public class BeautiSubTemplate extends Plugin {
 	public Input<String> sMainInput = new Input<String>("mainid","specifies id of the main plugin to be created by the template", Validate.REQUIRED);
 	//public Input<XML> sXMLInput = new Input<XML>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
 	public Input<String> sXMLInput = new Input<String>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
-	public Input<List<BeautiConnector>> connections = new Input<List<BeautiConnector>>("connect","Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
+	public Input<List<BeautiConnector>> connectorsInput = new Input<List<BeautiConnector>>("connect","Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
 
 	Class<?> _class = null;
 	Object instance;
 	String sXML = null;
-	String [] sSrcIDs;
-	String [] sTargetIDs;
-	String [] sTargetInputs;
+	List<BeautiConnector> connectors;
+	
+//	String [] sSrcIDs;
+//	String [] sTargetIDs;
+//	String [] sTargetInputs;
 //	ConnectCondition [] conditions;
 	String sMainID = "";
 	String sShortClassName;
@@ -64,19 +66,20 @@ public class BeautiSubTemplate extends Plugin {
         //m_sXMLInput.get().m_sValue.setValue("<![CDATA[" + m_sXML + "]]>", m_sXMLInput.get());
         sXMLInput.setValue("<![CDATA[" + sXML + "]]>", this);
         
-		int nConnectors = connections.get().size();
-		sSrcIDs = new String[nConnectors];
-		sTargetIDs = new String[nConnectors];
-		sTargetInputs = new String[nConnectors];
-//		conditions = new ConnectCondition[nConnectors];
-
-		for (int i = 0; i < nConnectors; i++) {
-			BeautiConnector connector = connections.get().get(i);
-			sSrcIDs[i] = connector.sSourceID.get();
-			sTargetIDs[i] = connector.sTargetID.get();
-			sTargetInputs[i] = connector.sInputName.get();
-//			conditions[i] = connector.connectCondition.get(); 
-		}
+        connectors = connectorsInput.get();
+//		int nConnectors = connections.get().size();
+//		sSrcIDs = new String[nConnectors];
+//		sTargetIDs = new String[nConnectors];
+//		sTargetInputs = new String[nConnectors];
+////		conditions = new ConnectCondition[nConnectors];
+//
+//		for (int i = 0; i < nConnectors; i++) {
+//			BeautiConnector connector = connections.get().get(i);
+//			sSrcIDs[i] = connector.sSourceID.get();
+//			sTargetIDs[i] = connector.sTargetID.get();
+//			sTargetInputs[i] = connector.sInputName.get();
+////			conditions[i] = connector.connectCondition.get(); 
+//		}
 	}
 
 
@@ -108,12 +111,12 @@ public class BeautiSubTemplate extends Plugin {
 		}
 		
 		// disconnect all connection points in the template
-		for (int i = 0; i < template.sSrcIDs.length; i++) {
-			Plugin src = PluginPanel.g_plugins.get(template.sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));
-			String sTargetID = template.sTargetIDs[i].replaceAll("\\$\\(n\\)", sPartition);
+		for (BeautiConnector connector : template.connectors) {
+			Plugin src = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
+			String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
 //			switch (template.conditions[i]) {
 //			case always:
-				doc.disconnect(src, sTargetID, template.sTargetInputs[i]);
+				doc.disconnect(src, sTargetID, connector.sTargetInput);
 //				break;
 //			case ifunlinked:
 //				Plugin plugin2 = PluginPanel.g_plugins.get(sTargetID);
@@ -189,32 +192,43 @@ public class BeautiSubTemplate extends Plugin {
 			for (Plugin plugin : plugins) {
 				doc.addPlugin(plugin);
 			}
-			for (int i = 0; i < sSrcIDs.length; i++) {
-				Plugin src = sIDMap.get(sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));
-				String sTargetID = sTargetIDs[i].replaceAll("\\$\\(n\\)", sPartition);
+			
+			for (BeautiConnector connector : connectors) {
+				List<Plugin> posteriorPredecessors = doc.getPosteriorPredecessors();
+				if (connector.isActivated(sPartition, posteriorPredecessors)) {
+					Plugin src = sIDMap.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
+					String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
 //				switch (conditions[i]) {
 //				case always:
-					doc.connect(src, sTargetID, sTargetInputs[i]);
-//					break;
-//				case ifunlinked:
-//					Plugin plugin = PluginPanel.g_plugins.get(sTargetID);
-//					Input<?> input = plugin.getInput(sTargetInputs[i]);
-//					if (input.get() == null) {
-//						// no value set yet, so connect
-//						doc.connect(src, sTargetID, sTargetInputs[i]);
-//					} else if (input.get() instanceof List) {
-//						// check if the src is already in the list of plugins in the target input
-//						List<?> list = (List) input.get();
-//						if (!list.contains(src)) {
-//							doc.connect(src, sTargetID, sTargetInputs[i]);
-//						}
-//					} else if (input.get() != src) {
-//						// it is not a list-input, so just check equality of value and src
-//						doc.connect(src, sTargetID, sTargetInputs[i]);
-//					}
-//					break;
-//				}
-			}
+					doc.connect(src, sTargetID, connector.sTargetInput);
+				}
+			}			
+//			for (int i = 0; i < sSrcIDs.length; i++) {
+//				Plugin src = sIDMap.get(sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));
+//				String sTargetID = sTargetIDs[i].replaceAll("\\$\\(n\\)", sPartition);
+////				switch (conditions[i]) {
+////				case always:
+//					doc.connect(src, sTargetID, sTargetInputs[i]);
+////					break;
+////				case ifunlinked:
+////					Plugin plugin = PluginPanel.g_plugins.get(sTargetID);
+////					Input<?> input = plugin.getInput(sTargetInputs[i]);
+////					if (input.get() == null) {
+////						// no value set yet, so connect
+////						doc.connect(src, sTargetID, sTargetInputs[i]);
+////					} else if (input.get() instanceof List) {
+////						// check if the src is already in the list of plugins in the target input
+////						List<?> list = (List) input.get();
+////						if (!list.contains(src)) {
+////							doc.connect(src, sTargetID, sTargetInputs[i]);
+////						}
+////					} else if (input.get() != src) {
+////						// it is not a list-input, so just check equality of value and src
+////						doc.connect(src, sTargetID, sTargetInputs[i]);
+////					}
+////					break;
+////				}
+//			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

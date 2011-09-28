@@ -134,6 +134,8 @@
                 </branchRateModel>
             </plugin>
 
+	        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="OneOnX"/></plugin>
+
             <!-- tree and its properties -->
             <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
             <plugin spec='beast.evolution.tree.Tree' id='Tree.$(n)' taxonset='@TaxonSet.$(n)'>
@@ -186,6 +188,7 @@
             <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
             <connect spec='BeautiConnector' srcID='RandomTree.$(n)' targetID='mcmc' inputName='init'/>
 
+            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
 
             <connect spec='BeautiConnector' srcID='Tree.$(n)' targetID='state' inputName='stateNode'/>

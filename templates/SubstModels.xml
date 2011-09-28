@@ -138,18 +138,60 @@
 
 				<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
    			    <!-- need updown operator for clockRate?!? Also in Standard.xml -->
+
+		        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
             <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode'/>
+            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'/>
 
             <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
         </subtemplate>
 
-<!-- Relaxed clock -->
-        <subtemplate id='RelaxedClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='RelaxedClock.$(n)'>
+<!-- Relaxed clock exponential -->
+        <subtemplate id='RelaxedClockExponential' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='ExponentialRelaxedClock.$(n)'>
+<![CDATA[
+        <plugin spec='UCRelaxedClockModel' id="ExponentialRelaxedClock.$(n)" tree='@Tree.$(n)'>
+			<parameter name='clock.rate' id='ucedMean.$(n)' value='1.0' estimate='false'/>
+            <distr id='Exponential.$(n)' name='distr' spec="beast.math.distributions.Exponential">
+				<parameter id='UCExpLambda' name='lambda' value='1.0'/>
+			</distr>
+            <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1" dimension='10' estimate='true'/>
+        </plugin>
+
+        <operator id='ucedMeanScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucedMean.$(n)"/>
+        <operator id="ExpCategoriesRandomWalk.$(n)" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@rateCategories.$(n)"/>
+		<operator id='ExpCategoriesSwapOperator.$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@rateCategories.$(n)'/>
+		<operator id='ExpCategoriesUniform.$(n)' spec='UniformOperator' weight="10" intparameter='@rateCategories.$(n)'/>
+
+		<upDownOperator id='relaxedUpDownOperatorExp.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+			<up idref="ucedMean.$(n)"/>
+			<down idref="Tree.$(n)"/>
+		</upDownOperator>
+
+		<log id='rateStat.$(n)' spec='RateStatistic' tree='@Tree.$(n)' branchratemodel='@ExponentialRelaxedClock.$(n)'/>
+        <plugin id='MeanRatePrior.$(n)' spec='Prior' x='@ucedMean.$(n)'><distr spec="OneOnX"/></plugin>
+]]>
+            <connect spec='BeautiConnector' srcID='MeanRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+
+            <connect spec='BeautiConnector' srcID='ucedMeanScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='ExpCategoriesRandomWalk.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='ExpCategoriesSwapOperator.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='ExpCategoriesUniform.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='relaxedUpDownOperatorExp.$(n)' targetID='mcmc' inputName='operator' if='inposterior(ucedMean.$(n)) and ucedMean.$(n)/estimate=true and Tree.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='ucedMean.$(n)' targetID='tracelog' inputName='log' if='ucedMean.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateStat.$(n)' targetID='tracelog' inputName='log'/>
+
+        </subtemplate>
+
+
+<!-- Relaxed clock log normal -->
+        <subtemplate id='RelaxedClockLogNormal' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='RelaxedClock.$(n)'>
 <![CDATA[
         <plugin spec='UCRelaxedClockModel' id="RelaxedClock.$(n)" tree='@Tree.$(n)'>
+			<parameter name='clock.rate' id='ucldMean.$(n)' value='1.0'/>
             <distr id='LogNormalDistributionModel.$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel" meanInRealSpace='true'>
-                <parameter name='M' id='ucldMean.$(n)' value="0.5" estimate='true' lower='0' upper='1'/>
+                <parameter name='M' value="1.0" estimate='false' lower='0' upper='1'/>
                 <parameter name='S' id='ucldStdev.$(n)' value="0.5" lower="0" upper="5" estimate='true'/>
             </distr>
             <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1" dimension='10' estimate='true'/>
@@ -174,6 +216,7 @@
 
 
 		<log id='rate.$(n)' spec='RateStatistic' tree='@Tree.$(n)' branchratemodel='@RelaxedClock.$(n)'/>
+        <plugin id='MeanRatePrior.$(n)' spec='Prior' x='@ucldMean.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
             <connect spec='BeautiConnector' srcID='ucldMeanScaler.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ucldStdevScaler.$(n)' targetID='mcmc' inputName='operator'/>
@@ -187,12 +230,15 @@
             <connect spec='BeautiConnector' srcID='rate.$(n)' targetID='tracelog' inputName='log'/>
 
             <connect spec='BeautiConnector' srcID='ucldStdevrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='MeanRatePrior.$(n)' targetID='prior' inputName='distribution'/>
         </subtemplate>
+
 
 <!-- Random local clock -->
         <subtemplate id='RandomLocalClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.RandomLocalClockModel' mainid='RandomLocalClock.$(n)'>
 <![CDATA[
         <input spec='RandomLocalClockModel' id="RandomLocalClock.$(n)" ratesAreMultipliers="false" tree='@Tree.$(n)'>
+            <clock.rate id='meanClockRate.$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
             <parameter spec='parameter.BooleanParameter' name='indicators' id='Indicators.$(n)' value="1"/>
             <parameter name='rates' id='clockrates.$(n)' value="1"/>
         </input>
@@ -200,12 +246,24 @@
         <operator id="IndicatorsBitFlip.$(n)" spec="BitFlipOperator" weight="1" parameter="@Indicators.$(n)"/>
         <operator id='ClockRateScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@clockrates.$(n)"/>
 
+        <operator id='randomClockScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@meanClockRate.$(n)"/>
+		<upDownOperator id='randomClockUpDownOperator.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+			<up idref="meanClockRate.$(n)"/>
+			<down idref="Tree.$(n)"/>
+		</upDownOperator>
+
+        <plugin id='MeanRRatePrior.$(n)' spec='Prior' x='@meanClockRate.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
+            <connect spec='BeautiConnector' srcID='randomClockScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='randomClockUpDownOperator.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='IndicatorsBitFlip.$(n)' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='ClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
 
             <connect spec='BeautiConnector' srcID='Indicators.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='clockrates.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='meanClockRate.$(n)' targetID='tracelog' inputName='log'/>
+
+            <connect spec='BeautiConnector' srcID='MeanRRatePrior.$(n)' targetID='prior' inputName='distribution'/>
         </subtemplate>
 
 

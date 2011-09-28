@@ -784,10 +784,16 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	}
 
-	/** remove loggers of StateNodes that have no impact on the posterior **/
-	void scrubLoggers() {
+	List<Plugin> getPosteriorPredecessors() {
 		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
 		collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
+		return posteriorPredecessors;
+	}
+	
+	/** remove loggers of StateNodes that have no impact on the posterior **/
+	void scrubLoggers() {
+//		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
+//		collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 
 		List<StateNode> stateNodes = ((State) PluginPanel.g_plugins.get("state")).stateNodeInput.get();
 		List<Logger> loggers = ((MCMC) mcmc.get()).m_loggers.get();

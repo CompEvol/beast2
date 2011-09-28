@@ -1,5 +1,4 @@
 /*
-
  * File AddOnManager.java
  *
  * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
@@ -46,23 +45,38 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * This class is used for discovering classes that implement a certain interface
- * or a derived from a certain class.
- * 
- * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 5953 $
- * @see StringCompare
+ * This class is used to manage beast 2 add-ons, and can
+ * - install a new add on
+ * - un-install an add on
+ * - list directories that may contain add ons 
+ * - load jars from installed add ons
+ * - discover classes in add ons that implement a certain interface or a derived from a certain class
  */
 public class AddOnManager {
+	/** whether to output some debug information. */
+	public final static boolean VERBOSE = false;
+
 	public final static String[] IMPLEMENTATION_DIR = { "beast", "snap" };
+
+	/** flag indicating add ons have been loaded at least once **/
+	static boolean externalJarsLoaded = false;
+
+
+	/** list of all classes found in the class path **/
+	private static List<String> all_classes;
+
+	/** notify if VERBOSE is still on */
+	static {
+		if (VERBOSE)
+			System.err.println(AddOnManager.class.getName() + ": VERBOSE ON");
+	}
+
+
 
 	/** return URLs containing list of downloadable add-ons **/
 	public static String[] getAddOnURL() {
 		return new String[] { "http://beast2.cs.auckland.ac.nz/index.php/Add-ons" };
 	}
-
-	/** flag indicating add ons have been loaded at least once **/
-	static boolean externalJarsLoaded = false;
 
 	/**
 	 * create list of addons. The list is downloaded from a beast2 wiki page and
@@ -253,12 +267,14 @@ public class AddOnManager {
 				for (File file : files) {
 					if (file.isDirectory()) {
 						File[] files2 = file.listFiles();
-						for (File file2 : files2) {
-							if (file2.isDirectory()) {
-								String sFile = file2.getAbsolutePath().toLowerCase();
-								if (sFile.endsWith("/lib") || sFile.endsWith("/templates")) {
-									sSubDirs.add(file.getAbsolutePath());
-									break;
+						if (files2 != null) {
+							for (File file2 : files2) {
+								if (file2.isDirectory()) {
+									String sFile = file2.getAbsolutePath().toLowerCase();
+									if (sFile.endsWith("/lib") || sFile.endsWith("/templates")) {
+										sSubDirs.add(file.getAbsolutePath());
+										break;
+									}
 								}
 							}
 						}
@@ -287,10 +303,6 @@ public class AddOnManager {
 		externalJarsLoaded = true;
 	} // loadExternalJars
 
-	// Parameters
-	private static final Class<?>[] parameters = new Class[] { URL.class };
-	private static List<String> all_classes;
-
 	/**
 	 * Add URL to CLASSPATH
 	 * 
@@ -314,6 +326,8 @@ public class AddOnManager {
 		}
 		Class<?> sysclass = URLClassLoader.class;
 		try {
+			// Parameters
+			Class<?>[] parameters = new Class[] { URL.class };
 			Method method = sysclass.getDeclaredMethod("addURL", parameters);
 			method.setAccessible(true);
 			method.invoke(sysLoader, new Object[] { u });
@@ -395,21 +409,6 @@ public class AddOnManager {
 			}
 		}
 
-	}
-
-	/** whether to output some debug information. */
-	public final static boolean VERBOSE = true;
-
-	/**
-	 * for caching queries (classname+packagename &lt;-&gt; List with
-	 * classnames).
-	 */
-	protected static Hashtable<String, List<String>> m_Cache;
-
-	/** notify if VERBOSE is still on */
-	static {
-		if (VERBOSE)
-			System.err.println(AddOnManager.class.getName() + ": VERBOSE ON");
 	}
 
 
