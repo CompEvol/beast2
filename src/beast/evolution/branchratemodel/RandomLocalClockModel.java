@@ -22,15 +22,16 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
             new Input<RealParameter>("rates",
                     "the rate parameters associated with nodes in the tree for sampling of individual rates among branches.",
                     Input.Validate.REQUIRED);
-    public Input<RealParameter> meanRateInput =
-            new Input<RealParameter>("meanRate",
-                    "an optional parameter to set the mean rate across the whole tree");
+//    public Input<RealParameter> meanRateInput =
+//            new Input<RealParameter>("meanRate",
+//                    "an optional parameter to set the mean rate across the whole tree");
     public Input<Tree> treeInput =
             new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
     public Input<Boolean> ratesAreMultipliersInput =
             new Input<Boolean>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).", false);
 
     Tree m_tree;
+    RealParameter meanRate;
     
     @Override
     public void initAndValidate() throws Exception {
@@ -59,6 +60,11 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
         
         ratesAreMultipliers = ratesAreMultipliersInput.get();
+        
+        meanRate = meanRateInput.get();
+        if (meanRate == null) {
+        	meanRate = new RealParameter("1.0");
+        }
     }
 
     /**
@@ -115,8 +121,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
         scaleFactor = timeTotal / branchTotal;
 
-        RealParameter meanRate = meanRateInput.get();
-        if (meanRate != null) scaleFactor *= meanRate.getValue();
+        scaleFactor *= meanRate.getValue();
     }
 
     @Override

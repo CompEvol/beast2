@@ -1,7 +1,7 @@
 package beast.evolution.branchratemodel;
 
 import beast.core.Description;
-import beast.core.Input;
+//import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 
@@ -12,13 +12,13 @@ import beast.evolution.tree.Node;
 @Description("Defines a mean rate for each branch in the beast.tree.")
 public class StrictClockModel extends BranchRateModel.Base {
 
-    public Input<RealParameter> muParameterInput = new Input<RealParameter>("clock.rate", "the clock rate (defaults to 1.0)");
+    //public Input<RealParameter> muParameterInput = new Input<RealParameter>("clock.rate", "the clock rate (defaults to 1.0)");
 
     RealParameter muParameter;
     
     @Override
     public void initAndValidate() throws Exception {
-    	muParameter = muParameterInput.get();
+    	muParameter = meanRateInput.get();
         if (muParameter != null) {
         	muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);
             mu = muParameter.getValue();

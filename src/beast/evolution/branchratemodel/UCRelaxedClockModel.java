@@ -5,6 +5,7 @@ import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.ParametricDistribution;
@@ -17,11 +18,13 @@ import beast.math.distributions.ParametricDistribution;
 @Citation(value = "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088")
 public class UCRelaxedClockModel extends BranchRateModel.Base {
 
-    public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches", Input.Validate.REQUIRED);
+    public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.REQUIRED);
     public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
     public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
 
+    RealParameter meanRate;
+    
     @Override
     public void initAndValidate() throws Exception {
 
@@ -48,6 +51,11 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         }
         System.arraycopy(rates, 0, storedRates, 0, rates.length);
         normalize = normalizeInput.get();
+
+        meanRate = meanRateInput.get();
+        if (meanRate == null) {
+        	meanRate = new RealParameter("1.0");
+        }
     }
 
     public double getRateForBranch(Node node) {
@@ -70,7 +78,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
         int rateCategory = categories.getValue(nodeNumber);
 
-        return rates[rateCategory] * scaleFactor;
+        return rates[rateCategory] * scaleFactor * meanRate.getValue();
     }
 
     // compute scale factor
@@ -96,6 +104,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         //treeRate /= treeTime;
 
         scaleFactor = normalizeBranchRateTo / (treeRate / treeTime);
+
+
         //System.out.println("scaleFactor\t\t\t\t\t" + scaleFactor);
     }
 
@@ -143,6 +153,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	//recompute = true;
         	return true;
         }
+        if (meanRateInput.get().somethingIsDirty()) {
+        	return true;
+        }
+        
         return recompute;
     }
 
