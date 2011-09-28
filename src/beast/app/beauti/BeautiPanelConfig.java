@@ -60,7 +60,7 @@ public class BeautiPanelConfig extends Plugin {
 	List<Plugin> startInputs;
 	/** plugins that are parents, i.e. contain inputs of m_inputs **/
 	List<Plugin> parentPlugins;
-	List<Input<?>> parentInputs = new ArrayList();
+	List<Input<?>> parentInputs = new ArrayList<Input<?>>();
 	/** flag to indicate we are dealing with a list input **/
 	boolean bIsList;
 
@@ -131,6 +131,7 @@ public class BeautiPanelConfig extends Plugin {
 	/** Find the input associated with this panel
 	 * based on the path Input.
 	 */
+	@SuppressWarnings("unchecked")
 	public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
 		try {
 			if (parentPlugins != null && parentPlugins.size() > 0 && _input != null) System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());

@@ -34,7 +34,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import beast.app.BeastMCMC;
 import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.draw.HelpBrowser;

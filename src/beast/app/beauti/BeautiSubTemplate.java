@@ -17,7 +17,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.datatype.DataType;
+//import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
@@ -231,7 +231,7 @@ public class BeautiSubTemplate extends Plugin {
 		if (this == doc.m_beautiConfig.partitionTemplate.get()) {
 			// HACK: need to make sure the subst model is of the correct type
 			Plugin treeLikelihood = PluginPanel.g_plugins.get("treeLikelihood." + sPartition);
-			DataType dataType = ((TreeLikelihood) treeLikelihood).m_data.get().getDataType();
+			//DataType dataType = ((TreeLikelihood) treeLikelihood).m_data.get().getDataType();
 			SiteModel.Base siteModel = ((TreeLikelihood) treeLikelihood).m_pSiteModel.get();
 			SubstitutionModel substModel = siteModel.m_pSubstModel.get();
 			try {

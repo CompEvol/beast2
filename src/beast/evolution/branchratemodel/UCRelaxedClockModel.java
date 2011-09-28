@@ -153,7 +153,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	//recompute = true;
         	return true;
         }
-        if (meanRateInput.get().somethingIsDirty()) {
+        if (meanRate.somethingIsDirty()) {
         	return true;
         }
         

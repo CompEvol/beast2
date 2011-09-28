@@ -77,13 +77,14 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 	@Override
 	public Class<?>[] types() {
-		Class[] types = new Class[2];
+		Class<?>[] types = new Class[2];
 		types[0] = List.class;
 		types[1] = Alignment.class;
 		return types;
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
 		if (input.get() instanceof List) {
@@ -309,7 +310,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 	}
 
-	private String getPartition(Input input) {
+	private String getPartition(Input<?> input) {
 		Plugin plugin = (Plugin) input.get();
 		String sID = plugin.getID();
 		sID = sID.substring(sID.indexOf('.') + 1);
@@ -490,6 +491,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
+		private static final long serialVersionUID = 1L;
+
 		public MyComboBoxRenderer(String[] items) {
 			super(items);
 		}

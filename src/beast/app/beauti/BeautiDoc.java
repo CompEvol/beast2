@@ -213,6 +213,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		this.beauti = beauti;
 	}
 
+	@SuppressWarnings("unchecked")
 	void clear() {
 		potentialPriors = new ArrayList<Distribution>();
 		potentitalInits = new ArrayList<StateNodeInitialiser>();
@@ -225,8 +226,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		nCurrentPartitions = new List[3];
 		sPartitionNames = new ArrayList<String>();
 		for (int i = 0; i < 3; i++) {
-			pPartitionByAlignments[i] = new ArrayList();
-			pPartition[i] = new ArrayList();
+			pPartitionByAlignments[i] = new ArrayList<Plugin>();
+			pPartition[i] = new ArrayList<Plugin>();
 			nCurrentPartitions[i] = new ArrayList<Integer>();
 		}
 	}
@@ -1167,10 +1168,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public void disconnect(Plugin srcPlugin, String sTargetID, String sInputName) throws Exception {
 		try {
 			Plugin target = PluginPanel.g_plugins.get(sTargetID);
-			Input input = target.getInput(sInputName);
+			Input<?> input = target.getInput(sInputName);
 			Object o = input.get();
 			if (o instanceof List) {
-				List list = (List) o;
+				List<?> list = (List<?>) o;
 				for (int i = 0; i < list.size(); i++) {
 					if (list.get(i) == srcPlugin) {
 						list.remove(i);
@@ -1323,7 +1324,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	@Override
 	public Object createInput(Plugin plugin, Input<?> input) {
-		for (BeautiSubTemplate template : m_beautiConfig.g_subTemplates) {
+		for (BeautiSubTemplate template : BeautiConfig.g_subTemplates) {
 			try {
 				if (input.canSetValue(template.instance, plugin)) {
 					String sPartition = plugin.getID();

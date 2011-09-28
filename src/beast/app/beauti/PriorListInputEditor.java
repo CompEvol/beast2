@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -105,7 +106,7 @@ public class PriorListInputEditor extends ListInputEditor {
 				public void actionPerformed(ActionEvent e) {
 					JComboBox comboBox = (JComboBox) e.getSource();
 
-	        		List list = (List) m_input.get();
+	        		List<?> list = (List<?>) m_input.get();
 	        		int iItem = 0;
 	        		while (comboBoxes.get(iItem) != comboBox) {
 	        			iItem++;
@@ -165,13 +166,13 @@ public class PriorListInputEditor extends ListInputEditor {
         	comboBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JComboBox comboBox = (JComboBox) e.getSource();
 					currentComboBox = (JComboBox) e.getSource();
                 	SwingUtilities.invokeLater(new Runnable() {
 					
 					@Override
 					public void run() {
-	        		List list = (List) m_input.get();
+	        		@SuppressWarnings("unchecked")
+					List<Plugin> list = (List<Plugin>) m_input.get();
 	        		int iItem = 0;
 	        		while (comboBoxes.get(iItem) != currentComboBox) {
 	        			iItem++;
@@ -210,7 +211,7 @@ public class PriorListInputEditor extends ListInputEditor {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					JButton comboBox = (JButton) e.getSource();
-	        		List list = (List) m_input.get();
+	        		List<?> list = (List<?>) m_input.get();
 	        		int iItem = 0;
 	        		while (taxonButtons.get(iItem) != comboBox) {
 	        			iItem++;
@@ -263,7 +264,7 @@ public class PriorListInputEditor extends ListInputEditor {
 				public void actionPerformed(ActionEvent e) {
 					JComboBox comboBox = (JComboBox) e.getSource();
 					BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
-	        		List list = (List) m_input.get();
+	        		List<?> list = (List<?>) m_input.get();
 	        		int iItem = 0;
 	        		while (comboBoxes.get(iItem) != comboBox) {
 	        			iItem++;
@@ -278,7 +279,8 @@ public class PriorListInputEditor extends ListInputEditor {
 //						e1.printStackTrace();
 //					}
 					try {
-						Plugin plugin2 = template.createSubNet("", prior, prior.m_distInput);
+						//Plugin plugin2 = 
+						template.createSubNet("", prior, prior.m_distInput);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}

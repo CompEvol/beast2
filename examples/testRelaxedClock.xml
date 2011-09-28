@@ -43,9 +43,10 @@
 
     <input spec='UCRelaxedClockModel' id="branchRates">
         <!--<parameter name='mutationRate'>1.0</parameter>-->
+		<parameter name='clock.rate' id='ucld.mean' value='1.0'/>
         <distr id='lognormal' spec="beast.math.distributions.LogNormalDistributionModel">
             <parameter name='M' id='M' value="1"/>
-            <parameter name='S' id='S' value="0.5" lower="0" upper="5"/>
+            <parameter name='S' id='ucld.stdev' value="0.5" lower="0" upper="5"/>
         </distr>
         <parameter spec='IntegerParameter' name='rateCategories' id='rateCategories' dimension="11" value="1"/>
         <input name='tree' idref="tree"/>
@@ -72,8 +73,8 @@
         <state>
             <input name='stateNode' idref='hky.kappa'/>
             <input name='stateNode' idref='popSize'/>
-            <input name='stateNode' idref='M'/>
-            <input name='stateNode' idref='S'/>
+            <input name='stateNode' idref='ucld.mean'/>
+            <input name='stateNode' idref='ucld.stdev'/>
             <input name='stateNode' idref='tree'/>
             <input name='stateNode' idref='rateCategories'/>
         </state>
@@ -94,9 +95,7 @@
             <input name="parameter" idref="rateCategories"/>
         </operator>
 
-        <operator id='SScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
-            <parameter idref="S"/>
-        </operator>
+        <operator id='SScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter='@ucld.stdev'/>
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
             <parameter idref="hky.kappa"/>
@@ -132,7 +131,7 @@
             </log>
             <log idref="popSize"/>
             <log idref="hky.kappa"/>
-            <log idref="S"/>
+            <log idref="ucld.stdev"/>
             <log idref="rateCategories"/>
             <log idref="posterior"/>
         </logger>
@@ -148,7 +147,7 @@
             </log>
             <log idref="popSize"/>
             <log idref="hky.kappa"/>
-            <log idref="S"/>
+            <log idref="ucld.stdev"/>
             <log idref="rateCategories"/>
             <log idref="posterior"/>
         </logger>
