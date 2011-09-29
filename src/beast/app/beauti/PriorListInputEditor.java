@@ -365,7 +365,7 @@ public class PriorListInputEditor extends ListInputEditor {
     	try {
 
             List<Tree> trees = new ArrayList<Tree>();
-            BeautiDoc.g_doc.scrubState(true);
+            BeautiDoc.g_doc.scrubAll(true);
             State state = (State) PluginPanel.g_plugins.get("state");
 	    	for (StateNode node : state.stateNodeInput.get()) {
 	    		if (node instanceof Tree) { // && ((Tree) node).m_initial.get() != null) {
