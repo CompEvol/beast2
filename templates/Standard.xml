@@ -185,39 +185,45 @@
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
 
 ]]>
-            <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
-            <connect spec='BeautiConnector' srcID='RandomTree.$(n)' targetID='mcmc' inputName='init'/>
+            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)'            targetID='likelihood' inputName='distribution' if="isInitializing"/>
+            <connect spec='BeautiConnector' srcID='YuleModel.$(n)'                 targetID='prior' inputName='distribution' if="isInitializing"/>
 
-            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='treelog.$(n)'                   targetID='mcmc' inputName='logger' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='RandomTree.$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.$(n))'/>
 
-            <connect spec='BeautiConnector' srcID='Tree.$(n)' targetID='state' inputName='stateNode'/>
-            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='state' inputName='stateNode'/>
-            <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='state' inputName='stateNode'/>
-            <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='state' inputName='stateNode'/>
-            <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode'/>
+            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)'                targetID='prior' inputName='distribution' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='proportionInvariantScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='mutationRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='gammaShapeScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='allTipDatesRandomWalker.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='treeScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='UniformOperator.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='SubtreeSlide.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='narrow.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='wide.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='WilsonBalding.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='Tree.$(n)'                      targetID='state' inputName='stateNode' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)'       targetID='state' inputName='stateNode' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='mutationRate.$(n)'              targetID='state' inputName='stateNode' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='gammaShape.$(n)'                targetID='state' inputName='stateNode' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)'                 targetID='state' inputName='stateNode' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='birthRate.$(n)'                 targetID='state' inputName='stateNode' if='inposterior(birthRate.$(n)) and birthRate.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='TreeHeight.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='proportionInvariantScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='mutationRateScaler.$(n)'        targetID='mcmc' inputName='operator' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='gammaShapeScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)'       targetID='mcmc' inputName='operator' if='inposterior(birthRate.$(n)) and birthRate.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='GammaShapePrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='allTipDatesRandomWalker.$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='treeScaler.$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='UniformOperator.$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='SubtreeSlide.$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='narrow.$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='wide.$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='WilsonBalding.$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='TreeHeight.$(n)'                targetID='tracelog' inputName='log' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)'       targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='mutationRate.$(n)'              targetID='tracelog' inputName='log' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='gammaShape.$(n)'                targetID='tracelog' inputName='log' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)'                 targetID='tracelog' inputName='log' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='GammaShapePrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)'        targetID='prior' inputName='distribution' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
+
         </partitiontemplate>
 
 

@@ -27,13 +27,17 @@
         <plugin id='KappaPrior.$(n)' spec='Prior' x='@kappa.$(n)'><distr spec="OneOnX"/></plugin>
 
 ]]>
-            <connect spec='BeautiConnector' srcID='KappaScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
 
-            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='kappa.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='kappa.$(n)'                targetID='state' inputName='stateNode' if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)'        targetID='state' inputName='stateNode' if='inposterior(hky.$(n)) and freqParameter.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='KappaPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='KappaScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator' if='inposterior(hky.$(n)) and freqParameter.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='kappa.$(n)'                targetID='tracelog' inputName='log'  if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)'        targetID='tracelog' inputName='log'  if='inposterior(hky.$(n)) and freqParameter.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='KappaPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
         </subtemplate>
 
 <!-- GTR substitution model -->
@@ -54,9 +58,9 @@
         <operator id='RateACScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateAC.$(n)"/>
         <operator id='RateAGScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateAG.$(n)"/>
         <operator id='RateATScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateAT.$(n)"/>
-        <operator id='RateCGCScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCG.$(n)"/>
-        <operator id='RateCTCScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCT.$(n)"/>
-        <operator id='RateGTCScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateGT.$(n)"/>
+        <operator id='RateCGScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCG.$(n)"/>
+        <operator id='RateCTScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCT.$(n)"/>
+        <operator id='RateGTScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateGT.$(n)"/>
         <operator id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
 
         <prior id='RateACPrior.$(n)' spec='Prior' x='@rateAC.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
@@ -66,28 +70,37 @@
         <prior id='RateCTPrior.$(n)' spec='Prior' x='@rateCT.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
         <prior id='RateGTPrior.$(n)' spec='Prior' x='@rateGT.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
 ]]>
-            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='RateACScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='RateAGScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='RateATScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='RateCGScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='RateCTScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='RateGTScaler.$(n)' targetID='mcmc' inputName='operator'/>
 
-            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rateAC.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rateAG.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rateAT.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rateCG.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rateCT.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rateGT.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateAC.$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.$(n)) and rateAC.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateAG.$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.$(n)) and rateAG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateAT.$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.$(n)) and rateAT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateCG.$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.$(n)) and rateCG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateCT.$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.$(n)) and rateCT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateGT.$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.$(n)) and rateGT.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='RateACPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='RateAGPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='RateATPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='RateCGPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='RateCTPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='RateGTPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator' if='inposterior(freqParameter.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateACScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.$(n)) and rateAC.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateAGScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.$(n)) and rateAG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateATScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.$(n)) and rateAT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateCGScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.$(n)) and rateCG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateCTScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.$(n)) and rateCT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateGTScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.$(n)) and rateGT.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log' if='inposterior(freqParameter.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateAC.$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.$(n)) and rateAC.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateAG.$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.$(n)) and rateAG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateAT.$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.$(n)) and rateAT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateCG.$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.$(n)) and rateCG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateCT.$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.$(n)) and rateCT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateGT.$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.$(n)) and rateGT.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='RateACPrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.$(n)) and rateAC.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateAGPrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.$(n)) and rateAG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateATPrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.$(n)) and rateAT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateCGPrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.$(n)) and rateCG.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateCTPrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.$(n)) and rateCT.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='RateGTPrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.$(n)) and rateGT.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -110,8 +123,9 @@
 
 	        <plugin id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
 ]]>
-            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='state' inputName='stateNode' if='inposterior(estimatedFreqs.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator' if='inposterior(estimatedFreqs.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)' targetID='tracelog' inputName='log' if='inposterior(estimatedFreqs.$(n)) and freqParameter.$(n)/estimate=true'/>
         </subtemplate>
 
         <subtemplate id='Empirical' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.Frequencies' mainid='empiricalFreqs.$(n)'>
@@ -141,10 +155,11 @@
 
 		        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode'/>
-            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)'  targetID='state' inputName='stateNode'          if='inposterior(StrictClock.$(n) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'       if='inposterior(StrictClock.$(n) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(StrictClock.$(n) and clockRate.$(n)/estimate=true'/>
         </subtemplate>
 
 <!-- Relaxed clock exponential -->
@@ -155,13 +170,13 @@
             <distr id='Exponential.$(n)' name='distr' spec="beast.math.distributions.Exponential">
 				<parameter id='UCExpLambda' name='lambda' value='1.0'/>
 			</distr>
-            <rateCategories spec='parameter.IntegerParameter' id='rateCategories.$(n)' value="1" dimension='10' estimate='true'/>
+            <rateCategories spec='parameter.IntegerParameter' id='expRateCategories.$(n)' value="1" dimension='10' estimate='true'/>
         </plugin>
 
         <operator id='ucedMeanScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucedMean.$(n)"/>
-        <operator id="ExpCategoriesRandomWalk.$(n)" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@rateCategories.$(n)"/>
-		<operator id='ExpCategoriesSwapOperator.$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@rateCategories.$(n)'/>
-		<operator id='ExpCategoriesUniform.$(n)' spec='UniformOperator' weight="10" intparameter='@rateCategories.$(n)'/>
+        <operator id="ExpCategoriesRandomWalk.$(n)" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@expRateCategories.$(n)"/>
+		<operator id='ExpCategoriesSwapOperator.$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@expRateCategories.$(n)'/>
+		<operator id='ExpCategoriesUniform.$(n)' spec='UniformOperator' weight="10" intparameter='@expRateCategories.$(n)'/>
 
 		<upDownOperator id='relaxedUpDownOperatorExp.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 			<up idref="ucedMean.$(n)"/>
@@ -169,18 +184,21 @@
 		</upDownOperator>
 
 		<log id='rateStat.$(n)' spec='RateStatistic' tree='@Tree.$(n)' branchratemodel='@ExponentialRelaxedClock.$(n)'/>
-        <plugin id='MeanRatePrior.$(n)' spec='Prior' x='@ucedMean.$(n)'><distr spec="OneOnX"/></plugin>
+        <plugin id='UCMeanRatePrior.$(n)' spec='Prior' x='@ucedMean.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect spec='BeautiConnector' srcID='MeanRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='ucedMean.$(n)' targetID='state' inputName='stateNode' if='inposterior(ExponentialRelaxedClock.$(n)) and ucedMean.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='expRateCategories.$(n)' targetID='state' inputName='stateNode' if='inposterior(ExponentialRelaxedClock.$(n))'/>
 
-            <connect spec='BeautiConnector' srcID='ucedMeanScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='ExpCategoriesRandomWalk.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='ExpCategoriesSwapOperator.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='ExpCategoriesUniform.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='relaxedUpDownOperatorExp.$(n)' targetID='mcmc' inputName='operator' if='inposterior(ucedMean.$(n)) and ucedMean.$(n)/estimate=true and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='UCMeanRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(ExponentialRelaxedClock.$(n)) and ucedMean.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='ucedMean.$(n)' targetID='tracelog' inputName='log' if='ucedMean.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='rateStat.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='ucedMeanScaler.$(n)'            targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.$(n)) and ucedMean.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ExpCategoriesRandomWalk.$(n)'   targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='ExpCategoriesSwapOperator.$(n)' targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='ExpCategoriesUniform.$(n)'      targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='relaxedUpDownOperatorExp.$(n)'  targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.$(n)) and ucedMean.$(n)/estimate=true and Tree.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='ucedMean.$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.$(n)) and ucedMean.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateStat.$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.$(n))'/>
 
         </subtemplate>
 
@@ -208,7 +226,7 @@
 			<down idref="Tree.$(n)"/>
 		</upDownOperator>
 
-        <prior id='ucldStdevrior.$(n)' spec='Prior' x='@ucldStdev.$(n)'>
+        <prior id='ucldStdevPrior.$(n)' spec='Prior' x='@ucldStdev.$(n)'>
             <distr spec="beast.math.distributions.Exponential">
                 <parameter name='lambda' value="0.3333" estimate='false'/>
             </distr>
@@ -218,19 +236,23 @@
 		<log id='rate.$(n)' spec='RateStatistic' tree='@Tree.$(n)' branchratemodel='@RelaxedClock.$(n)'/>
         <plugin id='MeanRatePrior.$(n)' spec='Prior' x='@ucldMean.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect spec='BeautiConnector' srcID='ucldMeanScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='ucldStdevScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='CategoriesRandomWalk.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='CategoriesSwapOperator.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='CategoriesUniform.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='relaxedUpDownOperator.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='ucldMean.$(n)' targetID='state' inputName='stateNode' if='inposterior(RelaxedClock.$(n)) and ucldMean.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ucldStdev.$(n)' targetID='state' inputName='stateNode' if='inposterior(RelaxedClock.$(n)) and ucldStdev.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='rateCategories.$(n)' targetID='state' inputName='stateNode' if='inposterior(RelaxedClock.$(n))'/>
 
-            <connect spec='BeautiConnector' srcID='ucldMean.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='ucldStdev.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='rate.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='ucldMeanScaler.$(n)'         targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.$(n)) and ucldMean.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ucldStdevScaler.$(n)'        targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='CategoriesRandomWalk.$(n)'   targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='CategoriesSwapOperator.$(n)' targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='CategoriesUniform.$(n)'      targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='relaxedUpDownOperator.$(n)'  targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.$(n)) and ucldMean.$(n)/estimate=true and Tree.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='ucldStdevrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='MeanRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='ucldMean.$(n)'  targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.$(n)) and ucldMean.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ucldStdev.$(n)' targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='rate.$(n)'      targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='ucldStdevPrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(RelaxedClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='MeanRatePrior.$(n)'  targetID='prior' inputName='distribution' if='inposterior(RelaxedClock.$(n)) and ucldMean.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -244,6 +266,7 @@
         </input>
 
         <operator id="IndicatorsBitFlip.$(n)" spec="BitFlipOperator" weight="1" parameter="@Indicators.$(n)"/>
+<!-- this should probably be a DeltaExchange instead of scale operator to keep mean rate to 1 -->
         <operator id='ClockRateScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@clockrates.$(n)"/>
 
         <operator id='randomClockScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@meanClockRate.$(n)"/>
@@ -254,16 +277,21 @@
 
         <plugin id='MeanRRatePrior.$(n)' spec='Prior' x='@meanClockRate.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect spec='BeautiConnector' srcID='randomClockScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='randomClockUpDownOperator.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='IndicatorsBitFlip.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='ClockRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='Indicators.$(n)' targetID='state' inputName='stateNode' if='inposterior(Indicators.$(n))'/>
+            <connect spec='BeautiConnector' srcID='meanClockRate.$(n)' targetID='state' inputName='stateNode' if='inposterior(meanClockRate.$(n)) and meanClockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='clockrates.$(n)' targetID='state' inputName='stateNode' if='inposterior(clockrates.$(n))'/>
 
-            <connect spec='BeautiConnector' srcID='Indicators.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='clockrates.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='meanClockRate.$(n)' targetID='tracelog' inputName='log'/>
 
-            <connect spec='BeautiConnector' srcID='MeanRRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='randomClockScaler.$(n)'         targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='randomClockUpDownOperator.$(n)' targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.$(n)) and meanClockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='IndicatorsBitFlip.$(n)'         targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='ClockRateScaler.$(n)'           targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='Indicators.$(n)'                targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='clockrates.$(n)'                targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.$(n))'/>
+            <connect spec='BeautiConnector' srcID='meanClockRate.$(n)'             targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.$(n)) and meanClockRate.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='MeanRRatePrior.$(n)'            targetID='prior' inputName='distribution' if='inposterior(RandomLocalClock.$(n)) and meanClockRate.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -279,9 +307,11 @@
 
   		    <scale id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
 ]]>
-            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <!--connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/-->
+            <connect spec='BeautiConnector' srcID='birthRate.$(n)' targetID='state' inputName='stateNode' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)' targetID='mcmc' inputName='operator'     if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -299,13 +329,15 @@
   		    <scale id='BirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.$(n)"/>
   		    <scale id='DeathRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.$(n)"/>
 ]]>
-            <connect spec='BeautiConnector' srcID='BirthDeath.$(n)' targetID='prior' inputName='distribution'/>
+            <!--connect spec='BeautiConnector' srcID='BirthDeath.$(n)' targetID='prior' inputName='distribution'/-->
+            <connect spec='BeautiConnector' srcID='birthRate2.$(n)' targetID='state' inputName='stateNode' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='relativeDeathRate2.$(n)' targetID='state' inputName='stateNode' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='BirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='DeathRatePrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='BirthRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='DeathRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='BirthRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='DeathRateScaler.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='BirthRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='DeathRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -338,32 +370,35 @@
 
 
 <!-- Coalescent for Bayesian skyline -->
-        <subtemplate id='CoalescentBayesianSkyline' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='CoalescentBayesianSkyline.$(n)'>
+        <subtemplate id='CoalescentBayesianSkyline' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='BayesianSkyline.$(n)'>
 <![CDATA[
             <distribution spec="BayesianSkyline" id='BayesianSkyline.$(n)'>
-                <parameter name='popSizes' id='bPopSizes.$(n)' dimension="1" value="380.0" lower="0.0" upper="380000.0" estimate='true'/>
-                <groupSizes spec='parameter.IntegerParameter' id='bGroupSizes.$(n)' dimension='1' value='1' estimate='true'/>
+                <parameter name='popSizes' id='bPopSizes.$(n)' dimension="5" value="380.0" lower="0.0" upper="380000.0" estimate='true'/>
+                <groupSizes spec='parameter.IntegerParameter' id='bGroupSizes.$(n)' dimension='5' value='1' estimate='true'/>
                 <treeIntervals spec='TreeIntervals' id='BSPTreeIntervals.$(n)' tree='@Tree.$(n)'/>
             </distribution>
 
             <distribution id='MarkovChainedPopSizes.$(n)' spec="beast.math.distributions.MarkovChainDistribution" 
 				jeffreys="true"
-				parameter="@skyline.popSize"/>
+				parameter="@bPopSizes.$(n)"/>
 
 		    <operator id='popSizesScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="15" parameter="@bPopSizes.$(n)"/>
 		    <operator id='groupSizesDelta.$(n)' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
 		              intparameter="@bGroupSizes.$(n)"/>
 
 ]]>
-            <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='MarkovChainedPopSizes.$(n)' targetID='prior' inputName='distribution'/>
+            <!--connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='prior' inputName='distribution'/-->
+            <connect spec='BeautiConnector' srcID='bPopSizes.$(n)' targetID='state' inputName='stateNode' if='inposterior(bPopSizes.$(n))'/>
+            <connect spec='BeautiConnector' srcID='bGroupSizes.$(n)' targetID='state' inputName='stateNode' if='inposterior(bGroupSizes.$(n))'/>
 
-            <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='bPopSizes.$(n)' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='bGroupSizes.$(n)' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='MarkovChainedPopSizes.$(n)' targetID='prior' inputName='distribution' if='inposterior(BayesianSkyline.$(n))'/>
 
-            <connect spec='BeautiConnector' srcID='popSizesScaler.$(n)' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='groupSizesDelta.$(n)' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='tracelog' inputName='log' if='inposterior(BayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='bPopSizes.$(n)'       targetID='tracelog' inputName='log' if='inposterior(BayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='bGroupSizes.$(n)'     targetID='tracelog' inputName='log' if='inposterior(BayesianSkyline.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='popSizesScaler.$(n)'  targetID='mcmc' inputName='operator' if='inposterior(BayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='groupSizesDelta.$(n)' targetID='mcmc' inputName='operator' if='inposterior(BayesianSkyline.$(n))'/>
         </subtemplate>
 
 <!-- Parametric distributions, all without hyperpriors -->

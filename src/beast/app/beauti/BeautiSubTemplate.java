@@ -116,7 +116,8 @@ public class BeautiSubTemplate extends Plugin {
 			String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
 //			switch (template.conditions[i]) {
 //			case always:
-				doc.disconnect(src, sTargetID, connector.sTargetInput);
+				//doc.disconnect(src, sTargetID, connector.sTargetInput);
+				doc.disconnect(connector, sPartition);
 //				break;
 //			case ifunlinked:
 //				Plugin plugin2 = PluginPanel.g_plugins.get(sTargetID);
@@ -194,13 +195,15 @@ public class BeautiSubTemplate extends Plugin {
 			}
 			
 			for (BeautiConnector connector : connectors) {
-				List<Plugin> posteriorPredecessors = doc.getPosteriorPredecessors();
-				if (connector.isActivated(sPartition, posteriorPredecessors)) {
-					Plugin src = sIDMap.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
-					String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
+				//List<Plugin> posteriorPredecessors = doc.getPosteriorPredecessors();
+				if (connector.atInitialisationOnly()) {// || 
+						//connector.isActivated(sPartition, posteriorPredecessors)) {
+//					Plugin src = sIDMap.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
+//					String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
 //				switch (conditions[i]) {
 //				case always:
-					doc.connect(src, sTargetID, connector.sTargetInput);
+					//doc.connect(src, sTargetID, connector.sTargetInput);
+					doc.connect(connector, sPartition);
 				}
 			}			
 //			for (int i = 0; i < sSrcIDs.length; i++) {

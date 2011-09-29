@@ -27,6 +27,7 @@ public class BeautiConnector extends Plugin {
 
 	
 	final static String IS_IN_POSTERIOR = "x";
+	final static String AT_INITIALISATION_ONLY = "y";
 	
 	String sSourceID;
 	String sTargetID;
@@ -53,6 +54,10 @@ public class BeautiConnector extends Plugin {
 					sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
 					sConditionInputs[i] = null;
 					sConditionValues[i] = IS_IN_POSTERIOR;
+				} else if (s.startsWith("isInitializing")) {
+					sConditionIDs[i] = AT_INITIALISATION_ONLY;
+					sConditionInputs[i] = null;
+					sConditionValues[i] = null;
 				} else {
 					sConditionIDs[i] = s.substring(0, s.indexOf("/"));
 					sConditionInputs[i] = s.substring(s.indexOf("/") + 1, s.indexOf("="));
@@ -66,30 +71,44 @@ public class BeautiConnector extends Plugin {
 		}
 	}
 	
+	
+	public boolean atInitialisationOnly() {
+		if (sConditionIDs.length > 0) {
+			return sConditionIDs[0].equals(AT_INITIALISATION_ONLY);
+		} else {
+			return false;
+		}
+	}
+	
 	/** check that conditions in the 'if' input are met **/
 	public boolean isActivated(String sPartition, List<Plugin> posteriorPredecessors) {
+		if (atInitialisationOnly()) {
+			return true;
+		}
+		
+		
 		boolean bIsActive = true;
 		for (int i = 0; i < sConditionIDs.length; i++) {
 			String sID = sConditionIDs[i].replaceAll("\\$\\(n\\)", sPartition);
 			Plugin plugin = PluginPanel.g_plugins.get(sID);
 			if (plugin == null) {
-				System.err.println("isActivated::no plugin found");
+				//System.err.println("isActivated::no plugin found");
 				return false;
 			}
-			System.err.println("isActivated::found " + sID);
+			//System.err.println("isActivated::found " + sID);
 			if (sConditionValues[i].equals(IS_IN_POSTERIOR)) {
 				if (!posteriorPredecessors.contains(plugin)) {
-					System.err.println(posteriorPredecessors);
-					System.err.println("isActivated::is not in posterior, return false");
+					//System.err.println(posteriorPredecessors);
+					//System.err.println("isActivated::is not in posterior, return false");
 					return false;
 				}
-				System.err.println("isActivated::is in posterior");
+				//System.err.println("isActivated::is in posterior");
 			} else {
 				try {
 					Input<?> input = plugin.getInput(sConditionInputs[i]);
-					System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
+					//System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
 					if (!input.get().toString().equals(sConditionValues[i])) {
-						System.err.println("isActivated::return false");
+						//System.err.println("isActivated::return false");
 						return false;
 					}
 				} catch (Exception e) {
@@ -98,10 +117,13 @@ public class BeautiConnector extends Plugin {
 				}
 			}
 		}
-		if (sConditionIDs.length > 0) {
-			System.err.println("isActivated::return true");
-		}
+		//if (sConditionIDs.length > 0) {
+		//	System.err.println("isActivated::return true");
+		//}
 		return bIsActive;
 	}
-	
+
+	public String toString() {
+		return "@" + sSourceID + " -> @" + sTargetID + "/" + sTargetInput;
+	}
 }
