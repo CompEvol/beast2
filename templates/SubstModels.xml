@@ -25,19 +25,25 @@
         <plugin id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
 
         <plugin id='KappaPrior.$(n)' spec='Prior' x='@kappa.$(n)'><distr spec="OneOnX"/></plugin>
+<!--
+        <plugin id='FrequenciesPrior.$(n)' spec='Prior' x='@freqParameter.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></plugin>
+-->
 
 ]]>
 
             <connect spec='BeautiConnector' srcID='kappa.$(n)'                targetID='state' inputName='stateNode' if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='freqParameter.$(n)'        targetID='state' inputName='stateNode' if='inposterior(hky.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)'        targetID='state' inputName='stateNode' if='inposterior(hky.$(n)) and inposterior(freqParameter.$(n)) and freqParameter.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='KappaScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator' if='inposterior(hky.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='FrequenciesExchanger.$(n)' targetID='mcmc' inputName='operator' if='inposterior(hky.$(n)) and inposterior(freqParameter.$(n)) and freqParameter.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='kappa.$(n)'                targetID='tracelog' inputName='log'  if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='freqParameter.$(n)'        targetID='tracelog' inputName='log'  if='inposterior(hky.$(n)) and freqParameter.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='freqParameter.$(n)'        targetID='tracelog' inputName='log'  if='inposterior(hky.$(n)) and inposterior(freqParameter.$(n)) and freqParameter.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='KappaPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(hky.$(n)) and kappa.$(n)/estimate=true'/>
+<!--
+            <connect spec='BeautiConnector' srcID='FrequenciesPrior.$(n)'     targetID='prior' inputName='distribution' if='inposterior(hky.$(n)) and inposterior(freqParameter.$(n)) and freqParameter.$(n)/estimate=true'/>
+-->
         </subtemplate>
 
 <!-- GTR substitution model -->
@@ -139,7 +145,6 @@
             <frequencies id='equalFreqs.$(n)' spec='Frequencies' data='@$(n)' estimate='false'/>
 ]]>
         </subtemplate>
-
 
 <!-- Clock models -->
 

@@ -9,10 +9,12 @@ import javax.swing.Box;
 import javax.swing.JCheckBox;
 
 import beast.app.beauti.BeautiConfig;
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
+import beast.evolution.branchratemodel.BranchRateModel;
 
 public class ParameterInputEditor extends PluginInputEditor {
 	private static final long serialVersionUID = 1L;
@@ -66,6 +68,16 @@ public class ParameterInputEditor extends PluginInputEditor {
 				m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
 			}
 			m_isEstimatedBox.setToolTipText(parameter.m_bIsEstimated.getTipText());
+			
+			boolean bIsClockRate = false;
+			for (Plugin output : parameter.outputs) {
+				if (output instanceof BranchRateModel.Base) {
+					bIsClockRate |= ((BranchRateModel.Base) output).meanRateInput.get() == parameter;
+				}
+			}
+			m_isEstimatedBox.setEnabled(!bIsClockRate || !BeautiDoc.g_doc.bAutoSetClockRate);
+			
+			
 			m_isEstimatedBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

@@ -547,48 +547,58 @@ public class Beauti extends JTabbedPane {
         menuBar.add(modeMenu);
         modeMenu.setMnemonic('M');
         
-		final JCheckBoxMenuItem viewEditTree = new JCheckBoxMenuItem("Expert mode", InputEditor.g_bExpertMode);
-		viewEditTree.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				InputEditor.g_bExpertMode = viewEditTree.getState();
-				refreshPanel();
-			}
-		});
-		modeMenu.add(viewEditTree);
-		modeMenu.addSeparator();
+//		final JCheckBoxMenuItem viewEditTree = new JCheckBoxMenuItem("Expert mode", InputEditor.g_bExpertMode);
+//		viewEditTree.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent ae) {
+//				InputEditor.g_bExpertMode = viewEditTree.getState();
+//				refreshPanel();
+//			}
+//		});
+//		modeMenu.add(viewEditTree);
+//		modeMenu.addSeparator();
+//
+//		final JCheckBoxMenuItem autoScrubPriors = new JCheckBoxMenuItem("Automatic scrub priors", this.doc.bAutoScrubPriors);
+//		autoScrubPriors.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent ae) {
+//				doc.bAutoScrubPriors = autoScrubPriors.getState();
+//				refreshPanel();
+//			}
+//		});
+//		modeMenu.add(autoScrubPriors);
+//		final JCheckBoxMenuItem autoScrubState = new JCheckBoxMenuItem("Automatic scrub state", this.doc.bAutoScrubState);
+//		autoScrubState.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent ae) {
+//				doc.bAutoScrubState = autoScrubState.getState();
+//				refreshPanel();
+//			}
+//		});
+//		modeMenu.add(autoScrubState);
+//		final JCheckBoxMenuItem autoScrubOperators = new JCheckBoxMenuItem("Automatic scrub operators", this.doc.bAutoScrubOperators);
+//		autoScrubOperators.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent ae) {
+//				doc.bAutoScrubOperators = autoScrubOperators.getState();
+//				refreshPanel();
+//			}
+//		});
+//		modeMenu.add(autoScrubOperators);
+//		final JCheckBoxMenuItem autoScrubLoggers = new JCheckBoxMenuItem("Automatic scrub loggers", this.doc.bAutoScrubLoggers);
+//		autoScrubLoggers.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent ae) {
+//				doc.bAutoScrubLoggers = autoScrubLoggers.getState();
+//				refreshPanel();
+//			}
+//		});
+//		modeMenu.add(autoScrubLoggers);
 
-		final JCheckBoxMenuItem autoScrubPriors = new JCheckBoxMenuItem("Automatic scrub priors", this.doc.bAutoScrubPriors);
-		autoScrubPriors.addActionListener(new ActionListener() {
+        
+		final JCheckBoxMenuItem autoSetClockRate = new JCheckBoxMenuItem("Automatic set clock rate", this.doc.bAutoSetClockRate);
+		autoSetClockRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				doc.bAutoScrubPriors = autoScrubPriors.getState();
+				doc.bAutoSetClockRate = autoSetClockRate.getState();
 				refreshPanel();
 			}
 		});
-		modeMenu.add(autoScrubPriors);
-		final JCheckBoxMenuItem autoScrubState = new JCheckBoxMenuItem("Automatic scrub state", this.doc.bAutoScrubState);
-		autoScrubState.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				doc.bAutoScrubState = autoScrubState.getState();
-				refreshPanel();
-			}
-		});
-		modeMenu.add(autoScrubState);
-		final JCheckBoxMenuItem autoScrubOperators = new JCheckBoxMenuItem("Automatic scrub operators", this.doc.bAutoScrubOperators);
-		autoScrubOperators.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				doc.bAutoScrubOperators = autoScrubOperators.getState();
-				refreshPanel();
-			}
-		});
-		modeMenu.add(autoScrubOperators);
-		final JCheckBoxMenuItem autoScrubLoggers = new JCheckBoxMenuItem("Automatic scrub loggers", this.doc.bAutoScrubLoggers);
-		autoScrubLoggers.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				doc.bAutoScrubLoggers = autoScrubLoggers.getState();
-				refreshPanel();
-			}
-		});
-		modeMenu.add(autoScrubLoggers);
+		modeMenu.add(autoSetClockRate);
 
 		final JCheckBoxMenuItem muteSound = new JCheckBoxMenuItem("Mute sound", false);
 		muteSound.addActionListener(new ActionListener() {

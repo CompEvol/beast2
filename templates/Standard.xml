@@ -71,8 +71,8 @@
             beast.evolution.tree.coalescent.BayesianSkyline.popSizes
             '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
-        disableMenus='Mode'
     >
+        <!--disableMenus='Mode'-->
 
         <panel spec='BeautiPanelConfig' panelname="Partitions" tiptext="Data Partitions"
             path='distribution/distribution[id="likelihood"]/distribution/data'

@@ -156,9 +156,11 @@ public abstract class InputEditor extends Box implements ValidateListener {
 //			JOptionPane.showMessageDialog(null, "Error while setting " + m_input.getName() + ": " + ex.getMessage() +
 //					" Leaving value at " + m_input.get());
 //			m_entry.setText(m_input.get() + "");
-			m_validateLabel.setVisible(true);
-			m_validateLabel.setToolTipText("<html><p>Parsing error: " + ex.getMessage() + ". Value was left at " + m_input.get() +".</p></html>");
-			m_validateLabel.m_circleColor = Color.orange;
+			if (m_validateLabel != null) {
+				m_validateLabel.setVisible(true);
+				m_validateLabel.setToolTipText("<html><p>Parsing error: " + ex.getMessage() + ". Value was left at " + m_input.get() +".</p></html>");
+				m_validateLabel.m_circleColor = Color.orange;
+			}
 			repaint();
 		}
 	}

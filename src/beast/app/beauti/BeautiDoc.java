@@ -86,10 +86,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	/** contains all loggers from the template **/
 	List<List<Plugin>> loggerInputs;
 
-	boolean bAutoScrubOperators = true;
-	boolean bAutoScrubLoggers = true;
-	boolean bAutoScrubPriors = true;
-	boolean bAutoScrubState = true;
+//	boolean bAutoScrubOperators = true;
+//	boolean bAutoScrubLoggers = true;
+//	boolean bAutoScrubPriors = true;
+//	boolean bAutoScrubState = true;
+
+	public boolean bAutoSetClockRate = true;
 
 	/** [0] = sitemodel [1] = clock model [2] = tree **/
 	List<Plugin>[] pPartitionByAlignments;
@@ -102,7 +104,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	// prevents haveing multiple windows open
 	// All globals need to be removed to make multiple document view work on
 	// Macs
-	static BeautiDoc g_doc;
+	static public BeautiDoc g_doc;
 	Beauti beauti;
 
 	String sTemplateName = null;
@@ -703,7 +705,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	void scrubAll(boolean bUseNotEstimatedStateNodes) {
 		try {
-			setClockRate();
+			if (bAutoSetClockRate) {
+				setClockRate();
+			}
 			
 			// go through all templates, and process connectors in relevant ones 
 //			List<Plugin> mcmcPredecessors = new ArrayList<Plugin>();
@@ -1255,7 +1259,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			// prevent duplication inserts in list
 			Object o = target.getInputValue(connector.sTargetInput);
 			if (o instanceof List) {
-				System.err.println("   " + ((List)o).size());
+				//System.err.println("   " + ((List)o).size());
 				if (((List<?>) o).contains(srcPlugin)) {
 					System.err.println("   " + sTargetID + "/"  + connector.sTargetInput +  " already contains " + connector.sSourceID);
 					return;
@@ -1279,7 +1283,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			Object o = input.get();
 			if (o instanceof List) {
 				List<?> list = (List<?>) o;
-				System.err.println("   " + ((List)o).size());
+				//System.err.println("   " + ((List)o).size());
 				for (int i = 0; i < list.size(); i++) {
 					if (list.get(i) == srcPlugin) {
 						System.err.println("  DEL "  + sTargetID + "/"  + connector.sTargetInput +  " already contains " + connector.sSourceID);
