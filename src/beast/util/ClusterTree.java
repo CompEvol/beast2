@@ -86,8 +86,32 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 		
         if (Boolean.valueOf(System.getProperty("beast.resume")) && 
         		(m_bIsEstimated.get() || (m_initial.get() != null && m_initial.get().m_bIsEstimated.get()))) {
-        	// don't bother creating a tree, if it is read from file anyway 
-    		super.initAndValidate();
+        	// don't bother creating a cluster tree to save some time, if it is read from file anyway 
+        	// make a caterpillar
+			List<String> sTaxa = m_pData.get().getTaxaNames();
+			Node left = new Node();
+			left.setNr(0);
+			left.setID(sTaxa.get(0));
+			left.setHeight(0);
+			for (int i = 1; i < sTaxa.size(); i++) {
+				Node right = new Node();
+				right.setNr(i);
+				right.setID(sTaxa.get(i));
+				right.setHeight(0);
+				Node parent = new Node();
+				parent.setNr(sTaxa.size() + i - 1);
+				parent.setHeight(i);
+				left.setParent(parent);
+				parent.m_left = left;
+				right.setParent(parent);
+				parent.m_right = right;
+				left = parent;
+			}
+			root = left;
+			leafNodeCount = sTaxa.size();
+			nodeCount = leafNodeCount * 2 - 1;
+			internalNodeCount = leafNodeCount - 1;
+			super.initAndValidate();
         	return;
         }
 		

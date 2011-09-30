@@ -11,21 +11,24 @@ import beast.core.util.ESS;
 public class LogAnalyser {
     
     /** column labels in log file **/
-    String [] m_sLabels;
+	protected String [] m_sLabels;
     
     /** distinguish various column types **/
-    enum type {REAL, BOOL, NOMINAL};
-    type [] m_types;
+	protected enum type {REAL, BOOL, NOMINAL};
+    protected type [] m_types;
     /** range of a column, if it is not a REAL **/
-    List<String> [] m_ranges;
+    protected List<String> [] m_ranges;
     
     /** data from log file with burn-in removed **/
-    Double [][] m_fTraces;
+    protected Double [][] m_fTraces;
     
     /** statistics on the data, one per column. First column (sample nr) is not set **/
     Double [] m_fMean, m_fStdDev, m_fMedian, m_f95HPDup, m_f95HPDlow, m_fESS, m_fACT, m_fGeometricMean;
     
-	/** MAX_LAG typical = 2000; = maximum lag for ESS 
+
+	public LogAnalyser() {}
+    
+    /** MAX_LAG typical = 2000; = maximum lag for ESS 
       * nBurnInPercentage typical = 10; percentage of data that can be ignored 
       * **/
 	public LogAnalyser(String [] args, int MAX_LAG, int nBurnInPercentage) throws Exception {
@@ -34,9 +37,10 @@ public class LogAnalyser {
 		calcStats(MAX_LAG);
 	}
 
-	void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
+	protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
 		BufferedReader fin = new BufferedReader(new FileReader(sFile));
 		String sStr = null;
+		m_sLabels = null;
 		int nData = 0;
 		// first, sweep through the log file to determine size of the log
 		while (fin.ready()) {

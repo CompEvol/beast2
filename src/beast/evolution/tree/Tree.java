@@ -152,9 +152,9 @@ public class Tree extends StateNode {
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
 
     /** counters of number of nodes, nodeCount = internalNodeCount + leafNodeCount **/
-    int nodeCount = -1;
-    int internalNodeCount = -1;
-    int leafNodeCount = -1;
+    protected int nodeCount = -1;
+    protected int internalNodeCount = -1;
+    protected int leafNodeCount = -1;
 
     /**
      * node representation of the beast.tree *
@@ -217,6 +217,10 @@ public class Tree extends StateNode {
     			m_sTaxaNames = new String[getLeafNodeCount()];
     			collectTaxaNames(getRoot());
     		}
+    	}
+    	// sanity check
+    	if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null && Boolean.valueOf(System.getProperty("beast.resume"))) {
+    		System.err.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
     	}
     	return m_sTaxaNames;
     }
