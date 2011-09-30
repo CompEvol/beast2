@@ -16,6 +16,14 @@ public class EigenDecomposition {
         Evec = evec;
         Ievc = ievc;
         Eval = eval;
+        Evali = null;
+    }
+
+    public EigenDecomposition(double[] evec, double[] ievc, double[] eval, double[] evali) {
+        Evec = evec;
+        Ievc = ievc;
+        Eval = eval;
+        Evali = evali;   // the imaginary parts are being ignored at the moment
     }
 
     public EigenDecomposition copy() {
@@ -51,6 +59,14 @@ public class EigenDecomposition {
     }
 
     /**
+     * This function returns the imaginary part of the Eigen values.
+     * @return the Eigen values
+     */
+    public final double[] getImEigenValues() {
+        return Evali;
+    }
+
+    /**
      * This functions returns true if the diagonalization may be complex
      * @return bool
      */
@@ -69,9 +85,20 @@ public class EigenDecomposition {
             Eval[i] /= scale;
     }
 
+    public Boolean hasImagEigenvectors(){
+        if (Evali==null) return false;
+        for (int i=0; i<Evali.length; i++)
+            if (Evali[i]!=0) {
+//                System.err.println("Imaginary eigenvectors found. Discard.");
+                return true;
+            }
+        return false;
+    }
+
     // Eigenvalues, eigenvectors, and inverse eigenvectors
     private final double[] Evec;
     private final double[] Ievc;
     private final double[] Eval;
+    private final double[] Evali;   // imaginary part of eigenvalues
 
 }

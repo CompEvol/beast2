@@ -71,6 +71,8 @@ public class RPNcalculator extends CalculationNode implements Loggable {
                     Object[] values =  ((Object[]) variables.get(name));
                     if (values[0] instanceof Boolean)
                         return ((Boolean)values[values.length > 1 ? index : 0]?1.:0.);
+                    if (values[0] instanceof Integer)
+                        return (Integer)values[values.length > 1 ? index : 0];
                     return (Double) values[values.length > 1 ? index : 0];
                 }
             };
