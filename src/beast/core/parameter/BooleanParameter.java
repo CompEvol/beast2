@@ -68,8 +68,12 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
     	m_nDimension.setValue(nDimension, this);
         values = new java.lang.Boolean[nDimension];
         storedValues = new java.lang.Boolean[nDimension];
+        String tempValue;
         for (int i = 0; i < values.length; i++) {
-            values[i] = new Boolean(sValues[i % sValues.length]);
+            tempValue = sValues[i % sValues.length];
+            if (tempValue.equals("1.") ||  tempValue.equals("1") || tempValue.equals("1.0")) tempValue = "true";
+            if (tempValue.equals("0.") ||  tempValue.equals("0") || tempValue.equals("0.0")) tempValue = "false";
+            values[i] = new Boolean(tempValue);
         }
         super.initAndValidate();
     }
