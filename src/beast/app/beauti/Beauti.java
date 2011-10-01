@@ -37,7 +37,6 @@ import javax.swing.event.ChangeListener;
 import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.draw.HelpBrowser;
-import beast.app.draw.InputEditor;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.draw.ExtensionFileFilter;
@@ -165,19 +164,21 @@ public class Beauti extends JTabbedPane {
             if (!doc.validateModel()) {
                 return false;
             }
-            JFileChooser fc = new JFileChooser(g_sDir);
-            fc.addChoosableFileFilter(ef1);
-            fc.setDialogTitle("Save Model As");
-            if (!sFileName.equals("")) {
-                // can happen on actionQuit
-                fc.setSelectedFile(new File(sFileName));
-            }
-            int rval = fc.showSaveDialog(null);
-
-            if (rval == JFileChooser.APPROVE_OPTION) {
+            File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(sFileName), null, (String[]) null);
+//            JFileChooser fc = new JFileChooser(g_sDir);
+//            fc.addChoosableFileFilter(ef1);
+//            fc.setDialogTitle("Save Model As");
+//            if (!sFileName.equals("")) {
+//                // can happen on actionQuit
+//                fc.setSelectedFile(new File(sFileName));
+//            }
+//            int rval = fc.showSaveDialog(null);
+//
+//            if (rval == JFileChooser.APPROVE_OPTION) {
+            if (file != null) {
                 // System.out.println("Saving to file \""+
                 // f.getAbsoluteFile().toString()+"\"");
-                sFileName = fc.getSelectedFile().toString();
+                sFileName = file.getAbsolutePath();//fc.getSelectedFile().toString();
                 if (sFileName.lastIndexOf('/') > 0) {
                     g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
                 }
@@ -248,11 +249,14 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-    		JFileChooser fileChooser = new JFileChooser(g_sDir);
-    		fileChooser.addChoosableFileFilter(ef1);
-    		fileChooser.setDialogTitle("Load Beast XML File");
-    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-    			sFileName = fileChooser.getSelectedFile().toString();
+        	File file = beast.app.util.Utils.getLoadFile("Load Beast XML File");
+//    		JFileChooser fileChooser = new JFileChooser(g_sDir);
+//    		fileChooser.addChoosableFileFilter(ef1);
+//    		fileChooser.setDialogTitle("Load Beast XML File");
+//    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+//        		sFileName = fileChooser.getSelectedFile().toString();
+        	if (file != null) {
+        		sFileName = file.getAbsolutePath();
                 if (sFileName.lastIndexOf('/') > 0) {
                     g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
                 }
@@ -277,11 +281,14 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-    		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir")+"/templates");
-    		fileChooser.addChoosableFileFilter(ef1);
-    		fileChooser.setDialogTitle("Load Template XML File");
-    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-    			String sFileName = fileChooser.getSelectedFile().toString();
+        	File file = beast.app.util.Utils.getLoadFile("Load Template XML File");
+//    		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir")+"/templates");
+//    		fileChooser.addChoosableFileFilter(ef1);
+//    		fileChooser.setDialogTitle("Load Template XML File");
+//    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+//    			String sFileName = fileChooser.getSelectedFile().toString();
+        	if (file != null) {
+        		String sFileName = file.getAbsolutePath();
     			try {
     				doc.loadNewTemplate(sFileName);
     			} catch (Exception e) {

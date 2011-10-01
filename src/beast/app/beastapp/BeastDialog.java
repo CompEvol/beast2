@@ -58,47 +58,53 @@ public class BeastDialog {
 
         inputFileButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-            	if (!Utils.isMacOSX()) {
-	        		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-	        		fc.addChoosableFileFilter(new FileFilter() {
-	        			public boolean accept(File f) {
-	        				if (f.isDirectory()) {
-	        					return true;
-	        				}
-	        				String name = f.getName().toLowerCase();
-	        				if (name.endsWith(".xml")) {
-	        					return true;
-	        				}
-	        				return false;
-	        			}
-	
-	        			// The description of this filter
-	        			public String getDescription() {
-	        				return "xml files";
-	        			}
-	        		});
-	
-	        		fc.setDialogTitle("Load xml file");
-	        		int rval = fc.showOpenDialog(null);
-	        		if (rval == JFileChooser.APPROVE_OPTION) {
-	                    inputFile = fc.getSelectedFile();
-	                    inputFileNameText.setText(inputFile.getName());
-	        		}
-                } else {
-                    FileDialog dialog = new FileDialog(frame,
-                            "Select target file...",
-                            FileDialog.LOAD);
-
-                    dialog.setVisible(true);
-                    if (dialog.getFile() == null) {
-                        // the dialog was cancelled...
-                        return;
-                    }
-
-                    inputFile = new File(dialog.getDirectory(), dialog.getFile());
+            	File file = beast.app.util.Utils.getLoadFile("Load xml file", inputFile, "Beast xml files",".xml");
+            	if (file != null) {
+            		inputFile = file;	
                     inputFileNameText.setText(inputFile.getName());
-
-                }
+            	}
+            	
+//            	if (!Utils.isMacOSX()) {
+//	        		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+//	        		fc.addChoosableFileFilter(new FileFilter() {
+//	        			public boolean accept(File f) {
+//	        				if (f.isDirectory()) {
+//	        					return true;
+//	        				}
+//	        				String name = f.getName().toLowerCase();
+//	        				if (name.endsWith(".xml")) {
+//	        					return true;
+//	        				}
+//	        				return false;
+//	        			}
+//	
+//	        			// The description of this filter
+//	        			public String getDescription() {
+//	        				return "xml files";
+//	        			}
+//	        		});
+//	
+//	        		fc.setDialogTitle("Load xml file");
+//	        		int rval = fc.showOpenDialog(null);
+//	        		if (rval == JFileChooser.APPROVE_OPTION) {
+//	                    inputFile = fc.getSelectedFile();
+//	                    inputFileNameText.setText(inputFile.getName());
+//	        		}
+//                } else {
+//                    FileDialog dialog = new FileDialog(frame,
+//                            "Select target file...",
+//                            FileDialog.LOAD);
+//
+//                    dialog.setVisible(true);
+//                    if (dialog.getFile() == null) {
+//                        // the dialog was cancelled...
+//                        return;
+//                    }
+//
+//                    inputFile = new File(dialog.getDirectory(), dialog.getFile());
+//                    inputFileNameText.setText(inputFile.getName());
+//
+//                }
         	}});
         inputFileNameText.setEditable(false);
 
