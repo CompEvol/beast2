@@ -82,7 +82,7 @@ public class BeastMCMC {
 	/** number of threads used to run the likelihood beast.core **/
 	static public int m_nThreads = 1;
 	/** thread pool **/
-	public static ExecutorService g_exec = null;
+	public static ExecutorService g_exec = Executors.newFixedThreadPool(m_nThreads);
 	/** random number seed used to initialise Randomizer **/
 	long m_nSeed = 127;
 	/** name of SnAP specification file **/
@@ -123,6 +123,7 @@ public class BeastMCMC {
 					
                     } else if (args[i].equals("-threads")) {
 						m_nThreads = Integer.parseInt(args[i + 1]);
+						g_exec = Executors.newFixedThreadPool(m_nThreads);
 						i += 2;
 // use BEAST environment variable to set Beast directories as colon separated list						
 //					} else if (args[i].equals("-beastlib")) {

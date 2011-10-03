@@ -26,8 +26,10 @@
 package beast.util;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ArrayList;
@@ -224,7 +226,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 		}
 
 		public String toString() {
-			DecimalFormat myFormatter = new DecimalFormat("#.#####");
+			DecimalFormat myFormatter = new DecimalFormat("#.#####", new DecimalFormatSymbols(Locale.US));
 
 			if (m_left == null) {
 				if (m_right == null) {

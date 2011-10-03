@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 
@@ -35,6 +37,8 @@ public class LogCombiner extends LogAnalyser {
 	// Sample interval as it appears in the combined log file.
 	// To use the interval of the log files, use the -renumber option 
 	int m_nSampleInterval = 1;
+	// whether to use decimal or scientific format to print doubles
+	boolean m_bUseDecimalFormat = false;
 	DecimalFormat format = new DecimalFormat("#.############E0", new DecimalFormatSymbols(Locale.US));
 	
 	// resample the log files to this frequency (the original sampling frequency must be a factor of this value)
@@ -70,6 +74,7 @@ public class LogCombiner extends LogAnalyser {
 		                m_sParticleDir = args[i+1];
 						i += 2;
 					} else if (args[i].equals("-decimal")) {
+						m_bUseDecimalFormat = true;
 						format = new DecimalFormat("#.############", new DecimalFormatSymbols(Locale.US));
 						i++;
 					} else if (args[i].equals("-resample")) {
@@ -222,7 +227,9 @@ public class LogCombiner extends LogAnalyser {
 		if (m_bIsTreeLog) {
 			for (int i = 0; i < m_sTrees.size(); i++) {
 				if ((m_nSampleInterval * i) % m_nResample == 0) {
-					m_out.println("tree STATE_" + (m_nSampleInterval * i) + " = " + m_sTrees.get(i));
+					String sTree = m_sTrees.get(i);
+					sTree = format(sTree);
+					m_out.println("tree STATE_" + (m_nSampleInterval * i) + " = " + sTree);
 					nLines++;
 				}
 			}
@@ -255,6 +262,66 @@ public class LogCombiner extends LogAnalyser {
 			}
 		}
 		logln(" " + nLines + " lines in combined log");
+	}
+
+	private String format(String sTree) {
+		if (m_bUseDecimalFormat) {
+			// convert scientific to decimal format
+			if (sTree.matches(".*[0-9]+\\.[0-9]+[0-9-]+E[0-9-]+.*")) {
+				int k = 0; 
+				while (k < sTree.length()) {
+					char c = sTree.charAt(k);
+					if (Character.isDigit(c)) {
+						int iStart = k;
+						while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {}
+						if (k < sTree.length() && sTree.charAt(k) == '.') {
+							while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {}
+							if (k < sTree.length() && (sTree.charAt(k) == 'E' || sTree.charAt(k) == 'e')) {
+								k++;
+								if (k < sTree.length() && sTree.charAt(k) == '-') {k++;}
+								if (k < sTree.length() && Character.isDigit(sTree.charAt(k))) {
+									while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {}
+									int iEnd = k;
+									String sNumber = sTree.substring(iStart, iEnd);
+									double d = Double.parseDouble(sNumber);
+									sNumber = format.format(d);
+									sTree = sTree.substring(0, iStart) + sNumber + sTree.substring(iEnd);
+									k = iStart + sNumber.length();
+								}
+							}
+						}
+					} else {
+						k++;
+					}
+				}
+			}
+		} else {
+			// convert decimal to scientific format
+			if (sTree.matches(".*[0-9]+\\.[0-9]+[^E-].*")) {
+				int k = 0; 
+				while (k < sTree.length()) {
+					char c = sTree.charAt(k);
+					if (Character.isDigit(c)) {
+						int iStart = k;
+						while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {}
+						if (k < sTree.length() && sTree.charAt(k) == '.') {
+							while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {}
+							if (k < sTree.length() && sTree.charAt(k) != '-' && sTree.charAt(k) != 'E' && sTree.charAt(k) != 'e') {
+								int iEnd = k;
+								String sNumber = sTree.substring(iStart, iEnd);
+								double d = Double.parseDouble(sNumber);
+								sNumber = format.format(d);
+								sTree = sTree.substring(0, iStart) + sNumber + sTree.substring(iEnd);
+								k = iStart + sNumber.length();
+							}
+						}
+					} else {
+						k++;
+					}
+				}
+			}						
+		}
+		return sTree;
 	}
 
 	private static String getUsage() {
@@ -333,7 +400,8 @@ public class LogCombiner extends LogAnalyser {
 	            }
 
 	            combiner.m_bIsTreeLog = dialog.isTreeFiles();
-	            if (dialog.convertToDecimal()) {
+	            combiner.m_bUseDecimalFormat = dialog.convertToDecimal(); 
+	            if (combiner.m_bUseDecimalFormat) {
 	            	combiner.format = new DecimalFormat("#.############", new DecimalFormatSymbols(Locale.US));
 	            }
 	            if (!dialog.renumberOutputStates()) {
