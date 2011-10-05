@@ -8,7 +8,9 @@ import beast.core.State;
 import beast.core.Valuable;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
+import beast.evolution.speciation.SpeciesTreeDistribution;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeDistribution;
 import beast.math.Binomial;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ import java.util.Random;
  * @author Alexei Drummond
  */
 @Description("A likelihood function for the generalized skyline plot coalescent.")
-public class BayesianSkyline extends Distribution { 
+public class BayesianSkyline extends TreeDistribution { 
 //public class BayesianSkyline extends PopulationFunction.Abstract {
 
 	public Input<Valuable> popSizeParamInput = new Input<Valuable>("popSizes", "present-day population size. "
@@ -33,8 +35,8 @@ public class BayesianSkyline extends Distribution {
 			"the group sizes parameter", Validate.REQUIRED);
 	// public Input<Tree> treeInput = new Input<Tree>("tree",
 	// "The tree containing coalescent node times for use in defining BSP.");
-	public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals",
-			"The intervals of the tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
+//	public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals",
+//			"The intervals of the tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
 
 	Valuable popSizes;
 	IntegerParameter groupSizes;
@@ -62,7 +64,10 @@ public class BayesianSkyline extends Distribution {
 	// }
 
 	public void initAndValidate() throws Exception {
-		intervals = m_treeIntervals.get();
+		if (m_tree.get() != null) {
+			throw new Exception("only tree intervals (not tree) should not be specified");
+		}
+		intervals = treeIntervals.get();
 		groupSizes = groupSizeParamInput.get();
 		popSizes = popSizeParamInput.get();
 

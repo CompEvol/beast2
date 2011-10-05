@@ -79,6 +79,9 @@ public class Beauti extends JTabbedPane {
 	/** menu for making showing/hiding tabs **/
     JMenu viewMenu;
 
+    
+    /** flag indicating beauti is in the process of being set up and panels should not sync with current model **/
+    boolean isInitialising = true;
 	
 	public Beauti(BeautiDoc doc) {
 		bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
@@ -744,6 +747,7 @@ public class Beauti extends JTabbedPane {
 	} // hidePanels
 	
     void setUpPanels() throws Exception {
+    	isInitialising = true;
     	// remove any existing tabs
     	if (getTabCount() > 0) {
 	    	while (getTabCount() > 0) {
@@ -768,6 +772,7 @@ public class Beauti extends JTabbedPane {
 				removeTabAt(iPanel);
 			}
 		}
+    	isInitialising = false;
     }
 
 
@@ -797,7 +802,9 @@ public class Beauti extends JTabbedPane {
 						beauti.currentTab = beauti.panels[0];
 					}
 					if (beauti.currentTab != null) {
-						beauti.currentTab.config.sync(beauti.currentTab.iPartition);
+						if (!beauti.isInitialising) {
+							beauti.currentTab.config.sync(beauti.currentTab.iPartition);
+						}
 						BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
 						beauti.currentTab = panel;
 						beauti.refreshPanel();

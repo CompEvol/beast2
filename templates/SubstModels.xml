@@ -162,9 +162,9 @@
 ]]>
             <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='clockRate.$(n)'  targetID='state' inputName='stateNode'          if='inposterior(StrictClock.$(n) and clockRate.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'       if='inposterior(StrictClock.$(n) and clockRate.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(StrictClock.$(n) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)'  targetID='state' inputName='stateNode'          if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'       if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
         </subtemplate>
 
 <!-- Relaxed clock exponential -->

@@ -6,12 +6,9 @@ import beast.app.beauti.BeautiConfig;
 import beast.app.beauti.BeautiSubTemplate;
 import beast.app.draw.InputEditor.BUTTONSTATUS;
 import beast.app.draw.InputEditor.EXPAND;
-import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.Loggable;
 import beast.core.MCMC;
-import beast.core.Operator;
 import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;
 import beast.util.AddOnManager;
@@ -54,10 +51,10 @@ public class PluginPanel extends JPanel {
     /* Set of plugins in the system.
       * These are the plugins that an input can be connected to **/
     static public HashMap<String, Plugin> g_plugins = null;
-    static public Set<Operator> g_operators = null;
+//    static public Set<Operator> g_operators = null;
 //    static public Set<StateNode> g_stateNodes = null;
-    static public Set<Loggable> g_loggers = null;
-    static public Set<Distribution> g_distributions = null;
+//    static public Set<Loggable> g_loggers = null;
+//    static public Set<Distribution> g_distributions = null;
     static public Set<Taxon> g_taxa = null;
 
     public static Point m_position;
@@ -90,10 +87,10 @@ public class PluginPanel extends JPanel {
         
         m_position = new Point(0, 0);
         g_plugins = new HashMap<String, Plugin>();
-        g_operators = new HashSet<Operator>();
+//        g_operators = new HashSet<Operator>();
 //        g_stateNodes = new HashSet<StateNode>();
-        g_loggers = new HashSet<Loggable>();
-        g_distributions = new HashSet<Distribution>();
+//        g_loggers = new HashSet<Loggable>();
+//        g_distributions = new HashSet<Distribution>();
         g_taxa = new HashSet<Taxon>();
     }
 
@@ -136,18 +133,18 @@ public class PluginPanel extends JPanel {
     /** add plugin to plugin map and update related maps 
      * @return true if it was already registered **/
     static public boolean registerPlugin(String sID, Plugin plugin) {
-    	if (plugin instanceof Operator) {
-    		g_operators.add((Operator)plugin);
-    	}
+//    	if (plugin instanceof Operator) {
+//    		g_operators.add((Operator)plugin);
+//    	}
 //    	if (plugin instanceof StateNode) {
 //    		g_stateNodes.add((StateNode)plugin);
 //    	}
-    	if (plugin instanceof Loggable) {
-    		g_loggers.add((Loggable)plugin);
-    	}
-    	if (plugin instanceof Distribution) {
-    		g_distributions.add((Distribution)plugin);
-    	}
+//    	if (plugin instanceof Loggable) {
+//    		g_loggers.add((Loggable)plugin);
+//    	}
+//    	if (plugin instanceof Distribution) {
+//    		g_distributions.add((Distribution)plugin);
+//    	}
     	if (plugin instanceof Taxon) {
     		g_taxa.add((Taxon)plugin);
     	}
@@ -160,10 +157,10 @@ public class PluginPanel extends JPanel {
 
     public static void renamePluginID(Plugin plugin, String sOldID, String sID) {
 		g_plugins.remove(sOldID);
-		g_operators.remove(sOldID);
+//		g_operators.remove(sOldID);
 //		g_stateNodes.remove(sOldID);
-		g_loggers.remove(sOldID);
-		g_distributions.remove(sOldID);
+//		g_loggers.remove(sOldID);
+//		g_distributions.remove(sOldID);
 		g_taxa.remove(sOldID);
     	registerPlugin(sID, plugin);
 	}

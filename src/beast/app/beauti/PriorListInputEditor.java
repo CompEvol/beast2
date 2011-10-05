@@ -3,6 +3,7 @@ package beast.app.beauti;
 
 
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import beast.app.draw.DoubleInputEditor;
+import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.SmallButton;
@@ -28,6 +31,7 @@ import beast.core.Logger;
 import beast.core.Plugin;
 import beast.core.State;
 import beast.core.StateNode;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Tree;
@@ -90,6 +94,16 @@ public class PriorListInputEditor extends ListInputEditor {
         	label.setMinimumSize(PREFERRED_SIZE);
         	label.setPreferredSize(PREFERRED_SIZE);
         	itemBox.add(label);
+        	if (prior.m_x.get() instanceof RealParameter) {
+        		RealParameter p = (RealParameter) prior.m_x.get();
+        		InputEditor lower = new DoubleInputEditor();
+        		lower.init(p.lowerValueInput, p, EXPAND.FALSE, false);
+        		InputEditor upper = new DoubleInputEditor();
+        		lower.init(p.upperValueInput, p, EXPAND.FALSE, false);
+        		itemBox.add(lower);
+        		itemBox.add(upper);
+        	}
+        	
 
             List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
@@ -365,7 +379,7 @@ public class PriorListInputEditor extends ListInputEditor {
     	try {
 
             List<Tree> trees = new ArrayList<Tree>();
-            BeautiDoc.g_doc.scrubAll(true);
+            BeautiDoc.g_doc.scrubAll(true, false);
             State state = (State) PluginPanel.g_plugins.get("state");
 	    	for (StateNode node : state.stateNodeInput.get()) {
 	    		if (node instanceof Tree) { // && ((Tree) node).m_initial.get() != null) {

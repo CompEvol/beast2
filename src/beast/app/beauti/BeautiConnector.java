@@ -83,7 +83,7 @@ public class BeautiConnector extends Plugin {
 	/** check that conditions in the 'if' input are met **/
 	public boolean isActivated(String sPartition, List<Plugin> posteriorPredecessors) {
 		if (atInitialisationOnly()) {
-			return true;
+			return false;
 		}
 		
 		

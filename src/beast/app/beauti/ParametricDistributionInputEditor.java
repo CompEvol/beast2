@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -169,7 +171,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 			// draw ticks on edge
 			Font smallFont = new Font(font.getName(), font.getStyle(), 8);
 			g.setFont(smallFont);
-			DecimalFormat myFormatter = new DecimalFormat("##.##");
+			DecimalFormat myFormatter = new DecimalFormat("##.##", new DecimalFormatSymbols(Locale.US));
 			fMinValue += m_distr.m_offset.get();
 			for (int i = 0; i <= NR_OF_TICKS_X; i++) {
 				int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;

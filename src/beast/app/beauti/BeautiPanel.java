@@ -161,7 +161,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		if (doc.alignments.size() == 0) {
 			return;
 		}
-		doc.scrubAll(true);
+		doc.scrubAll(true, false);
 
 		refreshInputPanel();
 		if (partitionBox != null && config.getType() != null) {

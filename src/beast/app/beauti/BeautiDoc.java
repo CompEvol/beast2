@@ -9,12 +9,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,26 +31,16 @@ import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.Logger;
-import beast.core.Logger.LOGMODE;
 import beast.core.MCMC;
-import beast.core.Operator;
 import beast.core.Plugin;
-import beast.core.State;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.operators.TipDatesScaler;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreeDistribution;
-import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.Prior;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -76,15 +63,15 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			Validate.REQUIRED);
 
 	/** points to input that contains prior distribution, if any **/
-	Input<List<Distribution>> priors;
+//	Input<List<Distribution>> priors;
 	/** contains all Priors from the template **/
-	protected List<Distribution> potentialPriors;
-	List<StateNodeInitialiser> potentitalInits;
-	List<Logger> potentitalLoggers;
+//	protected List<Distribution> potentialPriors;
+//	List<StateNodeInitialiser> potentitalInits;
+//	List<Logger> potentitalLoggers;
 
 	protected List<BranchRateModel> clockModels;
 	/** contains all loggers from the template **/
-	List<List<Plugin>> loggerInputs;
+//	List<List<Plugin>> loggerInputs;
 
 //	boolean bAutoScrubOperators = true;
 //	boolean bAutoScrubLoggers = true;
@@ -109,8 +96,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	String sTemplateName = null;
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
-	String sFileName = null;
 
+	String sFileName = null;
 	public BeautiDoc() {
 		g_doc = this;
 		setID("BeautiDoc");
@@ -122,6 +109,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		String m_sOutputFileName = "beast.xml";
 		String m_sXML = null;
 		String m_sTemplateXML = null;
+		TraitSet traitset = null;
 
 		int i = 0;
 		try {
@@ -158,6 +146,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						alignments.add(parser.m_alignment);
 					}
 					i += 2;
+					traitset = parser.m_traitSet;
 				} else if (args[i].equals("-xmldata")) {
 					// NB: multiple -xmldata/-nex commands can be processed!
 					String sFileName = args[i + 1];
@@ -190,6 +179,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 
 		initialize(m_endState, m_sXML, m_sTemplateXML, m_sOutputFileName);
+		addTraitSet(traitset);
 		return m_endState;
 	} // parseArgs
 
@@ -219,9 +209,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	@SuppressWarnings("unchecked")
 	void clear() {
-		potentialPriors = new ArrayList<Distribution>();
-		potentitalInits = new ArrayList<StateNodeInitialiser>();
-		potentitalLoggers = new ArrayList<Logger>();
+//		potentialPriors = new ArrayList<Distribution>();
+//		potentitalInits = new ArrayList<StateNodeInitialiser>();
+//		potentitalLoggers = new ArrayList<Logger>();
 		clockModels = new ArrayList<BranchRateModel>();
 		alignments = new ArrayList<Alignment>();
 
@@ -280,6 +270,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			addAlignmentWithSubnet(parser.m_alignment);
 		}
 		connectModel();
+		addTraitSet(parser.m_traitSet);
 		beauti.setUpPanels();
 	}
 
@@ -296,7 +287,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		case UNKNOWN:
 		case SHOW_DETAILS_USE_TEMPLATE: {
 			mergeSequences(sTemplate);
-			scrubAll(true);
+			//scrubAll(true, );
 			connectModel();
 			break;
 		}
@@ -478,7 +469,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
-		scrubAll(false);
+		scrubAll(false, false);
 		determinePartitions();
 		// String sXML = new XMLProducer().toXML(m_mcmc.get(),
 		// PluginPanel.g_plugins.values());
@@ -637,36 +628,58 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 	}
 
+	
+	
+	/** assigns trait to first available tree **/
+	void addTraitSet(TraitSet trait) {
+		if (trait != null) {
+			CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+			for (Distribution d : likelihood.pDistributions.get()) {
+				if (d instanceof TreeLikelihood) {
+					Tree tree = ((TreeLikelihood)d).m_tree.get();
+					try {
+						tree.m_trait.setValue(trait, tree);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					scrubAll(true, false);
+					return;
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Connect all inputs to the relevant ancestors of m_runnable.
 	 * 
 	 * @throws Exception
 	 * **/
 	void connectModel() throws Exception {
-		try {
+//		try {
 			// MCMC mcmc = (MCMC) m_mcmc.get();
 			// build global list of loggers
-			loggerInputs = new ArrayList<List<Plugin>>();
-			for (Logger logger : ((MCMC) mcmc.get()).m_loggers.get()) {
-				List<Plugin> loggers = new ArrayList<Plugin>();
-				for (Plugin plugin : logger.m_pLoggers.get()) {
-					loggers.add(plugin);
-				}
-				loggerInputs.add(loggers);
-			}
+//			loggerInputs = new ArrayList<List<Plugin>>();
+//			for (Logger logger : ((MCMC) mcmc.get()).m_loggers.get()) {
+//				List<Plugin> loggers = new ArrayList<Plugin>();
+//				for (Plugin plugin : logger.m_pLoggers.get()) {
+//					loggers.add(plugin);
+//				}
+//				loggerInputs.add(loggers);
+//			}
 
 			// collect priors from template
-			CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
-			this.priors = prior.pDistributions;
-			List<Distribution> list = this.priors.get();
-			for (Distribution prior2 : list) {
-				if (!(prior2 instanceof TreeDistribution)) {
-					potentialPriors.add(prior2);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//			CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
+//			this.priors = prior.pDistributions;
+//			List<Distribution> list = this.priors.get();
+//			for (Distribution prior2 : list) {
+//				if (!(prior2 instanceof TreeDistribution)) {
+//					potentialPriors.add(prior2);
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		scrubAll(true, true);
 		collectClockModels();
 	}
 
@@ -703,7 +716,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		return null;
 	}
 
-	void scrubAll(boolean bUseNotEstimatedStateNodes) {
+	void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {
 		try {
 			if (bAutoSetClockRate) {
 				setClockRate();
@@ -731,10 +744,18 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 					// check if template is in use
 					if (plugin != null) {
-						
 						// if so, run through all connectors
 						for (BeautiConnector connector : template.connectors) {
-							if (connector.isActivated(sPartition, posteriorPredecessors)) {
+							if (connector.toString().contains("YuleModel")) {
+								int h = 3;
+								h++;
+							}
+							if (connector.atInitialisationOnly()) {
+								if (bInitial) {
+									System.err.println("connect: " + connector);
+									connect(connector, sPartition);
+								}
+							} else 	if (connector.isActivated(sPartition, posteriorPredecessors)) {
 								System.err.println("connect: " + connector);
 								connect(connector, sPartition);
 							} else {
@@ -1290,7 +1311,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						list.remove(i);
 					}
 				}
-				srcPlugin.outputs.remove(target);
+				if (srcPlugin.outputs != null) {
+					srcPlugin.outputs.remove(target);
+				}
 			} else {
 				input.setValue(null, target);
 			}
