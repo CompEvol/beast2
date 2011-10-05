@@ -27,7 +27,9 @@ public class BayesianSkylineTest extends TestCase {
 
         BayesianSkyline skyline = new BayesianSkyline();
         //skyline.init(popSize, groupSize, intervals);
-        skyline.init("1.0 2.0", "2 2", intervals);
+        skyline.initByName("popSizes", "1.0 2.0", 
+        					"groupSizes", "2 2", 
+        					"treeIntervals", intervals);
 
         assertEquals(skyline.getPopSize(0.01), 1.0);
         assertEquals(skyline.getPopSize(1.49), 1.0);
