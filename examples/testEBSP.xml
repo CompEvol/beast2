@@ -576,6 +576,10 @@
         <log idref="treeModel003"/>
     </logger>
 
+    <logger filename='EBSP.$(seed).log' logEvery='5000'>
+        <log idref='demographic'/>
+    </logger>
+
 </run>
 
 </beast>
