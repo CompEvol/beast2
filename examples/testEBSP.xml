@@ -576,7 +576,7 @@
         <log idref="treeModel003"/>
     </logger>
 
-    <logger filename='EBSP.$(seed).log' logEvery='5000'>
+    <logger fileName='EBSP.$(seed).log' logEvery='5000'>
         <log idref='demographic'/>
     </logger>
 
