@@ -90,7 +90,6 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         double treeRate = 0.0;
         double treeTime = 0.0;
 
-        //normalizeBranchRateTo = 1.0;
         for (int i = 0; i < tree.getNodeCount(); i++) {
             Node node = tree.getNode(i);
             if (!node.isRoot()) {
@@ -103,7 +102,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         }
         //treeRate /= treeTime;
 
-        scaleFactor = normalizeBranchRateTo / (treeRate / treeTime);
+        scaleFactor = 1.0 / (treeRate / treeTime);
 
 
         //System.out.println("scaleFactor\t\t\t\t\t" + scaleFactor);
@@ -179,7 +178,6 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     private boolean normalize = false;
     private boolean recompute = true;
-    private double normalizeBranchRateTo = Double.NaN;
     private double[] rates;
     private double[] storedRates;
     private double scaleFactor = 1.0;
