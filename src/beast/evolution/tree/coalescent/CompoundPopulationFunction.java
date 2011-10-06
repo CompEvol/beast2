@@ -8,11 +8,17 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.IntervalType;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.evolution.tree.coalescent.TreeIntervals;
+import beast.math.statistic.DiscreteStatistics;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author joseph
@@ -577,6 +583,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 	@Override
 	public void init(PrintStream out) throws Exception {
 		// interval sizes
+		out.print("popsSize0\t");
 		for (int i = 0; i < alltimes.length; i++) {
 			out.print(getID() +".times." + i + "\t");
 		}
@@ -585,11 +592,18 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 	@Override
 	public void log(int nSample, PrintStream out) {
 		// interval sizes
+		out.print("0:" + popSizeParameter.getArrayValue(0));
 		for (int i = 0; i < alltimes.length; i++) {
 			out.print(alltimes[i] + "\t");
+			if (indicatorsParameter.getArrayValue(i) > 0) {
+				out.print(":" + popSizeParameter.getArrayValue(i + 1));
+			}
+			out.print("\t");
 		}
 	}
 
+
+	
 	@Override
 	public void close(PrintStream out) {
 	}
