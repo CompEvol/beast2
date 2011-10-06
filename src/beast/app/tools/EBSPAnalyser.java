@@ -32,32 +32,32 @@ public class EBSPAnalyser {
 				nData++;
 			}
 		}		
-		int nBurnIn = nData * nBurnInPercentage / 100;
+		final int nBurnIn = nData * nBurnInPercentage / 100;
 		logln(" skipping " + nBurnIn + " line\n\n");
 		nData = -nBurnIn - 1;
 		fin = new BufferedReader(new FileReader(sFile));
 		
 		// process log
-		List<List<Double>> times = new ArrayList<List<Double>>();
-		List<List<Double>> popSizes = new ArrayList<List<Double>>();
+		final List<List<Double>> times = new ArrayList<List<Double>>();
+		final List<List<Double>> popSizes = new ArrayList<List<Double>>();
 		double [] alltimes = null;
 		while (fin.ready()) {
 			sStr = fin.readLine();
 			if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
-				if (nData > 0) {
-					String [] sStrs = sStr.split("\t");
-					List<Double> times2 = new ArrayList<Double>();
-					List<Double> popSizes2 = new ArrayList<Double>();
+				if (++nData > 0) {
+					final String [] sStrs = sStr.split("\t");
+					final List<Double> times2 = new ArrayList<Double>();
+					final List<Double> popSizes2 = new ArrayList<Double>();
 					if (alltimes == null) {
 						alltimes = new double[sStrs.length - 1];
 					}
 					for (int i = 1; i < sStrs.length; i++) {
-						String [] sStrs2 = sStrs[i].split(":");
-						Double time = Double.parseDouble(sStrs2[0]);
+						final String [] sStrs2 = sStrs[i].split(":");
+						final Double time = Double.parseDouble(sStrs2[0]);
 						alltimes[i - 1] += time;
 						if (sStrs2.length > 1) {
 							times2.add(time);
-							popSizes2.add(Double.parseDouble(sStrs2[0]));
+							popSizes2.add(Double.parseDouble(sStrs2[1]));
 						}
 					}
 					times.add(times2);
@@ -66,7 +66,12 @@ public class EBSPAnalyser {
 				}
 			}
 		}
-		
+
+        if( alltimes == null ) {
+            //burn-in too large?
+            return;
+        }
+
 		// take average of coalescent times 
 		for (int i = 0; i < alltimes.length; i++) {
 			alltimes[i] /= times.size();
@@ -74,24 +79,43 @@ public class EBSPAnalyser {
 		
 		// generate output
 		out.println("time\tmean\tmedian\t95HPD lower\t95HPD upper");
-		double [] popSizeAtTimeT = new double[times.size()]; 
-		for (int i = 0; i < alltimes.length; i++) {
-			for (int j = 0; j < popSizeAtTimeT.length; j++) {
-				popSizeAtTimeT[j] = calcPopSize(sType, times.get(j), popSizes.get(j), alltimes[i]);
-			}
-			Arrays.sort(popSizeAtTimeT);
-			out.print(alltimes[i] + "\t");
-			out.print(DiscreteStatistics.mean(popSizeAtTimeT) + "\t");
-			out.print(DiscreteStatistics.median(popSizeAtTimeT) + "\t");
-			out.print(DiscreteStatistics.quantile(0.025, popSizeAtTimeT) + "\t");
-			out.print(DiscreteStatistics.quantile(0.975, popSizeAtTimeT) + "\t");
-			out.println();
-		}		
+		final double [] popSizeAtTimeT = new double[times.size()];
+        for (final double time : alltimes) {
+            for (int j = 0; j < popSizeAtTimeT.length; j++) {
+                popSizeAtTimeT[j] = calcPopSize(sType, times.get(j), popSizes.get(j), time);
+            }
+            Arrays.sort(popSizeAtTimeT);
+            out.print(time + "\t");
+            out.print(DiscreteStatistics.mean(popSizeAtTimeT) + "\t");
+            out.print(DiscreteStatistics.median(popSizeAtTimeT) + "\t");
+            out.print(DiscreteStatistics.quantile(0.025, popSizeAtTimeT) + "\t");
+            out.print(DiscreteStatistics.quantile(0.975, popSizeAtTimeT) + "\t");
+            out.println();
+        }
 	}
 	
-	private double calcPopSize(String sType, List<Double> list, List<Double> list2, double d) {
-		// TODO Auto-generated method stub
-		return 0;
+	private double calcPopSize(String sType, List<Double> xs, List<Double> ys, double d) {
+		// TODO completely untested
+        // assume linear
+        assert sType.equals("Linear");
+
+        final int n = xs.size();
+        final double xn = xs.get(n - 1);
+        if( d >= xn) {
+           return ys.get(n-1);
+        }
+
+        int i = 0;
+        while( d < xs.get(i) )  {
+            ++i;
+        }
+         // d >=  xs.get(i)
+        double x0 = xs.get(i);
+        double x1 = xs.get(i+1);
+        double y0 = ys.get(i);
+        double y1 = ys.get(i+1);
+
+        return (d * (y1-y0) + (y0*x1-y1*x0)) / (x1-x0);
 	}
 	
 	private void parseArgs(String[] args) throws Exception {
@@ -161,7 +185,4 @@ public class EBSPAnalyser {
 		}
 		
 	}
-
-
-
 }

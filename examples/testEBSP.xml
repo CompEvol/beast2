@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><beast namespace="beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" version="2.0">
 
+<!--
+	demographic function: 5 over all interval,
+	 0) tree root ploidy (4): 18.5433
+	    substitution model: Kimura 2P(R=1.25)
+	    mutation rate: 5e-05
+	 1) tree root ploidy (4): 65.6623
+	    substitution model: Kimura 2P(R=1.25)
+	    mutation rate: 5e-05
+	 2) tree root ploidy (4): 32.3994
+	    substitution model: Kimura 2P(R=1.25)
+	    mutation rate: 5e-05
+	 3) tree root: 4.61462
+	    substitution model: Kimura 2P(R=7.5)
+	    mutation rate: 0.001
+-->
+
 
     <data dataType="nucleotide" id="alignment000" name="taxa">
                 <sequence taxon="l00_tip_022" totalcount="4">
@@ -432,7 +448,7 @@
 
 
     
-<run chainLength="1000000" distribution="@posterior" id="mcmc" preBurnin="0" spec="MCMC" storeEvery="-1">
+<run chainLength="10000000" distribution="@posterior" id="mcmc" preBurnin="0" spec="MCMC" storeEvery="-1">
     <state storeEvery="-1">
         <parameter dimension="1" estimate="true" id="hky000.kappa" lower="0.0" name="stateNode" upper="100.0" value="1.0"/>
         <parameter dimension="1" estimate="true" id="hky003.kappa" lower="0.0" name="stateNode" upper="100.0" value="1.0"/>
@@ -534,7 +550,7 @@
         <log idref="treeLikelihood003"/>
     </logger>
 
-    <logger fileName="ooo3.$(seed).log" log="@indicators" logEvery="5000" mode="autodetect" model="@posterior">
+    <logger fileName="testEBSP.$(seed).log" log="@indicators" logEvery="5000" mode="autodetect" model="@posterior">
         <log idref="posterior"/>
         <log idref="likelihood"/>
         <log idref="coalescent"/>

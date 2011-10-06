@@ -592,9 +592,9 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 	@Override
 	public void log(int nSample, PrintStream out) {
 		// interval sizes
-		out.print("0:" + popSizeParameter.getArrayValue(0));
+		out.print("0:" + popSizeParameter.getArrayValue(0) + "\t");
 		for (int i = 0; i < alltimes.length; i++) {
-			out.print(alltimes[i] + "\t");
+			out.print(alltimes[i]);
 			if (indicatorsParameter.getArrayValue(i) > 0) {
 				out.print(":" + popSizeParameter.getArrayValue(i + 1));
 			}
