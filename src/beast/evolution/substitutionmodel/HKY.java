@@ -29,7 +29,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.evolution.datatype.Aminoacid;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.tree.Node;
@@ -64,6 +63,10 @@ public class HKY extends SubstitutionModel.Base {
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
       	double distance = (fStartTime - fEndTime) * fRate;
 
+        getTransitionProbabilities(distance, matrix);
+    }
+
+    public void getTransitionProbabilities(double distance, double[] matrix) {
         if (updateMatrix) {
             setupMatrix();
         }
