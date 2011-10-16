@@ -175,11 +175,13 @@
 
 
 ]]>
+            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution' if="isInitializing"/>
+            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution' if="isInitializing"/>
+
             <connect spec='BeautiConnector' srcID='treelog.$(n)' targetID='mcmc' inputName='logger'/>
             <connect spec='BeautiConnector' srcID='RandomGeneTree.$(n)' targetID='mcmc' inputName='init'/>
 
             <connect spec='BeautiConnector' srcID='treePrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
 
             <connect spec='BeautiConnector' srcID='Tree.$(n)' targetID='state' inputName='stateNode'/>
             <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)' targetID='state' inputName='stateNode'/>
@@ -204,12 +206,12 @@
             <connect spec='BeautiConnector' srcID='mutationRate.$(n)' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='gammaShape.$(n)' targetID='tracelog' inputName='log'/>
 
-            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='GammaShapePrior.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution'/>
         </partitiontemplate>
 
         <mergepoint id='commonTemplates'/>
+        <mergepoint id='parametricDistributions'/>
 
     </beauticonfig>
 

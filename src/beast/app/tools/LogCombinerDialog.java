@@ -68,12 +68,15 @@ public class LogCombinerDialog {
     private final JTextField fileNameText = new JTextField("not selected", 16);
 	private File outputFile = null;
 
-	public LogCombinerDialog(final JFrame frame) {
+	public LogCombinerDialog(final JFrame frame, String titleString, Icon icon) {
 		this.frame = frame;
 
 		optionPanel = new OptionsPanel(12, 12);
 
-		//this.frame = frame;
+        final JLabel titleText = new JLabel(titleString);
+        titleText.setIcon(icon);
+        optionPanel.addSpanningComponent(titleText);
+        titleText.setFont(new Font("sans-serif", 0, 12));
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setOpaque(false);
@@ -96,7 +99,8 @@ public class LogCombinerDialog {
 		JScrollPane scrollPane1 = new JScrollPane(filesTable,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+		scrollPane1.setMaximumSize(new Dimension(10000,120));
+		
 		ActionPanel actionPanel1 = new ActionPanel(false);
 		actionPanel1.setAddAction(addFileAction);
 		actionPanel1.setRemoveAction(removeFileAction);

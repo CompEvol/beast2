@@ -100,7 +100,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
                 final RealParameter p = new RealParameter();
         		p.initByName("value", popSizeParameter.getValue() + "", "upper", popSizeParameter.getUpper(), "lower", popSizeParameter.getLower(), "dimension", events);
                 p.setID(popSizeParameter.getID());
-                popSizeParameter.assignFrom(p);
+                popSizeParameter.assignFromWithoutID(p);
             }
 
             if (indicatorsParameter.getDimension() != events - 1) {

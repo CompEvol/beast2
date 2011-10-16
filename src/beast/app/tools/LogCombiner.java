@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 
@@ -380,22 +378,24 @@ public class LogCombiner extends LogAnalyser {
 	            System.setProperty("apple.awt.showGrowBox", "true");
 
 	            // TODO: set up ICON
-//	            java.net.URL url = LogCombiner.class.getResource("/images/utility.png");
+	            java.net.URL url = LogCombiner.class.getResource("images/logcombiner.png");
 	            javax.swing.Icon icon = null;
+	            
+	            if (url != null) {
+	                icon = new javax.swing.ImageIcon(url);
+	            }
 
-//	            if (url != null) {
-//	                icon = new javax.swing.ImageIcon(url);
-//	            }
-
+	            String titleString = "<html><center><p>LogCombiner<br>" +
+                "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
 
 	            //ConsoleApplication consoleApp = 
 	           	new ConsoleApplication(nameString, aboutString, icon, true);
 
 	            combiner.printTitle(aboutString);
 
-	            LogCombinerDialog dialog = new LogCombinerDialog(new JFrame());
+	            LogCombinerDialog dialog = new LogCombinerDialog(new JFrame(), titleString, icon);
 
-	            if (!dialog.showDialog("LogCombiner " + versionString)) {
+	            if (!dialog.showDialog(nameString)) {
 	                return;
 	            }
 

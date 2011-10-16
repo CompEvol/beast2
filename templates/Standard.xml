@@ -228,7 +228,7 @@
 
 
 
-
+        <mergepoint id='parametricDistributions'/>
         <mergepoint id='commonTemplates'/>
 
 <!-- Tree initialisation -->

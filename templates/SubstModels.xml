@@ -406,6 +406,9 @@
             <connect spec='BeautiConnector' srcID='groupSizesDelta.$(n)' targetID='mcmc' inputName='operator' if='inposterior(BayesianSkyline.$(n))'/>
         </subtemplate>
 
+</mergewith>
+
+<mergewith point='parametricDistributions'>
 <!-- Parametric distributions, all without hyperpriors -->
 
 <!-- Uniform -->
