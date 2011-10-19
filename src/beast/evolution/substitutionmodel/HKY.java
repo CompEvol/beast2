@@ -63,10 +63,6 @@ public class HKY extends SubstitutionModel.Base {
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
       	double distance = (fStartTime - fEndTime) * fRate;
 
-        getTransitionProbabilities(distance, matrix);
-    }
-
-    public void getTransitionProbabilities(double distance, double[] matrix) {
         if (updateMatrix) {
             setupMatrix();
         }

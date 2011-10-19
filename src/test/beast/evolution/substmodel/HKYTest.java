@@ -125,7 +125,7 @@ public class HKYTest extends TestCase {
             double distance = test.getDistance();
 
             double[] mat = new double[4 * 4];
-            hky.getTransitionProbabilities(distance, mat);
+            hky.getTransitionProbabilities(null, distance, 0, 1, mat);
             final double[] result = test.getExpectedResult();
 
             for (int k = 0; k < mat.length; ++k) {
