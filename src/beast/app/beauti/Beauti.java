@@ -641,6 +641,7 @@ public class Beauti extends JTabbedPane {
 	
     
     void setUpViewMenu() {
+    	m_viewPanelCheckBoxMenuItems = null;
     	viewMenu.removeAll();
 		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
         	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem( iPanel);
@@ -753,6 +754,8 @@ public class Beauti extends JTabbedPane {
 	    	while (getTabCount() > 0) {
 	    		removeTabAt(0);
 	    	}
+			bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
+			Arrays.fill(bPaneIsVisible, true);
     	} else {
     		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
     			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);

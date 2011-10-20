@@ -1,18 +1,19 @@
 package beast.evolution.speciation;
 
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
 import beast.core.Description;
-import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
@@ -25,6 +26,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
 	public Input<SpeciesTreePrior> m_speciesTreePrior = new Input<SpeciesTreePrior>("speciesTreePrior","defines population function and its parameters", Validate.REQUIRED);
 	
+	public Input<TreeTopFinder> treeTopFinder = new Input<TreeTopFinder>("treetop","calculates height of species tree, required only for linear *beast analysis");
 	// intervals for each of the species tree branches
 	PriorityQueue<Double> [] m_intervals;
 	// count nr of lineages at the bottom of species tree branches
@@ -48,6 +50,13 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 		int nLineages = m_tree.get().getLeafNodeCount();
 		Node [] nodes2 = m_speciesTree.get().getNodesAsArray();
 		int nSpecies = m_speciesTree.get().getNodeCount();
+		
+		
+		if (nSpecies == 1 && nodes2[0].getID().equals("dummyTaxonSet")) {
+			// we are in Beauti, don't initialise
+			return;
+		}
+		
 		
 		// reserve memory for priority queues
 		m_intervals = new PriorityQueue[nSpecies];
@@ -153,7 +162,11 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 		if (!node.isRoot()) {
 			fTimes[k+1] = node.getParent().getHeight(); 
 		} else {
-			fTimes[k+1] = Math.max(node.getHeight(), m_tree.get().getRoot().getHeight());
+			if (m_bIsConstantPopFunction == PopSizeFunction.linear) {
+				fTimes[k+1] = treeTopFinder.get().getHighestTreeHeight();
+			} else {
+				fTimes[k+1] = Math.max(node.getHeight(), m_tree.get().getRoot().getHeight());
+			}
 		}
 		// sanity check
 		for (int i = 0; i <= k; i++) {
@@ -167,14 +180,15 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
 		switch (m_bIsConstantPopFunction) {
 		case constant:
-			calcConstantPopSizeContribution(nLineagesBottom, iNode, fTimes, k);
+			calcConstantPopSizeContribution(nLineagesBottom, m_fPopSizesBottom.getValue(iNode), fTimes, k);
 			break;
 		case linear:
 			calcLinearPopSizeContribution(nLineagesBottom, iNode, fTimes, k, node);
 			break;
 		case linear_with_constant_root:
 			if (node.isRoot()) {
-				calcConstantPopSizeContribution(nLineagesBottom, iNode, fTimes, k);
+				double fPopSize = getTopPopSize(node.m_left.getNr()) + getTopPopSize(node.m_right.getNr());
+				calcConstantPopSizeContribution(nLineagesBottom, fPopSize, fTimes, k);
 			} else {
 				calcLinearPopSizeContribution(nLineagesBottom, iNode, fTimes, k, node);
 			}
@@ -185,12 +199,12 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 	/* the contribution of a branch in the species tree to
 	 * the log probability, for constant population function.
 	 */
-	private void calcConstantPopSizeContribution(int nLineagesBottom, int iNode, double[] fTimes, int k) {
-		double fPopSize = m_fPopSizesBottom.getValue(iNode) * m_fPloidy;
+	private void calcConstantPopSizeContribution(int nLineagesBottom, double fPopSize2, double[] fTimes, int k) {
+		double fPopSize = fPopSize2 * m_fPloidy;
 		logP += - k * Math.log(fPopSize);
 //		System.err.print(logP);
 		for (int i = 0; i <= k; i++) {
-			logP += -((nLineagesBottom - i) * (nLineagesBottom-i - 1.0) / 2.0) * (fTimes[i+1]-fTimes[i]) / fPopSize;
+			logP += -((nLineagesBottom - i) * (nLineagesBottom - i - 1.0) / 2.0) * (fTimes[i+1] - fTimes[i]) / fPopSize;
 		}
 //		System.err.println(" " + logP + " " + Arrays.toString(fTimes) + " " + iNode + " " + k);
 	}
@@ -204,11 +218,10 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 			fPopSizeBottom = m_fPopSizesBottom.getValue(iNode) * m_fPloidy;
 		} else {
 			// use sum of left and right child branches for internal nodes
-			fPopSizeBottom = (m_fPopSizesTop.getValue(node.m_left.getNr()) + 
-				m_fPopSizesTop.getValue(node.m_right.getNr())) * m_fPloidy;
+			fPopSizeBottom = (getTopPopSize(node.m_left.getNr()) + getTopPopSize(node.m_right.getNr())) * m_fPloidy;
 		}
-		double fPopSizeTop = m_fPopSizesTop.getValue(iNode) * m_fPloidy;
-		double a = (fPopSizeTop-fPopSizeBottom)/(fTimes[k]-fTimes[0]);
+		double fPopSizeTop = getTopPopSize(iNode) * m_fPloidy;
+		double a = (fPopSizeTop - fPopSizeBottom)/(fTimes[k+1] - fTimes[0]);
 		double b = fPopSizeBottom; 
 		for (int i = 0; i < k; i++) {
 			//double fPopSize = fPopSizeBottom + (fPopSizeTop-fPopSizeBottom) * fTimes[i+1]/(fTimes[k]-fTimes[0]);
@@ -216,8 +229,14 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 			logP += - Math.log(fPopSize);
 		}
 		for (int i = 0; i <= k; i++) {
-			logP += -((nLineagesBottom - i) * (nLineagesBottom-i - 1.0) / 2.0) * 
-				Math.log((a*(fTimes[i+1]-fTimes[0])+b)/(a*(fTimes[i]-fTimes[0])+b)) / a; 
+			if (Math.abs(fPopSizeTop-fPopSizeBottom) < 1e-10) {
+				// slope = 0, so population function is constant
+				double fPopSize = a*(fTimes[i+1]-fTimes[0])+b;
+				logP += -((nLineagesBottom - i) * (nLineagesBottom - i - 1.0) / 2.0) * (fTimes[i+1] - fTimes[i]) / fPopSize;
+			} else {
+				double f = (a * (fTimes[i+1] - fTimes[0]) + b)/(a * (fTimes[i] - fTimes[0]) + b);
+				logP += -((nLineagesBottom - i) * (nLineagesBottom - i - 1.0) / 2.0) * Math.log(f) / a;
+			}
 		}
 	}
 
@@ -253,8 +272,22 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 		}
 	}
 
+	/* return population size at top. For linear with constant root, there is no
+	 * entry for the root. An internal node can have the number equal to dimension
+	 * of m_fPopSizesTop, then the root node can be numbered with a lower number
+	 * and we can use that entry in m_fPopSizesTop for the rogue internal node.
+	 */
+	private double getTopPopSize(int iNode) {
+		if (iNode < m_fPopSizesTop.getDimension()) {
+			return m_fPopSizesTop.getArrayValue(iNode);
+		}
+		return m_fPopSizesTop.getArrayValue(m_speciesTree.get().getRoot().getNr());
+	}
+	
+	
 	@Override
 	public boolean requiresRecalculation() {
+		// TODO: check whether this is worth optimising?
 		return true;
 	}
 	

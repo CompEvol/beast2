@@ -170,7 +170,11 @@ public class PriorListInputEditor extends ListInputEditor {
             }
 
             String sID = distr.getID();
-            sID = sID.substring(0, sID.indexOf('.'));
+            try {
+            	sID = sID.substring(0, sID.indexOf('.'));
+            } catch (Exception e) {
+				throw new RuntimeException("Improperly formatted ID: " + distr.getID());
+			}
             for (BeautiSubTemplate template : sAvailablePlugins) {
             	if (template.matchesName(sID)) { //getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
             		comboBox.setSelectedItem(template);

@@ -32,6 +32,7 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -211,5 +212,18 @@ public class PluginShape extends Shape {
 			return null;
 		}
 		return m_plugin.getID();
+	}
+	@Override
+	void toSVG(PrintStream out) {
+	    out.println("<defs>");
+	    out.println("  <linearGradient id='grad" + getID() + "' x1='0%' y1='0%' x2='100%' y2='100%'>");
+	    out.println("    <stop offset='0%' style='stop-color:rgb(255,255,255);stop-opacity:1' />");
+	    out.println("    <stop offset='100%' style='stop-color:rgb(" + m_fillcolor.getRed() + "," + m_fillcolor.getGreen() + "," + m_fillcolor.getBlue() + ");stop-opacity:1' />");
+	    out.println("  </linearGradient>");
+	    out.println("</defs>");
+	    out.print("<path id='" + getID() +"' d='M " + m_x + " " + (m_y + m_h) + " l " + m_w/2 + " 0 ");
+	    out.print(" a " + m_w/2 + " " + (-m_h/2) + " 0 0,0 0," + (-m_h) + " l " +(-m_w/2)+ " 0 z'");
+	    out.println(" fill='url(#grad" + getID()+ ")' />");
+	    drawSVGString(out, g_PluginFont, m_pencolor, "middle");
 	}
 } // class Function

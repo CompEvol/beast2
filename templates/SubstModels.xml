@@ -312,7 +312,7 @@
 
   		    <scale id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
 ]]>
-            <!--connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution'/-->
+            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='prior' inputName='distribution' if='Tree.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='birthRate.$(n)' targetID='state' inputName='stateNode' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
@@ -334,7 +334,7 @@
   		    <scale id='BirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.$(n)"/>
   		    <scale id='DeathRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.$(n)"/>
 ]]>
-            <!--connect spec='BeautiConnector' srcID='BirthDeath.$(n)' targetID='prior' inputName='distribution'/-->
+            <connect spec='BeautiConnector' srcID='BirthDeath.$(n)' targetID='prior' inputName='distribution' if='Tree.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='birthRate2.$(n)' targetID='state' inputName='stateNode' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='relativeDeathRate2.$(n)' targetID='state' inputName='stateNode' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
 
@@ -357,6 +357,7 @@
                  </populationModel>
             </distribution>
 ]]>
+            <connect spec='BeautiConnector' srcID='CoalescentConstant.$(n)' targetID='prior' inputName='distribution' if='Tree.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -371,6 +372,7 @@
                 </populationModel>
             </distribution>
 ]]>
+            <connect spec='BeautiConnector' srcID='CoalescentExponential.$(n)' targetID='prior' inputName='distribution' if='Tree.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -392,7 +394,7 @@
 		              intparameter="@bGroupSizes.$(n)"/>
 
 ]]>
-            <!--connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='prior' inputName='distribution'/-->
+            <connect spec='BeautiConnector' srcID='BayesianSkyline.$(n)' targetID='prior' inputName='distribution' if='Tree.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='bPopSizes.$(n)' targetID='state' inputName='stateNode' if='inposterior(bPopSizes.$(n))'/>
             <connect spec='BeautiConnector' srcID='bGroupSizes.$(n)' targetID='state' inputName='stateNode' if='inposterior(bGroupSizes.$(n))'/>
 

@@ -27,10 +27,12 @@ package beast.app.draw;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 import java.awt.Rectangle;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -38,7 +40,7 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
-public class Shape {
+abstract public class Shape {
 	int m_x = 0;
 	int m_y = 0;
 	int m_w = 1;
@@ -277,4 +279,38 @@ public class Shape {
 	void toggleFilled() {m_bFilled = !m_bFilled;}
 	int getPenWidth() {return m_nPenWidth;}
 	void setPenWidth(int nPenWidth) {m_nPenWidth = nPenWidth;}
+	
+	abstract void toSVG(PrintStream out);
+	void drawSVGString(PrintStream out, Font font, Color color, String sTextAnchor) {
+		if (getLabel() !=null) {
+
+			String sLabel = getLabel();
+			int i = 0;
+			while (sLabel.indexOf('\n')>= 0) {
+				String sStr = sLabel.substring(0,sLabel.indexOf('\n'));
+				out.println("<text x='"
+					+ (m_x + m_w/2)
+					+ "' y='"
+					+ (m_y + m_h/2)
+					+ "' font-family='" + font.getFamily() + "' "
+					+ "font-size='" + font.getSize() + "pt' " + "font-style='"
+					+ (font.isBold() ? "oblique" : "") + (font.isItalic() ? "italic" : "") + "' "
+					+
+					"stroke='rgb(" + color.getRed() + "," + color.getGreen()
+					+ "," + color.getBlue() + ")' text-anchor='" + sTextAnchor + "'>" + sStr + "</text>\n");				
+				sLabel = sLabel.substring(sStr.length() + 1);
+				i++;
+			}
+			out.println("<text x='"
+					+ (m_x + m_w/2)
+					+ "' y='"
+					+ (m_y + m_h/2)
+					+ "' font-family='" + font.getFamily() + "' "
+					+ "font-size='" + font.getSize() + "pt' " + "font-style='"
+					+ (font.isBold() ? "oblique" : "") + (font.isItalic() ? "italic" : "") + "' "
+					+
+					"stroke='rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ")' " +
+					"text-anchor='" + sTextAnchor + "'>" + sLabel + "</text>\n");				
+		}
+	}
 }

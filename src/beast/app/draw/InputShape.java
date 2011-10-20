@@ -29,6 +29,7 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.io.PrintStream;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -160,5 +161,12 @@ public class InputShape extends Shape {
 		} else {
 			return m_sID;
 		}
+	}
+	
+	@Override
+	void toSVG(PrintStream out) {
+		out.print("<circle cx='" + (m_x + m_w / 2) + "' cy='" + (m_y + m_h / 2) + "' r='" + (m_w/2)+ "' ");
+		out.println("fill='rgb(" + m_fillcolor.getRed() + "," + m_fillcolor.getGreen() + "," + m_fillcolor.getBlue() + ")'/>");
+	    drawSVGString(out, g_InputFont, m_pencolor, "end");
 	}
 } // class Ellipse

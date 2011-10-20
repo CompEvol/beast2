@@ -68,10 +68,12 @@ public class Tree extends StateNode {
     			Node left = new Node();
     			left.m_iLabel = 0;
     			left.m_fHeight = 0;
+    			left.setID(sTaxa.get(0));
     			for (int i = 1; i < sTaxa.size(); i++) {
     				Node right = new Node();
     				right.m_iLabel = i;
     				right.m_fHeight = 0;
+        			right.setID(sTaxa.get(i));
     				Node parent = new Node();
     				parent.m_iLabel = sTaxa.size() + i - 1;
     				parent.m_fHeight = i;

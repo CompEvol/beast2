@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
+import java.io.PrintStream;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -240,5 +241,14 @@ public class Arrow extends Shape {
 	}
 	public String toString() {
 		return m_sTailID + "-->" + m_sHeadID;
+	}
+	
+	@Override
+	void toSVG(PrintStream out) {
+	    out.println("<path d='M " + m_x +" " + m_y + 
+	    		" C "+(m_x+20) + " " + m_y + " " + (m_x+m_w-40) + " " + (m_y+m_h) + " " + (m_x+m_w) + " " + (m_y+m_h) +"'" +
+//	    		" q 20 0 " + (m_w-40) + " " + (m_h) + " T 40 0 '" +
+	    		" stroke='rgb(" + m_pencolor.getRed() + "," + m_pencolor.getGreen() + "," + m_pencolor.getBlue()+")'" +
+	    		" stroke-width='" + m_nPenWidth+"' fill='none'/>");
 	}
 } // class Arrow

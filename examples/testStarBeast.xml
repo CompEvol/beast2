@@ -139,41 +139,34 @@
     <distribution id="posterior" spec="util.CompoundDistribution">
         <distribution id="prior" spec="util.CompoundDistribution">
 
-        <distribution id="speciesCoalescent" spec="util.CompoundDistribution">
-            <!-- gene tree priors -->
-            <distribution id='tree.prior.29' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree29' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
-            <distribution id='tree.prior.26' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree26' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
+		    <distribution id="speciesCoalescent" spec="util.CompoundDistribution">
+		        <!-- gene tree priors -->
+		        <distribution id='tree.prior.29' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree29' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
+		        <distribution id='tree.prior.26' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree26' speciesTree='@speciesTree' speciesTreePrior='@SpeciesTreePopSizePrior'/>
 
-            <!-- species tree priors -->
-            <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' tree='@speciesTree' 
-            		popFunction='constant' taxonset='@taxonsuperset'>
-                <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
-                <parameter name='gammaParameter' id='popMean' value='0.004'/>
-            </distribution>
-        </distribution>
+		        <!-- species tree priors -->
+		        <distribution id='SpeciesTreePopSizePrior' spec='SpeciesTreePrior' tree='@speciesTree' 
+		        		popFunction='constant' taxonset='@taxonsuperset'>
+		            <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
+		            <parameter name='gammaParameter' id='popMean' value='0.004'/>
+		        </distribution>
+		    </distribution>
 
             <distribution id="SpeciesTreeDivergenceTimesPrior" spec="speciation.YuleModel" tree='@speciesTree'>
                 <birthDiffRate spec='parameter.RealParameter' id="birthRate" value='213.2021' lower='0' upper='10000' />
             </distribution>
-<!--
-            <distribution id="SpeciesTreeDivergenceTimesPrior" spec="speciation.BirthDeathGernhard08Model" tree='@speciesTree'>
-                <birthDiffRate spec='parameter.RealParameter' id="birthRate" value='1' lower='0' upper='10000' />
-            	<relativeDeathRate spec='parameter.RealParameter' id="relativeDeathRate" value='0.5' lower='0' upper='1' />
-            </distribution>
--->
+
             <!-- hyper priors for assorted parameters -->
             <distribution id='birthRatePrior' spec='distributions.Prior' x='@birthRate'>
                 <distr id='OneOnX' spec='distributions.OneOnX'/>
             </distribution>
-<!--
-            <distribution id='relativeDeathRatePrior' spec='distributions.Prior' x='@relativeDeathRate'>
-                <distribution id="UniformRelDeathRate" spec='distributions.Uniform' lower='0' upper='1'/>
-            </distribution>
--->
+
             <distribution id="popMean.prior26" spec="beast.math.distributions.Prior" x="@popMean" distr='@OneOnX'/>
+
             <distribution id="kappa.prior26" spec="beast.math.distributions.Prior" x="@hky.kappa26">
                 <distr id='logNormal' spec='beast.math.distributions.LogNormalDistributionModel' M="1.0" S="1.25" offset="0.0" meanInRealSpace="false"/>
             </distribution>
+
             <distribution id="kappa.prior29" spec="beast.math.distributions.Prior" x="@hky.kappa29"  distr='@logNormal'/>
 
         </distribution>
@@ -244,8 +237,8 @@ initial='@tree29' taxonset='@lineagetaxa' threshold='1e-12' />
         <!--parameter dimension="1" estimate="false" id="popSize" name="stateNode" value="1.0"/-->
         <parameter dimension="1" estimate="false" id="mutationRate" name="stateNode" value="1.0"/>
         <parameter dimension="1" estimate="false" id="clockRate" name="stateNode" value="1.0"/>
-        <parameter dimension="1" estimate="false" id="hky.kappa26" lower="0.0" name="stateNode" value="1.0"/>
-        <parameter dimension="1" estimate="false" id="hky.kappa29" lower="0.0" name="stateNode" value="1.0"/>
+        <parameter dimension="1" estimate="true" id="hky.kappa26" lower="0.0" name="stateNode" value="1.0"/>
+        <parameter dimension="1" estimate="true" id="hky.kappa29" lower="0.0" name="stateNode" value="1.0"/>
 
         <stateNode idref='popSize'/> 
         <stateNode idref='popMean'/>

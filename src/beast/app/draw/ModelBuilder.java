@@ -25,6 +25,7 @@
 package beast.app.draw;
 
 import beast.app.BeastMCMC;
+import beast.app.util.Utils;
 import beast.core.Plugin;
 import beast.evolution.alignment.Sequence;
 import beast.util.AddOnManager;
@@ -44,6 +45,7 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -368,49 +370,55 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         public void actionPerformed(ActionEvent ae) {
             m_bIsExporting = true;
 
-            JFileChooser fc = new JFileChooser(m_sDir);
-            fc.addChoosableFileFilter(new MyFileFilter() {
-                public String getExtention() {
-                    return ".bmp";
-                }
+//            JFileChooser fc = new JFileChooser(m_sDir);
+//            fc.addChoosableFileFilter(new MyFileFilter() {
+//                public String getExtention() {
+//                    return ".bmp";
+//                }
+//
+//                public String getDescription() {
+//                    return "Bitmap files (*.bmp)";
+//                }
+//            });
+//            fc.addChoosableFileFilter(new MyFileFilter() {
+//                public String getExtention() {
+//                    return ".jpg";
+//                }
+//
+//                public String getDescription() {
+//                    return "JPEG bitmap files (*.jpg)";
+//                }
+//            });
+//            fc.addChoosableFileFilter(new MyFileFilter() {
+//                public String getExtention() {
+//                    return ".png";
+//                }
+//
+//                public String getDescription() {
+//                    return "PNG bitmap files (*.png)";
+//                }
+//            });
+//            fc.setDialogTitle("Export Image As");
+//            int rval = fc.showSaveDialog(g_panel);
+//            if (rval == JFileChooser.APPROVE_OPTION) {
+//	            String sFileName = fc.getSelectedFile().toString();
+        	try {
 
-                public String getDescription() {
-                    return "Bitmap files (*.bmp)";
-                }
-            });
-            fc.addChoosableFileFilter(new MyFileFilter() {
-                public String getExtention() {
-                    return ".jpg";
-                }
-
-                public String getDescription() {
-                    return "JPEG bitmap files (*.jpg)";
-                }
-            });
-            fc.addChoosableFileFilter(new MyFileFilter() {
-                public String getExtention() {
-                    return ".png";
-                }
-
-                public String getDescription() {
-                    return "PNG bitmap files (*.png)";
-                }
-            });
-            fc.setDialogTitle("Export DensiTree As");
-            int rval = fc.showSaveDialog(g_panel);
-            if (rval == JFileChooser.APPROVE_OPTION) {
-                String sFileName = fc.getSelectedFile().toString();
+        		File file = Utils.getSaveFile("Export image (type determined by extention)", new File(m_sDir), "Image files", "png", "bmp", "jpg", "svg");
+            
+        		if (file != null) {
+                String sFileName = file.getAbsolutePath();
                 if (sFileName.lastIndexOf('/') > 0) {
                     m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
                 }
                 if (sFileName != null && !sFileName.equals("")) {
-                    if (!sFileName.toLowerCase().endsWith(".png")
-                            && sFileName.toLowerCase().endsWith(".jpg")
-                            && sFileName.toLowerCase().endsWith(".bmp")
-                            && sFileName.toLowerCase().endsWith(".svg")) {
-                        sFileName += ((MyFileFilter) fc.getFileFilter())
-                                .getExtention();
-                    }
+//                    if (!sFileName.toLowerCase().endsWith(".png")
+//                            && sFileName.toLowerCase().endsWith(".jpg")
+//                            && sFileName.toLowerCase().endsWith(".bmp")
+//                            && sFileName.toLowerCase().endsWith(".svg")) {
+//                        sFileName += ((MyFileFilter) fc.getFileFilter())
+//                                .getExtention();
+//                    }
 
                     if (sFileName.toLowerCase().endsWith(".png")
                             || sFileName.toLowerCase().endsWith(".jpg")
@@ -440,18 +448,37 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             e.printStackTrace();
                         }
                         return;
+                    } else if (sFileName.toLowerCase().endsWith(".svg")) {
+                   		writeSVG(sFileName);
+                    	return;
                     }
                     JOptionPane.showMessageDialog(null, "Extention of file "
                             + sFileName
                             + " not recognized as png,bmp,jpg or svg file");
                 }
             }
+        	} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Something went wrong while exporting image: " + e.getMessage());
+			}
 
             m_bIsExporting = false;
             repaint();
         }
 
-        public boolean isExporting() {
+        private void writeSVG(String sFileName) throws Exception {
+			PrintStream out = new PrintStream(sFileName);
+			out.println("<?xml version='1.0'?>\n" + "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n"
+					+ "  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n"
+					+ "<svg xmlns='http://www.w3.org/2000/svg' version='1.1'\n" + "      width='" + getWidth()
+					+ "' height='" + getHeight() + "' viewBox='0 0 " + getWidth() + " " + getHeight() + "'>\n"
+					+ "<rect fill='#fff' width='" + getWidth() + "' height='" + getHeight() + "'/>");
+			for (Shape shape : m_doc.m_objects) {
+				shape.toSVG(out);
+			}
+			out.println("</svg>");
+		}
+
+		public boolean isExporting() {
             return m_bIsExporting;
         }
     } // class ActionExport

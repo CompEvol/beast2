@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.SpringLayout;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -236,6 +237,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			loadTemplate(sXML);
 			beauti.setUpPanels();
 			beauti.setUpViewMenu();
+			beauti.setTitle();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -469,8 +471,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
-		scrubAll(false, false);
 		determinePartitions();
+		scrubAll(false, false);
 		// String sXML = new XMLProducer().toXML(m_mcmc.get(),
 		// PluginPanel.g_plugins.values());
 		String sXML = new XMLProducer().toXML(mcmc.get(), new HashSet<Plugin>());
@@ -721,52 +723,85 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (bAutoSetClockRate) {
 				setClockRate();
 			}
+
+			// set estimate flag on tree, only if tree occurs in a partition
+			for (String sPartition: sPartitionNames) {
+				Tree tree = (Tree) PluginPanel.g_plugins.get("Tree." + sPartition);
+				tree.m_bIsEstimated.setValue(false, tree);
+			}
+			for (Plugin plugin : pPartition[2]) {
+				Tree tree = ((TreeLikelihood) plugin).m_tree.get();
+				tree.m_bIsEstimated.setValue(true, tree);
+			}
+			
 			
 			// go through all templates, and process connectors in relevant ones 
 //			List<Plugin> mcmcPredecessors = new ArrayList<Plugin>();
 //			collectPredecessors(((MCMC) mcmc.get()), mcmcPredecessors);
 			
 //			List<Plugin> getPosteriorPredecessors() {
-				List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-				collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 //				return posteriorPredecessors;
 //			}
 			
 //			List<Plugin> posteriorPredecessors = getPosteriorPredecessors();
-			List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
-			templates.add(m_beautiConfig.partitionTemplate.get());
-			templates.addAll(BeautiConfig.g_subTemplates);
-			
-			for (String sPartition : sPartitionNames) {
-				for (BeautiSubTemplate template : templates) {
-					String sTemplateID = template.getMainID().replaceAll("\\$\\(n\\)", sPartition);
-					Plugin plugin = PluginPanel.g_plugins.get(sTemplateID);
 
-					// check if template is in use
-					if (plugin != null) {
-						// if so, run through all connectors
-						for (BeautiConnector connector : template.connectors) {
-							if (connector.toString().contains("YuleModel")) {
-								int h = 3;
-								h++;
-							}
-							if (connector.atInitialisationOnly()) {
-								if (bInitial) {
+
+			boolean bProgress = true;
+			while (bProgress) {
+				bProgress = false;
+				List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
+				collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
+	
+				
+				List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
+				templates.add(m_beautiConfig.partitionTemplate.get());
+				templates.addAll(BeautiConfig.g_subTemplates);
+			
+				for (String sPartition : sPartitionNames) {
+					for (BeautiSubTemplate template : templates) {
+						String sTemplateID = template.getMainID().replaceAll("\\$\\(n\\)", sPartition);
+						Plugin plugin = PluginPanel.g_plugins.get(sTemplateID);
+	
+						// check if template is in use
+						if (plugin != null) {
+							// if so, run through all connectors
+							for (BeautiConnector connector : template.connectors) {
+								if (connector.toString().contains("YuleModel")) {
+									int h = 3;
+									h++;
+								}
+								if (connector.atInitialisationOnly()) {
+									if (bInitial) {
+										System.err.println("connect: " + connector);
+										connect(connector, sPartition);
+									}
+								} else 	if (connector.isActivated(sPartition, posteriorPredecessors)) {
 									System.err.println("connect: " + connector);
 									connect(connector, sPartition);
+								} else {
+									disconnect(connector, sPartition);
+									System.err.println("DISconnect: " + connector);
 								}
-							} else 	if (connector.isActivated(sPartition, posteriorPredecessors)) {
-								System.err.println("connect: " + connector);
-								connect(connector, sPartition);
-							} else {
-								disconnect(connector, sPartition);
-								System.err.println("DISconnect: " + connector);
 							}
 						}
 					}
 				}
-			}
 			
+				// if the model changed, some rules that use inposterior() may not have been triggered properly
+				// so we need to check that the model changed, and if so, revisit the BeautiConnectors
+				List<Plugin> posteriorPredecessors2 = new ArrayList<Plugin>();
+				collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors2);
+				if (posteriorPredecessors.size() != posteriorPredecessors2.size()) {
+					bProgress = true;
+				} else {
+					for (Plugin plugin : posteriorPredecessors2) {
+						if (!posteriorPredecessors.contains(plugin)) {
+							bProgress = true;
+							break;
+						}
+					}
+				}
+			}
 			
 //			if (bAutoScrubState) {
 //				scrubState(bUseNotEstimatedStateNodes);
