@@ -229,7 +229,7 @@ public class BeastMain {
     //Main method
     public static void main(String[] args) throws java.io.IOException {
     	List<String> MCMCargs = new ArrayList<String>();
-    	Utils.loadUIManager();
+//    	Utils.loadUIManager();
 
         Arguments arguments = new Arguments(
                 new Arguments.Option[]{
@@ -376,6 +376,7 @@ public class BeastMain {
         String nameString = "BEAST " + version.getVersionString();
 
         if (window) {
+            Utils.loadUIManager();
             System.setProperty("com.apple.macos.useScreenMenuBar", "true");
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("apple.awt.showGrowBox", "true");
