@@ -560,6 +560,10 @@ public class XMLParser {
 
         String sIDRef = getIDRef(node);
         if (sIDRef != null) {
+        	// produce warning if there are other attributes than idref
+        	if (node.getAttributes().getLength() > 1) {
+        		System.err.println("Element " + node.getNodeName() + " found with idref='" + sIDRef+ "'. All other attributes are ignored.\n");
+        	}
             if (m_sIDMap.containsKey(sIDRef)) {
                 Plugin plugin = m_sIDMap.get(sIDRef);
                 if (checkType(sClass, plugin)) {

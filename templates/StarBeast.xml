@@ -272,7 +272,7 @@
         </logger>
 
 		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="10000" mode="tree">
-		    <log spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@speciesTree" speciesTreePrior='@SpeciesTreePopSize.Prior'/>
+		    <log spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@speciesTree" speciesTreePrior='@SpeciesTreePopSize.Prior' treetop='@treeTopFinder'/>
 		</logger>
 
         <logger id='screenlog' logEvery="10000">

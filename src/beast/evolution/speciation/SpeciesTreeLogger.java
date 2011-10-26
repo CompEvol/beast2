@@ -19,6 +19,7 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
 	public Input<Valuable> m_parameter = new Input<Valuable>("popSize","population size parameter associated with tree nodes",Validate.REQUIRED);
 	public Input<Valuable> m_parameterTop = new Input<Valuable>("popSizeTop","population size parameter associated with top of tree branches, only used for non-constant *beast analysis");
 	public Input<SpeciesTreePrior> speciesTreePrior = new Input<SpeciesTreePrior>("speciesTreePrior", "species tree prior, used to find which Population Size Function is used. If not specified, assumes 'constant'");
+	public Input<TreeTopFinder> treeTopFinder = new Input<TreeTopFinder>("treetop","calculates height of species tree, required only for linear *beast analysis");
 
 	PopSizeFunction popSizeFunction;
 	String m_sMetaDataLabel;
@@ -73,7 +74,13 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
 		} else {
 			buf.append(node.getNr());
 		}
-		buf.append(m_sMetaDataLabel);
+		buf.append("[&dmt=");
+		if (node.isRoot()) {
+		    buf.append(treeTopFinder.get().getHighestTreeHeight() - node.getHeight());
+		} else {
+		    buf.append(node.getLength());
+		}
+		buf.append(",dmv=");
 		switch (popSizeFunction) {
 		case constant:
 			buf.append("{" + metadata.getArrayValue(node.getNr()) + "}");
@@ -82,7 +89,7 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
 			if (node.isLeaf()) {
 				buf.append("{" + metadata.getArrayValue(node.getNr()));
 			} else {
-				buf.append("{" + metadataTop.getArrayValue(node.m_left.getNr()) + metadataTop.getArrayValue(node.m_right.getNr()));
+				buf.append("{" + (metadataTop.getArrayValue(node.m_left.getNr()) + metadataTop.getArrayValue(node.m_right.getNr())));
 			}
 			buf.append("," + getMetaDataTopValue(node, metadataTop) + "}");
 			break;
@@ -90,17 +97,19 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
 			if (node.isLeaf()) {
 				buf.append("{" + metadata.getArrayValue(node.getNr()));
 			} else {
-				buf.append("{" + getMetaDataTopValue(node.m_left, metadataTop) + getMetaDataTopValue(node.m_right, metadataTop));
+				buf.append("{" + (getMetaDataTopValue(node.m_left, metadataTop) + getMetaDataTopValue(node.m_right, metadataTop)));
 			}
 			if (node.isRoot()) {
-				buf.append("," + getMetaDataTopValue(node.m_left, metadataTop) + getMetaDataTopValue(node.m_right, metadataTop) + "}");
+				buf.append("," + (getMetaDataTopValue(node.m_left, metadataTop) + getMetaDataTopValue(node.m_right, metadataTop)) + "}");
 			} else {
 				buf.append("," + getMetaDataTopValue(node, metadataTop) + "}");
 			}
 			break;
 		}
 		buf.append(']');
-	    buf.append(":").append(node.getLength());
+		if (!node.isRoot()) {
+		    buf.append(":").append(node.getLength());
+		}
 		return buf.toString();
 	}
 	

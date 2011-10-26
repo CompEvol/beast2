@@ -404,7 +404,7 @@ public class AddOnManager {
 				addDirContent(file, len);
 			} else {
 				if (file.getName().endsWith(".class")) {
-					all_classes.add(file.getPath().substring(len));
+					all_classes.add(file.getAbsolutePath().substring(len));
 				}
 			}
 		}
