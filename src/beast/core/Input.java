@@ -96,6 +96,9 @@ public class Input<T> {
         checkName();
     } // c'tor
 
+    /*
+     * constructor for List<>
+     */
     public Input(String sName, String sTipText, T startValue) {
         name = sName;
         tipText = sTipText;
@@ -103,6 +106,25 @@ public class Input<T> {
         defaultValue = startValue;
         checkName();
     } // c'tor
+
+    /*
+     * constructor for List<> with XOR rules
+     */
+    public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other) {
+        name = sName;
+        tipText = sTipText;
+        value = startValue;
+        defaultValue = startValue;
+        if (rule != Validate.XOR) {
+            System.err.println("Programmer error: input rule should be XOR for this Input constructor");
+        }
+        this.rule = rule;
+        this.other = other;
+        this.other.other = this;
+        this.other.rule = rule;
+        checkName();
+    } // c'tor
+
 
     public Input(String sName, String sTipText, T startValue, Class<?> type) {
         name = sName;
