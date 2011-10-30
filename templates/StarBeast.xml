@@ -66,6 +66,16 @@
             beast.evolution.branchratemodel.RandomLocalClockModel.indicators,
             beast.evolution.operators.ScaleOperator.indicator,
 	        beast.core.Operator.weight,
+			beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution.speciesTree,
+			beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution.speciesTreePrior,
+			beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution.treetop,
+			beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution.tree,
+			beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution.treeIntervals,
+			beast.evolution.speciation.SpeciesTreePrior.bottomPopSize,
+			beast.evolution.speciation.SpeciesTreePrior.topPopSize,
+			beast.evolution.speciation.SpeciesTreePrior.taxonset,
+			beast.evolution.speciation.SpeciesTreePrior.tree,
+			beast.evolution.speciation.SpeciesTreePrior.treeIntervals,
             beast.core.Logger.model
             '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters'
@@ -76,6 +86,10 @@
             path='distribution/distribution[id="likelihood"]/distribution/data'
             hasPartitions="none" icon='2220.png' forceExpansion='FALSE'
             type='beast.evolution.alignment.Alignment'
+        />
+		<panel spec='BeautiPanelConfig' panelname="Taxon sets" tiptext="Specify taxon sets that make up species"
+            path='distribution/distribution[id="speciescoalescent"]/distribution[id="SpeciesTreePopSize.Prior"]/taxonset'
+            hasPartitions="none" icon='1.png' forceExpansion='TRUE'
         />
 		<panel spec='BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
             path='siteModel'
@@ -89,6 +103,10 @@
             path='state/stateNode'
             hasPartitions="none" icon='6.png' forceExpansion='TRUE_START_COLLAPSED'
             isVisible='false'
+        />
+		<panel spec='BeautiPanelConfig' panelname="Multi Species Coalescent" tiptext="Multi Species Coalescent specific settings"
+            path='distribution/distribution[id="speciescoalescent"]/distribution'
+            hasPartitions="none" icon='2.png' forceExpansion='TRUE'
         />
 		<panel spec='BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
@@ -132,22 +150,12 @@
 
             <!-- tree and its properties -->
             <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
-            <plugin spec='beast.evolution.tree.Tree' id='Tree.$(n)' taxonset='@TaxonSet.$(n)'>
-	            <!--trait id='datetrait.$(n)' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
-		            value=''>
-		            <taxa idref='data'/>
-	            </trait-->
-            </plugin>
+            <plugin spec='beast.evolution.tree.Tree' id='Tree.$(n)' taxonset='@TaxonSet.$(n)'/>
 
             <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.$(n)'-->
 			<tree spec='RandomGeneTree' id='RandomGeneTree.$(n)' initial='@Tree.$(n)' speciesTree='@speciesTree' taxa='@$(n)'>
 				<populationModel id='RGTPopulationModel.$(n)' spec='ConstantPopulation'><popSize id='RGTPopSize.$(n)' spec='parameter.RealParameter' value='1'/></populationModel>
 			</tree>
-
-            <!-- default tree prior -->
-            <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
-                <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0' estimate='true'/>
-            </plugin>
 
             <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
@@ -166,9 +174,7 @@
             <operator id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.$(n)"/>
             <operator id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@Tree.$(n)"/>
 
-            <prior id='YuleBirthRatePrior.$(n)' spec='Prior' x='@birthRate.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' /></prior>
             <prior id='GammaShapePrior.$(n)' spec='Prior' x='@gammaShape.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
-  		    <operator id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
 			<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
 
@@ -176,13 +182,12 @@
 
 
 ]]>
-            <connect spec='BeautiConnector' srcID='YuleModel.$(n)'            targetID='prior' inputName='distribution' if="isInitializing"/>
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)'       targetID='likelihood' inputName='distribution' if="isInitializing"/>
 
             <connect spec='BeautiConnector' srcID='treelog.$(n)'              targetID='mcmc' inputName='logger' if='inposterior(Tree.$(n))'/>
             <connect spec='BeautiConnector' srcID='RandomGeneTree.$(n)'       targetID='mcmc' inputName='init' if='inposterior(Tree.$(n))'/>
 
-            <connect spec='BeautiConnector' srcID='treePrior.$(n)'            targetID='prior' inputName='distribution' if='inposterior(Tree.$(n))'/>
+            <connect spec='BeautiConnector' srcID='treePrior.$(n)'            targetID='speciescoalescent' inputName='distribution' if='inposterior(Tree.$(n))'/>
             <connect spec='BeautiConnector' srcID='ClockPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='Tree.$(n)'                 targetID='state' inputName='stateNode' if='inposterior(Tree.$(n))'/>
@@ -194,7 +199,6 @@
             <connect spec='BeautiConnector' srcID='proportionInvariantScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='mutationRateScaler.$(n)'        targetID='mcmc' inputName='operator' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='gammaShapeScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)'       targetID='mcmc' inputName='operator' if='inposterior(birthRate.$(n)) and birthRate.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='treeScaler.$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
@@ -211,21 +215,20 @@
             <connect spec='BeautiConnector' srcID='clockRate.$(n)'            targetID='tracelog' inputName='log' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='GammaShapePrior.$(n)'      targetID='prior' inputName='distribution' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)'   targetID='prior' inputName='distribution' if='inposterior(birthRate.$(n)) and birthRate.$(n)/estimate=true'/>
-
-            <connect spec='BeautiConnector' srcID='Tree.$(n)'        targetID='Reheight' inputName='tree'/>
-            <connect spec='BeautiConnector' srcID='popSizeTopScaler' targetID='Reheight' inputName='tree' if='SpeciesTreePopSize.Prior/popFunction!=constant'/>
+            <connect spec='BeautiConnector' srcID='Tree.$(n)'        targetID='Reheight' inputName='genetree'/>
+            <connect spec='BeautiConnector' srcID='popSizeTopScaler' targetID='mcmc' inputName='operator' if='SpeciesTreePopSize.Prior/popFunction!=constant'/>
             <connect spec='BeautiConnector' srcID='Tree.$(n)'        targetID='treeTopFinder' inputName='tree'/>
             <connect spec='BeautiConnector' srcID='treeTopFinder'    targetID='treePrior.$(n)' inputName='treetop' if='SpeciesTreePopSize.Prior/popFunction=linear'/>
         </partitiontemplate>
 
         <mergepoint id='commonTemplates'/>
+        <mergepoint id='parametricDistributions'/>
 
     </beauticonfig>
 
 
 	<taxonset spec='beast.evolution.alignment.TaxonSet' id='taxonsuperset'>
-		<taxon spec='beast.evolution.alignment.TaxonSet' id='dummyTaxonSet'>
+		<taxon spec='beast.evolution.alignment.TaxonSet' id='Beauti2DummyTaxonSet'>
 			<taxon spec='beast.evolution.alignment.Taxon' id='dummyTaxon'/>
 		</taxon>
 	</taxonset>
@@ -244,14 +247,16 @@
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
+            <distribution spec="CompoundDistribution" id="speciescoalescent">
+				<distribution id='SpeciesTreePopSize.Prior' spec='SpeciesTreePrior' tree='@speciesTree' 
+						popFunction='constant' taxonset='@taxonsuperset'>
+				    <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
+			        <topPopSize spec='parameter.RealParameter' id='popSizeTop' value='1'/> 
+				    <parameter name='gammaParameter' id='popMean' value='0.004'/>
+				</distribution>
+			</distribution>
             <distribution spec="CompoundDistribution" id="prior">
 			    <!-- species tree priors -->
-			    <distribution id='SpeciesTreePopSize.Prior' spec='SpeciesTreePrior' tree='@speciesTree' 
-			    		popFunction='constant' taxonset='@taxonsuperset'>
-			        <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
-		            <topPopSize spec='parameter.RealParameter' id='popSizeTop' value='1'/> 
-			        <parameter name='gammaParameter' id='popMean' value='0.004'/>
-			    </distribution>
 		        <distribution id="SpeciesTreeDivergenceTimes.Prior" spec="speciation.YuleModel" tree='@speciesTree'>
 		            <birthDiffRate spec='parameter.RealParameter' id="birthRate" value='213.2021' lower='0' upper='10000' />
 		        </distribution>

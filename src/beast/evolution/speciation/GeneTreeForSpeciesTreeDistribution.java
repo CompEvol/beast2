@@ -52,7 +52,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 		int nSpecies = m_speciesTree.get().getNodeCount();
 		
 		
-		if (nSpecies == 1 && nodes2[0].getID().equals("dummyTaxonSet")) {
+		if (nSpecies <= 1 && nodes2[0].getID().equals("Beauti2DummyTaxonSet")) {
 			// we are in Beauti, don't initialise
 			return;
 		}

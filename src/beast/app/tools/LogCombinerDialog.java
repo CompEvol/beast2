@@ -28,6 +28,7 @@ package beast.app.tools;
 
 //import dr.app.gui.FileDrop;
 import beast.app.beastapp.WholeNumberField;
+import beast.app.beauti.Beauti;
 import beast.app.util.FileDrop;
 import beast.app.util.Utils;
 //import dr.app.gui.table.TableEditorStopper;
@@ -133,13 +134,16 @@ public class LogCombinerDialog {
 
         ActionListener buttonListener = new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-            	File file = Utils.getSaveFile("Select output file...");
+            	File file = Utils.getSaveFile("Select output file...", new File(Beauti.g_sDir), "Beast log and tree files", "log", "trees");
                 if( file == null ) {
                     // the dialog was cancelled...
                     return;
                 }
-
                 outputFile = file;
+				String sFileName = file.getAbsolutePath();
+				if (sFileName.lastIndexOf('/') > 0) {
+					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+				}
                 fileNameText.setText(outputFile.getName());
 
             }
@@ -249,12 +253,18 @@ public class LogCombinerDialog {
             fileInfo.burnin = 0;
 
             files.add(fileInfo);
+
+    		String sFileName = file.getAbsolutePath();
+    		if (sFileName.lastIndexOf('/') > 0) {
+    			Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+    		}
         }
 
         filesTableModel.fireTableDataChanged();
 
         int sel2 = files.size() - 1;
         filesTable.setRowSelectionInterval(sel1, sel2);
+
     }
 
 	Action addFileAction = new AbstractAction("+") {
@@ -265,8 +275,7 @@ public class LogCombinerDialog {
 		private static final long serialVersionUID = 7602227478402204088L;
 
 		public void actionPerformed(ActionEvent ae) {
-
-			File [] files = Utils.getLoadFiles("Select log file", null, "Trace or tree log files", "log", "trees");
+			File [] files = Utils.getLoadFiles("Select log file", new File(Beauti.g_sDir), "Trace or tree log files", "log", "trees");
             if (files != null) {
                 addFiles(files);
             }
@@ -301,7 +310,7 @@ public class LogCombinerDialog {
 		 *
 		 */
 		private static final long serialVersionUID = 4153326364833213013L;
-		private final String[] columns = { "File", "Burnin" };
+		private final String[] columns = { "File", "Burnin (percentage)" };
 
 		public FilesTableModel() {
 		}

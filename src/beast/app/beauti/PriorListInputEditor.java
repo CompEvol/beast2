@@ -34,6 +34,8 @@ import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution;
+import beast.evolution.speciation.SpeciesTreePrior;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
@@ -324,6 +326,9 @@ public class PriorListInputEditor extends ListInputEditor {
         }
         if (!(plugin instanceof MRCAPrior) && m_buttonStatus != BUTTONSTATUS.NONE && m_buttonStatus != BUTTONSTATUS.ADDONLY) {
         	m_delButton.get(m_delButton.size() - 1).setVisible(false);
+        }
+        if (plugin instanceof SpeciesTreePrior || plugin instanceof GeneTreeForSpeciesTreeDistribution) {
+        	comboBox.setVisible(false);
         }
     	comboBox.setMaximumSize(new Dimension(1024, 24));
     	comboBoxes.add(comboBox);

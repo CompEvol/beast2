@@ -342,7 +342,7 @@ public class Beauti extends JTabbedPane {
     		fileChooser.addChoosableFileFilter(ef1);
     		fileChooser.addChoosableFileFilter(ef0);
     		fileChooser.setMultiSelectionEnabled(true);
-    		fileChooser.setDialogTitle("Load Beast XML File");
+    		fileChooser.setDialogTitle("Import alignment File");
 
     		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
     			try {

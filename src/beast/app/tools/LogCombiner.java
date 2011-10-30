@@ -1,9 +1,11 @@
 package beast.app.tools;
 
+
 import jam.console.ConsoleApplication;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
@@ -203,7 +205,17 @@ public class LogCombiner extends LogAnalyser {
 						}
 						
 					}
-					m_sTrees.add(sStr.substring(sStr.indexOf("=") + 1));
+					int i = 0;
+					while (sStr.charAt(i) != '=') {
+						i++;
+						if (sStr.charAt(i) == '[') {
+							i++;
+							while (sStr.charAt(i) != ']') {
+								i++;
+							}
+						}
+					}
+					m_sTrees.add(sStr.substring(i + 1));
 				}
 			}
 			if (nData % nLines == 0) {
@@ -214,10 +226,18 @@ public class LogCombiner extends LogAnalyser {
 	} // readTreeLogFile
 
 	private void printCombinedLogs() {
-		logln("Collected " + (m_bIsTreeLog ? m_sTrees.size(): m_fCombinedTraces[0].length) + " lines in combined log");
+		int nData = (m_bIsTreeLog ? m_sTrees.size(): m_fCombinedTraces[0].length);
+		logln("Collected " + nData + " lines in combined log");
 		if (m_sFileOut != null){
 			log("Writing to file " + m_sFileOut);
+			try {
+				m_out = new PrintStream(new File(m_sFileOut));
+			} catch (FileNotFoundException e) {
+				log("Could not open file " + m_sFileOut + " for writing: " + e.getMessage());
+				return;
+			}
 		}
+		logln("\n\n"+BAR);
 		// preamble
 		m_out.println(m_sPreAmble);
 
@@ -229,6 +249,9 @@ public class LogCombiner extends LogAnalyser {
 					sTree = format(sTree);
 					m_out.println("tree STATE_" + (m_nSampleInterval * i) + " = " + sTree);
 					nLines++;
+				}
+				if (i % (nData/80) == 0) {
+					log("*");
 				}
 			}
 			m_out.println("End;");
@@ -257,9 +280,12 @@ public class LogCombiner extends LogAnalyser {
 					m_out.print("\n");
 					nLines++;
 				}
+				if (i % (nData/80) == 0) {
+					log("*");
+				}
 			}
 		}
-		logln(" " + nLines + " lines in combined log");
+		logln("\n" + nLines + " lines in combined log");
 	}
 
 	private String format(String sTree) {
@@ -414,9 +440,9 @@ public class LogCombiner extends LogAnalyser {
 	            String[] inputFiles = dialog.getFileNames();
 	            int[] burnins = dialog.getBurnins();
 
-	            String outputFileName = dialog.getOutputFileName();
+	            combiner.m_sFileOut = dialog.getOutputFileName();
 
-	            if (outputFileName == null) {
+	            if (combiner.m_sFileOut == null) {
 	                System.err.println("No output file specified");
 	            }
 
