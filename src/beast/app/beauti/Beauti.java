@@ -252,7 +252,7 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	File file = beast.app.util.Utils.getLoadFile("Load Beast XML File");
+        	File file = beast.app.util.Utils.getLoadFile("Load Beast XML File", new File(g_sDir), "Beast XML files", "xml");
 //    		JFileChooser fileChooser = new JFileChooser(g_sDir);
 //    		fileChooser.addChoosableFileFilter(ef1);
 //    		fileChooser.setDialogTitle("Load Beast XML File");

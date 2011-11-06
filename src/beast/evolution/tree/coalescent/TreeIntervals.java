@@ -51,6 +51,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 	
 	@Override
 	public void initAndValidate() {
+		// this initialises data structures that store/restore might need 
+        calculateIntervals();
         intervalsKnown = false;
 	}
 	
