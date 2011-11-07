@@ -360,12 +360,21 @@
             <distribution id="CoalescentConstant.$(n)" spec="Coalescent">
                 <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)' tree='@Tree.$(n)'/>
                 <populationModel spec="ConstantPopulation" id='ConstantPopulation.$(n)'>
-                     <parameter name="popSize" id="cPopSize.$(n)" value='1.0' estimate='false'/>
+                     <parameter name="popSize" id="cPopSize.$(n)" value='0.3' estimate='true'/>
                  </populationModel>
             </distribution>
+
+  		    <operator id='cPopSizeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@cPopSize.$(n)"/>
+	        <prior id='cPopSizePrior.$(n)' spec='Prior' x='@cPopSize.$(n)'><distr spec="OneOnX"/></prior>
 ]]>
             <connect spec='BeautiConnector' srcID='CoalescentConstant.$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='cPopSizePrior.$(n)'      targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'/>
 
+            <connect spec='BeautiConnector' srcID='cPopSize.$(n)'           targetID='state' inputName='stateNode' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='cPopSizeScaler.$(n)'     targetID='mcmc' inputName='operator' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='cPopSize.$(n)'           targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='CoalescentConstant.$(n)' targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.$(n)) and Tree.$(n)/estimate=true'/>
         </subtemplate>
 
@@ -376,14 +385,31 @@
             <distribution id="CoalescentExponential.$(n)" spec="Coalescent">
                 <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)' tree='@Tree.$(n)'/>
                 <populationModel spec="ExponentialGrowth" id="ExponentialGrowth.$(n)">
-                    <parameter name="popSize" id="ePopSize.$(n)" value='1.0' estimate='false'/>
-                    <parameter name="growthRate" id="growthRate.$(n)" value='1.0' estimate='false'/>
+                    <parameter name="popSize" id="ePopSize.$(n)" value='0.3' estimate='true'/>
+                    <parameter name="growthRate" id="growthRate.$(n)" value='3e-4' estimate='true'/>
                 </populationModel>
             </distribution>
+
+  		    <operator id='ePopSizeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@ePopSize.$(n)"/>
+	        <operator id="GrowthRateRandomWalk.$(n)" spec="RealRandomWalkOperator" windowSize='1' weight="3" parameter="@growthRate.$(n)"/>
+
+	        <prior id='ePopSizePrior.$(n)' spec='Prior' x='@ePopSize.$(n)'><distr spec="OneOnX"/></prior>
+	        <prior id='GrowthRatePrior.$(n)' spec='Prior' x='@growthRate.$(n)'><distr spec="LaplaceDistribution" mu='0.001' scale='30.701135'/></prior>
+
 ]]>
             <connect spec='BeautiConnector' srcID='CoalescentExponential.$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ePopSizePrior.$(n)'         targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.$(n)) and ePopSize.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='GrowthRatePrior.$(n)'       targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.$(n)) and growthRate.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='ePopSize.$(n)'              targetID='state' inputName='stateNode' if='inposterior(CoalescentExponential.$(n)) and ePopSize.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='growthRate.$(n)'            targetID='state' inputName='stateNode' if='inposterior(CoalescentExponential.$(n)) and growthRate.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='ePopSizeScaler.$(n)'        targetID='mcmc' inputName='operator' if='inposterior(CoalescentExponential.$(n)) and ePopSize.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='GrowthRateRandomWalk.$(n)'  targetID='mcmc' inputName='operator' if='inposterior(CoalescentExponential.$(n)) and growthRate.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='CoalescentExponential.$(n)' targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ePopSize.$(n)'              targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.$(n)) and ePopSize.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='growthRate.$(n)'            targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.$(n)) and growthRate.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -479,6 +505,7 @@
 
 <!-- Laplace -->
 <!-- TODO: IMPLEMENT beast.math.distributions.LaplaceDistribution.getDistribution() before uncommenting this
+-->
         <subtemplate id='LaplaceDistribution' spec='BeautiSubTemplate' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
@@ -487,7 +514,6 @@
         </distr>
 ]]>
         </subtemplate>
--->
 
 <!-- InverseGamma -->
         <subtemplate id='InverseGamma' spec='BeautiSubTemplate' class='beast.math.distributions.InverseGamma' mainid='[top]'>

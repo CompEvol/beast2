@@ -2,11 +2,13 @@ package beast.math.distributions;
 
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
+import org.apache.commons.math.distribution.NormalDistributionImpl;
 import org.apache.commons.math.MathException;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
 
 @Description("Laplace distribution.    f(x|\\mu,b) = \\frac{1}{2b} \\exp \\left( -\\frac{|x-\\mu|}{b} \\right)" +
         "The probability density function of the Laplace distribution is also reminiscent of the normal distribution; " +
@@ -23,6 +25,7 @@ public class LaplaceDistribution extends ParametricDistribution {
     double scale;
     // the maximum density
     double c;
+    LaplaceImpl m_dist = new LaplaceImpl();
 
     @Override
     public void initAndValidate() {
@@ -60,7 +63,7 @@ public class LaplaceDistribution extends ParametricDistribution {
         scale = s;
 
         //Normalizing constant
-        c = 1 / (2 * scale);
+        c = 1.0 / (2.0 * scale);
     }
 
     @Override
@@ -84,9 +87,44 @@ public class LaplaceDistribution extends ParametricDistribution {
 
     @Override
     public ContinuousDistribution getDistribution() {
-//		refresh();
-//		return null;
-        throw new UnsupportedOperationException();
+		refresh();
+		return m_dist;
+//        throw new UnsupportedOperationException();
     }
+
+	class LaplaceImpl implements ContinuousDistribution {
+
+		@Override
+		public double cumulativeProbability(double x) throws MathException {
+			// =0.5\,[1 + \sgn(x-\mu)\,(1-\exp(-|x-\mu|/b))].
+			//return 0.5 * (1.0 + Math.signum(x - m_fMu) * (1.0 - Math.exp(-Math.abs(x-m_fMu)/m_fScale)));
+	        if (x == mu) {
+	            return 0.5;
+	        } else {
+	            return (0.5) * (1 + ((x - mu) / Math.abs(x - mu)) * (1 - Math.exp(-Math.abs(x - mu) / scale)));
+	        }
+		}
+
+		@Override
+		public double cumulativeProbability(double x0, double x1) throws MathException {
+			return cumulativeProbability(x1) - cumulativeProbability(x0);
+		}
+
+		@Override
+		public double inverseCumulativeProbability(double p) throws MathException {
+			//     \mu - b\,\sgn(p-0.5)\,\ln(1 - 2|p-0.5|). 
+            return mu - scale * Math.signum(p - 0.5) * Math.log(1.0 - 2.0 * Math.abs(p - 0.5));
+		}
+
+		@Override
+		public double density(double fX) {
+			// f(x|\mu,b) = \frac{1}{2b} \exp \left( -\frac{|x-\mu|}{b} \right) \,\!
+	        return c * Math.exp(-Math.abs(fX - mu) / scale);
+		}
+		@Override
+		public double logDensity(double fX) {
+	        return Math.log(c) - (Math.abs(fX - mu) / scale);
+		}
+	} // class LaplaceImpl
 
 } // class
