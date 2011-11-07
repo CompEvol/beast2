@@ -830,12 +830,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		Plugin likelihood = PluginPanel.g_plugins.get("likelihood");
 		if (likelihood instanceof CompoundDistribution) {
 			int i = 0;
+			BranchRateModel.Base firstModel = null;
 			for (Distribution distr : ((CompoundDistribution)likelihood).pDistributions.get()) {
 				if (distr instanceof TreeLikelihood) {
 					TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
 					boolean bNeedsEstimation = false;
 					if (i > 0) {
-						bNeedsEstimation = true;
+						BranchRateModel.Base model = (BranchRateModel.Base) treeLikelihood.m_pBranchRateModel.get();
+						bNeedsEstimation = (model != firstModel);
 					} else {
 						Tree tree = treeLikelihood.m_tree.get();
 						// check whether there are tip dates
@@ -857,6 +859,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					if (model != null) {
 						RealParameter clockRate = model.meanRateInput.get(); 
 						clockRate.m_bIsEstimated.setValue(bNeedsEstimation, clockRate);
+						if (firstModel == null) {
+							firstModel = model;
+						}
 					}
 					i++;
 				}

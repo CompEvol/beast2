@@ -160,11 +160,11 @@
 
 		        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)' targetID='state' inputName='stateNode' if='inposterior(StrictClock.$(n)) and clockRate.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='clockRate.$(n)'  targetID='state' inputName='stateNode'          if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'       if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='clockRate.$(n)'  targetID='state' inputName='stateNode'          if='inposterior(StrictClock.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='ClockPrior.$(n)' targetID='prior' inputName='distribution'       if='inposterior(StrictClock.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='StrictClockRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(StrictClock.$(n)) and clockRate.$(n)/estimate=true'/>
         </subtemplate>
 
 <!-- Relaxed clock exponential -->
@@ -317,6 +317,9 @@
 
             <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='YuleBirthRateScaler.$(n)' targetID='mcmc' inputName='operator'     if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='YuleModel.$(n)' targetID='tracelog' inputName='log' if='inposterior(YuleModel.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='birthRate.$(n)' targetID='tracelog' inputName='log' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -334,15 +337,19 @@
   		    <scale id='BirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.$(n)"/>
   		    <scale id='DeathRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.$(n)"/>
 ]]>
-            <connect spec='BeautiConnector' srcID='BirthDeath.$(n)' targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and Tree.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='birthRate2.$(n)' targetID='state' inputName='stateNode' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='BirthDeath.$(n)'         targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='birthRate2.$(n)'         targetID='state' inputName='stateNode' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='relativeDeathRate2.$(n)' targetID='state' inputName='stateNode' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='BirthRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='DeathRatePrior.$(n)' targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='BirthRatePrior.$(n)'     targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='DeathRatePrior.$(n)'     targetID='prior' inputName='distribution' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='BirthRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='DeathRateScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='BirthRateScaler.$(n)'    targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='DeathRateScaler.$(n)'    targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.$(n)) and relativeDeathRate2.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='BirthDeath.$(n)'         targetID='tracelog' inputName='log' if='inposterior(BirthDeath.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='birthRate2.$(n)'         targetID='tracelog' inputName='log' if='inposterior(BirthDeath.$(n)) and birthRate2relativeDeathRaten)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='relativeDeathRate2.$(n)' targetID='tracelog' inputName='log' if='inposterior(BirthDeath.$(n)) and birthRate2.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -358,6 +365,8 @@
             </distribution>
 ]]>
             <connect spec='BeautiConnector' srcID='CoalescentConstant.$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.$(n)) and Tree.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='CoalescentConstant.$(n)' targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.$(n)) and Tree.$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -373,6 +382,8 @@
             </distribution>
 ]]>
             <connect spec='BeautiConnector' srcID='CoalescentExponential.$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.$(n)) and Tree.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='CoalescentExponential.$(n)' targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.$(n)) and Tree.$(n)/estimate=true'/>
         </subtemplate>
 
 

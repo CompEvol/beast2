@@ -215,11 +215,14 @@
             <connect spec='BeautiConnector' srcID='wide.$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
             <connect spec='BeautiConnector' srcID='WilsonBalding.$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'/>
 
+            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)'            targetID='tracelog' inputName='log' if='inposterior(Tree.$(n))'/>
             <connect spec='BeautiConnector' srcID='TreeHeight.$(n)'                targetID='tracelog' inputName='log' if='inposterior(Tree.$(n))'/>
             <connect spec='BeautiConnector' srcID='proportionInvariant.$(n)'       targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='mutationRate.$(n)'              targetID='tracelog' inputName='log' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='gammaShape.$(n)'                targetID='tracelog' inputName='log' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='clockRate.$(n)'                 targetID='tracelog' inputName='log' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='YuleModel.$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='birthRate.$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='GammaShapePrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
             <connect spec='BeautiConnector' srcID='YuleBirthRatePrior.$(n)'        targetID='prior' inputName='distribution' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
