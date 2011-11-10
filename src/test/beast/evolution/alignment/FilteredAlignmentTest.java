@@ -1,12 +1,10 @@
 package test.beast.evolution.alignment;
 
-import org.junit.Test;
-
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
-
 import junit.framework.TestCase;
+import org.junit.Test;
 
 public class FilteredAlignmentTest extends TestCase {
 	
@@ -88,7 +86,22 @@ public class FilteredAlignmentTest extends TestCase {
 
 		data2.initByName("data",data,"filter","1::3,2::3");
 		assertEquals(11, data2.getSiteCount());
+
+//        System.out.println(alignmentToString(data2, 1));
+
+        data2.initByName("data",data,"filter","3::3");
+		assertEquals(5, data2.getSiteCount());
+
+//        System.out.println(alignmentToString(data2, 1));
 	}
 
-
+    String alignmentToString(Alignment data, int iTaxon) throws Exception {
+		int [] nStates = new int [data.getSiteCount()];
+		for (int i = 0; i < data.getSiteCount(); i++) {
+			int iPattern = data.getPatternIndex(i);
+			int [] sitePattern = data.getPattern(iPattern);
+			nStates[i] = sitePattern[iTaxon];
+		}
+		return data.getDataType().state2string(nStates);
+	}
 }

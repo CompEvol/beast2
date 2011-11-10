@@ -1,16 +1,17 @@
 package beast.evolution.operators;
 
 
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.Operator;
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
+import beast.util.Randomizer;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import beast.core.Input.Validate;
-import beast.core.Operator;
-import beast.core.Input;
-import beast.core.Description;
-import beast.core.parameter.*;
-import beast.util.Randomizer;
 
 /**
  * A generic operator for use with a sum-constrained (possibly weighted) vector parameter.
@@ -51,10 +52,10 @@ public class DeltaExchangeOperator extends Operator {
 
         if (parameterInput.get().isEmpty()) {
             if (intparameterInput.get().size() > 1)
-                compoundParameter = new CompoundIntegerParameter(intparameterInput.get());
+                compoundParameter = new CompoundParameterHelper(intparameterInput.get());
         } else {
             if (parameterInput.get().size() > 1)
-                compoundParameter = new CompoundRealParameter(parameterInput.get());
+                compoundParameter = new CompoundParameterHelper(parameterInput.get());
         }
 
         if (compoundParameter == null) { // one parameter case
@@ -177,8 +178,8 @@ public class DeltaExchangeOperator extends Operator {
 
             if (intparameterInput.get().isEmpty()) {
                 // operate on real parameter
-                double scalar1 = ((CompoundRealParameter) compoundParameter).getValue(dim1);
-                double scalar2 = ((CompoundRealParameter) compoundParameter).getValue(dim2);
+                double scalar1 = (Double) compoundParameter.getValue(dim1);
+                double scalar2 = (Double) compoundParameter.getValue(dim2);
 
                 if (isIntegerOperator) {
                     int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
@@ -199,19 +200,19 @@ public class DeltaExchangeOperator extends Operator {
 
                 }
 
-                if (scalar1 < ((CompoundRealParameter) compoundParameter).getLower(dim1) ||
-                        scalar1 > ((CompoundRealParameter) compoundParameter).getUpper(dim1) ||
-                        scalar2 < ((CompoundRealParameter) compoundParameter).getLower(dim2) ||
-                        scalar2 > ((CompoundRealParameter) compoundParameter).getUpper(dim2)) {
+                if (scalar1 < (Double) compoundParameter.getLower(dim1) ||
+                        scalar1 > (Double) compoundParameter.getUpper(dim1) ||
+                        scalar2 < (Double) compoundParameter.getLower(dim2) ||
+                        scalar2 > (Double) compoundParameter.getUpper(dim2)) {
                     logq = Double.NEGATIVE_INFINITY;
                 } else {
-                    ((CompoundRealParameter) compoundParameter).setValue(dim1, scalar1);
-                    ((CompoundRealParameter) compoundParameter).setValue(dim2, scalar2);
+                    compoundParameter.setValue(dim1, scalar1);
+                    compoundParameter.setValue(dim2, scalar2);
                 }
             } else {
                 // operate on int parameter
-                int scalar1 = ((CompoundIntegerParameter) compoundParameter).getValue(dim1);
-                int scalar2 = ((CompoundIntegerParameter) compoundParameter).getValue(dim2);
+                int scalar1 = (Integer) compoundParameter.getValue(dim1);
+                int scalar2 = (Integer) compoundParameter.getValue(dim2);
 
                 int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
@@ -220,14 +221,14 @@ public class DeltaExchangeOperator extends Operator {
                 scalar2 = Math.round(scalar2 + d);
 
 
-                if (scalar1 < ((CompoundIntegerParameter) compoundParameter).getLower(dim1) ||
-                        scalar1 > ((CompoundIntegerParameter) compoundParameter).getUpper(dim1) ||
-                        scalar2 < ((CompoundIntegerParameter) compoundParameter).getLower(dim2) ||
-                        scalar2 > ((CompoundIntegerParameter) compoundParameter).getUpper(dim2)) {
+                if (scalar1 < (Integer) compoundParameter.getLower(dim1) ||
+                        scalar1 > (Integer) compoundParameter.getUpper(dim1) ||
+                        scalar2 < (Integer) compoundParameter.getLower(dim2) ||
+                        scalar2 > (Integer) compoundParameter.getUpper(dim2)) {
                     logq = Double.NEGATIVE_INFINITY;
                 } else {
-                    ((CompoundIntegerParameter) compoundParameter).setValue(dim1, scalar1);
-                    ((CompoundIntegerParameter) compoundParameter).setValue(dim2, scalar2);
+                    compoundParameter.setValue(dim1, scalar1);
+                    compoundParameter.setValue(dim2, scalar2);
                 }
 
             }
