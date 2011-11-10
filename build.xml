@@ -124,6 +124,7 @@
 			<batchtest fork="yes" todir="${report}">
 				<fileset dir="${src}">
 					<include name="test/**/*Test.java" />
+                    <exclude name="test/beast/beast2vs1/**/*Test.java"/>
 				</fileset>
 			</batchtest>
 		</junit>

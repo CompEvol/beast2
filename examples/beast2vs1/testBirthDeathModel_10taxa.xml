@@ -1,0 +1,59 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- test Yule birth model and Birth Death model per Gernhard 2008-->
+<beast version='2.0'
+       namespace='beast.evolution.speciation:beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+
+    <data id="alignment" dataType="nucleotide">
+        <sequence taxon="A">A</sequence>
+        <sequence taxon="B">A</sequence>
+        <sequence taxon="C">A</sequence>
+        <sequence taxon="D">A</sequence>
+        <sequence taxon="E">A</sequence>
+        <sequence taxon="F">A</sequence>
+        <sequence taxon="G">A</sequence>
+        <sequence taxon="H">A</sequence>
+        <sequence taxon="I">A</sequence>
+        <sequence taxon="J">A</sequence>
+    </data>
+
+    <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+        <taxa idref='alignment'/>
+    </input>
+
+    <!-- A prior on the distribution node heights defined given                  -->
+    <!-- a Yule speciation process (a pure birth process).                       -->
+    <input spec='BirthDeathGernhard08Model' id="birthDeath">
+        <birthDiffRate idref="birthRate"/>
+        <relativeDeathRate idref='relativeDeathRate'/>
+        <tree idref='tree'/>
+    </input>
+
+    <parameter id="birthRate" value="2.0" lower="0.0" upper="1000000.0"/>
+    <parameter id='relativeDeathRate' value='0.5' lower="0.0" upper="100.0"/>
+
+    <run spec='MCMC' chainLength="2000000">
+        <state>
+            <stateNode idref='birthRate'/>
+            <stateNode idref='tree'/>
+        </state>
+
+        <distribution id="birthDeath.prior" idref='birthDeath'/>
+
+        <operator spec='SubtreeSlide' weight="1" gaussian="true" size="1.0" tree="@tree"/>
+
+        <logger logEvery="10" fileName="test.$(seed).log">
+            <log idref='birthDeath'/>
+            <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+            <log idref='birthRate'/>
+            <log idref='relativeDeathRate'/>
+        </logger>
+
+        <logger logEvery="20000">
+            <log idref='birthDeath'/>
+            <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+            <log idref='birthRate'/>
+            <log idref='relativeDeathRate'/>
+        </logger>
+    </run>
+
+</beast>
