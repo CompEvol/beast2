@@ -30,7 +30,7 @@ public abstract class TestFramework extends TestCase {
                 Logger.FILE_MODE = Logger.FILE_OVERWRITE;
                 String sDir = System.getProperty("user.dir");
 
-                String sFileName = sDir + "/examples/beast2vsbeast1/" + xmls[index_XML];
+                String sFileName = sDir + "/examples/beast2vs1/" + xmls[index_XML];
 
                 System.out.println("Processing " + sFileName);
                 XMLParser parser = new XMLParser();
