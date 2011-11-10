@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import java.util.List;
 
 public abstract class TestFramework extends TestCase {
-    protected static long SEED = 127;
+    protected static long SEED = 128;
     private String[] xmls;
 
     protected abstract List<Expectation> giveExpectations(int index_XML) throws Exception;
