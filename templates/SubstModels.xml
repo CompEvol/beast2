@@ -1,7 +1,7 @@
 <beast version='2.0'
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
-<mergewith point='commonTemplates'>
+<mergewith point='substModelTemplates'>
 
 <!-- substitution models -->
 <!-- JC69 substitution model -->
@@ -145,8 +145,11 @@
             <frequencies id='equalFreqs.$(n)' spec='Frequencies' data='@$(n)' estimate='false'/>
 ]]>
         </subtemplate>
+</mergewith>
+
 
 <!-- Clock models -->
+<mergewith point='clockModelTemplates'>
 
 <!-- Strickt clock -->
         <subtemplate id='StrictClock' spec='BeautiSubTemplate' class='beast.evolution.branchratemodel.StrictClockModel' mainid='StrictClock.$(n)'>
@@ -299,8 +302,11 @@
             <connect spec='BeautiConnector' srcID='MeanRRatePrior.$(n)'            targetID='prior' inputName='distribution' if='inposterior(RandomLocalClock.$(n)) and meanClockRate.$(n)/estimate=true'/>
         </subtemplate>
 
+</mergewith>
+
 
 <!-- tree priors -->
+<mergewith point='treePriorTemplates'>
 <!-- Yule -->
         <subtemplate id='YuleModel' spec='BeautiSubTemplate' class='beast.evolution.speciation.YuleModel' mainid='YuleModel.$(n)'>
 <![CDATA[

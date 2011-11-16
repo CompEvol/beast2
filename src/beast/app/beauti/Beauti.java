@@ -16,6 +16,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,10 +53,6 @@ public class Beauti extends JTabbedPane {
     ExtensionFileFilter ef0 = new ExtensionFileFilter(".nex", "Nexus files");
     ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
 	
-    /**
-     * name of current file, used for saving (as opposed to saveAs) *
-     */
-    String sFileName = "";
     /**
      * current directory for opening files *
      */
@@ -92,7 +90,7 @@ public class Beauti extends JTabbedPane {
 	}
 	
 	void setTitle() {
-		frame.setTitle("Beauti II: " + this.doc.sTemplateName + " " + sFileName);
+		frame.setTitle("Beauti II: " + this.doc.sTemplateName + " " + doc.sFileName);
 	}
 	
 	void toggleVisible(int nPanelNr) {
@@ -150,11 +148,11 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            if (!sFileName.equals("")) {
+            if (!doc.sFileName.equals("")) {
                 if (!doc.validateModel()) {
                     return;
                 }
-                saveFile(sFileName);
+                saveFile(doc.sFileName);
 //                m_doc.isSaved();
             } else {
                 if (saveAs()) {
@@ -163,49 +161,6 @@ public class Beauti extends JTabbedPane {
             }
         } // actionPerformed
 
-        boolean saveAs() {
-            if (!doc.validateModel()) {
-                return false;
-            }
-            File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(sFileName), null, (String[]) null);
-//            JFileChooser fc = new JFileChooser(g_sDir);
-//            fc.addChoosableFileFilter(ef1);
-//            fc.setDialogTitle("Save Model As");
-//            if (!sFileName.equals("")) {
-//                // can happen on actionQuit
-//                fc.setSelectedFile(new File(sFileName));
-//            }
-//            int rval = fc.showSaveDialog(null);
-//
-//            if (rval == JFileChooser.APPROVE_OPTION) {
-            if (file != null) {
-                // System.out.println("Saving to file \""+
-                // f.getAbsoluteFile().toString()+"\"");
-                sFileName = file.getAbsolutePath();//fc.getSelectedFile().toString();
-                if (sFileName.lastIndexOf('/') > 0) {
-                    g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-                }
-                if (!sFileName.endsWith(FILE_EXT))
-                	sFileName = sFileName.concat(FILE_EXT);
-                saveFile(sFileName);
-                setTitle();
-                return true;
-            }
-            return false;
-        } // saveAs    
-
-        protected void saveFile(String sFileName) {
-            try {
-            	if (currentTab != null) {
-            		currentTab.config.sync(currentTab.iPartition);
-            	} else {
-            		panels[0].config.sync(0);
-            	}
-                doc.save(sFileName);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } // saveFile
         
         
     } // class ActionSave
@@ -224,6 +179,47 @@ public class Beauti extends JTabbedPane {
             saveAs();
         } // actionPerformed
     } // class ActionSaveAs    
+
+    boolean saveAs() {
+        if (!doc.validateModel()) {
+            return false;
+        }
+        File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(doc.sFileName), null, (String[]) null);
+        if (file != null) {
+        	if (file.exists()) {
+        		if (JOptionPane.showConfirmDialog(null, 
+        				"File " + file.getName() + " already exists. Do you want to overwrite?", "Overwrite file?", 
+        				JOptionPane.YES_NO_CANCEL_OPTION) != JOptionPane.YES_OPTION) {
+        			return false;
+        		}
+        	}
+            // System.out.println("Saving to file \""+
+            // f.getAbsoluteFile().toString()+"\"");
+        	doc.sFileName = file.getAbsolutePath();//fc.getSelectedFile().toString();
+            if (doc.sFileName.lastIndexOf('/') > 0) {
+                g_sDir = doc.sFileName.substring(0, doc.sFileName.lastIndexOf('/'));
+            }
+            if (!doc.sFileName.endsWith(FILE_EXT))
+            	doc.sFileName = doc.sFileName.concat(FILE_EXT);
+            saveFile(doc.sFileName);
+            setTitle();
+            return true;
+        }
+        return false;
+    } // saveAs    
+
+    protected void saveFile(String sFileName) {
+        try {
+        	if (currentTab != null) {
+        		currentTab.config.sync(currentTab.iPartition);
+        	} else {
+        		panels[0].config.sync(0);
+        	}
+            doc.save(sFileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    } // saveFile
 
     class ActionNew extends MyAction {
         private static final long serialVersionUID = 1;
@@ -259,12 +255,12 @@ public class Beauti extends JTabbedPane {
 //    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 //        		sFileName = fileChooser.getSelectedFile().toString();
         	if (file != null) {
-        		sFileName = file.getAbsolutePath();
-                if (sFileName.lastIndexOf('/') > 0) {
-                    g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+        		doc.sFileName = file.getAbsolutePath();
+                if (doc.sFileName.lastIndexOf('/') > 0) {
+                    g_sDir = doc.sFileName.substring(0, doc.sFileName.lastIndexOf('/'));
                 }
     			try {
-    				doc.loadXML(sFileName);
+    				doc.loadXML(doc.sFileName);
     				a_save.setEnabled(true);
     				a_saveas.setEnabled(true);
     				setTitle();
@@ -381,24 +377,31 @@ public class Beauti extends JTabbedPane {
 
         public void actionPerformed(ActionEvent ae) {
 //            if (!m_doc.m_bIsSaved) {
-        	if (doc.validateModel()) {
-                int result = JOptionPane.showConfirmDialog(null,
-                        "Do you want to save the Beast specification?",
-                        "Save before closing?",
-                        JOptionPane.YES_NO_CANCEL_OPTION);
-                if (result == JOptionPane.CANCEL_OPTION) {
-                    return;
-                }
-                if (result == JOptionPane.YES_OPTION) {
-                    if (!saveAs()) {
-                        return;
-                    }
-                }
-            }
+        	if (!quit()) {
+        		return;
+        	}
             System.exit(0);
         }
     } // class ActionQuit
 
+    boolean quit() {
+    	if (doc.validateModel()) {
+            int result = JOptionPane.showConfirmDialog(null,
+                    "Do you want to save the Beast specification?",
+                    "Save before closing?",
+                    JOptionPane.YES_NO_CANCEL_OPTION);
+            if (result == JOptionPane.CANCEL_OPTION) {
+                return false;
+            }
+            if (result == JOptionPane.YES_OPTION) {
+                if (!saveAs()) {
+                    return false;
+                }
+            }
+        }
+    	return true;
+    }
+    
     ViewPanelCheckBoxMenuItem [] m_viewPanelCheckBoxMenuItems;
     
     class ViewPanelCheckBoxMenuItem extends JCheckBoxMenuItem{
@@ -818,7 +821,7 @@ public class Beauti extends JTabbedPane {
 			
 			beauti.setVisible(true);
 			beauti.refreshPanel();
-			JFrame frame = new JFrame("Beauti II: " + doc.sTemplateName + " " + beauti.sFileName);
+			JFrame frame = new JFrame("Beauti II: " + doc.sTemplateName + " " + doc.sFileName);
 			beauti.frame = frame;
 			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
 
@@ -833,7 +836,17 @@ public class Beauti extends JTabbedPane {
 			frame.add(beauti);
 	        frame.setSize(1024, 768);
 	        frame.setVisible(true);
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+	        // check file needs to be save on closing main frame
+	        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			frame.addWindowListener(new WindowAdapter() {
+			    public void windowClosing(WindowEvent e) {
+		        	if (!beauti.quit()) {
+			    		return;
+			    	}
+		        	System.exit(0);
+			    }
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

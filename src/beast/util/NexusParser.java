@@ -37,7 +37,8 @@ public class NexusParser {
 	public TraitSet m_traitSet;
 	static Set<String> g_sequenceIDs;
 	static { g_sequenceIDs = new HashSet<String>();}
-	
+	public List<TaxonSet> m_taxonsets = new ArrayList<TaxonSet>();
+
 	/**  
 	 * try to reconstruct Beast II objects from the nexus file with given file name   
 	 * **/
@@ -298,6 +299,36 @@ public class NexusParser {
 		} while (!sStr.toLowerCase().contains("end;"));
 	}
 
+	/** parse sets block 
+BEGIN Sets;
+  TAXSET 'con' = 'con_SL_Gert2' 'con_SL_Tran6' 'con_SL_Tran7' 'con_SL_Gert6';
+  TAXSET 'spa' = 'spa_138a_Cerb' 'spa_JB_Eyre1' 'spa_JB_Eyre2';
+END; [Sets]
+	**/
+	void parseSetsBlock(BufferedReader fin) throws Exception {
+		String sStr;
+		do {
+			sStr = nextLine(fin);
+			if (sStr.toLowerCase().matches("\\s*taxset\\s.*")) {
+				sStr = sStr.replaceAll("^\\s+", "");
+				sStr = sStr.replaceAll(";", "");
+				String [] sStrs = sStr.split("\\s+");
+				String sID = sStrs[1];
+				sID = sID.replaceAll("'\"", "");
+				TaxonSet set = new TaxonSet();
+				set.setID(sID);
+				for (int i = 3; i < sStrs.length; i++) {
+					sID = sStrs[i];
+					sID = sID.replaceAll("'\"", "");
+					Taxon taxon = new Taxon();
+					taxon.setID(sID);
+					set.m_taxonset.setValue(taxon, set);
+				}
+				m_taxonsets.add(set);
+			}
+		} while (!sStr.toLowerCase().contains("end;"));
+	}
+	
 	private String generateSequenceID(String sTaxon) {
 		String sID = "seq_" + sTaxon;
 		int i = 0;

@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
-import javax.swing.SpringLayout;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -98,7 +98,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	String sTemplateName = null;
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
 
+    /**
+     * name of current file, used for saving (as opposed to saveAs) *
+     */
 	String sFileName = null;
+	
 	public BeautiDoc() {
 		g_doc = this;
 		setID("BeautiDoc");
@@ -106,10 +110,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	public ActionOnExit parseArgs(String[] args) throws Exception {
-		ActionOnExit m_endState = ActionOnExit.UNKNOWN;
-		String m_sOutputFileName = "beast.xml";
-		String m_sXML = null;
-		String m_sTemplateXML = null;
+		ActionOnExit endState = ActionOnExit.UNKNOWN;
+		String sOutputFileName = "beast.xml";
+		String sXML = null;
+		String sTemplateXML = null;
 		TraitSet traitset = null;
 
 		int i = 0;
@@ -122,7 +126,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					showUsageAndExit();
 				} else if (args[i].equals("-xml")) {
 					String sFileName = args[i + 1];
-					m_sXML = load(sFileName);
+					sXML = load(sFileName);
 					// XMLParser parser = new XMLParser();
 					// m_doc.m_mcmc.setValue(parser.parseFile(sFileName),
 					// m_doc);
@@ -130,7 +134,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					i += 2;
 				} else if (args[i].equals("-template")) {
 					String sFileName = args[i + 1];
-					m_sTemplateXML = processTemplate(sFileName);
+					sTemplateXML = processTemplate(sFileName);
 					m_sTemplateFileName = sFileName;
 					sTemplateName = nameFromFile(sFileName);
 					i += 2;
@@ -156,17 +160,17 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					i += 2;
 				} else if (args[i].equals("-exitaction")) {
 					if (args[i + 1].equals("writexml")) {
-						m_endState = ActionOnExit.WRITE_XML;
+						endState = ActionOnExit.WRITE_XML;
 					} else if (args[i + 1].equals("usetemplate")) {
-						m_endState = ActionOnExit.SHOW_DETAILS_USE_TEMPLATE;
+						endState = ActionOnExit.SHOW_DETAILS_USE_TEMPLATE;
 					} else if (args[i + 1].equals("usexml")) {
-						m_endState = ActionOnExit.SHOW_DETAILS_USE_XML_SPEC;
+						endState = ActionOnExit.SHOW_DETAILS_USE_XML_SPEC;
 					} else {
 						throw new Exception("Expected one of 'writexml','usetemplate' or 'usexml', not " + args[i + 1]);
 					}
 					i += 2;
 				} else if (args[i].equals("-out")) {
-					m_sOutputFileName = args[i + 1];
+					sOutputFileName = args[i + 1];
 					i += 2;
 				}
 				if (i == iOld) {
@@ -179,9 +183,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			System.exit(1);
 		}
 
-		initialize(m_endState, m_sXML, m_sTemplateXML, m_sOutputFileName);
+		initialize(endState, sXML, sTemplateXML, sOutputFileName);
 		addTraitSet(traitset);
-		return m_endState;
+		return endState;
 	} // parseArgs
 
 	String nameFromFile(String sFileName) {
@@ -438,14 +442,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			buf.append('\n');
 		}
 		fin.close();
-
-		String sXML = buf.toString();
-		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
-			sXML = sXML.replaceAll("<!--\\s*" + XMLProducer.DO_NOT_EDIT_WARNING, "");
-			int i = sXML.lastIndexOf("-->");
-			sXML = sXML.substring(0, i) + sXML.substring(i + 3);
-		}
-		return sXML;
+		return buf.toString();
 	}
 
 	Alignment getPartition(Plugin plugin) {
@@ -463,7 +460,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * see whether we have a valid model that can be saved at this point in time
 	 **/
 	public boolean validateModel() {
-		if (mcmc == null) {
+		if (mcmc == null || sPartitionNames.size() == 0) {
 			return false;
 		}
 		return true;
@@ -473,9 +470,15 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public void save(String sFileName) throws Exception {
 		determinePartitions();
 		scrubAll(false, false);
-		// String sXML = new XMLProducer().toXML(m_mcmc.get(),
-		// PluginPanel.g_plugins.values());
-		String sXML = new XMLProducer().toXML(mcmc.get(), new HashSet<Plugin>());
+		//String sXML = new XMLProducer().toXML(mcmc.get(), );
+		Set<Plugin> plugins = new HashSet<Plugin>();
+		for (Plugin plugin : PluginPanel.g_plugins.values()) {
+			String sName = plugin.getClass().getName(); 
+			if (!sName.startsWith("beast.app.beauti")) {
+				plugins.add(plugin);
+			}
+		}
+		String sXML = new XMLProducer().toXML(mcmc.get(), plugins);
 		FileWriter outfile = new FileWriter(sFileName);
 		outfile.write(sXML);
 		outfile.close();
@@ -492,6 +495,20 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		Plugin MCMC = parser.parseFragment(sXML, true);
 		mcmc.setValue(MCMC, this);
 		PluginPanel.addPluginToMap(MCMC);
+		
+		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
+			int iStart = sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
+			int iEnd = sXML.lastIndexOf("-->");
+			sXML = sXML.substring(iStart, iEnd);
+			sXML = sXML.replaceAll(XMLProducer.DO_NOT_EDIT_WARNING, "");
+	    	sXML = "<beast namespace='" + XMLProducer.DEFAULT_NAMESPACE +"'>" + sXML + "</beast>";
+			List<Plugin> plugins = parser.parseBareFragments(sXML, true);
+			for (Plugin plugin : plugins) {
+				PluginPanel.addPluginToMap(plugin);
+			}
+		}
+		
+		
 		// extract alignments
 		determinePartitions();
 	}
@@ -757,7 +774,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				templates.add(m_beautiConfig.partitionTemplate.get());
 				templates.addAll(BeautiConfig.g_subTemplates);
 			
-				for (String sPartition : sPartitionNames) {
+				List<String> sPartitionNames2 = new ArrayList<String>();
+				// add 'Species' as special partition name
+				sPartitionNames2.addAll(sPartitionNames);
+				sPartitionNames2.add("Species");
+				
+				for (String sPartition : sPartitionNames2) {
 					for (BeautiSubTemplate template : templates) {
 						String sTemplateID = template.getMainID().replaceAll("\\$\\(n\\)", sPartition);
 						Plugin plugin = PluginPanel.g_plugins.get(sTemplateID);
@@ -777,10 +799,19 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 									}
 								} else 	if (connector.isActivated(sPartition, posteriorPredecessors)) {
 									System.err.println("connect: " + connector);
-									connect(connector, sPartition);
+									try {
+										connect(connector, sPartition);
+									} catch (Exception e) {
+										System.err.println(e.getMessage());
+									}
+
 								} else {
-									disconnect(connector, sPartition);
 									System.err.println("DISconnect: " + connector);
+									try {
+										disconnect(connector, sPartition);
+									} catch (Exception e) {
+										System.err.println(e.getMessage());
+									}
 								}
 							}
 						}
@@ -1340,6 +1371,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //	public void disconnect(Plugin srcPlugin, String sTargetID, String sInputName) throws Exception {
 		try {
 			Plugin target = PluginPanel.g_plugins.get(sTargetID);
+			if (target == null) {
+				return;
+			}
 			Input<?> input = target.getInput(connector.sTargetInput);
 			Object o = input.get();
 			if (o instanceof List) {
@@ -1351,7 +1385,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						list.remove(i);
 					}
 				}
-				if (srcPlugin.outputs != null) {
+				if (srcPlugin != null && srcPlugin.outputs != null) {
 					srcPlugin.outputs.remove(target);
 				}
 			} else {

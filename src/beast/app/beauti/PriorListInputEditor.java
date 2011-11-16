@@ -3,7 +3,7 @@ package beast.app.beauti;
 
 
 
-import java.awt.Component;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,9 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import beast.app.draw.DoubleInputEditor;
-import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
+import beast.app.draw.PluginDialog;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.SmallButton;
 import beast.core.Distribution;
@@ -47,6 +46,7 @@ public class PriorListInputEditor extends ListInputEditor {
 	static Dimension PREFERRED_SIZE = new Dimension(200,20);
 
 	List<JComboBox> comboBoxes;
+	List<JButton> rangeButtons;
 	JComboBox currentComboBox;
 
 	List<JButton> taxonButtons;
@@ -66,6 +66,7 @@ public class PriorListInputEditor extends ListInputEditor {
 //			m_buttonStatus = BUTTONSTATUS.NONE;
 //		}
 		comboBoxes = new ArrayList<JComboBox>();
+		rangeButtons = new ArrayList<JButton>();
 		taxonButtons = new ArrayList<JButton>();
 		super.init(input, plugin, bExpand, bAddButtons);
 
@@ -87,8 +88,9 @@ public class PriorListInputEditor extends ListInputEditor {
      */
 	@Override
     protected void addPluginItem(Box itemBox, Plugin plugin) {
-		JComboBox comboBox = null;		
+		JComboBox comboBox = null;
     	JButton taxonButton = null;
+    	JButton rangeButton = null;
         if (plugin instanceof Prior) {
         	Prior prior = (Prior) plugin;
         	String sText = /*plugin.getID() + ": " +*/ ((Plugin)prior.m_x.get()).getID();
@@ -96,15 +98,6 @@ public class PriorListInputEditor extends ListInputEditor {
         	label.setMinimumSize(PREFERRED_SIZE);
         	label.setPreferredSize(PREFERRED_SIZE);
         	itemBox.add(label);
-        	if (prior.m_x.get() instanceof RealParameter) {
-        		RealParameter p = (RealParameter) prior.m_x.get();
-        		InputEditor lower = new DoubleInputEditor();
-        		lower.init(p.lowerValueInput, p, EXPAND.FALSE, false);
-        		InputEditor upper = new DoubleInputEditor();
-        		lower.init(p.upperValueInput, p, EXPAND.FALSE, false);
-        		itemBox.add(lower);
-        		itemBox.add(upper);
-        	}
         	
 
             List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
@@ -136,17 +129,41 @@ public class PriorListInputEditor extends ListInputEditor {
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
-//
-//	            	try {
-//						prior.m_distInput.setValue(plugin2, prior);
-//					} catch (Exception e1) {
-//						e1.printStackTrace();
-//					}
+
 					sync();
 					refreshPanel();
 				}
 			});
         	itemBox.add(comboBox);
+        	
+        	if (prior.m_x.get() instanceof RealParameter) {
+        		// add range button for real parameters
+        		RealParameter p = (RealParameter) prior.m_x.get();
+        		rangeButton = new JButton(paramToString(p));
+        		rangeButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JButton rangeButton = (JButton) e.getSource();
+		        		int iItem = 0;
+		        		while (rangeButtons.get(iItem) != rangeButton) {
+		        			iItem++;
+		        		}
+		        		List<?> list = (List<?>) m_input.get();
+		        		Prior prior = (Prior) list.get(iItem);
+		        		RealParameter p = (RealParameter) prior.m_x.get();
+		        		PluginDialog dlg = new PluginDialog(p, RealParameter.class);
+		        		dlg.setVisible(true);
+		                if (dlg.getOK()) {
+		                	dlg.accept(p);
+		                	rangeButton.setText(paramToString(p));
+		                	refreshPanel();
+		                }
+					}
+				});
+        		itemBox.add(Box.createHorizontalStrut(10));
+        		itemBox.add(rangeButton);
+        	}
+
         } else if (plugin instanceof TreeDistribution) {
         	TreeDistribution distr= (TreeDistribution) plugin;
         	String sText = ""/*plugin.getID() + ": "*/;
@@ -187,6 +204,10 @@ public class PriorListInputEditor extends ListInputEditor {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					currentComboBox = (JComboBox) e.getSource();
+					
+                	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
                 	SwingUtilities.invokeLater(new Runnable() {
 					
 					@Override
@@ -214,6 +235,8 @@ public class PriorListInputEditor extends ListInputEditor {
 //System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
 					sync();
 					refreshPanel();
+                	}
+                	});
 					}
                 	});
 				}
@@ -230,10 +253,10 @@ public class PriorListInputEditor extends ListInputEditor {
         	taxonButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JButton comboBox = (JButton) e.getSource();
+					JButton taxonButton = (JButton) e.getSource();
 	        		List<?> list = (List<?>) m_input.get();
 	        		int iItem = 0;
-	        		while (taxonButtons.get(iItem) != comboBox) {
+	        		while (taxonButtons.get(iItem) != taxonButton) {
 	        			iItem++;
 	        		}
 	        		MRCAPrior prior = (MRCAPrior) list.get(iItem);
@@ -332,12 +355,20 @@ public class PriorListInputEditor extends ListInputEditor {
         }
     	comboBox.setMaximumSize(new Dimension(1024, 24));
     	comboBoxes.add(comboBox);
+    	rangeButtons.add(rangeButton);
     	taxonButtons.add(taxonButton);
     	itemBox.add(createGlue());
     } // addPluginItem
 	
 	
-	
+	String paramToString(RealParameter p) {
+		Double lower = p.lowerValueInput.get();
+		Double upper = p.upperValueInput.get();
+		return "initial = " + p.m_pValues.get() + 
+			" [" +  (lower == null? "-\u221E" : lower + "") + 
+			"," + (upper == null? "\u221E" : upper + "") + "]";
+	}
+
 	Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
 		Set<Taxon> candidates = new HashSet<Taxon>();
 		for (String sTaxon : prior.m_treeInput.get().getTaxaNames()) {

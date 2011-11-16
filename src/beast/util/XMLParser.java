@@ -339,7 +339,7 @@ public class XMLParser {
      */
     public Plugin parseFragment(String sXML, boolean bInitialize) throws Exception {
     	m_bInitialize = bInitialize;
-        // parse the XML file into a DOM document
+        // parse the XML fragment into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         m_doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
         m_doc.normalize();
@@ -395,6 +395,34 @@ public class XMLParser {
     	} else {
     		return parseFragment("<beast>" + sXML + "</beast>", bInitialize);
     	}
+    }
+
+    public List<Plugin> parseBareFragments(String sXML, boolean bInitialize) throws Exception {
+    	m_bInitialize = bInitialize;
+        // parse the XML fragment into a DOM document
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        m_doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        m_doc.normalize();
+        processPlates();
+    	
+        // find top level beast element
+        NodeList nodes = m_doc.getElementsByTagName("*");
+        if (nodes == null || nodes.getLength() == 0) {
+            throw new Exception("Expected top level beast element in XML");
+        }
+        Node topNode = nodes.item(0);
+        initIDNodeMap(topNode);
+        parseNameSpaceAndMap(topNode);
+        
+        NodeList children = topNode.getChildNodes();
+        List<Plugin> plugins = new ArrayList<Plugin>();
+        for (int i = 0; i < children.getLength(); i++) {
+        	if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+        		Plugin plugin = createObject(children.item(i), PLUGIN_CLASS, null);
+            	plugins.add(plugin);
+        	}
+        }
+        return plugins;
     }
 
     /**
@@ -562,7 +590,10 @@ public class XMLParser {
         if (sIDRef != null) {
         	// produce warning if there are other attributes than idref
         	if (node.getAttributes().getLength() > 1) {
-        		System.err.println("Element " + node.getNodeName() + " found with idref='" + sIDRef+ "'. All other attributes are ignored.\n");
+        		// check if there are just 2 attributes and other attribute is 'name'
+        		if (node.getAttributes().getLength() != 2 || getAttribute(node, "name") == null) {
+        			System.err.println("Element " + node.getNodeName() + " found with idref='" + sIDRef+ "'. All other attributes are ignored.\n");
+        		}
         	}
             if (m_sIDMap.containsKey(sIDRef)) {
                 Plugin plugin = m_sIDMap.get(sIDRef);

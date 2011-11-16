@@ -26,8 +26,9 @@ public class BeautiConnector extends Plugin {
 //			ConnectCondition.always, ConnectCondition.values());
 
 	
-	final static String IS_IN_POSTERIOR = "x";
-	final static String AT_INITIALISATION_ONLY = "y";
+	enum Operation {EQUALS, NOT_EQUALS, IS_IN_POSTERIOR, AT_INITIALISATION_ONLY}
+//	final static String IS_IN_POSTERIOR = "x";
+//	final static String AT_INITIALISATION_ONLY = "y";
 	
 	String sSourceID;
 	String sTargetID;
@@ -35,6 +36,7 @@ public class BeautiConnector extends Plugin {
 	
 	String [] sConditionIDs;
 	String [] sConditionInputs;
+	Operation [] conditionOperations;
 	String [] sConditionValues;
 
 	@Override
@@ -48,33 +50,42 @@ public class BeautiConnector extends Plugin {
 			sConditionIDs = new String[sConditions.length];
 			sConditionInputs = new String[sConditions.length];
 			sConditionValues = new String[sConditions.length];
+			conditionOperations = new Operation[sConditions.length];
 			for (int i = 0; i < sConditions.length; i++) {
 				String s = sConditions[i];
 				if (s.startsWith("inposterior(")) {
 					sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
 					sConditionInputs[i] = null;
-					sConditionValues[i] = IS_IN_POSTERIOR;
+					conditionOperations[i] = Operation.IS_IN_POSTERIOR;
+					sConditionValues[i] = null;
 				} else if (s.startsWith("isInitializing")) {
-					sConditionIDs[i] = AT_INITIALISATION_ONLY;
+					sConditionIDs[i] = null;
+					conditionOperations[i] = Operation.AT_INITIALISATION_ONLY;
 					sConditionInputs[i] = null;
 					sConditionValues[i] = null;
 				} else {
 					sConditionIDs[i] = s.substring(0, s.indexOf("/"));
 					sConditionInputs[i] = s.substring(s.indexOf("/") + 1, s.indexOf("="));
 					sConditionValues[i] = s.substring(s.indexOf("=") + 1);
+					conditionOperations[i] = Operation.EQUALS;
+					if (sConditionInputs[i].endsWith("!")) {
+						sConditionInputs[i] = sConditionInputs[i].substring(0, sConditionInputs[i].length() - 1);
+						conditionOperations[i] = Operation.NOT_EQUALS;
+					}
 				}
 			}
 		} else {
 			sConditionIDs = new String[0];
 			sConditionInputs = new String[0];
+			conditionOperations = new Operation[0];
 			sConditionValues = new String[0];
 		}
 	}
 	
 	
 	public boolean atInitialisationOnly() {
-		if (sConditionIDs.length > 0) {
-			return sConditionIDs[0].equals(AT_INITIALISATION_ONLY);
+		if (conditionOperations.length > 0) {
+			return conditionOperations[0].equals(Operation.AT_INITIALISATION_ONLY);
 		} else {
 			return false;
 		}
@@ -96,25 +107,38 @@ public class BeautiConnector extends Plugin {
 				return false;
 			}
 			//System.err.println("isActivated::found " + sID);
-			if (sConditionValues[i].equals(IS_IN_POSTERIOR)) {
-				if (!posteriorPredecessors.contains(plugin)) {
-					//System.err.println(posteriorPredecessors);
-					//System.err.println("isActivated::is not in posterior, return false");
-					return false;
-				}
-				//System.err.println("isActivated::is in posterior");
-			} else {
-				try {
+			try {
+				switch (conditionOperations[i]) {
+				case IS_IN_POSTERIOR:
+					if (!posteriorPredecessors.contains(plugin)) {
+						//System.err.println(posteriorPredecessors);
+						//System.err.println("isActivated::is not in posterior, return false");
+						return false;
+					}
+					break;
+					//System.err.println("isActivated::is in posterior");
+				case EQUALS:
 					Input<?> input = plugin.getInput(sConditionInputs[i]);
 					//System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
 					if (!input.get().toString().equals(sConditionValues[i])) {
 						//System.err.println("isActivated::return false");
 						return false;
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					return false;
+					break;
+				case NOT_EQUALS:
+					Input<?> input2 = plugin.getInput(sConditionInputs[i]);
+					//System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
+					if (input2.get().toString().equals(sConditionValues[i])) {
+						//System.err.println("isActivated::return false");
+						return false;
+					}
+					break;
+					default:
+						throw new Exception("Unexpected operation: " + conditionOperations[i]);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
 			}
 		}
 		//if (sConditionIDs.length > 0) {

@@ -19,7 +19,7 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
 	public Input<Valuable> m_parameter = new Input<Valuable>("popSize","population size parameter associated with tree nodes",Validate.REQUIRED);
 	public Input<Valuable> m_parameterTop = new Input<Valuable>("popSizeTop","population size parameter associated with top of tree branches, only used for non-constant *beast analysis");
 	public Input<SpeciesTreePrior> speciesTreePrior = new Input<SpeciesTreePrior>("speciesTreePrior", "species tree prior, used to find which Population Size Function is used. If not specified, assumes 'constant'");
-	public Input<TreeTopFinder> treeTopFinder = new Input<TreeTopFinder>("treetop","calculates height of species tree, required only for linear *beast analysis", Validate.REQUIRED);
+	public Input<TreeTopFinder> treeTopFinder = new Input<TreeTopFinder>("treetop","calculates height of species tree", Validate.REQUIRED);
 
 	PopSizeFunction popSizeFunction;
 	String m_sMetaDataLabel;

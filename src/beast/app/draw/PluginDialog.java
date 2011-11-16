@@ -50,7 +50,7 @@ public class PluginDialog extends JDialog {
     }
 
     /* to be called when Cancel is pressed **/
-    void accept(Plugin plugin) {
+    public void accept(Plugin plugin) {
     	try {
     		for (Input<?> input : m_panel.m_plugin.listInputs()) {
     			plugin.setInputValue(input.getName(), input.get());

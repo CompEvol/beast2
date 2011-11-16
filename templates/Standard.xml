@@ -20,6 +20,9 @@
 	        beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.tree,
 	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
+			beast.evolution.speciation.YuleModel.treeIntervals,
+			beast.evolution.speciation.YuleModel.useTipDates,
+			beast.evolution.speciation.YuleModel.tree,
 	        beast.evolution.tree.Tree,
 	        beast.evolution.tree.Tree.trait,
 	        beast.evolution.tree.Tree.taxa,
@@ -229,10 +232,10 @@
 
         </partitiontemplate>
 
-
-
+		<mergepoint id='substModelTemplates'/>
+		<mergepoint id='clockModelTemplates'/>
+		<mergepoint id='treePriorTemplates'/>
         <mergepoint id='parametricDistributions'/>
-        <mergepoint id='commonTemplates'/>
 
 <!-- Tree initialisation -->
 <!-- Random tree -->
