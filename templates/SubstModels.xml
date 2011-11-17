@@ -15,7 +15,7 @@
         <subtemplate id='HKY' spec='BeautiSubTemplate' class='beast.evolution.substitutionmodel.HKY' mainid='hky.$(n)'>
 <![CDATA[
         <plugin spec='HKY' id='hky.$(n)'>
-            <parameter id="kappa.$(n)" name='kappa' value="1.0" lower="0.0" estimate='true'/>
+            <parameter id="kappa.$(n)" name='kappa' value="2.0" lower="0.0" estimate='true'/>
             <frequencies id='estimatedFreqs.$(n)' spec='Frequencies'>
                 <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
             </frequencies>
@@ -24,7 +24,12 @@
         <plugin id='KappaScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@kappa.$(n)"/>
         <plugin id='FrequenciesExchanger.$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.$(n)"/>
 
-        <plugin id='KappaPrior.$(n)' spec='Prior' x='@kappa.$(n)'><distr spec="OneOnX"/></plugin>
+        <plugin id='KappaPrior.$(n)' spec='Prior' x='@kappa.$(n)'>
+            <distr spec="LogNormalDistributionModel" meanInRealSpace='true'>
+                <parameter name='M' value="1.0" estimate='false'/>
+                <parameter name='S' value="1.25" estimate='false'/>
+            </distr>
+		</plugin>
 <!--
         <plugin id='FrequenciesPrior.$(n)' spec='Prior' x='@freqParameter.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></plugin>
 -->
@@ -481,6 +486,9 @@
                 <distr id="popPriorDist.EBSP" lambda="@populationMean.alltrees" spec="Exponential"/>
             </distribution>
 
+			<logger id="EBSPLogger" fileName='EBSP.$(seed).log' logEvery='5000'>
+				<log idref='demographic.alltrees'/>
+			</logger>
 
 			<operator id="bitflip.alltrees" parameter="@indicators.alltrees" spec="BitFlipOperator" uniform="true" weight="1.0"/>
 			<operator id="indicatorSampler.alltrees" dist="@popPriorDist.alltrees" indicators="@indicators.alltrees" spec="beast.evolution.tree.coalescent.SampleOffValues" values="@popSizes.alltrees" weight="15.0"/>
@@ -504,6 +512,8 @@
             <connect spec='BeautiConnector' srcID='indicators.alltrees'     targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
             <connect spec='BeautiConnector' srcID='populationMean.alltrees' targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
             <connect spec='BeautiConnector' srcID='popSizes.alltrees'       targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='EBSPLogger' targetID='mcmc' inputName='logger' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
 
             <connect spec='BeautiConnector' srcID='bitflip.alltrees'            targetID='mcmc' inputName='operator' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
             <connect spec='BeautiConnector' srcID='indicatorSampler.alltrees'   targetID='mcmc' inputName='operator' if='inposterior(ExtendedBayesianSkyline.$(n))'/>

@@ -164,6 +164,14 @@ public class BeautiSubTemplate extends Plugin {
 		return o;
 	}
 	
+	public Plugin createSubNet(String sPartition) throws Exception {
+		if (sXML == null) {
+			// this is the NULL_TEMPLATE
+			return null;
+		}
+		Plugin o = createSubNet(sPartition, BeautiDoc.g_doc, PluginPanel.g_plugins);
+		return o;
+	}
 
 	
 	Plugin createSubNet(Alignment data, BeautiDoc doc) {

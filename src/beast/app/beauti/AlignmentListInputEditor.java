@@ -146,13 +146,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		unlinkSModelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (getDoc().XmlIsReloaded) {
-					JOptionPane.showMessageDialog(null, "Cannot unlink after reloading (yet)");
-				} else {
-					JButton button = (JButton) e.getSource();
-					unlink(columnLabelToNr(button.getText()));
-					table.repaint();
-				}
+				JButton button = (JButton) e.getSource();
+				unlink(columnLabelToNr(button.getText()));
+				table.repaint();
 			}
 
 		});

@@ -38,7 +38,9 @@ import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.speciation.YuleModel;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
@@ -99,8 +101,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	String sTemplateName = null;
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
-
-	boolean XmlIsReloaded = false;
 
     /**
      * name of current file, used for saving (as opposed to saveAs) *
@@ -234,7 +234,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			pPartition[i] = new ArrayList<Plugin>();
 			nCurrentPartitions[i] = new ArrayList<Integer>();
 		}
-		XmlIsReloaded = false;
 	}
 
 	/** remove all alignment data and model, and reload Standard template **/
@@ -258,7 +257,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		extractSequences(sXML);
 		connectModel();
 		beauti.setUpPanels();
-		XmlIsReloaded = true;
 	}
 
 	public void loadNewTemplate(String sFileName) throws Exception {
@@ -711,8 +709,20 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	private void collectClockModels() {
-		// collect branch rate models from template
+		// collect branch rate models from model
 		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+		while (clockModels.size() <  sPartitionNames.size()) {
+			try {
+				TreeLikelihood treelikelihood = new TreeLikelihood();
+				treelikelihood.m_pBranchRateModel.setValue(new StrictClockModel(), treelikelihood);
+	            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(treelikelihood.m_pBranchRateModel, treelikelihood, null);
+				Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(clockModels.size()));
+				clockModels.add((BranchRateModel.Base) plugin);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		int k = 0;
 		for (Distribution d : likelihood.pDistributions.get()) {
 			BranchRateModel.Base clockModel = ((TreeLikelihood) d).m_pBranchRateModel.get();
@@ -721,11 +731,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				sID = sID.substring(sID.indexOf('.') + 1);
 				String sPartition = alignments.get(k).getID();
 				if (sID.equals(sPartition)) {
-					if (clockModels.size() <= k) {
-						clockModels.add(clockModel);
-					} else {
-						clockModels.set(k, clockModel);
-					}
+					clockModels.set(k, clockModel);
 				}
 				k++;
 			}
@@ -733,8 +739,25 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	private void collectTreePriors() {
-		// collect branch rate models from template
+		// collect tree priors from model
 		CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
+		while (treePriors.size() <  sPartitionNames.size()) {
+			try {
+				CompoundDistribution distr = new CompoundDistribution();
+				distr.pDistributions.setValue(new YuleModel(), distr);
+	            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(distr.pDistributions, distr, null);
+	            for (int i = sAvailablePlugins.size()-1; i >= 0; i--) {
+	            	if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i)._class)) {
+						sAvailablePlugins.remove(i);
+					}
+	            }
+				Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(treePriors.size()));
+				treePriors.add((TreeDistribution) plugin);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		int k = 0;
 		for (Distribution d : prior.pDistributions.get()) {
 			if (d instanceof TreeDistribution) {
@@ -742,11 +765,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				sID = sID.substring(sID.indexOf('.') + 1);
 				String sPartition = alignments.get(k).getID();
 				if (sID.equals(sPartition)) {
-					if (treePriors.size() <= k) {
-						treePriors.add((TreeDistribution) d);
-					} else {
-						treePriors.set(k, (TreeDistribution) d);
-					}
+					treePriors.set(k, (TreeDistribution) d);
 				}
 				k++;
 			}
