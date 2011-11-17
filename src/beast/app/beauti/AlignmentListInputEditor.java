@@ -41,6 +41,7 @@ import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeDistribution;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 
@@ -145,9 +146,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		unlinkSModelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JButton button = (JButton) e.getSource();
-				unlink(columnLabelToNr(button.getText()));
-				table.repaint();
+				if (getDoc().XmlIsReloaded) {
+					JOptionPane.showMessageDialog(null, "Cannot unlink after reloading (yet)");
+				} else {
+					JButton button = (JButton) e.getSource();
+					unlink(columnLabelToNr(button.getText()));
+					table.repaint();
+				}
 			}
 
 		});
@@ -261,6 +266,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 //				String sPartition = (String) m_tableData[iRow][TREE_COLUMN];
 					Tree tree = (Tree) PluginPanel.g_plugins.get("Tree." + sPartition);
 					this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
+				}
+				TreeDistribution d = doc.getTreePrior(sPartition);
+				CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
+				if (!prior.pDistributions.get().contains(d)) {
+					prior.pDistributions.setValue(d, prior);
 				}
 				sPartition = treeLikelihood.m_tree.get().getID();
 				sPartition = sPartition.substring(sPartition.indexOf('.') + 1);

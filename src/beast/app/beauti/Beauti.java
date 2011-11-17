@@ -390,6 +390,7 @@ public class Beauti extends JTabbedPane {
                     "Do you want to save the Beast specification?",
                     "Save before closing?",
                     JOptionPane.YES_NO_CANCEL_OPTION);
+            System.err.println("result=" + result);
             if (result == JOptionPane.CANCEL_OPTION) {
                 return false;
             }

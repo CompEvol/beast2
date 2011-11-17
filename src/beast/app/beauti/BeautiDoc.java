@@ -41,6 +41,7 @@ import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
@@ -71,6 +72,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //	List<Logger> potentitalLoggers;
 
 	protected List<BranchRateModel> clockModels;
+	protected List<TreeDistribution> treePriors;
 	/** contains all loggers from the template **/
 //	List<List<Plugin>> loggerInputs;
 
@@ -98,10 +100,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	String sTemplateName = null;
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
 
+	boolean XmlIsReloaded = false;
+
     /**
      * name of current file, used for saving (as opposed to saveAs) *
      */
-	String sFileName = null;
+	String sFileName = "";
 	
 	public BeautiDoc() {
 		g_doc = this;
@@ -218,6 +222,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //		potentitalInits = new ArrayList<StateNodeInitialiser>();
 //		potentitalLoggers = new ArrayList<Logger>();
 		clockModels = new ArrayList<BranchRateModel>();
+		treePriors = new ArrayList<TreeDistribution>();
 		alignments = new ArrayList<Alignment>();
 
 		pPartitionByAlignments = new List[3];
@@ -229,6 +234,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			pPartition[i] = new ArrayList<Plugin>();
 			nCurrentPartitions[i] = new ArrayList<Integer>();
 		}
+		XmlIsReloaded = false;
 	}
 
 	/** remove all alignment data and model, and reload Standard template **/
@@ -252,6 +258,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		extractSequences(sXML);
 		connectModel();
 		beauti.setUpPanels();
+		XmlIsReloaded = true;
 	}
 
 	public void loadNewTemplate(String sFileName) throws Exception {
@@ -699,7 +706,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //			e.printStackTrace();
 //		}
 		scrubAll(true, true);
-		collectClockModels();
+//		collectClockModels();
+//		collectTreePriors();
 	}
 
 	private void collectClockModels() {
@@ -724,11 +732,46 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 	}
 
+	private void collectTreePriors() {
+		// collect branch rate models from template
+		CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
+		int k = 0;
+		for (Distribution d : prior.pDistributions.get()) {
+			if (d instanceof TreeDistribution) {
+				String sID = d.getID();
+				sID = sID.substring(sID.indexOf('.') + 1);
+				String sPartition = alignments.get(k).getID();
+				if (sID.equals(sPartition)) {
+					if (treePriors.size() <= k) {
+						treePriors.add((TreeDistribution) d);
+					} else {
+						treePriors.set(k, (TreeDistribution) d);
+					}
+				}
+				k++;
+			}
+		}
+//		for (TreeDistribution d : treePriors) {
+//			System.out.println(d);
+//		}
+	}
+
 	BranchRateModel getClockModel(String sPartition) {
 		int k = 0;
 		for (Alignment data : alignments) {
 			if (data.getID().equals(sPartition)) {
 				return clockModels.get(k);
+			}
+			k++;
+		}
+		return null;
+	}
+
+	TreeDistribution getTreePrior(String sPartition) {
+		int k = 0;
+		for (Alignment data : alignments) {
+			if (data.getID().equals(sPartition)) {
+				return treePriors.get(k);
 			}
 			k++;
 		}
@@ -848,6 +891,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //			}
 //			scrubInits();
 			collectClockModels();
+			collectTreePriors();
 
 			System.err.println("PARTITIONS:\n");
 			System.err.println(Arrays.toString(nCurrentPartitions));

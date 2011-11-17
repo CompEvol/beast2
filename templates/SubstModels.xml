@@ -451,7 +451,68 @@
             <connect spec='BeautiConnector' srcID='groupSizesDelta.$(n)' targetID='mcmc' inputName='operator' if='inposterior(BayesianSkyline.$(n))'/>
         </subtemplate>
 
+
+<!-- Coalescent for Extended Bayesian skyline -->
+        <subtemplate id='CoalescentExtendedBayesianSkyline' spec='BeautiSubTemplate' class='beast.evolution.tree.coalescent.Coalescent' mainid='ExtendedBayesianSkyline.$(n)'>
+<![CDATA[
+	        <stateNode id="indicators.alltrees" spec="parameter.BooleanParameter" value="false"/>
+            <stateNode id="populationMean.alltrees" spec="parameter.RealParameter" value="1"/>
+	        <stateNode id="popSizes.alltrees" spec="parameter.RealParameter" value="1"/>
+
+            <distribution id="ExtendedBayesianSkyline.$(n)" spec="Coalescent">
+                 <treeIntervals id="treeIntervals.$(n)" spec="TreeIntervals" tree="@Tree.$(n)"/>
+                 <populationModel id="scaledDemo.$(n)" spec="beast.evolution.tree.coalescent.ScaledPopulationFunction" factor='1' population='@demographic.alltrees'/>
+            </distribution>
+
+            <population id="demographic.alltrees" populationIndicators="@indicators.alltrees" populationSizes="@popSizes.alltrees" spec="beast.evolution.tree.coalescent.CompoundPopulationFunction" type="linear" useIntervalsMiddle="false">
+                <itree idref="treeIntervals.$(n)"/>
+			</population>
+
+            <distribution id="populationMeanPrior.alltrees" spec="Prior" x="@populationMean.alltrees">
+                <distr spec="OneOnX" id='OneOnX.EBSP'/>
+            </distribution>
+            <distribution id="indicatorsPrior.alltrees" spec="Prior">
+                <x arg="@indicators.alltrees" id="indsSun.alltrees" spec="util.Sum"/>
+                <distr spec="Poisson"  id='Poisson.EBSP'>
+                    <parameter name="lambda" upper="0.0" value="0.69314718056" estimate='false'/>
+                </distr>
+            </distribution>
+            <distribution id="popSizePrior.alltrees" spec="Prior" x="@popSizes.alltrees">
+                <distr id="popPriorDist.EBSP" lambda="@populationMean.alltrees" spec="Exponential"/>
+            </distribution>
+
+
+			<operator id="bitflip.alltrees" parameter="@indicators.alltrees" spec="BitFlipOperator" uniform="true" weight="1.0"/>
+			<operator id="indicatorSampler.alltrees" dist="@popPriorDist.alltrees" indicators="@indicators.alltrees" spec="beast.evolution.tree.coalescent.SampleOffValues" values="@popSizes.alltrees" weight="15.0"/>
+			<operator id="indicatorScaler.alltrees" degreesOfFreedom="1" indicator="@indicators.alltrees" parameter="@popSizes.alltrees" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" weight="15.0"/>
+			<operator id="EBSPupDownOperator.alltrees" scaleFactor="0.7" spec="UpDownOperator" weight="5.0">
+				<up idref="popSizes.alltrees"/>
+				<up idref="populationMean.alltrees"/>
+			</operator>
+]]>
+            <connect spec='BeautiConnector' srcID='ExtendedBayesianSkyline.$(n)' targetID='prior' inputName='distribution' if='inposterior(ExtendedBayesianSkyline.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='treeIntervals.$(n)' targetID='demographic.alltrees' inputName='itree' if='inposterior(ExtendedBayesianSkyline.$(n)) and Tree.$(n)/estimate=true'/>
+
+            <connect spec='BeautiConnector' srcID='indicators.alltrees'     targetID='state' inputName='stateNode' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='populationMean.alltrees' targetID='state' inputName='stateNode' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='popSizes.alltrees'       targetID='state' inputName='stateNode' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='populationMeanPrior.alltrees' targetID='prior' inputName='distribution' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='indicatorsPrior.alltrees'     targetID='prior' inputName='distribution' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='popSizePrior.alltrees'        targetID='prior' inputName='distribution' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='indicators.alltrees'     targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='populationMean.alltrees' targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='popSizes.alltrees'       targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+
+            <connect spec='BeautiConnector' srcID='bitflip.alltrees'            targetID='mcmc' inputName='operator' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='indicatorSampler.alltrees'   targetID='mcmc' inputName='operator' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='indicatorScaler.alltrees'    targetID='mcmc' inputName='operator' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+            <connect spec='BeautiConnector' srcID='EBSPupDownOperator.alltrees' targetID='mcmc' inputName='operator' if='inposterior(ExtendedBayesianSkyline.$(n))'/>
+        </subtemplate>
+
 </mergewith>
+
 
 <mergewith point='parametricDistributions'>
 <!-- Parametric distributions, all without hyperpriors -->
