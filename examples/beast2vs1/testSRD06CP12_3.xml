@@ -54,14 +54,14 @@
     </input>
 
     <input spec='TreeLikelihood' id="CP12.treeLikelihood">
-        <data idref="alignment"/>
+        <data idref="CP12"/>
         <tree idref="tree"/>
         <siteModel idref="CP12.siteModel"/>
         <branchRateModel idref="branchRates"/>
     </input>
 
     <input spec='TreeLikelihood' id="CP3.treeLikelihood">
-        <data idref="alignment"/>
+        <data idref="CP3"/>
         <tree idref="tree"/>
         <siteModel idref="CP3.siteModel"/>
         <branchRateModel idref="branchRates"/>
@@ -69,8 +69,8 @@
 
     <parameter id="CP12.hky.kappa" value="2.0" lower="0.0"/>
     <parameter id="CP3.hky.kappa" value="2.0" lower="0.0"/>
-    <parameter id="CP12.frequencies" value="0.25" dimension="4"/>
-    <parameter id="CP3.frequencies" value="0.25" dimension="4"/>
+    <parameter id="CP12.frequencies" value="0.25" dimension="4" lower="0.0" upper="1.0"/>
+    <parameter id="CP3.frequencies" value="0.25" dimension="4" lower="0.0" upper="1.0"/>
     <parameter id="popSize" value="0.077" lower="0.0"/>
 
     <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
@@ -81,15 +81,15 @@
                     <distr id="CP12.LogNormalDistributionModel" M="1.0" S="1.25" meanInRealSpace="false"
                            spec="beast.math.distributions.LogNormalDistributionModel"/>
                 </distribution>
-                <distribution id="CP12.hky.frequencies.prior" spec="beast.math.distributions.Prior" x="@CP12.frequencies">
-                    <distr id="CP12.Uniform" lower="0.0" upper="1.0" spec="beast.math.distributions.Uniform"/>
+                <distribution id="CP12.gammaShape.prior" spec="beast.math.distributions.Prior" x="@CP12.gammaShape">
+                    <distr id="CP12.gammaShape.OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
                 </distribution>
                 <distribution id="CP3.hky.kappa.prior" spec="beast.math.distributions.Prior" x="@CP3.hky.kappa">
                     <distr id="CP3.LogNormalDistributionModel" M="1.0" S="1.25" meanInRealSpace="false"
                            spec="beast.math.distributions.LogNormalDistributionModel"/>
                 </distribution>
-                <distribution id="CP3.hky.frequencies.prior" spec="beast.math.distributions.Prior" x="@CP3.frequencies">
-                    <distr id="CP3.Uniform" lower="0.0" upper="1.0" spec="beast.math.distributions.Uniform"/>
+                <distribution id="CP3.gammaShape.prior" spec="beast.math.distributions.Prior" x="@CP3.gammaShape">
+                    <distr id="CP3.gammaShape.OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
                 </distribution>
                 <distribution id="popSize.prior" spec="beast.math.distributions.Prior" x="@popSize">
                     <distr id="OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX"/>
@@ -115,13 +115,15 @@
             <parameter idref="CP3.mutationRate"/>
         </operator>
 
-        <operator id='CP12kappaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@CP12.hky.kappa"/>
+        <operator id='CP12kappaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1"
+                  parameter="@CP12.hky.kappa"/>
         <operator id='CP12frequenciesDelta' spec='DeltaExchangeOperator' delta="0.01" weight="0.1"
                   parameter="@CP12.frequencies"/>
         <operator id='CP3kappaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@CP3.hky.kappa"/>
         <operator id='CP3frequenciesDelta' spec='DeltaExchangeOperator' delta="0.01" weight="0.1"
                   parameter="@CP3.frequencies"/>
-        <operator id='CP12alphaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@CP12.gammaShape"/>
+        <operator id='CP12alphaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1"
+                  parameter="@CP12.gammaShape"/>
         <operator id='CP3alphaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@CP3.gammaShape"/>
         <operator id='popSizeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popSize"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" tree="@tree"/>

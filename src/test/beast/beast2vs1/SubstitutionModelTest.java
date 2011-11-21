@@ -10,7 +10,8 @@ import java.util.List;
  */
 public class SubstitutionModelTest extends TestFramework {
 
-    private final String[] XML_FILES = new String[]{"testHKY.xml", "testSiteModelAlpha.xml", "testMultiSubstModel.xml"};
+    private final String[] XML_FILES = new String[]{"testHKY.xml", "testSiteModelAlpha.xml",
+            "testMultiSubstModel.xml", "testSRD06CP12_3.xml"};
 
     public void testHKY() throws Exception {
         analyse(0);
@@ -22,6 +23,10 @@ public class SubstitutionModelTest extends TestFramework {
 
     public void testMultiSubstModel() throws Exception {
         analyse(2);
+    }
+
+    public void testSRD06CP12_3() throws Exception {
+        analyse(3);
     }
 
     @Override
@@ -76,7 +81,32 @@ public class SubstitutionModelTest extends TestFramework {
                 addExpIntoList(expList, "CoalescentConstant.firsthalf", -3.1965, 8.9084E-3);
                 break;
 
-            default:
+            case 3: // testSRD06CP12_3.xml
+                addExpIntoList(expList, "posterior", -1793.4164, 0.2044);
+                addExpIntoList(expList, "prior", 0.8416, 0.2033);
+                addExpIntoList(expList, "tree.height", 9.8986E-2, 3.709E-4);
+                addExpIntoList(expList, "CP12.hky.kappa", 25.0699, 0.2541);
+                addExpIntoList(expList, "CP12.frequencies1", 0.3444, 8.2165E-4);
+                addExpIntoList(expList, "CP12.frequencies2", 0.2447, 6.885E-4);
+                addExpIntoList(expList, "CP12.frequencies3", 0.1444, 5.3526E-4);
+                addExpIntoList(expList, "CP12.frequencies4", 0.2666, 6.174E-4);
+                addExpIntoList(expList, "CP3.hky.kappa", 82.9907, 1.9773);
+                addExpIntoList(expList, "CP3.frequencies1", 0.3197, 1.1763E-3);
+                addExpIntoList(expList, "CP3.frequencies2", 0.264, 9.0478E-4);
+                addExpIntoList(expList, "CP3.frequencies3", 0.1675, 8.6506E-4);
+                addExpIntoList(expList, "CP3.frequencies4", 0.2488, 1.059E-3);
+                addExpIntoList(expList, "CP12.gammaShape", 6.4322E-2, 4.8796E-3);
+                addExpIntoList(expList, "CP3.gammaShape", 8.5652E-2, 6.9946E-3);
+                addExpIntoList(expList, "CP12.mutationRate", 0.9437, 1.195E-3);
+                addExpIntoList(expList, "CP3.mutationRate", 1.1126, 2.3899E-3);
+                addExpIntoList(expList, "likelihood", -1794.258, 9.3476E-2);
+                addExpIntoList(expList, "CP12.treeLikelihood", -1181.4538, 6.0608E-2);
+                addExpIntoList(expList, "CP3.treeLikelihood", -612.8041, 6.0563E-2);
+                addExpIntoList(expList, "popSize", 0.1211, 7.505E-4);
+                addExpIntoList(expList, "coalescent", 6.2171, 1.1266E-2);
+                break;
+
+           default:
                 throw new Exception("No such XML");
         }
 
