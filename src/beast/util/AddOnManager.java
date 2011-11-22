@@ -53,9 +53,6 @@ import java.util.zip.ZipFile;
  * - discover classes in add ons that implement a certain interface or a derived from a certain class
  */
 public class AddOnManager {
-	/** whether to output some debug information. */
-	public final static boolean VERBOSE = false;
-
 	public final static String[] IMPLEMENTATION_DIR = { "beast", "snap" };
 
 	/** flag indicating add ons have been loaded at least once **/
@@ -64,14 +61,6 @@ public class AddOnManager {
 
 	/** list of all classes found in the class path **/
 	private static List<String> all_classes;
-
-	/** notify if VERBOSE is still on */
-	static {
-		if (VERBOSE)
-			System.err.println(AddOnManager.class.getName() + ": VERBOSE ON");
-	}
-
-
 
 	/** return URLs containing list of downloadable add-ons **/
 	public static String[] getAddOnURL() {
@@ -151,6 +140,8 @@ public class AddOnManager {
 
 		// unzip archive
 		doUnzip(sZipFile, sDir);
+		// refresh classes
+		loadExternalJars();
 	}
 
 	public static void uninstallAddOn(String sURL) throws Exception {

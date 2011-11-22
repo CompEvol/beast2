@@ -287,6 +287,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	public void importXMLAlignment(String sFileName) throws Exception {
 		Alignment data = (Alignment) AlignmentListInputEditor.getXMLData(sFileName);
+		data.initAndValidate();
 		addAlignmentWithSubnet(data);
 		connectModel();
 		beauti.setUpPanels();
@@ -751,8 +752,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						sAvailablePlugins.remove(i);
 					}
 	            }
-				Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(treePriors.size()));
-				treePriors.add((TreeDistribution) plugin);
+	            if (sAvailablePlugins.size() > 0){
+	            	Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(treePriors.size()));
+					treePriors.add((TreeDistribution) plugin);
+	            } else {
+					treePriors.add(null);
+	            }
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -830,6 +835,23 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				bProgress = false;
 				List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
 				collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
+
+				// process MRCA priors
+				for (String sID : PluginPanel.g_plugins.keySet()) {
+					if (sID.endsWith(".prior")) {
+						Plugin plugin = PluginPanel.g_plugins.get(sID);
+						if (plugin instanceof MRCAPrior) {
+							MRCAPrior prior = (MRCAPrior) plugin;
+							if (prior.m_treeInput.get().m_bIsEstimated.get() == false) {
+								// disconnect
+								disconnect(plugin, "prior", "distribution");
+							} else {
+								// connect
+								connect(plugin, "prior", "distribution");
+							}
+						}
+					}
+				}
 	
 				
 				List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
@@ -1362,7 +1384,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //		}
 //	}
 
-	public void addPlugin(final Plugin plugin) throws Exception {
+	public void addPlugin(final Plugin plugin) { //throws Exception {
 		// SwingUtilities.invokeLater(new Runnable() {
 		// @Override
 		// public void run() {
@@ -1405,23 +1427,23 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			throw new Exception("Could not find plugin with id " + sSrcID + ". Typo in template perhaps?");
 		}
 		String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
-//
-//	}
-//	
-//	public void connect(Plugin srcPlugin, String sTargetID, String sInputName) throws Exception {
+		connect(srcPlugin, sTargetID, connector.sTargetInput);
+	}
+
+	public void connect(Plugin srcPlugin, String sTargetID, String sInputName) {
 		try {
 			Plugin target = PluginPanel.g_plugins.get(sTargetID);
 			// prevent duplication inserts in list
-			Object o = target.getInputValue(connector.sTargetInput);
+			Object o = target.getInputValue(sInputName);
 			if (o instanceof List) {
 				//System.err.println("   " + ((List)o).size());
 				if (((List<?>) o).contains(srcPlugin)) {
-					System.err.println("   " + sTargetID + "/"  + connector.sTargetInput +  " already contains " + connector.sSourceID);
+					System.err.println("   " + sTargetID + "/"  + sInputName +  " already contains " + srcPlugin.getID());
 					return;
 				}
 			}
 			
-			target.setInputValue(connector.sTargetInput, srcPlugin);
+			target.setInputValue(sInputName, srcPlugin);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1431,20 +1453,23 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public void disconnect(BeautiConnector connector, String sPartition) {
 		Plugin srcPlugin = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
 		String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
-//	public void disconnect(Plugin srcPlugin, String sTargetID, String sInputName) throws Exception {
+		disconnect(srcPlugin, sTargetID, connector.sTargetInput);
+	}
+	
+	public void disconnect(Plugin srcPlugin, String sTargetID, String sInputName) { 
 		try {
 			Plugin target = PluginPanel.g_plugins.get(sTargetID);
 			if (target == null) {
 				return;
 			}
-			Input<?> input = target.getInput(connector.sTargetInput);
+			Input<?> input = target.getInput(sInputName);
 			Object o = input.get();
 			if (o instanceof List) {
 				List<?> list = (List<?>) o;
 				//System.err.println("   " + ((List)o).size());
 				for (int i = 0; i < list.size(); i++) {
 					if (list.get(i) == srcPlugin) {
-						System.err.println("  DEL "  + sTargetID + "/"  + connector.sTargetInput +  " already contains " + connector.sSourceID);
+						System.err.println("  DEL "  + sTargetID + "/"  + sInputName +  " already contains " + srcPlugin.getID());
 						list.remove(i);
 					}
 				}

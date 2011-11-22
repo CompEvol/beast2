@@ -1,6 +1,7 @@
 package beast.app.draw;
 
 
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -332,6 +333,7 @@ public class ListInputEditor extends InputEditor {
 	                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
 	            }
 	            addSingleItem(plugin);
+	            BeautiDoc.g_doc.addPlugin(plugin);
         	}
             checkValidation();
             updateState();
