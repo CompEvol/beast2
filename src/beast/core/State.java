@@ -217,14 +217,14 @@ public class State extends Plugin {
      * 
      * Also, store the state to disk for resumption of analysis later on.
      *
-     * @param nSample chain state number
+     * @param iSample chain state number
      **/
-    public void store(int nSample) {
+    public void store(int iSample) {
     	//Arrays.fill(changeStateNodes, -1);
     	nChangedStateNodes = 0;
     	
-    	if (m_nStoreEvery> 0 && nSample % m_nStoreEvery == 0 && nSample > 0) {
-    		storeToFile();
+    	if (m_nStoreEvery> 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
+    		storeToFile(iSample);
     	}
     }
     
@@ -289,23 +289,29 @@ public class State extends Plugin {
     
     /** Print state to file. This is called either periodically or at the end
      * of an MCMC chain, so that the state can be resumed later on.
+     * @param iSample TODO
      */
-    public void storeToFile() {
+    public void storeToFile(int iSample) {
 		try {
-			PrintStream out = new PrintStream(m_sStateFileName);
-			out.print(toXML());
+			PrintStream out = new PrintStream(m_sStateFileName + ".new");
+			out.print(toXML(iSample));
 			//out.print(new XMLProducer().toXML(this));
 			out.close();
+			File newStateFile = new File(m_sStateFileName + ".new");
+			File oldStateFile = new File(m_sStateFileName);
+			oldStateFile.delete();
+			newStateFile.renameTo(oldStateFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
     }
     
     /** convert state to XML string,
-     * The state can be reconstructed using the fromXML() method **/
-    public String toXML() {
+     * The state can be reconstructed using the fromXML() method 
+     * @param iSample TODO**/
+    public String toXML(int iSample) {
     	StringBuffer buf = new StringBuffer();
-		buf.append("<itsabeastystatewerein version='2.0'>\n");
+		buf.append("<itsabeastystatewerein version='2.0' sample='" + iSample + "'>\n");
 		for(StateNode node : stateNode) {
 			buf.append(node.toXML());
 		}
