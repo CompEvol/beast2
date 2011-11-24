@@ -1,4 +1,4 @@
-package beast.trace;
+package test.beast.beast2vs1.trace;
 
 import beast.core.Citation;
 import beast.core.Description;

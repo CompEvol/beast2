@@ -1,6 +1,5 @@
-package beast.trace;
+package test.beast.beast2vs1.trace;
 
-import beast.util.TrimLineReader;
 
 import java.io.File;
 import java.io.FileReader;

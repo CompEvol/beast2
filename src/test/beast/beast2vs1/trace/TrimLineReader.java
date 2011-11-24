@@ -1,4 +1,4 @@
-package beast.util;
+package test.beast.beast2vs1.trace;
 
 import java.io.BufferedReader;
 import java.io.IOException;

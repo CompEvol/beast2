@@ -1,9 +1,10 @@
 package test.beast.beast2vs1;
 
-import beast.trace.Expectation;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import test.beast.beast2vs1.trace.Expectation;
 
 /**
  * @author Walter Xie

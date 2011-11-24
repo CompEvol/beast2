@@ -1,13 +1,14 @@
 package test.beast.beast2vs1;
 
 import beast.core.Logger;
-import beast.trace.Expectation;
-import beast.trace.LogAnalyser;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import junit.framework.TestCase;
 
 import java.util.List;
+
+import test.beast.beast2vs1.trace.Expectation;
+import test.beast.beast2vs1.trace.LogAnalyser;
 
 public abstract class TestFramework extends TestCase {
     protected static long SEED = 128;
