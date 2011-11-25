@@ -45,6 +45,7 @@ import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
+import beast.util.AddOnManager;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -348,66 +349,68 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 		// find XML to merge
 
-		File templates = new File("templates");
-		File[] files = templates.listFiles();
-		if (files != null) {
-			for (File template : files) {
-				if (!template.getAbsolutePath().equals(mainTemplate.getAbsolutePath())
-						&& template.getName().toLowerCase().endsWith(".xml")) {
-					String sXML2 = load(template.getAbsolutePath());
-					if (!sXML2.contains("<mergepoint ")) {
-					try {
-
-						DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-						// factory.setValidating(true);
-						Document doc = factory.newDocumentBuilder().parse(template);
-						doc.normalize();
-
-						processBeautiConfig(doc);
-
-						// find mergewith elements
-						NodeList nodes = doc.getElementsByTagName("mergewith");
-						for (int iMergeElement = 0; iMergeElement < nodes.getLength(); iMergeElement++) {
-							Node mergeElement = nodes.item(iMergeElement);
-							String sMergePoint = mergeElement.getAttributes().getNamedItem("point").getNodeValue();
-							if (!sMergePoints.containsKey(sMergePoint)) {
-								System.err.println("Cannot find merge point named " + sMergePoint + " from "
-										+ template.getName() + " in template. MergeWith ignored.");
-							} else {
-								String sXML = "";
-								NodeList children = mergeElement.getChildNodes();
-								for (int iChild = 0; iChild < children.getLength(); iChild++) {
-									sXML += nodeToString(children.item(iChild));
+		for (String sDir : AddOnManager.getBeastDirectories()) {
+			File templates = new File(sDir + "/templates");
+			File[] files = templates.listFiles();
+			if (files != null) {
+				for (File template : files) {
+					if (!template.getAbsolutePath().equals(mainTemplate.getAbsolutePath())
+							&& template.getName().toLowerCase().endsWith(".xml")) {
+						String sXML2 = load(template.getAbsolutePath());
+						if (!sXML2.contains("<mergepoint ")) {
+						try {
+	
+							DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+							// factory.setValidating(true);
+							Document doc = factory.newDocumentBuilder().parse(template);
+							doc.normalize();
+	
+							processBeautiConfig(doc);
+	
+							// find mergewith elements
+							NodeList nodes = doc.getElementsByTagName("mergewith");
+							for (int iMergeElement = 0; iMergeElement < nodes.getLength(); iMergeElement++) {
+								Node mergeElement = nodes.item(iMergeElement);
+								String sMergePoint = mergeElement.getAttributes().getNamedItem("point").getNodeValue();
+								if (!sMergePoints.containsKey(sMergePoint)) {
+									System.err.println("Cannot find merge point named " + sMergePoint + " from "
+											+ template.getName() + " in template. MergeWith ignored.");
+								} else {
+									String sXML = "";
+									NodeList children = mergeElement.getChildNodes();
+									for (int iChild = 0; iChild < children.getLength(); iChild++) {
+										sXML += nodeToString(children.item(iChild));
+									}
+									String sStr = sMergePoints.get(sMergePoint);
+									sStr += sXML;
+									sMergePoints.put(sMergePoint, sStr);
 								}
-								String sStr = sMergePoints.get(sMergePoint);
-								sStr += sXML;
-								sMergePoints.put(sMergePoint, sStr);
+	
 							}
-
+						} catch (Exception e) {
+							if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
+								System.err.println(e.getMessage());
+							}
 						}
-					} catch (Exception e) {
-						if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
-							System.err.println(e.getMessage());
 						}
-					}
 					}
 				}
 			}
-
-			// merge XML
-			i = 0;
-			while (i >= 0) {
-				i = sTemplateXML.indexOf("<" + MERGE_ELEMENT, i + 1);
-				if (i > 0) {
-					int j = sTemplateXML.indexOf('>', i);
-					String sStr = sTemplateXML.substring(i, j);
-					sStr = sStr.replaceAll(".*id=", "");
-					char c = sStr.charAt(0);
-					sStr = sStr.replaceAll(c + "[^" + c + "]*$", "");
-					sStr = sStr.substring(1);
-					String sXML = sMergePoints.get(sStr);
-					sTemplateXML = sTemplateXML.substring(0, i) + sXML + sTemplateXML.substring(j + 1);
-				}
+		}
+	
+		// merge XML
+		i = 0;
+		while (i >= 0) {
+			i = sTemplateXML.indexOf("<" + MERGE_ELEMENT, i + 1);
+			if (i > 0) {
+				int j = sTemplateXML.indexOf('>', i);
+				String sStr = sTemplateXML.substring(i, j);
+				sStr = sStr.replaceAll(".*id=", "");
+				char c = sStr.charAt(0);
+				sStr = sStr.replaceAll(c + "[^" + c + "]*$", "");
+				sStr = sStr.substring(1);
+				String sXML = sMergePoints.get(sStr);
+				sTemplateXML = sTemplateXML.substring(0, i) + sXML + sTemplateXML.substring(j + 1);
 			}
 		}
 		sTemplateName = nameFromFile(sFileName);
