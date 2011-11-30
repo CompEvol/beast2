@@ -1,7 +1,7 @@
-                    BEAST v2.0.a 2011
+                    BEAST v2.0.c 2011
                  Beast 2 development team 2011
 
-Last updated: 26th July 2011
+Last updated: 1st December 2011
 
 Contents:
 1) INTRODUCTION

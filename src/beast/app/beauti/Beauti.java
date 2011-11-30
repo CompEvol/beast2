@@ -1,15 +1,16 @@
 package beast.app.beauti;
 
 
+import beast.app.beastapp.BeastVersion;
+import beast.app.beauti.BeautiDoc.ActionOnExit;
+import beast.app.draw.*;
+import beast.app.util.Utils;
+import beast.util.AddOnManager;
 
-
-
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Toolkit;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
@@ -22,29 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import beast.app.beastapp.BeastVersion;
-import beast.app.beauti.BeautiDoc.ActionOnExit;
-import beast.app.draw.HelpBrowser;
-import beast.app.draw.ModelBuilder;
-import beast.app.draw.MyAction;
-import beast.app.draw.ExtensionFileFilter;
-import beast.app.draw.PluginPanel;
-import beast.app.util.Utils;
-import beast.util.AddOnManager;
 
 
 public class Beauti extends JTabbedPane {
@@ -90,7 +68,7 @@ public class Beauti extends JTabbedPane {
 	}
 	
 	void setTitle() {
-		frame.setTitle("Beauti II: " + this.doc.sTemplateName + " " + doc.sFileName);
+		frame.setTitle("Beauti 2: " + this.doc.sTemplateName + " " + doc.sFileName);
 	}
 	
 	void toggleVisible(int nPanelNr) {
