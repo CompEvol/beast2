@@ -2,6 +2,7 @@
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
 <map name='connect'>beast.app.beauti.BeautiConnector</map>
+<map name='subtemplate'>beast.app.beauti.BeautiSubTemplate</map>
 
     <beauticonfig spec='BeautiConfig'
         inputLabelMap='beast.core.MCMC.operator=Operators,
@@ -164,7 +165,7 @@
 
             <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
-            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="10000" fileName="beast.$(seed).trees" mode='tree'>
+            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="1000" fileName="beast.$(seed).trees" mode='tree'>
                 <log idref="Tree.$(n)"/>
             </logger>
 
@@ -245,7 +246,7 @@
 <!-- framework for main model -->
     <run spec="MCMC" id="mcmc" chainLength="10000000">
 
-        <state storeEvery='100000' id='state'>
+        <state storeEvery='1000' id='state'>
 	        <stateNode idref='popSize'/> 
 	        <stateNode idref='popSizeTop'/> 
 	        <stateNode idref='Tree.Species'/> 
@@ -279,7 +280,7 @@
 	    <operator id='YuleBirthRateScaler.Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.Species"/>
 
 
-        <logger id='tracelog' logEvery="10000" fileName="beast_$(seed).log">
+        <logger id='tracelog' logEvery="1000" fileName="beast_$(seed).log">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
@@ -288,11 +289,11 @@
 			<log idref="YuleModel.Species"/>
         </logger>
 
-		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="10000" mode="tree">
+		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="1000" mode="tree">
 		    <log spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@Tree.Species" speciesTreePrior='@SpeciesTreePopSize.Species' treetop='@treeTopFinder'/>
 		</logger>
 
-        <logger id='screenlog' logEvery="10000">
+        <logger id='screenlog' logEvery="1000">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
       	    <ESS spec='ESS' name='log' arg="@posterior"/>

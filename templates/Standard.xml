@@ -166,7 +166,7 @@
 
             <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
-            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="10000" fileName="$(n).$(seed).trees" mode='tree'>
+            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(n).$(seed).trees" mode='tree'>
                 <log idref="Tree.$(n)"/>
             </logger>
 
@@ -278,7 +278,7 @@
 
     <run spec="MCMC" id="mcmc" chainLength="10000000">
 
-        <state storeEvery='10000' id='state'>
+        <state storeEvery='1000' id='state'>
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
@@ -288,14 +288,14 @@
             </distribution>
         </distribution>
 
-        <logger id='tracelog' logEvery="10000" fileName="beast.$(seed).log">
+        <logger id='tracelog' logEvery="1000" fileName="beast.$(seed).log">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
         </logger>
 
-        <logger id='screenlog' logEvery="10000">
+        <logger id='screenlog' logEvery="1000">
 	        <!--model idref='posterior'/-->
             <log idref="posterior"/>
       	    <ESS spec='ESS' name='log' arg="@posterior"/>
