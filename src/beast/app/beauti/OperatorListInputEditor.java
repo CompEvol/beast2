@@ -105,11 +105,12 @@ public class OperatorListInputEditor extends ListInputEditor {
     }
 	
 	String getLabel(Operator operator) {
-        String sName = operator.getID();
-        if (sName == null || sName.length() == 0) {
-            sName = operator.getClass().getName();
-            sName = sName.substring(sName.lastIndexOf('.') + 1);
-        }
+		String sName = operator.getClass().getName();
+        sName = sName.substring(sName.lastIndexOf('.') + 1);
+		sName = sName.replaceAll("Operator", ""); 
+		if (sName.matches(".*[A-Z].*")) {
+			sName = sName.replaceAll("(.)([A-Z])", "$1 $2");
+		}
         sName  += ": ";
         try {
         	for (Plugin plugin2 : operator.listActivePlugins()) {
@@ -120,6 +121,10 @@ public class OperatorListInputEditor extends ListInputEditor {
         } catch (Exception e) {
 			// ignore
 		}
+        String sTipText = BeautiDoc.g_doc.tipTextMap.get(operator.getID());
+        if (sTipText != null) {
+        	sName += " " + sTipText;
+        }
         return sName;
 	}
 } // OperatorListInputEditor

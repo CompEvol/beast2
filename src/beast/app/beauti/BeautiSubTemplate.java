@@ -214,6 +214,10 @@ public class BeautiSubTemplate extends Plugin {
 					//doc.connect(src, sTargetID, connector.sTargetInput);
 					doc.connect(connector, sPartition);
 				}
+				if (connector.getTipText() != null) {
+					doc.tipTextMap.put(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition), 
+							connector.getTipText().replaceAll("\\$\\(n\\)", sPartition));
+				}
 			}			
 //			for (int i = 0; i < sSrcIDs.length; i++) {
 //				Plugin src = sIDMap.get(sSrcIDs[i].replaceAll("\\$\\(n\\)", sPartition));

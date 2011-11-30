@@ -24,7 +24,6 @@
  */
 package beast.app.draw;
 
-import beast.app.BeastMCMC;
 import beast.app.util.Utils;
 import beast.core.Plugin;
 import beast.evolution.alignment.Sequence;
@@ -1553,18 +1552,26 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 switch (m_nMode) {
                     case MODE_SELECT:
                         int iSelection = -1;
-                        for (int i = m_doc.m_objects.size() - 1; iSelection < 0
-                                && i >= 0; i--) {
+                        for (int i = m_doc.m_objects.size() - 1; iSelection < 0 && i >= 0; i--) {
                             Shape shape = (Shape) m_doc.m_objects.get(i);
-                            if (shape.m_bNeedsDrawing
-                                    && shape.intersects(me.getX(), me.getY())) {
+                            if (shape.m_bNeedsDrawing && !(shape instanceof Arrow) && shape.intersects(me.getX(), me.getY())) {
                                 m_nPosX = shape.offsetX(me.getX());
                                 m_nPosY = shape.offsetY(me.getY());
                                 iSelection = i;
                             }
                         }
                         if (iSelection < 0) {
-                            return;
+                            for (int i = m_doc.m_objects.size() - 1; iSelection < 0 && i >= 0; i--) {
+                                Shape shape = (Shape) m_doc.m_objects.get(i);
+                                if (shape.m_bNeedsDrawing && shape.intersects(me.getX(), me.getY())) {
+                                    m_nPosX = shape.offsetX(me.getX());
+                                    m_nPosY = shape.offsetY(me.getY());
+                                    iSelection = i;
+                                }
+                            }
+                            if (iSelection < 0) {
+                            	return;
+                            }
                         }
                         if ((me.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
                             m_Selection.toggleSelection(iSelection);

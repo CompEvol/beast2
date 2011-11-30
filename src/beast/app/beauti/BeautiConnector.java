@@ -13,6 +13,7 @@ public class BeautiConnector extends Plugin {
 	public Input<String> sSourceIDInput = new Input<String>("srcID","ID of the plugin to be connected", Validate.REQUIRED);
 	public Input<String> sTargetIDInput = new Input<String>("targetID","ID of plugin to connect to", Validate.REQUIRED);
 	public Input<String> sInputNameInput = new Input<String>("inputName","name of the input of the plugin to connect to", Validate.REQUIRED);
+	public Input<String> sTipText = new Input<String>("value","associate some tip text with the srcID plugin, useful for displaying prior and operator specific information");
 	
 	public Input<String> sConditionInput = new Input<String>("if","condition under which this connector should be executed." +
 			"These should be of the form " +
@@ -147,6 +148,10 @@ public class BeautiConnector extends Plugin {
 		return bIsActive;
 	}
 
+	public String getTipText() {
+		return sTipText.get(); 
+	}
+	
 	public String toString() {
 		return "@" + sSourceID + " -> @" + sTargetID + "/" + sTargetInput;
 	}

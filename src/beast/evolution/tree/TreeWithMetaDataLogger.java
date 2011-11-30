@@ -14,6 +14,7 @@ import beast.evolution.branchratemodel.BranchRateModel;
 @Description("Logs tree annotated with metadata and/or rates")
 public class TreeWithMetaDataLogger extends Plugin implements Loggable {
 	public Input<Tree> m_tree = new Input<Tree>("tree","tree to be logged",Validate.REQUIRED);
+	// TODO: make this input a list of valuables
 	public Input<Valuable> m_parameter = new Input<Valuable>("metadata","meta data to be logged with the tree nodes");
 	public Input<BranchRateModel.Base> clockModel = new Input<BranchRateModel.Base>("branchratemodel", "rate to be logged with branches of the tree");
 	

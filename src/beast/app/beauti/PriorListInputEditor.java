@@ -104,6 +104,7 @@ public class PriorListInputEditor extends ListInputEditor {
             comboBox = new JComboBox(sAvailablePlugins.toArray());
             
             String sID = prior.m_distInput.get().getID();
+            System.err.println("id=" + sID);
             sID = sID.substring(0, sID.indexOf('.'));
             for (BeautiSubTemplate template : sAvailablePlugins) {
         		if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
@@ -357,6 +358,14 @@ public class PriorListInputEditor extends ListInputEditor {
     	comboBoxes.add(comboBox);
     	rangeButtons.add(rangeButton);
     	taxonButtons.add(taxonButton);
+    	
+        String sTipText = BeautiDoc.g_doc.tipTextMap.get(plugin.getID());
+        System.out.println(plugin.getID());
+        if (sTipText != null) {
+        	JLabel tipTextLabel = new JLabel(" " + sTipText);
+        	itemBox.add(tipTextLabel);
+        }
+    	
     	itemBox.add(createGlue());
     } // addPluginItem
 	

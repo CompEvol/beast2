@@ -330,7 +330,7 @@ public class Input<T> {
     public void setValue(Object value, Plugin plugin) throws Exception {
         if (value == null) {
            	if (this.value != null) {
-                if (value instanceof Plugin) {
+                if (this.value instanceof Plugin) {
                 	((Plugin)this.value).outputs.remove(plugin);
                 }
            	}

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
@@ -102,6 +103,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	String sTemplateName = null;
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
+	
+	Map<String,String> tipTextMap = new HashMap<String, String>();
 
     /**
      * name of current file, used for saving (as opposed to saveAs) *
@@ -235,6 +238,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			pPartition[i] = new ArrayList<Plugin>();
 			nCurrentPartitions[i] = new ArrayList<Integer>();
 		}
+		tipTextMap = new HashMap<String, String>();
 	}
 
 	/** remove all alignment data and model, and reload Standard template **/
