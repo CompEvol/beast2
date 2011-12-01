@@ -1,10 +1,7 @@
 package beast.math.statistic;
 
 
-import beast.core.CalculationNode;
-import beast.core.Loggable;
-import beast.core.Input;
-import beast.core.Description;
+import beast.core.*;
 import beast.core.parameter.Parameter;
 
 import java.util.Map;
@@ -22,7 +19,7 @@ import java.io.PrintStream;
  * @author Joseph Heled in beast1, migrated to beast2 by Denise Kuehnert
  */
 @Description("RPN calculator to evaluate simple expressions of parameters (Reverse Polish notation is a mathematical notation wherein every operator follows its operands)")
-public class RPNcalculator extends CalculationNode implements Loggable {
+public class RPNcalculator extends CalculationNode implements Loggable, Valuable {
 
 
     public Input<String> str_expression = new Input<String>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
@@ -99,6 +96,18 @@ public class RPNcalculator extends CalculationNode implements Loggable {
 
     public int getDimension() {
         return dim;
+    }
+
+
+    // todo: add dirty flag to avoid double calculation!!! 
+    @Override
+    public double getArrayValue() {
+        return getStatisticValue(0);
+    }
+
+    @Override
+    public double getArrayValue(int i) {
+        return getStatisticValue(i);
     }
 
     public String getDimensionName(int dim) {
