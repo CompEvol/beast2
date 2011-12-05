@@ -55,11 +55,11 @@ public class MCMC extends Runnable {
 
     public Input<State> m_startState =
             new Input<State>("state", "elements of the state space");
-    
-    public Input<Integer> m_storeEvery = 
+
+    public Input<Integer> m_storeEvery =
         new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
 		"resume computation later on if the process failed half-way.", -1);
-    
+
     public Input<Distribution> posteriorInput =
             new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)",
                     Input.Validate.REQUIRED);
@@ -72,30 +72,30 @@ public class MCMC extends Runnable {
             new Input<List<Logger>>("logger", "loggers for reporting progress of MCMC chain",
                     new ArrayList<Logger>(), Input.Validate.REQUIRED);
 
-    public Input<List<StateNodeInitialiser>> m_initilisers = 
+    public Input<List<StateNodeInitialiser>> m_initilisers =
     	new Input<List<StateNodeInitialiser>>("init", "one or more state node initilisers used for determining " +
-    			"the start state of the chain", 
+    			"the start state of the chain",
     			new ArrayList<StateNodeInitialiser>());
-    
+
     public Input<Boolean> sampleFromPrior = new Input<Boolean>("sampleFromPrior","whether to ignore the likelihood when sampling (default false). " +
     		"The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", false);
-    
+
     /** Alternative representation of operatorsInput that allows random selection
      * of operators and calculation of statistics.
      */
     protected OperatorSet operatorSet = new OperatorSet();
 
 
-    /** The state that takes care of managing StateNodes, 
+    /** The state that takes care of managing StateNodes,
      * operations on StateNodes and propagates store/restore/requireRecalculation
      * calls to the appropriate Plugins.
      */
     protected State state;
-    
+
     /**
      * number of samples taken where calculation is checked against full
      * recalculation of the posterior. Note that after every proposal that
-     * is checked, there are 2 that are not checked. This allows errors 
+     * is checked, there are 2 that are not checked. This allows errors
      * in store/restore to be detected that cannot be found when every single
      * consecutive sample is checked.
      * So, only after 3*NR_OF_DEBUG_SAMPLES samples checking is stopped.
@@ -121,7 +121,7 @@ public class MCMC extends Runnable {
         		int nDistr = distrs.size();
         		for (int i = 0; i < nDistr; i++) {
         			Distribution distr = distrs.get(i);
-        			String sID = distr.getID(); 
+        			String sID = distr.getID();
         			if (sID != null && sID.equals("likelihood")) {
         				distrs.remove(distr);
         				break;
@@ -136,8 +136,8 @@ public class MCMC extends Runnable {
         				"Suggestion: set sampleFromPrior flag to false.");
         	}
         }
-        
-        
+
+
         // StateNode initialisation, only required when the state is not read from file
         if (m_bRestoreFromFile) {
 	        HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
@@ -155,7 +155,7 @@ public class MCMC extends Runnable {
 	        	//initialiser.initStateNodes();
 	        }
         }
-        
+
         // State initialisation
         HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
         for (Operator op : operatorsInput.get()) {
@@ -252,9 +252,9 @@ public class MCMC extends Runnable {
 			PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(aFile, true)));
 			out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
             for (int i = 0; i < m_operators.size(); i++) {
-            	Operator operator = m_operators.get(i); 
-                out.println(operator.getID() + " " + m_fCumulativeProbs[i] + " " + operator.getCoercableParameterValue() + " " 
-                		+ operator.m_nNrAccepted + " " + operator.m_nNrRejected +  " " 
+            	Operator operator = m_operators.get(i);
+                out.println(operator.getID() + " " + m_fCumulativeProbs[i] + " " + operator.getCoercableParameterValue() + " "
+                		+ operator.m_nNrAccepted + " " + operator.m_nNrRejected +  " "
                 		+ operator.m_nNrAcceptedForCorrection + " " + operator.m_nNrRejectedForCorrection);
             }
 			out.println("-->");
@@ -281,7 +281,7 @@ public class MCMC extends Runnable {
 	            	}
 	            	operator.m_nNrAccepted = Integer.parseInt(sStrs2[3]);
 	            	operator.m_nNrRejected = Integer.parseInt(sStrs2[4]);
-	    			Operator.g_autoOptimizeDelay = operator.m_nNrAccepted + operator.m_nNrRejected;  
+	    			Operator.g_autoOptimizeDelay = operator.m_nNrAccepted + operator.m_nNrRejected;
 	            	operator.m_nNrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
 	            	operator.m_nNrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
             	} else {
@@ -293,15 +293,15 @@ public class MCMC extends Runnable {
     } // class OperatorSet
 
 
-    
+
     protected double logAlpha;
     protected boolean bDebug;
-    protected double fOldLogLikelihood; 
-    protected double fNewLogLikelihood; 
+    protected double fOldLogLikelihood;
+    protected double fNewLogLikelihood;
     protected int nBurnIn;
     protected int nChainLength;
     protected Distribution posterior;
-    
+
     @Override
     public void run() throws Exception {
     	// set up state (again). Other plugins may have manipulated the
@@ -334,7 +334,7 @@ public class MCMC extends Runnable {
         // do the sampling
         logAlpha = 0;
         bDebug = Boolean.valueOf(System.getProperty("beast.debug"));
-        
+
 
         System.err.println("Start state:");
         System.err.println(state.toString());
@@ -351,7 +351,7 @@ public class MCMC extends Runnable {
         }
 
         doLoop();
-        
+
         operatorSet.showOperatorRates(System.out);
         long tEnd = System.currentTimeMillis();
         System.out.println("Total calculation time: " + (tEnd - tStart) / 1000.0 + " seconds");
@@ -363,17 +363,48 @@ public class MCMC extends Runnable {
         operatorSet.storeToFile();
     } // run;
 
-    
-    /** main MCMC loop **/ 
+
+    /** main MCMC loop **/
     protected void doLoop() throws Exception {
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
-            state.store(iSample);
+            final int currentState = iSample;
+
+            state.store(currentState);
 
             Operator operator = operatorSet.selectOperator();
             //System.out.print("\n" + iSample + " " + operator.getName()+ ":");
-            double fLogHastingsRatio = operator.proposal();
+
+            final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
+            Evaluator evaluator = null;
+
+            if (evaluatorDistribution != null) {
+                evaluator = new Evaluator() {
+                    @Override
+                    public double evaluate() {
+                        double logP = 0.0;
+
+                        state.storeCalculationNodes();
+                        state.checkCalculationNodesDirtiness();
+
+                        try {
+                            logP = evaluatorDistribution.calculateLogP();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.exit(1);
+                        }
+
+                        state.restore();
+                        state.store(currentState);
+
+                        return logP;
+                    }
+                };
+            }
+
+            double fLogHastingsRatio = operator.proposal(evaluator);
+
             if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
-            	
+
             	state.storeCalculationNodes();
                 state.checkCalculationNodesDirtiness();
 
@@ -409,11 +440,11 @@ public class MCMC extends Runnable {
                 //System.out.print(" direct reject");
             }
             log(iSample);
-            
-            if (bDebug && iSample % 3 == 0 || iSample % 10000 == 0) { 
+
+            if (bDebug && iSample % 3 == 0 || iSample % 10000 == 0) {
             	// check that the posterior is correctly calculated at every third
             	// sample, as long as we are in debug mode
-                double fLogLikelihood = robustlyCalcPosterior(posterior); 
+                double fLogLikelihood = robustlyCalcPosterior(posterior);
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
                 	reportLogLikelihoods(posterior, "");
                     throw new Exception("At sample "+ iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood
@@ -428,10 +459,10 @@ public class MCMC extends Runnable {
             }
             callUserFunction(iSample);
         }
-    }    
-    
-    /** report posterior and subcomponents recursively, for debugging 
-     * incorrectly recalculated posteriors **/ 
+    }
+
+    /** report posterior and subcomponents recursively, for debugging
+     * incorrectly recalculated posteriors **/
     protected  void reportLogLikelihoods(Distribution distr, String sTab) {
 		System.err.println(sTab + "P(" + distr.getID() + ") = " + distr.logP + " (was " + distr.storedLogP +")");
 		if (distr instanceof CompoundDistribution) {
@@ -443,7 +474,7 @@ public class MCMC extends Runnable {
 
     protected void callUserFunction(int iSample) {}
 
-    
+
     /** Calculate posterior by setting all StateNodes and CalculationNodes dirty.
      * Clean everything afterwards.
      */
@@ -457,6 +488,6 @@ public class MCMC extends Runnable {
         state.acceptCalculationNodes();
         return fLogLikelihood;
     }
-    
+
 } // class MCMC
 
