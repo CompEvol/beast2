@@ -33,7 +33,7 @@ public class SliceOperator extends Operator {
     {
 	totalDelta = 0.0;
 	totalNumber = 0;
-	n_learning_iterations = 0;
+	n_learning_iterations = 100;
 	W=0.0;
 	windowSize = windowSizeInput.get();
 	g = sliceDensityInput.get();
