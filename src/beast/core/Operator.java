@@ -61,7 +61,7 @@ public abstract class Operator extends Plugin {
 	 * (for Gibbs operators).
      **/
     public double proposal(final Evaluator evaluator) {
-        throw new IllegalArgumentException("proposal with evaluator is not implemented for this proposal");
+        return proposal();
     }
 
     /** Implement this for proposing a new State.
