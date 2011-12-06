@@ -51,7 +51,7 @@ public class SliceOperator extends Operator {
     
     boolean above_upper_bound(RealParameter X, double x)
     {
-	return (x > X.getLower());
+	return (x > X.getUpper());
     }
 
     Double evaluate(RealParameter X, double x)
