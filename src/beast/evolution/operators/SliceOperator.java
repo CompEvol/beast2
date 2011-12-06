@@ -7,14 +7,14 @@ import beast.core.Evaluator;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.BaseOperator;
+import beast.core.Operator;
 import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
 
 
 @Description("A random walk operator that selects a random dimension of the real parameter and perturbs the value a " +
         "random amount within +/- windowSize.")
-public class SliceOperator extends BaseOperator {
+public class SliceOperator extends Operator {
     public Input<RealParameter> parameterInput =
             new Input<RealParameter>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
     public Input<Double> windowSizeInput =
@@ -37,11 +37,6 @@ public class SliceOperator extends BaseOperator {
 	W=0.0;
 	windowSize = windowSizeInput.get();
 	g = sliceDensityInput.get();
-    }
-
-    public Distribution getEvaluatorDistribution()
-    {
-	return g;
     }
 
     boolean in_range(RealParameter X, double x) 
@@ -168,7 +163,7 @@ public class SliceOperator extends BaseOperator {
      * returns log of hastingRatio, or Double.NEGATIVE_INFINITY if proposal should not be accepted *
      */
     @Override
-    public double proposal(Evaluator E) {
+    public double proposal() {
 
 	int m = 100;
 
