@@ -46,7 +46,6 @@ import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
-import beast.util.AddOnManager;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -333,8 +332,36 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	String processTemplate(String sFileName) throws Exception {
 		final String MERGE_ELEMENT = "mergepoint";
+		// first gather the set of potential directories with templates
+		Set<String> sDirs = new HashSet<String>();//AddOnManager.getBeastDirectories();
+		String pathSep = System.getProperty("path.separator");
+		String classpath = System.getProperty("java.class.path");
+		for (String path : classpath.split(pathSep)) {
+			if (path.endsWith(".jar")) {
+				path = path.substring(0, path.lastIndexOf("/"));
+			}
+			if (path.indexOf("/") >=0) {
+				path = path.substring(0, path.lastIndexOf("/"));
+			}
+			if (!sDirs.contains(path)) {
+				sDirs.add(path);
+			}
+		}
+
+		
+		// read main template, try all template directories if necessary
 		File mainTemplate = new File(sFileName);
-		String sTemplateXML = load(sFileName);
+		for (String sDir : sDirs) {
+			if (!mainTemplate.exists()) {
+				mainTemplate = new File(sDir + "/" + sFileName);
+			}
+			if (!mainTemplate.exists()) {
+				mainTemplate = new File(sDir + "/templates/" + sFileName);
+			}
+		}
+		System.err.println("Loading template " + mainTemplate.getAbsolutePath());
+		String sTemplateXML = load(mainTemplate.getAbsolutePath());
+		
 		// find merge points
 		int i = 0;
 		HashMap<String, String> sMergePoints = new HashMap<String, String>();
@@ -352,14 +379,19 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 
 		// find XML to merge
-
-		for (String sDir : AddOnManager.getBeastDirectories()) {
+		// ensure processed templates are unique in name.
+		// This prevents loading templates twice, once from the development area and once from .beast2-addon area
+		Set<String> loadedTemplates = new HashSet<String>();
+		for (String sDir : sDirs) {
 			File templates = new File(sDir + "/templates");
 			File[] files = templates.listFiles();
 			if (files != null) {
 				for (File template : files) {
 					if (!template.getAbsolutePath().equals(mainTemplate.getAbsolutePath())
 							&& template.getName().toLowerCase().endsWith(".xml")) {
+						if (!loadedTemplates.contains(template.getName())) {
+							System.err.println("Processing " + template.getAbsolutePath());
+						    loadedTemplates.add(template.getName());
 						String sXML2 = load(template.getAbsolutePath());
 						if (!sXML2.contains("<mergepoint ")) {
 						try {
@@ -397,6 +429,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 							}
 						}
 						}
+						} else {
+							System.err.println("Skipping " + template.getAbsolutePath() + " since " + template.getName() + " is already processed");
+						}
+						
 					}
 				}
 			}
