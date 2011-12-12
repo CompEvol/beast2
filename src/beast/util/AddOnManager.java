@@ -41,6 +41,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -284,9 +285,42 @@ public class AddOnManager {
 			if (jarDir.exists() && jarDir.isDirectory()) {
 				for (String sFile : jarDir.list()) {
 					if (sFile.endsWith(".jar")) {
+						// check that we are not reload existing classes
+						   String loadedClass = null;
+						   try{
+						     JarInputStream jarFile = new JarInputStream
+						        (new FileInputStream (jarDir.getAbsolutePath() + "/" + sFile));
+						     JarEntry jarEntry;
+
+						     while(loadedClass == null) {
+						       jarEntry=jarFile.getNextJarEntry ();
+						       if(jarEntry == null){
+						         break;
+						       }
+						       if((jarEntry.getName ().endsWith (".class")) ) {
+						         String className = jarEntry.getName().replaceAll("/", "\\.");
+						         className = className.substring(0, className.lastIndexOf('.'));
+						         try {
+						        	 Object o = Class.forName(className);
+						        	 loadedClass = className;
+						         } catch (Exception e) {
+									// TODO: handle exception
+								}
+						       }
+						     }
+						   }
+						   catch( Exception e){
+						     e.printStackTrace ();
+						   }
+
+						
 						@SuppressWarnings("deprecation")
 						URL url = new File(jarDir.getAbsolutePath() + "/" + sFile).toURL();
-						addURL(url);
+						if (loadedClass == null) {
+							addURL(url);
+						} else {
+							System.err.println("Skip loading " + url + ": contains classs " + loadedClass + " that is already loaded");
+						}
 					}
 				}
 			}

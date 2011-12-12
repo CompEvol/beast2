@@ -60,7 +60,7 @@ public class TreeLikelihood extends Distribution {
     public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
 
     /** calculation engine **/
-    LikelihoodCore m_likelihoodCore;
+    protected LikelihoodCore m_likelihoodCore;
     BeagleTreeLikelihood m_beagle;
     
     /** Plugin associated with inputs. Since none of the inputs are StateNodes, it

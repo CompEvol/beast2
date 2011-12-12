@@ -847,7 +847,15 @@ public class XMLParser {
 
     void setInput(Node node, Plugin plugin, String sName, Plugin plugin2) throws XMLParserException {
         try {
-            plugin.setInputValue(sName, plugin2);
+            Input<?> input = plugin.getInput(sName);
+            // test whether input was not set before, this is done by testing whether input has default value.
+            // for non-list inputs, this should be true if the value was not already set before
+            // for list inputs this is always true.
+            if (input.get() == input.defaultValue) {
+            	plugin.setInputValue(sName, plugin2);
+            } else {
+            	throw new Exception("Multiple entries for non-list input " + input.getName());
+            }
             return;
         } catch (Exception e) {
         	if (e.getMessage().contains("101")) {
@@ -870,8 +878,7 @@ public class XMLParser {
 
     void setInput(Node node, Plugin plugin, String sName, String sValue) throws XMLParserException {
         try {
-
-        	plugin.setInputValue(sName, sValue);
+           	plugin.setInputValue(sName, sValue);
             return;
         } catch (Exception e) {
             throw new XMLParserException(node, e.getMessage(), 124);
