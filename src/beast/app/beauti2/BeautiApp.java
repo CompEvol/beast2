@@ -168,7 +168,6 @@ public class BeautiApp extends MultiDocApplication {
                 System.setProperty("apple.laf.useScreenMenuBar","true");
                 System.setProperty("apple.awt.draggableWindowBackground","true");
                 System.setProperty("apple.awt.showGrowBox","true");
-
                 try {
 
                     try {

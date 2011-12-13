@@ -409,7 +409,7 @@
 		            mainclass="beast.app.beauti.Beauti"
 		            icon="${common_dir}/icons/beauti.icns"
 		            jvmversion="1.6+"
-		            vmoptions="-Xmx1024M"
+		            vmoptions="-Xmx1024M -Xdock:name=&quot;BEAUti 2&quot;"
 		            arguments=""
 		            version="${version}"
 		            infostring="${BEAUti_name}, ${copyright}"

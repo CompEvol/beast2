@@ -7,6 +7,9 @@ import beast.app.draw.*;
 import beast.app.util.Utils;
 import beast.util.AddOnManager;
 
+import jam.framework.Application;
+import jam.framework.DocumentFrame;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -20,16 +23,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class Beauti extends JTabbedPane {
 	private static final long serialVersionUID = 1L;
 	
-    ExtensionFileFilter ef0 = new ExtensionFileFilter(".nex", "Nexus files");
-    ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
+//    ExtensionFileFilter ef0 = new ExtensionFileFilter(".nex", "Nexus files");
+//    ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
 	
     /**
      * current directory for opening files *
@@ -312,34 +318,38 @@ public class Beauti extends JTabbedPane {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-    		JFileChooser fileChooser = new JFileChooser(g_sDir);
-    		fileChooser.addChoosableFileFilter(ef1);
-    		fileChooser.addChoosableFileFilter(ef0);
-    		fileChooser.setMultiSelectionEnabled(true);
-    		fileChooser.setDialogTitle("Import alignment File");
-
-    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-    			try {
-        			File[] files = fileChooser.getSelectedFiles();
-        			for (int i = 0; i < files.length; i++) {
-        				String sFileName = files[i].getAbsolutePath();
-        				if (sFileName.lastIndexOf('/') > 0) {
-        					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-        				}
-        				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
-                			doc.importNexus(sFileName);
-        				}
-        				if (sFileName.toLowerCase().endsWith(".xml")) {
-                			doc.importXMLAlignment(sFileName);
-        				}
-        			}
-    				a_save.setEnabled(true);
-    				a_saveas.setEnabled(true);
-    			} catch (Exception e) {
-    				e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
-				}
-            }
+        	
+//    		JFileChooser fileChooser = new JFileChooser(g_sDir);
+//    		fileChooser.addChoosableFileFilter(ef1);
+//    		fileChooser.addChoosableFileFilter(ef0);
+//    		fileChooser.setMultiSelectionEnabled(true);
+//    		fileChooser.setDialogTitle("Import alignment File");
+//
+//    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			try {
+    			File[] files = Utils.getLoadFiles("Import alignment File", new File(g_sDir), "alignment files", "nex","nexus","xml");
+    			if (files == null) {
+    				return;
+    			}
+    			for (int i = 0; i < files.length; i++) {
+    				String sFileName = files[i].getAbsolutePath();
+    				if (sFileName.lastIndexOf('/') > 0) {
+    					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+    				}
+    				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
+            			doc.importNexus(sFileName);
+    				}
+    				if (sFileName.toLowerCase().endsWith(".xml")) {
+            			doc.importXMLAlignment(sFileName);
+    				}
+    			}
+				a_save.setEnabled(true);
+				a_saveas.setEnabled(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
+			}
+//            }
         } // actionPerformed
     }
     
@@ -532,57 +542,15 @@ public class Beauti extends JTabbedPane {
         fileMenu.addSeparator();
         fileMenu.add(a_save);
         fileMenu.add(a_saveas);
-        fileMenu.addSeparator();
-        fileMenu.add(a_quit);
+        if (!Utils.isMac()) {
+            fileMenu.addSeparator();
+        	fileMenu.add(a_quit);
+        }
         
         JMenu modeMenu = new JMenu("Mode");
         menuBar.add(modeMenu);
         modeMenu.setMnemonic('M');
-        
-//		final JCheckBoxMenuItem viewEditTree = new JCheckBoxMenuItem("Expert mode", InputEditor.g_bExpertMode);
-//		viewEditTree.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent ae) {
-//				InputEditor.g_bExpertMode = viewEditTree.getState();
-//				refreshPanel();
-//			}
-//		});
-//		modeMenu.add(viewEditTree);
-//		modeMenu.addSeparator();
-//
-//		final JCheckBoxMenuItem autoScrubPriors = new JCheckBoxMenuItem("Automatic scrub priors", this.doc.bAutoScrubPriors);
-//		autoScrubPriors.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent ae) {
-//				doc.bAutoScrubPriors = autoScrubPriors.getState();
-//				refreshPanel();
-//			}
-//		});
-//		modeMenu.add(autoScrubPriors);
-//		final JCheckBoxMenuItem autoScrubState = new JCheckBoxMenuItem("Automatic scrub state", this.doc.bAutoScrubState);
-//		autoScrubState.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent ae) {
-//				doc.bAutoScrubState = autoScrubState.getState();
-//				refreshPanel();
-//			}
-//		});
-//		modeMenu.add(autoScrubState);
-//		final JCheckBoxMenuItem autoScrubOperators = new JCheckBoxMenuItem("Automatic scrub operators", this.doc.bAutoScrubOperators);
-//		autoScrubOperators.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent ae) {
-//				doc.bAutoScrubOperators = autoScrubOperators.getState();
-//				refreshPanel();
-//			}
-//		});
-//		modeMenu.add(autoScrubOperators);
-//		final JCheckBoxMenuItem autoScrubLoggers = new JCheckBoxMenuItem("Automatic scrub loggers", this.doc.bAutoScrubLoggers);
-//		autoScrubLoggers.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent ae) {
-//				doc.bAutoScrubLoggers = autoScrubLoggers.getState();
-//				refreshPanel();
-//			}
-//		});
-//		modeMenu.add(autoScrubLoggers);
-
-        
+                
 		final JCheckBoxMenuItem autoSetClockRate = new JCheckBoxMenuItem("Automatic set clock rate", this.doc.bAutoSetClockRate);
 		autoSetClockRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -738,12 +706,11 @@ public class Beauti extends JTabbedPane {
 	    	}
 			bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
 			Arrays.fill(bPaneIsVisible, true);
-    	} else {
-    		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-    			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
-    			bPaneIsVisible[iPanel] = panelConfig.bIsVisibleInput.get();
-    		}    		
     	}
+		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+			bPaneIsVisible[iPanel] = panelConfig.bIsVisibleInput.get();
+		}    		
     	// add panels according to BeautiConfig 
 		panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
 		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
@@ -760,8 +727,6 @@ public class Beauti extends JTabbedPane {
     	isInitialising = false;
     }
 
-
-	
 	public static void main(String[] args) {
 		try {
 			AddOnManager.loadExternalJars();
@@ -771,6 +736,54 @@ public class Beauti extends JTabbedPane {
 	        BeautiDoc doc = new BeautiDoc();
 	        if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
                	return;
+            }
+
+            boolean lafLoaded = false;
+	        if (Utils.isMac()) {
+                System.setProperty("apple.awt.graphics.UseQuartz", "true");
+                System.setProperty("apple.awt.antialiasing","true");
+                System.setProperty("apple.awt.rendering","VALUE_RENDER_QUALITY");
+
+                System.setProperty("apple.laf.useScreenMenuBar","true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "BEAUti 2");
+                System.setProperty("apple.awt.draggableWindowBackground","true");
+                System.setProperty("apple.awt.showGrowBox","true");
+
+                try {
+
+                    try {
+                        // We need to do this using dynamic class loading to avoid other platforms
+                        // having to link to this class. If the Quaqua library is not on the classpath
+                        // it simply won't be used.
+                        Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+                        Method method = qm.getMethod("setExcludedUIs", Set.class);
+
+                        Set<String> excludes = new HashSet<String>();
+                        excludes.add("Button");
+                        excludes.add("ToolBar");
+                        method.invoke(null, excludes);
+
+                    }
+                    catch (Throwable e) {
+                    }
+
+                    //set the Quaqua Look and Feel in the UIManager
+                    UIManager.setLookAndFeel(
+                            "ch.randelshofer.quaqua.QuaquaLookAndFeel"
+                    );
+                    lafLoaded = true;
+
+                } catch (Exception e) {
+
+                }
+
+                UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
+                UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
+            }
+
+
+            if (!lafLoaded) {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
 	        
 	        final Beauti beauti = new Beauti(doc);
@@ -796,6 +809,7 @@ public class Beauti extends JTabbedPane {
 					}
 				}
 			});
+			
 			
 			
 			beauti.setVisible(true);
@@ -832,3 +846,7 @@ public class Beauti extends JTabbedPane {
     } // main
 
 } // class Beauti
+
+
+
+

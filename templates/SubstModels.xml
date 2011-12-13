@@ -123,6 +123,18 @@
         <subtemplate id='mtREV' class='beast.evolution.substitutionmodel.MTREV' mainid='MTREV.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='MTREV' id='MTREV.$(n)'/>]]></subtemplate>
         <subtemplate id='WAG' class='beast.evolution.substitutionmodel.WAG' mainid='WAG.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='WAG' id='WAG.$(n)'/>]]></subtemplate>
 
+<!-- binary model -->
+        <subtemplate id='MutationDeathModel' class='beast.evolution.substitutionmodel.MutationDeathModel' mainid='MutationDeathModel.$(n)'
+suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel">
+<![CDATA[
+		<plugin id='MutationDeathModel.$(n)' spec='MutationDeathModel'>
+			<parameter name='deathprob' value='0.1' estimate='false'/>
+			<parameter name='mu' value='1' estimate='false'/>
+		</plugin>
+]]>
+        </subtemplate>
+
+
 
 
 <!-- frequency models -->
