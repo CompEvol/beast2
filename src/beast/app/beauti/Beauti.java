@@ -14,8 +14,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.apple.eawt.ApplicationEvent;
-
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -798,24 +796,25 @@ public class Beauti extends JTabbedPane {
 
 	     if (Utils.isMac()) {
 	    	// set up application about-menu for Mac
-	            new com.apple.eawt.Application() {
-	                {
-	                    addApplicationListener(new AboutBoxHandler());
-	                }
-
-	                class AboutBoxHandler extends com.apple.eawt.ApplicationAdapter {
-	                    public void handleAbout(com.apple.eawt.ApplicationEvent event) {
-	                    	beauti.a_about.actionPerformed(null);
-	                    	event.setHandled(true);
-	                    }
-	                
-                    @Override
-                    public void handleQuit(ApplicationEvent event) {
-                    	beauti.a_quit.actionPerformed(null);
-                    	event.setHandled(true);
-                    }
-	                }
-	            };
+// Mac-only stuff
+//	            new com.apple.eawt.Application() {
+//	                {
+//	                    addApplicationListener(new AboutBoxHandler());
+//	                }
+//
+//	                class AboutBoxHandler extends com.apple.eawt.ApplicationAdapter {
+//	                    public void handleAbout(com.apple.eawt.ApplicationEvent event) {
+//	                    	beauti.a_about.actionPerformed(null);
+//	                    	event.setHandled(true);
+//	                    }
+//	                
+//                    @Override
+//                    public void handleQuit(ApplicationEvent event) {
+//                    	beauti.a_quit.actionPerformed(null);
+//                    	event.setHandled(true);
+//                    }
+//	                }
+//	            };
 		} 
 	        beauti.setUpPanels();
 			
