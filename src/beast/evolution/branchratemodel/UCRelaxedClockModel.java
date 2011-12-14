@@ -63,11 +63,16 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	// root has no rate
     		return 1;
     	}
-    	
         if (recompute) {
             prepare();
             recompute = false;
         }
+    	if (renormalize) {
+    		if (normalize) {
+    			computeFactor();
+    		}
+        	renormalize = false;
+    	}
 
         int nodeNumber = node.getNr();
 
@@ -93,7 +98,12 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         for (int i = 0; i < tree.getNodeCount(); i++) {
             Node node = tree.getNode(i);
             if (!node.isRoot()) {
-                int rateCategory = categories.getValue(node.getNr());
+                int nodeNumber = node.getNr();
+                if (nodeNumber == categories.getDimension()) {
+                	// root node has nr less than #categories, so use that nr
+            		nodeNumber = node.getTree().getRoot().getNr();
+                }
+                int rateCategory = categories.getValue(nodeNumber);
                 treeRate += rates[rateCategory] * node.getLength();
                 treeTime += node.getLength();
 
@@ -131,12 +141,13 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	System.exit(0);
         }
 
-        if (normalize) computeFactor();
+        //if (normalize) computeFactor();
     }
 
     @Override
     protected boolean requiresRecalculation() {
     	recompute = false;
+    	renormalize = true;
 
 //        if (treeInput.get().somethingIsDirty()) {
 //        	recompute = true;
@@ -162,6 +173,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     @Override
     public void store() {
         System.arraycopy(rates, 0, storedRates, 0, rates.length);
+        storedScaleFactor = scaleFactor;
     	super.store();
     }
     @Override
@@ -169,6 +181,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     	double [] tmp = rates;
     	rates = storedRates;
     	storedRates = tmp;
+    	scaleFactor = storedScaleFactor;
     	super.restore();
     }
     
@@ -178,8 +191,11 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     private boolean normalize = false;
     private boolean recompute = true;
+    private boolean renormalize = true;
+    
     private double[] rates;
     private double[] storedRates;
     private double scaleFactor = 1.0;
+    private double storedScaleFactor = 1.0;
 
 }
