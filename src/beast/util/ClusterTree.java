@@ -91,16 +91,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         	// don't bother creating a cluster tree to save some time, if it is read from file anyway 
         	// make a caterpillar
 			List<String> sTaxa = m_pData.get().getTaxaNames();
-			Node left = new Node();
+			Node left = newNode();
 			left.setNr(0);
 			left.setID(sTaxa.get(0));
 			left.setHeight(0);
 			for (int i = 1; i < sTaxa.size(); i++) {
-				Node right = new Node();
+				Node right = newNode();
 				right.setNr(i);
 				right.setID(sTaxa.get(i));
 				right.setHeight(0);
-				Node parent = new Node();
+				Node parent = newNode();
 				parent.setNr(sTaxa.size() + i - 1);
 				parent.setHeight(i);
 				left.setParent(parent);

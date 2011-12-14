@@ -45,6 +45,14 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import beast.app.util.Utils;
+
 /**
  * This class is used to manage beast 2 add-ons, and can
  * - install a new add on
@@ -127,7 +135,7 @@ public class AddOnManager {
 		// create directory
 		URL templateURL = new URL(sURL);
 		ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
-		String sDir = getAddOnDir() + "/" + sName;
+		String sDir = getAddOnUserDir() + "/" + sName;
 		File dir = new File(sDir);
 		if (!dir.exists()) {
 			if (!dir.mkdirs()) {
@@ -150,7 +158,7 @@ public class AddOnManager {
 			throw new Exception("Add-on should be packaged in a zip file");
 		}
 		String sName = URL2AddOnName(sURL);
-		String sDir = getAddOnDir() + "/" + sName;
+		String sDir = getAddOnUserDir() + "/" + sName;
 		File dir = new File(sDir);
 		deleteRecursively(dir);
 	}
@@ -227,31 +235,60 @@ public class AddOnManager {
 		zipFile.close();
 	}
 
-	/** return directory where to install add-ons **/
-	public static String getAddOnDir() {
-		return System.getProperty("user.home") + "/.beast2";
+	/** return directory where to install add-ons for users **/
+	public static String getAddOnUserDir() {
+		if (Utils.isWindows()) {
+			if (System.getenv("APPDATA") != null) {
+				return System.getenv("APPDATA") + "/BEAST";
+			}
+			return System.getProperty("user.home") + "/BEAST";
+		}
+		if (Utils.isMac()) {
+			return System.getProperty("user.home") + "/Library/Application Support/BEAST";
+		}
+		// Linux and unices
+		return System.getProperty("user.home") + "/.beast";
 	}
 
+	/** return directory where system wide add-ons reside **/
+	public static String getAddOnAppDir() {
+		if (Utils.isWindows()) {
+			return "/Program Files/BEAST";
+		}
+		if (Utils.isMac()) {
+			return "/Library/Application Support/BEAST";
+		}
+		return "/usr/local/share/beast";
+	}
+	
 	/** return list of directories that may contain add-ons **/
 	public static List<String> getBeastDirectories() {
 		List<String> sDirs = new ArrayList<String>();
 		// check if there is the BEAST environment variable is set
-		if (System.getenv("BEAST") != null) {
-			String sBEAST = System.getenv("BEAST");
+		if (System.getProperty("BEAST_ADDON_PATH") != null) {
+			String sBEAST = System.getProperty("BEAST_ADDON_PATH");
 			for (String sDir : sBEAST.split(":")) {
 				sDirs.add(sDir);
 			}
-			return sDirs;
+		}
+		if (System.getenv("BEAST_ADDON_PATH") != null) {
+			String sBEAST = System.getenv("BEAST_ADDON_PATH");
+			for (String sDir : sBEAST.split(":")) {
+				sDirs.add(sDir);
+			}
 		}
 		// add user directory
 		sDirs.add(System.getProperty("user.dir"));
-		// add home directory
-		sDirs.add(System.getProperty("user.home") + "/.beast2");
-		List<String> sSubDirs = new ArrayList<String>();
+		// add user add-on directory
+		sDirs.add(getAddOnUserDir());
+		// add application add-on directory
+		sDirs.add(getAddOnAppDir());
+		
 
 		// subdirectories that look like they may contain an add-on
 		// this is detected by checking the subdirectory contains a lib or
 		// templates directory
+		List<String> sSubDirs = new ArrayList<String>();
 		for (String sDir : sDirs) {
 			File dir = new File(sDir);
 			if (dir.isDirectory()) {
@@ -274,13 +311,20 @@ public class AddOnManager {
 				}
 			}
 		}
+		// check version dependencies
+
+
+		
 		sDirs.addAll(sSubDirs);
+		
 		return sDirs;
 	} // getBeastDirectories
 
 	/** load external jars in beast directories **/
 	public static void loadExternalJars() throws Exception {
-		for (String sJarDir : getBeastDirectories()) {
+		List<String> sDirs = getBeastDirectories();
+		checkDependencies(sDirs);
+		for (String sJarDir : sDirs) {
 			File jarDir = new File(sJarDir + "/lib");
 			if (jarDir.exists() && jarDir.isDirectory()) {
 				for (String sFile : jarDir.list()) {
@@ -327,6 +371,73 @@ public class AddOnManager {
 		}
 		externalJarsLoaded = true;
 	} // loadExternalJars
+
+	
+	/** go through list of directories collecting version and dependency information for
+	 * all add-ons. Version and dependency info is stored in a file 
+	 * @param sDirs
+	 */
+	private static void checkDependencies(List<String> sDirs) {
+
+		class AddonDependency {
+			String addon;
+			String dependson;
+			Double atLeast;
+			Double atMost;
+		}
+		
+		HashMap<String,Double> addonVersion = new HashMap<String, Double>();
+		addonVersion.put("beast2", 2.0);
+		List<AddonDependency> dependencies = new ArrayList<AddonDependency>();
+		
+		// gather version and dependency info for all add-ons
+		for (String sDir : sDirs) {
+			File version = new File(sDir+"/version.xml");
+			if (version.exists()) {
+				try {
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					Document doc = factory.newDocumentBuilder().parse(version);
+					doc.normalize();
+					// get name and version of add-on
+					Element addon = doc.getDocumentElement();
+					String sAddon = addon.getAttribute("name");
+					String sAddonVersion = addon.getAttribute("version");
+					addonVersion.put(sAddon, Double.parseDouble(sAddonVersion));
+
+					// get dependencies of add-n
+					NodeList nodes = doc.getElementsByTagName("depends");
+					for (int i = 0; i < nodes.getLength(); i++) {
+						Element dependson = (Element) nodes.item(i);
+						AddonDependency dep = new AddonDependency();
+						dep.addon = sAddon;
+						dep.dependson = dependson.getAttribute("on"); 
+						String sAtLeast = dependson.getAttribute("atleast"); 
+						String sAtMost = dependson.getAttribute("atmost");
+						dep.atLeast = (sAtLeast.length() > 0 ? Double.parseDouble(sAtLeast) : 0);
+						dep.atMost = (sAtMost.length() > 0 ? Double.parseDouble(sAtMost) : Double.MAX_VALUE);
+						dependencies.add(dep);
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// check dependencies
+		for (AddonDependency dep : dependencies) {
+			Double version = addonVersion.get(dep.dependson);
+			if (version == null) {
+				throw new RuntimeException("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") which is not installed.\n" +
+						"Either uninstall " + dep.addon + " or install the " + dep.dependson + " add on.");
+			}
+			if (version > dep.atMost || version < dep.atLeast) {
+				throw new RuntimeException("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
+						dep.atLeast + " to " + dep.atMost + " but " + dep.dependson + " has version " + version + "\n" +
+						"Either uninstall " + dep.addon + " or install the correct version of " + dep.dependson +".");
+			}
+		}
+	}
 
 	/**
 	 * Add URL to CLASSPATH

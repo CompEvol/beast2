@@ -13,6 +13,9 @@ import jam.framework.DocumentFrame;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import com.apple.eawt.ApplicationEvent;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -582,7 +585,9 @@ public class Beauti extends JTabbedPane {
         helpMenu.add(a_help);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
-        helpMenu.add(a_about);
+        if (!Utils.isMac()) {
+        	helpMenu.add(a_about);
+        }
     	
     	setMenuVisibiliy("", menuBar);
     	
@@ -779,6 +784,9 @@ public class Beauti extends JTabbedPane {
 
                 UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
                 UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
+                
+                
+                
             }
 
 
@@ -788,6 +796,27 @@ public class Beauti extends JTabbedPane {
 	        
 	        final Beauti beauti = new Beauti(doc);
 
+	     if (Utils.isMac()) {
+	    	// set up application about-menu for Mac
+	            new com.apple.eawt.Application() {
+	                {
+	                    addApplicationListener(new AboutBoxHandler());
+	                }
+
+	                class AboutBoxHandler extends com.apple.eawt.ApplicationAdapter {
+	                    public void handleAbout(com.apple.eawt.ApplicationEvent event) {
+	                    	beauti.a_about.actionPerformed(null);
+	                    	event.setHandled(true);
+	                    }
+	                
+                    @Override
+                    public void handleQuit(ApplicationEvent event) {
+                    	beauti.a_quit.actionPerformed(null);
+                    	event.setHandled(true);
+                    }
+	                }
+	            };
+		} 
 	        beauti.setUpPanels();
 			
 			beauti.currentTab = beauti.panels[0];
@@ -814,7 +843,7 @@ public class Beauti extends JTabbedPane {
 			
 			beauti.setVisible(true);
 			beauti.refreshPanel();
-			JFrame frame = new JFrame("Beauti II: " + doc.sTemplateName + " " + doc.sFileName);
+			JFrame frame = new JFrame("BEAUti 2: " + doc.sTemplateName + " " + doc.sFileName);
 			beauti.frame = frame;
 			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
 
