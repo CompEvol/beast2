@@ -42,9 +42,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener {
     private BeautiDoc doc;
 
     private JTabbedPane tabbedPane =  new JTabbedPane();
-
-    /** currently selected tab **/
-    private BeautiPanel currentTab;
+    private TemplatePanel templatePanel;
 
     private boolean [] isPaneVisible;
     private BeautiPanel [] panels;
@@ -68,23 +66,19 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener {
 
         getFindAction().setEnabled(false);
         // probably some other actions to disable
-        
+
+        templatePanel = new TemplatePanel(this, doc);
+
         setUpPanels();
-		
-		currentTab = panels[0];
 
 		tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if (currentTab == null) {
-                    currentTab = panels[0];
-                }
-                if (currentTab != null) {
+                Component comp = tabbedPane.getSelectedComponent();
+                if (comp != null && comp instanceof BeautiPanel) {
                     if (!isInitialising) {
-                        currentTab.config.sync(currentTab.iPartition);
+                        ((BeautiPanel)comp).config.sync(((BeautiPanel)comp).iPartition);
                     }
-                    BeautiPanel panel = (BeautiPanel) tabbedPane.getSelectedComponent();
-                    currentTab = panel;
                     refreshPanel();
                 }
             }
@@ -148,7 +142,11 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener {
 		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
 			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
 			isPaneVisible[iPanel] = panelConfig.bIsVisibleInput.get();
-		}    		
+		}
+        // add the special Template panel:
+        tabbedPane.addTab("Templates", templatePanel);
+        tabbedPane.setToolTipTextAt(0, "Select from available analysis templates");
+
     	// add panels according to BeautiConfig 
 		panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
 		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
@@ -167,11 +165,11 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener {
 
     public void refreshPanel() {
 		try {
-			BeautiPanel panel = (BeautiPanel)tabbedPane.getSelectedComponent();
-			if (panel != null) {
+			Component panel = tabbedPane.getSelectedComponent();
+			if (panel != null && panel instanceof BeautiPanel) {
 				this.doc.determinePartitions();
-				panel.updateList();
-				panel.refreshPanel();
+				((BeautiPanel)panel).updateList();
+				((BeautiPanel)panel).refreshPanel();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -210,8 +208,9 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener {
             return false;
         }
         try {
-        	if (currentTab != null) {
-        		currentTab.config.sync(currentTab.iPartition);
+            Component comp = tabbedPane.getSelectedComponent();
+            if (comp != null && comp instanceof BeautiPanel) {
+                ((BeautiPanel)comp).config.sync(((BeautiPanel)comp).iPartition);
         	} else {
         		panels[0].config.sync(0);
         	}
