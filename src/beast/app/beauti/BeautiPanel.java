@@ -83,6 +83,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	    this.config = config;
 	    refreshPanel();
 	    addParitionPanel(this.config.hasPartition(), iPanel);
+
+        setOpaque(false);
 	} // c'tor
     
     void addParitionPanel(Partition bHasPartion, int iPanel) {

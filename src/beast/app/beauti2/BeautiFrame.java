@@ -86,10 +86,6 @@ public class BeautiFrame extends DocumentFrame {
 //			beauti.a_saveas.setEnabled(true);
 //		}
 		
-		add(beauti);
-        setSize(1024, 768);
-        setVisible(true);
-
         // check file needs to be save on closing main frame
 //        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 //		frame.addWindowListener(new WindowAdapter() {
@@ -109,6 +105,7 @@ public class BeautiFrame extends DocumentFrame {
 
         JPanel basePanel = new JPanel(new BorderLayout(6, 6));
         basePanel.setBorder(new BorderUIResource.EmptyBorderUIResource(new java.awt.Insets(12, 12, 12, 12)));
+        basePanel.add(beauti, BorderLayout.CENTER);
 
         add(basePanel, BorderLayout.CENTER);
 
@@ -118,6 +115,8 @@ public class BeautiFrame extends DocumentFrame {
         importChooser.setFileFilter(new FileNameExtensionFilter(
                 "NEXUS (*.nex) & BEAST (*.xml) Files", "nex", "nexus", "nx", "xml", "beast", "fa", "fasta", "afa"));
         importChooser.setDialogTitle("Import Data...");
+
+        setSize(1024, 768);
     }
 
     /**

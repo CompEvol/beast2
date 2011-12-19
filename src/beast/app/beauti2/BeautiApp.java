@@ -25,6 +25,7 @@
 
 package beast.app.beauti2;
 
+import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.draw.PluginPanel;
@@ -48,82 +49,6 @@ public class BeautiApp extends SingleDocApplication {
 //public class BeautiApp extends MultiDocApplication {
 
     private static final boolean IS_MULTI_DOCUMENT = false;
-
-    private final static Version version = new Version() {
-        private static final String VERSION = "1.7.0";
-        private static final String DATE_STRING = "2002-2011";
-        private static final boolean IS_PRERELEASE = true;
-        private static final String REVISION = "$Rev: 3910 $";
-
-        @Override
-        public String getVersion() { return VERSION; }
-
-        @Override
-        public String getVersionString() {  return "v" + VERSION + (IS_PRERELEASE ? " Prerelease " + getBuildString() : ""); }
-
-        @Override
-        public String getDateString() { return DATE_STRING; }
-
-        @Override
-        public String[] getCredits() {
-            return new String[]{
-                    "Designed and developed by",
-                    "Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard",
-                    "",
-                    "Department of Computer Science",
-                    "University of Auckland",
-                    "alexei@cs.auckland.ac.nz",
-                    "",
-                    "Institute of Evolutionary Biology",
-                    "University of Edinburgh",
-                    "a.rambaut@ed.ac.uk",
-                    "",
-                    "David Geffen School of Medicine",
-                    "University of California, Los Angeles",
-                    "msuchard@ucla.edu",
-                    "",
-                    "Downloads, Help & Resources:",
-
-                    "\thttp://beast.bio.ed.ac.uk",
-                    "",
-                    "Source code distributed under the GNU Lesser General Public License:",
-                    "\thttp://code.google.com/p/beast-mcmc",
-                    "",
-                    "BEAST developers:",
-                    "\tAlex Alekseyenko, Erik Bloomquist, Joseph Heled, Sebastian Hoehna, ",
-                    "\tPhilippe Lemey, Wai Lok Sibon Li, Gerton Lunter, Sidney Markowitz, ",
-                    "\tVladimir Minin, Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie",
-                    "",
-                    "Thanks to:",
-                    "\tRoald Forsberg, Beth Shapiro and Korbinian Strimmer"};
-        }
-
-        @Override
-        public String getHTMLCredits() {
-            return
-                    "<p>Designed and developed by<br>" +
-                            "Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard</p>" +
-                            "<p>Department of Computer Science, University of Auckland<br>" +
-                            "<a href=\"mailto:alexei@cs.auckland.ac.nz\">alexei@cs.auckland.ac.nz</a></p>" +
-                            "<p>Institute of Evolutionary Biology, University of Edinburgh<br>" +
-                            "<a href=\"mailto:a.rambaut@ed.ac.uk\">a.rambaut@ed.ac.uk</a></p>" +
-                            "<p>David Geffen School of Medicine, University of California, Los Angeles<br>" +
-                            "<a href=\"mailto:msuchard@ucla.edu\">msuchard@ucla.edu</a></p>" +
-                            "<p><a href=\"http://beast.bio.ed.ac.uk\">http://beast.bio.ed.ac.uk</a></p>" +
-                            "<p>Source code distributed under the GNU LGPL:<br>" +
-                            "<a href=\"http://code.google.com/p/beast-mcmc\">http://code.google.com/p/beast-mcmc</a></p>" +
-                            "<p>BEAST developers:<br>" +
-                            "Alex Alekseyenko, Erik Bloomquist, Joseph Heled, Sebastian Hoehna, Philippe Lemey,<br>" +
-                            "Wai Lok Sibon Li, Gerton Lunter, Sidney Markowitz, Vladimir Minin,<br>" +
-                            "Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie</p>" +
-                            "<p>Thanks to Roald Forsberg, Beth Shapiro and Korbinian Strimmer</p>";
-        }
-
-        @Override
-        public String getBuildString() {
-            return "r" + REVISION.split(" ")[1];
-        }
-    };
 
     public BeautiApp(String nameString, String aboutString, Icon icon,
                      String websiteURLString, String helpURLString) {
@@ -212,6 +137,8 @@ public class BeautiApp extends SingleDocApplication {
             if (url != null) {
                 icon = new ImageIcon(url);
             }
+
+            BeastVersion version = new BeastVersion();
 
             final String nameString = "BEAUti";
             final String versionString = version.getVersionString();
