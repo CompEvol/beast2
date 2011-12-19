@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class Beauti extends JTabbedPane {
+public class Beauti extends JTabbedPane implements BeautiDocListener {
 	private static final long serialVersionUID = 1L;
 	
 //    ExtensionFileFilter ef0 = new ExtensionFileFilter(".nex", "Nexus files");
@@ -69,7 +69,7 @@ public class Beauti extends JTabbedPane {
 		Arrays.fill(bPaneIsVisible, true);
 		//m_panels = new BeautiPanel[NR_OF_PANELS];
 		this.doc = doc;
-		this.doc.setBeauti(this);
+		this.doc.addBeautiDocListener(this);
 	}
 	
 	void setTitle() {
@@ -116,6 +116,13 @@ public class Beauti extends JTabbedPane {
     Action a_citation = new ActionCitation();
     Action a_about = new ActionAbout();
     Action a_viewModel = new ActionViewModel();
+
+    @Override
+    public void docHasChanged() throws Exception {
+        setUpPanels();
+        setUpViewMenu();
+        setTitle();
+    }
 
     class ActionSave extends MyAction {
         private static final long serialVersionUID = 1;
@@ -864,13 +871,13 @@ public class Beauti extends JTabbedPane {
 	        // check file needs to be save on closing main frame
 	        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			frame.addWindowListener(new WindowAdapter() {
-			    public void windowClosing(WindowEvent e) {
-		        	if (!beauti.quit()) {
-			    		return;
-			    	}
-		        	System.exit(0);
-			    }
-			});
+                public void windowClosing(WindowEvent e) {
+                    if (!beauti.quit()) {
+                        return;
+                    }
+                    System.exit(0);
+                }
+            });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

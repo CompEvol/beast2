@@ -122,7 +122,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     	return partitionBox;
     }
 
-    void updateList() {
+    public void updateList() {
     	if (listModel == null) {
     		return;
     	}
@@ -156,10 +156,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	
 	}
 	
+	// AR remove globals (doesn't seem to be used anywhere)...
+//	static BeautiPanel g_currentPanel = null;
 	
-	static BeautiPanel g_currentPanel = null;
-	
-	void refreshPanel() throws Exception {
+	public void refreshPanel() throws Exception {
 		if (doc.alignments.size() == 0) {
 			return;
 		}
@@ -169,7 +169,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		if (partitionBox != null && config.getType() != null) {
 			partitionBox.setVisible(doc.getPartitions(config.getType()).size() > 1);
 		}
-		g_currentPanel = this;
+//		g_currentPanel = this;
 	}
 	
 	void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, EXPAND bForceExpansion) throws Exception {

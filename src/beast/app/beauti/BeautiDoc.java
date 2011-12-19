@@ -98,7 +98,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	// All globals need to be removed to make multiple document view work on
 	// Macs
 	static public BeautiDoc g_doc;
-	Beauti beauti;
+//	Beauti beauti;
 
 	public String sTemplateName = null;
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
@@ -215,8 +215,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				+ "-xml [beast file]\n" + "-out [output file name]\n" + "-exitaction [writexml|usetemplate|usexml]\n";
 	}
 
-	public void setBeauti(Beauti beauti) {
-		this.beauti = beauti;
+
+    private Set<BeautiDocListener> listeners = new HashSet<BeautiDocListener>();
+
+	public void addBeautiDocListener(BeautiDocListener listener) {
+		listeners.add(listener);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -248,9 +251,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			BeautiConfig.clear();
 			String sXML = processTemplate(m_sTemplateFileName);
 			loadTemplate(sXML);
-			beauti.setUpPanels();
-			beauti.setUpViewMenu();
-			beauti.setTitle();
+
+            for (BeautiDocListener listener : listeners) {
+                listener.docHasChanged();
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -260,7 +264,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		String sXML = load(sFileName);
 		extractSequences(sXML);
 		connectModel();
-		beauti.setUpPanels();
+		fireDocHasChanged();
 	}
 
 	public void loadNewTemplate(String sFileName) throws Exception {
@@ -286,7 +290,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 		connectModel();
 		addTraitSet(parser.m_traitSet);
-		beauti.setUpPanels();
+		fireDocHasChanged();
 	}
 
 	public void importXMLAlignment(String sFileName) throws Exception {
@@ -294,8 +298,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		data.initAndValidate();
 		addAlignmentWithSubnet(data);
 		connectModel();
-		beauti.setUpPanels();
+		fireDocHasChanged();
 	}
+
+    private void fireDocHasChanged() throws Exception {
+        for (BeautiDocListener listener : listeners) {
+            listener.docHasChanged();
+        }
+    }
 
 	void initialize(ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
 		BeautiConfig.clear();
@@ -517,21 +527,26 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	/** save specification in file **/
 	public void save(String sFileName) throws Exception {
-		determinePartitions();
-		scrubAll(false, false);
-		//String sXML = new XMLProducer().toXML(mcmc.get(), );
-		Set<Plugin> plugins = new HashSet<Plugin>();
-		for (Plugin plugin : PluginPanel.g_plugins.values()) {
-			String sName = plugin.getClass().getName(); 
-			if (!sName.startsWith("beast.app.beauti")) {
-				plugins.add(plugin);
-			}
-		}
-		String sXML = new XMLProducer().toXML(mcmc.get(), plugins);
-		FileWriter outfile = new FileWriter(sFileName);
-		outfile.write(sXML);
-		outfile.close();
+		save(new File(sFileName));
 	} // save
+
+    /** save specification in file **/
+    public void save(File file) throws Exception {
+        determinePartitions();
+        scrubAll(false, false);
+        //String sXML = new XMLProducer().toXML(mcmc.get(), );
+        Set<Plugin> plugins = new HashSet<Plugin>();
+        for (Plugin plugin : PluginPanel.g_plugins.values()) {
+            String sName = plugin.getClass().getName();
+            if (!sName.startsWith("beast.app.beauti")) {
+                plugins.add(plugin);
+            }
+        }
+        String sXML = new XMLProducer().toXML(mcmc.get(), plugins);
+        FileWriter outfile = new FileWriter(file);
+        outfile.write(sXML);
+        outfile.close();
+    } // save
 
 	void extractSequences(String sXML) throws Exception {
 		// load standard template
@@ -1548,7 +1563,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		determinePartitions();
 	}
 
-	void determinePartitions() {
+	public void determinePartitions() {
 		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
 		sPartitionNames = new ArrayList<String>();
 		for (Distribution distr : likelihood.pDistributions.get()) {
