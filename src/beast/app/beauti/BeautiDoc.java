@@ -100,7 +100,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	static public BeautiDoc g_doc;
 	Beauti beauti;
 
-	String sTemplateName = null;
+	public String sTemplateName = null;
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
 	
 	Map<String,String> tipTextMap = new HashMap<String, String>();
@@ -108,7 +108,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
     /**
      * name of current file, used for saving (as opposed to saveAs) *
      */
-	String sFileName = "";
+	public String sFileName = "";
 	
 	public BeautiDoc() {
 		g_doc = this;

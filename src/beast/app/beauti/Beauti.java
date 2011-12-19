@@ -1,14 +1,12 @@
 package beast.app.beauti;
 
 
+
 import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.draw.*;
 import beast.app.util.Utils;
 import beast.util.AddOnManager;
-
-import jam.framework.Application;
-import jam.framework.DocumentFrame;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -48,14 +46,14 @@ public class Beauti extends JTabbedPane {
     static public final String FILE_EXT = ".xml";
 
 	/** document in document-view pattern. BTW this class is the view */
-    BeautiDoc doc;
-    JFrame frame;
+    public BeautiDoc doc;
+    public JFrame frame;
     
     /** currently selected tab **/
-    BeautiPanel currentTab;
+    public BeautiPanel currentTab;
     
-	boolean [] bPaneIsVisible;
-	BeautiPanel [] panels;
+    public boolean [] bPaneIsVisible;
+	public BeautiPanel [] panels;
 
 	/** menu for switching templates **/
     JMenu templateMenu;
@@ -64,7 +62,7 @@ public class Beauti extends JTabbedPane {
 
     
     /** flag indicating beauti is in the process of being set up and panels should not sync with current model **/
-    boolean isInitialising = true;
+    public boolean isInitialising = true;
 	
 	public Beauti(BeautiDoc doc) {
 		bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
@@ -105,11 +103,11 @@ public class Beauti extends JTabbedPane {
 
 	
     Action a_new = new ActionNew();
-    Action a_load = new ActionLoad();
+    public Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
     Action a_addOn = new ActionAddOn();
-    Action a_import = new ActionImport();
-    Action a_save = new ActionSave();
+    public Action a_import = new ActionImport();
+    public Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
     Action a_quit = new ActionQuit();
     Action a_viewall = new ActionViewAllPanels();
@@ -193,7 +191,7 @@ public class Beauti extends JTabbedPane {
         return false;
     } // saveAs    
 
-    protected void saveFile(String sFileName) {
+    public void saveFile(String sFileName) {
         try {
         	if (currentTab != null) {
         		currentTab.config.sync(currentTab.iPartition);
@@ -509,7 +507,7 @@ public class Beauti extends JTabbedPane {
     } // class ActionViewModel
     
     
-    void refreshPanel() {
+    public void refreshPanel() {
 		try {
 			BeautiPanel panel = (BeautiPanel) getSelectedComponent();
 			if (panel != null) {
@@ -691,7 +689,7 @@ public class Beauti extends JTabbedPane {
     
     // hide panels as indicated in the hidepanels attribute in the XML template,
     // or use default tabs to hide otherwise.
-	void hidePanels() {
+	public void hidePanels() {
 //		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
 //			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
 //			if (!panelConfig.m_bIsVisibleInput.get()) {
@@ -700,7 +698,7 @@ public class Beauti extends JTabbedPane {
 //		}
 	} // hidePanels
 	
-    void setUpPanels() throws Exception {
+    public void setUpPanels() throws Exception {
     	isInitialising = true;
     	// remove any existing tabs
     	if (getTabCount() > 0) {
@@ -815,6 +813,11 @@ public class Beauti extends JTabbedPane {
 //                    }
 //	                }
 //	            };
+
+//        	BeastVersion version = new BeastVersion();
+//             BeautiApp app = new BeautiApp("BEAUti 2", version.getHTMLCredits(), BeautiPanel.getIcon(0, null),
+//                     "http://beast2.cs.auckland.ac.nz", "http://beast2.cs.auckland.ac.nz");
+
 		} 
 	        beauti.setUpPanels();
 			

@@ -25,7 +25,11 @@
 
 package beast.app.beauti2;
 
+import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.BeautiDoc.ActionOnExit;
+import beast.app.draw.PluginPanel;
 import beast.app.util.Version;
+import beast.util.AddOnManager;
 import jam.framework.*;
 import jam.mac.Utils;
 
@@ -128,6 +132,14 @@ public class BeautiApp extends SingleDocApplication {
 
     // Main entry point
     static public void main(String[] args) {
+    	try {
+    		AddOnManager.loadExternalJars();
+    		PluginPanel.init();
+            BeautiDoc doc = new BeautiDoc();
+            if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
+               	return;
+            }
+
 
 // deal with arguments here...
 //        if (args.length > 1) {
@@ -145,7 +157,9 @@ public class BeautiApp extends SingleDocApplication {
 //
 //        } else {
 
-        boolean lafLoaded = false;
+    	beast.app.util.Utils.loadUIManager();
+    	
+/*        boolean lafLoaded = false;
 
         if (Utils.isMacOSX()) {
             System.setProperty("apple.awt.graphics.UseQuartz", "true");
@@ -186,12 +200,11 @@ public class BeautiApp extends SingleDocApplication {
             UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
             UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
         }
+*/
 
-        try {
-
-            if (!lafLoaded) {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            }
+//            if (!lafLoaded) {
+//                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            }
 
             java.net.URL url = BeautiApp.class.getResource("images/beauti.png");
             Icon icon = null;
@@ -216,7 +229,7 @@ public class BeautiApp extends SingleDocApplication {
             System.setProperty("BEAST & BEAUTi Version", version.getVersion());
 
             BeautiApp app = new BeautiApp(nameString, aboutString, icon, websiteURLString, helpURLString);
-            app.setDocumentFrame(new BeautiFrame(nameString));
+            app.setDocumentFrame(new BeautiFrame(nameString, doc));
 
             // For multidoc apps...
 //            app.setDocumentFrameFactory(new DocumentFrameFactory() {

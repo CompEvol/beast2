@@ -134,7 +134,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     		listOfPartitions.setSelectedIndex(iPartition);
     }
     
-	static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
+    public static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
         String sIconLocation = ICONPATH + iPanel +".png";
         if (config != null) {
         	sIconLocation = ICONPATH + config.getIcon();

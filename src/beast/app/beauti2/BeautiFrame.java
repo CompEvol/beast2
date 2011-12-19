@@ -8,23 +8,19 @@
  */
 package beast.app.beauti2;
 
+import beast.app.beauti.Beauti;
+import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.BeautiPanel;
 import beast.app.util.Utils;
 import jam.framework.DocumentFrame;
-import jam.framework.Exportable;
-import jam.util.IconUtils;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.HierarchyBoundsListener;
-import java.awt.event.HierarchyEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -38,7 +34,9 @@ public class BeautiFrame extends DocumentFrame {
 
     private JFileChooser importChooser; // make JFileChooser chooser remember previous path
 
-    public BeautiFrame(String title) {
+    Beauti beauti;
+    
+    public BeautiFrame(String title, BeautiDoc doc) throws Exception {
         super();
 
         setTitle(title);
@@ -48,6 +46,60 @@ public class BeautiFrame extends DocumentFrame {
 
         getFindAction().setEnabled(false);
         // probably some other actions to disable
+        
+        beauti = new Beauti(doc);
+        beauti.setUpPanels();
+		
+		beauti.currentTab = beauti.panels[0];
+		beauti.hidePanels();
+
+		beauti.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if (beauti.currentTab == null) {
+					beauti.currentTab = beauti.panels[0];
+				}
+				if (beauti.currentTab != null) {
+					if (!beauti.isInitialising) {
+						beauti.currentTab.config.sync(beauti.currentTab.iPartition);
+					}
+					BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
+					beauti.currentTab = panel;
+					beauti.refreshPanel();
+				}
+			}
+		});
+		
+		
+		
+		beauti.setVisible(true);
+		beauti.refreshPanel();
+		JFrame frame = this;//new JFrame("BEAUti 2: " + doc.sTemplateName + " " + doc.sFileName);
+		beauti.frame = frame;
+		frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
+
+		//JMenuBar menuBar = beauti.makeMenuBar(); 
+		//frame.setJMenuBar(menuBar);
+		
+//		if (doc.sFileName != null || doc.alignments.size()> 0) {
+//			beauti.a_save.setEnabled(true);
+//			beauti.a_saveas.setEnabled(true);
+//		}
+		
+		add(beauti);
+        setSize(1024, 768);
+        setVisible(true);
+
+        // check file needs to be save on closing main frame
+//        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+//		frame.addWindowListener(new WindowAdapter() {
+//		    public void windowClosing(WindowEvent e) {
+//	        	if (!beauti.quit()) {
+//		    		return;
+//		    	}
+//	        	System.exit(0);
+//		    }
+//		});
     }
 
     /**
@@ -83,12 +135,25 @@ public class BeautiFrame extends DocumentFrame {
 
     // Read the document from the provide file (return true if successfully loaded).
     protected boolean readFromFile(File file) throws IOException {
+    	beauti.doc.sFileName = file.getAbsolutePath();
+		try {
+			beauti.doc.loadXML(beauti.doc.sFileName);
+		} catch (IOException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
         return true;
     }
 
     // Write the document data to the specified file (return true if successfully saved)
     protected boolean writeToFile(File file) throws IOException {
-        return false;
+    	beauti.doc.sFileName = file.getAbsolutePath();
+        if (!beauti.doc.validateModel()) {
+            return false;
+        }
+        beauti.saveFile(beauti.doc.sFileName);
+        return true;
     }
 
     public final void doImport() {
@@ -109,6 +174,21 @@ public class BeautiFrame extends DocumentFrame {
                 JOptionPane.showMessageDialog(this, "Invalid file name",
                         "Invalid file name", JOptionPane.ERROR_MESSAGE);
             } else {
+    			try {
+					String sFileName = file.getAbsolutePath();
+					if (sFileName.lastIndexOf('/') > 0) {
+						Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+					}
+					if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
+							beauti.doc.importNexus(sFileName);
+					}
+					if (sFileName.toLowerCase().endsWith(".xml")) {
+						beauti.doc.importXMLAlignment(sFileName);
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 //                try {
 //                    BEAUTiImporter beautiImporter = new BEAUTiImporter(this);
 //                    beautiImporter.importFromFile(file);

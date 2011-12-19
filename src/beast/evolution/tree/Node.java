@@ -460,5 +460,23 @@ public class Node extends Plugin {
 			m_tree.startEditing(null);
 		}
 	}
+
+	/** some methods that are usefule for porting from BEAST 1 **/
+	public int getChildCount() {
+		if (isLeaf()) {
+			return 0;
+		} else {
+			return 2;
+		}
+	}
+	
+	public Node getChild(int iChild) {
+		if (iChild == 0) {
+			return m_left;
+		} else {
+			return m_right;
+		}
+	}
+	
 	
 } // class Node
