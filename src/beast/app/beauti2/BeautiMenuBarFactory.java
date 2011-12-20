@@ -25,6 +25,9 @@
 
 package beast.app.beauti2;
 
+import beast.app.beauti2.menus.BeautiFileMenuFactory;
+import beast.app.beauti2.menus.BeautiMacFileMenuFactory;
+import beast.app.beauti2.menus.ViewsMenuFactory;
 import jam.framework.*;
 import jam.mac.*;
 
@@ -33,13 +36,15 @@ public class BeautiMenuBarFactory extends DefaultMenuBarFactory {
 
 	public BeautiMenuBarFactory(boolean isMultiDocument) {
 		if (Utils.isMacOSX()) {
-			registerMenuFactory(new MacFileMenuFactory(isMultiDocument));
+			registerMenuFactory(new BeautiMacFileMenuFactory(isMultiDocument));
 			registerMenuFactory(new MacEditMenuFactory());
+            registerMenuFactory(new ViewsMenuFactory());
 			registerMenuFactory(new MacWindowMenuFactory());
 			registerMenuFactory(new MacHelpMenuFactory());
 		} else {
-			registerMenuFactory(new DefaultFileMenuFactory(isMultiDocument));
+			registerMenuFactory(new BeautiFileMenuFactory(isMultiDocument));
 			registerMenuFactory(new DefaultEditMenuFactory());
+            registerMenuFactory(new ViewsMenuFactory());
 			registerMenuFactory(new DefaultHelpMenuFactory());
 		}
 	}

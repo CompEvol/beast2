@@ -9,6 +9,7 @@
 package beast.app.beauti2;
 
 import beast.app.beauti.*;
+import beast.app.beauti2.menus.BeautiFileMenuHandler;
 import beast.app.util.Utils;
 import jam.framework.DocumentFrame;
 
@@ -27,7 +28,7 @@ import java.util.Arrays;
  * @author Alexei Drummond
  * @version $Id: BeautiFrame.java,v 1.22 2006/09/09 16:07:06 rambaut Exp $
  */
-public class BeautiFrame extends DocumentFrame implements BeautiDocListener {
+public class BeautiFrame extends DocumentFrame implements BeautiDocListener, BeautiFileMenuHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -335,4 +336,27 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener {
 //        setUpViewMenu();
 //        setTitle();
     }
+
+    @Override
+    public Action getAddonManagerAction() {
+        return addonManagerAction;
+    }
+
+    protected AbstractAction addonManagerAction = new AbstractAction(BeautiFileMenuHandler.ADD_ON_MANAGER) {
+        public void actionPerformed(java.awt.event.ActionEvent ae) {
+        	JAddOnDialog dlg = new JAddOnDialog(BeautiFrame.this);
+        	dlg.setVisible(true);
+
+        	// refresh template menu item
+//        	templateMenu.removeAll();
+//    		List<AbstractAction> templateActions = getTemplateActions();
+//    		for (AbstractAction a: templateActions) {
+//    			templateMenu.add(a);
+//    		}
+//    		templateMenu.addSeparator();
+//    		templateMenu.add(a_template);
+
+        } // actionPerformed
+    };
+
 }
