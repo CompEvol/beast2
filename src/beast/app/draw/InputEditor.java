@@ -1,6 +1,7 @@
 package beast.app.draw;
 
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -19,9 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
-import com.sun.java.swing.plaf.motif.MotifBorders.BevelBorder;
-
-import beast.app.beauti.BeautiConfig;
+import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
 import beast.core.Input;
@@ -61,6 +60,9 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	/** label that shows up when validation fails **/
 	protected SmallLabel m_validateLabel;
 	
+	/** document that we are editing **/
+	protected BeautiDoc doc;
+	
 	/** list of objects that want to be notified of the validation state when it changes **/
 	List<ValidateListener> m_validateListeners;
 	public void addValidationListener(ValidateListener validateListener) {
@@ -81,13 +83,28 @@ public abstract class InputEditor extends Box implements ValidateListener {
 
 	public static Integer g_nLabelWidth = 150;
 	
+	public InputEditor() {super(BoxLayout.X_AXIS);}
 	
-	public InputEditor() {
-		super(BoxLayout.X_AXIS);
-		//setAlignmentX(LEFT_ALIGNMENT);
-		g_currentInputEditors.add(this);
-	} // c'tor
+//	public InputEditor(BeautiDoc doc) {
+//		super(BoxLayout.X_AXIS);
+//		//setAlignmentX(LEFT_ALIGNMENT);
+//		g_currentInputEditors.add(this);
+//	} // c'tor
 	
+	
+	protected BeautiDoc getDoc() {
+		if (doc == null) {
+		    Component c = this;
+		    while (((Component) c).getParent() != null) {
+		      	c = ((Component) c).getParent();
+		      	if (c instanceof BeautiPanel) {
+		      		doc = ((BeautiPanel) c).getDoc();
+		      	}
+		    }
+		}
+		return doc;
+	}
+
 	
 	/** return class the editor is suitable for.
 	 * Either implement type() or types() if multiple
@@ -168,8 +185,8 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	protected void addInputLabel() {
 		if (m_bAddButtons) {
 			String sName = m_input.getName();
-			if (BeautiConfig.g_inputLabelMap.containsKey(m_plugin.getClass().getName()+"."+sName)) {
-				sName = BeautiConfig.g_inputLabelMap.get(m_plugin.getClass().getName()+"."+sName);
+			if (doc.beautiConfig.inputLabelMap.containsKey(m_plugin.getClass().getName()+"."+sName)) {
+				sName = doc.beautiConfig.inputLabelMap.get(m_plugin.getClass().getName()+"."+sName);
 			} else {
 				sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
 				sName = sName.substring(0,1).toUpperCase() + sName.substring(1);

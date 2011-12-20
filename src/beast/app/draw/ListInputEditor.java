@@ -1,7 +1,6 @@
 package beast.app.draw;
 
 
-import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -69,7 +68,7 @@ public class ListInputEditor extends InputEditor {
     }
 
     public ListInputEditor() {
-        super();
+    	super();
         m_entries = new ArrayList<JTextField>();
         m_delButton = new ArrayList<SmallButton>();
         m_editButton = new ArrayList<SmallButton>();
@@ -204,7 +203,7 @@ public class ListInputEditor extends InputEditor {
         		(m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
         	Box expandBox = Box.createVerticalBox();
         	//box.add(itemBox);
-        	PluginPanel.addInputs(expandBox, plugin, this, null);
+        	PluginPanel.addInputs(expandBox, plugin, this, null, doc);
         	//System.err.print(expandBox.getComponentCount());
         	if (expandBox.getComponentCount() > 1) {
         		// only go here if it is worth showing expanded box
@@ -244,7 +243,7 @@ public class ListInputEditor extends InputEditor {
 
 	        
         } else {
-        	if (PluginPanel.countInputs(plugin) == 0) {
+        	if (PluginPanel.countInputs(plugin, doc) == 0) {
         		editButton.setVisible(false);
         	}        	
         }
@@ -333,7 +332,7 @@ public class ListInputEditor extends InputEditor {
 	                System.err.println(ex.getClass().getName() + " " + ex.getMessage());
 	            }
 	            addSingleItem(plugin);
-	            BeautiDoc.g_doc.addPlugin(plugin);
+	            getDoc().addPlugin(plugin);
         	}
             checkValidation();
             updateState();
@@ -345,7 +344,7 @@ public class ListInputEditor extends InputEditor {
 	protected Object editItem(Object o) {
 		int i = ((List<?>)m_input.get()).indexOf(o);
         Plugin plugin = (Plugin) ((List<?>)m_input.get()).get(i);
-        PluginDialog dlg = new PluginDialog(plugin, m_input.getType());
+        PluginDialog dlg = new PluginDialog(plugin, m_input.getType(), doc);
         dlg.setVisible(true);
         if (dlg.getOK()) {
         	//m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());

@@ -1,5 +1,6 @@
 package beast.app.draw;
 
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
@@ -41,12 +42,12 @@ public class PluginDialog extends JDialog {
         init(panel);
     }
 
-    public PluginDialog(Plugin plugin, Class<? extends Plugin> aClass, List<Plugin> plugins) {
-        this(new PluginPanel(plugin, aClass, plugins));
+    public PluginDialog(Plugin plugin, Class<? extends Plugin> aClass, List<Plugin> plugins, BeautiDoc doc) {
+        this(new PluginPanel(plugin, aClass, plugins, doc));
     }
 
-    public PluginDialog(Plugin plugin, Class<?> type) {
-        this(new PluginPanel(plugin, type));
+    public PluginDialog(Plugin plugin, Class<?> type, BeautiDoc doc) {
+        this(new PluginPanel(plugin, type, doc));
     }
 
     /* to be called when Cancel is pressed **/
@@ -130,7 +131,7 @@ public class PluginDialog extends JDialog {
         PluginDialog dlg = null;
         try {
             if (args.length == 0) {
-                dlg = new PluginDialog(new PluginPanel(new MCMC(), Runnable.class));
+                dlg = new PluginDialog(new PluginPanel(new MCMC(), Runnable.class, null));
             } else if (args[0].equals("-x")) {
                 StringBuilder text = new StringBuilder();
                 String NL = System.getProperty("line.separator");
@@ -144,11 +145,11 @@ public class PluginDialog extends JDialog {
                     scanner.close();
                 }
                 Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
-                dlg = new PluginDialog(new PluginPanel(plugin, plugin.getClass()));
+                dlg = new PluginDialog(new PluginPanel(plugin, plugin.getClass(), null));
             } else if (args.length == 1) {
-                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0])));
+                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null));
             } else if (args.length == 2) {
-                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[1])));
+                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null));
             } else {
                 throw new Exception("Incorrect number of arguments");
             }

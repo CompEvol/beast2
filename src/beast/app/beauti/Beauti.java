@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 
+
 import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.draw.*;
@@ -22,12 +23,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class Beauti extends JTabbedPane implements BeautiDocListener {
@@ -65,7 +63,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public boolean isInitialising = true;
 	
 	public Beauti(BeautiDoc doc) {
-		bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
+		bPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
 		Arrays.fill(bPaneIsVisible, true);
 		//m_panels = new BeautiPanel[NR_OF_PANELS];
 		this.doc = doc;
@@ -84,8 +82,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		} else {
 			bPaneIsVisible[nPanelNr] = true;
 			int nTabNr = tabNrForPanel(nPanelNr);
-				BeautiPanelConfig panel = BeautiConfig.g_panels.get(nPanelNr);
-				insertTab(BeautiConfig.getButtonLabel(this, panel.sNameInput.get()), null, panels[nPanelNr], panel.sTipTextInput.get(), nTabNr);
+				BeautiPanelConfig panel = doc.beautiConfig.panels.get(nPanelNr);
+				insertTab(doc.beautiConfig.getButtonLabel(this, panel.sNameInput.get()), null, panels[nPanelNr], panel.sTipTextInput.get(), nTabNr);
 //			}
 			setSelectedIndex(nTabNr);
 		}
@@ -404,11 +402,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		int m_iPanel;
 		
     	ViewPanelCheckBoxMenuItem(int iPanel) {
-    		super("Show " +	BeautiConfig.g_panels.get(iPanel).sNameInput.get() + " panel", 
-    				BeautiConfig.g_panels.get(iPanel).bIsVisibleInput.get());
+    		super("Show " +	doc.beautiConfig.panels.get(iPanel).sNameInput.get() + " panel", 
+    				doc.beautiConfig.panels.get(iPanel).bIsVisibleInput.get());
     		m_iPanel = iPanel;
     		if (m_viewPanelCheckBoxMenuItems == null) {
-    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[ BeautiConfig.g_panels.size()];
+    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[ doc.beautiConfig.panels.size()];
     		}
     		m_viewPanelCheckBoxMenuItems[iPanel] = this;
     	} // c'tor
@@ -601,7 +599,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     void setUpViewMenu() {
     	m_viewPanelCheckBoxMenuItems = null;
     	viewMenu.removeAll();
-		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
+		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
         	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem( iPanel);
         	viewPanelAction.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
@@ -679,7 +677,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     	} else if (c instanceof JMenuItem) {
     		sName = ((JMenuItem)c).getText();
     	}
-   		if (sName.length() > 0 && BeautiConfig.menuIsInvisible(sParentName+sName)) {
+   		if (sName.length() > 0 && doc.beautiConfig.menuIsInvisible(sParentName+sName)) {
    			c.setVisible(false);
    		}
        	if (c instanceof JMenu) {
@@ -712,22 +710,22 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	    	while (getTabCount() > 0) {
 	    		removeTabAt(0);
 	    	}
-			bPaneIsVisible = new boolean[ BeautiConfig.g_panels.size()];
+			bPaneIsVisible = new boolean[ doc.beautiConfig.panels.size()];
 			Arrays.fill(bPaneIsVisible, true);
     	}
-		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
 			bPaneIsVisible[iPanel] = panelConfig.bIsVisibleInput.get();
 		}    		
     	// add panels according to BeautiConfig 
-		panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
-		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+		panels = new BeautiPanel[ doc.beautiConfig.panels.size()];
+		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
 			panels[ iPanel] = new BeautiPanel( iPanel, this.doc, panelConfig);
-			addTab(BeautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[ iPanel], panelConfig.getTipText());
+			addTab(doc.beautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[ iPanel], panelConfig.getTipText());
 		}
 		
-		for (int iPanel = BeautiConfig.g_panels.size() - 1; iPanel >= 0; iPanel--) {
+		for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
 			if (!bPaneIsVisible[iPanel]) {
 				removeTabAt(iPanel);
 			}
@@ -746,56 +744,56 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                	return;
             }
 
-            boolean lafLoaded = false;
-	        if (Utils.isMac()) {
-                System.setProperty("apple.awt.graphics.UseQuartz", "true");
-                System.setProperty("apple.awt.antialiasing","true");
-                System.setProperty("apple.awt.rendering","VALUE_RENDER_QUALITY");
-
-                System.setProperty("apple.laf.useScreenMenuBar","true");
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "BEAUti 2");
-                System.setProperty("apple.awt.draggableWindowBackground","true");
-                System.setProperty("apple.awt.showGrowBox","true");
-
-                try {
-
-                    try {
-                        // We need to do this using dynamic class loading to avoid other platforms
-                        // having to link to this class. If the Quaqua library is not on the classpath
-                        // it simply won't be used.
-                        Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
-                        Method method = qm.getMethod("setExcludedUIs", Set.class);
-
-                        Set<String> excludes = new HashSet<String>();
-                        excludes.add("Button");
-                        excludes.add("ToolBar");
-                        method.invoke(null, excludes);
-
-                    }
-                    catch (Throwable e) {
-                    }
-
-                    //set the Quaqua Look and Feel in the UIManager
-                    UIManager.setLookAndFeel(
-                            "ch.randelshofer.quaqua.QuaquaLookAndFeel"
-                    );
-                    lafLoaded = true;
-
-                } catch (Exception e) {
-
-                }
-
-                UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
-                UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
-                
-                
-                
-            }
-
-
-            if (!lafLoaded) {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            }
+//            boolean lafLoaded = false;
+//	        if (Utils.isMac()) {
+//                System.setProperty("apple.awt.graphics.UseQuartz", "true");
+//                System.setProperty("apple.awt.antialiasing","true");
+//                System.setProperty("apple.awt.rendering","VALUE_RENDER_QUALITY");
+//
+//                System.setProperty("apple.laf.useScreenMenuBar","true");
+//                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "BEAUti 2");
+//                System.setProperty("apple.awt.draggableWindowBackground","true");
+//                System.setProperty("apple.awt.showGrowBox","true");
+//
+//                try {
+//
+//                    try {
+//                        // We need to do this using dynamic class loading to avoid other platforms
+//                        // having to link to this class. If the Quaqua library is not on the classpath
+//                        // it simply won't be used.
+//                        Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+//                        Method method = qm.getMethod("setExcludedUIs", Set.class);
+//
+//                        Set<String> excludes = new HashSet<String>();
+//                        excludes.add("Button");
+//                        excludes.add("ToolBar");
+//                        method.invoke(null, excludes);
+//
+//                    }
+//                    catch (Throwable e) {
+//                    }
+//
+//                    //set the Quaqua Look and Feel in the UIManager
+//                    UIManager.setLookAndFeel(
+//                            "ch.randelshofer.quaqua.QuaquaLookAndFeel"
+//                    );
+//                    lafLoaded = true;
+//
+//                } catch (Exception e) {
+//
+//                }
+//
+//                UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
+//                UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
+//                
+//                
+//                
+//            }
+//
+//
+//            if (!lafLoaded) {
+//                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            }
 	        
 	        final Beauti beauti = new Beauti(doc);
 

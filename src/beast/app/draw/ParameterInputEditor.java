@@ -1,6 +1,7 @@
 package beast.app.draw;
 
 
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,8 +9,6 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 
-import beast.app.beauti.BeautiConfig;
-import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.Plugin;
@@ -19,7 +18,6 @@ import beast.evolution.branchratemodel.BranchRateModel;
 public class ParameterInputEditor extends PluginInputEditor {
 	private static final long serialVersionUID = 1L;
 	JCheckBox m_isEstimatedBox;
-	
 	
     @Override
     public Class<?> type() {
@@ -63,7 +61,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 			paramBox.add(m_entry);
 			paramBox.add(Box.createHorizontalGlue());
 	
-			m_isEstimatedBox = new JCheckBox(BeautiConfig.getInputLabel(parameter, parameter.m_bIsEstimated.getName()));
+			m_isEstimatedBox = new JCheckBox(doc.beautiConfig.getInputLabel(parameter, parameter.m_bIsEstimated.getName()));
 			if (input.get() != null) {
 				m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
 			}
@@ -75,7 +73,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 					bIsClockRate |= ((BranchRateModel.Base) output).meanRateInput.get() == parameter;
 				}
 			}
-			m_isEstimatedBox.setEnabled(!bIsClockRate || !BeautiDoc.g_doc.bAutoSetClockRate);
+			m_isEstimatedBox.setEnabled(!bIsClockRate || !getDoc().bAutoSetClockRate);
 			
 			
 			m_isEstimatedBox.addActionListener(new ActionListener() {

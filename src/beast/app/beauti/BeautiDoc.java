@@ -97,7 +97,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	// prevents haveing multiple windows open
 	// All globals need to be removed to make multiple document view work on
 	// Macs
-	static public BeautiDoc g_doc;
+	//static public BeautiDoc g_doc;
+
+	public BeautiConfig beautiConfig;
 //	Beauti beauti;
 
 	public String sTemplateName = null;
@@ -111,7 +113,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public String sFileName = "";
 	
 	public BeautiDoc() {
-		g_doc = this;
+		//g_doc = this;
 		setID("BeautiDoc");
 		clear();
 	}
@@ -248,7 +250,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		try {
 			clear();
 			PluginPanel.init();
-			BeautiConfig.clear();
+			beautiConfig.clear();
 			String sXML = processTemplate(m_sTemplateFileName);
 			loadTemplate(sXML);
 
@@ -308,7 +310,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
     }
 
 	void initialize(ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
-		BeautiConfig.clear();
+		//beautiConfig.clear();
 		switch (endState) {
 		case UNKNOWN:
 		case SHOW_DETAILS_USE_TEMPLATE: {
@@ -550,7 +552,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	void extractSequences(String sXML) throws Exception {
 		// load standard template
-		if (m_beautiConfig == null) {
+		if (beautiConfig == null) {
 			String sTemplateXML = processTemplate(STANDARD_TEMPLATE);
 			loadTemplate(sTemplateXML);
 		}
@@ -577,8 +579,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		determinePartitions();
 	}
 
-	BeautiConfig m_beautiConfig;
-
 	/**
 	 * Merge sequence data with sXML specification.
 	 **/
@@ -589,7 +589,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		loadTemplate(sXML);
 		// create XML for alignments
 		for (Alignment alignment : alignments) {
-			m_beautiConfig.partitionTemplate.get().createSubNet(alignment, this);
+			beautiConfig.partitionTemplate.get().createSubNet(alignment, this);
 		}
 		determinePartitions();
 
@@ -703,7 +703,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (plugin instanceof beast.core.Runnable) {
 				mcmc.setValue(plugin, this);
 			} else if (plugin instanceof BeautiConfig) {
-				m_beautiConfig = (BeautiConfig) plugin;
+				beautiConfig = (BeautiConfig) plugin;
+				beautiConfig.setDoc(this);
 			} else {
 				System.err.println("template item " + plugin.getID() + " is ignored");
 			}
@@ -774,7 +775,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			try {
 				TreeLikelihood treelikelihood = new TreeLikelihood();
 				treelikelihood.m_pBranchRateModel.setValue(new StrictClockModel(), treelikelihood);
-	            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(treelikelihood.m_pBranchRateModel, treelikelihood, null);
+	            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(treelikelihood.m_pBranchRateModel, treelikelihood, null, this);
 				Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(clockModels.size()));
 				clockModels.add((BranchRateModel.Base) plugin);
 			} catch (Exception e) {
@@ -804,7 +805,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			try {
 				CompoundDistribution distr = new CompoundDistribution();
 				distr.pDistributions.setValue(new YuleModel(), distr);
-	            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(distr.pDistributions, distr, null);
+	            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(distr.pDistributions, distr, null, this);
 	            for (int i = sAvailablePlugins.size()-1; i >= 0; i--) {
 	            	if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i)._class)) {
 						sAvailablePlugins.remove(i);
@@ -913,8 +914,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	
 				
 				List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
-				templates.add(m_beautiConfig.partitionTemplate.get());
-				templates.addAll(BeautiConfig.g_subTemplates);
+				templates.add(beautiConfig.partitionTemplate.get());
+				templates.addAll(beautiConfig.subTemplates);
 			
 				List<String> sPartitionNames2 = new ArrayList<String>();
 				// add 'Species' as special partition name
@@ -1558,7 +1559,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	public void addAlignmentWithSubnet(Alignment data) {
 		alignments.add(data);
-		m_beautiConfig.partitionTemplate.get().createSubNet(data, this);
+		beautiConfig.partitionTemplate.get().createSubNet(data, this);
 		// re-determine partitions
 		determinePartitions();
 	}
@@ -1680,7 +1681,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	@Override
 	public Object createInput(Plugin plugin, Input<?> input) {
-		for (BeautiSubTemplate template : BeautiConfig.g_subTemplates) {
+		for (BeautiSubTemplate template : beautiConfig.subTemplates) {
 			try {
 				if (input.canSetValue(template.instance, plugin)) {
 					String sPartition = plugin.getID();

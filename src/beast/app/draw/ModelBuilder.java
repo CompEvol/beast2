@@ -1696,7 +1696,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                     plugins.add(((PluginShape) shape2).m_plugin);
                                 }
                             }
-                            PluginDialog dlg = new PluginDialog(plugin, plugin.getClass(), plugins);
+                            PluginDialog dlg = new PluginDialog(plugin, plugin.getClass(), plugins, null);
                             dlg.setVisible(true);
                             if (dlg.getOK()) {
                                 // add newly created Plug-ins

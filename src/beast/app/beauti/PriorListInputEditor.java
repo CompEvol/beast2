@@ -50,6 +50,11 @@ public class PriorListInputEditor extends ListInputEditor {
 	JComboBox currentComboBox;
 
 	List<JButton> taxonButtons;
+
+//	public PriorListInputEditor(BeautiDoc doc) {
+//		super(doc);
+//	}
+
 	@Override
 	public Class<?> type() {
 		return List.class;
@@ -100,7 +105,7 @@ public class PriorListInputEditor extends ListInputEditor {
         	itemBox.add(label);
         	
 
-            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
+            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null, doc);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
             
             String sID = prior.m_distInput.get().getID();
@@ -152,7 +157,7 @@ public class PriorListInputEditor extends ListInputEditor {
 		        		List<?> list = (List<?>) m_input.get();
 		        		Prior prior = (Prior) list.get(iItem);
 		        		RealParameter p = (RealParameter) prior.m_x.get();
-		        		PluginDialog dlg = new PluginDialog(p, RealParameter.class);
+		        		PluginDialog dlg = new PluginDialog(p, RealParameter.class, doc);
 		        		dlg.setVisible(true);
 		                if (dlg.getOK()) {
 		                	dlg.accept(p);
@@ -179,7 +184,7 @@ public class PriorListInputEditor extends ListInputEditor {
         	itemBox.add(label);
 //            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
             
-            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(m_input, m_plugin, null);
+            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(m_input, m_plugin, null, doc);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
 
             for (int i = sAvailablePlugins.size()-1; i >= 0; i--) {
@@ -289,7 +294,7 @@ public class PriorListInputEditor extends ListInputEditor {
         		
         	}
         	
-            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null);
+            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null, doc);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
             
             if (prior.m_distInput.get() != null) {
@@ -333,7 +338,7 @@ public class PriorListInputEditor extends ListInputEditor {
 			});
         	itemBox.add(comboBox);
         
-        	JCheckBox isEstimatedBox = new JCheckBox(BeautiConfig.getInputLabel(prior, prior.m_bIsMonophyleticInput.getName()));
+        	JCheckBox isEstimatedBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.m_bIsMonophyleticInput.getName()));
 			isEstimatedBox.setSelected(prior.m_bIsMonophyleticInput.get());
 			isEstimatedBox.setToolTipText(prior.m_bIsMonophyleticInput.getTipText());
 			isEstimatedBox.addActionListener(new MRCAPriorActionListener(prior));
@@ -359,7 +364,7 @@ public class PriorListInputEditor extends ListInputEditor {
     	rangeButtons.add(rangeButton);
     	taxonButtons.add(taxonButton);
     	
-        String sTipText = BeautiDoc.g_doc.tipTextMap.get(plugin.getID());
+        String sTipText = getDoc().tipTextMap.get(plugin.getID());
         System.out.println(plugin.getID());
         if (sTipText != null) {
         	JLabel tipTextLabel = new JLabel(" " + sTipText);
@@ -428,7 +433,7 @@ public class PriorListInputEditor extends ListInputEditor {
     	try {
 
             List<Tree> trees = new ArrayList<Tree>();
-            BeautiDoc.g_doc.scrubAll(true, false);
+            getDoc().scrubAll(true, false);
             State state = (State) PluginPanel.g_plugins.get("state");
 	    	for (StateNode node : state.stateNodeInput.get()) {
 	    		if (node instanceof Tree) { // && ((Tree) node).m_initial.get() != null) {

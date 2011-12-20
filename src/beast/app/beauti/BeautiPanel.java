@@ -37,6 +37,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 	
     /** document that this panel applies to **/
     BeautiDoc doc;
+    public BeautiDoc getDoc() {return doc;}
     /** configuration for this panel **/
     public BeautiPanelConfig config;
     
@@ -178,7 +179,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		}
 	    if (input != null && input.get() != null) {
 	    	BUTTONSTATUS bs = config.buttonStatusInput.get();
-	        InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null);
+	        InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
 	        Box box = Box.createVerticalBox();
 	        box.add(inputEditor);
 	        // RRB: is there a better way than just pooring in glue at the bottom?

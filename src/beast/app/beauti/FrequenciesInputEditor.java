@@ -21,6 +21,10 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 	private static final long serialVersionUID = 1L;
 	boolean bUseDefaultBehavior;
 
+//	public FrequenciesInputEditor(BeautiDoc doc) {
+//		super(doc);
+//	}
+
 	@Override
 	public Class<?> type() {
 		return ActionEvent.class;
@@ -85,7 +89,7 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 	}
 
 	private Plugin getCandidate(Input<?> input, Frequencies freqs) {
-		return BeautiDoc.g_doc.getPartition(freqs);
+		return getDoc().getPartition(freqs);
 //		List<String> sCandidates = PluginPanel.getAvailablePlugins(input, freqs, null);
 //		String sID = sCandidates.get(0);
 //		Plugin plugin = PluginPanel.g_plugins.get(sID);

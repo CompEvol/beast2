@@ -43,6 +43,10 @@ public class TaxonSetInputEditor extends InputEditor {
 	int m_sortByColumn = 0;
 	boolean m_bIsAscending = true;
 
+//	public TaxonSetInputEditor(BeautiDoc doc) {
+//		super(doc);
+//	}
+
 	@Override
 	public Class<?> type() {
 		return TaxonSet.class;
@@ -285,7 +289,7 @@ public class TaxonSetInputEditor extends InputEditor {
 		Pattern m_pattern = Pattern.compile(sRegexp);
 		Set<Taxon> taxa = new HashSet<Taxon>();
 		Set<String> taxonIDs = new HashSet<String>();
-		for (Alignment alignment : BeautiDoc.g_doc.alignments) {
+		for (Alignment alignment : getDoc().alignments) {
 			for (Sequence sequence : alignment.m_pSequences.get()) {
 				String sID = sequence.m_sTaxon.get();
 				if (!taxonIDs.contains(sID)) {

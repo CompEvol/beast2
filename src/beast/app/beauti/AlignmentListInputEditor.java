@@ -56,7 +56,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	final static int SITEMODEL_COLUMN = 5;
 	final static int CLOCKMODEL_COLUMN = 6;
 	final static int TREE_COLUMN = 7;
-	
+
 	/** alignments that form a partition. These can be FilteredAlignments **/
 	List<Alignment> alignments;
 	int nPartitions;
@@ -64,9 +64,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	Object[][] tableData;
 	JTable table;
 
-//	List<String> m_sPartitionNames;
-	BeautiDoc doc;
-	
+//	public AlignmentListInputEditor(BeautiDoc doc) {
+//		super(doc);
+//	}
+
 	@Override
 	public Class<?> type() {
 		return List.class;
@@ -76,6 +77,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	public Class<?> baseType() {
 		return Alignment.class;
 	}
+
 	@Override
 	public Class<?>[] types() {
 		Class<?>[] types = new Class[2];
@@ -84,7 +86,6 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		return types;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
@@ -155,7 +156,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(unlinkSModelButton);
 		box.add(Box.createHorizontalGlue());
 	}
-	
+
 	private int columnLabelToNr(String sColumn) {
 		int nColumn;
 		if (sColumn.contains("Tree")) {
@@ -168,9 +169,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		return nColumn;
 	}
 
-	
 	private void link(int nColumn) {
-		int [] nSelected = getTableRowSelection();
+		int[] nSelected = getTableRowSelection();
 		for (int i = 1; i < nSelected.length; i++) {
 			int iRow = nSelected[i];
 			tableData[iRow][nColumn] = tableData[nSelected[0]][nColumn];
@@ -181,9 +181,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 		}
 	}
-	
+
 	private void unlink(int nColumn) {
-		int [] nSelected = getTableRowSelection();
+		int[] nSelected = getTableRowSelection();
 		for (int i = 1; i < nSelected.length; i++) {
 			int iRow = nSelected[i];
 			tableData[iRow][nColumn] = getDoc().sPartitionNames.get(iRow);
@@ -195,8 +195,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 	}
 
-	int [] getTableRowSelection() {
-		int [] nSelected = table.getSelectedRows();
+	int[] getTableRowSelection() {
+		int[] nSelected = table.getSelectedRows();
 		if (nSelected.length == 0) {
 			// select all
 			nSelected = new int[nPartitions];
@@ -207,75 +207,62 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		return nSelected;
 	}
 
-	BeautiDoc getDoc() {
-		if (doc == null) {
-		    Component c = this;
-		    while (((Component) c).getParent() != null) {
-		      	c = ((Component) c).getParent();
-		      	if (c instanceof BeautiPanel) {
-		      		doc = ((BeautiPanel) c).doc;
-		      	}
-		    }
-		}
-		return doc;
-	}
-	
 	void updateModel(int nColumn, int iRow) throws Exception {
 		getDoc();
 		String sPartition = (String) tableData[iRow][nColumn];
 		TreeLikelihood treeLikelihood = (TreeLikelihood) PluginPanel.g_plugins.get("treeLikelihood." + sPartition);
 		switch (nColumn) {
-			case SITEMODEL_COLUMN: 
-			{
-				if (doc.getPartitionNr(sPartition) != iRow) {
-					this.likelihoods[iRow].m_pSiteModel.setValue(treeLikelihood.m_pSiteModel.get(), this.likelihoods[iRow]);
-				} else {
-					SiteModel siteModel = (SiteModel) PluginPanel.g_plugins.get("SiteModel." + sPartition);
-					this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
-				}
-				sPartition = treeLikelihood.m_pSiteModel.get().getID();
-				sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
-				doc.setCurrentPartition(0, iRow, sPartition);
+		case SITEMODEL_COLUMN: {
+			if (getDoc().getPartitionNr(sPartition) != iRow) {
+				this.likelihoods[iRow].m_pSiteModel.setValue(treeLikelihood.m_pSiteModel.get(), this.likelihoods[iRow]);
+			} else {
+				SiteModel siteModel = (SiteModel) PluginPanel.g_plugins.get("SiteModel." + sPartition);
+				this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
 			}
-				break;
-			case CLOCKMODEL_COLUMN:
-			{
-//				String sPartition = (String) m_tableData[iRow][CLOCKMODEL_COLUMN];
-//				BranchRateModel clockModel = m_doc.getClockModel(sPartition);
-					//(BranchRateModel) PluginPanel.g_plugins.get("ClockModel." + sPartition);
-				if (doc.getPartitionNr(sPartition) != iRow) {
-					this.likelihoods[iRow].m_pBranchRateModel.setValue(treeLikelihood.m_pBranchRateModel.get(), this.likelihoods[iRow]);
-				} else {
-					BranchRateModel clockModel = doc.getClockModel(sPartition);
-					this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
-				}
-				sPartition = treeLikelihood.m_pBranchRateModel.get().getID();
-				sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
-				doc.setCurrentPartition(1, iRow, sPartition);
+			sPartition = treeLikelihood.m_pSiteModel.get().getID();
+			sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+			getDoc().setCurrentPartition(0, iRow, sPartition);
+		}
+			break;
+		case CLOCKMODEL_COLUMN: {
+			// String sPartition = (String)
+			// m_tableData[iRow][CLOCKMODEL_COLUMN];
+			// BranchRateModel clockModel = m_doc.getClockModel(sPartition);
+			// (BranchRateModel) PluginPanel.g_plugins.get("ClockModel." +
+			// sPartition);
+			if (getDoc().getPartitionNr(sPartition) != iRow) {
+				this.likelihoods[iRow].m_pBranchRateModel.setValue(treeLikelihood.m_pBranchRateModel.get(),
+						this.likelihoods[iRow]);
+			} else {
+				BranchRateModel clockModel = getDoc().getClockModel(sPartition);
+				this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
 			}
-				break;
-			case TREE_COLUMN:
-			{
-				if (doc.getPartitionNr(sPartition) != iRow) {
-					this.likelihoods[iRow].m_tree.setValue(treeLikelihood.m_tree.get(), this.likelihoods[iRow]);
-				} else {
-//				String sPartition = (String) m_tableData[iRow][TREE_COLUMN];
-					Tree tree = (Tree) PluginPanel.g_plugins.get("Tree." + sPartition);
-					this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
-				}
-				TreeDistribution d = doc.getTreePrior(sPartition);
-				CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
-				if (!prior.pDistributions.get().contains(d)) {
-					prior.pDistributions.setValue(d, prior);
-				}
-				sPartition = treeLikelihood.m_tree.get().getID();
-				sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
-				doc.setCurrentPartition(2, iRow, sPartition);
+			sPartition = treeLikelihood.m_pBranchRateModel.get().getID();
+			sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+			getDoc().setCurrentPartition(1, iRow, sPartition);
+		}
+			break;
+		case TREE_COLUMN: {
+			if (getDoc().getPartitionNr(sPartition) != iRow) {
+				this.likelihoods[iRow].m_tree.setValue(treeLikelihood.m_tree.get(), this.likelihoods[iRow]);
+			} else {
+				// String sPartition = (String) m_tableData[iRow][TREE_COLUMN];
+				Tree tree = (Tree) PluginPanel.g_plugins.get("Tree." + sPartition);
+				this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
 			}
+			TreeDistribution d = getDoc().getTreePrior(sPartition);
+			CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
+			if (!prior.pDistributions.get().contains(d)) {
+				prior.pDistributions.setValue(d, prior);
+			}
+			sPartition = treeLikelihood.m_tree.get().getID();
+			sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+			getDoc().setCurrentPartition(2, iRow, sPartition);
+		}
 		}
 		tableData[iRow][nColumn] = sPartition;
 	}
-	
+
 	@Override
 	protected void addInputLabel() {
 	}
@@ -286,7 +273,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			tableData = new Object[nPartitions][8];
 		}
 		CompoundDistribution likelihoods = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
-		
+
 		for (int i = 0; i < nPartitions; i++) {
 			Alignment data = alignments.get(i);
 			// partition name
@@ -353,9 +340,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
 
-		
 		// set up comboboxes
-		String [] sPartitionNames = new String[nPartitions];
+		String[] sPartitionNames = new String[nPartitions];
 		for (int i = 0; i < nPartitions; i++) {
 			sPartitionNames[i] = alignments.get(i).getID();
 		}
@@ -368,11 +354,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		// non-editing state, also set the combobox renderer
 		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
 		col = table.getColumnModel().getColumn(CLOCKMODEL_COLUMN);
-		
+
 		JComboBox clockModelComboBox = new JComboBox(sPartitionNames);
 		clockModelComboBox.addActionListener(new ComboActionListener(CLOCKMODEL_COLUMN));
-		
-		
+
 		col.setCellEditor(new DefaultCellEditor(clockModelComboBox));
 		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
 		col = table.getColumnModel().getColumn(TREE_COLUMN);
@@ -439,26 +424,26 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 
 		});
-		
+
 		// show alignment viewer when double clicking a row
 		table.addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 			}
-			
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 			}
-			
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() > 1) {
@@ -473,17 +458,18 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				}
 			}
 		});
-		
+
 		JScrollPane scrollPane = new JScrollPane(table);
 		return scrollPane;
 	} // createListBox
 
-
-	class ComboActionListener implements ActionListener{
+	class ComboActionListener implements ActionListener {
 		int m_nColumn;
+
 		public ComboActionListener(int nColumn) {
 			m_nColumn = nColumn;
 		};
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			for (int i = 0; i < nPartitions; i++) {
@@ -529,18 +515,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	protected void addItem() {
 		List<Plugin> plugins = pluginSelector(m_input, m_plugin, null);
 
-		Component c = this;
-		BeautiDoc doc = null;
-		while (((Component) c).getParent() != null) {
-			c = ((Component) c).getParent();
-			if (c instanceof BeautiPanel) {
-				doc = ((BeautiPanel) c).doc;
-			}
-		}
-
+		//Component c = this;
 		if (plugins != null) {
 			for (Plugin plugin : plugins) {
-				doc.addAlignmentWithSubnet((Alignment) plugin);
+				getDoc().addAlignmentWithSubnet((Alignment) plugin);
 			}
 			refreshPanel();
 		}

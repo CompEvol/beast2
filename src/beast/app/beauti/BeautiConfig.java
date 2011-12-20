@@ -21,11 +21,11 @@ public class BeautiConfig extends Plugin {
 		"go inline, but are initially collapsed, e.g. beast.core.MCMC.logger");
 	public Input<String> suppressInputs = new Input<String>("suppressPlugins","comma separated list of inputs that should " +
 			"be suppressed. e.g. beast.core.MCMC.operator");
-	public Input<String> inputLabelMap = new Input<String>("inputLabelMap","comma separated list of inputs and their " +
+	public Input<String> inputLabelMapInput = new Input<String>("inputLabelMap","comma separated list of inputs and their " +
 			"display labels separated by a '=', e.g. beast.core.MCMC.logger=Loggers ");
 //	public Input<String> m_hidePanels = new Input<String>("hidePanels","comma separated list of panes that should not" +
 //			"be displayed when starting beauti, e.g. TAXON_SETS_PANEL,TIP_DATES_PANEL");
-	public Input<String> buttonLabelMap = new Input<String>("buttonLabelMap","comma separated list of buttons in dialogs and their " +
+	public Input<String> buttonLabelMapInput = new Input<String>("buttonLabelMap","comma separated list of buttons in dialogs and their " +
 			"display labels separated by a '=', e.g. beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters");
 	public Input<String> disableMenus = new Input<String>("disableMenus","comma separated list of menus that should " +
 			"not be visible, e.g., View.Show Data Panel,Mode");
@@ -34,78 +34,85 @@ public class BeautiConfig extends Plugin {
 //	public Input<String> m_editButtonStatus = new Input<String>("editButtonStatus","comma separated list of list-inputs with custom " +
 //	"button status. One of 'none', 'addonly' 'delonly' +, e.g., beast.core.MCMC.operator=addonly");
 
-	public Input<List<BeautiPanelConfig>> panels = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties", 
+	public Input<List<BeautiPanelConfig>> panelsInput = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties", 
 			new ArrayList<BeautiPanelConfig>());
 	public Input<Boolean> bIsExpertInput = new Input<Boolean>("isExpert", "flag to indicate Beauti should start in expert mode", false);
 	
 	
 	public Input<BeautiSubTemplate> partitionTemplate = new Input<BeautiSubTemplate>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
-	public Input<List<BeautiSubTemplate>> subTemplates = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes", 
+	public Input<List<BeautiSubTemplate>> subTemplatesInpupt = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes", 
 			new ArrayList<BeautiSubTemplate>());
 
 	
 	/** list of inputs for which the input editor should be expanded inline in a dialog 
 	 * in the format <className>.<inputName>, e.g. beast.evolution.sitemodel.SiteModel.substModel */
-	public static Set<String> g_inlinePlugins = new HashSet<String>();
+	public Set<String> inlinePlugins = new HashSet<String>();
 	/** list of inputs for which the input editor should be expanded inline in a dialog but initially collapsed.  
 	 * e.g. beast.evolution.sitemodel.SiteModel.substModel */
-	public static Set<String> g_collapsedPlugins = new HashSet<String>();
+	public Set<String> collapsedPlugins = new HashSet<String>();
 	/** list of inputs that should not be shown in a dialog. Same format as for m_inlinePlugins**/
-	public static Set<String> g_suppressPlugins = new HashSet<String>();
+	public Set<String> suppressPlugins = new HashSet<String>();
     /** map that identifies the label to be used for a particular input **/
-	public static HashMap<String, String> g_inputLabelMap = new HashMap<String, String>();
-	public static HashMap<String, String> g_buttonLabelMap = new HashMap<String, String>();
+	public HashMap<String, String> inputLabelMap = new HashMap<String, String>();
+	public HashMap<String, String> buttonLabelMap = new HashMap<String, String>();
 //	public static HashMap<String, String> g_sEditButtonStatus = new HashMap<String, String>();
 		
 //	public static Set<String> g_sHidePanels = new HashSet<String>();
-	public static Set<String> g_sDisabledMenus = new HashSet<String>();
-	public static Set<String> g_sDisabledButtons = new HashSet<String>();
+	public Set<String> sDisabledMenus = new HashSet<String>();
+	public Set<String> sDisabledButtons = new HashSet<String>();
 
-	public static List<BeautiPanelConfig> g_panels = new ArrayList<BeautiPanelConfig>();
+	public List<BeautiPanelConfig> panels = new ArrayList<BeautiPanelConfig>();
 
-	public static List<BeautiSubTemplate> g_subTemplates;
+	public List<BeautiSubTemplate> subTemplates;
 	
 	@Override
 	public void initAndValidate() {
-		parseSet(inlineInput.get(), null, g_inlinePlugins);
-		parseSet(collapsedInput.get(), null, g_collapsedPlugins);
-		g_inlinePlugins.addAll(g_collapsedPlugins);
+		parseSet(inlineInput.get(), null, inlinePlugins);
+		parseSet(collapsedInput.get(), null, collapsedPlugins);
+		inlinePlugins.addAll(collapsedPlugins);
 //		parseSet(m_hidePanels.get(), "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL", g_sHidePanels);
-		parseSet(suppressInputs.get(), null, g_suppressPlugins);
-		parseSet(disableMenus.get(), null, g_sDisabledMenus);
-		parseSet(disableButtons.get(), null, g_sDisabledButtons);
+		parseSet(suppressInputs.get(), null, suppressPlugins);
+		parseSet(disableMenus.get(), null, sDisabledMenus);
+		parseSet(disableButtons.get(), null, sDisabledButtons);
 		
-		parseMap(inputLabelMap.get(), g_inputLabelMap);
-		parseMap(buttonLabelMap.get(), g_buttonLabelMap);
+		parseMap(inputLabelMapInput.get(), inputLabelMap);
+		parseMap(buttonLabelMapInput.get(), buttonLabelMap);
 //		parseMap(m_editButtonStatus.get(), g_sEditButtonStatus);
-		for (BeautiPanelConfig panel : panels.get()) {
-			g_panels.add(panel);
+		for (BeautiPanelConfig panel : panelsInput.get()) {
+			panels.add(panel);
 			// check for duplicates
-			for (BeautiPanelConfig panel2 : g_panels) {
+			for (BeautiPanelConfig panel2 : panels) {
 				if (panel2.sNameInput.get().equals(panel.sNameInput.get()) && panel2!=panel) {
-					g_panels.remove(g_panels.size()-1);
+					panels.remove(panels.size()-1);
 					break;
 				}
 			}
 		}
 		InputEditor.g_bExpertMode = bIsExpertInput.get();
-		g_subTemplates = subTemplates.get();
+		subTemplates = subTemplatesInpupt.get();
 	}
 
-	public static void clear() {
-		g_inlinePlugins = new HashSet<String>();
-		g_collapsedPlugins = new HashSet<String>();
-		g_suppressPlugins = new HashSet<String>();
-		g_inputLabelMap = new HashMap<String, String>();
-		g_buttonLabelMap = new HashMap<String, String>();
-		g_sDisabledMenus = new HashSet<String>();
-		g_sDisabledButtons = new HashSet<String>();
-		g_panels = new ArrayList<BeautiPanelConfig>();
+	public void setDoc(BeautiDoc doc) {
+		partitionTemplate.get().setDoc(doc);
+		for (BeautiSubTemplate sub : subTemplates) {
+			sub.setDoc(doc);
+		}
 	}
 	
-	public static List<BeautiSubTemplate> getInputCandidates(Plugin plugin, Input<?> input, Class<?> type) {
+	public void clear() {
+		inlinePlugins = new HashSet<String>();
+		collapsedPlugins = new HashSet<String>();
+		suppressPlugins = new HashSet<String>();
+		inputLabelMap = new HashMap<String, String>();
+		buttonLabelMap = new HashMap<String, String>();
+		sDisabledMenus = new HashSet<String>();
+		sDisabledButtons = new HashSet<String>();
+		panels = new ArrayList<BeautiPanelConfig>();
+	}
+	
+	public List<BeautiSubTemplate> getInputCandidates(Plugin plugin, Input<?> input, Class<?> type) {
 		List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
-		for (BeautiSubTemplate template : g_subTemplates) {
+		for (BeautiSubTemplate template : subTemplates) {
 			if (type.isAssignableFrom(template._class)) {
 	        	try {
 	        		if (input.canSetValue(template.instance, plugin)) {
@@ -152,28 +159,28 @@ public class BeautiConfig extends Plugin {
 		return sStr.substring(i, n);
 	}
 
-	public static String getButtonLabel(String sClass, String sStr) {
-		if (g_buttonLabelMap.containsKey(sClass + "." + sStr)) {
-			return g_buttonLabelMap.get(sClass + "." + sStr);
+	public String getButtonLabel(String sClass, String sStr) {
+		if (buttonLabelMap.containsKey(sClass + "." + sStr)) {
+			return buttonLabelMap.get(sClass + "." + sStr);
 		}
 		return sStr;
 	}
 	
-	public static String getButtonLabel(Object o, String sStr) {
-		if (g_buttonLabelMap.containsKey(o.getClass().getName() + "." + sStr)) {
-			return g_buttonLabelMap.get(o.getClass().getName() + "." + sStr);
+	public String getButtonLabel(Object o, String sStr) {
+		if (buttonLabelMap.containsKey(o.getClass().getName() + "." + sStr)) {
+			return buttonLabelMap.get(o.getClass().getName() + "." + sStr);
 		}
 		return sStr;
 	}
-	public static String getInputLabel(Plugin plugin, String sName) {
-		if (g_inputLabelMap.containsKey(plugin.getClass().getName()+"."+sName)) {
-			sName =  BeautiConfig.g_inputLabelMap.get(plugin.getClass().getName()+"."+sName);
+	public String getInputLabel(Plugin plugin, String sName) {
+		if (inputLabelMap.containsKey(plugin.getClass().getName()+"."+sName)) {
+			sName =  inputLabelMap.get(plugin.getClass().getName()+"."+sName);
 		}
 		return sName;
 	}
 
-	public static boolean menuIsInvisible(String sMenuName) {
-		return g_sDisabledMenus.contains(sMenuName);
+	public boolean menuIsInvisible(String sMenuName) {
+		return sDisabledMenus.contains(sMenuName);
 	}
 
 	static BeautiSubTemplate NULL_TEMPLATE = new BeautiSubTemplate();

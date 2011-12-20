@@ -38,6 +38,8 @@ public class BeautiSubTemplate extends Plugin {
 	String sXML = null;
 	List<BeautiConnector> connectors;
 	
+	BeautiDoc doc;
+	
 //	String [] sSrcIDs;
 //	String [] sTargetIDs;
 //	String [] sTargetInputs;
@@ -83,6 +85,9 @@ public class BeautiSubTemplate extends Plugin {
 //		}
 	}
 
+	public void setDoc(BeautiDoc doc) {
+		this.doc = doc;
+	}
 
 	void removeSubNet(Object o) throws Exception {
 		if (o== null) {
@@ -93,14 +98,13 @@ public class BeautiSubTemplate extends Plugin {
 		if (o instanceof Plugin) {
 			plugin = (Plugin) o;
 		}
-		BeautiDoc doc = BeautiDoc.g_doc;
 		
 		// find template that created this plugin
 		String sID = plugin.getID();
 		String sPartition = sID.substring(sID.indexOf(".") + 1);
 		sID = sID.substring(0, sID.indexOf("."));
 		BeautiSubTemplate template = null;
-		for (BeautiSubTemplate template2 : doc.m_beautiConfig.subTemplates.get()) {
+		for (BeautiSubTemplate template2 : doc.beautiConfig.subTemplatesInpupt.get()) {
 			if (template2.matchesName(sID)) {
 				template = template2;
 				break;
@@ -113,8 +117,8 @@ public class BeautiSubTemplate extends Plugin {
 		
 		// disconnect all connection points in the template
 		for (BeautiConnector connector : template.connectors) {
-			Plugin src = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
-			String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
+//			Plugin src = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
+//			String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
 			doc.disconnect(connector, sPartition);
 		}
 	}
@@ -126,7 +130,7 @@ public class BeautiSubTemplate extends Plugin {
 			input.setValue(null, plugin);
 			return null;
 		}
-		Plugin o = createSubNet(sPartition, BeautiDoc.g_doc, PluginPanel.g_plugins);
+		Plugin o = createSubNet(sPartition, PluginPanel.g_plugins);
 		input.setValue(o, plugin);
 		return o;
 	}
@@ -138,7 +142,7 @@ public class BeautiSubTemplate extends Plugin {
 			list.set(iItem, null);
 			return null;
 		}
-		Plugin o = createSubNet(sPartition, BeautiDoc.g_doc, PluginPanel.g_plugins);
+		Plugin o = createSubNet(sPartition, PluginPanel.g_plugins);
 		list.set(iItem, o);
 		return o;
 	}
@@ -148,7 +152,7 @@ public class BeautiSubTemplate extends Plugin {
 			// this is the NULL_TEMPLATE
 			return null;
 		}
-		Plugin o = createSubNet(sPartition, BeautiDoc.g_doc, PluginPanel.g_plugins);
+		Plugin o = createSubNet(sPartition, PluginPanel.g_plugins);
 		return o;
 	}
 
@@ -157,10 +161,10 @@ public class BeautiSubTemplate extends Plugin {
 		String sPartition = data.getID();
 		HashMap<String, Plugin> sIDMap = PluginPanel.g_plugins;//new HashMap<String, Plugin>();
 		sIDMap.put(sPartition, data);
-		return createSubNet(sPartition, doc, sIDMap);
+		return createSubNet(sPartition, sIDMap);
 	}	
 	
-	private Plugin createSubNet(String sPartition, BeautiDoc doc, HashMap<String, Plugin> sIDMap) {
+	private Plugin createSubNet(String sPartition, /*BeautiDoc doc,*/ HashMap<String, Plugin> sIDMap) {
 		// wrap in a beast element with appropriate name spaces
 		String _sXML = "<beast version='2.0' \n" +
        "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
@@ -195,7 +199,7 @@ public class BeautiSubTemplate extends Plugin {
 				String [] inputs = suppressedInputs.get().split(",");
 				for (String input : inputs) {
 					input = input.trim();
-					BeautiConfig.g_suppressPlugins.add(input);
+					doc.beautiConfig.suppressPlugins.add(input);
 				}
 			}
 		} catch (Exception e) {
@@ -211,7 +215,7 @@ public class BeautiSubTemplate extends Plugin {
 		sID = sID.replaceAll("\\$\\(n\\)", sPartition);
 		Plugin plugin = PluginPanel.g_plugins.get(sID);
 
-		if (this == doc.m_beautiConfig.partitionTemplate.get()) {
+		if (this == doc.beautiConfig.partitionTemplate.get()) {
 			// HACK: need to make sure the subst model is of the correct type
 			Plugin treeLikelihood = PluginPanel.g_plugins.get("treeLikelihood." + sPartition);
 			//DataType dataType = ((TreeLikelihood) treeLikelihood).m_data.get().getDataType();

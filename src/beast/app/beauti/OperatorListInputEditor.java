@@ -19,6 +19,10 @@ public class OperatorListInputEditor extends ListInputEditor {
 	List<JTextField> textFields = new ArrayList<JTextField>(); 
 	List<Operator> operators = new ArrayList<Operator>();
 
+//	public OperatorListInputEditor(BeautiDoc doc) {
+//		super(doc);
+//	}
+
 	@Override
 	public Class<?> type() {
 		return List.class;
@@ -121,7 +125,7 @@ public class OperatorListInputEditor extends ListInputEditor {
         } catch (Exception e) {
 			// ignore
 		}
-        String sTipText = BeautiDoc.g_doc.tipTextMap.get(operator.getID());
+        String sTipText = getDoc().tipTextMap.get(operator.getID());
         if (sTipText != null) {
         	sName += " " + sTipText;
         }

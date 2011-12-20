@@ -56,7 +56,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
         setTitle(title);
 
-		isPaneVisible = new boolean[ BeautiConfig.g_panels.size()];
+		isPaneVisible = new boolean[ doc.beautiConfig.panels.size()];
 		Arrays.fill(isPaneVisible, true);
 		//m_panels = new BeautiPanel[NR_OF_PANELS];
 		this.doc = doc;
@@ -137,11 +137,11 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 	    	while (tabbedPane.getTabCount() > 0) {
 	    		tabbedPane.removeTabAt(0);
 	    	}
-			isPaneVisible = new boolean[ BeautiConfig.g_panels.size()];
+			isPaneVisible = new boolean[ doc.beautiConfig.panels.size()];
 			Arrays.fill(isPaneVisible, true);
     	}
-		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
 			isPaneVisible[iPanel] = panelConfig.bIsVisibleInput.get();
 		}
         // add the special Template panel:
@@ -149,14 +149,14 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
         tabbedPane.setToolTipTextAt(0, "Select from available analysis templates");
 
     	// add panels according to BeautiConfig 
-		panels = new BeautiPanel[ BeautiConfig.g_panels.size()];
-		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+		panels = new BeautiPanel[ doc.beautiConfig.panels.size()];
+		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
 			panels[ iPanel] = new BeautiPanel( iPanel, this.doc, panelConfig);
-			tabbedPane.addTab(BeautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[ iPanel], panelConfig.getTipText());
+			tabbedPane.addTab(doc.beautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[ iPanel], panelConfig.getTipText());
 		}
 		
-		for (int iPanel = BeautiConfig.g_panels.size() - 1; iPanel >= 0; iPanel--) {
+		for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
 			if (!isPaneVisible[iPanel]) {
 				tabbedPane.removeTabAt(iPanel);
 			}
@@ -329,6 +329,16 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
             doImport();
         }
     };
+
+    @Override
+    public boolean requestClose() {
+    	if (doc.alignments.size() > 0) {
+    		setDirty();
+    	} else {
+    		clearDirty();
+    	}
+    	return super.requestClose();
+    }
 
     @Override
     public void docHasChanged() throws Exception{

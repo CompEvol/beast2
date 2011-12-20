@@ -4,7 +4,6 @@ package beast.app.draw;
 import beast.app.beauti.BeautiSubTemplate;
 import beast.core.Input;
 import beast.core.Plugin;
-import beast.core.Input.Validate;
 import beast.util.AddOnManager;
 
 import javax.swing.*;
@@ -61,7 +60,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
         addComboBox(this, input, plugin);
 
         if (m_bAddButtons) {
-        	if (PluginPanel.countInputs((Plugin)m_input.get()) > 0) {
+        	if (PluginPanel.countInputs((Plugin)m_input.get(), doc) > 0) {
 		        m_editPluginButton = new SmallButton("e", true);
 		        if (input.get() == null) {
 		            m_editPluginButton.setEnabled(false);
@@ -71,7 +70,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
 		        m_editPluginButton.addActionListener(new ActionListener() {
 		            // implements ActionListener
 		            public void actionPerformed(ActionEvent e) {
-		                PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType());
+		                PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType(), doc);
 		                dlg.setVisible(true);
 		                if (dlg.getOK()) {
 		                	try {
@@ -138,7 +137,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
         addComboBox(combobox, input, plugin);
         box.add(combobox);
        
-    	PluginPanel.addInputs(box, (Plugin) input.get(), this, this);
+    	PluginPanel.addInputs(box, (Plugin) input.get(), this, this, doc);
 
         box.setBorder(new EtchedBorder());
         add(box);
@@ -151,7 +150,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
      * Furthermore, if expanded, update expanded inputs 
      */
     protected void addComboBox(Box box, Input <?> input, Plugin plugin) {
-        List<BeautiSubTemplate> availableTemplates = PluginPanel.getAvailableTemplates(m_input, m_plugin, null);
+        List<BeautiSubTemplate> availableTemplates = PluginPanel.getAvailableTemplates(m_input, m_plugin, null, doc);
         if (availableTemplates.size() > 0) {
 //        	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {
 //        		sAvailablePlugins.add(NO_VALUE);
@@ -194,7 +193,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
                     Plugin plugin = (Plugin) m_input.get();
                     String sID = plugin.getID();
                     String sPartition = sID.substring(sID.indexOf('.') + 1);
-                    String sNewID = sSelected.getMainID().replaceAll("\\$\\(n\\)", sPartition);
+                    //String sNewID = sSelected.getMainID().replaceAll("\\$\\(n\\)", sPartition);
 
                     if (sSelected.equals(NO_VALUE)) {
                         plugin = null;
@@ -276,7 +275,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
                         	}
                         	// add new items to Expansion Box
                         	if (plugin != null) {
-                        		PluginPanel.addInputs(m_expansionBox, plugin, _this, _this);
+                        		PluginPanel.addInputs(m_expansionBox, plugin, _this, _this, doc);
                         	}
                         } else {
                         	// it is not expanded, enable the edit button
