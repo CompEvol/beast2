@@ -49,6 +49,7 @@ public abstract class Parameter<T> extends StateNode {
     public Input<String> m_pValues = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", Validate.REQUIRED);
     public Input<java.lang.Integer> m_nDimension =
             new Input<java.lang.Integer>("dimension", "dimension of the paperameter (default 1)", 1);
+    public Input<Integer> strideInput = new Input<Integer>("stride", "subdimension when the parameter is interpreted as a matrix (default 0)", 0);
 
 
     /**
@@ -68,6 +69,11 @@ public abstract class Parameter<T> extends StateNode {
     @Override
     public void initAndValidate() throws Exception {
         m_bIsDirty = new boolean[m_nDimension.get()];
+
+        stride = strideInput.get();
+        if (stride > 0 && m_nDimension.get() % stride > 0) {
+        	throw new Exception("Dimension must be divisble by stride");
+        }
     }
 
 
@@ -83,6 +89,11 @@ public abstract class Parameter<T> extends StateNode {
      */
     protected T[] values;
     protected T[] storedValues;
+
+    /**
+     * sub-dimension when parameter is considered a matrix 
+     */
+    protected int stride = 0;
     
     /**
      * isDirty flags for individual elements in high dimensional parameters
@@ -213,7 +224,11 @@ public abstract class Parameter<T> extends StateNode {
      */
     public String toString() {
         final StringBuffer buf = new StringBuffer();
-        buf.append(m_sID).append("[").append(values.length).append("] ");
+        buf.append(m_sID).append("[").append(values.length);
+        if (stride > 0 ){
+        	buf.append(" ").append(stride);
+        }
+        buf.append("] ");
         buf.append("(").append(m_fLower).append(",").append(m_fUpper).append("): ");
         for(T value : values) {
             buf.append(value).append(" ");
@@ -300,15 +315,32 @@ public abstract class Parameter<T> extends StateNode {
     	NamedNodeMap atts = node.getAttributes();
     	setID(atts.getNamedItem("id").getNodeValue());
     	String sStr = node.getTextContent();
-    	Pattern pattern = Pattern.compile(".*\\[(.*)\\].*\\((.*),(.*)\\): (.*) ");
+    	Pattern pattern = Pattern.compile(".*\\[(.*) (.*)\\].*\\((.*),(.*)\\): (.*) ");
 		Matcher matcher = pattern.matcher(sStr);
-		matcher.matches();
-		String sDimension = matcher.group(1);
-		String sLower = matcher.group(2);
-		String sUpper = matcher.group(3);
-		String sValuesAsString = matcher.group(4);
-    	String [] sValues = sValuesAsString.split(" ");
-		fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
+		if (matcher.matches()) {
+			String sDimension = matcher.group(1);
+			String sStride = matcher.group(2);
+			String sLower = matcher.group(3);
+			String sUpper = matcher.group(4);
+			String sValuesAsString = matcher.group(5);
+	    	String [] sValues = sValuesAsString.split(" ");
+	    	stride = Integer.parseInt(sStride);
+			fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
+		} else {
+			pattern = Pattern.compile(".*\\[(.*)\\].*\\((.*),(.*)\\): (.*) ");
+			matcher = pattern.matcher(sStr);
+			if (matcher.matches()) {
+				String sDimension = matcher.group(1);
+				String sLower = matcher.group(2);
+				String sUpper = matcher.group(3);
+				String sValuesAsString = matcher.group(4);
+		    	String [] sValues = sValuesAsString.split(" ");
+		    	stride = 0;
+				fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
+			} else {
+				throw new RuntimeException("parameter could not be parsed");
+			}
+		}
     }
     
     /** Restore a saved parameter from string representation. 
@@ -322,7 +354,44 @@ public abstract class Parameter<T> extends StateNode {
      **/
     abstract void fromXML(int nDimension, String sLower, String sUpper, String [] sValues);
 
+    /** matrix implementation **/
+    public int getStride1() {return stride;}
+    public int getStride2() {return getDimension()/stride;}
+    
+    public T getMatrixValue(int i, int j) {
+    	return values[i * stride + j];
+    }
+    
+    public void setMatrixValue(int i, int j, T value) {
+    	setValue(i * stride + j, value);
+    }
 
+    public void getMatrixValues1(int i, T [] row) {
+    	assert (row.length == stride);
+    	System.arraycopy(values, i * stride, row, 0, stride);
+    }
+
+    public void getMatrixValues1(int i, double [] row) {
+    	assert (row.length == stride);
+    	int end = i * stride + getStride1();
+    	for (int j = i * stride; j < end; j++) {
+    		row[j] = getArrayValue(j);
+    	}
+    }
+
+    public void getMatrixValues2(int j, T [] col) {
+    	assert (col.length == getStride2());
+    	for (int i = 0; i < getStride2(); i++) {
+    		col[i] = values[i * stride + j];
+    	}
+    }
+
+    public void getMatrixValues2(int j, double [] col) {
+    	assert (col.length == getStride2());
+    	for (int i = 0; i < getStride2(); i++) {
+    		col[i] = getArrayValue(i * stride + j);
+    	}
+    }
     @Override
     protected void store() {
         System.arraycopy(values, 0, storedValues, 0, values.length);
