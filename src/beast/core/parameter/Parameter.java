@@ -48,7 +48,7 @@ public abstract class Parameter<T> extends StateNode {
 	 */
     public Input<String> m_pValues = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", Validate.REQUIRED);
     public Input<java.lang.Integer> m_nDimension =
-            new Input<java.lang.Integer>("dimension", "dimension of the paperameter (default 1)", 1);
+            new Input<java.lang.Integer>("dimension", "dimension of the parameter (default 1)", 1);
     public Input<Integer> strideInput = new Input<Integer>("stride", "subdimension when the parameter is interpreted as a matrix (default 0)", 0);
 
 
