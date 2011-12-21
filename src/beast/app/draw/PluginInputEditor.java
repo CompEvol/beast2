@@ -72,7 +72,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
 		            public void actionPerformed(ActionEvent e) {
 		                PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType(), doc);
 		                dlg.setVisible(true);
-		                if (dlg.getOK()) {
+		                if (dlg.getOK(doc)) {
 		                	try {
 		                		dlg.accept((Plugin) m_input.get());
 		                	} catch (Exception ex) {

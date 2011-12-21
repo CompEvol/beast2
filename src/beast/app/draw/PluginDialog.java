@@ -112,14 +112,14 @@ public class PluginDialog extends JDialog {
         //setLocation(PluginDialog.m_position);
     } // c'tor
 
-    public boolean getOK() {
+    public boolean getOK(BeautiDoc doc) {
         //PluginDialog.m_position.x -= 30;
         //PluginDialog.m_position.y -= 30;
     	if (m_bOK) {
     		String sOldID = m_panel.m_plugin.getID();
 			PluginPanel.g_plugins.remove(sOldID);
 			m_panel.m_plugin.setID(m_panel.m_identry.getText());
-			PluginPanel.registerPlugin(m_panel.m_plugin.getID(), m_panel.m_plugin);
+			PluginPanel.registerPlugin(m_panel.m_plugin.getID(), m_panel.m_plugin, doc);
     	}
         return m_bOK;
     }

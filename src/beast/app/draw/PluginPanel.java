@@ -127,14 +127,17 @@ public class PluginPanel extends JPanel {
                 plugin2.setID(null);
                 sID = getID(plugin2);
             }
-            registerPlugin(getID(plugin2), plugin2);
+            registerPlugin(getID(plugin2), plugin2, doc);
         }
         init(plugin, _pluginClass, true, doc);
     }
 
     /** add plugin to plugin map and update related maps 
      * @return true if it was already registered **/
-    static public boolean registerPlugin(String sID, Plugin plugin) {
+    static public boolean registerPlugin(String sID, Plugin plugin, BeautiDoc doc) {
+    	if (doc != null) {
+    		doc.registerPlugin(plugin);
+    	}
 //    	if (plugin instanceof Operator) {
 //    		g_operators.add((Operator)plugin);
 //    	}
@@ -157,14 +160,17 @@ public class PluginPanel extends JPanel {
 		return false;
     }
 
-    public static void renamePluginID(Plugin plugin, String sOldID, String sID) {
+    public static void renamePluginID(Plugin plugin, String sOldID, String sID, BeautiDoc doc) {
+    	if (doc != null) {
+    		doc.unregisterPlugin(plugin);
+    	}
 		g_plugins.remove(sOldID);
 //		g_operators.remove(sOldID);
 //		g_stateNodes.remove(sOldID);
 //		g_loggers.remove(sOldID);
 //		g_distributions.remove(sOldID);
 		g_taxa.remove(sOldID);
-    	registerPlugin(sID, plugin);
+    	registerPlugin(sID, plugin, doc);
 	}
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass, BeautiDoc doc) {
@@ -172,7 +178,7 @@ public class PluginPanel extends JPanel {
     }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
-        initPlugins(plugin);
+        initPlugins(plugin, doc);
         init(plugin, _pluginClass, bShowHeader, doc);
     }
     
@@ -597,25 +603,25 @@ public class PluginPanel extends JPanel {
         return outputs;
     } // getOutputs
 
-    public void initPlugins(Plugin plugin) {
+    public void initPlugins(Plugin plugin, BeautiDoc doc) {
         //g_plugins = new HashMap<String, Plugin>();
-        addPluginToMap(plugin);
+        addPluginToMap(plugin, doc);
     }
 
-    static public void addPluginToMap(Plugin plugin) {
-        if (registerPlugin(getID(plugin), plugin)) {
+    static public void addPluginToMap(Plugin plugin, BeautiDoc doc) {
+        if (registerPlugin(getID(plugin), plugin, doc)) {
         	return;
         }
         try {
             for (Input<?> input : plugin.listInputs()) {
                 if (input.get() != null) {
                     if (input.get() instanceof Plugin) {
-                        addPluginToMap((Plugin) input.get());
+                        addPluginToMap((Plugin) input.get(), doc);
                     }
                     if (input.get() instanceof List<?>) {
                         for (Object o : (List<?>) input.get()) {
                             if (o instanceof Plugin) {
-                                addPluginToMap((Plugin) o);
+                                addPluginToMap((Plugin) o, doc);
                             }
                         }
                     }

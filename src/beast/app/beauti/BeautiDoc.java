@@ -38,6 +38,7 @@ import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Taxon;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.TreeLikelihood;
@@ -106,6 +107,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	String m_sTemplateFileName = STANDARD_TEMPLATE;
 	
 	Map<String,String> tipTextMap = new HashMap<String, String>();
+	
+	/** list of all plugins in the model, mapped by its ID **/
+    public HashMap<String, Plugin> g_plugins = null;
+	/** set of all taxa in the model **/
+    public Set<Taxon> g_taxa = null;
+
 
     /**
      * name of current file, used for saving (as opposed to saveAs) *
@@ -243,6 +250,25 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			nCurrentPartitions[i] = new ArrayList<Integer>();
 		}
 		tipTextMap = new HashMap<String, String>();
+		
+		g_plugins = new HashMap<String, Plugin>();
+		g_taxa = new HashSet<Taxon>();
+	}
+	
+	public void registerPlugin(Plugin plugin) {
+		g_plugins.put(plugin.getID(), plugin);
+		if (plugin instanceof Taxon) {
+			g_taxa.add((Taxon) plugin);
+		}
+	}
+	
+	public void unregisterPlugin(Plugin plugin) {
+		for (String id : g_plugins.keySet()) {
+			if (g_plugins.get(id).equals(plugin)) {
+				g_plugins.remove(id);
+			}
+		}
+		g_taxa.remove(plugin);
 	}
 
 	/** remove all alignment data and model, and reload Standard template **/
@@ -538,7 +564,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         scrubAll(false, false);
         //String sXML = new XMLProducer().toXML(mcmc.get(), );
         Set<Plugin> plugins = new HashSet<Plugin>();
-        for (Plugin plugin : PluginPanel.g_plugins.values()) {
+        for (Plugin plugin : g_plugins.values()) {
             String sName = plugin.getClass().getName();
             if (!sName.startsWith("beast.app.beauti")) {
                 plugins.add(plugin);
@@ -560,7 +586,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		XMLParser parser = new XMLParser();
 		Plugin MCMC = parser.parseFragment(sXML, true);
 		mcmc.setValue(MCMC, this);
-		PluginPanel.addPluginToMap(MCMC);
+		PluginPanel.addPluginToMap(MCMC, this);
 		
 		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
 			int iStart = sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
@@ -570,7 +596,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	    	sXML = "<beast namespace='" + XMLProducer.DEFAULT_NAMESPACE +"'>" + sXML + "</beast>";
 			List<Plugin> plugins = parser.parseBareFragments(sXML, true);
 			for (Plugin plugin : plugins) {
-				PluginPanel.addPluginToMap(plugin);
+				PluginPanel.addPluginToMap(plugin, this);
 			}
 		}
 		
@@ -708,7 +734,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			} else {
 				System.err.println("template item " + plugin.getID() + " is ignored");
 			}
-			PluginPanel.addPluginToMap(plugin);
+			PluginPanel.addPluginToMap(plugin, this);
 		}
 	}
 
@@ -717,7 +743,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	/** assigns trait to first available tree **/
 	void addTraitSet(TraitSet trait) {
 		if (trait != null) {
-			CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+			CompoundDistribution likelihood = (CompoundDistribution) g_plugins.get("likelihood");
 			for (Distribution d : likelihood.pDistributions.get()) {
 				if (d instanceof TreeLikelihood) {
 					Tree tree = ((TreeLikelihood)d).m_tree.get();
@@ -770,7 +796,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	private void collectClockModels() {
 		// collect branch rate models from model
-		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+		CompoundDistribution likelihood = (CompoundDistribution) g_plugins.get("likelihood");
 		while (clockModels.size() <  sPartitionNames.size()) {
 			try {
 				TreeLikelihood treelikelihood = new TreeLikelihood();
@@ -800,7 +826,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	private void collectTreePriors() {
 		// collect tree priors from model
-		CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
+		CompoundDistribution prior = (CompoundDistribution) g_plugins.get("prior");
 		while (treePriors.size() <  sPartitionNames.size()) {
 			try {
 				CompoundDistribution distr = new CompoundDistribution();
@@ -869,7 +895,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 			// set estimate flag on tree, only if tree occurs in a partition
 			for (String sPartition: sPartitionNames) {
-				Tree tree = (Tree) PluginPanel.g_plugins.get("Tree." + sPartition);
+				Tree tree = (Tree) g_plugins.get("Tree." + sPartition);
 				tree.m_bIsEstimated.setValue(false, tree);
 			}
 			for (Plugin plugin : pPartition[2]) {
@@ -896,9 +922,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 
 				// process MRCA priors
-				for (String sID : PluginPanel.g_plugins.keySet()) {
+				for (String sID : g_plugins.keySet()) {
 					if (sID.endsWith(".prior")) {
-						Plugin plugin = PluginPanel.g_plugins.get(sID);
+						Plugin plugin = g_plugins.get(sID);
 						if (plugin instanceof MRCAPrior) {
 							MRCAPrior prior = (MRCAPrior) plugin;
 							if (prior.m_treeInput.get().m_bIsEstimated.get() == false) {
@@ -925,7 +951,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				for (String sPartition : sPartitionNames2) {
 					for (BeautiSubTemplate template : templates) {
 						String sTemplateID = template.getMainID().replaceAll("\\$\\(n\\)", sPartition);
-						Plugin plugin = PluginPanel.g_plugins.get(sTemplateID);
+						Plugin plugin = g_plugins.get(sTemplateID);
 	
 						// check if template is in use
 						if (plugin != null) {
@@ -940,7 +966,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 										System.err.println("connect: " + connector);
 										connect(connector, sPartition);
 									}
-								} else 	if (connector.isActivated(sPartition, posteriorPredecessors)) {
+								} else 	if (connector.isActivated(sPartition, posteriorPredecessors, this)) {
 									System.err.println("connect: " + connector);
 									try {
 										connect(connector, sPartition);
@@ -1002,7 +1028,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	} // scrubAll
 
 	void setClockRate() throws Exception {
-		Plugin likelihood = PluginPanel.g_plugins.get("likelihood");
+		Plugin likelihood = g_plugins.get("likelihood");
 		if (likelihood instanceof CompoundDistribution) {
 			int i = 0;
 			BranchRateModel.Base firstModel = null;
@@ -1448,17 +1474,17 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		// @Override
 		// public void run() {
 		//
-		PluginPanel.addPluginToMap(plugin);
+		PluginPanel.addPluginToMap(plugin, this);
 		try {
 			for (Input<?> input : plugin.listInputs()) {
 				if (input.get() != null) {
 					if (input.get() instanceof Plugin) {
-						PluginPanel.addPluginToMap((Plugin) input.get());
+						PluginPanel.addPluginToMap((Plugin) input.get(), this);
 					}
 					if (input.get() instanceof List<?>) {
 						for (Object o : (List<?>) input.get()) {
 							if (o instanceof Plugin) {
-								PluginPanel.addPluginToMap((Plugin) o);
+								PluginPanel.addPluginToMap((Plugin) o, this);
 							}
 						}
 					}
@@ -1481,7 +1507,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * @throws Exception **/
 	public void connect(BeautiConnector connector, String sPartition) throws Exception {
 		String sSrcID = connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition);
-		Plugin srcPlugin = PluginPanel.g_plugins.get(sSrcID);
+		Plugin srcPlugin = g_plugins.get(sSrcID);
 		if (srcPlugin == null) {
 			throw new Exception("Could not find plugin with id " + sSrcID + ". Typo in template perhaps?");
 		}
@@ -1491,7 +1517,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	public void connect(Plugin srcPlugin, String sTargetID, String sInputName) {
 		try {
-			Plugin target = PluginPanel.g_plugins.get(sTargetID);
+			Plugin target = g_plugins.get(sTargetID);
 			// prevent duplication inserts in list
 			Object o = target.getInputValue(sInputName);
 			if (o instanceof List) {
@@ -1510,14 +1536,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	/** disconnect source plugin with target plugin **/
 	public void disconnect(BeautiConnector connector, String sPartition) {
-		Plugin srcPlugin = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
+		Plugin srcPlugin = g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
 		String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
 		disconnect(srcPlugin, sTargetID, connector.sTargetInput);
 	}
 	
 	public void disconnect(Plugin srcPlugin, String sTargetID, String sInputName) { 
 		try {
-			Plugin target = PluginPanel.g_plugins.get(sTargetID);
+			Plugin target = g_plugins.get(sTargetID);
 			if (target == null) {
 				return;
 			}
@@ -1565,7 +1591,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	public void determinePartitions() {
-		CompoundDistribution likelihood = (CompoundDistribution) PluginPanel.g_plugins.get("likelihood");
+		CompoundDistribution likelihood = (CompoundDistribution) g_plugins.get("likelihood");
 		sPartitionNames = new ArrayList<String>();
 		for (Distribution distr : likelihood.pDistributions.get()) {
 			if (distr instanceof TreeLikelihood) {

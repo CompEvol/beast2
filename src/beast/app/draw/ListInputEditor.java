@@ -311,7 +311,7 @@ public class ListInputEditor extends InputEditor {
 		void processEntry() {
 			String sOldID = m_plugin.getID();
 			m_plugin.setID(m_entry.getText());
-			PluginPanel.renamePluginID(m_plugin, sOldID, m_plugin.getID());
+			PluginPanel.renamePluginID(m_plugin, sOldID, m_plugin.getID(), doc);
 			validateAllEditors();
 			m_entry.requestFocusInWindow();
 		}
@@ -346,7 +346,7 @@ public class ListInputEditor extends InputEditor {
         Plugin plugin = (Plugin) ((List<?>)m_input.get()).get(i);
         PluginDialog dlg = new PluginDialog(plugin, m_input.getType(), doc);
         dlg.setVisible(true);
-        if (dlg.getOK()) {
+        if (dlg.getOK(doc)) {
         	//m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
         	m_entries.get(i).setText(dlg.m_panel.m_plugin.getID());
         	//o = dlg.m_panel.m_plugin;
@@ -416,13 +416,13 @@ public class ListInputEditor extends InputEditor {
         }
         if (!sClassName.startsWith("new ")) {
             /* return existing plugin */
-        	selectedPlugins.add(PluginPanel.g_plugins.get(sClassName));
+        	selectedPlugins.add(doc.g_plugins.get(sClassName));
             return selectedPlugins;
         }
         /* create new plugin */
         try {
             Plugin plugin = (Plugin) Class.forName(sClassName.substring(4)).newInstance();
-            PluginPanel.addPluginToMap(plugin);
+            PluginPanel.addPluginToMap(plugin, doc);
         	selectedPlugins.add(plugin);
             return selectedPlugins;
         } catch (Exception ex) {
