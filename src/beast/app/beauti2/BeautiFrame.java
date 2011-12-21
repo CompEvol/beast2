@@ -352,10 +352,14 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
         return addonManagerAction;
     }
 
+    private AddOnManagerDialog addOnManagerDialog = null;
+
     protected AbstractAction addonManagerAction = new AbstractAction(BeautiFileMenuHandler.ADD_ON_MANAGER) {
         public void actionPerformed(java.awt.event.ActionEvent ae) {
-        	JAddOnDialog dlg = new JAddOnDialog(BeautiFrame.this);
-        	dlg.setVisible(true);
+            if (addOnManagerDialog == null) {
+                addOnManagerDialog = new AddOnManagerDialog(BeautiFrame.this);
+            }
+            addOnManagerDialog.showDialog();
 
         	// refresh template menu item
 //        	templateMenu.removeAll();
