@@ -416,7 +416,7 @@ public class ListInputEditor extends InputEditor {
         }
         if (!sClassName.startsWith("new ")) {
             /* return existing plugin */
-        	selectedPlugins.add(doc.g_plugins.get(sClassName));
+        	selectedPlugins.add(doc.pluginmap.get(sClassName));
             return selectedPlugins;
         }
         /* create new plugin */

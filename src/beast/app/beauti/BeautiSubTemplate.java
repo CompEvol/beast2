@@ -130,7 +130,7 @@ public class BeautiSubTemplate extends Plugin {
 			input.setValue(null, plugin);
 			return null;
 		}
-		Plugin o = createSubNet(sPartition, doc.g_plugins);
+		Plugin o = createSubNet(sPartition, doc.pluginmap);
 		input.setValue(o, plugin);
 		return o;
 	}
@@ -142,7 +142,7 @@ public class BeautiSubTemplate extends Plugin {
 			list.set(iItem, null);
 			return null;
 		}
-		Plugin o = createSubNet(sPartition, doc.g_plugins);
+		Plugin o = createSubNet(sPartition, doc.pluginmap);
 		list.set(iItem, o);
 		return o;
 	}
@@ -152,14 +152,14 @@ public class BeautiSubTemplate extends Plugin {
 			// this is the NULL_TEMPLATE
 			return null;
 		}
-		Plugin o = createSubNet(sPartition, doc.g_plugins);
+		Plugin o = createSubNet(sPartition, doc.pluginmap);
 		return o;
 	}
 
 	
 	Plugin createSubNet(Alignment data, BeautiDoc doc) {
 		String sPartition = data.getID();
-		HashMap<String, Plugin> sIDMap = doc.g_plugins;//new HashMap<String, Plugin>();
+		HashMap<String, Plugin> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
 		sIDMap.put(sPartition, data);
 		return createSubNet(sPartition, sIDMap);
 	}	
@@ -213,11 +213,11 @@ public class BeautiSubTemplate extends Plugin {
 		
 		String sID = sMainID;
 		sID = sID.replaceAll("\\$\\(n\\)", sPartition);
-		Plugin plugin = doc.g_plugins.get(sID);
+		Plugin plugin = doc.pluginmap.get(sID);
 
 		if (this == doc.beautiConfig.partitionTemplate.get()) {
 			// HACK: need to make sure the subst model is of the correct type
-			Plugin treeLikelihood = doc.g_plugins.get("treeLikelihood." + sPartition);
+			Plugin treeLikelihood = doc.pluginmap.get("treeLikelihood." + sPartition);
 			//DataType dataType = ((TreeLikelihood) treeLikelihood).m_data.get().getDataType();
 			SiteModel.Base siteModel = ((TreeLikelihood) treeLikelihood).m_pSiteModel.get();
 			SubstitutionModel substModel = siteModel.m_pSubstModel.get();

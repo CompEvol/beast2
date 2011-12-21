@@ -387,7 +387,7 @@ public class PriorListInputEditor extends ListInputEditor {
 		Set<Taxon> candidates = new HashSet<Taxon>();
 		for (String sTaxon : prior.m_treeInput.get().getTaxaNames()) {
 			Taxon taxon = null;
-			for (Taxon taxon2 : doc.g_taxa) {
+			for (Taxon taxon2 : doc.taxaset) {
 				if (taxon2.getID().equals(sTaxon)) {
 					taxon = taxon2;
 					break;
@@ -396,7 +396,7 @@ public class PriorListInputEditor extends ListInputEditor {
 			if (taxon == null) {
 				taxon = new Taxon();
 				taxon.setID(sTaxon);
-				doc.g_taxa.add(taxon);
+				doc.taxaset.add(taxon);
 			}
 			candidates.add(taxon);
 		}
@@ -434,7 +434,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
             List<Tree> trees = new ArrayList<Tree>();
             getDoc().scrubAll(true, false);
-            State state = (State) doc.g_plugins.get("state");
+            State state = (State) doc.pluginmap.get("state");
 	    	for (StateNode node : state.stateNodeInput.get()) {
 	    		if (node instanceof Tree) { // && ((Tree) node).m_initial.get() != null) {
 	    			trees.add((Tree) node);
@@ -470,7 +470,7 @@ public class PriorListInputEditor extends ListInputEditor {
 	    	// this removes the parametric distribution
     		prior.m_distInput.setValue(null, prior);
     		
-    		Logger logger = (Logger) doc.g_plugins.get("tracelog");
+    		Logger logger = (Logger) doc.pluginmap.get("tracelog");
     		logger.m_pLoggers.setValue(prior, logger);
     	} catch (Exception e) {
 			// TODO: handle exception

@@ -102,7 +102,7 @@ public class BeautiConnector extends Plugin {
 		boolean bIsActive = true;
 		for (int i = 0; i < sConditionIDs.length; i++) {
 			String sID = sConditionIDs[i].replaceAll("\\$\\(n\\)", sPartition);
-			Plugin plugin = doc.g_plugins.get(sID);
+			Plugin plugin = doc.pluginmap.get(sID);
 			if (plugin == null) {
 				//System.err.println("isActivated::no plugin found");
 				return false;

@@ -210,13 +210,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	void updateModel(int nColumn, int iRow) throws Exception {
 		getDoc();
 		String sPartition = (String) tableData[iRow][nColumn];
-		TreeLikelihood treeLikelihood = (TreeLikelihood) doc.g_plugins.get("treeLikelihood." + sPartition);
+		TreeLikelihood treeLikelihood = (TreeLikelihood) doc.pluginmap.get("treeLikelihood." + sPartition);
 		switch (nColumn) {
 		case SITEMODEL_COLUMN: {
 			if (getDoc().getPartitionNr(sPartition) != iRow) {
 				this.likelihoods[iRow].m_pSiteModel.setValue(treeLikelihood.m_pSiteModel.get(), this.likelihoods[iRow]);
 			} else {
-				SiteModel siteModel = (SiteModel) doc.g_plugins.get("SiteModel." + sPartition);
+				SiteModel siteModel = (SiteModel) doc.pluginmap.get("SiteModel." + sPartition);
 				this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
 			}
 			sPartition = treeLikelihood.m_pSiteModel.get().getID();
@@ -247,11 +247,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				this.likelihoods[iRow].m_tree.setValue(treeLikelihood.m_tree.get(), this.likelihoods[iRow]);
 			} else {
 				// String sPartition = (String) m_tableData[iRow][TREE_COLUMN];
-				Tree tree = (Tree) doc.g_plugins.get("Tree." + sPartition);
+				Tree tree = (Tree) doc.pluginmap.get("Tree." + sPartition);
 				this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
 			}
 			TreeDistribution d = getDoc().getTreePrior(sPartition);
-			CompoundDistribution prior = (CompoundDistribution) doc.g_plugins.get("prior");
+			CompoundDistribution prior = (CompoundDistribution) doc.pluginmap.get("prior");
 			if (!prior.pDistributions.get().contains(d)) {
 				prior.pDistributions.setValue(d, prior);
 			}
@@ -272,7 +272,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		if (tableData == null) {
 			tableData = new Object[nPartitions][8];
 		}
-		CompoundDistribution likelihoods = (CompoundDistribution) doc.g_plugins.get("likelihood");
+		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
 
 		for (int i = 0; i < nPartitions; i++) {
 			Alignment data = alignments.get(i);

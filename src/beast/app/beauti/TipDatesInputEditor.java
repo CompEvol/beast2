@@ -147,7 +147,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 		Taxon allTaxa = new Taxon();
 		allTaxa.setID(ALL_TAXA);
 		taxonsets.add(allTaxa);
-		for (Taxon taxon : doc.g_taxa) {
+		for (Taxon taxon : doc.taxaset) {
 			if (taxon instanceof TaxonSet) {
 				taxonsets.add(taxon);
 			}
