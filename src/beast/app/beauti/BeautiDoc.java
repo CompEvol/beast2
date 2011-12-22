@@ -253,9 +253,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		
 		pluginmap = new HashMap<String, Plugin>();
 		taxaset = new HashSet<Taxon>();
+		sFileName = "";
 	}
 	
 	public void registerPlugin(Plugin plugin) {
+		// first make sure to remove plug-ins when the id of a plugin changed
+		unregisterPlugin(plugin);
+		
 		pluginmap.put(plugin.getID(), plugin);
 		if (plugin instanceof Taxon) {
 			taxaset.add((Taxon) plugin);
@@ -263,10 +267,15 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 	
 	public void unregisterPlugin(Plugin plugin) {
+		String oldID = null;
 		for (String id : pluginmap.keySet()) {
 			if (pluginmap.get(id).equals(plugin)) {
-				pluginmap.remove(id);
+				oldID = id;
+				break;
 			}
+		}
+		if (oldID != null) {
+			pluginmap.remove(oldID);
 		}
 		taxaset.remove(plugin);
 	}
@@ -546,11 +555,24 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	/**
 	 * see whether we have a valid model that can be saved at this point in time
 	 **/
-	public boolean validateModel() {
+	public enum DOC_STATUS {NO_DOCUMENT, SAVED, DIRTY} 
+	public DOC_STATUS validateModel() {
 		if (mcmc == null || sPartitionNames.size() == 0) {
-			return false;
+			return DOC_STATUS.NO_DOCUMENT;
 		}
-		return true;
+		try {
+			// check if file is already saved and not changed wrt file on disk
+			if (sFileName != null && sFileName.length() > 0) {
+				String sFileXML = load(sFileName);
+				String sXML = toXML();
+				if (sFileXML.equals(sXML)) {
+					return DOC_STATUS.SAVED;
+				}
+			}
+		} catch (Exception e) {
+			// ignore
+		}
+		return DOC_STATUS.DIRTY;
 	} // validateModel
 
 	/** save specification in file **/
@@ -563,6 +585,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         determinePartitions();
         scrubAll(false, false);
         //String sXML = new XMLProducer().toXML(mcmc.get(), );
+        String sXML = toXML();
+        FileWriter outfile = new FileWriter(file);
+        outfile.write(sXML);
+        outfile.close();
+    } // save
+    
+    public String toXML() {
         Set<Plugin> plugins = new HashSet<Plugin>();
         for (Plugin plugin : pluginmap.values()) {
             String sName = plugin.getClass().getName();
@@ -571,10 +600,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             }
         }
         String sXML = new XMLProducer().toXML(mcmc.get(), plugins);
-        FileWriter outfile = new FileWriter(file);
-        outfile.write(sXML);
-        outfile.close();
-    } // save
+        return sXML + "\n";
+    }
 
 	void extractSequences(String sXML) throws Exception {
 		// load standard template

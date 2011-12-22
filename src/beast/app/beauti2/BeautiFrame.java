@@ -9,6 +9,7 @@
 package beast.app.beauti2;
 
 import beast.app.beauti.*;
+import beast.app.beauti.BeautiDoc.DOC_STATUS;
 import beast.app.beauti2.menus.BeautiFileMenuHandler;
 import beast.app.util.Utils;
 import jam.framework.DocumentFrame;
@@ -205,7 +206,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
     // Write the document data to the specified file (return true if successfully saved)
     protected boolean writeToFile(File file) throws IOException {
-        if (!doc.validateModel()) {
+        if (doc.validateModel() == DOC_STATUS.NO_DOCUMENT) {
             return false;
         }
         try {
@@ -332,7 +333,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
     @Override
     public boolean requestClose() {
-    	if (doc.alignments.size() > 0) {
+    	if (doc.validateModel() == DOC_STATUS.DIRTY) {
     		setDirty();
     	} else {
     		clearDirty();

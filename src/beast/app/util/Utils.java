@@ -69,7 +69,7 @@ public class Utils {
     public static void loadUIManager() {
         boolean lafLoaded = false;
 
-        if (jam.mac.Utils.isMacOSX()) {
+        if (isMac()) {
             System.setProperty("apple.awt.graphics.UseQuartz", "true");
             System.setProperty("apple.awt.antialiasing","true");
             System.setProperty("apple.awt.rendering","VALUE_RENDER_QUALITY");

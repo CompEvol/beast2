@@ -61,6 +61,7 @@ abstract public class LikelihoodCore {
 	abstract public void setNodePartialsForUpdate(int iNode);
 	/** assign values of partials for node with number iNode **/
 	abstract public void setNodePartials(int iNode, double[] fPartials);
+	abstract public void getNodePartials(int iNode, double[] fPartials);
     //abstract public void setCurrentNodePartials(int iNode, double[] fPartials);
 
     /** reserve memory for states for node with number iNode **/

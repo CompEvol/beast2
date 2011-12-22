@@ -5,6 +5,7 @@ package beast.app.beauti;
 
 import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
+import beast.app.beauti.BeautiDoc.DOC_STATUS;
 import beast.app.draw.*;
 import beast.app.util.Utils;
 import beast.util.AddOnManager;
@@ -137,7 +138,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         public void actionPerformed(ActionEvent ae) {
             if (!doc.sFileName.equals("")) {
-                if (!doc.validateModel()) {
+                if (doc.validateModel() != DOC_STATUS.DIRTY) {
                     return;
                 }
                 saveFile(doc.sFileName);
@@ -169,7 +170,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     } // class ActionSaveAs    
 
     boolean saveAs() {
-        if (!doc.validateModel()) {
+        if (doc.validateModel() == DOC_STATUS.NO_DOCUMENT) {
             return false;
         }
         File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(doc.sFileName), null, (String[]) null);
@@ -377,7 +378,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     } // class ActionQuit
 
     boolean quit() {
-    	if (doc.validateModel()) {
+    	if (doc.validateModel() == DOC_STATUS.DIRTY) {
             int result = JOptionPane.showConfirmDialog(null,
                     "Do you want to save the Beast specification?",
                     "Save before closing?",

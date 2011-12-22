@@ -1,7 +1,9 @@
 package beast.evolution.alignment;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import beast.core.Description;
 import beast.core.Input;
@@ -21,7 +23,7 @@ public class AscertainedAlignment extends Alignment {
 	/** indices of patterns that are excluded from the likelihood calculation
 	 * and used for ascertainment correction
 	 */
-	List<Integer> m_nExcluded;
+	Set<Integer> m_nExcludedPatterns;
 //	List<Integer> m_nIncluded;
 	
 	@Override
@@ -31,12 +33,12 @@ public class AscertainedAlignment extends Alignment {
 		int iFrom = m_excludefrom.get();
 		int iTo = m_excludeto.get();
 		int iEvery = m_excludeevery.get();
-		m_nExcluded = new ArrayList<Integer>();
+		m_nExcludedPatterns = new HashSet<Integer>();
 		for (int i = iFrom; i < iTo; i += iEvery) {
 			int iPattern = m_nPatternIndex[i];
 			// reduce weight, so it does not confuse the tree likelihood
 			m_nWeight[iPattern] = 0;
-			m_nExcluded.add(iPattern);
+			m_nExcludedPatterns.add(iPattern);
 		}
 
 //		iFrom = m_includefrom.get();
@@ -51,8 +53,17 @@ public class AscertainedAlignment extends Alignment {
 //		}
 	} // initAndValidate
 
-	
-	
+	public Set<Integer> getExcludedPatternIndices() {
+		return m_nExcludedPatterns;
+	}
+	public int getExcludedPatternCount() {
+		return m_nExcludedPatterns.size();
+	}
+
+//	public List<Integer> getIncludesIndices() {
+//		return m_nIncluded;
+//	}
+
     public double getAscertainmentCorrection(double[] patternLogProbs) {
         double excludeProb = 0, includeProb = 0, returnProb = 1.0;
 
@@ -60,8 +71,8 @@ public class AscertainedAlignment extends Alignment {
 //        	includeProb += Math.exp(patternLogProbs[m_nIncluded.get(i)]);
 //        }
         
-        for (int i = 0; i < m_nExcluded.size(); i++) {
-        	excludeProb += Math.exp(patternLogProbs[m_nExcluded.get(i)]);
+        for (int i : m_nExcludedPatterns) {
+        	excludeProb += Math.exp(patternLogProbs[i]);
         }
 
         if (includeProb == 0.0) {

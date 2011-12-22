@@ -1,8 +1,8 @@
 package beast.app.beauti;
 
+
 import java.util.List;
 
-import beast.app.draw.PluginPanel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
