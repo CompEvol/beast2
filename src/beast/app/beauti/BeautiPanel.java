@@ -89,7 +89,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     
     void addParitionPanel(Partition bHasPartion, int iPanel) {
 		Box box = Box.createVerticalBox();
-    	if (bHasPartion != Partition.NONE) {
+    	if (bHasPartion != Partition.none) {
 			box.add(createList());
     	}
 		box.add(Box.createVerticalGlue());

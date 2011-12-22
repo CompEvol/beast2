@@ -16,7 +16,7 @@ import beast.core.Plugin;
 @Description("Defines properties for custom panels in Beauti")
 public class BeautiPanelConfig extends Plugin {
     public enum Partition {
-        NONE, SITE_MODEL, CLOCK_MODEL, TREE
+    	none, SiteModel, ClockModel, Tree
     }
 	
 	public Input<String> sNameInput = new Input<String>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
@@ -29,7 +29,7 @@ public class BeautiPanelConfig extends Plugin {
 	
 
 	public Input<Partition> bHasPartitionsInput = new Input<Partition>("hasPartitions", "flag to indicate the panel has" +
-			"a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.NONE, Partition.values());
+			"a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
 	
 	public Input<Boolean> bAddButtonsInput = new Input<Boolean>("addButtons", "flag to indicate buttons should be added, deafult true", true);
 	public Input<Boolean> bIsVisibleInput = new Input<Boolean>("isVisible", "flag to indicate panel is visible on startup, deafult true", true);
@@ -136,7 +136,7 @@ public class BeautiPanelConfig extends Plugin {
 			if (parentPlugins != null && parentPlugins.size() > 0 && _input != null) System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
 			
 			List<Plugin> plugins;
-			if (bHasPartitionsInput.get() == Partition.NONE) {
+			if (bHasPartitionsInput.get() == Partition.none) {
 				plugins = new ArrayList<Plugin>();
 				plugins.add(doc.mcmc.get());
 			} else {
@@ -209,7 +209,7 @@ public class BeautiPanelConfig extends Plugin {
 				type = Class.forName(sTypeInput.get());
 			}
 			// sanity check
-			if (!bIsList && (bHasPartitionsInput.get() == Partition.NONE) && plugins.size() > 1) {
+			if (!bIsList && (bHasPartitionsInput.get() == Partition.none) && plugins.size() > 1) {
 				System.err.println("WARNING: multiple plugins match, but hasPartitions=none");
 				// this makes sure that all mathing plugins are available in one go
 				bIsList = true;
