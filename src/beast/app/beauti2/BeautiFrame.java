@@ -196,9 +196,8 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
     // Read the document from the provide file (return true if successfully loaded).
     protected boolean readFromFile(File file) throws IOException {
-    	doc.sFileName = file.getAbsolutePath();
 		try {
-			doc.loadXML(doc.sFileName);
+			doc.loadXML(file);
 		} catch (IOException e) {
 			throw e;
 		} catch (Exception e) {

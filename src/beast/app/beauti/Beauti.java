@@ -72,7 +72,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	}
 	
 	void setTitle() {
-		frame.setTitle("Beauti 2: " + this.doc.sTemplateName + " " + doc.sFileName);
+		frame.setTitle("Beauti 2: " + this.doc.getTemplateName() + " " + doc.getFileName());
 	}
 	
 	void toggleVisible(int nPanelNr) {
@@ -137,11 +137,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            if (!doc.sFileName.equals("")) {
+            if (!doc.getFileName().equals("")) {
                 if (doc.validateModel() != DOC_STATUS.DIRTY) {
                     return;
                 }
-                saveFile(doc.sFileName);
+                saveFile(doc.getFileName());
 //                m_doc.isSaved();
             } else {
                 if (saveAs()) {
@@ -173,7 +173,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         if (doc.validateModel() == DOC_STATUS.NO_DOCUMENT) {
             return false;
         }
-        File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(doc.sFileName), null, (String[]) null);
+        File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(doc.getFileName()), null, (String[]) null);
         if (file != null) {
         	if (file.exists()) {
         		if (JOptionPane.showConfirmDialog(null, 
@@ -184,13 +184,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         	}
             // System.out.println("Saving to file \""+
             // f.getAbsoluteFile().toString()+"\"");
-        	doc.sFileName = file.getAbsolutePath();//fc.getSelectedFile().toString();
-            if (doc.sFileName.lastIndexOf('/') > 0) {
-                g_sDir = doc.sFileName.substring(0, doc.sFileName.lastIndexOf('/'));
+        	doc.setFileName(file.getAbsolutePath());//fc.getSelectedFile().toString();
+            if (doc.getFileName().lastIndexOf('/') > 0) {
+                g_sDir = doc.getFileName().substring(0, doc.getFileName().lastIndexOf('/'));
             }
-            if (!doc.sFileName.endsWith(FILE_EXT))
-            	doc.sFileName = doc.sFileName.concat(FILE_EXT);
-            saveFile(doc.sFileName);
+            if (!doc.getFileName().endsWith(FILE_EXT))
+            	doc.setFileName(doc.getFileName().concat(FILE_EXT));
+            saveFile(doc.getFileName());
             setTitle();
             return true;
         }
@@ -244,12 +244,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 //    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 //        		sFileName = fileChooser.getSelectedFile().toString();
         	if (file != null) {
-        		doc.sFileName = file.getAbsolutePath();
-                if (doc.sFileName.lastIndexOf('/') > 0) {
-                    g_sDir = doc.sFileName.substring(0, doc.sFileName.lastIndexOf('/'));
+        		doc.setFileName(file.getAbsolutePath());
+                if (doc.getFileName().lastIndexOf('/') > 0) {
+                    g_sDir = doc.getFileName().substring(0, doc.getFileName().lastIndexOf('/'));
                 }
     			try {
-    				doc.loadXML(doc.sFileName);
+    				doc.loadXML(new File(doc.getFileName()));
     				a_save.setEnabled(true);
     				a_saveas.setEnabled(true);
     				setTitle();
@@ -852,14 +852,14 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			
 			beauti.setVisible(true);
 			beauti.refreshPanel();
-			JFrame frame = new JFrame("BEAUti 2: " + doc.sTemplateName + " " + doc.sFileName);
+			JFrame frame = new JFrame("BEAUti 2: " + doc.getTemplateName() + " " + doc.getFileName());
 			beauti.frame = frame;
 			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
 
 			JMenuBar menuBar = beauti.makeMenuBar(); 
 			frame.setJMenuBar(menuBar);
 			
-			if (doc.sFileName != null || doc.alignments.size()> 0) {
+			if (doc.getFileName() != null || doc.alignments.size()> 0) {
 				beauti.a_save.setEnabled(true);
 				beauti.a_saveas.setEnabled(true);
 			}
