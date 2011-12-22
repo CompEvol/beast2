@@ -5,6 +5,7 @@ import beast.util.Randomizer;
 import beast.util.XMLParser;
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.util.List;
 
 import test.beast.beast2vs1.trace.Expectation;
@@ -35,7 +36,7 @@ public abstract class TestFramework extends TestCase {
 
                 System.out.println("Processing " + sFileName);
                 XMLParser parser = new XMLParser();
-                beast.core.Runnable runable = parser.parseFile(sFileName);
+                beast.core.Runnable runable = parser.parseFile(new File(sFileName));
                 runable.setStateFile("tmp.state", false);
 //		   runable.setInputValue("preBurnin", 0);
 //		   runable.setInputValue("chainLength", 1000);

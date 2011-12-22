@@ -30,7 +30,7 @@ public class NexusParserTest extends TestCase {
 				System.out.println("Processing " + sFileName);
 				NexusParser parser = new NexusParser();
 				try {
-					parser.parseFile(sDir + "/" + sFileName);
+					parser.parseFile(new File(sDir + "/" + sFileName));
 				} catch (Exception e) {
 					System.out.println("ExampleNexusParsing::Failed for " + sFileName
 							+ ": " + e.getMessage());
@@ -56,7 +56,7 @@ public class NexusParserTest extends TestCase {
 		try {
 			String sFile = System.getProperty("user.dir") + "/examples/nexus/Primates.nex";
 			NexusParser parser = new NexusParser();
-			parser.parseFile(sFile);
+			parser.parseFile(new File(sFile));
 			assertEquals(2, parser.m_filteredAlignments.size());
 		} catch (Exception e) {
 			System.out.println("exception thrown ");

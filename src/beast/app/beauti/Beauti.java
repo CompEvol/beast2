@@ -336,16 +336,17 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     			if (files == null) {
     				return;
     			}
-    			for (int i = 0; i < files.length; i++) {
-    				String sFileName = files[i].getAbsolutePath();
-    				if (sFileName.lastIndexOf('/') > 0) {
-    					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-    				}
-    				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
-            			doc.importNexus(sFileName);
+    			for (File file : files) {
+    				String sFileName = file.getAbsolutePath();
+                    // AR - this looks very UNIX specific path (i.e., '/' not a System dependent separator char).
+//    				if (sFileName.lastIndexOf('/') > 0) {
+//    					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+//    				}
+    				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs") || sFileName.toLowerCase().endsWith(".nexus")) {
+            			doc.importNexus(file);
     				}
     				if (sFileName.toLowerCase().endsWith(".xml")) {
-            			doc.importXMLAlignment(sFileName);
+            			doc.importXMLAlignment(file);
     				}
     			}
 				a_save.setEnabled(true);

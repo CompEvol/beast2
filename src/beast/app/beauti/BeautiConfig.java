@@ -88,7 +88,7 @@ public class BeautiConfig extends Plugin {
 				}
 			}
 		}
-		InputEditor.g_bExpertMode = bIsExpertInput.get();
+		InputEditor.setExpertMode(bIsExpertInput.get());
 		subTemplates = subTemplatesInpupt.get();
 	}
 

@@ -6,6 +6,7 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -261,7 +262,7 @@ public class AlignmentViewer extends JPanel {
 	public static void main(String[] args) {
 		try {
 			NexusParser parser = new NexusParser();
-			parser.parseFile(args[0]);
+			parser.parseFile(new File(args[0]));
 			Alignment data = parser.m_alignment;
 			AlignmentViewer panel = new AlignmentViewer(data);
 			panel.showInDialog();

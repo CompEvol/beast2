@@ -38,12 +38,12 @@ import beast.core.Plugin;
 public abstract class InputEditor extends Box implements ValidateListener {
 	final public static String NO_VALUE = "<none>";
 	
-	public enum EXPAND {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM};
-	public enum BUTTONSTATUS {ALL,NONE,DELONLY,ADDONLY};
+	public enum ExpandOption {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM};
+	public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY};
 
-	public static boolean g_bExpertMode = false;
-	
-	private static final long serialVersionUID = 1L;
+	private static boolean isExpertMode = false;
+
+    private static final long serialVersionUID = 1L;
 	/** the input to be edited **/
 	protected Input<?> m_input;
 	/** parent plugin **/
@@ -83,7 +83,9 @@ public abstract class InputEditor extends Box implements ValidateListener {
 
 	public static Integer g_nLabelWidth = 150;
 	
-	public InputEditor() {super(BoxLayout.X_AXIS);}
+	public InputEditor() {
+        super(BoxLayout.X_AXIS);
+    }
 	
 //	public InputEditor(BeautiDoc doc) {
 //		super(BoxLayout.X_AXIS);
@@ -117,7 +119,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	}
 	
 	/** construct an editor consisting of a label and input entry **/
-	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
 		m_input = input;
 		m_plugin = plugin;
@@ -331,5 +333,16 @@ public abstract class InputEditor extends Box implements ValidateListener {
 	@Override public void setBorder(Border border) {
         // No border
     }
-	
+
+    // STATIC MEMBER FUNCTIONS
+
+    public static boolean isExpertMode() {
+        return isExpertMode;
+    }
+
+    public static void setExpertMode(boolean expertMode) {
+        isExpertMode = expertMode;
+    }
+
+
 } // class InputEditor

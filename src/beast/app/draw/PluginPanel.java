@@ -6,8 +6,8 @@ package beast.app.draw;
 import beast.app.beauti.BeautiConfig;
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
-import beast.app.draw.InputEditor.BUTTONSTATUS;
-import beast.app.draw.InputEditor.EXPAND;
+import beast.app.draw.InputEditor.ButtonStatus;
+import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.MCMC;
@@ -244,7 +244,7 @@ public class PluginPanel extends JPanel {
             try {
             	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
             	if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
-	            	InputEditor inputEditor = createInputEditor(input, plugin, true, EXPAND.FALSE, BUTTONSTATUS.ALL, editor, doc);
+	            	InputEditor inputEditor = createInputEditor(input, plugin, true, ExpandOption.FALSE, ButtonStatus.ALL, editor, doc);
 					box.add(inputEditor);
 	                box.add(Box.createVerticalStrut(5));
 	                //box.add(Box.createVerticalGlue());
@@ -284,11 +284,11 @@ public class PluginPanel extends JPanel {
     
     
     public static InputEditor createInputEditor(Input<?> input, Plugin plugin, BeautiDoc doc) throws Exception {
-    	return createInputEditor(input, plugin, true, EXPAND.FALSE, BUTTONSTATUS.ALL, null, doc);
+    	return createInputEditor(input, plugin, true, InputEditor.ExpandOption.FALSE, ButtonStatus.ALL, null, doc);
     }
     
     public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, 
-    		EXPAND bForceExpansion, BUTTONSTATUS buttonStatus, 
+    		ExpandOption bForceExpansion, ButtonStatus buttonStatus,
     		InputEditor editor, BeautiDoc doc) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
@@ -338,11 +338,11 @@ public class PluginPanel extends JPanel {
         }
     	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
 		//System.err.println(sFullInputName);
-    	EXPAND expand = bForceExpansion;
-    	if (doc.beautiConfig.inlinePlugins.contains(sFullInputName) || bForceExpansion == EXPAND.TRUE_START_COLLAPSED) {
-    		expand = EXPAND.TRUE;
+    	ExpandOption expandOption = bForceExpansion;
+    	if (doc.beautiConfig.inlinePlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
+    		expandOption = ExpandOption.TRUE;
     		// deal with initially collapsed plugins
-    		if (doc.beautiConfig.collapsedPlugins.contains(sFullInputName) || bForceExpansion == EXPAND.TRUE_START_COLLAPSED) {
+    		if (doc.beautiConfig.collapsedPlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
     			if (input.get() != null) {
     				Object o = input.get();
     				if (o instanceof ArrayList) {
@@ -367,7 +367,7 @@ public class PluginPanel extends JPanel {
     		}
     	}
     	inputEditor.doc = doc;
-        inputEditor.init(input, plugin,  expand, bAddButtons);
+        inputEditor.init(input, plugin, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
 		inputEditor.setVisible(true);
 		return inputEditor;
@@ -484,7 +484,7 @@ public class PluginPanel extends JPanel {
         if (sTabuList == null) {
             sTabuList = new ArrayList<String>();
         }
-        if (!InputEditor.g_bExpertMode) {
+        if (!InputEditor.isExpertMode()) {
 		    for (Plugin plugin : listAscendants(parent, g_plugins.values())) {
 		        sTabuList.add(plugin.getID());
 		    }
@@ -515,7 +515,7 @@ public class PluginPanel extends JPanel {
             }
         }
         /* add all plugin-classes of type assignable to the input */
-        if (InputEditor.g_bExpertMode) {
+        if (InputEditor.isExpertMode()) {
         	List<String> sClasses = AddOnManager.find(input.getType(), "beast");
 	        for (String sClass : sClasses) {
 	        	try {

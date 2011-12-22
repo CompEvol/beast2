@@ -33,7 +33,7 @@ public class ListInputEditor extends InputEditor {
     }
     
     
-    protected BUTTONSTATUS m_buttonStatus = BUTTONSTATUS.ALL;
+    protected ButtonStatus m_buttonStatus = ButtonStatus.ALL;
 
     /**
      * buttons for manipulating the list of inputs *
@@ -44,7 +44,7 @@ public class ListInputEditor extends InputEditor {
     protected List<SmallButton> m_editButton;
     protected List<SmallLabel> m_validateLabels;
     protected Box m_listBox;
-    protected EXPAND m_bExpand;
+    protected ExpandOption m_bExpandOption;
 
     static protected Set<String> g_collapsedIDs = new HashSet<String>();
     static Set<String> g_initiallyCollapsedIDs = new HashSet<String>();
@@ -73,7 +73,7 @@ public class ListInputEditor extends InputEditor {
         m_delButton = new ArrayList<SmallButton>();
         m_editButton = new ArrayList<SmallButton>();
         m_validateLabels = new ArrayList<SmallLabel>();
-        m_bExpand = EXPAND.FALSE;
+        m_bExpandOption = ExpandOption.FALSE;
 		setAlignmentY(Component.BOTTOM_ALIGNMENT);
    }
 
@@ -94,9 +94,9 @@ public class ListInputEditor extends InputEditor {
      * o a set of buttons for adding, deleting, editing items in the list
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
-    	m_bExpand = bExpand;
+    	m_bExpandOption = bExpandOption;
         m_input = input;
         m_plugin = plugin;
         addInputLabel();
@@ -119,7 +119,7 @@ public class ListInputEditor extends InputEditor {
 
         add(m_listBox);
         Box box = Box.createHorizontalBox();
-        if (m_buttonStatus == BUTTONSTATUS.ALL || m_buttonStatus == BUTTONSTATUS.ADDONLY) {
+        if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
 	        m_addButton = new SmallButton("+", true);
 	        m_addButton.setToolTipText("Add item to the list");
 	        m_addButton.addActionListener(new ActionListener() {
@@ -128,7 +128,7 @@ public class ListInputEditor extends InputEditor {
 	            }
 	        });
 	        box.add(m_addButton);
-	        if (!g_bExpertMode) {
+	        if (!isExpertMode()) {
 	        	// if nothing can be added, make add button invisible
 	            List<String> sTabuList = new ArrayList<String>();
 	            for (int i = 0; i < m_entries.size(); i++) {
@@ -159,7 +159,7 @@ public class ListInputEditor extends InputEditor {
         
 //    	String sFullInputName = plugin.getClass().getName() + "." + m_input.getName();
 //    	if (BeautiConfig.hasDeleteButton(sFullInputName)) {
-        if (m_buttonStatus == BUTTONSTATUS.ALL || m_buttonStatus == BUTTONSTATUS.DELONLY) {
+        if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.DELETE_ONLY) {
     		
 	        SmallButton delButton = new SmallButton("-", true);
 	        delButton.setToolTipText("Delete item from the list");
@@ -176,7 +176,7 @@ public class ListInputEditor extends InputEditor {
         
         
         SmallButton editButton = new SmallButton("e", true);
-        if (m_bExpand == EXPAND.FALSE || m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size()>1) {
+        if (m_bExpandOption == ExpandOption.FALSE || m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size()>1) {
 	        editButton.setToolTipText("Edit item in the list");
 	        editButton.addActionListener(new ActionListenerObject(plugin) {
 	            public void actionPerformed(ActionEvent e) {
@@ -199,8 +199,8 @@ public class ListInputEditor extends InputEditor {
 		m_validateLabels.add(validateLabel);
         itemBox.setBorder(BorderFactory.createEtchedBorder());
         
-        if (m_bExpand == EXPAND.TRUE || m_bExpand == EXPAND.TRUE_START_COLLAPSED || 
-        		(m_bExpand == EXPAND.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
+        if (m_bExpandOption == ExpandOption.TRUE || m_bExpandOption == ExpandOption.TRUE_START_COLLAPSED ||
+        		(m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
         	Box expandBox = Box.createVerticalBox();
         	//box.add(itemBox);
         	PluginPanel.addInputs(expandBox, plugin, this, null, doc);
@@ -399,9 +399,9 @@ public class ListInputEditor extends InputEditor {
         } else if (sPlugins.size() == 0) {
         	// no candidate => we cannot be in expert mode
         	// create a new Plugin 
-        	InputEditor.g_bExpertMode = true;
+        	InputEditor.setExpertMode(true);
             sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList);
-        	InputEditor.g_bExpertMode = false;
+        	InputEditor.setExpertMode(false);
             sClassName = sPlugins.get(0);
         } else {
             // otherwise, pop up a list box
@@ -458,7 +458,7 @@ public class ListInputEditor extends InputEditor {
 		updateState();
 	}
 
-	public void setButtonStatus(BUTTONSTATUS buttonStatus) {
+	public void setButtonStatus(ButtonStatus buttonStatus) {
 		m_buttonStatus = buttonStatus;
 	}
 

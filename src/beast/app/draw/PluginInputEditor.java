@@ -38,11 +38,11 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
      * o validation label -- optional, if input is not valid
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
-    	if (bExpand == EXPAND.FALSE) {
+    	if (bExpandOption == ExpandOption.FALSE) {
     		simpleInit(input, plugin);
     	} else {
     		expandedInit(input, plugin);

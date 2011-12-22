@@ -19,7 +19,7 @@ public class BooleanInputEditor extends InputEditor {
 	
 	/** create input editor containing a check box **/
 	@Override
-	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
 		m_plugin = plugin;
 		m_input = input;

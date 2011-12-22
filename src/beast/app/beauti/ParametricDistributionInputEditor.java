@@ -34,17 +34,17 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 	}
 	
     @Override
-    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
     	useDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
 
 //    	if (useDefaultBehavior && false) {
-//    		super.init(input, plugin, bExpand, bAddButtons);
+//    		super.init(input, plugin, bExpandOption, bAddButtons);
 //    	} else {
 	    	m_bAddButtons = bAddButtons;
 	        m_input = input;
 	        m_plugin = plugin;
 	    	if (input.get() != null) {
-	    		super.init(input, plugin, EXPAND.TRUE, bAddButtons);
+	    		super.init(input, plugin, ExpandOption.TRUE, bAddButtons);
 	    	}
 	    	add(createGraph());
 //    	}

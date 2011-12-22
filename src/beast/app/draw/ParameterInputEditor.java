@@ -91,7 +91,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 			paramBox.add(m_isEstimatedBox);
 			
 			// only show the estimate flag if there is an operator that works on this parameter
-			m_isEstimatedBox.setVisible(InputEditor.g_bExpertMode);
+			m_isEstimatedBox.setVisible(InputEditor.isExpertMode());
 			//m_editPluginButton.setVisible(false);
 			//m_bAddButtons = false;
 			for (Plugin plugin2 : ((Plugin)m_input.get()).outputs) {

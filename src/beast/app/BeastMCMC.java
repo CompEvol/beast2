@@ -85,8 +85,7 @@ public class BeastMCMC {
 	public static ExecutorService g_exec = Executors.newFixedThreadPool(m_nThreads);
 	/** random number seed used to initialise Randomizer **/
 	long m_nSeed = 127;
-	/** name of SnAP specification file **/
-	String m_sFileName = "";
+
 	/** MCMC object to execute **/
 	Runnable m_runnable;
 
@@ -94,7 +93,10 @@ public class BeastMCMC {
 	 * @throws Exception **/
 	public void parseArgs(String[] args) throws Exception {
 		int i = 0;
-		boolean bResume = false;
+		boolean resume = false;
+
+        File beastFile = null;
+
 		try {
 			while (i < args.length) {
 				int iOld = i;
@@ -105,7 +107,7 @@ public class BeastMCMC {
 						Logger.FILE_MODE = Logger.FILE_ONLY_NEW_OR_EXIT;
 						i += 1;
 					} else if (args[i].equals("-resume")) {
-						bResume = true;
+						resume = true;
 						Logger.FILE_MODE = Logger.FILE_APPEND;
 			        	System.setProperty("beast.resume","true");
 			        	System.setProperty("beast.debug","false");
@@ -135,7 +137,7 @@ public class BeastMCMC {
 					}
 					if (i == iOld) {
 						if (i == args.length-1) {
-							m_sFileName = args[i];
+                            beastFile = new File(args[i]);
 							i++;
 						} else {
 							throw new Exception("Wrong argument");
@@ -147,7 +149,10 @@ public class BeastMCMC {
 			e.printStackTrace();
 			throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
 		}
-		if (m_sFileName.equals("")) {
+
+		if (beastFile == null) {
+            // Not resuming so get starting options...
+
 	    	List<String> MCMCargs = new ArrayList<String>();
 			Version version = new BeastVersion();
             String titleString = "<html><center><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
@@ -216,17 +221,17 @@ public class BeastMCMC {
 		    parseArgs(MCMCargs.toArray(new String[0]));
 			return;
 		}
-		
-		
-		System.err.println("File: " + m_sFileName + " seed: " + m_nSeed + " threads: " + m_nThreads);
-		if (bResume) {
+
+        System.err.println("File: " + beastFile.getName() + " seed: " + m_nSeed + " threads: " + m_nThreads);
+        if (resume) {
 			System.out.println("Resuming from file");
-		}
+        }
+
 		AddOnManager.loadExternalJars();
 		// parse xml
 		Randomizer.setSeed(m_nSeed);
-		m_runnable = new XMLParser().parseFile(m_sFileName);
-		m_runnable.setStateFile(m_sFileName+".state", bResume);
+		m_runnable = new XMLParser().parseFile(beastFile);
+		m_runnable.setStateFile(beastFile.getName() + ".state", resume);
 	} // parseArgs
 
 	

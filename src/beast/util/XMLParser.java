@@ -207,11 +207,11 @@ public class XMLParser {
         m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
     }
 
-    public Runnable parseFile(String sFileName) throws Exception {
+    public Runnable parseFile(File file) throws Exception {
         // parse the XML file into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
-        m_doc = factory.newDocumentBuilder().parse(new File(sFileName));
+        m_doc = factory.newDocumentBuilder().parse(file);
         m_doc.normalize();
         processPlates();
         
@@ -967,7 +967,7 @@ public class XMLParser {
     		System.setOut(System.err);
     		// parse the file
     		XMLParser parser = new XMLParser();
-    		Plugin plugin = parser.parseFile(args[0]);
+    		Plugin plugin = parser.parseFile(new File(args[0]));
     		// restore stdout 
     		System.setOut(out);
     		System.out.println(new XMLProducer().toXML(plugin));

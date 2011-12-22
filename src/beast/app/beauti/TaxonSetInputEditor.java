@@ -53,7 +53,7 @@ public class TaxonSetInputEditor extends InputEditor {
 	}
 
 	@Override
-	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_input = input;
 		m_plugin = plugin;
 		TaxonSet taxonset = (TaxonSet) m_input.get();

@@ -24,8 +24,7 @@ import javax.swing.event.ListSelectionListener;
 
 import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
-import beast.app.draw.InputEditor.BUTTONSTATUS;
-import beast.app.draw.InputEditor.EXPAND;
+import beast.app.draw.InputEditor.ExpandOption;
 import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
@@ -90,7 +89,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     
     void addParitionPanel(Partition bHasPartion, int iPanel) {
 		Box box = Box.createVerticalBox();
-    	if (bHasPartion != Partition.none) {
+    	if (bHasPartion != Partition.NONE) {
 			box.add(createList());
     	}
 		box.add(Box.createVerticalGlue());
@@ -173,12 +172,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //		g_currentPanel = this;
 	}
 	
-	void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, EXPAND bForceExpansion) throws Exception {
+	void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
 		if (centralComponent != null) {
 			remove(centralComponent);
 		}
 	    if (input != null && input.get() != null) {
-	    	BUTTONSTATUS bs = config.buttonStatusInput.get();
+	    	InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
 	        InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
 	        Box box = Box.createVerticalBox();
 	        box.add(inputEditor);
@@ -202,7 +201,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		Input<?> input = config.resolveInput(doc, iPartition);
 		
 		boolean bAddButtons = config.addButtons();
-		EXPAND bForceExpansion = config.forceExpansion();
+		ExpandOption bForceExpansion = config.forceExpansion();
 		refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
 	}
 	

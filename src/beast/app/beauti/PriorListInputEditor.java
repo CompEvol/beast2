@@ -66,14 +66,14 @@ public class PriorListInputEditor extends ListInputEditor {
 	}
 
 	@Override
-	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 //		if (!InputEditor.g_bExpertMode && ((List<?>) input.get()).size() > 0 && !(((List<?>) input.get()).get(0) instanceof MRCAPrior)) {
-//			m_buttonStatus = BUTTONSTATUS.NONE;
+//			m_buttonStatus = ButtonStatus.NONE;
 //		}
 		comboBoxes = new ArrayList<JComboBox>();
 		rangeButtons = new ArrayList<JButton>();
 		taxonButtons = new ArrayList<JButton>();
-		super.init(input, plugin, bExpand, bAddButtons);
+		super.init(input, plugin, bExpandOption, bAddButtons);
 
         m_addButton = new SmallButton("+", true);
         m_addButton.setToolTipText("Add item to the list");
@@ -353,7 +353,7 @@ public class PriorListInputEditor extends ListInputEditor {
         	comboBox = new JComboBox();
         	comboBox.setVisible(false);
         }
-        if (!(plugin instanceof MRCAPrior) && m_buttonStatus != BUTTONSTATUS.NONE && m_buttonStatus != BUTTONSTATUS.ADDONLY) {
+        if (!(plugin instanceof MRCAPrior) && m_buttonStatus != ButtonStatus.NONE && m_buttonStatus != ButtonStatus.ADD_ONLY) {
         	m_delButton.get(m_delButton.size() - 1).setVisible(false);
         }
         if (plugin instanceof SpeciesTreePrior || plugin instanceof GeneTreeForSpeciesTreeDistribution) {

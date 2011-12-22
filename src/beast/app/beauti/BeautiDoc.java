@@ -156,9 +156,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					i += 2;
 				} else if (args[i].equals("-nex")) {
 					// NB: multiple -nex/-xmldata commands can be processed!
-					String sFileName = args[i + 1];
+					String fileName = args[i + 1];
 					NexusParser parser = new NexusParser();
-					parser.parseFile(sFileName);
+					parser.parseFile(new File(fileName));
 					if (parser.m_filteredAlignments.size() > 0) {
 						for (Alignment data : parser.m_filteredAlignments) {
 							alignments.add(data);
@@ -170,8 +170,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					traitset = parser.m_traitSet;
 				} else if (args[i].equals("-xmldata")) {
 					// NB: multiple -xmldata/-nex commands can be processed!
-					String sFileName = args[i + 1];
-					Alignment alignment = (Alignment) AlignmentListInputEditor.getXMLData(sFileName);
+					String fileName = args[i + 1];
+					Alignment alignment = (Alignment) AlignmentListInputEditor.getXMLData(new File(fileName));
 					alignments.add(alignment);
 					i += 2;
 				} else if (args[i].equals("-exitaction")) {
@@ -315,9 +315,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //		beauti.setUpPanels();
 	}
 
-	public void importNexus(String sFileName) throws Exception {
+	public void importNexus(File file) throws Exception {
 		NexusParser parser = new NexusParser();
-		parser.parseFile(sFileName);
+		parser.parseFile(file);
 		if (parser.m_filteredAlignments.size() > 0) {
 			for (Alignment data : parser.m_filteredAlignments) {
 				addAlignmentWithSubnet(data);
@@ -330,8 +330,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		fireDocHasChanged();
 	}
 
-	public void importXMLAlignment(String sFileName) throws Exception {
-		Alignment data = (Alignment) AlignmentListInputEditor.getXMLData(sFileName);
+	public void importXMLAlignment(File file) throws Exception {
+		Alignment data = (Alignment) AlignmentListInputEditor.getXMLData(file);
 		data.initAndValidate();
 		addAlignmentWithSubnet(data);
 		connectModel();

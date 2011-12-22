@@ -30,7 +30,6 @@ import javax.swing.table.TableColumn;
 
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.ListInputEditor;
-import beast.app.draw.PluginPanel;
 import beast.app.draw.SmallButton;
 import beast.core.Input;
 import beast.core.Plugin;
@@ -88,7 +87,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 		if (input.get() instanceof List) {
 			alignments = (List<Alignment>) input.get();
 		} else {
@@ -97,7 +96,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			alignments.add((Alignment) input.get());
 		}
 		nPartitions = alignments.size();
-		// super.init(input, plugin, bExpand, false);
+		// super.init(input, plugin, bExpandOption, false);
 		Box box = createVerticalBox();
 		box.add(Box.createVerticalStrut(5));
 		box.add(createButtonBox());
@@ -530,7 +529,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-		String[] exts = { ".nex", ".nxs" };
+		String[] exts = { ".nex", ".nxs", ".nexus" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
 
 		fileChooser.setDialogTitle("Load Sequence");
@@ -540,15 +539,15 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		if (rval == JFileChooser.APPROVE_OPTION) {
 
 			File[] files = fileChooser.getSelectedFiles();
-			for (int i = 0; i < files.length; i++) {
-				String sFileName = files[i].getAbsolutePath();
-				if (sFileName.lastIndexOf('/') > 0) {
-					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-				}
-				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
+			for (File file : files) {
+				String fileName = file.getName();
+//				if (sFileName.lastIndexOf('/') > 0) {
+//					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+//				}
+				if (fileName.toLowerCase().endsWith(".nex") || fileName.toLowerCase().endsWith(".nxs") || fileName.toLowerCase().endsWith(".nexus")) {
 					NexusParser parser = new NexusParser();
 					try {
-						parser.parseFile(sFileName);
+						parser.parseFile(file);
 						if (parser.m_filteredAlignments.size() > 0) {
 							for (Alignment data : parser.m_filteredAlignments) {
 								selectedPlugins.add(data);
@@ -558,12 +557,12 @@ public class AlignmentListInputEditor extends ListInputEditor {
 						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Loading of " + sFileName + " failed: " + ex.getMessage());
+						JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
 						return null;
 					}
 				}
-				if (sFileName.toLowerCase().endsWith(".xml")) {
-					Plugin alignment = getXMLData(sFileName);
+				if (file.getName().toLowerCase().endsWith(".xml")) {
+					Plugin alignment = getXMLData(file);
 					selectedPlugins.add(alignment);
 				}
 			}
@@ -572,11 +571,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		return null;
 	} // pluginSelector
 
-	static public Plugin getXMLData(String sFileName) {
+	static public Plugin getXMLData(File file) {
 		XMLParser parser = new XMLParser();
 		try {
 			String sXML = "";
-			BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+			BufferedReader fin = new BufferedReader(new FileReader(file));
 			while (fin.ready()) {
 				sXML += fin.readLine();
 			}
@@ -585,7 +584,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			return getAlignment(runnable);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Loading of " + sFileName + " failed: " + ex.getMessage());
+			JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + ex.getMessage());
 			return null;
 		}
 	}

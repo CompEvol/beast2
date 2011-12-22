@@ -2,6 +2,7 @@ package beast.util;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,9 +43,9 @@ public class NexusParser {
 	/**  
 	 * try to reconstruct Beast II objects from the nexus file with given file name   
 	 * **/
-	public void parseFile(String sFileName) throws Exception {
+	public void parseFile(File file) throws Exception {
 		m_nLineNr = 0;
-		BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+		BufferedReader fin = new BufferedReader(new FileReader(file));
 		try {
 			while (fin.ready()) {
 				String sStr = nextLine(fin);
@@ -53,9 +54,8 @@ public class NexusParser {
 				}
 				if (sStr.toLowerCase().matches("^\\s*begin\\s+data;\\s*$") || sStr.toLowerCase().matches("^\\s*begin\\s+characters;\\s*$")) {
 					m_alignment = parseDataBlock(fin);
-					sFileName = sFileName.replaceAll(".*[\\/\\\\]", "");
-					sFileName = sFileName.replaceAll("\\..*", "");
-					m_alignment.setID(sFileName);
+                    String fileName = file.getName().replaceAll(".*[\\/\\\\]", "").replaceAll("\\..*", "");
+					m_alignment.setID(fileName);
 				} else if (sStr.toLowerCase().matches("^\\s*begin\\s+calibration;\\s*$")) {
 					m_traitSet = parseCalibrationsBlock(fin);
 				} else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$")) {
@@ -391,7 +391,7 @@ END; [Sets]
 	public static void main(String [] args) {
 		try {
 			NexusParser parser = new NexusParser();
-			parser.parseFile(args[0]);
+			parser.parseFile(new File(args[0]));
 			String sXML = new XMLProducer().toXML(parser.m_alignment);
 			System.out.println(sXML);
 			if (parser.m_traitSet != null) {

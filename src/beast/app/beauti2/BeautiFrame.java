@@ -8,8 +8,11 @@
  */
 package beast.app.beauti2;
 
-import beast.app.beauti.*;
+import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
+import beast.app.beauti.BeautiDocListener;
+import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.BeautiPanelConfig;
 import beast.app.beauti2.menus.BeautiFileMenuHandler;
 import beast.app.util.Utils;
 import jam.framework.DocumentFrame;
@@ -47,7 +50,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
     private TemplatePanel templatePanel;
 
     private boolean [] isPaneVisible;
-    private BeautiPanel [] panels;
+    private BeautiPanel[] panels;
 
     /** flag indicating beauti is in the process of being set up and panels should not sync with current model **/
     private boolean isInitialising = true;
@@ -243,14 +246,14 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
             } else {
     			try {
 					String sFileName = file.getAbsolutePath();
-					if (sFileName.lastIndexOf('/') > 0) {
-						Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-					}
-					if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs")) {
-							doc.importNexus(sFileName);
+//					if (sFileName.lastIndexOf('/') > 0) {
+//						Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+//					}
+					if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs") || sFileName.toLowerCase().endsWith(".nexus")) {
+							doc.importNexus(file);
 					}
 					if (sFileName.toLowerCase().endsWith(".xml")) {
-						doc.importXMLAlignment(sFileName);
+						doc.importXMLAlignment(file);
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

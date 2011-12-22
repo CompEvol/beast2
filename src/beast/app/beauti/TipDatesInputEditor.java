@@ -26,7 +26,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import beast.app.draw.PluginInputEditor;
-import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;
@@ -55,7 +54,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 	
 	
     @Override
-    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
     	tree = (Tree) input.get();
     	if (tree != null) {

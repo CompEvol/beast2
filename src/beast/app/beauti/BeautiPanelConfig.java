@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.app.draw.InputEditor.BUTTONSTATUS;
-import beast.app.draw.InputEditor.EXPAND;
+import beast.app.draw.InputEditor;
 import beast.app.draw.PluginPanel;
 import beast.core.Description;
 import beast.core.Input;
@@ -17,7 +16,7 @@ import beast.core.Plugin;
 @Description("Defines properties for custom panels in Beauti")
 public class BeautiPanelConfig extends Plugin {
     public enum Partition {
-        none, SiteModel, ClockModel, Tree
+        NONE, SITE_MODEL, CLOCK_MODEL, TREE
     }
 	
 	public Input<String> sNameInput = new Input<String>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
@@ -30,7 +29,7 @@ public class BeautiPanelConfig extends Plugin {
 	
 
 	public Input<Partition> bHasPartitionsInput = new Input<Partition>("hasPartitions", "flag to indicate the panel has" +
-			"a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
+			"a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.NONE, Partition.values());
 	
 	public Input<Boolean> bAddButtonsInput = new Input<Boolean>("addButtons", "flag to indicate buttons should be added, deafult true", true);
 	public Input<Boolean> bIsVisibleInput = new Input<Boolean>("isVisible", "flag to indicate panel is visible on startup, deafult true", true);
@@ -38,15 +37,15 @@ public class BeautiPanelConfig extends Plugin {
 	
 	public Input<String> sIconInput = new Input<String>("icon", "icon shown in the panel relative to /beast/app/beauti, default 0.png", "0.png");
 	
-	public Input<EXPAND> forceExpansionInput = new Input<EXPAND>("forceExpansion", "whether to expand the input(s)" +
-			"This can be " + Arrays.toString(EXPAND.values()) + " (default 'FALSE')", EXPAND.FALSE, EXPAND.values());
+	public Input<InputEditor.ExpandOption> forceExpansionInput = new Input<InputEditor.ExpandOption>("forceExpansion", "whether to expand the input(s)" +
+			"This can be " + Arrays.toString(InputEditor.ExpandOption.values()) + " (default 'FALSE')", InputEditor.ExpandOption.FALSE, InputEditor.ExpandOption.values());
 	public Input<String> sTypeInput = new Input<String>("type", "type used for finding the appropriate plugin editor. By default, type is determined " +
 			"by the input type of the last component of the path");
 	
 	public Input<Integer> nLabelWidthInput = new Input<Integer>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
 
-	public Input<BUTTONSTATUS> buttonStatusInput = new Input<BUTTONSTATUS>("buttonStatus", "whether to show add and delete buttons. " +
-			"This can be " + Arrays.toString(BUTTONSTATUS.values()) + " (default 'ALL')", BUTTONSTATUS.ALL, BUTTONSTATUS.values());
+	public Input<InputEditor.ButtonStatus> buttonStatusInput = new Input<InputEditor.ButtonStatus>("buttonStatus", "whether to show add and delete buttons. " +
+			"This can be " + Arrays.toString(InputEditor.ButtonStatus.values()) + " (default 'ALL')", InputEditor.ButtonStatus.ALL, InputEditor.ButtonStatus.values());
 	
 	
 	String [] sPathComponents;
@@ -124,7 +123,7 @@ public class BeautiPanelConfig extends Plugin {
 		return sTipTextInput.get();
 	}
 
-	public EXPAND forceExpansion() {
+	public InputEditor.ExpandOption forceExpansion() {
 		return forceExpansionInput.get();
 	}
 	
@@ -137,7 +136,7 @@ public class BeautiPanelConfig extends Plugin {
 			if (parentPlugins != null && parentPlugins.size() > 0 && _input != null) System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
 			
 			List<Plugin> plugins;
-			if (bHasPartitionsInput.get() == Partition.none) {
+			if (bHasPartitionsInput.get() == Partition.NONE) {
 				plugins = new ArrayList<Plugin>();
 				plugins.add(doc.mcmc.get());
 			} else {
@@ -210,7 +209,7 @@ public class BeautiPanelConfig extends Plugin {
 				type = Class.forName(sTypeInput.get());
 			}
 			// sanity check
-			if (!bIsList && (bHasPartitionsInput.get() == Partition.none) && plugins.size() > 1) {
+			if (!bIsList && (bHasPartitionsInput.get() == Partition.NONE) && plugins.size() > 1) {
 				System.err.println("WARNING: multiple plugins match, but hasPartitions=none");
 				// this makes sure that all mathing plugins are available in one go
 				bIsList = true;
