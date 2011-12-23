@@ -389,7 +389,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         }
     }
 
-    String processTemplate(String sFileName) throws Exception {
+    /** public to allow access for unit test **/
+    public String processTemplate(String sFileName) throws Exception {
         final String MERGE_ELEMENT = "mergepoint";
         // first gather the set of potential directories with templates
         Set<String> sDirs = new HashSet<String>();//AddOnManager.getBeastDirectories();
