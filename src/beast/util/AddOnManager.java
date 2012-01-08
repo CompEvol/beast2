@@ -522,10 +522,11 @@ public class AddOnManager {
 
 		}
 
+		String fileSep = System.getProperty("file.separator");
 		for (int i = 0; i < all_classes.size(); i++) {
 			String sStr = all_classes.get(i);
 			sStr = sStr.substring(0, sStr.length() - 6);
-			sStr = sStr.replaceAll("/", ".");
+			sStr = sStr.replaceAll(fileSep, ".");
 			if (sStr.startsWith(".")) {
 				sStr = sStr.substring(1);
 			}

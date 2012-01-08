@@ -396,12 +396,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         Set<String> sDirs = new HashSet<String>();//AddOnManager.getBeastDirectories();
         String pathSep = System.getProperty("path.separator");
         String classpath = System.getProperty("java.class.path");
+        String fileSep = System.getProperty("file.separator");
         for (String path : classpath.split(pathSep)) {
             if (path.endsWith(".jar")) {
-                path = path.substring(0, path.lastIndexOf("/"));
+                path = path.substring(0, path.lastIndexOf(fileSep));
             }
-            if (path.indexOf("/") >=0) {
-                path = path.substring(0, path.lastIndexOf("/"));
+            if (path.indexOf(fileSep) >=0) {
+                path = path.substring(0, path.lastIndexOf(fileSep));
             }
             if (!sDirs.contains(path)) {
                 sDirs.add(path);
@@ -413,10 +414,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         File mainTemplate = new File(sFileName);
         for (String sDir : sDirs) {
             if (!mainTemplate.exists()) {
-                mainTemplate = new File(sDir + "/" + sFileName);
+                mainTemplate = new File(sDir + fileSep + sFileName);
             }
             if (!mainTemplate.exists()) {
-                mainTemplate = new File(sDir + "/templates/" + sFileName);
+                mainTemplate = new File(sDir + fileSep + "templates" + fileSep + sFileName);
             }
         }
         System.err.println("Loading template " + mainTemplate.getAbsolutePath());
@@ -443,7 +444,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         // This prevents loading templates twice, once from the development area and once from .beast2-addon area
         Set<String> loadedTemplates = new HashSet<String>();
         for (String sDir : sDirs) {
-            File templates = new File(sDir + "/templates");
+            File templates = new File(sDir + fileSep + "templates");
             File[] files = templates.listFiles();
             if (files != null) {
                 for (File template : files) {

@@ -28,8 +28,7 @@ public class DeltaExchangeOperator extends Operator {
     public Input<List<RealParameter>> parameterInput = new Input<List<RealParameter>>("parameter",
             "if specified, this parameter is operated on", new ArrayList<RealParameter>());
     public Input<List<IntegerParameter>> intparameterInput = new Input<List<IntegerParameter>>("intparameter",
-            "if specified, this parameter is operated on", new ArrayList<IntegerParameter>(), Validate.OPTIONAL);
-//            Validate.XOR, parameterInput);
+            "if specified, this parameter is operated on", new ArrayList<IntegerParameter>());
 
     public Input<Double> input_delta = new Input<Double>("delta", "Magnitude of change for two randomly picked values.", 1.0);
     public Input<Boolean> input_autoOptimize =
