@@ -102,6 +102,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public TreeParser() {
     }
 
+    public TreeParser(Alignment alignment, String newick) throws Exception {
+        m_oData.setValue(alignment, this);
+        m_oNewick.setValue(newick, this);
+        initAndValidate();
+    }
+
     public TreeParser(String newick) throws Exception {
         m_oNewick.setValue(newick, this);
         initAndValidate();

@@ -1,13 +1,18 @@
 package beast.app.draw.tree;
 
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
+import org.jtikz.TikzGraphics2D;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Alexei Drummond
@@ -19,15 +24,15 @@ public class TreeComponent extends JComponent {
     // the position of the "current" leaf node
     private double p = 0;
 
-    // text offset
-    double offset;
+    // offset of leaf node labels from leaf node position
+    double labelOffset;
 
     //String newick;
     //String options = "ultra thick";
     //ScaleBar scalebar;
     NumberFormat format = NumberFormat.getInstance();
 
-    boolean triangle = true;
+    boolean isTriangle = true;
 
     /**
      * The scaling of the node heights. If the scale is 0 then scale is automatically calculated from component size
@@ -39,24 +44,45 @@ public class TreeComponent extends JComponent {
      */
     double ns = 0;
 
-    public TreeComponent(Tree tree, double offset, boolean triangle) {
+    /**
+     * @param tree        the tree to draw
+     * @param labelOffset the pixel labelOffset of labels from leaf nodes
+     * @param isTriangle  true if tree should be drawn so that outside branches form a triangle on ultrametric trees
+     */
+    public TreeComponent(Tree tree, double labelOffset, boolean isTriangle) {
 
-        this(tree, 0, 0, offset, triangle);
+        this(tree, 0, 0, labelOffset, isTriangle);
 
     }
 
-    public TreeComponent(Tree tree, double nodeHeightScale, double nodeSpacing, double offset, boolean triangle) {
+    public TreeComponent(Tree tree, double nodeHeightScale, double nodeSpacing, double labelOffset, boolean isTriangle) {
 
         format.setMaximumFractionDigits(5);
 
         //this.scalebar = scalebar;
-        this.triangle = triangle;
+        this.isTriangle = isTriangle;
 
-        this.offset = offset;
+        this.labelOffset = labelOffset;
         this.nhs = nodeHeightScale;
         this.ns = nodeSpacing;
 
         this.tree = tree;
+    }
+
+    /**
+     * @param node the node to return scaled labelOffset height of
+     * @return the position of this node in root-to-tip direction once scaled and labelOffset for component
+     */
+    double getScaledOffsetNodeHeight(Node node) {
+        return getScaledTreeHeight() - node.getHeight() * getNodeHeightScale() + rootOffset();
+    }
+
+    /**
+     * @param node the node
+     * @return the position of this node in perpendicular to root-to-tip direction once scaled and labelOffset
+     */
+    double getNodePosition(Node node) {
+        return node.getMetaData("p");
     }
 
     /**
@@ -69,20 +95,29 @@ public class TreeComponent extends JComponent {
     /**
      * @return the distance from edge of component to root when traveling towards the leaves
      */
-    double rootOffset() {
-        return 0.05 * getWidth();
+    final double rootOffset() {
+        return 0.05 * getScaledTreeHeight();
     }
 
-    double getNodeHeightScale() {
-        if (nhs == 0) return 0.9 * getWidth() / tree.getRoot().getHeight();
+    final double getNodeHeightScale() {
+        if (nhs == 0) return getScaledTreeHeight() / tree.getRoot().getHeight();
         return nhs;
+    }
+
+    double getScaledTreeHeight() {
+        return 0.9 * getWidth();
+    }
+
+
+    double getTotalSizeForNodeSpacing() {
+        return getHeight();
     }
 
     /**
      * The spacing between the nodes (The number of pixels between adjacent leaf nodes)
      */
-    double getNodeSpacing() {
-        if (ns == 0) return getHeight() / tree.getLeafNodeCount();
+    final double getNodeSpacing() {
+        if (ns == 0) return getTotalSizeForNodeSpacing() / tree.getLeafNodeCount();
         return ns;
     }
 
@@ -122,18 +157,11 @@ public class TreeComponent extends JComponent {
 //
 //        draw(sbx1, sby, sbx2, sby, builder);
 //
-//        label(sbx3, sby + offset, "" + scalebar.size, builder);
+//        label(sbx3, sby + labelOffset, "" + scalebar.size, builder);
 //    }
 
     void label(double x, double y, String label, Graphics2D g) {
 
-//        builder.append("\\node at (");
-//        builder.append(x+ xOffset);
-//        builder.append(", ");
-//        builder.append(y + yOffset);
-//        builder.append(") {");
-//        builder.append(label);
-//        builder.append("};\n");
         if (label != null) {
             System.out.println("draw label \"" + label + "\" at " + x + ", " + y);
             g.drawString(label, (float) x, (float) y);
@@ -147,20 +175,21 @@ public class TreeComponent extends JComponent {
 
     void drawBranch(Tree tree, Node node, Node childNode, Graphics2D g) {
 
-        double height = getWidth() - node.getHeight() * getNodeHeightScale() - rootOffset();
-        double childHeight = getWidth() - childNode.getHeight() * getNodeHeightScale() - rootOffset();
+        double height = getScaledOffsetNodeHeight(node);
+        double childHeight = getScaledOffsetNodeHeight(childNode);
 
-        double position = getHeight() - node.getMetaData("p");
-        double childPosition = getHeight() - childNode.getMetaData("p");
+        double position = getNodePosition(node);
+        double childPosition = getNodePosition(childNode);
 
-        draw(childHeight, childPosition, height, position, g);
+        draw(height, position, childHeight, childPosition, g);
     }
 
     void drawLabel(Tree tree, Node node, Graphics2D g) {
 
-        double height = Math.round(node.getHeight() * getNodeHeightScale() * 1000000.0) / 1000000.0;
+        double height = getScaledOffsetNodeHeight(node);
+        double position = getNodePosition(node);
 
-        label(height + offset, p, node.getID(), g);
+        label(height + labelOffset, position, node.getID(), g);
     }
 
     void draw(Tree tree, Node node, Graphics2D g) {
@@ -176,7 +205,7 @@ public class TreeComponent extends JComponent {
         } else {
 
             double cp = 0;
-            if (triangle) {
+            if (isTriangle) {
                 if (node.isRoot()) {
 
                     int tipCount = tree.getLeafNodeCount();
@@ -212,7 +241,7 @@ public class TreeComponent extends JComponent {
                 count += 1;
             }
             cp /= count;
-            if (!triangle) node.setMetaData("p", cp);
+            if (!isTriangle) node.setMetaData("p", cp);
 
             for (Node childNode : node.getChildren()) {
 
@@ -223,7 +252,7 @@ public class TreeComponent extends JComponent {
 
     public void paintComponent(Graphics g) {
 
-        System.out.println("draw tree " + tree.toString());
+        //System.out.println("draw tree " + tree.toString());
 
         Graphics2D g2d = (Graphics2D) g;
 
@@ -233,14 +262,29 @@ public class TreeComponent extends JComponent {
     public static void main(String[] args) throws Exception {
 
         String newickTree = "((((1:0.1,2:0.1):0.1,3:0.2):0.1,4:0.3):0.1,5:0.4);";
-        //String newickTree2 = "((((A: 1, B: 1): 1, C: 2): 1, D: 3): 1, E: 4);";
 
-        double nodeHeightScale = 1000;
-        double nodeSpacing = 100;
-        double offset = 5;
+        List<Sequence> sequences = new ArrayList<Sequence>();
+        sequences.add(new Sequence("A", "A"));
+        sequences.add(new Sequence("B", "A"));
+        sequences.add(new Sequence("C", "A"));
+        sequences.add(new Sequence("D", "A"));
+        sequences.add(new Sequence("E", "A"));
 
-        TreeComponent treeComponent = new VerticalTreeComponent(new TreeParser(newickTree), offset, true);
-        //treeComponent.setOffset(0,500);
+        Alignment alignment = new Alignment(sequences, 4, "nucleotide");
+
+        double labelOffset = 5;
+
+        TreeComponent treeComponent = new SquareTreeComponent(new TreeParser(alignment, newickTree), labelOffset);
+
+        TikzGraphics2D tikzGraphics2D = new TikzGraphics2D() {
+            protected void handleDrawString(String s, double x, double y) {
+                addCommand("\\node" + " at (" + x + "pt, " + y + "pt) {" + toTeX(s) + "};");
+            }
+        };
+        treeComponent.setSize(new Dimension(100, 100));
+        treeComponent.paintComponent(tikzGraphics2D);
+        //System.out.println(tikzGraphics2D.toString());
+        //tikzGraphics2D.paintComponent(treeComponent);
 
         JFrame frame = new JFrame("TreeComponent");
         frame.getContentPane().add(treeComponent, BorderLayout.CENTER);

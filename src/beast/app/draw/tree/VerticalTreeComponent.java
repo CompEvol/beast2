@@ -2,7 +2,6 @@ package beast.app.draw.tree;
 
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
 
 import java.awt.*;
 
@@ -30,43 +29,35 @@ public class VerticalTreeComponent extends TreeComponent {
         this.showLabels = showLabels;
     }
 
-    /**
-     * @return the distance from edge of component to root when traveling towards the leaves
-     */
-    double rootOffset() {
-        return 0.05 * getHeight();
-    }
-
-    double getNodeHeightScale() {
-        if (nhs == 0) return 0.9 * getHeight() / tree.getRoot().getHeight();
-        return nhs;
+    @Override
+    double getScaledTreeHeight() {
+        return 0.9 * getHeight();
     }
 
     /**
-     * The spacing between the nodes (The number of pixels between adjacent leaf nodes)
+     * The total amount of space for nodes (The number of pixels between adjacent leaf nodes * the number of leaf nodes)
      */
-    double getNodeSpacing() {
-        if (ns == 0) return getWidth() / tree.getLeafNodeCount();
-        return ns;
+    double getTotalSizeForNodeSpacing() {
+        return getWidth();
     }
-
 
     @Override
     void drawBranch(Tree tree, Node node, Node childNode, Graphics2D g) {
 
-        double height = getHeight() - node.getHeight() * getNodeHeightScale() - rootOffset();
-        double childHeight = getHeight() - childNode.getHeight() * getNodeHeightScale() - rootOffset();
+        double height = getScaledOffsetNodeHeight(node);
+        double childHeight = getScaledOffsetNodeHeight(childNode);
 
-        draw(childNode.getMetaData("p"), childHeight, node.getMetaData("p"), height, g);
+        double position = getNodePosition(node);
+        double childPosition = getNodePosition(childNode);
+
+        draw(childPosition, childHeight, position, height, g);
     }
 
     @Override
     void drawLabel(Tree tree, Node node, Graphics2D g) {
 
         if (showLabels) {
-            double height = Math.round(node.getHeight() * getNodeHeightScale() * 1000000.0) / 1000000.0;
-
-            label(node.getMetaData("p"), height + offset, node.getID(), g);
+            label(getNodePosition(node), getScaledOffsetNodeHeight(node) + labelOffset, node.getID(), g);
         }
     }
 
@@ -80,21 +71,4 @@ public class VerticalTreeComponent extends TreeComponent {
 
         return tree + ";";
     }
-
-    public static void main(String[] args) throws Exception {
-
-        String tree1 = "((1:1,2:1):1,(3:1,4:1):1);";
-
-        int size = 4;
-        String tree2 = ladderTree(size);
-
-        for (int i = 0; i < 3; i++) {
-            TreeComponent treeComponent1 = new VerticalTreeComponent(new TreeParser(tree1), 0.666, 0.444, -0.2, true);
-            //treeComponent1.paint(false, builder);
-
-            TreeComponent treeComponent2 = new VerticalTreeComponent(new TreeParser(tree2), -(4.0 / 3.0) / (size - 1.0), (4.0 / 3.0) / (size - 1.0), +0.2, false);
-            //tikzTree2.generateTikzPicture(false, builder);
-        }
-    }
-
 }
