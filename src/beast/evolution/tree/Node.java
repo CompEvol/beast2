@@ -27,9 +27,7 @@ package beast.evolution.tree;
 import beast.core.Description;
 import beast.core.Plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Description("Nodes in building binary beast.tree data structure.")
 public class Node extends Plugin {
@@ -43,6 +41,11 @@ public class Node extends Plugin {
      * height of this node.
      */
     protected double m_fHeight = Double.MAX_VALUE;
+
+    /**
+     * Arbitrarily labeled double metadata on this node. Not currently implemented as part of state!
+     */
+    protected Map<String, Double> metaData;
 
     /**
      * list of children of this node *
@@ -490,11 +493,23 @@ public class Node extends Plugin {
                 sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             m_fHeight = (Double) fValue;
+            m_bIsDirty |= Tree.IS_DIRTY;
+        } else {
+            if (metaData == null) metaData = new TreeMap<String, Double>();
+            metaData.put(sPattern, (Double) fValue);
         }
-        m_bIsDirty |= Tree.IS_DIRTY;
+
     }
 
     public double getMetaData(String sPattern) {
+        if (sPattern.equals(TraitSet.DATE_TRAIT) ||
+                sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
+                sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+            return m_fHeight;
+        } else if (metaData != null) {
+            Double d = metaData.get(sPattern);
+            if (d != null) return d;
+        }
         return 0;
     }
 

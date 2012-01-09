@@ -29,7 +29,6 @@ import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -68,7 +67,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
 
 
-    /**                            op
+    /**
+     * op
      * assure the class behaves properly, even when inputs are not specified *
      */
     @Override
@@ -76,27 +76,29 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         if (m_oData.get() != null) {
             m_sLabels = m_oData.get().getTaxaNames();
         } else if (m_taxonset.get() != null) {
-            	m_sLabels = m_taxonset.get().asStringList();
+            m_sLabels = m_taxonset.get().asStringList();
         } else {
             m_sLabels = null;
 //            m_bIsLabelledNewick = false;
         }
         String sNewick = m_oNewick.get();
         if (sNewick == null || sNewick.equals("")) {
-        	// can happen while initalising Beauti
-        	Node dummy = new Node();
-        	setRoot(dummy);
+            // can happen while initalising Beauti
+            Node dummy = new Node();
+            setRoot(dummy);
         } else {
-        	setRoot(parseNewick(m_oNewick.get()));
+            setRoot(parseNewick(m_oNewick.get()));
         }
 
         super.initAndValidate();
         initStateNodes();
     } // init
 
-    /** used to make sure all taxa only occur once in the tree **/
+    /**
+     * used to make sure all taxa only occur once in the tree *
+     */
     List<Boolean> m_bTaxonIndexInUse = new ArrayList<Boolean>();
-    
+
     public TreeParser() {
     }
 
@@ -105,7 +107,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         initAndValidate();
     }
 
-	Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         return (Node) Class.forName(m_oNodeType.get()).newInstance();
         //return new NodeData();
     }
@@ -135,7 +137,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         } else {
             processMetadata(node.m_left);
             if (node.m_right != null) {
-            	processMetadata(node.m_right);
+                processMetadata(node.m_right);
             }
         }
     }
@@ -153,7 +155,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         } else {
             double fLeft = convertLengthToHeight(node.m_left, fHeight - fLength);
             if (node.m_right == null) {
-            	return fLeft;
+                return fLeft;
             }
             double fRight = convertLengthToHeight(node.m_right, fHeight - fLength);
             return Math.min(fLeft, fRight);
@@ -170,7 +172,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         if (!node.isLeaf()) {
             offset(node.m_left, fDelta);
             if (node.m_right != null) {
-            	offset(node.m_right, fDelta);
+                offset(node.m_right, fDelta);
             }
         }
     }
@@ -182,32 +184,32 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     private int getLabelIndex(String sStr) throws Exception {
         if (!m_bIsLabelledNewick.get()) {
             try {
-            	int nIndex = Integer.parseInt(sStr) - m_nOffset.get();
-            	checkTaxaIsAvailable(sStr, nIndex);
-            	return nIndex; 
+                int nIndex = Integer.parseInt(sStr) - m_nOffset.get();
+                checkTaxaIsAvailable(sStr, nIndex);
+                return nIndex;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
         for (int nIndex = 0; nIndex < m_sLabels.size(); nIndex++) {
             if (sStr.equals(m_sLabels.get(nIndex))) {
-            	checkTaxaIsAvailable(sStr, nIndex);
-            	return nIndex;
+                checkTaxaIsAvailable(sStr, nIndex);
+                return nIndex;
             }
         }
         throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified");
     }
 
-	void checkTaxaIsAvailable(String sStr, int nIndex) throws Exception {
-		while (nIndex + 1 > m_bTaxonIndexInUse.size()) {
-			m_bTaxonIndexInUse.add(false);
-		}
-		if (m_bTaxonIndexInUse.get(nIndex) == true) {
-			throw new Exception("Duplicate taxon found: " + sStr);
-		}
-		m_bTaxonIndexInUse.set(nIndex, true);
-	}
-    
+    void checkTaxaIsAvailable(String sStr, int nIndex) throws Exception {
+        while (nIndex + 1 > m_bTaxonIndexInUse.size()) {
+            m_bTaxonIndexInUse.add(false);
+        }
+        if (m_bTaxonIndexInUse.get(nIndex) == true) {
+            throw new Exception("Duplicate taxon found: " + sStr);
+        }
+        m_bTaxonIndexInUse.set(nIndex, true);
+    }
+
 
     char[] m_chars;
     int m_iTokenStart;
@@ -296,20 +298,20 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     break;
                     case BRACE_CLOSE: {
                         if (isFirstChild.lastElement()) {
-        					if (m_bAllowSingleChild.get()) {
-        						// process single child nodes
-        						Node left = stack.lastElement();
-        						stack.remove(stack.size()-1);
-        						isFirstChild.remove(isFirstChild.size()-1);
-        						Node parent = stack.lastElement();
-        						parent.m_left = left;
-        						parent.m_right = null;
-        						left.setParent(parent);
-        						break;
-        					} else {
-        						// don't know how to process single child nodes
-        						throw new Exception("Node with single child found.");
-        					}
+                            if (m_bAllowSingleChild.get()) {
+                                // process single child nodes
+                                Node left = stack.lastElement();
+                                stack.remove(stack.size() - 1);
+                                isFirstChild.remove(isFirstChild.size() - 1);
+                                Node parent = stack.lastElement();
+                                parent.m_left = left;
+                                parent.m_right = null;
+                                left.setParent(parent);
+                                break;
+                            } else {
+                                // don't know how to process single child nodes
+                                throw new Exception("Node with single child found.");
+                            }
                         }
                         // process multi(i.e. more than 2)-child nodes by pairwise merging.
                         while (isFirstChild.get(isFirstChild.size() - 2) == false) {
@@ -391,33 +393,31 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             convertLengthToHeight(tree);
             int n = tree.getNodeCount();
             if (tree.getNr() == 0) {
-            	tree.labelInternalNodes((n + 1) / 2);
+                tree.labelInternalNodes((n + 1) / 2);
             }
             if (!m_bSurpressMetadata) {
                 processMetadata(tree);
             }
             return tree;
-        }catch (Exception e) {
-            System.err.println(e.getClass().toString() + "/"+ e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
+        } catch (Exception e) {
+            System.err.println(e.getClass().toString() + "/" + e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
             throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
         }
 //        return node;
-	 }
+    }
 
-	@Override
-	public void initStateNodes() {
-		if (m_initial.get() != null) {
-			m_initial.get().assignFrom(this);
-		}
-	}
+    public void initStateNodes() {
+        if (m_initial.get() != null) {
+            m_initial.get().assignFrom(this);
+        }
+    }
 
-	@Override
-	public List<StateNode> getInitialisedStateNodes() {
-		List<StateNode> stateNodes = new ArrayList<StateNode>();
-		if (m_initial.get() != null) {
-			stateNodes.add(m_initial.get());
-		}
-		return stateNodes;
-	}
+    public List<StateNode> getInitialisedStateNodes() {
+        List<StateNode> stateNodes = new ArrayList<StateNode>();
+        if (m_initial.get() != null) {
+            stateNodes.add(m_initial.get());
+        }
+        return stateNodes;
+    }
 
 } // class TreeParser
