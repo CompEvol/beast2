@@ -13,6 +13,15 @@ public class VerticalTreeComponent extends TreeComponent {
 
     boolean showLabels = true;
 
+    public VerticalTreeComponent(Tree tree,
+                                 double offset, boolean showLabels) {
+
+        super(tree, 0, 0, offset, true);
+
+        this.showLabels = showLabels;
+    }
+
+
     public VerticalTreeComponent(Tree tree, double nodeHeightScale, double nodeSpacingScale,
                                  double offset, boolean showLabels) {
 
@@ -21,31 +30,43 @@ public class VerticalTreeComponent extends TreeComponent {
         this.showLabels = showLabels;
     }
 
-    public double startingY() {
-        return xOffset;
+    /**
+     * @return the distance from edge of component to root when traveling towards the leaves
+     */
+    double rootOffset() {
+        return 0.05 * getHeight();
     }
 
-    public void setOffset(double xOffset, double yOffset) {
-        this.xOffset = yOffset;
-        this.yOffset = xOffset;
+    double getNodeHeightScale() {
+        if (nhs == 0) return 0.9 * getHeight() / tree.getRoot().getHeight();
+        return nhs;
     }
+
+    /**
+     * The spacing between the nodes (The number of pixels between adjacent leaf nodes)
+     */
+    double getNodeSpacing() {
+        if (ns == 0) return getWidth() / tree.getLeafNodeCount();
+        return ns;
+    }
+
 
     @Override
     void drawBranch(Tree tree, Node node, Node childNode, Graphics2D g) {
 
-        double height = Math.round(node.getHeight() * xScale * 1000000.0) / 1000000.0;
-        double childHeight = Math.round(childNode.getHeight() * xScale * 1000000.0) / 1000000.0;
+        double height = getHeight() - node.getHeight() * getNodeHeightScale() - rootOffset();
+        double childHeight = getHeight() - childNode.getHeight() * getNodeHeightScale() - rootOffset();
 
-        draw(childNode.getMetaData("y"), childHeight, node.getMetaData("y"), height, g);
+        draw(childNode.getMetaData("p"), childHeight, node.getMetaData("p"), height, g);
     }
 
     @Override
     void drawLabel(Tree tree, Node node, Graphics2D g) {
 
         if (showLabels) {
-            double height = Math.round(node.getHeight() * xScale * 1000000.0) / 1000000.0;
+            double height = Math.round(node.getHeight() * getNodeHeightScale() * 1000000.0) / 1000000.0;
 
-            label(node.getMetaData("y"), height + offset, node.getID(), g);
+            label(node.getMetaData("p"), height + offset, node.getID(), g);
         }
     }
 
@@ -69,11 +90,9 @@ public class VerticalTreeComponent extends TreeComponent {
 
         for (int i = 0; i < 3; i++) {
             TreeComponent treeComponent1 = new VerticalTreeComponent(new TreeParser(tree1), 0.666, 0.444, -0.2, true);
-            treeComponent1.setOffset(0, i * 2.1666);
             //treeComponent1.paint(false, builder);
 
             TreeComponent treeComponent2 = new VerticalTreeComponent(new TreeParser(tree2), -(4.0 / 3.0) / (size - 1.0), (4.0 / 3.0) / (size - 1.0), +0.2, false);
-            treeComponent2.setOffset(1 * 1.333, i * 2.1666 + (1 + 0.1666 / 2.0));
             //tikzTree2.generateTikzPicture(false, builder);
         }
     }

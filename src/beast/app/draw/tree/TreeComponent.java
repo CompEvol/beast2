@@ -15,17 +15,12 @@ import java.text.NumberFormat;
 public class TreeComponent extends JComponent {
 
     Tree tree;
-    double y = 0;
+
+    // the position of the "current" leaf node
+    private double p = 0;
 
     // text offset
     double offset;
-
-    // x offset
-    double xOffset;
-
-    // y offset
-    double yOffset;
-
 
     //String newick;
     //String options = "ultra thick";
@@ -35,14 +30,20 @@ public class TreeComponent extends JComponent {
     boolean triangle = true;
 
     /**
-     * The scaling of the node heights
+     * The scaling of the node heights. If the scale is 0 then scale is automatically calculated from component size
      */
-    double xScale;
+    double nhs = 0;
 
     /**
-     * The scaling of the spacing between the nodes (The number of pixels between adjacent tip nodes)
+     * The scaling of the spacing between the nodes (The number of pixels between adjacent tip nodes). If the spacing is 0 then it is automatically calculated from component size
      */
-    double yScale;
+    double ns = 0;
+
+    public TreeComponent(Tree tree, double offset, boolean triangle) {
+
+        this(tree, 0, 0, offset, triangle);
+
+    }
 
     public TreeComponent(Tree tree, double nodeHeightScale, double nodeSpacing, double offset, boolean triangle) {
 
@@ -52,46 +53,69 @@ public class TreeComponent extends JComponent {
         this.triangle = triangle;
 
         this.offset = offset;
-        this.xScale = nodeHeightScale;
-        this.yScale = nodeSpacing;
+        this.nhs = nodeHeightScale;
+        this.ns = nodeSpacing;
 
         this.tree = tree;
     }
 
-    double startingY() {
-        return yOffset;
+    /**
+     * @return the distance from the edge of component to the first leaf when traveling across the leaves
+     */
+    double firstLeafNodePosition() {
+        return getNodeSpacing() / 2;
+    }
+
+    /**
+     * @return the distance from edge of component to root when traveling towards the leaves
+     */
+    double rootOffset() {
+        return 0.05 * getWidth();
+    }
+
+    double getNodeHeightScale() {
+        if (nhs == 0) return 0.9 * getWidth() / tree.getRoot().getHeight();
+        return nhs;
+    }
+
+    /**
+     * The spacing between the nodes (The number of pixels between adjacent leaf nodes)
+     */
+    double getNodeSpacing() {
+        if (ns == 0) return getHeight() / tree.getLeafNodeCount();
+        return ns;
     }
 
     void setTipValues(Node node) {
         if (node.isLeaf()) {
-            node.setMetaData("y", y);
-            node.setMetaData("ymin", y);
-            node.setMetaData("ymax", y);
-            y += yScale;
+            node.setMetaData("p", p);
+            node.setMetaData("pmin", p);
+            node.setMetaData("pmax", p);
+            p += getNodeSpacing();
         } else {
 
-            double ymin = Double.MAX_VALUE;
-            double ymax = Double.MIN_VALUE;
+            double pmin = Double.MAX_VALUE;
+            double pmax = Double.MIN_VALUE;
             for (Node childNode : node.getChildren()) {
                 setTipValues(childNode);
 
-                double cymin = childNode.getMetaData("ymin");
-                double cymax = childNode.getMetaData("ymax");
+                double cpmin = childNode.getMetaData("pmin");
+                double cpmax = childNode.getMetaData("pmax");
 
-                if (cymin < ymin) ymin = cymin;
-                if (cymax > ymax) ymax = cymax;
+                if (cpmin < pmin) pmin = cpmin;
+                if (cpmax > pmax) pmax = cpmax;
             }
-            node.setMetaData("ymin", ymin);
-            node.setMetaData("ymax", ymax);
+            node.setMetaData("pmin", pmin);
+            node.setMetaData("pmax", pmax);
         }
     }
 
 //    void drawScaleBar(Tree tree, StringBuilder builder) {
 //
-//        double sby = y;// - yScale - 1;
-//        double width = scalebar.size * xScale;
+//        double sby = y;// - nodeSpacing - 1;
+//        double width = scalebar.size * nodeHeightScale;
 //
-//        double sbx1 = (tree.getHeight(tree.getRootNode()) * xScale + -width) / 2.0;
+//        double sbx1 = (tree.getHeight(tree.getRootNode()) * nodeHeightScale + -width) / 2.0;
 //        double sbx2 = sbx1 + width;
 //
 //        double sbx3 = (sbx1 + sbx2) / 2;
@@ -112,38 +136,36 @@ public class TreeComponent extends JComponent {
 //        builder.append("};\n");
         if (label != null) {
             System.out.println("draw label \"" + label + "\" at " + x + ", " + y);
-            g.drawString(label, (float) (x + xOffset), (float) (y + yOffset));
+            g.drawString(label, (float) x, (float) y);
         }
     }
 
     void draw(double x1, double y1, double x2, double y2, Graphics2D g) {
-        x1 += xOffset;
-        y1 += yOffset;
-        x2 += xOffset;
-        y2 += yOffset;
 
         g.draw(new Line2D.Double(x1, y1, x2, y2));
-        //builder.append("\\draw (" + x1 + ", " + y1 + ") -- (" + x2 + ", " + y2 + ");\n");
     }
 
     void drawBranch(Tree tree, Node node, Node childNode, Graphics2D g) {
 
-        double height = Math.round(node.getHeight() * xScale * 1000000.0) / 1000000.0;
-        double childHeight = Math.round(childNode.getHeight() * xScale * 1000000.0) / 1000000.0;
+        double height = getWidth() - node.getHeight() * getNodeHeightScale() - rootOffset();
+        double childHeight = getWidth() - childNode.getHeight() * getNodeHeightScale() - rootOffset();
 
-        draw(childHeight, childNode.getMetaData("y"), height, node.getMetaData("y"), g);
+        double position = getHeight() - node.getMetaData("p");
+        double childPosition = getHeight() - childNode.getMetaData("p");
+
+        draw(childHeight, childPosition, height, position, g);
     }
 
     void drawLabel(Tree tree, Node node, Graphics2D g) {
 
-        double height = Math.round(node.getHeight() * xScale * 1000000.0) / 1000000.0;
+        double height = Math.round(node.getHeight() * getNodeHeightScale() * 1000000.0) / 1000000.0;
 
-        label(height + offset, y, node.getID(), g);
+        label(height + offset, p, node.getID(), g);
     }
 
     void draw(Tree tree, Node node, Graphics2D g) {
 
-        y = startingY();
+        p = firstLeafNodePosition();
 
         if (node.isRoot()) {
             setTipValues(node);
@@ -153,44 +175,44 @@ public class TreeComponent extends JComponent {
             drawLabel(tree, node, g);
         } else {
 
-            double py = 0;
+            double cp = 0;
             if (triangle) {
                 if (node.isRoot()) {
 
                     int tipCount = tree.getLeafNodeCount();
 
-                    py = ((tipCount - 1) * yScale) / 2.0;
+                    cp = ((tipCount - 1) * getNodeSpacing()) / 2.0 + firstLeafNodePosition();
                 } else {
 
                     Node parent = node.getParent();
 
-                    double ppy = parent.getMetaData("y");
+                    double pp = parent.getMetaData("p");
                     double ph = parent.getHeight();
                     double h = node.getHeight();
 
-                    double ymin = node.getMetaData("ymin");
-                    double ymax = node.getMetaData("ymax");
+                    double pmin = node.getMetaData("pmin");
+                    double pmax = node.getMetaData("pmax");
 
-                    double yminDist = Math.abs(ppy - ymin);
-                    double ymaxDist = Math.abs(ppy - ymax);
+                    double pminDist = Math.abs(pp - pmin);
+                    double pmaxDist = Math.abs(pp - pmax);
 
-                    if (yminDist > ymaxDist) {
-                        py = ((ppy * h) + (ymin * (ph - h))) / ph;
+                    if (pminDist > pmaxDist) {
+                        cp = ((pp * h) + (pmin * (ph - h))) / ph;
                     } else {
-                        py = ((ppy * h) + (ymax * (ph - h))) / ph;
+                        cp = ((pp * h) + (pmax * (ph - h))) / ph;
                     }
                 }
-                node.setMetaData("y", py);
+                node.setMetaData("p", cp);
             }
 
             int count = 0;
             for (Node childNode : node.getChildren()) {
                 draw(tree, childNode, g);
-                py += childNode.getMetaData("y");
+                cp += childNode.getMetaData("p");
                 count += 1;
             }
-            py /= count;
-            if (!triangle) node.setMetaData("y", py);
+            cp /= count;
+            if (!triangle) node.setMetaData("p", cp);
 
             for (Node childNode : node.getChildren()) {
 
@@ -208,23 +230,17 @@ public class TreeComponent extends JComponent {
         draw(tree, tree.getRoot(), g2d);
     }
 
-    public void setOffset(double xOffset, double yOffset) {
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-    }
-
     public static void main(String[] args) throws Exception {
 
-        String newickTree = "((((1:0.1,2:0.2):0.12,3:0.3):0.123,4:0.4):0.1234,5:0.5);";
+        String newickTree = "((((1:0.1,2:0.1):0.1,3:0.2):0.1,4:0.3):0.1,5:0.4);";
         //String newickTree2 = "((((A: 1, B: 1): 1, C: 2): 1, D: 3): 1, E: 4);";
 
-        double nodeHeightScale = 500;
+        double nodeHeightScale = 1000;
         double nodeSpacing = 100;
         double offset = 5;
 
-        TreeComponent treeComponent = new VerticalTreeComponent(new TreeParser(newickTree), nodeHeightScale, nodeSpacing, offset, true);
+        TreeComponent treeComponent = new VerticalTreeComponent(new TreeParser(newickTree), offset, true);
         //treeComponent.setOffset(0,500);
-
 
         JFrame frame = new JFrame("TreeComponent");
         frame.getContentPane().add(treeComponent, BorderLayout.CENTER);
