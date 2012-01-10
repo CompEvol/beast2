@@ -163,7 +163,6 @@ public class TreeComponent extends JComponent {
     void label(double x, double y, String label, Graphics2D g) {
 
         if (label != null) {
-            System.out.println("draw label \"" + label + "\" at " + x + ", " + y);
             g.drawString(label, (float) x, (float) y);
         }
     }
@@ -251,12 +250,7 @@ public class TreeComponent extends JComponent {
     }
 
     public void paintComponent(Graphics g) {
-
-        //System.out.println("draw tree " + tree.toString());
-
-        Graphics2D g2d = (Graphics2D) g;
-
-        draw(tree, tree.getRoot(), g2d);
+        draw(tree, tree.getRoot(), (Graphics2D) g);
     }
 
     public static void main(String[] args) throws Exception {
@@ -283,13 +277,15 @@ public class TreeComponent extends JComponent {
         };
         treeComponent.setSize(new Dimension(100, 100));
         treeComponent.paintComponent(tikzGraphics2D);
+        tikzGraphics2D.flush();
+
         //System.out.println(tikzGraphics2D.toString());
         //tikzGraphics2D.paintComponent(treeComponent);
 
-        JFrame frame = new JFrame("TreeComponent");
-        frame.getContentPane().add(treeComponent, BorderLayout.CENTER);
-        frame.setSize(new Dimension(800, 600));
-        frame.setVisible(true);
+//        JFrame frame = new JFrame("TreeComponent");
+//        frame.getContentPane().add(treeComponent, BorderLayout.CENTER);
+//        frame.setSize(new Dimension(800, 600));
+//        frame.setVisible(true);
     }
 }
 

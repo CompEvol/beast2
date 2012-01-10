@@ -37,7 +37,7 @@ import java.util.List;
 @Description("Log Analyser: analyse BEAST log and provide statistics result including mean, min, max, median, standard deviation, " +
         "mean squared error, variance, ESS, hpd lower, hpd upper, cpd lower, cpd upper, standard error of mean, auto correlation time " +
         "and geometric mean, which does not store the input data values in memory.")
-@Citation("Created by Alexei Drummond and modelified by Walter Xie")
+@Citation("Created by Alexei Drummond and modified by Walter Xie")
 public class LogAnalyser extends Runnable {
     public Input<String> m_sFileName =
             new Input<String>("fileName", "Name of the log file to be analysed", Validate.REQUIRED);

@@ -40,9 +40,9 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
 
     /**
      * @return the normalised probability (density) for this distribution.
-     * Note that some efficiency can be gained by testing whether the
-     * Distribution is dirty, and if not, call getCurrentLogP() instead
-     * of recalculating.
+     *         Note that some efficiency can be gained by testing whether the
+     *         Distribution is dirty, and if not, call getCurrentLogP() instead
+     *         of recalculating.
      * @throws Exception an exception
      */
     public double calculateLogP() throws Exception {
@@ -64,11 +64,11 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
 
     /**
      * This method draws new values for the arguments conditional on the current value(s) of the conditionals.
-     *
+     * <p/>
      * The new values are overwrite the argument values in the provided state.
      *
-     * @param state the state
-     * @param random  random number generator
+     * @param state  the state
+     * @param random random number generator
      */
     public abstract void sample(State state, Random random);
 
@@ -86,9 +86,11 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         // nothing to do
     }
 
-    /** CalculationNode methods **/
+    /**
+     * CalculationNode methods *
+     */
     @Override
-	public void store() {
+    public void store() {
         storedLogP = logP;
         super.store();
     }
@@ -99,28 +101,35 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         super.restore();
     }
 
-    /** Loggable interface implementation follows **/
-    @Override
-	public void init(PrintStream out) throws Exception {
-		out.print(getID() + "\t");
-	}
+    /**
+     * Loggable interface implementation follows *
+     */
+    public void init(PrintStream out) throws Exception {
+        out.print(getID() + "\t");
+    }
 
-    @Override
-	public void log(int nSample, PrintStream out) {
-		out.print(getCurrentLogP() + "\t");
-	}
+    public void log(int nSample, PrintStream out) {
+        out.print(getCurrentLogP() + "\t");
+    }
 
-    @Override
-	public void close(PrintStream out) {
-		// nothing to do
-	}
-    
-    /** Valuable interface implementation follows **/
-    @Override
-	public int getDimension() {return 1;}
-    @Override
-	public double getArrayValue() {return logP;}
-    @Override
-	public double getArrayValue(int iDim) {if (iDim == 0) return getArrayValue(); return 0;}
+    public void close(PrintStream out) {
+        // nothing to do
+    }
+
+    /**
+     * Valuable interface implementation follows *
+     */
+    public int getDimension() {
+        return 1;
+    }
+
+    public double getArrayValue() {
+        return logP;
+    }
+
+    public double getArrayValue(int iDim) {
+        if (iDim == 0) return getArrayValue();
+        return 0;
+    }
 
 } // class ProbabilityDistribution
