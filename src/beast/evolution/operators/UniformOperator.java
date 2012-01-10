@@ -11,10 +11,7 @@ import beast.util.Randomizer;
 
 @Description("Assign one or more parameter values to a uniformly selected value in its range.")
 public class UniformOperator extends Operator {
-	public Input<Parameter<?>> parameterInput = new Input<Parameter<?>>("parameter","a real parameter to sample individual values for", Parameter.class);
-	
-//	public Input<RealParameter> parameterInput = new Input<RealParameter>("parameter","a real parameter to sample individual values for");
-//	public Input<IntegerParameter> intparameterInput = new Input<IntegerParameter>("intparameter","an integer parameter to sample individual values for", Validate.XOR, parameterInput);
+	public Input<Parameter<?>> parameterInput = new Input<Parameter<?>>("parameter","a real or integer parameter to sample individual values for", Validate.REQUIRED, Parameter.class);
 	public Input<Integer> howManyInput = new Input<Integer>("howMany","number of items to sample, default 1, must be less than the dimension of the parameter", 1);
 
 	int howMany;
