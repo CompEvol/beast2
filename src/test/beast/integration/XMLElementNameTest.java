@@ -73,7 +73,9 @@ public class XMLElementNameTest extends TestCase {
     			List<Input<?>> inputs = plugin.listInputs();
     			for (Input<?> input : inputs) {
     				if (sElement2ClassMap.containsKey(input.getName())) {
-        				input.determineClass(plugin);
+    					if (plugin.getClass() == null) {
+    						input.determineClass(plugin);
+    					}
         				Class<?> type = input.getType();
         				String sBaseType = sElement2ClassMap.get(input.getName());
                         if (!isDerivedType(type, sBaseType)) {
