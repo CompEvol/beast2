@@ -15,15 +15,17 @@ import java.awt.geom.Path2D;
 public class SquareTreeComponent extends TreeComponent {
 
 
-    public SquareTreeComponent(Tree tree, double labelOffset) {
+    public SquareTreeComponent(Tree tree, double labelOffset, boolean showInternodeIntervals) {
 
         super(tree, labelOffset, false);
+        this.showInternodeIntervals = showInternodeIntervals;
     }
 
     public SquareTreeComponent(Tree tree, double nodeHeightScale, double nodeSpacing,
-                               double labelOffset) {
+                               double labelOffset,
+                               boolean showInternodeIntervals) {
 
-        super(tree, nodeHeightScale, nodeSpacing, labelOffset, false);
+        super(tree, nodeHeightScale, nodeSpacing, labelOffset, false, showInternodeIntervals);
     }
 
     void drawBranch(Tree tree, Node node, Node childNode, Graphics2D g) {
@@ -66,7 +68,7 @@ public class SquareTreeComponent extends TreeComponent {
 
         double labelOffset = 5;
 
-        TreeComponent treeComponent = new SquareTreeComponent(new TreeParser(newickTree), labelOffset);
+        TreeComponent treeComponent = new SquareTreeComponent(new TreeParser(newickTree), labelOffset, false);
 
         JFrame frame = new JFrame("SquareTreeComponent");
         frame.getContentPane().add(treeComponent, BorderLayout.CENTER);

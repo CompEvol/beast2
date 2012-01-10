@@ -14,6 +14,9 @@
         <sequence taxon="D">
             A
         </sequence>
+        <sequence taxon="E">
+            A
+        </sequence>
     </data>
 
     <tree spec='beast.evolution.tree.RandomTree' id='tree' taxa='@alignment'>
@@ -22,5 +25,6 @@
         </populationModel>
     </tree>
 
-    <run spec='beast.app.draw.tree.TikzTree' width="100" height="100" showLabels="true" tree="@tree"/>
+    <run spec='beast.app.draw.tree.TikzTree' fileName="testTikzTree.tex" width="100" height="100" showLabels="true"
+         lineThickness="2.0" showInternodeIntervals="true" tree="@tree"/>
 </beast>

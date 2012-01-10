@@ -15,7 +15,7 @@ public class VerticalTreeComponent extends TreeComponent {
     public VerticalTreeComponent(Tree tree,
                                  double offset, boolean showLabels) {
 
-        super(tree, 0, 0, offset, true);
+        super(tree, 0, 0, offset, true, false);
 
         this.showLabels = showLabels;
     }
@@ -24,7 +24,7 @@ public class VerticalTreeComponent extends TreeComponent {
     public VerticalTreeComponent(Tree tree, double nodeHeightScale, double nodeSpacingScale,
                                  double offset, boolean showLabels) {
 
-        super(tree, nodeHeightScale, nodeSpacingScale, offset, true);
+        super(tree, nodeHeightScale, nodeSpacingScale, offset, true, false);
 
         this.showLabels = showLabels;
     }
@@ -59,6 +59,11 @@ public class VerticalTreeComponent extends TreeComponent {
         if (showLabels) {
             label(getNodePosition(node), getScaledOffsetNodeHeight(node) + labelOffset, node.getID(), g);
         }
+    }
+
+    @Override
+    void drawInternodeInterval(double nodeHeight, double p1, double p2, Graphics2D g) {
+        draw(p1, nodeHeight, p2, nodeHeight, g);
     }
 
     static String ladderTree(int size) {
