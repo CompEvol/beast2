@@ -88,33 +88,49 @@ public class Input<T> {
      */
     public Input() {
     }
-
+    
+    /** 
+     * simple constructor, requiring only the input name and tiptext 
+     */
     public Input(String sName, String sTipText) {
         name = sName;
         tipText = sTipText;
         value = null;
         checkName();
     } // c'tor
-
-    /*
-     * constructor for List<>
+    
+    /** 
+     * simple constructor as above but with type pre-specified.
+     * This allows inputs of types that cannot be determined through
+     * introspection, such as template class inputs, e.g. Input<Parameter<?>> 
      */
-    public Input(String sName, String sTipText, T startValue) {
-        name = sName;
-        tipText = sTipText;
-        value = startValue;
-        defaultValue = startValue;
-        checkName();
+    public Input(String sName, String sTipText, Class<?> theClass) {
+    	this(sName, sTipText);
+        this.theClass = theClass;
     } // c'tor
 
-    /*
-     * constructor for List<> with XOR rules
-     */
-    public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other) {
-        name = sName;
-        tipText = sTipText;
+    /**
+     * constructor for List<>
+     **/
+    public Input(String sName, String sTipText, T startValue) {
+    	this(sName, sTipText);
         value = startValue;
         defaultValue = startValue;
+    } // c'tor
+
+    /**
+     * constructor for List<> with type specified
+     **/
+    public Input(String sName, String sTipText, T startValue, Class<?> theClass) {
+    	this(sName, sTipText, startValue);
+        this.theClass = theClass;
+    } // c'tor
+
+    /**
+     * constructor for List<> with XOR rules
+     **/
+    public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other) {
+        this(sName, sTipText, startValue);
         if (rule != Validate.XOR) {
             System.err.println("Programmer error: input rule should be XOR for this Input constructor");
         }
@@ -125,64 +141,62 @@ public class Input<T> {
         checkName();
     } // c'tor
 
-
-    public Input(String sName, String sTipText, T startValue, Class<?> type) {
-        name = sName;
-        tipText = sTipText;
-        value = startValue;
-        defaultValue = startValue;
-        theClass = type;
-        checkName();
+    /**
+     * constructor for List<> with XOR rules with type specified
+     **/
+    public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other, Class<?> theClass) {
+    	this(sName, sTipText, startValue, rule, other);
+    	this.theClass = theClass;
     } // c'tor
-
-    public Input(String sName, String sTipText, T startValue, Validate rule, Class<?> type) {
-        name = sName;
-        tipText = sTipText;
-        value = startValue;
-        defaultValue = startValue;
-        theClass = type;
-        this.rule = rule;
-        checkName();
-    } // c'tor
+    
 
     /**
-     * constructor for REQUIRED rules for array-inputs *
+     * Constructor for REQUIRED rules for List-inputs, i.e. lists that require
+     * at least one value to be specified. 
+     * If optional (i.e. no value need to be specified), leave the rule out 
      */
     public Input(String sName, String sTipText, T startValue, Validate rule) {
-        name = sName;
-        tipText = sTipText;
-        value = startValue;
-        defaultValue = startValue;
+        this(sName, sTipText, startValue);
         if (rule != Validate.REQUIRED) {
             System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + sName + ")");
         }
         this.rule = rule;
-        checkName();
     } // c'tor
 
     /**
-     * constructor for REQUIRED rules *
+     * constructor for REQUIRED rules for List-inputs, with type pre-specified 
+     */
+    public Input(String sName, String sTipText, T startValue, Validate rule, Class<?> type) {
+    	this(sName, sTipText, startValue, rule);
+        theClass = type;
+    } // c'tor
+
+    /**
+     * constructor for REQUIRED rules 
      */
     public Input(String sName, String sTipText, Validate rule) {
-        name = sName;
-        tipText = sTipText;
-        value = null;
+    	this(sName, sTipText);
         if (rule != Validate.REQUIRED) {
             System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + sName + ")");
         }
         this.rule = rule;
-        checkName();
     } // c'tor
 
+    /**
+     * constructor for REQUIRED rules, with type pre-specified 
+     */
+    public Input(String sName, String sTipText, Validate rule, Class<?> type) {
+    	this(sName, sTipText, rule);
+    	this.theClass = type;
+    }
+    
     /**
      * constructor for XOR rules *
      */
     public Input(String sName, String sTipText, Validate rule, Input<?> other) {
-        name = sName;
-        tipText = sTipText;
-        value = null;
+    	this(sName, sTipText);
         if (rule != Validate.XOR) {
             System.err.println("Programmer error: input rule should be XOR for this Input constructor");
         }
@@ -190,9 +204,15 @@ public class Input<T> {
         this.other = other;
         this.other.other = this;
         this.other.rule = rule;
-        checkName();
     } // c'tor
 
+    /**
+     * constructor for XOR rules, with type pre-specified
+     */
+    public Input(String sName, String sTipText, Validate rule, Input<?> other, Class<?> type) {
+    	this(sName, sTipText, rule, other);
+    	this.theClass = type;
+    }
 
     /**
      * constructor for enumeration.

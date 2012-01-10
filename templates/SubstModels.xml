@@ -201,7 +201,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         <operator id='ucedMeanScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucedMean.$(n)"/>
         <operator id="ExpCategoriesRandomWalk.$(n)" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@expRateCategories.$(n)"/>
 		<operator id='ExpCategoriesSwapOperator.$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@expRateCategories.$(n)'/>
-		<operator id='ExpCategoriesUniform.$(n)' spec='UniformOperator' weight="10" intparameter='@expRateCategories.$(n)'/>
+		<operator id='ExpCategoriesUniform.$(n)' spec='UniformOperator' weight="10" parameter='@expRateCategories.$(n)'/>
 
 		<upDownOperator id='relaxedUpDownOperatorExp.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 			<up idref="ucedMean.$(n)"/>
@@ -244,7 +244,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         <operator id='ucldStdevScaler.$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldStdev.$(n)"/>
         <operator id="CategoriesRandomWalk.$(n)" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@rateCategories.$(n)"/>
 		<operator id='CategoriesSwapOperator.$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@rateCategories.$(n)'/>
-		<operator id='CategoriesUniform.$(n)' spec='UniformOperator' weight="10" intparameter='@rateCategories.$(n)'/>
+		<operator id='CategoriesUniform.$(n)' spec='UniformOperator' weight="10" parameter='@rateCategories.$(n)'/>
 
 		<upDownOperator id='relaxedUpDownOperator.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 			<up idref="ucldMean.$(n)"/>
