@@ -29,12 +29,6 @@ package beast.core;
 import beast.core.util.CompoundDistribution;
 import beast.util.Randomizer;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -80,10 +74,12 @@ public class MCMC extends Runnable {
     public Input<Boolean> sampleFromPrior = new Input<Boolean>("sampleFromPrior","whether to ignore the likelihood when sampling (default false). " +
     		"The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", false);
 
+    public Input<OperatorSchedule> operatorScheduleInput = new Input<OperatorSchedule>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule());
+    
     /** Alternative representation of operatorsInput that allows random selection
      * of operators and calculation of statistics.
      */
-    protected OperatorSet operatorSet = new OperatorSet();
+    protected OperatorSchedule operatorSchedule;
 
 
     /** The state that takes care of managing StateNodes,
@@ -109,8 +105,9 @@ public class MCMC extends Runnable {
         System.out.println(getCitations());
         System.out.println("======================================================");
 
+        operatorSchedule = operatorScheduleInput.get();
         for (Operator op : operatorsInput.get()) {
-            operatorSet.addOperator(op);
+            operatorSchedule.addOperator(op);
         }
 
         if (sampleFromPrior.get()) {
@@ -209,88 +206,6 @@ public class MCMC extends Runnable {
         }
     } // close
 
-    /* Class for a collection of Operators. The main usage is to
-     * be able to draw operators randomly proportionally to their
-     * weight.
-     */
-    public class OperatorSet {
-        List<Operator> m_operators = new ArrayList<Operator>();
-        double m_fTotalWeight = 0;
-        /**
-         * the relative weights add to unity *
-         */
-        double[] m_fRelativeOperatorWeigths;
-        double[] m_fCumulativeProbs;
-
-        public void addOperator(Operator p) {
-            m_operators.add(p);
-            m_fTotalWeight += p.getWeight();
-            m_fCumulativeProbs = new double[m_operators.size()];
-            m_fCumulativeProbs[0] = m_operators.get(0).getWeight() / m_fTotalWeight;
-            for (int i = 1; i < m_operators.size(); i++) {
-                m_fCumulativeProbs[i] = m_operators.get(i).getWeight() / m_fTotalWeight + m_fCumulativeProbs[i - 1];
-            }
-        }
-
-        /** randomly select an operator with probability proportional to the weight of the operator **/
-        public Operator selectOperator() {
-            int iOperator = Randomizer.randomChoice(m_fCumulativeProbs);
-            return m_operators.get(iOperator);
-        }
-
-        /** report operator statistics **/
-        public void showOperatorRates(PrintStream out) {
-            out.println("Operator                                                              Tuning\t#accept\t#reject\t#total\tacceptance rate");
-            for (int i = 0; i < m_operators.size(); i++) {
-                out.println(m_operators.get(i));
-            }
-        }
-
-		public void storeToFile() throws Exception {
-			// appends state of operator set to state file
-			File aFile = new File(m_sStateFile);
-			PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(aFile, true)));
-			out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
-            for (int i = 0; i < m_operators.size(); i++) {
-            	Operator operator = m_operators.get(i);
-                out.println(operator.getID() + " " + m_fCumulativeProbs[i] + " " + operator.getCoercableParameterValue() + " "
-                		+ operator.m_nNrAccepted + " " + operator.m_nNrRejected +  " "
-                		+ operator.m_nNrAcceptedForCorrection + " " + operator.m_nNrRejectedForCorrection);
-            }
-			out.println("-->");
-			out.close();
-		}
-
-		public void restoreFromFile() throws Exception  {
-			// reads state of operator set from state file
-			String sXML = "";
-			BufferedReader fin = new BufferedReader(new FileReader(m_sStateFile));
-			while (fin.ready()) {
-				sXML += fin.readLine() + "\n";
-			}
-			fin.close();
-			sXML = sXML.substring(sXML.indexOf("</itsabeastystatewerein>") + 25);
-			String [] sStrs = sXML.split("\n");
-            for (int i = 0; i < m_operators.size() && i + 2 < sStrs.length; i++) {
-            	String [] sStrs2 = sStrs[i+2].split(" ");
-            	Operator operator = m_operators.get(i);
-            	if ((operator.getID() == null && sStrs2[0].equals("null")) ||operator.getID().equals(sStrs2[0])) {
-            		m_fCumulativeProbs[i] = Double.parseDouble(sStrs2[1]);
-	            	if (!sStrs2[2].equals("NaN")) {
-	            		operator.setCoercableParameterValue(Double.parseDouble(sStrs2[2]));
-	            	}
-	            	operator.m_nNrAccepted = Integer.parseInt(sStrs2[3]);
-	            	operator.m_nNrRejected = Integer.parseInt(sStrs2[4]);
-	    			Operator.g_autoOptimizeDelay = operator.m_nNrAccepted + operator.m_nNrRejected;
-	            	operator.m_nNrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
-	            	operator.m_nNrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
-            	} else {
-            		throw new Exception("Cannot resume: operator order or set changed from previous run");
-            	}
-            }
-            showOperatorRates(System.err);
-		}
-    } // class OperatorSet
 
 
 
@@ -309,6 +224,7 @@ public class MCMC extends Runnable {
     	state.initAndValidate();
     	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile);
+    	operatorSchedule.setStateFileName(m_sStateFile);
 
         nBurnIn = m_oBurnIn.get();
         nChainLength = m_oChainLength.get();
@@ -318,7 +234,7 @@ public class MCMC extends Runnable {
 
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
-            operatorSet.restoreFromFile();
+            operatorSchedule.restoreFromFile();
         	nBurnIn = 0;
             fOldLogLikelihood = robustlyCalcPosterior(posterior);
         } else {
@@ -352,7 +268,7 @@ public class MCMC extends Runnable {
 
         doLoop();
 
-        operatorSet.showOperatorRates(System.out);
+        operatorSchedule.showOperatorRates(System.out);
         long tEnd = System.currentTimeMillis();
         System.out.println("Total calculation time: " + (tEnd - tStart) / 1000.0 + " seconds");
         close();
@@ -360,7 +276,7 @@ public class MCMC extends Runnable {
         System.err.println("End likelihood: " + fOldLogLikelihood);
         System.err.println(state);
         state.storeToFile(nChainLength);
-        operatorSet.storeToFile();
+        operatorSchedule.storeToFile();
     } // run;
 
 
@@ -371,7 +287,7 @@ public class MCMC extends Runnable {
 
             state.store(currentState);
 
-            Operator operator = operatorSet.selectOperator();
+            Operator operator = operatorSchedule.selectOperator();
             //System.out.print("\n" + iSample + " " + operator.getName()+ ":");
 
             final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();

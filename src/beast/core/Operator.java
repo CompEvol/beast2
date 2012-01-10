@@ -34,6 +34,13 @@ import beast.core.Input.Validate;
 public abstract class Operator extends Plugin {
 	public Input<Double> m_pWeight = new Input<Double>("weight","weight with which this operator is selected", Validate.REQUIRED);
 
+	/** the schedule used for auto optimisation **/
+	OperatorSchedule operatorSchedule;
+	
+	protected void setOperatorSchedule(OperatorSchedule operatorSchedule) {
+		this.operatorSchedule = operatorSchedule;
+	}
+	
     /** Implement this for proposing new states based on evaluations of
      * a distribution. By default it returns null but can be overridden
      * to implement more complex proposals.
@@ -95,18 +102,18 @@ public abstract class Operator extends Plugin {
 	/** keep statistics of how often this operator was used, accepted or rejected **/
 	protected int m_nNrRejected = 0;
 	protected int m_nNrAccepted = 0;
-	int m_nNrRejectedForCorrection = 0;
-	int m_nNrAcceptedForCorrection = 0;
+	protected int m_nNrRejectedForCorrection = 0;
+	protected int m_nNrAcceptedForCorrection = 0;
 	public void accept() {
 		m_nNrAccepted++;
-		if (g_autoOptimizeDelay >= AUTO_OPTIMIZE_DELAY) {
+		if (operatorSchedule.autoOptimizeDelayCount >= operatorSchedule.autoOptimizeDelay) {
 			m_nNrAcceptedForCorrection++;
 		}
 	}
 
 	public void reject() {
 		m_nNrRejected++;
-		if (g_autoOptimizeDelay >= AUTO_OPTIMIZE_DELAY) {
+		if (operatorSchedule.autoOptimizeDelayCount >= operatorSchedule.autoOptimizeDelay) {
 			m_nNrRejectedForCorrection++;
 		}
 	}
@@ -123,22 +130,8 @@ public abstract class Operator extends Plugin {
 	/** @return  change of value of a parameter for MCMC chain optimisation
      * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
      **/
-	final static protected int AUTO_OPTIMIZE_DELAY = 10000;
-	static protected int g_autoOptimizeDelay = 0;
 	protected double calcDelta(double logAlpha) {
-		// do no optimisation for the first N optimisable operations
-		if (g_autoOptimizeDelay < AUTO_OPTIMIZE_DELAY) {
-			g_autoOptimizeDelay++;
-			return 0;
-		}
-        final double target = getTargetAcceptanceProbability();
-
-        final double deltaP = ((1.0 / (m_nNrRejectedForCorrection + m_nNrAcceptedForCorrection + 1.0)) * (Math.exp(Math.min(logAlpha, 0)) - target));
-
-        if (deltaP > -Double.MAX_VALUE && deltaP < Double.MAX_VALUE) {
-            return deltaP;
-        }
-        return 0;
+		return operatorSchedule.calcDelta(this, logAlpha);
 	} // calcDelta
 
 	/** @return target for automatic operator optimisation
