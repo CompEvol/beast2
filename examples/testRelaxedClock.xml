@@ -41,7 +41,7 @@
     </input>
 
 
-    <input spec='UCRelaxedClockModel' id="branchRates">
+    <input spec='UCRelaxedClockModel' id="branchRates" normalize='true'>
         <!--<parameter name='mutationRate'>1.0</parameter>-->
 		<parameter name='clock.rate' id='ucld.mean' value='1.0'/>
         <distr id='lognormal' spec="beast.math.distributions.LogNormalDistributionModel">
@@ -91,7 +91,7 @@
             <distribution id='likelihood' idref="treeLikelihood"/>
         </distribution>
 
-        <operator id="categoriesRandomWalk" spec="IntUniformOperator" weight="1">
+        <operator id="categoriesRandomWalk" spec="UniformOperator" weight="1">
             <input name="parameter" idref="rateCategories"/>
         </operator>
 

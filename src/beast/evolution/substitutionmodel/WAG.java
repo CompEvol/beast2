@@ -133,10 +133,6 @@ public class WAG extends EmpiricalSubstitutionModel {
         
         rate[18][19] = 0.347826;
         
-        if (true) {
-        	return rate;
-        }
-        
 		// Current (May 2011) version from http://www.ebi.ac.uk/goldman/WAG/index.html
 		//
 //			0.551571 
@@ -183,6 +179,7 @@ public class WAG extends EmpiricalSubstitutionModel {
 //				a maximum likelihood approach.  Molecular Biology and
 //				Evolution 18:691-699.
 
+/*
 		// Q matrix
 		rate[0][1] = 0.551571; rate[0][2] = 0.509848; 
 		rate[0][3] = 0.738998; rate[0][4] = 1.027040; 
@@ -322,7 +319,7 @@ public class WAG extends EmpiricalSubstitutionModel {
 
 
 		rate[18][19] = 0.31473;
-
+*/
 		
 		
 ////        WAG* matrix, a variant of the WAG matrix from the same paper

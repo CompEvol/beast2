@@ -101,7 +101,7 @@
         </operator>  
         <operator id="CategoriesRandomWalk" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@rateCategories" />
         <operator id='CategoriesSwapOperator' spec='SwapOperator' howMany="1" weight="10" intparameter='@rateCategories' />
-        <operator id='CategoriesUniform' spec='IntUniformOperator' weight="10" parameter='@rateCategories' /> 
+        <operator id='CategoriesUniform' spec='UniformOperator' weight="10" parameter='@rateCategories' /> 
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.75" weight="0.1" parameter="@hky.kappa" />
         <operator id='frequenciesDelta' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@hky.frequencies" />

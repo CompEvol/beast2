@@ -9,11 +9,13 @@ import beast.util.Randomizer;
 
 
 @Description("A uniform random operator that selects a random dimension of the integer parameter and picks a new random value within the bounds.")
+@Deprecated
 public class IntUniformOperator extends Operator {
     public Input<IntegerParameter> parameterInput = new Input<IntegerParameter>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
 
 
     public void initAndValidate() {
+    	System.err.println("\n\nIntUniformOperator is depracated. Use UniformOperator instead.\n\n");
     }
 
     /**
