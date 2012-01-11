@@ -24,7 +24,8 @@ public class TikzTree extends Runnable {
     public Input<Integer> width = new Input<Integer>("width", "the width of the figure in pts", 100);
     public Input<Integer> height = new Input<Integer>("height", "the height of the figure in pts", 100);
     public Input<String> fileName = new Input<String>("fileName", "the name of the file to write Tikz code to", "");
-    public Input<Boolean> showLabels = new Input<Boolean>("showLabels", "if true then the taxa labels are displayed", true);
+    public Input<Boolean> showLeafLabels = new Input<Boolean>("showLeafLabels", "if true then the taxa labels are displayed", true);
+    public Input<String> branchLabels = new Input<String>("branchLabels", "the attribute name of values to display on the branches, or empty string if no branch labels to be displayed", "");
     public Input<Boolean> showInternodeIntervals = new Input<Boolean>("showInternodeIntervals", "if true then dotted lines at each internal node height are displayed", true);
     public Input<String> pdflatexPath = new Input<String>("pdflatexPath", "the path to pdflatex; if provided then will be run automatically", "");
 
@@ -35,6 +36,8 @@ public class TikzTree extends Runnable {
         TreeComponent treeComponent = new SquareTreeComponent(tree.get(), labelOffset.get(), showInternodeIntervals.get());
         treeComponent.setLineThickness(lineThickness.get());
         treeComponent.setSize(new Dimension(width.get(), height.get()));
+        treeComponent.setShowLeafLabels(showLeafLabels.get());
+        treeComponent.setBranchLabelAttribute(branchLabels.get());
 
         String fileName = this.fileName.get();
         TikzGraphics2D tikzGraphics2D;

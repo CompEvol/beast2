@@ -43,9 +43,9 @@ public class Node extends Plugin {
     protected double m_fHeight = Double.MAX_VALUE;
 
     /**
-     * Arbitrarily labeled double metadata on this node. Not currently implemented as part of state!
+     * Arbitrarily labeled metadata on this node. Not currently implemented as part of state!
      */
-    protected Map<String, Double> metaData;
+    protected Map<String, Object> metaData;
 
     /**
      * list of children of this node *
@@ -495,19 +495,19 @@ public class Node extends Plugin {
             m_fHeight = (Double) fValue;
             m_bIsDirty |= Tree.IS_DIRTY;
         } else {
-            if (metaData == null) metaData = new TreeMap<String, Double>();
-            metaData.put(sPattern, (Double) fValue);
+            if (metaData == null) metaData = new TreeMap<String, Object>();
+            metaData.put(sPattern, fValue);
         }
 
     }
 
-    public double getMetaData(String sPattern) {
+    public Object getMetaData(String sPattern) {
         if (sPattern.equals(TraitSet.DATE_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             return m_fHeight;
         } else if (metaData != null) {
-            Double d = metaData.get(sPattern);
+            Object d = metaData.get(sPattern);
             if (d != null) return d;
         }
         return 0;

@@ -129,10 +129,17 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     }
                     String sPattern = sStrs[0];
                     sStrs[1] = sStrs[1].replaceAll("[\"']", "");
-                    Double fValue = Double.parseDouble(sStrs[1]);
-                    node.setMetaData(sPattern, fValue);
+                    try {
+                        Double fValue = Double.parseDouble(sStrs[1]);
+                        node.setMetaData(sPattern, fValue);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Warning: Meta data \"" + sPattern + "=" + sStrs[1] + "\" could not be interpreted as number. Storing as string.");
+                        node.setMetaData(sPattern, sStrs[1]);
+                    }
                 } catch (Exception e) {
                     System.out.println("Warning 333: Attempt to parse metadata failed: " + node.m_sMetaData);
+                    System.out.println(e.getMessage());
+
                 }
             }
         }

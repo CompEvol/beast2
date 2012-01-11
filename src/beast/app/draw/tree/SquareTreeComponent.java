@@ -3,6 +3,7 @@ package beast.app.draw.tree;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
+import org.jtikz.TikzRenderingHints;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,12 +37,26 @@ public class SquareTreeComponent extends TreeComponent {
         double pos = getNodePosition(node);
         double childPos = getNodePosition(childNode);
 
+
+
         Path2D path = new GeneralPath();
         path.moveTo(childHeight, childPos);
         path.lineTo(height, childPos);
         path.lineTo(height, pos);
 
         g.draw(path);
+
+        if (branchLabels != null && !branchLabels.equals("")) {
+            
+            Object metaData = childNode.getMetaData(branchLabels);
+            String branchLabel;
+            if (metaData instanceof Number) {
+                branchLabel = format.format(metaData);
+            } else {
+                branchLabel = metaData.toString();
+            }
+            drawNode(branchLabel,(height+childHeight)/2, childPos, TikzRenderingHints.VALUE_SOUTH, 9.0, g);
+        }
 
         //g.draw(new Line2D.Double(childHeight, childPos, height, childPos));
         //g.draw(new Line2D.Double(childHeight, childPos, height, childPos));

@@ -1,0 +1,37 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
+
+    <data id="alignment" dataType="nucleotide">
+        <sequence taxon="A">
+            A
+        </sequence>
+        <sequence taxon="B">
+            A
+        </sequence>
+        <sequence taxon="C">
+            A
+        </sequence>
+        <sequence taxon="D">
+            A
+        </sequence>
+        <sequence taxon="E">
+            A
+        </sequence>
+        <sequence taxon="F">
+            A
+        </sequence>
+    </data>
+
+    <tree spec='beast.util.TreeParser' id='tree'>
+        <input name='newick'>
+            <![CDATA[
+            ((5:[&rate=$r_2$]0.04847887618847128,(3:[&rate=$r_3$]0.03189934232093919,((2:[&rate=$r_{5}$]0.011076861832266626,1:[&rate=$r_6$]0.011076861832266626):[&rate=$r_{7}$]0.009810542752873795,4:[&rate=$r_4$]0.02088740458514042):[&rate=$r_8$]0.011011937735798769):[&rate=$r_9$]0.01657953386753209):[&rate=$r_{10}$]0.017232517763959114,6:[&rate=$r_{1}$]0.06571139395243039);
+            ]]>
+        </input>
+        <input name='taxa' idref='alignment'/>
+    </tree>
+
+    <run spec='beast.app.draw.tree.TikzTree' fileName="testTikzTree2.tex" width="300" height="300" showLeafLabels="true"
+         lineThickness="1.25" labelOffset="10" showInternodeIntervals="true" branchLabels="&amp;rate" pdflatexPath="/usr/texbin/pdflatex" tree="@tree"/>
+</beast>
+

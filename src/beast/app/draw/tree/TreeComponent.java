@@ -39,6 +39,10 @@ public class TreeComponent extends JComponent {
 
     boolean showInternodeIntervals = false;
 
+    private Boolean showLeafLabels = true;
+
+    String branchLabels = "";
+
     /**
      * The scaling of the node heights. If the scale is 0 then scale is automatically calculated from component size
      */
@@ -95,7 +99,7 @@ public class TreeComponent extends JComponent {
      * @return the position of this node in perpendicular to root-to-tip direction once scaled and labelOffset
      */
     double getNodePosition(Node node) {
-        return node.getMetaData("p");
+        return (Double)node.getMetaData("p");
     }
 
     /**
@@ -147,8 +151,8 @@ public class TreeComponent extends JComponent {
             for (Node childNode : node.getChildren()) {
                 setTipValues(childNode);
 
-                double cpmin = childNode.getMetaData("pmin");
-                double cpmax = childNode.getMetaData("pmax");
+                double cpmin = (Double)childNode.getMetaData("pmin");
+                double cpmax = (Double)childNode.getMetaData("pmax");
 
                 if (cpmin < pmin) pmin = cpmin;
                 if (cpmax > pmax) pmax = cpmax;
@@ -187,6 +191,16 @@ public class TreeComponent extends JComponent {
 
         g.draw(new Line2D.Double(x1, y1, x2, y2));
     }
+    
+    void drawNode(String label, double x, double y, Object anchor, double fontSize, Graphics2D g) {
+        Object oldHintValue = g.getRenderingHint(TikzRenderingHints.KEY_NODE_ANCHOR);
+        g.setRenderingHint(TikzRenderingHints.KEY_NODE_ANCHOR, anchor);
+        Font oldFont = g.getFont();
+        g.setFont(oldFont.deriveFont((float) fontSize));
+        g.drawString(label, (float) x, (float) y);
+        if (oldHintValue != null) g.setRenderingHint(TikzRenderingHints.KEY_NODE_ANCHOR, oldHintValue);
+        g.setFont(oldFont);
+    }
 
     void drawBranch(Tree tree, Node node, Node childNode, Graphics2D g) {
 
@@ -196,6 +210,16 @@ public class TreeComponent extends JComponent {
         double position = getNodePosition(node);
         double childPosition = getNodePosition(childNode);
 
+        if (branchLabels != null && !branchLabels.equals("")) {
+            Object metaData = childNode.getMetaData(branchLabels);
+            String branchLabel;
+            if (metaData instanceof Number) {
+                branchLabel = format.format(metaData);
+            } else {
+                branchLabel = metaData.toString();
+            }
+            drawNode(branchLabel,(height+childHeight)/2, (position+childPosition)/2, TikzRenderingHints.VALUE_SOUTH, 9.0, g);
+        }
         draw(height, position, childHeight, childPosition, g);
     }
 
@@ -221,7 +245,7 @@ public class TreeComponent extends JComponent {
             setTipValues(node);
         }
 
-        if (node.isLeaf()) {
+        if (node.isLeaf() && showLeafLabels) {
             drawLabel(tree, node, g);
         } else {
 
@@ -236,12 +260,12 @@ public class TreeComponent extends JComponent {
 
                     Node parent = node.getParent();
 
-                    double pp = parent.getMetaData("p");
+                    double pp = (Double)parent.getMetaData("p");
                     double ph = parent.getHeight();
                     double h = node.getHeight();
 
-                    double pmin = node.getMetaData("pmin");
-                    double pmax = node.getMetaData("pmax");
+                    double pmin = (Double)node.getMetaData("pmin");
+                    double pmax = (Double)node.getMetaData("pmax");
 
                     double pminDist = Math.abs(pp - pmin);
                     double pmaxDist = Math.abs(pp - pmax);
@@ -258,7 +282,7 @@ public class TreeComponent extends JComponent {
             int count = 0;
             for (Node childNode : node.getChildren()) {
                 draw(tree, childNode, g);
-                cp += childNode.getMetaData("p");
+                cp += (Double)childNode.getMetaData("p");
                 count += 1;
             }
             cp /= count;
@@ -336,6 +360,14 @@ public class TreeComponent extends JComponent {
 
     public void setLineThickness(double lineThickness) {
         this.lineThickness = lineThickness;
+    }
+
+    public void setBranchLabelAttribute(String branchLabels) {
+        this.branchLabels = branchLabels;
+    }
+
+    public void setShowLeafLabels(Boolean showLeafLabels) {
+        this.showLeafLabels = showLeafLabels;
     }
 }
 
