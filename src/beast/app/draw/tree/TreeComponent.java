@@ -13,6 +13,8 @@ import java.awt.geom.Line2D;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Alexei Drummond
@@ -47,6 +49,8 @@ public class TreeComponent extends JComponent {
     double ns = 0;
 
     double lineThickness = 1.0;
+    
+    Set<Double> internodeIntervals = null;
 
     /**
      * @param tree        the tree to draw
@@ -66,6 +70,9 @@ public class TreeComponent extends JComponent {
         //this.scalebar = scalebar;
         this.isTriangle = isTriangle;
         this.showInternodeIntervals = showInternodeIntervals;
+        if (showInternodeIntervals) {
+            internodeIntervals = new TreeSet<Double>();
+        }
 
         this.labelOffset = labelOffset;
         this.nhs = nodeHeightScale;
@@ -202,6 +209,10 @@ public class TreeComponent extends JComponent {
 
         p = firstLeafNodePosition();
 
+        if (showInternodeIntervals) {
+            drawInternodeInterval(node, g);
+        }
+        
         if (node.isRoot()) {
             setTipValues(node);
         }
@@ -209,10 +220,6 @@ public class TreeComponent extends JComponent {
         if (node.isLeaf()) {
             drawLabel(tree, node, g);
         } else {
-
-            if (showInternodeIntervals) {
-                drawInternodeInterval(node, g);
-            }
 
             double cp = 0;
             if (isTriangle) {
@@ -261,15 +268,21 @@ public class TreeComponent extends JComponent {
     }
 
     final void drawInternodeInterval(Node node, Graphics2D g) {
-        double height = getScaledOffsetNodeHeight(node);
 
-        double p1 = firstLeafNodePosition();
-        double p2 = getTotalSizeForNodeSpacing();
+        if (internodeIntervals == null) internodeIntervals = new TreeSet<Double>();
+        if (!internodeIntervals.contains(node.getHeight())) {
 
-        Stroke s = g.getStroke();
-        g.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10, new float[]{5, 5}, 0));
-        drawInternodeInterval(height, p1, p2, g);
-        g.setStroke(s);
+            double height = getScaledOffsetNodeHeight(node);
+    
+            double p1 = firstLeafNodePosition()/2;
+            double p2 = getTotalSizeForNodeSpacing()-p1;
+    
+            Stroke s = g.getStroke();
+            g.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10, new float[]{1.0f, 1.0f}, 0));
+            drawInternodeInterval(height, p1, p2, g);
+            g.setStroke(s);
+            internodeIntervals.add(node.getHeight());
+        }
     }
 
     void drawInternodeInterval(double nodeHeight, double p1, double p2, Graphics2D g) {
@@ -278,6 +291,11 @@ public class TreeComponent extends JComponent {
 
 
     public void paintComponent(Graphics g) {
+
+        if (showInternodeIntervals && internodeIntervals != null) {
+            internodeIntervals.clear();
+        }
+
         draw(tree, tree.getRoot(), (Graphics2D) g);
     }
 
