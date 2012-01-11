@@ -39,6 +39,12 @@ public class TikzGraphics2D extends AbstractGraphicsInterface {
     int colorId;
 
     /**
+     * Default node anchoring for drawString nodes.
+     */
+    Object nodeAnchor = TikzRenderingHints.VALUE_SOUTH_WEST;
+
+
+    /**
      * Creates a new TikzGraphics2D object that will output the code to <code>system.out</code>.
      */
     public TikzGraphics2D() {
@@ -154,7 +160,12 @@ public class TikzGraphics2D extends AbstractGraphicsInterface {
     }
 
     protected void handleDrawString(String s, double x, double y) {
-        addCommand("\\node" + handleOptions("",true) + " at (" + x + "pt, " + y + "pt) {" + toTeX(s) + "};");
+        
+        if (hints.containsKey(TikzRenderingHints.KEY_NODE_ANCHOR)) {
+            nodeAnchor = hints.get(TikzRenderingHints.KEY_NODE_ANCHOR);
+        }
+        
+        addCommand("\\node" + handleOptions(nodeAnchor != TikzRenderingHints.VALUE_CENTER ? "anchor="+nodeAnchor : "",true) + " at (" + x + "pt, " + y + "pt) {" + toTeX(s) + "};");
     }
 
     protected void handlePath(PathIterator i, Action action) {
@@ -280,5 +291,13 @@ public class TikzGraphics2D extends AbstractGraphicsInterface {
     }
     protected void handleClearRect(double x, double y, double width, double height) {
         addCommand("\\fill[" + colorToTikz(background) + "] (" + x + "pt, " + y + "pt) -- (" + (x + width - 1) + "pt, " + y + "pt) -- (" + (x + width - 1) + "pt, " + (y + height - 1) + "pt) -- (" + x + "pt, " + (y + height - 1) + "pt) -- cycle;");
+    }
+
+    /**
+     * Sets the node anchor behavior for drawString commands
+     * @param o a compatible value for TikzRenderingHints.KEY_NODE_ANCHOR
+     */
+    public void setNodeAnchor(Object o) {
+        if (TikzRenderingHints.KEY_NODE_ANCHOR.isCompatibleValue(o)) nodeAnchor = o;
     }
 }

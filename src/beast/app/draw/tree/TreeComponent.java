@@ -6,6 +6,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import org.jtikz.TikzGraphics2D;
+import org.jtikz.TikzRenderingHints;
 
 import javax.swing.*;
 import java.awt.*;
@@ -175,7 +176,10 @@ public class TreeComponent extends JComponent {
     void label(double x, double y, String label, Graphics2D g) {
 
         if (label != null) {
+            Object oldHintValue = g.getRenderingHint(TikzRenderingHints.KEY_NODE_ANCHOR);
+            g.setRenderingHint(TikzRenderingHints.KEY_NODE_ANCHOR,TikzRenderingHints.VALUE_CENTER);
             g.drawString(label, (float) x, (float) y);
+            if (oldHintValue != null) g.setRenderingHint(TikzRenderingHints.KEY_NODE_ANCHOR, oldHintValue);
         }
     }
 
@@ -316,11 +320,7 @@ public class TreeComponent extends JComponent {
 
         TreeComponent treeComponent = new SquareTreeComponent(new TreeParser(alignment, newickTree), labelOffset, false);
 
-        TikzGraphics2D tikzGraphics2D = new TikzGraphics2D() {
-            protected void handleDrawString(String s, double x, double y) {
-                addCommand("\\node" + " at (" + x + "pt, " + y + "pt) {" + toTeX(s) + "};");
-            }
-        };
+        TikzGraphics2D tikzGraphics2D = new TikzGraphics2D();
         treeComponent.setSize(new Dimension(100, 100));
         treeComponent.paintComponent(tikzGraphics2D);
         tikzGraphics2D.flush();

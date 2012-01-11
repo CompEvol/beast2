@@ -22,10 +22,12 @@ public abstract class AbstractGraphicsInterface extends Graphics2D implements Cl
     Color background;
     BasicStroke stroke;
     LinkedList<GraphicsCommand> commands;
-
+    
     protected PrintStream out;
 
-    protected static enum Action { DRAW, FILL, CLIP };
+    Map<RenderingHints.Key, Object> hints = new HashMap<RenderingHints.Key, Object>();
+
+    protected static enum Action { DRAW, FILL, CLIP }
 
     protected void addCommand(Object command) {
         if(parent != null)
@@ -433,23 +435,24 @@ public abstract class AbstractGraphicsInterface extends Graphics2D implements Cl
     }
 
     public RenderingHints getRenderingHints() {
-        return new RenderingHints(null);
+        return new RenderingHints(hints);
+    }
+    
+    public void addRenderingHints(Map hints) {
+        for (Object key : hints.keySet()) {
+            if (key instanceof RenderingHints.Key) {
+                this.hints.put((RenderingHints.Key)key, hints.get(key));
+            }
+        }
     }
 
-    public void addRenderingHints(Map<?,?> hints) {
-        /* TODO: implement this later ! */
-    }
-
-    public void addRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
-        /* TODO: implement this later ! */
-    }
-
-    public void setRenderingHints(Map<?,?> hints) {
-        /* TODO: implement this later ! */
+    public void setRenderingHints(Map hints) {
+        this.hints.clear();
+        addRenderingHints(hints);
     }
 
     public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
-        /* TODO: implement this later ! */
+        hints.put(hintKey, hintValue);
     }
 
     public GraphicsConfiguration getDeviceConfiguration() {
@@ -470,4 +473,7 @@ public abstract class AbstractGraphicsInterface extends Graphics2D implements Cl
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) { return true; }
     public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) { return true; }
     public boolean drawImage(Image img, int x, int y, ImageObserver observer) { return true; }
+    
+    
+    
 }
