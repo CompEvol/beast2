@@ -50,6 +50,25 @@ public interface DataType {
     /** data type description, e.g. nucleotide, codon **/
     public String getDescription();
     
+    /**
+     * Get character corresponding to a given state
+     *
+     * @param state state
+     *              <p/>
+     *              return corresponding character
+     */
+    public char getChar(int state);
+
+    /**
+     * Get a string code corresponding to a given state. By default this
+     * calls getChar but overriding classes may return multicharacter codes.
+     *
+     * @param state state
+     *              <p/>
+     *              return corresponding code
+     */
+    public String getCode(int state);
+    
     @Description(value="Base class bringing class and interfaces together", isInheritable=false)
     public abstract class Base extends Plugin implements DataType {
     	/** size of the state space **/
@@ -206,6 +225,16 @@ public interface DataType {
     	}
     	
     	@Override
+        public char getChar(int state) {
+            return (char) (state + 'A');
+        }
+
+    	@Override
+        public String getCode(int state) {
+            return String.valueOf(getChar(state));
+        }
+
+        @Override
     	public String toString() {
     		return getDescription();
     	}

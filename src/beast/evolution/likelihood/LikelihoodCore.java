@@ -69,6 +69,7 @@ abstract public class LikelihoodCore {
 
 	/** assign values of states for node with number iNode **/
 	abstract public void setNodeStates(int iNode, int[] iStates);
+	abstract public void getNodeStates(int iNode, int[] iStates);
 	
 	/** indicate that the probability transition matrix for node 
 	 * iNode is about the be changed, that is, that the stored
@@ -77,6 +78,7 @@ abstract public class LikelihoodCore {
 	
     /** assign values of states for probability transition matrix for node with number iNode **/
 	abstract public void setNodeMatrix(int iNode, int iMatrixIndex, double[] fMatrix);
+	abstract public void getNodeMatrix(int iNode, int iMatrixIndex, double[] fMatrix);
     /** assign values of states for probability transition matrices 
      * padded with 1s for dealing with unknown characters for node with number iNode **/
 //	abstract public void setPaddedNodeMatrices(int iNode, double[] fMatrix);
