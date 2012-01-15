@@ -22,14 +22,13 @@ public class BayesianSkylineTest extends TestCase {
         //popSize.setValue(1, 2.0);
 
         Tree tree = new Tree("(((1:1,2:1):2.5,(3:1.5,4:1.5):2):2,5:5.5);");
-        TreeIntervals intervals = new TreeIntervals();
-        intervals.init(tree);
+        TreeIntervals intervals = new TreeIntervals(tree);
 
         BayesianSkyline skyline = new BayesianSkyline();
         //skyline.init(popSize, groupSize, intervals);
-        skyline.initByName("popSizes", "1.0 2.0", 
-        					"groupSizes", "2 2", 
-        					"treeIntervals", intervals);
+        skyline.initByName("popSizes", "1.0 2.0",
+                "groupSizes", "2 2",
+                "treeIntervals", intervals);
 
         assertEquals(skyline.getPopSize(0.01), 1.0);
         assertEquals(skyline.getPopSize(1.49), 1.0);

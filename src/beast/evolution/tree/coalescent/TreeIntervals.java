@@ -45,50 +45,60 @@ import java.util.List;
  * @version $Id: TreeIntervals.java,v 1.9 2005/05/24 20:25:56 rambaut Exp $
  */
 @Description("Extracts the intervals from a tree. Points in the intervals " +
-		"are defined by the heights of nodes in the tree.")
+        "are defined by the heights of nodes in the tree.")
 public class TreeIntervals extends CalculationNode implements IntervalList {
-	public Input<Tree> m_tree = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
-	
-	@Override
-	public void initAndValidate() {
-		// this initialises data structures that store/restore might need 
-        calculateIntervals();
-        intervalsKnown = false;
-	}
-	
-    /** CalculationNode methods **/
-	@Override
-    protected boolean requiresRecalculation() {
-		// we only get here if the tree is dirty, which is a StateNode
-		// since the StateNode can only become dirty through an operation, 
-		// we need to recalculate tree intervals
-		intervalsKnown = false;
-		return true;
-	}	
+    public Input<Tree> m_tree = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
 
-	@Override
-    protected void restore() {
-		//intervalsKnown = false;
-		double [] tmp = storedIntervals;
-		storedIntervals = intervals;
-		intervals = tmp;
-		
-		int [] tmp2 = storedLineageCounts;
-		storedLineageCounts = lineageCounts;
-		lineageCounts = tmp2;
-		
-		int tmp3 = storedIntervalCount;
-		storedIntervalCount = intervalCount;
-		intervalCount = tmp3;
-    	super.restore();
+    public TreeIntervals() {
+        super();
     }
 
-	@Override
+    public TreeIntervals(Tree tree) throws Exception {
+        init(tree);
+    }
+
+    @Override
+    public void initAndValidate() {
+        // this initialises data structures that store/restore might need
+        calculateIntervals();
+        intervalsKnown = false;
+    }
+
+    /**
+     * CalculationNode methods *
+     */
+    @Override
+    protected boolean requiresRecalculation() {
+        // we only get here if the tree is dirty, which is a StateNode
+        // since the StateNode can only become dirty through an operation,
+        // we need to recalculate tree intervals
+        intervalsKnown = false;
+        return true;
+    }
+
+    @Override
+    protected void restore() {
+        //intervalsKnown = false;
+        double[] tmp = storedIntervals;
+        storedIntervals = intervals;
+        intervals = tmp;
+
+        int[] tmp2 = storedLineageCounts;
+        storedLineageCounts = lineageCounts;
+        lineageCounts = tmp2;
+
+        int tmp3 = storedIntervalCount;
+        storedIntervalCount = intervalCount;
+        intervalCount = tmp3;
+        super.restore();
+    }
+
+    @Override
     protected void store() {
-		System.arraycopy(lineageCounts, 0, storedLineageCounts, 0, lineageCounts.length); 
-		System.arraycopy(intervals, 0, storedIntervals, 0, intervals.length); 
-		storedIntervalCount = intervalCount;
-		super.store();
+        System.arraycopy(lineageCounts, 0, storedLineageCounts, 0, lineageCounts.length);
+        System.arraycopy(intervals, 0, storedIntervals, 0, intervals.length);
+        storedIntervalCount = intervalCount;
+        super.store();
     }
 
     /**
@@ -106,9 +116,9 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      */
     public void setMultifurcationLimit(double multifurcationLimit) {
         // invalidate only if changing anything
-        if( this.multifurcationLimit != multifurcationLimit) {
-          this.multifurcationLimit = multifurcationLimit;
-          intervalsKnown = false;
+        if (this.multifurcationLimit != multifurcationLimit) {
+            this.multifurcationLimit = multifurcationLimit;
+            intervalsKnown = false;
         }
     }
 
@@ -298,8 +308,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * Recalculates all the intervals for the given beast.tree.
      */
     @SuppressWarnings("unchecked")
-	private void calculateIntervals() {
-    	Tree tree = m_tree.get();
+    private void calculateIntervals() {
+        Tree tree = m_tree.get();
 
         final int nodeCount = tree.getNodeCount();
 
@@ -323,18 +333,18 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
             storedLineageCounts = new int[nodeCount];
 
         } else {
-	        for( List<Node> l : lineagesAdded ) {
-	            if( l != null ) {
-	                l.clear();
-	            }
-	        }
-	        for( List<Node> l : lineagesRemoved ) {
-	            if( l != null ) {
-	                l.clear();
-	            }
-	        }
+            for (List<Node> l : lineagesAdded) {
+                if (l != null) {
+                    l.clear();
+                }
+            }
+            for (List<Node> l : lineagesRemoved) {
+                if (l != null) {
+                    l.clear();
+                }
+            }
         }
-        
+
         // start is the time of the first tip
         double start = times[indices[0]];
         int numLines = 0;
@@ -435,12 +445,12 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * @param childCounts the number of children of each node
      */
     private static void collectTimes(Tree tree, double[] times, int[] childCounts) {
-    	Node [] nodes = tree.getNodesAsArray();
-    	for (int i = 0; i < nodes.length; i++) {
-    		Node node = nodes[i];
+        Node[] nodes = tree.getNodesAsArray();
+        for (int i = 0; i < nodes.length; i++) {
+            Node node = nodes[i];
             times[i] = node.getHeight();
             childCounts[i] = node.isLeaf() ? 0 : 2;
-    	}
+        }
     }
 
     /**
