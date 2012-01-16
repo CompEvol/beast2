@@ -27,6 +27,8 @@
 package beast.evolution.substitutionmodel;
 
 
+import java.lang.reflect.Constructor;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Valuable;
@@ -44,6 +46,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
             		"rate matrix). Entry i specifies the rate of from i%n to floor(i/(n-1)) where " +
             		"n is the number of states.", Validate.REQUIRED);
 
+    public Input<String> eigenSystemClass = new Input<String>("eigenSystem","Name of the class used for creating an EigenSystem", DefaultEigenSystem.class.getName());
     /** a square m_nStates x m_nStates matrix containing current rates  **/
     double [][] m_rateMatrix;
     
@@ -58,11 +61,27 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         			"rate matrix of dimension " + m_nStates + "x" + (m_nStates -1) + "=" + m_nStates * (m_nStates -1) + " was " +
         			"expected");
         }
-        eigenSystem = new DefaultEigenSystem(m_nStates);
+        
+        eigenSystem = createEigenSystem();
+        //eigenSystem = new DefaultEigenSystem(m_nStates);
+        
         m_rateMatrix = new double[m_nStates][m_nStates];
         relativeRates = new double[m_rates.get().getDimension()];
         storedRelativeRates = new double[m_rates.get().getDimension()];
     } // initAndValidate
+
+    /** create an EigenSystem of the class indicated by the eigenSystemClass input **/
+    protected EigenSystem createEigenSystem() throws Exception {
+        Constructor<?>[] ctors = Class.forName(eigenSystemClass.get()).getDeclaredConstructors();
+    	Constructor<?> ctor = null;
+    	for (int i = 0; i < ctors.length; i++) {
+    	    ctor = ctors[i];
+    	    if (ctor.getGenericParameterTypes().length == 1)
+    		break;
+    	}
+   	    ctor.setAccessible(true);
+   	    return (EigenSystem)ctor.newInstance(m_nStates);
+    }
 
     protected double[] relativeRates;
     protected double[] storedRelativeRates;

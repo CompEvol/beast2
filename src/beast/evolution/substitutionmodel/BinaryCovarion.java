@@ -63,7 +63,7 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 		storedUnnormalizedQ = new double[4][4]; 
 
         updateMatrix = true;
-        eigenSystem = new DefaultEigenSystem(m_nStates);
+        eigenSystem = createEigenSystem();
         m_rateMatrix = new double[m_nStates][m_nStates];
         relativeRates = new double[4*3];
         storedRelativeRates = new double[4*3];

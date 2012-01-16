@@ -52,7 +52,7 @@
         </subtemplate>
 
 <!-- GTR substitution model -->
-        <subtemplate id='GTR' class='beast.evolution.substitutionmodel.HKY' mainid='gtr.$(n)'>
+        <subtemplate id='GTR' class='beast.evolution.substitutionmodel.GTR' mainid='gtr.$(n)' suppressInputs='beast.evolution.substitutionmodel.GTR.eigenSystem'>
 <![CDATA[
         <plugin spec='GTR' id='gtr.$(n)'>
             <parameter id="rateAC.$(n)" name='rateAC' value="1.0" lower="0.0" estimate='true'/>
@@ -116,12 +116,12 @@
 
 
 <!-- empirical amino acid substitution models -->
-        <subtemplate id='Blosum62' class='beast.evolution.substitutionmodel.Blosum62' mainid='Blosum62.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='Blosum62' id='Blosum62.$(n)'/>]]></subtemplate>
-        <subtemplate id='Dayhoff' class='beast.evolution.substitutionmodel.Dayhoff' mainid='Dayhoff.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='Dayhoff' id='Dayhoff.$(n)'/>]]></subtemplate>
-        <subtemplate id='JTT' class='beast.evolution.substitutionmodel.JTT' mainid='JTT.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='JTT' id='JTT.$(n)'/>]]></subtemplate>
-        <subtemplate id='cpREV' class='beast.evolution.substitutionmodel.CPREV' mainid='CPREV.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='CPREV' id='CPREV.$(n)'/>]]></subtemplate>
-        <subtemplate id='mtREV' class='beast.evolution.substitutionmodel.MTREV' mainid='MTREV.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='MTREV' id='MTREV.$(n)'/>]]></subtemplate>
-        <subtemplate id='WAG' class='beast.evolution.substitutionmodel.WAG' mainid='WAG.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='WAG' id='WAG.$(n)'/>]]></subtemplate>
+        <subtemplate id='Blosum62' class='beast.evolution.substitutionmodel.Blosum62' suppressInputs='beast.evolution.substitutionmodel.Blosum62.eigenSystem' mainid='Blosum62.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='Blosum62' id='Blosum62.$(n)'/>]]></subtemplate>
+        <subtemplate id='Dayhoff' class='beast.evolution.substitutionmodel.Dayhoff' suppressInputs='beast.evolution.substitutionmodel.Dayhoff.eigenSystem' mainid='Dayhoff.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='Dayhoff' id='Dayhoff.$(n)'/>]]></subtemplate>
+        <subtemplate id='JTT' class='beast.evolution.substitutionmodel.JTT' suppressInputs='beast.evolution.substitutionmodel.JTT.eigenSystem' mainid='JTT.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='JTT' id='JTT.$(n)'/>]]></subtemplate>
+        <subtemplate id='cpREV' class='beast.evolution.substitutionmodel.CPREV' suppressInputs='beast.evolution.substitutionmodel.CPREV.eigenSystem' mainid='CPREV.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='CPREV' id='CPREV.$(n)'/>]]></subtemplate>
+        <subtemplate id='mtREV' class='beast.evolution.substitutionmodel.MTREV' suppressInputs='beast.evolution.substitutionmodel.MTREV.eigenSystem' mainid='MTREV.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='MTREV' id='MTREV.$(n)'/>]]></subtemplate>
+        <subtemplate id='WAG' class='beast.evolution.substitutionmodel.WAG' suppressInputs='beast.evolution.substitutionmodel.WAG.eigenSystem' mainid='WAG.$(n)'><!--value spec='XML'--><![CDATA[<plugin spec='WAG' id='WAG.$(n)'/>]]></subtemplate>
 
 <!-- binary model -->
         <subtemplate id='MutationDeathModel' class='beast.evolution.substitutionmodel.MutationDeathModel' mainid='MutationDeathModel.$(n)'

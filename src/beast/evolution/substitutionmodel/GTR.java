@@ -41,7 +41,7 @@ public class GTR extends GeneralSubstitutionModel {
     		throw new Exception("Frequencies has wrong size. Expected 4, but got " + m_nStates);
     	}
 
-        eigenSystem = new DefaultEigenSystem(m_nStates);
+        eigenSystem = createEigenSystem();
         m_rateMatrix = new double[m_nStates][m_nStates];
         relativeRates = new double[m_nStates * (m_nStates - 1)];
         storedRelativeRates = new double[m_nStates * (m_nStates - 1)];

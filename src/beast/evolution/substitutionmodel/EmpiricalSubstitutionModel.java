@@ -28,7 +28,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 		
         updateMatrix = true;
         m_nStates = m_frequencies.getFreqs().length;
-        eigenSystem = new DefaultEigenSystem(m_nStates);
+        eigenSystem = createEigenSystem();
         m_rateMatrix = new double[m_nStates][m_nStates];
         relativeRates = new double[m_empiricalRates.length];
         storedRelativeRates = new double[m_empiricalRates.length];
