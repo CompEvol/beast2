@@ -173,6 +173,7 @@ public class Node extends Plugin {
      * @return a list of immediate child nodes of this node.
      */
     public List<Node> getChildren() {
+        if (isLeaf()) return Collections.emptyList();
         return Arrays.asList(m_left, m_right);
     }
 
