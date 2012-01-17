@@ -373,9 +373,8 @@ public abstract class Parameter<T> extends StateNode {
 
     public void getMatrixValues1(int i, double [] row) {
     	assert (row.length == minorDimension);
-    	int end = i * minorDimension + getMinorDimension1();
-    	for (int j = i * minorDimension; j < end; j++) {
-    		row[j] = getArrayValue(j);
+    	for (int j = 0; j < minorDimension; j++) {
+    		row[j] = getArrayValue(i * minorDimension + j);
     	}
     }
 
