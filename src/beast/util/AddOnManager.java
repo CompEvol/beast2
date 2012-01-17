@@ -31,6 +31,7 @@
 package beast.util;
 
 
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -51,6 +52,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import beast.app.util.Arguments;
 import beast.app.util.Utils;
 
 /**
@@ -87,6 +89,7 @@ public class AddOnManager {
 
 		List<List<String>> addOns = new ArrayList<List<String>>();
 		String[] sURLs = getAddOnURL();
+		List<String> sBeastDirs = AddOnManager.getBeastDirectories();
 
 		for (String sURL : sURLs) {
 			URL url = new URL(sURL);
@@ -112,6 +115,15 @@ public class AddOnManager {
 				addOn.add(sStr2[0]);
 				sStr2 = sStr2[1].split("\"");
 				addOn.add(sStr2[1]);
+				String sAddOnName = URL2AddOnName(sStr2[1]); 
+				addOn.add(sAddOnName);
+				addOn.add("not installed");
+				for (String sDir : sBeastDirs) {
+					File f = new File(sDir + "/" + sAddOnName);
+					if (f.exists()) {
+						addOn.set(3, "installed");
+					}
+				}
 				addOns.add(addOn);
 			}
 		}
@@ -753,6 +765,90 @@ public class AddOnManager {
 		}
 
 		return result;
+	}
+
+	
+	private static void printUsageAndExit(Arguments arguments) {
+		arguments.printUsage("addonmanager", "");
+		System.out.println("\nExamples:");
+		System.out.println("addonmanager -list");
+		System.out.println("addonmanager -add SNAPP");
+		System.out.println("addonmanager -del SNAPP");
+		System.exit(0);
+	}
+	
+	public static void main(String [] args) {
+		try {
+			Arguments arguments = new Arguments(
+	            new Arguments.Option[]{
+	                new Arguments.Option("list", "List available add-ons"),
+	                new Arguments.StringOption("add", "NAME", "Install the <NAME> add-on "),
+	                new Arguments.StringOption("del", "NAME", "Uninstall the <NAME> add-on "),
+	                new Arguments.Option("help", "Show help"),
+	            });
+	        try {
+	            arguments.parseArguments(args);
+	        } catch (Arguments.ArgumentException ae) {
+	            System.out.println();
+	            System.out.println(ae.getMessage());
+	            System.out.println();
+	            printUsageAndExit(arguments);
+	        }
+
+	        if (args.length == 0 || arguments.hasOption("help")) {
+	            printUsageAndExit(arguments);
+	        }
+	        
+			List<List<String>> addOns = AddOnManager.getAddOns();
+	        if (arguments.hasOption("list")) {
+				System.out.println("Name : status : Description ");
+				for (List<String> addOn : addOns) {
+					System.out.println(addOn.get(2)+ " (" + addOn.get(3) + ")" + ": "+ addOn.get(0));
+				}
+	        }
+
+	        if (arguments.hasOption("add")) {
+	            String name = arguments.getStringOption("add");
+	            boolean processed = false;
+				for (List<String> addOn : addOns) {
+					if (addOn.get(2).equals(name)) {
+						processed = true;
+						if (!addOn.get(3).equals("installed")) {
+				            installAddOn(addOn.get(1));
+							System.out.println("Add-on " + name + " is installed.");
+						} else {
+							System.out.println("Installation aborted: " + name + " is already installed.");
+							System.exit(0);
+						}
+					}
+				}	            
+				if (!processed) {
+					System.out.println("Could not find add-on '" + name +"' (typo perhaps?)");
+				}
+	        }
+
+	        if (arguments.hasOption("del")) {
+	            String name = arguments.getStringOption("del");
+	            boolean processed = false;
+				for (List<String> addOn : addOns) {
+					if (addOn.get(2).equals(name)) {
+						processed = true;
+						if (!addOn.get(3).equals("not installed")) {
+				            uninstallAddOn(addOn.get(1));
+							System.out.println("Add-on " + name + " is uninstalled.");
+						} else {
+							System.out.println("Un-installation aborted: " + name + " is not installed yet.");
+							System.exit(0);
+						}
+					}
+				}	            
+				if (!processed) {
+					System.out.println("Could not find add-on '" + name +"' (typo perhaps?)");
+				}
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
