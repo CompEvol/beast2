@@ -154,8 +154,8 @@
             <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.$(n)'-->
             <plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' initial='@Tree.$(n)'>
                 <taxa spec='Alignment' idref='data'/>
-                <populationModel id='ConstantPopulation.$(n)' spec='ConstantPopulation'>
-            		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
+                <populationModel id='ConstantPopulation0.$(n)' spec='ConstantPopulation'>
+            		<popSize id='randomPopSize.$(n)' spec='parameter.RealParameter' value='1'/>
 	            </populationModel>
             </plugin>
 
@@ -247,8 +247,8 @@
 <![CDATA[
             <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
                 <taxa spec='Alignment' idref='data'/>
-                <populationModel id='ConstantPopulation.$(n)' spec='ConstantPopulation'>
-            		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
+                <populationModel id='ConstantPopulation0.$(n)' spec='ConstantPopulation'>
+            		<popSize id='randomPopSize.$(n)' spec='parameter.RealParameter' value='1'/>
 	            </populationModel>
             </tree>
 ]]>

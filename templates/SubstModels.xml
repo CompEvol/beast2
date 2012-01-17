@@ -59,8 +59,8 @@
             <parameter id="rateAG.$(n)" name='rateAG' value="1.0" lower="0.0" estimate='true'/>
             <parameter id="rateAT.$(n)" name='rateAT' value="1.0" lower="0.0" estimate='true'/>
             <parameter id="rateCG.$(n)" name='rateCG' value="1.0" lower="0.0" estimate='true'/>
-            <parameter id="rateCT.$(n)" name='rateCT' value="1.0" lower="0.0" estimate='true'/>
-            <parameter id="rateGT.$(n)" name='rateGT' value="1.0" lower="0.0" estimate='false'/>
+            <parameter id="rateCT.$(n)" name='rateCT' value="1.0" lower="0.0" estimate='false'/>
+            <parameter id="rateGT.$(n)" name='rateGT' value="1.0" lower="0.0" estimate='true'/>
             <frequencies id='freqs.$(n)' spec='Frequencies'>
                 <frequencies id='freqParameter.$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
             </frequencies>
@@ -383,21 +383,21 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
             <distribution id="CoalescentConstant.$(n)" spec="Coalescent">
                 <treeIntervals spec='TreeIntervals' id='TreeIntervals.$(n)' tree='@Tree.$(n)'/>
                 <populationModel spec="ConstantPopulation" id='ConstantPopulation.$(n)'>
-                     <parameter name="popSize" id="cPopSize.$(n)" value='0.3' estimate='true'/>
+                     <parameter name="popSize" id="popSize.$(n)" value='0.3' estimate='true'/>
                  </populationModel>
             </distribution>
 
-  		    <operator id='cPopSizeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@cPopSize.$(n)"/>
-	        <prior id='cPopSizePrior.$(n)' spec='Prior' x='@cPopSize.$(n)'><distr spec="OneOnX"/></prior>
+  		    <operator id='PopSizeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popSize.$(n)"/>
+	        <prior id='PopSizePrior.$(n)' spec='Prior' x='@popSize.$(n)'><distr spec="OneOnX"/></prior>
 ]]>
-            <connect srcID='CoalescentConstant.$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.$(n)) and Tree.$(n)/estimate=true'>Coalesenct prior with constant rate on tree $(n)</connect>
-            <connect srcID='cPopSizePrior.$(n)'      targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'>Coalescent population size parameter of partition $(n)</connect>
+            <connect srcID='CoalescentConstant.$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.$(n)) and Tree.$(n)/estimate=true'>Coalescent prior with constant rate on tree $(n)</connect>
+            <connect srcID='PopSizePrior.$(n)'      targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.$(n)) and popSize.$(n)/estimate=true'>Coalescent population size parameter of partition $(n)</connect>
 
-            <connect srcID='cPopSize.$(n)'           targetID='state' inputName='stateNode' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'/>
+            <connect srcID='popSize.$(n)'           targetID='state' inputName='stateNode' if='inposterior(CoalescentConstant.$(n)) and popSize.$(n)/estimate=true'/>
 
-            <connect srcID='cPopSizeScaler.$(n)'     targetID='mcmc' inputName='operator' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'>Scale population size of Coalescent prior of tree $(n)</connect>
+            <connect srcID='PopSizeScaler.$(n)'     targetID='mcmc' inputName='operator' if='inposterior(CoalescentConstant.$(n)) and popSize.$(n)/estimate=true'>Scale population size of Coalescent prior of tree $(n)</connect>
 
-            <connect srcID='cPopSize.$(n)'           targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.$(n)) and cPopSize.$(n)/estimate=true'/>
+            <connect srcID='popSize.$(n)'           targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.$(n)) and popSize.$(n)/estimate=true'/>
             <connect srcID='CoalescentConstant.$(n)' targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.$(n)) and Tree.$(n)/estimate=true'/>
         </subtemplate>
 

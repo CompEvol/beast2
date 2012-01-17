@@ -799,7 +799,10 @@ public class AddOnManager {
 	            printUsageAndExit(arguments);
 	        }
 	        
+	        System.err.print("Getting list of add-ons ...");
 			List<List<String>> addOns = AddOnManager.getAddOns();
+	        System.err.println("Done!\n");
+			
 	        if (arguments.hasOption("list")) {
 				System.out.println("Name : status : Description ");
 				for (List<String> addOn : addOns) {
@@ -814,6 +817,7 @@ public class AddOnManager {
 					if (addOn.get(2).equals(name)) {
 						processed = true;
 						if (!addOn.get(3).equals("installed")) {
+					        System.err.println("Start installation");
 				            installAddOn(addOn.get(1));
 							System.out.println("Add-on " + name + " is installed.");
 						} else {
@@ -834,6 +838,7 @@ public class AddOnManager {
 					if (addOn.get(2).equals(name)) {
 						processed = true;
 						if (!addOn.get(3).equals("not installed")) {
+					        System.err.println("Start un-installation");
 				            uninstallAddOn(addOn.get(1));
 							System.out.println("Add-on " + name + " is uninstalled.");
 						} else {
