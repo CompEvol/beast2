@@ -11,8 +11,15 @@ public class Taxon extends Plugin {
 	// idref to refer to the single taxon.
 //	public Input<String> m_sLabel = new Input<String>("label", "name of the taxon", Validate.REQUIRED);
 
-	
-	@Override
+    public Taxon(String id) throws Exception {
+        setID(id);
+        initAndValidate();
+    }
+
+    public Taxon() {
+    }
+
+    @Override
 	public void initAndValidate() throws Exception {
 		
 	}

@@ -13,6 +13,13 @@ public class TaxonSet extends Taxon {
 	public Input<Alignment> m_alignment = new Input<Alignment>("alignment","alignment where each seaquence represents a taxon");
 	
     List<String> m_taxonList;
+
+    public TaxonSet() {}
+    
+    public TaxonSet(List<Taxon> taxa) throws Exception {
+        m_taxonset.setValue(taxa, this);
+        initAndValidate();
+    }
     
 	@Override
 	public void initAndValidate() throws Exception {
