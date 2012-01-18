@@ -125,12 +125,12 @@ public class JAddOnDialog extends JDialog {
 						if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " + AddOnManager.URL2AddOnName(addOn.sAddOnURL) + "?", "Uninstall Add On", JOptionPane.YES_NO_OPTION) == 
 							JOptionPane.YES_OPTION) {
 				            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-							AddOnManager.uninstallAddOn(addOn.sAddOnURL);
+							AddOnManager.uninstallAddOn(addOn.sAddOnURL, false);
 				            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 						}
 					} else {
 			            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-						AddOnManager.installAddOn(addOn.sAddOnURL);
+						AddOnManager.installAddOn(addOn.sAddOnURL, false);
 			            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					}
 					resetList();

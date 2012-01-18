@@ -136,9 +136,10 @@ public class AddOnManager {
 	 * add on /templates with beauti XML templates
 	 * 
 	 * @param sURL
+	 * @param useAppDir if false, use user directory, otherwise use application directory
 	 * @throws Exception
 	 */
-	public static void installAddOn(String sURL) throws Exception {
+	public static void installAddOn(String sURL, boolean useAppDir) throws Exception {
 		if (!sURL.toLowerCase().endsWith(".zip")) {
 			throw new Exception("Add-on should be packaged in a zip file");
 		}
@@ -147,7 +148,7 @@ public class AddOnManager {
 		// create directory
 		URL templateURL = new URL(sURL);
 		ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
-		String sDir = getAddOnUserDir() + "/" + sName;
+		String sDir = (useAppDir ? getAddOnAppDir() : getAddOnUserDir()) + "/" + sName;
 		File dir = new File(sDir);
 		if (!dir.exists()) {
 			if (!dir.mkdirs()) {
@@ -165,12 +166,12 @@ public class AddOnManager {
 		loadExternalJars();
 	}
 
-	public static void uninstallAddOn(String sURL) throws Exception {
+	public static void uninstallAddOn(String sURL, boolean useAppDir) throws Exception {
 		if (!sURL.toLowerCase().endsWith(".zip")) {
 			throw new Exception("Add-on should be packaged in a zip file");
 		}
 		String sName = URL2AddOnName(sURL);
-		String sDir = getAddOnUserDir() + "/" + sName;
+		String sDir = (useAppDir ? getAddOnAppDir() : getAddOnUserDir()) + "/" + sName;
 		File dir = new File(sDir);
 		deleteRecursively(dir);
 	}
@@ -773,6 +774,7 @@ public class AddOnManager {
 		System.out.println("\nExamples:");
 		System.out.println("addonmanager -list");
 		System.out.println("addonmanager -add SNAPP");
+		System.out.println("addonmanager -useAppDir -add SNAPP");
 		System.out.println("addonmanager -del SNAPP");
 		System.exit(0);
 	}
@@ -782,6 +784,7 @@ public class AddOnManager {
 			Arguments arguments = new Arguments(
 	            new Arguments.Option[]{
 	                new Arguments.Option("list", "List available add-ons"),
+	                new Arguments.Option("useAppDir", "Use application (system wide) installation directory. Note this requires writing rights to the application directory. If not specified, the user's BEAST directory will be used."),
 	                new Arguments.StringOption("add", "NAME", "Install the <NAME> add-on "),
 	                new Arguments.StringOption("del", "NAME", "Uninstall the <NAME> add-on "),
 	                new Arguments.Option("help", "Show help"),
@@ -798,6 +801,8 @@ public class AddOnManager {
 	        if (args.length == 0 || arguments.hasOption("help")) {
 	            printUsageAndExit(arguments);
 	        }
+
+	        boolean useAppDir = arguments.hasOption("useAppDir");
 	        
 	        System.err.print("Getting list of add-ons ...");
 			List<List<String>> addOns = AddOnManager.getAddOns();
@@ -818,7 +823,7 @@ public class AddOnManager {
 						processed = true;
 						if (!addOn.get(3).equals("installed")) {
 					        System.err.println("Start installation");
-				            installAddOn(addOn.get(1));
+				            installAddOn(addOn.get(1), useAppDir);
 							System.out.println("Add-on " + name + " is installed.");
 						} else {
 							System.out.println("Installation aborted: " + name + " is already installed.");
@@ -839,7 +844,7 @@ public class AddOnManager {
 						processed = true;
 						if (!addOn.get(3).equals("not installed")) {
 					        System.err.println("Start un-installation");
-				            uninstallAddOn(addOn.get(1));
+				            uninstallAddOn(addOn.get(1), useAppDir);
 							System.out.println("Add-on " + name + " is uninstalled.");
 						} else {
 							System.out.println("Un-installation aborted: " + name + " is not installed yet.");

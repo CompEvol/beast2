@@ -63,6 +63,11 @@ public class UserDataType extends Base {
 	}
 	
 	@Override
+    public String getCode(int state) {
+        return String.valueOf(m_sCodeMap.split(",")[state]);
+    }
+
+	@Override
 	public String getDescription() {
 		return "user defined";
 	}
