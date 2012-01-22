@@ -58,6 +58,23 @@ public class TreeUtils {
         };
     }
 
+    public static Comparator<Node> createReverseNodeDensityMinNodeHeightComparator() {
+        return new Comparator<Node>() {
+
+            public int compare(Node node1, Node node2) {
+                int larger = node2.getLeafNodeCount() - node1.getLeafNodeCount();
+
+                if (larger != 0) return larger;
+
+                double tipRecent = getMinNodeHeight(node2) - getMinNodeHeight(node1);
+                if (tipRecent > 0.0) return 1;
+                if (tipRecent < 0.0) return -1;
+                return 0;
+            }
+
+        };
+    }
+
     public static double getMinNodeHeight(Node node) {
         if (!node.isLeaf()) {
             double minNodeHeight = Double.MAX_VALUE;
