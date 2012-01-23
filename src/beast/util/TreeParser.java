@@ -390,8 +390,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                         tree.sort();
                         // at this stage, all heights are actually lengths
                         convertLengthToHeight(tree);
-                        int n = tree.getNodeCount();
-                        tree.labelInternalNodes((n + 1) / 2);
+                        int n = tree.getLeafNodeCount();
+                        tree.labelInternalNodes(n);
                         if (!m_bSurpressMetadata) {
                             processMetadata(tree);
                         }
@@ -404,9 +404,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             tree.sort();
             // at this stage, all heights are actually lengths
             convertLengthToHeight(tree);
-            int n = tree.getNodeCount();
+            int n = tree.getLeafNodeCount();
             if (tree.getNr() == 0) {
-                tree.labelInternalNodes((n + 1) / 2);
+                tree.labelInternalNodes(n);
             }
             if (!m_bSurpressMetadata) {
                 processMetadata(tree);
