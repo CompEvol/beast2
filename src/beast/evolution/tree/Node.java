@@ -174,7 +174,12 @@ public class Node extends Plugin {
      */
     public List<Node> getChildren() {
         if (isLeaf()) return Collections.emptyList();
-        return Arrays.asList(m_left, m_right);
+
+        List<Node> children = new ArrayList<Node>();
+        if (m_left != null) children.add(m_left);
+        if (m_right != null) children.add(m_right);
+
+        return children;
     }
 
     /**
@@ -208,7 +213,7 @@ public class Node extends Plugin {
      * @return true if current node is a leaf node *
      */
     public boolean isLeaf() {
-        return m_left == null;
+        return m_left == null && m_right == null;
     }
 
     /**
@@ -544,11 +549,10 @@ public class Node extends Plugin {
      * some methods that are usefule for porting from BEAST 1 *
      */
     public int getChildCount() {
-        if (isLeaf()) {
-            return 0;
-        } else {
-            return 2;
-        }
+        int childCount = 0;
+        if (m_left != null) childCount += 1;
+        if (m_right != null) childCount += 1;
+        return childCount;
     }
 
     public Node getChild(int iChild) {
