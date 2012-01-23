@@ -20,16 +20,17 @@ package org.apache.commons.math.analysis;
 import org.apache.commons.math.FunctionEvaluationException;
 
 
-
 /**
  * Base class for {@link BivariateRealFunction} that can be composed with other functions.
  *
- * @since 2.1
  * @version $Revision: 924453 $ $Date: 2010-03-17 16:05:20 -0400 (Wed, 17 Mar 2010) $
+ * @since 2.1
  */
 public abstract class BinaryFunction implements BivariateRealFunction {
 
-    /** The + operator method wrapped as a {@link BinaryFunction}. */
+    /**
+     * The + operator method wrapped as a {@link BinaryFunction}.
+     */
     public static final BinaryFunction ADD = new BinaryFunction() {
         /** {@inheritDoc} */
         @Override
@@ -38,7 +39,9 @@ public abstract class BinaryFunction implements BivariateRealFunction {
         }
     };
 
-    /** The - operator method wrapped as a {@link BinaryFunction}. */
+    /**
+     * The - operator method wrapped as a {@link BinaryFunction}.
+     */
     public static final BinaryFunction SUBTRACT = new BinaryFunction() {
         /** {@inheritDoc} */
         @Override
@@ -47,7 +50,9 @@ public abstract class BinaryFunction implements BivariateRealFunction {
         }
     };
 
-    /** The * operator method wrapped as a {@link BinaryFunction}. */
+    /**
+     * The * operator method wrapped as a {@link BinaryFunction}.
+     */
     public static final BinaryFunction MULTIPLY = new BinaryFunction() {
         /** {@inheritDoc} */
         @Override
@@ -56,7 +61,9 @@ public abstract class BinaryFunction implements BivariateRealFunction {
         }
     };
 
-    /** The / operator method wrapped as a {@link BinaryFunction}. */
+    /**
+     * The / operator method wrapped as a {@link BinaryFunction}.
+     */
     public static final BinaryFunction DIVIDE = new BinaryFunction() {
         /** {@inheritDoc} */
         @Override
@@ -65,7 +72,9 @@ public abstract class BinaryFunction implements BivariateRealFunction {
         }
     };
 
-    /** The {@code Math.pow} method wrapped as a {@link BinaryFunction}. */
+    /**
+     * The {@code Math.pow} method wrapped as a {@link BinaryFunction}.
+     */
     public static final BinaryFunction POW = new BinaryFunction() {
         /** {@inheritDoc} */
         @Override
@@ -74,7 +83,9 @@ public abstract class BinaryFunction implements BivariateRealFunction {
         }
     };
 
-    /** The {@code Math.atan2} method wrapped as a {@link BinaryFunction}. */
+    /**
+     * The {@code Math.atan2} method wrapped as a {@link BinaryFunction}.
+     */
     public static final BinaryFunction ATAN2 = new BinaryFunction() {
         /** {@inheritDoc} */
         @Override
@@ -83,10 +94,14 @@ public abstract class BinaryFunction implements BivariateRealFunction {
         }
     };
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public abstract double value(double x, double y) throws FunctionEvaluationException;
 
-    /** Get a composable function by fixing the first argument of the instance.
+    /**
+     * Get a composable function by fixing the first argument of the instance.
+     *
      * @param fixedX fixed value of the first argument
      * @return a function such that {@code f.value(y) == value(fixedX, y)}
      */
@@ -100,7 +115,9 @@ public abstract class BinaryFunction implements BivariateRealFunction {
         };
     }
 
-    /** Get a composable function by fixing the second argument of the instance.
+    /**
+     * Get a composable function by fixing the second argument of the instance.
+     *
      * @param fixedY fixed value of the second argument
      * @return a function such that {@code f.value(x) == value(x, fixedY)}
      */

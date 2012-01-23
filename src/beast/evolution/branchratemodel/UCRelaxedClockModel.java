@@ -24,7 +24,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
 
     RealParameter meanRate;
-    
+
     @Override
     public void initAndValidate() throws Exception {
 
@@ -33,15 +33,15 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         categories = categoryInput.get();
         int nCategoryCount = tree.getNodeCount() - 1;
         categories.setDimension(nCategoryCount);
-        Integer [] iCategories = new Integer[nCategoryCount];
+        Integer[] iCategories = new Integer[nCategoryCount];
         for (int i = 0; i < nCategoryCount; i++) {
-        	iCategories[i] = i;
+            iCategories[i] = i;
         }
         IntegerParameter other = new IntegerParameter(iCategories);
         categories.assignFromWithoutID(other);
         categories.setLower(0);
         categories.setUpper(categories.getDimension() - 1);
-        
+
         distribution = rateDistInput.get();
 
         rates = new double[categories.getDimension()];
@@ -54,31 +54,31 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
         meanRate = meanRateInput.get();
         if (meanRate == null) {
-        	meanRate = new RealParameter("1.0");
+            meanRate = new RealParameter("1.0");
         }
     }
 
     public double getRateForBranch(Node node) {
-    	if (node.isRoot()) {
-        	// root has no rate
-    		return 1;
-    	}
+        if (node.isRoot()) {
+            // root has no rate
+            return 1;
+        }
         if (recompute) {
             prepare();
             recompute = false;
         }
-    	if (renormalize) {
-    		if (normalize) {
-    			computeFactor();
-    		}
-        	renormalize = false;
-    	}
+        if (renormalize) {
+            if (normalize) {
+                computeFactor();
+            }
+            renormalize = false;
+        }
 
         int nodeNumber = node.getNr();
 
         if (nodeNumber == categories.getDimension()) {
-        	// root node has nr less than #categories, so use that nr
-    		nodeNumber = node.getTree().getRoot().getNr();
+            // root node has nr less than #categories, so use that nr
+            nodeNumber = node.getTree().getRoot().getNr();
         }
 
         int rateCategory = categories.getValue(nodeNumber);
@@ -100,8 +100,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             if (!node.isRoot()) {
                 int nodeNumber = node.getNr();
                 if (nodeNumber == categories.getDimension()) {
-                	// root node has nr less than #categories, so use that nr
-            		nodeNumber = node.getTree().getRoot().getNr();
+                    // root node has nr less than #categories, so use that nr
+                    nodeNumber = node.getTree().getRoot().getNr();
                 }
                 int rateCategory = categories.getValue(nodeNumber);
                 treeRate += rates[rateCategory] * node.getLength();
@@ -131,14 +131,14 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
         rates = new double[categories.getDimension()];
         try {
-	        for (int i = 0; i < rates.length; i++) {
-	            rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
-	        }
+            for (int i = 0; i < rates.length; i++) {
+                rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+            }
         } catch (Exception e) {
-        	// Exception due to distribution not having  inverseCumulativeProbability implemented.
-        	// This should already been caught at initAndValidate()
-        	e.printStackTrace();
-        	System.exit(0);
+            // Exception due to distribution not having  inverseCumulativeProbability implemented.
+            // This should already been caught at initAndValidate()
+            e.printStackTrace();
+            System.exit(0);
         }
 
         //if (normalize) computeFactor();
@@ -146,8 +146,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     protected boolean requiresRecalculation() {
-    	recompute = false;
-    	renormalize = true;
+        recompute = false;
+        renormalize = true;
 
 //        if (treeInput.get().somethingIsDirty()) {
 //        	recompute = true;
@@ -155,18 +155,18 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //        }
         // rateDistInput cannot be dirty?!?
         if (rateDistInput.get().isDirtyCalculation()) {
-        	recompute = true;
-        	return true;
+            recompute = true;
+            return true;
         }
         // NOT processed as trait on the tree, so DO mark as dirty
         if (categoryInput.get().somethingIsDirty()) {
-        	//recompute = true;
-        	return true;
+            //recompute = true;
+            return true;
         }
         if (meanRate.somethingIsDirty()) {
-        	return true;
+            return true;
         }
-        
+
         return recompute;
     }
 
@@ -174,17 +174,18 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     public void store() {
         System.arraycopy(rates, 0, storedRates, 0, rates.length);
         storedScaleFactor = scaleFactor;
-    	super.store();
+        super.store();
     }
+
     @Override
     public void restore() {
-    	double [] tmp = rates;
-    	rates = storedRates;
-    	storedRates = tmp;
-    	scaleFactor = storedScaleFactor;
-    	super.restore();
+        double[] tmp = rates;
+        rates = storedRates;
+        storedRates = tmp;
+        scaleFactor = storedScaleFactor;
+        super.restore();
     }
-    
+
     ParametricDistribution distribution;
     IntegerParameter categories;
     Tree tree;
@@ -192,7 +193,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     private boolean normalize = false;
     private boolean recompute = true;
     private boolean renormalize = true;
-    
+
     private double[] rates;
     private double[] storedRates;
     private double scaleFactor = 1.0;

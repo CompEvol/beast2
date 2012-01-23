@@ -283,7 +283,7 @@ public class Tree extends StateNode {
      * @param sPattern the name of the meta data
      */
     public void getMetaData(Node node, Double[] fT, String sPattern) {
-        fT[Math.abs(node.getNr())] = (Double)node.getMetaData(sPattern);
+        fT[Math.abs(node.getNr())] = (Double) node.getMetaData(sPattern);
         if (!node.isLeaf()) {
             getMetaData(node.m_left, fT, sPattern);
             if (node.m_right != null) {

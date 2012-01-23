@@ -1159,11 +1159,11 @@ public class Document {
             m_actions = new ArrayList<UndoAction>();
             // remove duplicates, if any
             Collections.sort(nPositions, new Comparator<Integer>() {
-				@Override
-				public int compare(Integer o1, Integer o2) {
-					return (o2  - o1);
-				}
-			});
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return (o2 - o1);
+                }
+            });
             for (int i = 1; i < nPositions.size(); i++) {
                 if ((int) nPositions.get(i) == (int) nPositions.get(i - 1)) {
                     nPositions.remove(i);
@@ -1381,8 +1381,7 @@ public class Document {
                 while (scanner.hasNextLine()) {
                     sXML.append(scanner.nextLine() + NL);
                 }
-            }
-            finally {
+            } finally {
                 scanner.close();
             }
             Plugin plugin0 = parser.parseBareFragment(sXML.toString(), false);
@@ -1392,7 +1391,7 @@ public class Document {
             // TODO: handle exception
         }
     }
-    
+
     public void init(Plugin plugin0) {
         try {
             if (plugin0 instanceof PluginSet) {

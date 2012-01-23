@@ -40,146 +40,159 @@ import javax.swing.event.HyperlinkListener;
 
 import beast.app.DocMaker;
 
-/** Dialog for showing HTML help, with hyperlinks and some browser 
+/**
+ * Dialog for showing HTML help, with hyperlinks and some browser
  * functionality to navigate around the Plugin help facilities.
  */
 public class HelpBrowser extends JDialog implements HyperlinkListener {
-	/** serialisation **/
-	private static final long serialVersionUID = 1L;
-	/** generates HTML pages **/
-	static DocMaker m_docMaker;
-	/** browser stack **/
-	List<String> m_sPlugins = new ArrayList<String>();
-	int m_iCurrentPlugin = 0;
-	
-	/** GUI components **/
-	JEditorPane m_editorPane;
-	JButton m_forwardButton;
-	JButton m_backwardButton;
+    /**
+     * serialisation *
+     */
+    private static final long serialVersionUID = 1L;
+    /**
+     * generates HTML pages *
+     */
+    static DocMaker m_docMaker;
+    /**
+     * browser stack *
+     */
+    List<String> m_sPlugins = new ArrayList<String>();
+    int m_iCurrentPlugin = 0;
 
-	
-	public HelpBrowser(String sPlugin) {
-		if (m_docMaker == null) {
-			m_docMaker = new DocMaker();
-		}
+    /**
+     * GUI components *
+     */
+    JEditorPane m_editorPane;
+    JButton m_forwardButton;
+    JButton m_backwardButton;
 
-		// initialise JEditorPane
-		m_editorPane = new JEditorPane(); 
-		m_editorPane.setEditable(false);
-		m_editorPane.setContentType("text/html");
-		m_editorPane.addHyperlinkListener(this);
-		setModal(true);
 
-		JScrollPane scroller = new JScrollPane(m_editorPane);
-		
-		// add the navigation buttons at the top
-		Box buttonBox = Box.createHorizontalBox();
-		buttonBox.setAlignmentX(LEFT_ALIGNMENT);
-		m_forwardButton = new JButton(">");
-		m_forwardButton.setToolTipText("Browse forward");
-		m_forwardButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				browseForward();
-			}
-		});
-		
-		m_backwardButton = new JButton("<");
-		m_backwardButton.setToolTipText("Browse backward");
-		m_backwardButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				browseBackward();
-			}
-		});
+    public HelpBrowser(String sPlugin) {
+        if (m_docMaker == null) {
+            m_docMaker = new DocMaker();
+        }
 
-		
-		JButton closeButton = new JButton("x");
-		closeButton.setToolTipText("Close Help");
-		closeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+        // initialise JEditorPane
+        m_editorPane = new JEditorPane();
+        m_editorPane.setEditable(false);
+        m_editorPane.setContentType("text/html");
+        m_editorPane.addHyperlinkListener(this);
+        setModal(true);
+
+        JScrollPane scroller = new JScrollPane(m_editorPane);
+
+        // add the navigation buttons at the top
+        Box buttonBox = Box.createHorizontalBox();
+        buttonBox.setAlignmentX(LEFT_ALIGNMENT);
+        m_forwardButton = new JButton(">");
+        m_forwardButton.setToolTipText("Browse forward");
+        m_forwardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                browseForward();
+            }
+        });
+
+        m_backwardButton = new JButton("<");
+        m_backwardButton.setToolTipText("Browse backward");
+        m_backwardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                browseBackward();
+            }
+        });
+
+
+        JButton closeButton = new JButton("x");
+        closeButton.setToolTipText("Close Help");
+        closeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
 //		m_backwardButton.setMnemonic(KeyEvent.VK_RIGHT);
 //		m_forwardButton.setMnemonic(KeyEvent.VK_LEFT);
 
-		buttonBox.add(m_backwardButton);
-		buttonBox.add(m_forwardButton);
-		buttonBox.add(closeButton);
-		
-		Box box = Box.createVerticalBox();
-		box.add(buttonBox);
-		box.add(scroller);
+        buttonBox.add(m_backwardButton);
+        buttonBox.add(m_forwardButton);
+        buttonBox.add(closeButton);
 
-	
-		m_sPlugins.add(sPlugin);
-		updateState();
-		this.add(box);
-	} // c'tor
-	
-	void browseForward() {
-		if (m_iCurrentPlugin < m_sPlugins.size()-1) {
-			m_iCurrentPlugin++;
-		}
-		updateState();
-	}
+        Box box = Box.createVerticalBox();
+        box.add(buttonBox);
+        box.add(scroller);
 
-	void browseBackward() {
-		if (m_iCurrentPlugin > 0) {
-			m_iCurrentPlugin--;
-		}
-		updateState();
-	}
 
-	@Override
-	public void hyperlinkUpdate(HyperlinkEvent link) {
-		try {
-			HyperlinkEvent.EventType type = link.getEventType();
-			if (type == HyperlinkEvent.EventType.ACTIVATED) {
-				String sPlugin = link.getDescription();
-				sPlugin = sPlugin.replaceAll(".html", "");
-				// update browser stack
-				m_iCurrentPlugin++;
-				while (m_iCurrentPlugin < m_sPlugins.size()) {
-					m_sPlugins.remove(m_iCurrentPlugin);
-				}
-				m_sPlugins.add(sPlugin);
-				updateState();
-			}
-		} catch (Exception e) {
-			// ignore
-			System.err.println(e.getMessage());
-		}
-	} // hyperlinkUpdate
-	
-	
-	/** change html text and enable/disable buttons (where appropriate) **/
-	void updateState() {
-		String sPlugin = m_sPlugins.get(m_iCurrentPlugin);
-		try {
-			String sHTML = m_docMaker.getHTML(sPlugin, false);
-			m_editorPane.setText(sHTML);
-		} catch (Exception e) {
-			// ignore
-			System.err.println("HelpBrowser: Something is wrong: " + e.getClass().getName() + " " + e.getMessage());
-		}
-		m_backwardButton.setEnabled(m_iCurrentPlugin > 0);
-		m_forwardButton.setEnabled(m_iCurrentPlugin < m_sPlugins.size() - 1);
-	} // updateState
+        m_sPlugins.add(sPlugin);
+        updateState();
+        this.add(box);
+    } // c'tor
 
-	
-	/** test **/
-	public static void main(String [] args) {
-		try {
-			HelpBrowser b = new HelpBrowser("beast.core.MCMC");
-			b.setSize(800,800);
-			b.setVisible(true);
-			b.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-		}
-	} // main
+    void browseForward() {
+        if (m_iCurrentPlugin < m_sPlugins.size() - 1) {
+            m_iCurrentPlugin++;
+        }
+        updateState();
+    }
+
+    void browseBackward() {
+        if (m_iCurrentPlugin > 0) {
+            m_iCurrentPlugin--;
+        }
+        updateState();
+    }
+
+    @Override
+    public void hyperlinkUpdate(HyperlinkEvent link) {
+        try {
+            HyperlinkEvent.EventType type = link.getEventType();
+            if (type == HyperlinkEvent.EventType.ACTIVATED) {
+                String sPlugin = link.getDescription();
+                sPlugin = sPlugin.replaceAll(".html", "");
+                // update browser stack
+                m_iCurrentPlugin++;
+                while (m_iCurrentPlugin < m_sPlugins.size()) {
+                    m_sPlugins.remove(m_iCurrentPlugin);
+                }
+                m_sPlugins.add(sPlugin);
+                updateState();
+            }
+        } catch (Exception e) {
+            // ignore
+            System.err.println(e.getMessage());
+        }
+    } // hyperlinkUpdate
+
+
+    /**
+     * change html text and enable/disable buttons (where appropriate) *
+     */
+    void updateState() {
+        String sPlugin = m_sPlugins.get(m_iCurrentPlugin);
+        try {
+            String sHTML = m_docMaker.getHTML(sPlugin, false);
+            m_editorPane.setText(sHTML);
+        } catch (Exception e) {
+            // ignore
+            System.err.println("HelpBrowser: Something is wrong: " + e.getClass().getName() + " " + e.getMessage());
+        }
+        m_backwardButton.setEnabled(m_iCurrentPlugin > 0);
+        m_forwardButton.setEnabled(m_iCurrentPlugin < m_sPlugins.size() - 1);
+    } // updateState
+
+
+    /**
+     * test *
+     */
+    public static void main(String[] args) {
+        try {
+            HelpBrowser b = new HelpBrowser("beast.core.MCMC");
+            b.setSize(800, 800);
+            b.setVisible(true);
+            b.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    } // main
 
 } // HelpBrowser

@@ -1,8 +1,6 @@
 package beast.app.draw;
 
 
-
-
 import beast.app.beauti.BeautiConfig;
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
@@ -53,7 +51,7 @@ public class PluginPanel extends JPanel {
     /* Set of plugins in the system.
       * These are the plugins that an input can be connected to **/
     static public HashMap<String, Plugin> g_plugins = null;
-//    static public Set<Operator> g_operators = null;
+    //    static public Set<Operator> g_operators = null;
 //    static public Set<StateNode> g_stateNodes = null;
 //    static public Set<Loggable> g_loggers = null;
 //    static public Set<Distribution> g_distributions = null;
@@ -66,27 +64,26 @@ public class PluginPanel extends JPanel {
      */
     static HashMap<Class<?>, String> g_inputEditorMap;
     static HashMap<Class<?>, String> g_listInputEditorMap;
-    
-    
+
 
     static {
-    	//init();
+        //init();
     } // finished registering input editors
-    
+
     public static void init() {
         // register input editors
         g_inputEditorMap = new HashMap<Class<?>, String>();
         g_listInputEditorMap = new HashMap<Class<?>, String>();
-        
+
 //        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
 //        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
 //        registerInputEditors(sKnownEditors);
         String[] PACKAGE_DIRS = {"beast.app",};
-        for(String sPackage : PACKAGE_DIRS) {
-	        List<String> sInputEditors = AddOnManager.find("beast.app.draw.InputEditor", sPackage);
-	        registerInputEditors(sInputEditors.toArray(new String[0]));
+        for (String sPackage : PACKAGE_DIRS) {
+            List<String> sInputEditors = AddOnManager.find("beast.app.draw.InputEditor", sPackage);
+            registerInputEditors(sInputEditors.toArray(new String[0]));
         }
-        
+
         m_position = new Point(0, 0);
         g_plugins = new HashMap<String, Plugin>();
 //        g_operators = new HashSet<Operator>();
@@ -101,24 +98,24 @@ public class PluginPanel extends JPanel {
             try {
                 Class<?> _class = Class.forName(sInputEditor);
                 InputEditor editor = (InputEditor) _class.newInstance();
-                Class<?> [] types = editor.types();
+                Class<?>[] types = editor.types();
                 for (Class<?> type : types) {
-	                g_inputEditorMap.put(type, sInputEditor);
-	                if (editor instanceof ListInputEditor) {
-		                Class<?> baseType = ((ListInputEditor)editor).baseType();
-		                g_listInputEditorMap.put(baseType, sInputEditor);
-	                }
+                    g_inputEditorMap.put(type, sInputEditor);
+                    if (editor instanceof ListInputEditor) {
+                        Class<?> baseType = ((ListInputEditor) editor).baseType();
+                        g_listInputEditorMap.put(baseType, sInputEditor);
+                    }
                 }
             } catch (java.lang.InstantiationException e) {
-            	// ingore input editors that are inner classes
+                // ingore input editors that are inner classes
             } catch (Exception e) {
                 // print message
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         }
-	}
+    }
 
-	public PluginPanel(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins, BeautiDoc doc) {
+    public PluginPanel(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins, BeautiDoc doc) {
         //g_plugins = new HashMap<String, Plugin>();
         for (Plugin plugin2 : plugins) {
             String sID = getID(plugin2);
@@ -132,12 +129,15 @@ public class PluginPanel extends JPanel {
         init(plugin, _pluginClass, true, doc);
     }
 
-    /** add plugin to plugin map and update related maps 
-     * @return true if it was already registered **/
+    /**
+     * add plugin to plugin map and update related maps
+     *
+     * @return true if it was already registered *
+     */
     static public boolean registerPlugin(String sID, Plugin plugin, BeautiDoc doc) {
-    	if (doc != null) {
-    		doc.registerPlugin(plugin);
-    	}
+        if (doc != null) {
+            doc.registerPlugin(plugin);
+        }
 //    	if (plugin instanceof Operator) {
 //    		g_operators.add((Operator)plugin);
 //    	}
@@ -150,49 +150,49 @@ public class PluginPanel extends JPanel {
 //    	if (plugin instanceof Distribution) {
 //    		g_distributions.add((Distribution)plugin);
 //    	}
-    	if (plugin instanceof Taxon) {
-    		g_taxa.add((Taxon)plugin);
-    	}
-    	if (g_plugins.containsKey(sID) && g_plugins.get(sID) == plugin) {
-    		return true;
-    	}
-    	g_plugins.put(sID, plugin);
-		return false;
+        if (plugin instanceof Taxon) {
+            g_taxa.add((Taxon) plugin);
+        }
+        if (g_plugins.containsKey(sID) && g_plugins.get(sID) == plugin) {
+            return true;
+        }
+        g_plugins.put(sID, plugin);
+        return false;
     }
 
     public static void renamePluginID(Plugin plugin, String sOldID, String sID, BeautiDoc doc) {
-    	if (doc != null) {
-    		doc.unregisterPlugin(plugin);
-    	}
-		g_plugins.remove(sOldID);
+        if (doc != null) {
+            doc.unregisterPlugin(plugin);
+        }
+        g_plugins.remove(sOldID);
 //		g_operators.remove(sOldID);
 //		g_stateNodes.remove(sOldID);
 //		g_loggers.remove(sOldID);
 //		g_distributions.remove(sOldID);
-		g_taxa.remove(sOldID);
-    	registerPlugin(sID, plugin, doc);
-	}
+        g_taxa.remove(sOldID);
+        registerPlugin(sID, plugin, doc);
+    }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass, BeautiDoc doc) {
-    	this(plugin, _pluginClass, true, doc);
+        this(plugin, _pluginClass, true, doc);
     }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
         initPlugins(plugin, doc);
         init(plugin, _pluginClass, bShowHeader, doc);
     }
-    
+
     void init(Plugin plugin, Class<?> _pluginClass, boolean showHeader, BeautiDoc doc) {
-    	try {
-    		m_plugin = plugin.getClass().newInstance();
-    		for (Input<?> input : plugin.listInputs()) {
-    			m_plugin.setInputValue(input.getName(), input.get());
-    		}
-    		m_plugin.setID(plugin.getID());
-    	} catch (Exception e) {
-			e.printStackTrace();
-		}
-    	
+        try {
+            m_plugin = plugin.getClass().newInstance();
+            for (Input<?> input : plugin.listInputs()) {
+                m_plugin.setInputValue(input.getName(), input.get());
+            }
+            m_plugin.setID(plugin.getID());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         //setModal(true);
         //m_plugin = plugin;
@@ -203,15 +203,15 @@ public class PluginPanel extends JPanel {
         mainBox.add(Box.createVerticalStrut(5));
 
         if (showHeader) {
-	        /* add plugin + help button at the top */
-	        Box pluginBox = createPluginBox();
-	        mainBox.add(pluginBox);
-	        mainBox.add(Box.createVerticalStrut(5));
+            /* add plugin + help button at the top */
+            Box pluginBox = createPluginBox();
+            mainBox.add(pluginBox);
+            mainBox.add(Box.createVerticalStrut(5));
         }
 
-        
+
         addInputs(mainBox, m_plugin, null, null, doc);
-        
+
 
         mainBox.add(Box.createVerticalStrut(5));
 
@@ -230,7 +230,9 @@ public class PluginPanel extends JPanel {
         return m_bOK;
     }
 
-    /** add all inputs of a plugin to a box **/
+    /**
+     * add all inputs of a plugin to a box *
+     */
     public static List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor, ValidateListener validateListener, BeautiDoc doc) {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
@@ -242,17 +244,17 @@ public class PluginPanel extends JPanel {
         }
         for (Input<?> input : inputs) {
             try {
-            	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-            	if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
-	            	InputEditor inputEditor = createInputEditor(input, plugin, true, ExpandOption.FALSE, ButtonStatus.ALL, editor, doc);
-					box.add(inputEditor);
-	                box.add(Box.createVerticalStrut(5));
-	                //box.add(Box.createVerticalGlue());
-	                if (validateListener != null) {
-	                	inputEditor.addValidationListener(validateListener);
-	                }
-	                editors.add(inputEditor);
-            	}
+                String sFullInputName = plugin.getClass().getName() + "." + input.getName();
+                if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
+                    InputEditor inputEditor = createInputEditor(input, plugin, true, ExpandOption.FALSE, ButtonStatus.ALL, editor, doc);
+                    box.add(inputEditor);
+                    box.add(Box.createVerticalStrut(5));
+                    //box.add(Box.createVerticalGlue());
+                    if (validateListener != null) {
+                        inputEditor.addValidationListener(validateListener);
+                    }
+                    editors.add(inputEditor);
+                }
             } catch (Exception e) {
                 // ignore
                 System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
@@ -265,114 +267,116 @@ public class PluginPanel extends JPanel {
         return editors;
     } // addInputs
 
-    /** add all inputs of a plugin to a box **/
+    /**
+     * add all inputs of a plugin to a box *
+     */
     public static int countInputs(Plugin plugin, BeautiDoc doc) {
-    	int nInputs = 0;
+        int nInputs = 0;
         try {
-        	List<Input<?>> inputs = plugin.listInputs();
-        	for (Input<?> input : inputs) {
-            	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-            	if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
-            		nInputs++;
-            	}
-        	}
+            List<Input<?>> inputs = plugin.listInputs();
+            for (Input<?> input : inputs) {
+                String sFullInputName = plugin.getClass().getName() + "." + input.getName();
+                if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
+                    nInputs++;
+                }
+            }
         } catch (Exception e) {
             // ignore
         }
         return nInputs;
     } // addInputs
-    
-    
+
+
     public static InputEditor createInputEditor(Input<?> input, Plugin plugin, BeautiDoc doc) throws Exception {
-    	return createInputEditor(input, plugin, true, InputEditor.ExpandOption.FALSE, ButtonStatus.ALL, null, doc);
+        return createInputEditor(input, plugin, true, InputEditor.ExpandOption.FALSE, ButtonStatus.ALL, null, doc);
     }
-    
-    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons, 
-    		ExpandOption bForceExpansion, ButtonStatus buttonStatus,
-    		InputEditor editor, BeautiDoc doc) throws Exception {
+
+    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons,
+                                                ExpandOption bForceExpansion, ButtonStatus buttonStatus,
+                                                InputEditor editor, BeautiDoc doc) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
         }
         Class<?> inputClass = input.getType();
 
         InputEditor inputEditor;
-        
+
         // check whether the super.editor has a custom method for creating an Editor
         if (editor != null) {
-        	try {
-        		String sName = input.getName();
-        		sName = new String(sName.charAt(0)+"").toUpperCase() + sName.substring(1);
-        		sName = "create" + sName + "Editor";
-        		Class<?> _class = editor.getClass();
-        		Method method = _class.getMethod(sName);
-        		inputEditor = (InputEditor) method.invoke(editor);
-        		return inputEditor;
-        	} catch (Exception e) {
-        		// ignore
-        	}
+            try {
+                String sName = input.getName();
+                sName = new String(sName.charAt(0) + "").toUpperCase() + sName.substring(1);
+                sName = "create" + sName + "Editor";
+                Class<?> _class = editor.getClass();
+                Method method = _class.getMethod(sName);
+                inputEditor = (InputEditor) method.invoke(editor);
+                return inputEditor;
+            } catch (Exception e) {
+                // ignore
+            }
         }
-    	if (List.class.isAssignableFrom(inputClass) ||
+        if (List.class.isAssignableFrom(inputClass) ||
                 (input.get() != null && input.get() instanceof List<?>)) {
-        	// handle list inputs
-	            if (g_listInputEditorMap.containsKey(inputClass)) {
-	            	// use custom list input editor
-	                String sInputEditor = g_listInputEditorMap.get(inputClass);
-	                inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
-	            } else {
-		        	// otherwise, use generic list editor
-		        	inputEditor = new ListInputEditor();
-	            }
-                ((ListInputEditor) inputEditor).setButtonStatus(buttonStatus);
+            // handle list inputs
+            if (g_listInputEditorMap.containsKey(inputClass)) {
+                // use custom list input editor
+                String sInputEditor = g_listInputEditorMap.get(inputClass);
+                inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
+            } else {
+                // otherwise, use generic list editor
+                inputEditor = new ListInputEditor();
+            }
+            ((ListInputEditor) inputEditor).setButtonStatus(buttonStatus);
         } else if (input.possibleValues != null) {
-        	// handle enumeration inputs
+            // handle enumeration inputs
             inputEditor = new EnumInputEditor();
         } else if (g_inputEditorMap.containsKey(inputClass)) {
-        	// handle Plugin-input with custom input editors
+            // handle Plugin-input with custom input editors
             String sInputEditor = g_inputEditorMap.get(inputClass);
             inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
-        //} else if (inputClass.isEnum()) {
-        //    inputEditor = new EnumInputEditor();
+            //} else if (inputClass.isEnum()) {
+            //    inputEditor = new EnumInputEditor();
         } else {
             // assume it is a general Plugin, so create a default Plugin input editor
             inputEditor = new PluginInputEditor();
         }
-    	String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-		//System.err.println(sFullInputName);
-    	ExpandOption expandOption = bForceExpansion;
-    	if (doc.beautiConfig.inlinePlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
-    		expandOption = ExpandOption.TRUE;
-    		// deal with initially collapsed plugins
-    		if (doc.beautiConfig.collapsedPlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
-    			if (input.get() != null) {
-    				Object o = input.get();
-    				if (o instanceof ArrayList) {
-    					for (Object o2 : (ArrayList<?>)o) {
-    						if (o2 instanceof Plugin) {
-    			    			String sID = ((Plugin)o2).getID();
-    			    	        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
-    			    	        	ListInputEditor.g_initiallyCollapsedIDs.add(sID);
-    			    	        	ListInputEditor.g_collapsedIDs.add(sID);
-    			    	        }
-    						}
-    					}
-    				} else if (o instanceof Plugin) {
-		    			String sID = ((Plugin)o).getID();
-		    	        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
-		    	        	ListInputEditor.g_initiallyCollapsedIDs.add(sID);
-		    	        	ListInputEditor.g_collapsedIDs.add(sID);
-		    	        }
-    				}
-    			}
+        String sFullInputName = plugin.getClass().getName() + "." + input.getName();
+        //System.err.println(sFullInputName);
+        ExpandOption expandOption = bForceExpansion;
+        if (doc.beautiConfig.inlinePlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
+            expandOption = ExpandOption.TRUE;
+            // deal with initially collapsed plugins
+            if (doc.beautiConfig.collapsedPlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
+                if (input.get() != null) {
+                    Object o = input.get();
+                    if (o instanceof ArrayList) {
+                        for (Object o2 : (ArrayList<?>) o) {
+                            if (o2 instanceof Plugin) {
+                                String sID = ((Plugin) o2).getID();
+                                if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
+                                    ListInputEditor.g_initiallyCollapsedIDs.add(sID);
+                                    ListInputEditor.g_collapsedIDs.add(sID);
+                                }
+                            }
+                        }
+                    } else if (o instanceof Plugin) {
+                        String sID = ((Plugin) o).getID();
+                        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
+                            ListInputEditor.g_initiallyCollapsedIDs.add(sID);
+                            ListInputEditor.g_collapsedIDs.add(sID);
+                        }
+                    }
+                }
 
-    		}
-    	}
-    	inputEditor.doc = doc;
+            }
+        }
+        inputEditor.doc = doc;
         inputEditor.init(input, plugin, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
-		inputEditor.setVisible(true);
-		return inputEditor;
+        inputEditor.setVisible(true);
+        return inputEditor;
     } // createInputEditor
-    
+
     /**
      * create box for manipulating the plugin, or ask for help *
      */
@@ -422,30 +426,32 @@ public class PluginPanel extends JPanel {
 //        box.add(m_pluginButton);
 
 
-		m_identry = new JTextField();
-		//Dimension size = new Dimension(100,22);
-		//m_identry.setMinimumSize(size);
+        m_identry = new JTextField();
+        //Dimension size = new Dimension(100,22);
+        //m_identry.setMinimumSize(size);
 //		m_identry.setPreferredSize(size);
 //		m_identry.setMaximumSize(size);
         m_identry.setText(m_plugin.getID());
         m_identry.setToolTipText("Name/ID that uniquely identifies this item");
-        
-		m_identry.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				processID();
-			}
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				processID();
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				processID();
-			}
-		});
+
+        m_identry.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                processID();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                processID();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                processID();
+            }
+        });
         box.add(m_identry);
-        
+
 
         Box vbox = Box.createVerticalBox();
         vbox.setBorder(BorderFactory.createEmptyBorder());
@@ -456,38 +462,38 @@ public class PluginPanel extends JPanel {
         return vbox;
     } // createPluginBox
 
-	void processID() {
+    void processID() {
 //		PluginPanel.g_plugins.remove(m_plugin.getID());
 //		m_plugin.setID(m_identry.getText());
 //		PluginPanel.g_plugins.put(m_plugin.getID(), m_plugin);
-	}
+    }
 
-	public static List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, Plugin parent, List<String> sTabuList, BeautiDoc doc) {
-		Class<?> type = input.getType();
+    public static List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, Plugin parent, List<String> sTabuList, BeautiDoc doc) {
+        Class<?> type = input.getType();
         List<BeautiSubTemplate> candidates = doc.beautiConfig.getInputCandidates(parent, input, type);
         if (input.getRule().equals(Validate.OPTIONAL)) {
-        	candidates.add(BeautiConfig.getNullTemplate());
+            candidates.add(BeautiConfig.getNullTemplate());
         }
         return candidates;
-	}	
+    }
 
-	public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
-		
+    public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
+
         //List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
         List<String> sPlugins = new ArrayList<String>();
         if (sPlugins != null) {
-        	return sPlugins;
+            return sPlugins;
         }
-		
-		
+
+
         /* add ascendants to tabu list */
         if (sTabuList == null) {
             sTabuList = new ArrayList<String>();
         }
         if (!InputEditor.isExpertMode()) {
-		    for (Plugin plugin : listAscendants(parent, g_plugins.values())) {
-		        sTabuList.add(plugin.getID());
-		    }
+            for (Plugin plugin : listAscendants(parent, g_plugins.values())) {
+                sTabuList.add(plugin.getID());
+            }
         }
         //System.err.println(sTabuList);
 
@@ -504,29 +510,29 @@ public class PluginPanel extends JPanel {
                     }
                 }
                 if (!bIsTabu) {
-	        		try {
-						if (input.canSetValue(plugin, parent)) {
-							sPlugins.add(plugin.getID());
-						}
-					} catch (Exception e) {
-						// ignore
-					}
+                    try {
+                        if (input.canSetValue(plugin, parent)) {
+                            sPlugins.add(plugin.getID());
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
             }
         }
         /* add all plugin-classes of type assignable to the input */
         if (InputEditor.isExpertMode()) {
-        	List<String> sClasses = AddOnManager.find(input.getType(), "beast");
-	        for (String sClass : sClasses) {
-	        	try {
-	        		Object o = Class.forName(sClass).newInstance();
-	        		if (input.canSetValue(o, parent)) {
-	        			sPlugins.add("new " + sClass);
-	        		}
-	        	} catch (Exception e) {
-					// ignore
-				}
-	        }
+            List<String> sClasses = AddOnManager.find(input.getType(), "beast");
+            for (String sClass : sClasses) {
+                try {
+                    Object o = Class.forName(sClass).newInstance();
+                    if (input.canSetValue(o, parent)) {
+                        sPlugins.add("new " + sClass);
+                    }
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
         }
         return sPlugins;
     } // getAvailablePlugins
@@ -547,12 +553,12 @@ public class PluginPanel extends JPanel {
             for (int i = 0; i < ascendants.size(); i++) {
                 Plugin ascendant = ascendants.get(i);
                 if (outputs.containsKey(ascendant)) {
-	                for (Plugin parent2 : outputs.get(ascendant)) {
-	                    if (!ascendants.contains(parent2)) {
-	                        ascendants.add(parent2);
-	                        bProgress = true;
-	                    }
-	                }
+                    for (Plugin parent2 : outputs.get(ascendant)) {
+                        if (!ascendants.contains(parent2)) {
+                            ascendants.add(parent2);
+                            bProgress = true;
+                        }
+                    }
                 }
             }
         }
@@ -574,24 +580,24 @@ public class PluginPanel extends JPanel {
                 for (Input<?> input2 : plugin.listInputs()) {
                     Object o = input2.get();
                     if (o != null && o instanceof Plugin) {
-                    	List<Plugin> list = outputs.get(o);
+                        List<Plugin> list = outputs.get(o);
 //                    	if (list == null) {
 //                    		int h = 3;
 //                    		h++;
 //                    	} else {
-                    		list.add(plugin);
+                        list.add(plugin);
 //                    	}
                     }
                     if (o != null && o instanceof List<?>) {
                         for (Object o2 : (List<?>) o) {
                             if (o2 != null && o2 instanceof Plugin) {
-                            	List<Plugin> list = outputs.get(o2); 
-                            	if (list == null) {
-                            		int h = 3;
-                            		h++;
-                            	} else {
-                            		list.add(plugin);
-                            	}
+                                List<Plugin> list = outputs.get(o2);
+                                if (list == null) {
+                                    int h = 3;
+                                    h++;
+                                } else {
+                                    list.add(plugin);
+                                }
                             }
                         }
                     }
@@ -610,7 +616,7 @@ public class PluginPanel extends JPanel {
 
     static public void addPluginToMap(Plugin plugin, BeautiDoc doc) {
         if (registerPlugin(getID(plugin), plugin, doc)) {
-        	return;
+            return;
         }
         try {
             for (Input<?> input : plugin.listInputs()) {
@@ -652,7 +658,7 @@ public class PluginPanel extends JPanel {
      * rudimentary test *
      */
     public static void main(String[] args) {
-    	init();
+        init();
         PluginPanel pluginPanel = null;
         try {
             if (args.length == 0) {
@@ -665,8 +671,7 @@ public class PluginPanel extends JPanel {
                     while (scanner.hasNextLine()) {
                         text.append(scanner.nextLine() + NL);
                     }
-                }
-                finally {
+                } finally {
                     scanner.close();
                 }
                 Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);

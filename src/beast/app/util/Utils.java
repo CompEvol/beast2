@@ -71,12 +71,12 @@ public class Utils {
 
         if (isMac()) {
             System.setProperty("apple.awt.graphics.UseQuartz", "true");
-            System.setProperty("apple.awt.antialiasing","true");
-            System.setProperty("apple.awt.rendering","VALUE_RENDER_QUALITY");
+            System.setProperty("apple.awt.antialiasing", "true");
+            System.setProperty("apple.awt.rendering", "VALUE_RENDER_QUALITY");
 
-            System.setProperty("apple.laf.useScreenMenuBar","true");
-            System.setProperty("apple.awt.draggableWindowBackground","true");
-            System.setProperty("apple.awt.showGrowBox","true");
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("apple.awt.draggableWindowBackground", "true");
+            System.setProperty("apple.awt.showGrowBox", "true");
 
             try {
 
@@ -92,8 +92,7 @@ public class Utils {
                     excludes.add("ToolBar");
                     method.invoke(null, excludes);
 
-                }
-                catch (Throwable e) {
+                } catch (Throwable e) {
                 }
 
                 //set the Quaqua Look and Feel in the UIManager
@@ -141,7 +140,7 @@ public class Utils {
     }
 
     public static File getLoadFile(String message, File defaultFileOrDir, String description, final String... extensions) {
-        File [] files = getFile(message, true, defaultFileOrDir, false, description, extensions);
+        File[] files = getFile(message, true, defaultFileOrDir, false, description, extensions);
         if (files == null) {
             return null;
         } else {
@@ -150,7 +149,7 @@ public class Utils {
     }
 
     public static File getSaveFile(String message, File defaultFileOrDir, String description, final String... extensions) {
-        File [] files = getFile(message, false, defaultFileOrDir, false, description, extensions);
+        File[] files = getFile(message, false, defaultFileOrDir, false, description, extensions);
         if (files == null) {
             return null;
         } else {
@@ -158,19 +157,19 @@ public class Utils {
         }
     }
 
-    public static File [] getLoadFiles(String message, File defaultFileOrDir, String description, final String... extensions) {
+    public static File[] getLoadFiles(String message, File defaultFileOrDir, String description, final String... extensions) {
         return getFile(message, true, defaultFileOrDir, true, description, extensions);
     }
 
-    public static File [] getSaveFiles(String message, File defaultFileOrDir, String description, final String... extensions) {
+    public static File[] getSaveFiles(String message, File defaultFileOrDir, String description, final String... extensions) {
         return getFile(message, false, defaultFileOrDir, true, description, extensions);
     }
 
-    public static File [] getFile(String message, boolean bLoadNotSave, File defaultFileOrDir, boolean bAllowMultipleSelection, String description, final String... extensions) {
+    public static File[] getFile(String message, boolean bLoadNotSave, File defaultFileOrDir, boolean bAllowMultipleSelection, String description, final String... extensions) {
         if (isMac()) {
             java.awt.Frame frame = new java.awt.Frame();
             java.awt.FileDialog chooser = new java.awt.FileDialog(frame, message,
-                    (bLoadNotSave? java.awt.FileDialog.LOAD : java.awt.FileDialog.SAVE));
+                    (bLoadNotSave ? java.awt.FileDialog.LOAD : java.awt.FileDialog.SAVE));
             if (defaultFileOrDir != null) {
                 if (defaultFileOrDir.isDirectory()) {
                     chooser.setDirectory(defaultFileOrDir.getAbsolutePath());
@@ -241,7 +240,6 @@ public class Utils {
         }
         return null;
     }
-
 
 
 }

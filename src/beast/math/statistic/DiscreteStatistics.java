@@ -45,8 +45,8 @@ public class DiscreteStatistics {
     public static double mean(double[] x) {
         double m = 0;
         int count = x.length;
-        for(double aX : x) {
-            if( Double.isNaN(aX) ) {
+        for (double aX : x) {
+            if (Double.isNaN(aX)) {
                 count--;
             } else {
                 m += aX;
@@ -76,7 +76,7 @@ public class DiscreteStatistics {
     /**
      * compute the mean squared error
      *
-     * @param x list of numbers
+     * @param x         list of numbers
      * @param trueValue truth
      * @return MSE
      */
@@ -88,10 +88,10 @@ public class DiscreteStatistics {
         }
 
         double total = 0;
-        for(double sample : x) {
+        for (double sample : x) {
             total += (sample - trueValue) * (sample - trueValue);
         }
-        total /= x.length;       
+        total /= x.length;
         return total;
     }
 
@@ -124,8 +124,8 @@ public class DiscreteStatistics {
     public static double variance(double[] x, double mean) {
         double var = 0;
         int count = x.length;
-        for(double aX : x) {
-            if( Double.isNaN(aX) ) {
+        for (double aX : x) {
+            if (Double.isNaN(aX)) {
                 count--;
             } else {
                 double diff = aX - mean;
@@ -174,7 +174,7 @@ public class DiscreteStatistics {
         double covar = 0.0;
         for (int i = 0; i < x.length; i++) {
             if (Double.isNaN(x[i]) || Double.isNaN(y[i])) {
-                count --;
+                count--;
             } else {
                 covar += (x[i] - xmean) * (y[i] - ymean);
             }
@@ -385,11 +385,10 @@ public class DiscreteStatistics {
     public static double geometricMean(double[] x) {
         double gm = 0;
         int len = x.length;
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             gm += Math.log(x[i]);
         }
 
-        return Math.exp(gm/(double) len);
+        return Math.exp(gm / (double) len);
     }
 }

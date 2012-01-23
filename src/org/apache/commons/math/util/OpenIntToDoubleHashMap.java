@@ -33,66 +33,99 @@ import org.apache.commons.math.MathRuntimeException;
  * {@link #iterator()} are fail-fast: they throw a
  * <code>ConcurrentModificationException</code> when they detect the map has been
  * modified during iteration.</p>
+ *
  * @version $Revision: 885278 $ $Date: 2009-11-29 16:47:51 -0500 (Sun, 29 Nov 2009) $
  * @since 2.0
  */
 public class OpenIntToDoubleHashMap implements Serializable {
 
-    /** Status indicator for free table entries. */
-    protected static final byte FREE    = 0;
+    /**
+     * Status indicator for free table entries.
+     */
+    protected static final byte FREE = 0;
 
-    /** Status indicator for full table entries. */
-    protected static final byte FULL    = 1;
+    /**
+     * Status indicator for full table entries.
+     */
+    protected static final byte FULL = 1;
 
-    /** Status indicator for removed table entries. */
+    /**
+     * Status indicator for removed table entries.
+     */
     protected static final byte REMOVED = 2;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -3646337053166149105L;
 
-    /** Message for map modification during iteration. */
+    /**
+     * Message for map modification during iteration.
+     */
     private static final String CONCURRENT_MODIFICATION_MESSAGE =
-        "map has been modified while iterating";
+            "map has been modified while iterating";
 
-    /** Message for exhausted iterator. */
+    /**
+     * Message for exhausted iterator.
+     */
     private static final String EXHAUSTED_ITERATOR_MESSAGE =
-        "iterator exhausted";
+            "iterator exhausted";
 
-    /** Load factor for the map. */
+    /**
+     * Load factor for the map.
+     */
     private static final float LOAD_FACTOR = 0.5f;
 
-    /** Default starting size.
+    /**
+     * Default starting size.
      * <p>This must be a power of two for bit mask to work properly. </p>
      */
     private static final int DEFAULT_EXPECTED_SIZE = 16;
 
-    /** Multiplier for size growth when map fills up.
+    /**
+     * Multiplier for size growth when map fills up.
      * <p>This must be a power of two for bit mask to work properly. </p>
      */
     private static final int RESIZE_MULTIPLIER = 2;
 
-    /** Number of bits to perturb the index when probing for collision resolution. */
+    /**
+     * Number of bits to perturb the index when probing for collision resolution.
+     */
     private static final int PERTURB_SHIFT = 5;
 
-    /** Keys table. */
+    /**
+     * Keys table.
+     */
     private int[] keys;
 
-    /** Values table. */
+    /**
+     * Values table.
+     */
     private double[] values;
 
-    /** States table. */
+    /**
+     * States table.
+     */
     private byte[] states;
 
-    /** Return value for missing entries. */
+    /**
+     * Return value for missing entries.
+     */
     private final double missingEntries;
 
-    /** Current size of the map. */
+    /**
+     * Current size of the map.
+     */
     private int size;
 
-    /** Bit mask for hash values. */
+    /**
+     * Bit mask for hash values.
+     */
     private int mask;
 
-    /** Modifications count. */
+    /**
+     * Modifications count.
+     */
     private transient int count;
 
     /**
@@ -104,6 +137,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Build an empty map with default size
+     *
      * @param missingEntries value to return when a missing entry is fetched
      */
     public OpenIntToDoubleHashMap(final double missingEntries) {
@@ -112,6 +146,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Build an empty map with specified size and using NaN for missing entries.
+     *
      * @param expectedSize expected number of elements in the map
      */
     public OpenIntToDoubleHashMap(final int expectedSize) {
@@ -120,21 +155,23 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Build an empty map with specified size.
-     * @param expectedSize expected number of elements in the map
+     *
+     * @param expectedSize   expected number of elements in the map
      * @param missingEntries value to return when a missing entry is fetched
      */
     public OpenIntToDoubleHashMap(final int expectedSize,
                                   final double missingEntries) {
         final int capacity = computeCapacity(expectedSize);
-        keys   = new int[capacity];
+        keys = new int[capacity];
         values = new double[capacity];
         states = new byte[capacity];
         this.missingEntries = missingEntries;
-        mask   = capacity - 1;
+        mask = capacity - 1;
     }
 
     /**
      * Copy constructor.
+     *
      * @param source map to copy
      */
     public OpenIntToDoubleHashMap(final OpenIntToDoubleHashMap source) {
@@ -146,13 +183,14 @@ public class OpenIntToDoubleHashMap implements Serializable {
         states = new byte[length];
         System.arraycopy(source.states, 0, states, 0, length);
         missingEntries = source.missingEntries;
-        size  = source.size;
-        mask  = source.mask;
+        size = source.size;
+        mask = source.mask;
         count = source.count;
     }
 
     /**
      * Compute the capacity needed for a given size.
+     *
      * @param expectedSize expected size of the map
      * @return capacity to use for the specified size
      */
@@ -160,7 +198,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
         if (expectedSize == 0) {
             return 1;
         }
-        final int capacity   = (int) Math.ceil(expectedSize / LOAD_FACTOR);
+        final int capacity = (int) Math.ceil(expectedSize / LOAD_FACTOR);
         final int powerOfTwo = Integer.highestOneBit(capacity);
         if (powerOfTwo == capacity) {
             return capacity;
@@ -170,6 +208,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Find the smallest power of two greater than the input value
+     *
      * @param i input value
      * @return smallest power of two greater than the input value
      */
@@ -179,12 +218,13 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Get the stored value associated with the given key
+     *
      * @param key key associated with the data
      * @return data associated with the key
      */
     public double get(final int key) {
 
-        final int hash  = hashOf(key);
+        final int hash = hashOf(key);
         int index = hash & mask;
         if (containsKey(key, index)) {
             return values[index];
@@ -209,12 +249,13 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Check if a value is associated with a key.
+     *
      * @param key key to check
      * @return true if a value is associated with key
      */
     public boolean containsKey(final int key) {
 
-        final int hash  = hashOf(key);
+        final int hash = hashOf(key);
         int index = hash & mask;
         if (containsKey(key, index)) {
             return true;
@@ -242,6 +283,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
      * <p>The specialized iterators returned are fail-fast: they throw a
      * <code>ConcurrentModificationException</code> when they detect the map
      * has been modified during iteration.</p>
+     *
      * @return iterator over the map elements
      */
     public Iterator iterator() {
@@ -250,6 +292,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Perturb the hash for starting probing.
+     *
      * @param hash initial hash
      * @return perturbed hash
      */
@@ -259,6 +302,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Find the index at which a key should be inserted
+     *
      * @param key key to lookup
      * @return index at which key should be inserted
      */
@@ -268,10 +312,11 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Find the index at which a key should be inserted
-     * @param keys keys table
+     *
+     * @param keys   keys table
      * @param states states table
-     * @param key key to lookup
-     * @param mask bit mask for hash values
+     * @param key    key to lookup
+     * @param mask   bit mask for hash values
      * @return index at which key should be inserted
      */
     private static int findInsertionIndex(final int[] keys, final byte[] states,
@@ -325,8 +370,9 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Compute next probe for collision resolution
+     *
      * @param perturb perturbed hash
-     * @param j previous probe
+     * @param j       previous probe
      * @return next probe
      */
     private static int probe(final int perturb, final int j) {
@@ -335,6 +381,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Change the index sign
+     *
      * @param index initial index
      * @return changed index
      */
@@ -344,6 +391,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Get the number of elements stored in the map.
+     *
      * @return number of elements stored in the map
      */
     public int size() {
@@ -353,12 +401,13 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Remove the value associated with a key.
+     *
      * @param key key to which the value is associated
      * @return removed value
      */
     public double remove(final int key) {
 
-        final int hash  = hashOf(key);
+        final int hash = hashOf(key);
         int index = hash & mask;
         if (containsKey(key, index)) {
             return doRemove(index);
@@ -384,7 +433,8 @@ public class OpenIntToDoubleHashMap implements Serializable {
     /**
      * Check if the tables contain an element associated with specified key
      * at specified index.
-     * @param key key to check
+     *
+     * @param key   key to check
      * @param index index to check
      * @return true if an element is associated with key at index
      */
@@ -394,11 +444,12 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Remove an element at specified index.
+     *
      * @param index index of the element to remove
      * @return removed value
      */
     private double doRemove(int index) {
-        keys[index]   = 0;
+        keys[index] = 0;
         states[index] = REMOVED;
         final double previous = values[index];
         values[index] = missingEntries;
@@ -409,7 +460,8 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Put a value associated with a key in the map.
-     * @param key key to which value is associated
+     *
+     * @param key   key to which value is associated
      * @param value value to put in the map
      * @return previous value associated with the key
      */
@@ -422,7 +474,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
             previous = values[index];
             newMapping = false;
         }
-        keys[index]   = key;
+        keys[index] = key;
         states[index] = FULL;
         values[index] = value;
         if (newMapping) {
@@ -441,10 +493,10 @@ public class OpenIntToDoubleHashMap implements Serializable {
      */
     private void growTable() {
 
-        final int oldLength      = states.length;
-        final int[] oldKeys      = keys;
+        final int oldLength = states.length;
+        final int[] oldKeys = keys;
         final double[] oldValues = values;
-        final byte[] oldStates   = states;
+        final byte[] oldStates = states;
 
         final int newLength = RESIZE_MULTIPLIER * oldLength;
         final int[] newKeys = new int[newLength];
@@ -455,14 +507,14 @@ public class OpenIntToDoubleHashMap implements Serializable {
             if (oldStates[i] == FULL) {
                 final int key = oldKeys[i];
                 final int index = findInsertionIndex(newKeys, newStates, key, newMask);
-                newKeys[index]   = key;
+                newKeys[index] = key;
                 newValues[index] = oldValues[i];
                 newStates[index] = FULL;
             }
         }
 
-        mask   = newMask;
-        keys   = newKeys;
+        mask = newMask;
+        keys = newKeys;
         values = newValues;
         states = newStates;
 
@@ -470,6 +522,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Check if tables should grow due to increased size.
+     *
      * @return true if  tables should grow
      */
     private boolean shouldGrowTable() {
@@ -478,6 +531,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Compute the hash value of a key
+     *
      * @param key key to hash
      * @return hash value of the key
      */
@@ -487,16 +541,24 @@ public class OpenIntToDoubleHashMap implements Serializable {
     }
 
 
-    /** Iterator class for the map. */
+    /**
+     * Iterator class for the map.
+     */
     public class Iterator {
 
-        /** Reference modification count. */
+        /**
+         * Reference modification count.
+         */
         private final int referenceCount;
 
-        /** Index of current element. */
+        /**
+         * Index of current element.
+         */
         private int current;
 
-        /** Index of next element. */
+        /**
+         * Index of next element.
+         */
         private int next;
 
         /**
@@ -519,6 +581,7 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
         /**
          * Check if there is a next element in the map.
+         *
          * @return true if there is a next element
          */
         public boolean hasNext() {
@@ -527,15 +590,17 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
         /**
          * Get the key of current entry.
+         *
          * @return key of current entry
-         * @exception ConcurrentModificationException if the map is modified during iteration
-         * @exception NoSuchElementException if there is no element left in the map
+         * @throws ConcurrentModificationException
+         *                                if the map is modified during iteration
+         * @throws NoSuchElementException if there is no element left in the map
          */
         public int key()
-            throws ConcurrentModificationException, NoSuchElementException {
+                throws ConcurrentModificationException, NoSuchElementException {
             if (referenceCount != count) {
                 throw MathRuntimeException.createConcurrentModificationException(
-                      CONCURRENT_MODIFICATION_MESSAGE);
+                        CONCURRENT_MODIFICATION_MESSAGE);
             }
             if (current < 0) {
                 throw MathRuntimeException.createNoSuchElementException(EXHAUSTED_ITERATOR_MESSAGE);
@@ -545,15 +610,17 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
         /**
          * Get the value of current entry.
+         *
          * @return value of current entry
-         * @exception ConcurrentModificationException if the map is modified during iteration
-         * @exception NoSuchElementException if there is no element left in the map
+         * @throws ConcurrentModificationException
+         *                                if the map is modified during iteration
+         * @throws NoSuchElementException if there is no element left in the map
          */
         public double value()
-            throws ConcurrentModificationException, NoSuchElementException {
+                throws ConcurrentModificationException, NoSuchElementException {
             if (referenceCount != count) {
                 throw MathRuntimeException.createConcurrentModificationException(
-                      CONCURRENT_MODIFICATION_MESSAGE);
+                        CONCURRENT_MODIFICATION_MESSAGE);
             }
             if (current < 0) {
                 throw MathRuntimeException.createNoSuchElementException(EXHAUSTED_ITERATOR_MESSAGE);
@@ -563,15 +630,17 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
         /**
          * Advance iterator one step further.
-         * @exception ConcurrentModificationException if the map is modified during iteration
-         * @exception NoSuchElementException if there is no element left in the map
+         *
+         * @throws ConcurrentModificationException
+         *                                if the map is modified during iteration
+         * @throws NoSuchElementException if there is no element left in the map
          */
         public void advance()
-            throws ConcurrentModificationException, NoSuchElementException {
+                throws ConcurrentModificationException, NoSuchElementException {
 
             if (referenceCount != count) {
                 throw MathRuntimeException.createConcurrentModificationException(
-                      CONCURRENT_MODIFICATION_MESSAGE);
+                        CONCURRENT_MODIFICATION_MESSAGE);
             }
 
             // advance on step
@@ -595,13 +664,14 @@ public class OpenIntToDoubleHashMap implements Serializable {
 
     /**
      * Read a serialized object.
+     *
      * @param stream input stream
-     * @throws IOException if object cannot be read
+     * @throws IOException            if object cannot be read
      * @throws ClassNotFoundException if the class corresponding
-     * to the serialized object cannot be found
+     *                                to the serialized object cannot be found
      */
     private void readObject(final ObjectInputStream stream)
-        throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
         count = 0;
     }

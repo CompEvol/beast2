@@ -25,200 +25,211 @@ import beast.evolution.tree.TraitSet;
 //end;
 
 
-
-
-/** parses nexus file and grabs alignment and calibration from the file **/
+/**
+ * parses nexus file and grabs alignment and calibration from the file *
+ */
 public class NexusParser {
-	/** keep track of nexus file line number, to report when the file does not parse **/
-	int m_nLineNr;
+    /**
+     * keep track of nexus file line number, to report when the file does not parse *
+     */
+    int m_nLineNr;
 
-	/**Beast II objects reconstructed from the file**/
-	public Alignment m_alignment;
-	public List<Alignment> m_filteredAlignments = new ArrayList<Alignment>();
-	public TraitSet m_traitSet;
-	static Set<String> g_sequenceIDs;
-	static { g_sequenceIDs = new HashSet<String>();}
-	public List<TaxonSet> m_taxonsets = new ArrayList<TaxonSet>();
+    /**
+     * Beast II objects reconstructed from the file*
+     */
+    public Alignment m_alignment;
+    public List<Alignment> m_filteredAlignments = new ArrayList<Alignment>();
+    public TraitSet m_traitSet;
+    static Set<String> g_sequenceIDs;
 
-	/**  
-	 * try to reconstruct Beast II objects from the nexus file with given file name   
-	 * **/
-	public void parseFile(File file) throws Exception {
-		m_nLineNr = 0;
-		BufferedReader fin = new BufferedReader(new FileReader(file));
-		try {
-			while (fin.ready()) {
-				String sStr = nextLine(fin);
-				if (sStr == null) {
-					return;
-				}
-				if (sStr.toLowerCase().matches("^\\s*begin\\s+data;\\s*$") || sStr.toLowerCase().matches("^\\s*begin\\s+characters;\\s*$")) {
-					m_alignment = parseDataBlock(fin);
+    static {
+        g_sequenceIDs = new HashSet<String>();
+    }
+
+    public List<TaxonSet> m_taxonsets = new ArrayList<TaxonSet>();
+
+    /**
+     * try to reconstruct Beast II objects from the nexus file with given file name
+     * *
+     */
+    public void parseFile(File file) throws Exception {
+        m_nLineNr = 0;
+        BufferedReader fin = new BufferedReader(new FileReader(file));
+        try {
+            while (fin.ready()) {
+                String sStr = nextLine(fin);
+                if (sStr == null) {
+                    return;
+                }
+                if (sStr.toLowerCase().matches("^\\s*begin\\s+data;\\s*$") || sStr.toLowerCase().matches("^\\s*begin\\s+characters;\\s*$")) {
+                    m_alignment = parseDataBlock(fin);
                     String fileName = file.getName().replaceAll(".*[\\/\\\\]", "").replaceAll("\\..*", "");
-					m_alignment.setID(fileName);
-				} else if (sStr.toLowerCase().matches("^\\s*begin\\s+calibration;\\s*$")) {
-					m_traitSet = parseCalibrationsBlock(fin);
-				} else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$")) {
-					parseAssumptionsBlock(fin);
-				}
-			}			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Around line " + m_nLineNr + "\n" + e.getMessage());
-		}
-	} // parseFile
-	
-	/** parse calibrations block and create TraitSet **/
-	TraitSet parseCalibrationsBlock(BufferedReader fin) throws Exception {
-		TraitSet traitSet = new TraitSet();
-		traitSet.m_sTraitName.setValue("date", traitSet);
-		String sStr = null;
-		do {
-			sStr = nextLine(fin);
-			if (sStr.toLowerCase().contains("options")) {
-				String sScale = getAttValue("scale", sStr);
-				if (sScale.endsWith("s")) {
-					sScale = sScale.substring(0, sScale.length() - 1);
-				}
-				traitSet.m_sUnits.setValue(sScale, traitSet);
-			}
-		} while (sStr.toLowerCase().contains("tipcalibration"));
-		
-		String sText = "";
-		while (true) {
-			sStr = nextLine(fin);
-			if (sStr.contains(";")) {
-				break;
-			}
-			sText += sStr;
-		};
-		String [] sStrs = sText.split(",");
-		sText = "";
-		for (String sStr2 : sStrs) {
-			String [] sParts = sStr2.split(":");
-			String sDate = sParts[0].replaceAll(".*=\\s*","");
-			String [] sTaxa = sParts[1].split("\\s+");
-			for (String sTaxon : sTaxa) {
-				if (!sTaxon.matches("^\\s*$")) {
-					sText += sTaxon + "=" + sDate + ",\n";
-				}
-			}
-		}
-		sText = sText.substring(0, sText.length()-2);
-		traitSet.m_traits.setValue(sText, traitSet);
-		TaxonSet taxa = new TaxonSet();
-		taxa.initByName("alignment", m_alignment);
-		traitSet.m_taxa.setValue(taxa, traitSet);
-		
-		traitSet.initAndValidate();
-		return traitSet;
-	} // parseCalibrations
-	
+                    m_alignment.setID(fileName);
+                } else if (sStr.toLowerCase().matches("^\\s*begin\\s+calibration;\\s*$")) {
+                    m_traitSet = parseCalibrationsBlock(fin);
+                } else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$")) {
+                    parseAssumptionsBlock(fin);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Around line " + m_nLineNr + "\n" + e.getMessage());
+        }
+    } // parseFile
 
-	/** parse data block and create Alignment **/
-	public Alignment parseDataBlock(BufferedReader fin) throws Exception {
+    /**
+     * parse calibrations block and create TraitSet *
+     */
+    TraitSet parseCalibrationsBlock(BufferedReader fin) throws Exception {
+        TraitSet traitSet = new TraitSet();
+        traitSet.m_sTraitName.setValue("date", traitSet);
+        String sStr = null;
+        do {
+            sStr = nextLine(fin);
+            if (sStr.toLowerCase().contains("options")) {
+                String sScale = getAttValue("scale", sStr);
+                if (sScale.endsWith("s")) {
+                    sScale = sScale.substring(0, sScale.length() - 1);
+                }
+                traitSet.m_sUnits.setValue(sScale, traitSet);
+            }
+        } while (sStr.toLowerCase().contains("tipcalibration"));
 
-		Alignment alignment = new Alignment();
-		
-		String sStr = null;
-		int nTaxa = -1;
-		int nChar = -1;
-		int nTotalCount = 4;
-		String sMissing="?";
-		String sGap="-";
-		// indicates character matches the one in the first sequence
-		String sMatchChar = null;
-		do {
-			sStr = nextLine(fin);
+        String sText = "";
+        while (true) {
+            sStr = nextLine(fin);
+            if (sStr.contains(";")) {
+                break;
+            }
+            sText += sStr;
+        }
+        ;
+        String[] sStrs = sText.split(",");
+        sText = "";
+        for (String sStr2 : sStrs) {
+            String[] sParts = sStr2.split(":");
+            String sDate = sParts[0].replaceAll(".*=\\s*", "");
+            String[] sTaxa = sParts[1].split("\\s+");
+            for (String sTaxon : sTaxa) {
+                if (!sTaxon.matches("^\\s*$")) {
+                    sText += sTaxon + "=" + sDate + ",\n";
+                }
+            }
+        }
+        sText = sText.substring(0, sText.length() - 2);
+        traitSet.m_traits.setValue(sText, traitSet);
+        TaxonSet taxa = new TaxonSet();
+        taxa.initByName("alignment", m_alignment);
+        traitSet.m_taxa.setValue(taxa, traitSet);
 
-			//dimensions ntax=12 nchar=898;
-			if (sStr.toLowerCase().contains("dimensions")) {
-				while (sStr.indexOf(';') < 0) {
-					sStr += nextLine(fin);
-				}
-				sStr = sStr.replace(";", " ");
-				
-				String sChar=getAttValue("nchar", sStr);
-				if (sChar == null) {
-					throw new Exception ("nchar attribute expected (e.g. 'dimensions char=123') expected, not "+ sStr);
-				}
-				nChar = Integer.parseInt(sChar);
-				String sTaxa = getAttValue("ntax", sStr);
-				if (sTaxa != null) {
-					nTaxa = Integer.parseInt(sTaxa);
-				}
-			} else if (sStr.toLowerCase().contains("format")) {
-				while (sStr.indexOf(';') < 0) {
-					sStr += nextLine(fin);
-				}
-				sStr = sStr.replace(";", " ");
-				
-				//format datatype=dna interleave=no gap=-;
-				String sDataType = getAttValue("datatype", sStr);
-				String sSymbols = getAttValue("symbols", sStr);
-				if (sDataType == null) {
-					System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr +"' Assuming integer dataType"); 
-					alignment.m_sDataType.setValue("integer", alignment);
-				} else 
-				if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
-					alignment.m_sDataType.setValue("nucleotide", alignment);
-					nTotalCount = 4;
-				} else 
-				if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
-					alignment.m_sDataType.setValue("aminoacid", alignment);
-					nTotalCount = 20;
-				} else 
-				if (sDataType.toLowerCase().equals("standard") && sSymbols.equals("01")) {
-					alignment.m_sDataType.setValue("binary", alignment);
-					nTotalCount = 2;
-				} else {
-					alignment.m_sDataType.setValue("integer", alignment);
-				}
-				String sMissingChar = getAttValue("missing", sStr);
-				if (sMissingChar != null) {
-					sMissing = sMissingChar;
-				}
-				String sGapChar = getAttValue("gap", sStr);
-				if (sGapChar != null) {
-					sGap = sGapChar;
-				}
-				sMatchChar = getAttValue("matchchar", sStr);
-			}
-		} while (!sStr.toLowerCase().contains("matrix"));
+        traitSet.initAndValidate();
+        return traitSet;
+    } // parseCalibrations
 
-		// read character data
-		Map<String, String> seqMap = new HashMap<String, String>();
-		List<String> sTaxa = new ArrayList<String>();
-		while (true) {
-			sStr = nextLine(fin);
-			if (sStr.contains(";")) {
-				break;
-			}
-			
-			int iStart = 0, iEnd = 0; 
-			String sTaxon;
-			while (Character.isWhitespace(sStr.charAt(iStart))) {
-				iStart++;
-			}
-			if (sStr.charAt(iStart)=='\'' || sStr.charAt(iStart)=='\"') {
-				char c = sStr.charAt(iStart);
-				iStart++;
-				iEnd = iStart;
-				while (sStr.charAt(iEnd)!= c) {
-					iEnd++;
-				}
-				sTaxon = sStr.substring(iStart, iEnd);
-				iEnd++;
-			} else {
-				iEnd = iStart;
-				while (!Character.isWhitespace(sStr.charAt(iEnd))) {
-					iEnd++;
-				}
-				sTaxon = sStr.substring(iStart, iEnd);
-			}
-			String sData = sStr.substring(iEnd);
-			sData = sData.replaceAll("\\s", "");
-			
+
+    /**
+     * parse data block and create Alignment *
+     */
+    public Alignment parseDataBlock(BufferedReader fin) throws Exception {
+
+        Alignment alignment = new Alignment();
+
+        String sStr = null;
+        int nTaxa = -1;
+        int nChar = -1;
+        int nTotalCount = 4;
+        String sMissing = "?";
+        String sGap = "-";
+        // indicates character matches the one in the first sequence
+        String sMatchChar = null;
+        do {
+            sStr = nextLine(fin);
+
+            //dimensions ntax=12 nchar=898;
+            if (sStr.toLowerCase().contains("dimensions")) {
+                while (sStr.indexOf(';') < 0) {
+                    sStr += nextLine(fin);
+                }
+                sStr = sStr.replace(";", " ");
+
+                String sChar = getAttValue("nchar", sStr);
+                if (sChar == null) {
+                    throw new Exception("nchar attribute expected (e.g. 'dimensions char=123') expected, not " + sStr);
+                }
+                nChar = Integer.parseInt(sChar);
+                String sTaxa = getAttValue("ntax", sStr);
+                if (sTaxa != null) {
+                    nTaxa = Integer.parseInt(sTaxa);
+                }
+            } else if (sStr.toLowerCase().contains("format")) {
+                while (sStr.indexOf(';') < 0) {
+                    sStr += nextLine(fin);
+                }
+                sStr = sStr.replace(";", " ");
+
+                //format datatype=dna interleave=no gap=-;
+                String sDataType = getAttValue("datatype", sStr);
+                String sSymbols = getAttValue("symbols", sStr);
+                if (sDataType == null) {
+                    System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
+                    alignment.m_sDataType.setValue("integer", alignment);
+                } else if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
+                    alignment.m_sDataType.setValue("nucleotide", alignment);
+                    nTotalCount = 4;
+                } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
+                    alignment.m_sDataType.setValue("aminoacid", alignment);
+                    nTotalCount = 20;
+                } else if (sDataType.toLowerCase().equals("standard") && sSymbols.equals("01")) {
+                    alignment.m_sDataType.setValue("binary", alignment);
+                    nTotalCount = 2;
+                } else {
+                    alignment.m_sDataType.setValue("integer", alignment);
+                }
+                String sMissingChar = getAttValue("missing", sStr);
+                if (sMissingChar != null) {
+                    sMissing = sMissingChar;
+                }
+                String sGapChar = getAttValue("gap", sStr);
+                if (sGapChar != null) {
+                    sGap = sGapChar;
+                }
+                sMatchChar = getAttValue("matchchar", sStr);
+            }
+        } while (!sStr.toLowerCase().contains("matrix"));
+
+        // read character data
+        Map<String, String> seqMap = new HashMap<String, String>();
+        List<String> sTaxa = new ArrayList<String>();
+        while (true) {
+            sStr = nextLine(fin);
+            if (sStr.contains(";")) {
+                break;
+            }
+
+            int iStart = 0, iEnd = 0;
+            String sTaxon;
+            while (Character.isWhitespace(sStr.charAt(iStart))) {
+                iStart++;
+            }
+            if (sStr.charAt(iStart) == '\'' || sStr.charAt(iStart) == '\"') {
+                char c = sStr.charAt(iStart);
+                iStart++;
+                iEnd = iStart;
+                while (sStr.charAt(iEnd) != c) {
+                    iEnd++;
+                }
+                sTaxon = sStr.substring(iStart, iEnd);
+                iEnd++;
+            } else {
+                iEnd = iStart;
+                while (!Character.isWhitespace(sStr.charAt(iEnd))) {
+                    iEnd++;
+                }
+                sTaxon = sStr.substring(iStart, iEnd);
+            }
+            String sData = sStr.substring(iEnd);
+            sData = sData.replaceAll("\\s", "");
+
 //			String [] sStrs = sStr.split("\\s+");
 //			String sTaxon = sStrs[0];
 //			for (int k = 1; k < sStrs.length - 1; k++) {
@@ -227,181 +238,189 @@ public class NexusParser {
 //			sTaxon = sTaxon.replaceAll("'", "");
 //			System.err.println(sTaxon);
 //			String sData = sStrs[sStrs.length - 1];
-			
-			if (seqMap.containsKey(sTaxon)) {
-				seqMap.put(sTaxon, seqMap.get(sTaxon) + sData);
-			} else {
-				seqMap.put(sTaxon, sData);
-				sTaxa.add(sTaxon);
-			}
-		}
-		if (nTaxa > 0 && sTaxa.size() > nTaxa) {
-			throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
-		}
-		for (String sTaxon : sTaxa) {
-			String sData = seqMap.get(sTaxon);
-			
-			if (sData.length() != nChar) {
-				throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
-			}
-			// map to standard missing and gap chars
-			sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
-			sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
 
-			// resolve matching char, if any
-			if (sMatchChar != null && sData.contains(sMatchChar)) {
-				char cMatchChar = sMatchChar.charAt(0);
-				String sBaseData = seqMap.get(sTaxa.get(0));
-				for (int i = 0; i < sData.length(); i++) {
-				    if (sData.charAt(i) == cMatchChar) {
-				    	char cReplaceChar = sBaseData.charAt(i);
-				    	sData = sData.substring(0, i) + cReplaceChar + (i+1<sData.length() ? sData.substring(i+1) : "" );
-				    }
-				}
-			}
-			
-			Sequence sequence = new Sequence();
-			sequence.init(nTotalCount, sTaxon, sData);
-			sequence.setID(generateSequenceID(sTaxon));
-			alignment.m_pSequences.setValue(sequence, alignment);
-		}
-		alignment.initAndValidate();
-		if (nTaxa > 0 && nTaxa != alignment.getNrTaxa()) {
-			throw new Exception("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getNrTaxa() + " taxa found");
-		}
-		return alignment;
-	} // parseDataBlock
-	
-	
-	/** parse assumptions block 
-	begin assumptions;
-    	charset firsthalf = 1-449;
-    	charset secondhalf = 450-898;
-	end;
-	**/
-	void parseAssumptionsBlock(BufferedReader fin) throws Exception {
-		String sStr;
-		do {
-			sStr = nextLine(fin);
-			if (sStr.toLowerCase().matches("\\s*charset\\s.*")) {
-				sStr = sStr.replaceAll("^\\s+", "");
-				sStr = sStr.replaceAll(";", "");
-				String [] sStrs = sStr.split("\\s+");
-				String sID = sStrs[1];
-				String sRange = sStrs[sStrs.length-1];
-				FilteredAlignment alignment = new FilteredAlignment();
-				alignment.setID(sID);
-				alignment.m_alignmentInput.setValue(m_alignment, alignment);
-				alignment.m_sFilterInput.setValue(sRange, alignment);
-				alignment.initAndValidate();
-				m_filteredAlignments.add(alignment);
-			}
-		} while (!sStr.toLowerCase().contains("end;"));
-	}
+            if (seqMap.containsKey(sTaxon)) {
+                seqMap.put(sTaxon, seqMap.get(sTaxon) + sData);
+            } else {
+                seqMap.put(sTaxon, sData);
+                sTaxa.add(sTaxon);
+            }
+        }
+        if (nTaxa > 0 && sTaxa.size() > nTaxa) {
+            throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
+        }
+        for (String sTaxon : sTaxa) {
+            String sData = seqMap.get(sTaxon);
 
-	/** parse sets block 
-BEGIN Sets;
-  TAXSET 'con' = 'con_SL_Gert2' 'con_SL_Tran6' 'con_SL_Tran7' 'con_SL_Gert6';
-  TAXSET 'spa' = 'spa_138a_Cerb' 'spa_JB_Eyre1' 'spa_JB_Eyre2';
-END; [Sets]
-	**/
-	void parseSetsBlock(BufferedReader fin) throws Exception {
-		String sStr;
-		do {
-			sStr = nextLine(fin);
-			if (sStr.toLowerCase().matches("\\s*taxset\\s.*")) {
-				sStr = sStr.replaceAll("^\\s+", "");
-				sStr = sStr.replaceAll(";", "");
-				String [] sStrs = sStr.split("\\s+");
-				String sID = sStrs[1];
-				sID = sID.replaceAll("'\"", "");
-				TaxonSet set = new TaxonSet();
-				set.setID(sID);
-				for (int i = 3; i < sStrs.length; i++) {
-					sID = sStrs[i];
-					sID = sID.replaceAll("'\"", "");
-					Taxon taxon = new Taxon();
-					taxon.setID(sID);
-					set.m_taxonset.setValue(taxon, set);
-				}
-				m_taxonsets.add(set);
-			}
-		} while (!sStr.toLowerCase().contains("end;"));
-	}
-	
-	private String generateSequenceID(String sTaxon) {
-		String sID = "seq_" + sTaxon;
-		int i = 0;
-		while (g_sequenceIDs.contains(sID+(i>0?i:""))) {
-			i++;
-		}
-		sID = sID + (i>0?i:"");
-		g_sequenceIDs.add(sID);
-		return sID;
-	}
+            if (sData.length() != nChar) {
+                throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
+            }
+            // map to standard missing and gap chars
+            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
+            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
 
-	/** read line from nexus file **/
-	String readLine(BufferedReader fin) throws Exception {
-		if (!fin.ready()) {
-			return null;
-		}
-		m_nLineNr++;
-		return fin.readLine();
-	}
+            // resolve matching char, if any
+            if (sMatchChar != null && sData.contains(sMatchChar)) {
+                char cMatchChar = sMatchChar.charAt(0);
+                String sBaseData = seqMap.get(sTaxa.get(0));
+                for (int i = 0; i < sData.length(); i++) {
+                    if (sData.charAt(i) == cMatchChar) {
+                        char cReplaceChar = sBaseData.charAt(i);
+                        sData = sData.substring(0, i) + cReplaceChar + (i + 1 < sData.length() ? sData.substring(i + 1) : "");
+                    }
+                }
+            }
 
-	/** read next line from nexus file that is not a comment and not empty **/
-	String nextLine(BufferedReader fin) throws Exception {
-		String sStr = readLine(fin);
-		if (sStr == null) {
-			return null;
-		}
-		if (sStr.contains("[")) {
-			int iStart = sStr.indexOf('[');
-			int iEnd = sStr.indexOf(']', iStart);
-			while (iEnd < 0){
-				sStr += readLine(fin);
-				iEnd = sStr.indexOf(']', iStart);
-			}
-			sStr = sStr.substring(0, iStart) + sStr.substring(iEnd+1);
-			if (sStr.matches("^\\s*$")) {
-				return nextLine(fin);
-			}
-		}
-		if (sStr.matches("^\\s*$")) {
-			return nextLine(fin);
-		}
-		return sStr;
-	}
+            Sequence sequence = new Sequence();
+            sequence.init(nTotalCount, sTaxon, sData);
+            sequence.setID(generateSequenceID(sTaxon));
+            alignment.m_pSequences.setValue(sequence, alignment);
+        }
+        alignment.initAndValidate();
+        if (nTaxa > 0 && nTaxa != alignment.getNrTaxa()) {
+            throw new Exception("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getNrTaxa() + " taxa found");
+        }
+        return alignment;
+    } // parseDataBlock
 
-	/** return attribute value as a string **/
-	String getAttValue(String sAttribute, String sStr) {
-		Pattern pattern = Pattern.compile(".*" + sAttribute +"\\s*=\\s*([^\\s;]+).*");
-		Matcher matcher = pattern.matcher(sStr.toLowerCase());
-		if (!matcher.find()) {
-			return null; 
-		}
-		String sAtt = matcher.group(1);
-		if (sAtt.startsWith("\"") && sAtt.endsWith("\"")) {
-			int iStart = matcher.start(1);
-			sAtt = sStr.substring(iStart + 1, sStr.indexOf('"', iStart+1));
-		}
-		return sAtt;
-	}
-	
-	public static void main(String [] args) {
-		try {
-			NexusParser parser = new NexusParser();
-			parser.parseFile(new File(args[0]));
-			String sXML = new XMLProducer().toXML(parser.m_alignment);
-			System.out.println(sXML);
-			if (parser.m_traitSet != null) {
-				sXML = new XMLProducer().toXML(parser.m_traitSet);
-				System.out.println(sXML);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	} // main
-	
+
+    /**
+     * parse assumptions block
+     * begin assumptions;
+     * charset firsthalf = 1-449;
+     * charset secondhalf = 450-898;
+     * end;
+     */
+    void parseAssumptionsBlock(BufferedReader fin) throws Exception {
+        String sStr;
+        do {
+            sStr = nextLine(fin);
+            if (sStr.toLowerCase().matches("\\s*charset\\s.*")) {
+                sStr = sStr.replaceAll("^\\s+", "");
+                sStr = sStr.replaceAll(";", "");
+                String[] sStrs = sStr.split("\\s+");
+                String sID = sStrs[1];
+                String sRange = sStrs[sStrs.length - 1];
+                FilteredAlignment alignment = new FilteredAlignment();
+                alignment.setID(sID);
+                alignment.m_alignmentInput.setValue(m_alignment, alignment);
+                alignment.m_sFilterInput.setValue(sRange, alignment);
+                alignment.initAndValidate();
+                m_filteredAlignments.add(alignment);
+            }
+        } while (!sStr.toLowerCase().contains("end;"));
+    }
+
+    /**
+     * parse sets block
+     * BEGIN Sets;
+     * TAXSET 'con' = 'con_SL_Gert2' 'con_SL_Tran6' 'con_SL_Tran7' 'con_SL_Gert6';
+     * TAXSET 'spa' = 'spa_138a_Cerb' 'spa_JB_Eyre1' 'spa_JB_Eyre2';
+     * END; [Sets]
+     */
+    void parseSetsBlock(BufferedReader fin) throws Exception {
+        String sStr;
+        do {
+            sStr = nextLine(fin);
+            if (sStr.toLowerCase().matches("\\s*taxset\\s.*")) {
+                sStr = sStr.replaceAll("^\\s+", "");
+                sStr = sStr.replaceAll(";", "");
+                String[] sStrs = sStr.split("\\s+");
+                String sID = sStrs[1];
+                sID = sID.replaceAll("'\"", "");
+                TaxonSet set = new TaxonSet();
+                set.setID(sID);
+                for (int i = 3; i < sStrs.length; i++) {
+                    sID = sStrs[i];
+                    sID = sID.replaceAll("'\"", "");
+                    Taxon taxon = new Taxon();
+                    taxon.setID(sID);
+                    set.m_taxonset.setValue(taxon, set);
+                }
+                m_taxonsets.add(set);
+            }
+        } while (!sStr.toLowerCase().contains("end;"));
+    }
+
+    private String generateSequenceID(String sTaxon) {
+        String sID = "seq_" + sTaxon;
+        int i = 0;
+        while (g_sequenceIDs.contains(sID + (i > 0 ? i : ""))) {
+            i++;
+        }
+        sID = sID + (i > 0 ? i : "");
+        g_sequenceIDs.add(sID);
+        return sID;
+    }
+
+    /**
+     * read line from nexus file *
+     */
+    String readLine(BufferedReader fin) throws Exception {
+        if (!fin.ready()) {
+            return null;
+        }
+        m_nLineNr++;
+        return fin.readLine();
+    }
+
+    /**
+     * read next line from nexus file that is not a comment and not empty *
+     */
+    String nextLine(BufferedReader fin) throws Exception {
+        String sStr = readLine(fin);
+        if (sStr == null) {
+            return null;
+        }
+        if (sStr.contains("[")) {
+            int iStart = sStr.indexOf('[');
+            int iEnd = sStr.indexOf(']', iStart);
+            while (iEnd < 0) {
+                sStr += readLine(fin);
+                iEnd = sStr.indexOf(']', iStart);
+            }
+            sStr = sStr.substring(0, iStart) + sStr.substring(iEnd + 1);
+            if (sStr.matches("^\\s*$")) {
+                return nextLine(fin);
+            }
+        }
+        if (sStr.matches("^\\s*$")) {
+            return nextLine(fin);
+        }
+        return sStr;
+    }
+
+    /**
+     * return attribute value as a string *
+     */
+    String getAttValue(String sAttribute, String sStr) {
+        Pattern pattern = Pattern.compile(".*" + sAttribute + "\\s*=\\s*([^\\s;]+).*");
+        Matcher matcher = pattern.matcher(sStr.toLowerCase());
+        if (!matcher.find()) {
+            return null;
+        }
+        String sAtt = matcher.group(1);
+        if (sAtt.startsWith("\"") && sAtt.endsWith("\"")) {
+            int iStart = matcher.start(1);
+            sAtt = sStr.substring(iStart + 1, sStr.indexOf('"', iStart + 1));
+        }
+        return sAtt;
+    }
+
+    public static void main(String[] args) {
+        try {
+            NexusParser parser = new NexusParser();
+            parser.parseFile(new File(args[0]));
+            String sXML = new XMLProducer().toXML(parser.m_alignment);
+            System.out.println(sXML);
+            if (parser.m_traitSet != null) {
+                sXML = new XMLProducer().toXML(parser.m_traitSet);
+                System.out.println(sXML);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    } // main
+
 } // class NexusParser

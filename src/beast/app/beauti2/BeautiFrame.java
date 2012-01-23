@@ -43,16 +43,20 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
      */
     static public final String FILE_EXT = ".xml";
 
-    /** document in document-view pattern. BTW this class is the view */
+    /**
+     * document in document-view pattern. BTW this class is the view
+     */
     private BeautiDoc doc;
 
-    private JTabbedPane tabbedPane =  new JTabbedPane();
+    private JTabbedPane tabbedPane = new JTabbedPane();
     private TemplatePanel templatePanel;
 
-    private boolean [] isPaneVisible;
+    private boolean[] isPaneVisible;
     private BeautiPanel[] panels;
 
-    /** flag indicating beauti is in the process of being set up and panels should not sync with current model **/
+    /**
+     * flag indicating beauti is in the process of being set up and panels should not sync with current model *
+     */
     private boolean isInitialising = true;
 
     public BeautiFrame(String title, BeautiDoc doc) throws Exception {
@@ -60,13 +64,13 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
         setTitle(title);
 
-		isPaneVisible = new boolean[ doc.beautiConfig.panels.size()];
-		Arrays.fill(isPaneVisible, true);
-		//m_panels = new BeautiPanel[NR_OF_PANELS];
-		this.doc = doc;
-		this.doc.addBeautiDocListener(this);
+        isPaneVisible = new boolean[doc.beautiConfig.panels.size()];
+        Arrays.fill(isPaneVisible, true);
+        //m_panels = new BeautiPanel[NR_OF_PANELS];
+        this.doc = doc;
+        this.doc.addBeautiDocListener(this);
 
-	    // set the import action (this will mean an 'import' menu option will be created in the File menu).
+        // set the import action (this will mean an 'import' menu option will be created in the File menu).
         setImportAction(importAction);
 
         getFindAction().setEnabled(false);
@@ -76,31 +80,31 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
         setUpPanels();
 
-		tabbedPane.addChangeListener(new ChangeListener() {
+        tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 Component comp = tabbedPane.getSelectedComponent();
                 if (comp != null && comp instanceof BeautiPanel) {
                     if (!isInitialising) {
-                        ((BeautiPanel)comp).config.sync(((BeautiPanel)comp).iPartition);
+                        ((BeautiPanel) comp).config.sync(((BeautiPanel) comp).iPartition);
                     }
                     refreshPanel();
                 }
             }
         });
-		
-		refreshPanel();
 
-		setIconImage(BeautiPanel.getIcon(0, null).getImage());
+        refreshPanel();
 
-		//JMenuBar menuBar = beauti.makeMenuBar(); 
-		//frame.setJMenuBar(menuBar);
-		
+        setIconImage(BeautiPanel.getIcon(0, null).getImage());
+
+        //JMenuBar menuBar = beauti.makeMenuBar();
+        //frame.setJMenuBar(menuBar);
+
 //		if (doc.sFileName != null || doc.alignments.size()> 0) {
 //			beauti.a_save.setEnabled(true);
 //			beauti.a_saveas.setEnabled(true);
 //		}
-		
+
         // check file needs to be save on closing main frame
 //        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 //		frame.addWindowListener(new WindowAdapter() {
@@ -135,50 +139,50 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
     }
 
     public void setUpPanels() throws Exception {
-    	isInitialising = true;
-    	// remove any existing tabs
-    	if (tabbedPane.getTabCount() > 0) {
-	    	while (tabbedPane.getTabCount() > 0) {
-	    		tabbedPane.removeTabAt(0);
-	    	}
-			isPaneVisible = new boolean[ doc.beautiConfig.panels.size()];
-			Arrays.fill(isPaneVisible, true);
-    	}
-		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
-			isPaneVisible[iPanel] = panelConfig.bIsVisibleInput.get();
-		}
+        isInitialising = true;
+        // remove any existing tabs
+        if (tabbedPane.getTabCount() > 0) {
+            while (tabbedPane.getTabCount() > 0) {
+                tabbedPane.removeTabAt(0);
+            }
+            isPaneVisible = new boolean[doc.beautiConfig.panels.size()];
+            Arrays.fill(isPaneVisible, true);
+        }
+        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
+            isPaneVisible[iPanel] = panelConfig.bIsVisibleInput.get();
+        }
         // add the special Template panel:
         tabbedPane.addTab("Templates", templatePanel);
         tabbedPane.setToolTipTextAt(0, "Select from available analysis templates");
 
-    	// add panels according to BeautiConfig 
-		panels = new BeautiPanel[ doc.beautiConfig.panels.size()];
-		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
-			panels[ iPanel] = new BeautiPanel( iPanel, this.doc, panelConfig);
-			tabbedPane.addTab(doc.beautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[ iPanel], panelConfig.getTipText());
-		}
-		
-		for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
-			if (!isPaneVisible[iPanel]) {
-				tabbedPane.removeTabAt(iPanel);
-			}
-		}
-    	isInitialising = false;
+        // add panels according to BeautiConfig
+        panels = new BeautiPanel[doc.beautiConfig.panels.size()];
+        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
+            panels[iPanel] = new BeautiPanel(iPanel, this.doc, panelConfig);
+            tabbedPane.addTab(doc.beautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[iPanel], panelConfig.getTipText());
+        }
+
+        for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
+            if (!isPaneVisible[iPanel]) {
+                tabbedPane.removeTabAt(iPanel);
+            }
+        }
+        isInitialising = false;
     }
 
     public void refreshPanel() {
-		try {
-			Component panel = tabbedPane.getSelectedComponent();
-			if (panel != null && panel instanceof BeautiPanel) {
-				this.doc.determinePartitions();
-				((BeautiPanel)panel).updateList();
-				((BeautiPanel)panel).refreshPanel();
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            Component panel = tabbedPane.getSelectedComponent();
+            if (panel != null && panel instanceof BeautiPanel) {
+                this.doc.determinePartitions();
+                ((BeautiPanel) panel).updateList();
+                ((BeautiPanel) panel).refreshPanel();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -196,13 +200,13 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
     // Read the document from the provide file (return true if successfully loaded).
     protected boolean readFromFile(File file) throws IOException {
-		try {
-			doc.loadXML(file);
-		} catch (IOException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IOException(e);
-		}
+        try {
+            doc.loadXML(file);
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
         return true;
     }
 
@@ -214,10 +218,10 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
         try {
             Component comp = tabbedPane.getSelectedComponent();
             if (comp != null && comp instanceof BeautiPanel) {
-                ((BeautiPanel)comp).config.sync(((BeautiPanel)comp).iPartition);
-        	} else {
-        		panels[0].config.sync(0);
-        	}
+                ((BeautiPanel) comp).config.sync(((BeautiPanel) comp).iPartition);
+            } else {
+                panels[0].config.sync(0);
+            }
             doc.save(file);
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,6 +239,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
     /**
      * Called by the Import menu option to import non-native file formats.
+     *
      * @param files
      */
     private void importFiles(File[] files) {
@@ -243,21 +248,21 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
                 JOptionPane.showMessageDialog(this, "Invalid file name",
                         "Invalid file name", JOptionPane.ERROR_MESSAGE);
             } else {
-    			try {
-					String sFileName = file.getAbsolutePath();
+                try {
+                    String sFileName = file.getAbsolutePath();
 //					if (sFileName.lastIndexOf('/') > 0) {
 //						Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
 //					}
-					if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs") || sFileName.toLowerCase().endsWith(".nexus")) {
-							doc.importNexus(file);
-					}
-					if (sFileName.toLowerCase().endsWith(".xml")) {
-						doc.importXMLAlignment(file);
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                    if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs") || sFileName.toLowerCase().endsWith(".nexus")) {
+                        doc.importNexus(file);
+                    }
+                    if (sFileName.toLowerCase().endsWith(".xml")) {
+                        doc.importXMLAlignment(file);
+                    }
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 //                try {
 //                    BEAUTiImporter beautiImporter = new BEAUTiImporter(this);
 //                    beautiImporter.importFromFile(file);
@@ -305,6 +310,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
     /**
      * return the currently selected component that could be used to export data via the clipboard
+     *
      * @return
      */
     public JComponent getExportableComponent() {
@@ -335,16 +341,16 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
 
     @Override
     public boolean requestClose() {
-    	if (doc.validateModel() == DOC_STATUS.DIRTY) {
-    		setDirty();
-    	} else {
-    		clearDirty();
-    	}
-    	return super.requestClose();
+        if (doc.validateModel() == DOC_STATUS.DIRTY) {
+            setDirty();
+        } else {
+            clearDirty();
+        }
+        return super.requestClose();
     }
 
     @Override
-    public void docHasChanged() throws Exception{
+    public void docHasChanged() throws Exception {
         setUpPanels();
 //        setUpViewMenu();
 //        setTitle();
@@ -364,7 +370,7 @@ public class BeautiFrame extends DocumentFrame implements BeautiDocListener, Bea
             }
             addOnManagerDialog.showDialog();
 
-        	// refresh template menu item
+            // refresh template menu item
 //        	templateMenu.removeAll();
 //    		List<AbstractAction> templateActions = getTemplateActions();
 //    		for (AbstractAction a: templateActions) {

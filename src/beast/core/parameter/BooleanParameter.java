@@ -30,21 +30,25 @@ import java.io.PrintStream;
 
 /**
  * @author Joseph Heled
- *
  */
 @Description("A Boolean-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
 public class BooleanParameter extends Parameter<java.lang.Boolean> {
-    public BooleanParameter() {m_fUpper=true;}
-
-    public BooleanParameter(Boolean [] fValues) {
-    	super(fValues);
-    	m_fUpper=true;
+    public BooleanParameter() {
+        m_fUpper = true;
     }
-    /** Constructor used by Input.setValue(String) **/
+
+    public BooleanParameter(Boolean[] fValues) {
+        super(fValues);
+        m_fUpper = true;
+    }
+
+    /**
+     * Constructor used by Input.setValue(String) *
+     */
     public BooleanParameter(String sValue) throws Exception {
-    	init(sValue, 1);
-    	m_fUpper=true;
+        init(sValue, 1);
+        m_fUpper = true;
     }
 //    /**
 //     * Constructor for testing.
@@ -58,21 +62,21 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
 
     @Override
     public void initAndValidate() throws Exception {
-    	String sValue = m_pValues.get();
-    	// remove start and end spaces
-    	sValue = sValue.replaceAll("^\\s+", "");
-    	sValue = sValue.replaceAll("\\s+$", "");
-    	// split into space-separated bits
-    	String [] sValues = sValue.split("\\s+");
-    	int nDimension = Math.max(m_nDimension.get(), sValues.length);
-    	m_nDimension.setValue(nDimension, this);
+        String sValue = m_pValues.get();
+        // remove start and end spaces
+        sValue = sValue.replaceAll("^\\s+", "");
+        sValue = sValue.replaceAll("\\s+$", "");
+        // split into space-separated bits
+        String[] sValues = sValue.split("\\s+");
+        int nDimension = Math.max(m_nDimension.get(), sValues.length);
+        m_nDimension.setValue(nDimension, this);
         values = new java.lang.Boolean[nDimension];
         storedValues = new java.lang.Boolean[nDimension];
         String tempValue;
         for (int i = 0; i < values.length; i++) {
             tempValue = sValues[i % sValues.length];
-            if (tempValue.equals("1.") ||  tempValue.equals("1") || tempValue.equals("1.0")) tempValue = "true";
-            if (tempValue.equals("0.") ||  tempValue.equals("0") || tempValue.equals("0.0")) tempValue = "false";
+            if (tempValue.equals("1.") || tempValue.equals("1") || tempValue.equals("1.0")) tempValue = "true";
+            if (tempValue.equals("0.") || tempValue.equals("0") || tempValue.equals("0.0")) tempValue = "false";
             values[i] = new Boolean(tempValue);
         }
         super.initAndValidate();
@@ -80,22 +84,40 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
 
 
     @Override
-    Boolean getMax() {return true;}
+    Boolean getMax() {
+        return true;
+    }
+
     @Override
-    Boolean getMin() {return false;}
+    Boolean getMin() {
+        return false;
+    }
 
     /** Valuable implementation follows **/
-    /** we need this here, because the base implementation (public T getValue()) fails
+    /**
+     * we need this here, because the base implementation (public T getValue()) fails
      * for some reason
      */
     @Override
     public Boolean getValue() {
         return values[0];
     }
-    @Override public double getArrayValue() {return (values[0] ? 1 : 0);}
-    @Override public double getArrayValue(int iValue) {return (values[iValue] ? 1 : 0);};
 
-    /** Loggable implementation follows **/
+    @Override
+    public double getArrayValue() {
+        return (values[0] ? 1 : 0);
+    }
+
+    @Override
+    public double getArrayValue(int iValue) {
+        return (values[iValue] ? 1 : 0);
+    }
+
+    ;
+
+    /**
+     * Loggable implementation follows *
+     */
     @Override
     public void log(int nSample, PrintStream out) {
         BooleanParameter var = (BooleanParameter) getCurrent();
@@ -106,19 +128,21 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
         }
     }
 
-    /** StateNode methods **/
-	@Override
-	public int scale(double fScale) {
-		// nothing to do
-		System.err.println("Attempt to scale Boolean parameter " + getID() + "  has no effect");
-		return 0;
-	}
+    /**
+     * StateNode methods *
+     */
+    @Override
+    public int scale(double fScale) {
+        // nothing to do
+        System.err.println("Attempt to scale Boolean parameter " + getID() + "  has no effect");
+        return 0;
+    }
 
-	@Override
-    void fromXML(int nDimension, String sLower, String sUpper, String [] sValues) {
-    	values = new Boolean[nDimension];
-    	for (int i = 0; i < sValues.length; i++) {
-    		values[i] = Boolean.parseBoolean(sValues[i]);
-    	}
+    @Override
+    void fromXML(int nDimension, String sLower, String sUpper, String[] sValues) {
+        values = new Boolean[nDimension];
+        for (int i = 0; i < sValues.length; i++) {
+            values[i] = Boolean.parseBoolean(sValues[i]);
+        }
     }
 }

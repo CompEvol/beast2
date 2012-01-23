@@ -37,7 +37,7 @@ public class TemplatePanel extends JPanel {
         add(panel, BorderLayout.NORTH);
 
         JPanel panel2 = new JPanel(new BorderLayout());
-        panel2.setBorder(BorderFactory.createTitledBorder((String)null));
+        panel2.setBorder(BorderFactory.createTitledBorder((String) null));
 
         add(panel2, BorderLayout.CENTER);
 
@@ -53,16 +53,16 @@ public class TemplatePanel extends JPanel {
         add(panel3, BorderLayout.SOUTH);
 
         List<AbstractAction> templateActions = getTemplateActions();
-        for (AbstractAction a: templateActions) {
+        for (AbstractAction a : templateActions) {
             templateCombo.addItem(a);
         }
 
-        currentTemplate = (TemplateAction)templateCombo.getSelectedItem();
+        currentTemplate = (TemplateAction) templateCombo.getSelectedItem();
 
         applyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                TemplateAction a = (TemplateAction)templateCombo.getSelectedItem();
+                TemplateAction a = (TemplateAction) templateCombo.getSelectedItem();
                 a.actionPerformed(null);
                 if (currentTemplate == a) {
                     // the template was loaded...

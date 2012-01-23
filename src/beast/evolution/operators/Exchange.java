@@ -61,8 +61,8 @@ import beast.util.Randomizer;
  */
 
 @Description("Implements branch exchange operations. There is a NARROW and WIDE variety. " +
-                "The narrow exchange is very similar to a rooted-beast.tree nearest-neighbour " +
-                "interchange but with the restriction that node height must remain consistent.")
+        "The narrow exchange is very similar to a rooted-beast.tree nearest-neighbour " +
+        "interchange but with the restriction that node height must remain consistent.")
 public class Exchange extends TreeOperator {
     public Input<Boolean> m_bIsNarrow = new Input<Boolean>("isNarrow", "if true (default) a narrow exchange is performed, otherwise a wide exchange", true);
 
@@ -70,8 +70,11 @@ public class Exchange extends TreeOperator {
     public void initAndValidate() {
     }
 
-    /** override this for proposals,
-	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
+    /**
+     * override this for proposals,
+     *
+     * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted *
+     */
     @Override
     public double proposal() {
         Tree tree = m_tree.get(this);
@@ -130,14 +133,14 @@ public class Exchange extends TreeOperator {
         Node iUncle = iGrandParent.m_left;
         if (iUncle.getNr() == iParent.getNr()) {
             iUncle = iGrandParent.m_right;
-            assert(iUncle.getNr() != iParent.getNr());
+            assert (iUncle.getNr() != iParent.getNr());
         }
         assert iUncle == getOtherChild(iGrandParent, iParent);
 
         assert i.getHeight() <= iGrandParent.getHeight();
 
         if (//i.getHeight() < iUncle.getHeight() && 
-        		iUncle.getHeight() < iParent.getHeight()) {
+                iUncle.getHeight() < iParent.getHeight()) {
             exchangeNodes(i, iUncle, iParent, iGrandParent);
             return 0;
         } else {
@@ -172,8 +175,8 @@ public class Exchange extends TreeOperator {
                 && (j.getHeight() < iP.getHeight())
                 && (i.getHeight() < jP.getHeight())
                 && ((iP.getHeight() < jP.getHeight() && i.getHeight() < j.getHeight()) ||
-                	(iP.getHeight() > jP.getHeight() && i.getHeight() > j.getHeight()))
-        		) {
+                (iP.getHeight() > jP.getHeight() && i.getHeight() > j.getHeight()))
+                ) {
             exchangeNodes(i, j, iP, jP);
             // System.out.println("tries = " + tries+1);
             return 0;

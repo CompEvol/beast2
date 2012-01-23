@@ -25,53 +25,64 @@ import org.apache.commons.math.MathRuntimeException;
  * Default implementation of
  * {@link org.apache.commons.math.distribution.CauchyDistribution}.
  *
- * @since 1.1
  * @version $Revision: 925900 $ $Date: 2010-03-21 17:10:07 -0400 (Sun, 21 Mar 2010) $
+ * @since 1.1
  */
 public class CauchyDistributionImpl extends AbstractContinuousDistribution
         implements CauchyDistribution, Serializable {
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = 8589540077390120676L;
 
-    /** The median of this distribution. */
+    /**
+     * The median of this distribution.
+     */
     private double median = 0;
 
-    /** The scale of this distribution. */
+    /**
+     * The scale of this distribution.
+     */
     private double scale = 1;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Creates cauchy distribution with the medain equal to zero and scale
      * equal to one.
      */
-    public CauchyDistributionImpl(){
+    public CauchyDistributionImpl() {
         this(0.0, 1.0);
     }
 
     /**
      * Create a cauchy distribution using the given median and scale.
+     *
      * @param median median for this distribution
-     * @param s scale parameter for this distribution
+     * @param s      scale parameter for this distribution
      */
-    public CauchyDistributionImpl(double median, double s){
+    public CauchyDistributionImpl(double median, double s) {
         this(median, s, DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
     }
 
     /**
      * Create a cauchy distribution using the given median and scale.
-     * @param median median for this distribution
-     * @param s scale parameter for this distribution
+     *
+     * @param median             median for this distribution
+     * @param s                  scale parameter for this distribution
      * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     *                           (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
     public CauchyDistributionImpl(double median, double s, double inverseCumAccuracy) {
@@ -83,6 +94,7 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * For this distribution, X, this method returns P(X &lt; <code>x</code>).
+     *
      * @param x the value at which the CDF is evaluated.
      * @return CDF evaluted at <code>x</code>.
      */
@@ -92,6 +104,7 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Access the median.
+     *
      * @return median for this distribution
      */
     public double getMedian() {
@@ -100,6 +113,7 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Access the scale parameter.
+     *
      * @return scale parameter for this distribution
      */
     public double getScale() {
@@ -129,17 +143,17 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     @Override
     public double inverseCumulativeProbability(double p) {
         double ret;
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
+                    "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
         } else if (p == 0) {
             ret = Double.NEGATIVE_INFINITY;
-        } else  if (p == 1) {
+        } else if (p == 1) {
             ret = Double.POSITIVE_INFINITY;
         } else {
             ret = median + scale * Math.tan(Math.PI * (p - .5));
@@ -149,6 +163,7 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the median.
+     *
      * @param median for this distribution
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
@@ -156,8 +171,10 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
     public void setMedian(double median) {
         setMedianInternal(median);
     }
+
     /**
      * Modify the median.
+     *
      * @param newMedian for this distribution
      */
     private void setMedianInternal(double newMedian) {
@@ -166,6 +183,7 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the scale parameter.
+     *
      * @param s scale parameter for this distribution
      * @throws IllegalArgumentException if <code>sd</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
@@ -174,15 +192,17 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
     public void setScale(double s) {
         setScaleInternal(s);
     }
+
     /**
      * Modify the scale parameter.
+     *
      * @param s scale parameter for this distribution
      * @throws IllegalArgumentException if <code>sd</code> is not positive.
      */
     private void setScaleInternal(double s) {
         if (s <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "scale must be positive ({0})", s);
+                    "scale must be positive ({0})", s);
         }
         scale = s;
     }

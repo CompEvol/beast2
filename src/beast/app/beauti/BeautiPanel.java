@@ -29,40 +29,63 @@ import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
 
-/** panel making up each of the tabs in Beauti **/
+/**
+ * panel making up each of the tabs in Beauti *
+ */
 public class BeautiPanel extends JPanel implements ListSelectionListener {
-	private static final long serialVersionUID = 1L;
-	public final static String ICONPATH = "beast/app/beauti/";
-	
-    /** document that this panel applies to **/
+    private static final long serialVersionUID = 1L;
+    public final static String ICONPATH = "beast/app/beauti/";
+
+    /**
+     * document that this panel applies to *
+     */
     BeautiDoc doc;
-    public BeautiDoc getDoc() {return doc;}
-    /** configuration for this panel **/
+
+    public BeautiDoc getDoc() {
+        return doc;
+    }
+
+    /**
+     * configuration for this panel *
+     */
     public BeautiPanelConfig config;
-    
-    /** panel number **/
+
+    /**
+     * panel number *
+     */
     int iPanel;
-    
-    /** partition currently on display **/
+
+    /**
+     * partition currently on display *
+     */
     public int iPartition = 0;
 
-    /** box containing the list of partitions, to make (in)visible on update **/
+    /**
+     * box containing the list of partitions, to make (in)visible on update *
+     */
     Box partitionBox;
-	/** list of partitions in m_listBox **/
-	JList listOfPartitions;
-	/** model for m_listOfPartitions **/
+    /**
+     * list of partitions in m_listBox *
+     */
+    JList listOfPartitions;
+    /**
+     * model for m_listOfPartitions *
+     */
     DefaultListModel listModel;
 
-    
-    /** component containing main input editor **/ 
-	Component centralComponent = null;
 
-	public BeautiPanel() {}
-	
+    /**
+     * component containing main input editor *
+     */
+    Component centralComponent = null;
+
+    public BeautiPanel() {
+    }
+
     public BeautiPanel(int iPanel, BeautiDoc doc, BeautiPanelConfig config) throws Exception {
-		this.doc = doc;
-		this.iPanel = iPanel;
-		
+        this.doc = doc;
+        this.iPanel = iPanel;
+
 //        SmallButton helpButton2 = new SmallButton("?", true);
 //        helpButton2.setToolTipText("Show help for this plugin");
 //        helpButton2.addActionListener(new ActionListener() {
@@ -77,196 +100,197 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //            }
 //        });
 //    	add(helpButton2);
-		
-		
-	    setLayout(new BorderLayout());
-	    this.config = config;
-	    refreshPanel();
-	    addParitionPanel(this.config.hasPartition(), iPanel);
+
+
+        setLayout(new BorderLayout());
+        this.config = config;
+        refreshPanel();
+        addParitionPanel(this.config.hasPartition(), iPanel);
 
         setOpaque(false);
-	} // c'tor
-    
+    } // c'tor
+
     void addParitionPanel(Partition bHasPartion, int iPanel) {
-		Box box = Box.createVerticalBox();
-    	if (bHasPartion != Partition.none) {
-			box.add(createList());
-    	}
-		box.add(Box.createVerticalGlue());
-		box.add(new JLabel(getIcon(iPanel, config)));
-    	add(box, BorderLayout.WEST);
-    	if (listOfPartitions != null) {
-    		listOfPartitions.setSelectedIndex(iPartition);
-    	}
-	}
-	
+        Box box = Box.createVerticalBox();
+        if (bHasPartion != Partition.none) {
+            box.add(createList());
+        }
+        box.add(Box.createVerticalGlue());
+        box.add(new JLabel(getIcon(iPanel, config)));
+        add(box, BorderLayout.WEST);
+        if (listOfPartitions != null) {
+            listOfPartitions.setSelectedIndex(iPartition);
+        }
+    }
+
     Box createList() {
-    	partitionBox = Box.createVerticalBox();
-		partitionBox.setAlignmentX(LEFT_ALIGNMENT);
-		partitionBox.add(new JLabel("partition"));
+        partitionBox = Box.createVerticalBox();
+        partitionBox.setAlignmentX(LEFT_ALIGNMENT);
+        partitionBox.add(new JLabel("partition"));
         listModel = new DefaultListModel();
-    	listOfPartitions = new JList(listModel);
-    	
-    	Dimension size = new Dimension(100,300);
-    	listOfPartitions.setFixedCellWidth(100);
+        listOfPartitions = new JList(listModel);
+
+        Dimension size = new Dimension(100, 300);
+        listOfPartitions.setFixedCellWidth(100);
 //    	m_listOfPartitions.setSize(size);
-    	listOfPartitions.setPreferredSize(size);
+        listOfPartitions.setPreferredSize(size);
 //    	m_listOfPartitions.setMinimumSize(size);
 //    	m_listOfPartitions.setBounds(0, 0, 100, 100);
-    	
-    	listOfPartitions.addListSelectionListener(this);
-    	updateList();
-    	listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
-    	partitionBox.add(listOfPartitions);
-    	partitionBox.setBorder(new EtchedBorder());
-    	return partitionBox;
+
+        listOfPartitions.addListSelectionListener(this);
+        updateList();
+        listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
+        partitionBox.add(listOfPartitions);
+        partitionBox.setBorder(new EtchedBorder());
+        return partitionBox;
     }
 
     public void updateList() {
-    	if (listModel == null) {
-    		return;
-    	}
-    	listModel.clear();
-    	for (Plugin partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
-    		String sPartition = partition.getID();
-    		sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
-    		listModel.addElement(sPartition);
-    	}
-    	if (iPartition >= 0 && listModel.size() > 0)
-    		listOfPartitions.setSelectedIndex(iPartition);
+        if (listModel == null) {
+            return;
+        }
+        listModel.clear();
+        for (Plugin partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
+            String sPartition = partition.getID();
+            sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
+            listModel.addElement(sPartition);
+        }
+        if (iPartition >= 0 && listModel.size() > 0)
+            listOfPartitions.setSelectedIndex(iPartition);
     }
-    
+
     public static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
-        String sIconLocation = ICONPATH + iPanel +".png";
+        String sIconLocation = ICONPATH + iPanel + ".png";
         if (config != null) {
-        	sIconLocation = ICONPATH + config.getIcon();
+            sIconLocation = ICONPATH + config.getIcon();
         }
         try {
-	        URL url = (URL)ClassLoader.getSystemResource(sIconLocation);
-	        if (url == null) {
-	        	System.err.println("Cannot find icon " + sIconLocation);
-	        	return null;
-	        }
-	        ImageIcon icon = new ImageIcon(url);
-	        return icon;
+            URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
+            if (url == null) {
+                System.err.println("Cannot find icon " + sIconLocation);
+                return null;
+            }
+            ImageIcon icon = new ImageIcon(url);
+            return icon;
         } catch (Exception e) {
-        	System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
-        	return null;
-		}
-	
-	}
-	
-	// AR remove globals (doesn't seem to be used anywhere)...
+            System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+            return null;
+        }
+
+    }
+
+    // AR remove globals (doesn't seem to be used anywhere)...
 //	static BeautiPanel g_currentPanel = null;
-	
-	public void refreshPanel() throws Exception {
-		if (doc.alignments.size() == 0) {
-			return;
-		}
-		doc.scrubAll(true, false);
 
-		refreshInputPanel();
-		if (partitionBox != null && config.getType() != null) {
-			partitionBox.setVisible(doc.getPartitions(config.getType()).size() > 1);
-		}
+    public void refreshPanel() throws Exception {
+        if (doc.alignments.size() == 0) {
+            return;
+        }
+        doc.scrubAll(true, false);
+
+        refreshInputPanel();
+        if (partitionBox != null && config.getType() != null) {
+            partitionBox.setVisible(doc.getPartitions(config.getType()).size() > 1);
+        }
 //		g_currentPanel = this;
-	}
-	
-	void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
-		if (centralComponent != null) {
-			remove(centralComponent);
-		}
-	    if (input != null && input.get() != null) {
-	    	InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
-	        InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
-	        Box box = Box.createVerticalBox();
-	        box.add(inputEditor);
-	        // RRB: is there a better way than just pooring in glue at the bottom?
-	        //for (int i = 0; i < 30; i++) {
-	        
-	        	box.add(Box.createVerticalStrut(1024 - inputEditor.getPreferredSize().height));
-	        //}
-	        JScrollPane scroller = new JScrollPane(box);
-	        centralComponent = scroller;
-	    } else {
-	        centralComponent = new JLabel("Nothing to be specified");
-	    }
+    }
+
+    void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
+        if (centralComponent != null) {
+            remove(centralComponent);
+        }
+        if (input != null && input.get() != null) {
+            InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
+            InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
+            Box box = Box.createVerticalBox();
+            box.add(inputEditor);
+            // RRB: is there a better way than just pooring in glue at the bottom?
+            //for (int i = 0; i < 30; i++) {
+
+            box.add(Box.createVerticalStrut(1024 - inputEditor.getPreferredSize().height));
+            //}
+            JScrollPane scroller = new JScrollPane(box);
+            centralComponent = scroller;
+        } else {
+            centralComponent = new JLabel("Nothing to be specified");
+        }
         add(centralComponent, BorderLayout.CENTER);
-	}
+    }
 
-	void refreshInputPanel() throws Exception {
-		InputEditor.g_currentInputEditors.clear();
-		InputEditor.g_nLabelWidth = config.nLabelWidthInput.get();
-		Plugin plugin = config;
-		Input<?> input = config.resolveInput(doc, iPartition);
-		
-		boolean bAddButtons = config.addButtons();
-		ExpandOption bForceExpansion = config.forceExpansion();
-		refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
-	}
-	
-	
-	public static boolean soundIsPlaying = false;
-	public static synchronized void playSound(final String url) {
-	    new Thread(new Runnable() {
-	      public void run() {
-	        try {
-	        	synchronized (this) {
-	        		if (soundIsPlaying) {
-	        			return;
-	        		} 
-            		soundIsPlaying = true;
-				}
-	          Clip clip = AudioSystem.getClip();
-	          AudioInputStream inputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/beast/app/beauti/" + url));
-	          clip.open(inputStream);
-	          clip.start(); 
-	          Thread.sleep(500);
-	        	synchronized (this) {
-	        		soundIsPlaying = false;
-				}
-	        } catch (Exception e) {
-        		soundIsPlaying = false;
-	          System.err.println(e.getMessage());
-	        }
-	      }
-	    }).start();
-	  }
+    void refreshInputPanel() throws Exception {
+        InputEditor.g_currentInputEditors.clear();
+        InputEditor.g_nLabelWidth = config.nLabelWidthInput.get();
+        Plugin plugin = config;
+        Input<?> input = config.resolveInput(doc, iPartition);
 
-	@Override
-	public void valueChanged(ListSelectionEvent e) {
-		//System.err.print("BeautiPanel::valueChanged " + m_iPartition + " => ");
-		if (e != null) {
-			config.sync(iPartition);
-			if (listOfPartitions != null) {
-				iPartition = Math.max(0, listOfPartitions.getSelectedIndex());
-			}
-		}
-		BeautiPanel.playSound("woosh.wav");
-		//System.err.println(m_iPartition);
-		try {
-			refreshPanel();
+        boolean bAddButtons = config.addButtons();
+        ExpandOption bForceExpansion = config.forceExpansion();
+        refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
+    }
 
-			centralComponent.repaint();
-			repaint();
-			
-			// hack to ensure m_centralComponent is repainted RRB: is there a better way???
-			if (Frame.getFrames().length == 0) {
-				// happens at startup
-				return;
-			}
-			Frame frame = Frame.getFrames()[Frame.getFrames().length - 1];
-			frame.setSize(frame.getSize());
-			//Frame frame = frames[frames.length - 1];
+
+    public static boolean soundIsPlaying = false;
+
+    public static synchronized void playSound(final String url) {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    synchronized (this) {
+                        if (soundIsPlaying) {
+                            return;
+                        }
+                        soundIsPlaying = true;
+                    }
+                    Clip clip = AudioSystem.getClip();
+                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/beast/app/beauti/" + url));
+                    clip.open(inputStream);
+                    clip.start();
+                    Thread.sleep(500);
+                    synchronized (this) {
+                        soundIsPlaying = false;
+                    }
+                } catch (Exception e) {
+                    soundIsPlaying = false;
+                    System.err.println(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        //System.err.print("BeautiPanel::valueChanged " + m_iPartition + " => ");
+        if (e != null) {
+            config.sync(iPartition);
+            if (listOfPartitions != null) {
+                iPartition = Math.max(0, listOfPartitions.getSelectedIndex());
+            }
+        }
+        BeautiPanel.playSound("woosh.wav");
+        //System.err.println(m_iPartition);
+        try {
+            refreshPanel();
+
+            centralComponent.repaint();
+            repaint();
+
+            // hack to ensure m_centralComponent is repainted RRB: is there a better way???
+            if (Frame.getFrames().length == 0) {
+                // happens at startup
+                return;
+            }
+            Frame frame = Frame.getFrames()[Frame.getFrames().length - 1];
+            frame.setSize(frame.getSize());
+            //Frame frame = frames[frames.length - 1];
 //			Dimension size = frames[frames.length-1].getSize();
 //			frames[frames.length-1].setSize(size);
 
 //			m_centralComponent.repaint();
 //			m_centralComponent.requestFocusInWindow();
-			centralComponent.requestFocus();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+            centralComponent.requestFocus();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
 } // class BeautiPanel

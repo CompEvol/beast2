@@ -42,7 +42,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 
     public Input<Boolean> useMiddle = new Input<Boolean>("useIntervalsMiddle", "When true, the demographic X axis points are " +
             "in the middle of the coalecent intervals. By default they are at the beggining.",
-                false);
+            false);
 
     private RealParameter popSizeParameter;
     private BooleanParameter indicatorsParameter;
@@ -71,20 +71,20 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
     private void getParams() {
         popSizeParameter = popSizeParameterInput.get();
         indicatorsParameter = indicatorsParameterInput.get();
-        assert popSizeParameter != null && popSizeParameter.getArrayValue(0) > 0 &&  indicatorsParameter != null; 
+        assert popSizeParameter != null && popSizeParameter.getArrayValue(0) > 0 && indicatorsParameter != null;
     }
 
     // why do we need this additional level on top of initAndValidate - does not seem to do anything?
     @Override
     public void prepare() {
-       getParams();
+        getParams();
         // is that safe???
-       trees = treesInput.get();
+        trees = treesInput.get();
 
-       useMid = useMiddle.get();
+        useMid = useMiddle.get();
 
-       // used to work without upper case ???
-       type = Type.valueOf(demographicType.get().toUpperCase());  // errors?
+        // used to work without upper case ???
+        type = Type.valueOf(demographicType.get().toUpperCase());  // errors?
         // set lengths
 
         int events = 0;
@@ -98,18 +98,18 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         try {
             if (popSizeParameter.getDimension() != events) {
                 final RealParameter p = new RealParameter();
-        		p.initByName("value", popSizeParameter.getValue() + "", "upper", popSizeParameter.getUpper(), "lower", popSizeParameter.getLower(), "dimension", events);
+                p.initByName("value", popSizeParameter.getValue() + "", "upper", popSizeParameter.getUpper(), "lower", popSizeParameter.getLower(), "dimension", events);
                 p.setID(popSizeParameter.getID());
                 popSizeParameter.assignFromWithoutID(p);
             }
 
             if (indicatorsParameter.getDimension() != events - 1) {
                 final BooleanParameter p = new BooleanParameter();
-                p.initByName("value", "" + indicatorsParameter.getValue(), "dimension", events-1) ;
-                p.setID(indicatorsParameter.getID()); 
+                p.initByName("value", "" + indicatorsParameter.getValue(), "dimension", events - 1);
+                p.setID(indicatorsParameter.getID());
                 indicatorsParameter.assignFrom(p);
             }
-        } catch( Exception e ) {
+        } catch (Exception e) {
             // what to do?
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         paramIDs.add(popSizeParameter.getID());
         paramIDs.add(indicatorsParameter.getID());
 
-        for( TreeIntervals t : trees ) {
+        for (TreeIntervals t : trees) {
             // I think this may be wrong, and we need the trees themselves
             paramIDs.add(t.getID());
         }
@@ -214,13 +214,13 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 
         void protect_demo() {
 
-                values = CompoundPopulationFunction.this.values;
-                times = CompoundPopulationFunction.this.times;
-                intervals = CompoundPopulationFunction.this.intervals;
+            values = CompoundPopulationFunction.this.values;
+            times = CompoundPopulationFunction.this.times;
+            intervals = CompoundPopulationFunction.this.intervals;
 
-                CompoundPopulationFunction.this.values = null;
-                CompoundPopulationFunction.this.times = null;
-                CompoundPopulationFunction.this.intervals = null;
+            CompoundPopulationFunction.this.values = null;
+            CompoundPopulationFunction.this.times = null;
+            CompoundPopulationFunction.this.intervals = null;
 //            {
 //                final double[] src = CompoundPopulationFunction.this.values;
 //                final double[] target = values;
@@ -253,28 +253,28 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 
         void protect_alltimes() {
             final double[] src = CompoundPopulationFunction.this.alltimes;
-            System.arraycopy(src, 0,  alltimes, 0, src.length);
+            System.arraycopy(src, 0, alltimes, 0, src.length);
             c_alltimes = true;
         }
 
         void protect_ttimes(int nt) {
             final double[] src = CompoundPopulationFunction.this.ttimes[nt];
-            System.arraycopy(src, 0,  ttimes[nt], 0, src.length);
+            System.arraycopy(src, 0, ttimes[nt], 0, src.length);
             c_ttimes[nt] = true;
         }
 
         void accept() {
-          values = times = intervals = null;
+            values = times = intervals = null;
         }
 
         void reject() {
-            if( c_alltimes ) {
+            if (c_alltimes) {
                 final double[] v = CompoundPopulationFunction.this.alltimes;
                 CompoundPopulationFunction.this.alltimes = alltimes;
                 alltimes = v;
             }
 
-            if( c_demo ) {
+            if (c_demo) {
                 CompoundPopulationFunction.this.values = values;
                 CompoundPopulationFunction.this.times = times;
                 CompoundPopulationFunction.this.intervals = intervals;
@@ -294,10 +294,10 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
             }
 
             for (int nt = 0; nt < c_ttimes.length; ++nt) {
-                if( c_ttimes[nt] ) {
-                   double[] v = CompoundPopulationFunction.this.ttimes[nt];
-                   CompoundPopulationFunction.this.ttimes[nt] = ttimes[nt];
-                   ttimes[nt] = v;
+                if (c_ttimes[nt]) {
+                    double[] v = CompoundPopulationFunction.this.ttimes[nt];
+                    CompoundPopulationFunction.this.ttimes[nt] = ttimes[nt];
+                    ttimes[nt] = v;
                 }
             }
         }
@@ -309,7 +309,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         ttimes = new double[trees.size()][];
         int tot = 0;
         for (int k = 0; k < ttimes.length; ++k) {
-            ttimes[k] = new double[trees.get(k).m_tree.get().getLeafNodeCount() -1];
+            ttimes[k] = new double[trees.get(k).m_tree.get().getLeafNodeCount() - 1];
             tot += ttimes[k].length;
         }
         alltimes = new double[tot];
@@ -345,7 +345,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 
     private double intensityLinInterval(double start, double end, int index) {
         final double dx = end - start;
-        if( dx == 0 ) {
+        if (dx == 0) {
             return 0;
         }
 
@@ -431,6 +431,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 
     /**
      * Get times of the (presumably changed) nt'th tree into the local array.
+     *
      * @param nt
      */
     private void setTreeTimes(int nt) {
@@ -469,7 +470,9 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         }
     }
 
-    /** Merge sorted times in each ttimes[] array into one sorted array (alltimes) **/
+    /**
+     * Merge sorted times in each ttimes[] array into one sorted array (alltimes) *
+     */
     private void mergeTreeTimes() {
         // now we want to merge times together
         int[] inds = new int[ttimes.length];
@@ -491,7 +494,9 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         }
     }
 
-    /** Setup the internal times,values,intervals from the rest **/
+    /**
+     * Setup the internal times,values,intervals from the rest *
+     */
     private void setDemographicArrays() {
         // assumes lowest node has time 0. this is probably problematic when we come
         // to deal with multiple trees
@@ -502,7 +507,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         assert nd == alltimes.length + (type == Type.STEPWISE ? -1 : 0) :
                 " nd=" + nd + " alltimes.length=" + alltimes.length + " type=" + type;
         for (int k = 0; k < nd; ++k) {
-            if ( indicatorsParameter.getValue(k) ) {
+            if (indicatorsParameter.getValue(k)) {
                 ++tot;
             }
         }
@@ -517,13 +522,13 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         values[0] = popSizeParameter.getValue(0);
 
         int n = 0;
-        for(int k = 0; k < nd && n+1 < tot; ++k) {
+        for (int k = 0; k < nd && n + 1 < tot; ++k) {
 
-            if( indicatorsParameter.getValue(k) ) {
-                times[n+1] = useMid ? ((alltimes[k] + (k > 0 ? alltimes[k-1] : 0))/2) : alltimes[k];
+            if (indicatorsParameter.getValue(k)) {
+                times[n + 1] = useMid ? ((alltimes[k] + (k > 0 ? alltimes[k - 1] : 0)) / 2) : alltimes[k];
 
-                values[n+1] =  popSizeParameter.getValue(k+1);
-                intervals[n] = times[n+1] - times[n];
+                values[n + 1] = popSizeParameter.getValue(k + 1);
+                intervals[n] = times[n + 1] - times[n];
                 ++n;
             }
         }
@@ -539,7 +544,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         boolean anyTreesChanged = false;
         for (int nt = 0; nt < trees.size(); ++nt) {
             TreeIntervals ti = trees.get(nt);
-            if( ti.isDirtyCalculation() ) {
+            if (ti.isDirtyCalculation()) {
                 shadow.protect_ttimes(nt);
 
                 setTreeTimes(nt);
@@ -550,14 +555,14 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         // we access parameters in any case
         getParams();
 
-        if( anyTreesChanged ) {
+        if (anyTreesChanged) {
             shadow.protect_alltimes();
             shadow.protect_demo();
 
             mergeTreeTimes();
             setDemographicArrays();
         } else {
-            if( popSizeParameter.somethingIsDirty() &&  !indicatorsParameter.somethingIsDirty() ) {
+            if (popSizeParameter.somethingIsDirty() && !indicatorsParameter.somethingIsDirty()) {
 
             }
             shadow.protect_demo();
@@ -580,31 +585,30 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         super.accept();
     }
 
-	@Override
-	public void init(PrintStream out) throws Exception {
-		// interval sizes
-		out.print("popsSize0\t");
-		for (int i = 0; i < alltimes.length; i++) {
-			out.print(getID() +".times." + i + "\t");
-		}
-	}
+    @Override
+    public void init(PrintStream out) throws Exception {
+        // interval sizes
+        out.print("popsSize0\t");
+        for (int i = 0; i < alltimes.length; i++) {
+            out.print(getID() + ".times." + i + "\t");
+        }
+    }
 
-	@Override
-	public void log(int nSample, PrintStream out) {
-		// interval sizes
-		out.print("0:" + popSizeParameter.getArrayValue(0) + "\t");
-		for (int i = 0; i < alltimes.length; i++) {
-			out.print(alltimes[i]);
-			if (indicatorsParameter.getArrayValue(i) > 0) {
-				out.print(":" + popSizeParameter.getArrayValue(i + 1));
-			}
-			out.print("\t");
-		}
-	}
+    @Override
+    public void log(int nSample, PrintStream out) {
+        // interval sizes
+        out.print("0:" + popSizeParameter.getArrayValue(0) + "\t");
+        for (int i = 0; i < alltimes.length; i++) {
+            out.print(alltimes[i]);
+            if (indicatorsParameter.getArrayValue(i) > 0) {
+                out.print(":" + popSizeParameter.getArrayValue(i + 1));
+            }
+            out.print("\t");
+        }
+    }
 
 
-	
-	@Override
-	public void close(PrintStream out) {
-	}
+    @Override
+    public void close(PrintStream out) {
+    }
 }

@@ -20,12 +20,12 @@ package org.apache.commons.math.distribution;
  * The Pascal distribution.  The Pascal distribution is a special case of the
  * Negative Binomial distribution where the number of successes parameter is an
  * integer.
- *
+ * <p/>
  * There are various ways to express the probability mass and distribution
  * functions for the Pascal distribution.  The convention employed by the
  * library is to express these functions in terms of the number of failures in
  * a Bernoulli experiment [2].
- *
+ * <p/>
  * <p>
  * References:
  * <ol>

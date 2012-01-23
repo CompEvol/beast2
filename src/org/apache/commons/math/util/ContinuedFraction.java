@@ -23,7 +23,7 @@ import org.apache.commons.math.MaxIterationsExceededException;
 /**
  * Provides a generic means to evaluate continued fractions.  Subclasses simply
  * provided the a and b coefficients to evaluate the continued fraction.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -36,7 +36,9 @@ import org.apache.commons.math.MaxIterationsExceededException;
  */
 public abstract class ContinuedFraction {
 
-    /** Maximum allowed numerical error. */
+    /**
+     * Maximum allowed numerical error.
+     */
     private static final double DEFAULT_EPSILON = 10e-9;
 
     /**
@@ -49,6 +51,7 @@ public abstract class ContinuedFraction {
     /**
      * Access the n-th a coefficient of the continued fraction.  Since a can be
      * a function of the evaluation point, x, that is passed in as well.
+     *
      * @param n the coefficient index to retrieve.
      * @param x the evaluation point.
      * @return the n-th a coefficient.
@@ -58,6 +61,7 @@ public abstract class ContinuedFraction {
     /**
      * Access the n-th b coefficient of the continued fraction.  Since b can be
      * a function of the evaluation point, x, that is passed in as well.
+     *
      * @param n the coefficient index to retrieve.
      * @param x the evaluation point.
      * @return the n-th b coefficient.
@@ -66,6 +70,7 @@ public abstract class ContinuedFraction {
 
     /**
      * Evaluates the continued fraction at the value x.
+     *
      * @param x the evaluation point.
      * @return the value of the continued fraction evaluated at x.
      * @throws MathException if the algorithm fails to converge.
@@ -76,7 +81,8 @@ public abstract class ContinuedFraction {
 
     /**
      * Evaluates the continued fraction at the value x.
-     * @param x the evaluation point.
+     *
+     * @param x       the evaluation point.
      * @param epsilon maximum error allowed.
      * @return the value of the continued fraction evaluated at x.
      * @throws MathException if the algorithm fails to converge.
@@ -87,7 +93,8 @@ public abstract class ContinuedFraction {
 
     /**
      * Evaluates the continued fraction at the value x.
-     * @param x the evaluation point.
+     *
+     * @param x             the evaluation point.
      * @param maxIterations maximum number of convergents
      * @return the value of the continued fraction evaluated at x.
      * @throws MathException if the algorithm fails to converge.
@@ -100,15 +107,15 @@ public abstract class ContinuedFraction {
      * <p>
      * Evaluates the continued fraction at the value x.
      * </p>
-     *
+     * <p/>
      * <p>
      * The implementation of this method is based on equations 14-17 of:
      * <ul>
      * <li>
-     *   Eric W. Weisstein. "Continued Fraction." From MathWorld--A Wolfram Web
-     *   Resource. <a target="_blank"
-     *   href="http://mathworld.wolfram.com/ContinuedFraction.html">
-     *   http://mathworld.wolfram.com/ContinuedFraction.html</a>
+     * Eric W. Weisstein. "Continued Fraction." From MathWorld--A Wolfram Web
+     * Resource. <a target="_blank"
+     * href="http://mathworld.wolfram.com/ContinuedFraction.html">
+     * http://mathworld.wolfram.com/ContinuedFraction.html</a>
      * </li>
      * </ul>
      * The recurrence relationship defined in those equations can result in
@@ -116,15 +123,14 @@ public abstract class ContinuedFraction {
      * As a means to combat these overflow conditions, the intermediate results
      * are scaled whenever they threaten to become numerically unstable.</p>
      *
-     * @param x the evaluation point.
-     * @param epsilon maximum error allowed.
+     * @param x             the evaluation point.
+     * @param epsilon       maximum error allowed.
      * @param maxIterations maximum number of convergents
      * @return the value of the continued fraction evaluated at x.
      * @throws MathException if the algorithm fails to converge.
      */
     public double evaluate(double x, double epsilon, int maxIterations)
-        throws MathException
-    {
+            throws MathException {
         double p0 = 1.0;
         double p1 = getA(0, x);
         double q0 = 0.0;
@@ -148,11 +154,11 @@ public abstract class ContinuedFraction {
                 double scaleFactor = 1d;
                 double lastScaleFactor = 1d;
                 final int maxPower = 5;
-                final double scale = Math.max(a,b);
+                final double scale = Math.max(a, b);
                 if (scale <= 0) {  // Can't scale
                     throw new ConvergenceException(
                             "Continued fraction convergents diverged to +/- infinity for value {0}",
-                             x);
+                            x);
                 }
                 infinite = true;
                 for (int i = 0; i < maxPower; i++) {
@@ -173,18 +179,18 @@ public abstract class ContinuedFraction {
             }
 
             if (infinite) {
-               // Scaling failed
-               throw new ConvergenceException(
-                 "Continued fraction convergents diverged to +/- infinity for value {0}",
-                  x);
+                // Scaling failed
+                throw new ConvergenceException(
+                        "Continued fraction convergents diverged to +/- infinity for value {0}",
+                        x);
             }
 
             double r = p2 / q2;
 
             if (Double.isNaN(r)) {
                 throw new ConvergenceException(
-                  "Continued fraction diverged to NaN for value {0}",
-                  x);
+                        "Continued fraction diverged to NaN for value {0}",
+                        x);
             }
             relativeError = Math.abs(r / c - 1.0);
 
@@ -198,8 +204,8 @@ public abstract class ContinuedFraction {
 
         if (n >= maxIterations) {
             throw new MaxIterationsExceededException(maxIterations,
-                "Continued fraction convergents failed to converge for value {0}",
-                x);
+                    "Continued fraction convergents failed to converge for value {0}",
+                    x);
         }
 
         return c;

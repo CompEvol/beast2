@@ -51,7 +51,7 @@ public class TraitSet extends Plugin {
     @Override
     public void initAndValidate() throws Exception {
         if (m_traits.get().matches("^\\s*$")) {
-        	return;
+            return;
         }
 
         // first, determine taxon numbers associated with traits
@@ -120,9 +120,9 @@ public class TraitSet extends Plugin {
     }
 
     public double getValue(int iTaxonNr) {
-    	if (m_fValues == null) {
-    		return 0;
-    	}
+        if (m_fValues == null) {
+            return 0;
+        }
         return m_fValues[iTaxonNr];
     }
 
@@ -152,15 +152,15 @@ public class TraitSet extends Plugin {
         return sStr;
     }
 
-	public double getDate(double fHeight) {
+    public double getDate(double fHeight) {
         if (m_sTraitName.get().equals(DATE_TRAIT) || m_sTraitName.get().equals(DATE_FORWARD_TRAIT)) {
-        	return m_fMaxValue - fHeight;
+            return m_fMaxValue - fHeight;
         }
 
         if (m_sTraitName.get().equals(DATE_BACKWARD_TRAIT)) {
-        	return m_fMinValue + fHeight;
+            return m_fMinValue + fHeight;
         }
         return fHeight;
-	}
+    }
 
 } // class TraitSet

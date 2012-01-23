@@ -34,7 +34,9 @@ import org.apache.commons.math.analysis.UnivariateRealFunction;
  */
 public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
 
-    /** Intermediate result. */
+    /**
+     * Intermediate result.
+     */
     private double s;
 
     /**
@@ -42,7 +44,7 @@ public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
      *
      * @param f function to integrate
      * @deprecated as of 2.0 the integrand function is passed as an argument
-     * to the {@link #integrate(UnivariateRealFunction, double, double)}method.
+     *             to the {@link #integrate(UnivariateRealFunction, double, double)}method.
      */
     @Deprecated
     public TrapezoidIntegrator(UnivariateRealFunction f) {
@@ -65,23 +67,23 @@ public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
      * arbitrary m sections because this configuration can best utilize the
      * alrealy computed values.</p>
      *
-     * @param f the integrand function
+     * @param f   the integrand function
      * @param min the lower bound for the interval
      * @param max the upper bound for the interval
-     * @param n the stage of 1/2 refinement, n = 0 is no refinement
+     * @param n   the stage of 1/2 refinement, n = 0 is no refinement
      * @return the value of n-th stage integral
      * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function
+     *                                     function
      */
     double stage(final UnivariateRealFunction f,
                  final double min, final double max, final int n)
-        throws FunctionEvaluationException {
+            throws FunctionEvaluationException {
 
         if (n == 0) {
             s = 0.5 * (max - min) * (f.value(min) + f.value(max));
             return s;
         } else {
-            final long np = 1L << (n-1);           // number of new points in this stage
+            final long np = 1L << (n - 1);           // number of new points in this stage
             double sum = 0;
             final double spacing = (max - min) / np; // spacing between adjacent new points
             double x = min + 0.5 * spacing;    // the first new point
@@ -95,17 +97,21 @@ public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double integrate(final double min, final double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
+            throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
         return integrate(f, min, max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double integrate(final UnivariateRealFunction f,
                             final double min, final double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
+            throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
 
         clearResult();
         verifyInterval(min, max);
@@ -117,7 +123,7 @@ public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
             if (i >= minimalIterationCount) {
                 final double delta = Math.abs(t - oldt);
                 final double rLimit =
-                    relativeAccuracy * (Math.abs(oldt) + Math.abs(t)) * 0.5;
+                        relativeAccuracy * (Math.abs(oldt) + Math.abs(t)) * 0.5;
                 if ((delta <= rLimit) || (delta <= absoluteAccuracy)) {
                     setResult(t, i);
                     return result;
@@ -128,7 +134,9 @@ public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
         throw new MaxIterationsExceededException(maximalIterationCount);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void verifyIterationCount() throws IllegalArgumentException {
         super.verifyIterationCount();

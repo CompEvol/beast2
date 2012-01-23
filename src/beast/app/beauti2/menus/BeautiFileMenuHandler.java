@@ -9,5 +9,5 @@ import javax.swing.*;
 public interface BeautiFileMenuHandler {
     public static final String ADD_ON_MANAGER = "Add-on Manager...";
 
-	Action getAddonManagerAction();
+    Action getAddonManagerAction();
 }

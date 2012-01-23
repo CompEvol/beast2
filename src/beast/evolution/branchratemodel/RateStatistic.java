@@ -38,31 +38,33 @@ import beast.math.statistic.DiscreteStatistics;
 
 
 @Description("A statistic that tracks the mean, variance and coefficent of variation of rates. " +
-		"It has three dimensions, one for each statistic.")
+        "It has three dimensions, one for each statistic.")
 public class RateStatistic extends Plugin implements Loggable, Valuable {
-	public Input<BranchRateModel> branchRateModelInput = new Input<BranchRateModel>("branchratemodel", "model that provides rates for a tree");
-	public Input<Tree> treeInput = new Input<Tree>("tree","tree for which the rates apply");
-	public Input<Boolean> internalInput = new Input<Boolean>("internal","consider internal nodes, default true", true);
-	public Input<Boolean> externalInput = new Input<Boolean>("external","consider external nodes, default true", true);
-	
+    public Input<BranchRateModel> branchRateModelInput = new Input<BranchRateModel>("branchratemodel", "model that provides rates for a tree");
+    public Input<Tree> treeInput = new Input<Tree>("tree", "tree for which the rates apply");
+    public Input<Boolean> internalInput = new Input<Boolean>("internal", "consider internal nodes, default true", true);
+    public Input<Boolean> externalInput = new Input<Boolean>("external", "consider external nodes, default true", true);
+
     private Tree tree = null;
     private BranchRateModel branchRateModel = null;
     private boolean internal = true;
     private boolean external = true;
-    
+
     final static int MEAN = 0;
     final static int VARIANCE = 1;
     final static int COEFFICIENT_OF_VARIATION = 2;
-    
-	@Override
-	public void initAndValidate() throws Exception {
-    	tree = treeInput.get();
+
+    @Override
+    public void initAndValidate() throws Exception {
+        tree = treeInput.get();
         branchRateModel = branchRateModelInput.get();
         this.internal = internalInput.get();
         this.external = externalInput.get();
-	}
-    
-    /** calculate the three statistics from scratch **/
+    }
+
+    /**
+     * calculate the three statistics from scratch *
+     */
     public double[] calcValues() {
         int length = 0;
         int offset = 0;
@@ -76,8 +78,8 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
         final double[] rates = new double[length];
         // need those only for mean
         final double[] branchLengths = new double[length];
-        
-        Node [] nodes = tree.getNodesAsArray();
+
+        Node[] nodes = tree.getNodesAsArray();
         int nrOfLeafs = tree.getLeafNodeCount();
         /** handle leaf nodes **/
         if (external) {
@@ -89,7 +91,7 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
             }
             offset = nrOfLeafs;
         }
-        
+
         /** handle internal nodes **/
         if (internal) {
             final int n = tree.getNodeCount();
@@ -105,7 +107,7 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
             }
         }
 
-        double [] values = new double[3];
+        double[] values = new double[3];
         double totalWeightedRate = 0.0;
         double totalTreeLength = 0.0;
         for (int i = 0; i < rates.length; i++) {
@@ -119,48 +121,54 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
         return values;
     }
 
-    
-    /** Valuable implementation **/
-    
+
+    /**
+     * Valuable implementation *
+     */
+
     @Override
     public int getDimension() {
         return 3;
     }
 
     @Override
-	public double getArrayValue() {
-		return calcValues()[0];
-	}
+    public double getArrayValue() {
+        return calcValues()[0];
+    }
 
-	@Override
-	public double getArrayValue(int iDim) {
-		if (iDim > 3) {
-			throw new IllegalArgumentException();
-		}
-		return calcValues()[iDim];
-	}
-
-
-    /** Loggable implementation **/
-
-	@Override
-	public void init(PrintStream out) throws Exception {
-		String sID = getID();
-		if (sID == null) {sID = "";}
-		out.print(sID + ".mean\t" + sID + ".variance\t" +sID + ".coefficientOfVariation\t");
-	}
+    @Override
+    public double getArrayValue(int iDim) {
+        if (iDim > 3) {
+            throw new IllegalArgumentException();
+        }
+        return calcValues()[iDim];
+    }
 
 
-	@Override
-	public void log(int nSample, PrintStream out) {
-		double [] values = calcValues();
-		out.print(values[0] + "\t" + values[1] + "\t" + values[2] + "\t");
-	}
+    /**
+     * Loggable implementation *
+     */
+
+    @Override
+    public void init(PrintStream out) throws Exception {
+        String sID = getID();
+        if (sID == null) {
+            sID = "";
+        }
+        out.print(sID + ".mean\t" + sID + ".variance\t" + sID + ".coefficientOfVariation\t");
+    }
 
 
-	@Override
-	public void close(PrintStream out) {
-		// nothing to do
-	}
-    
+    @Override
+    public void log(int nSample, PrintStream out) {
+        double[] values = calcValues();
+        out.print(values[0] + "\t" + values[1] + "\t" + values[2] + "\t");
+    }
+
+
+    @Override
+    public void close(PrintStream out) {
+        // nothing to do
+    }
+
 }

@@ -9,28 +9,29 @@ package beast.app.util;
  */
 public abstract class Version {
 
-	public abstract String getVersion();
+    public abstract String getVersion();
 
-	public abstract String getVersionString();
+    public abstract String getVersionString();
 
-	public abstract String getBuildString();
+    public abstract String getBuildString();
 
-	public abstract String getDateString();
+    public abstract String getDateString();
 
-	public abstract String[] getCredits();
+    public abstract String[] getCredits();
 
-	public String getHTMLCredits() {
-    	String sStr = "";
-    	for (String s : getCredits()) {
-    		if (s.contains("@")) {
-    			sStr += "<a href=\"mailto:" + s + "\">" + s + "</a><br>";
-    		} if (s.contains("http")) {
-    			sStr += "<a href=\"" + s + "\">" + s + "</a><br>";
-    		} else {
-    			sStr += "<p>" + s + "</p>";
-    		}
-    	}
-    	return sStr;
+    public String getHTMLCredits() {
+        String sStr = "";
+        for (String s : getCredits()) {
+            if (s.contains("@")) {
+                sStr += "<a href=\"mailto:" + s + "\">" + s + "</a><br>";
+            }
+            if (s.contains("http")) {
+                sStr += "<a href=\"" + s + "\">" + s + "</a><br>";
+            } else {
+                sStr += "<p>" + s + "</p>";
+            }
+        }
+        return sStr;
 
     }
 }

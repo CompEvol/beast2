@@ -12,36 +12,40 @@ public class MutationDeathModel extends SubstitutionModel.Base {
 
     public Input<RealParameter> delParameter = new Input<RealParameter>("deathprob", "rate of death, used to calculate death probability", Validate.REQUIRED);
     public Input<RealParameter> mutationRate = new Input<RealParameter>("mu", "mutation rate, default 1");
-    public Input<SubstitutionModel.Base> m_CTMCModel = new Input<SubstitutionModel.Base>("substmodel","CTMC Model for the life states, so should have " +
-    		"a state-space one less than this model. If not specified, ...");
+    public Input<SubstitutionModel.Base> m_CTMCModel = new Input<SubstitutionModel.Base>("substmodel", "CTMC Model for the life states, so should have " +
+            "a state-space one less than this model. If not specified, ...");
     // TODO: figure out the end of the last sentence
-    
-    /** transition matrix for live states **/
+
+    /**
+     * transition matrix for live states *
+     */
     protected double[] m_trMatrix;
-    /** number of states **/
+    /**
+     * number of states *
+     */
     int m_nStates;
-    
+
     @Override
     public void initAndValidate() throws Exception {
-    	super.initAndValidate();
-		double [] freqs = getFrequencies();
-		m_nStates = freqs.length;
+        super.initAndValidate();
+        double[] freqs = getFrequencies();
+        m_nStates = freqs.length;
         m_trMatrix = new double[(m_nStates - 1) * (m_nStates - 1)];
         if (m_CTMCModel.get() != null) {
-        	if (m_CTMCModel.get().frequenciesInput.get().m_fFreqs.length != m_nStates - 1) {
-        		throw new Exception("substmodel does not have the correct state space: should be " + (m_nStates-1));
-        	}
+            if (m_CTMCModel.get().frequenciesInput.get().m_fFreqs.length != m_nStates - 1) {
+                throw new Exception("substmodel does not have the correct state space: should be " + (m_nStates - 1));
+            }
         }
     }
-    
-    @Override
-	public EigenDecomposition getEigenDecomposition(Node node) {
-		return null;
-	}
 
-	@Override
+    @Override
+    public EigenDecomposition getEigenDecomposition(Node node) {
+        return null;
+    }
+
+    @Override
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
-      	double distance = (fStartTime - fEndTime) * fRate;
+        double distance = (fStartTime - fEndTime) * fRate;
         int i, j;
         // assuming that expected number of changes in CTMCModel is 1 per unit time
         // we are contributing s*deathRate number of changes per unit of time
@@ -75,20 +79,22 @@ public class MutationDeathModel extends SubstitutionModel.Base {
 
         matrix[m_nStates * m_nStates - 1] = 1.0;
     } // getTransitionProbabilities
-	
-	/** CalculationNode implementation **/
-	@Override
-	protected boolean requiresRecalculation() {
-	   	// we only get here if delParameter or mutationRate is dirty
-	   	return true;
-	}
-	
+
+    /**
+     * CalculationNode implementation *
+     */
+    @Override
+    protected boolean requiresRecalculation() {
+        // we only get here if delParameter or mutationRate is dirty
+        return true;
+    }
+
     @Override
     public boolean canHandleDataType(DataType dataType) throws Exception {
-    	if (dataType.getStateCount() == Integer.MAX_VALUE) {
-    		return false;
-    	}
-	   return true;
+        if (dataType.getStateCount() == Integer.MAX_VALUE) {
+            return false;
+        }
+        return true;
     }
-	
+
 } // class MutationDeathModel

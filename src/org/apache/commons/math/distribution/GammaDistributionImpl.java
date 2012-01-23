@@ -28,30 +28,40 @@ import org.apache.commons.math.special.Gamma;
  * @version $Revision: 925812 $ $Date: 2010-03-21 11:49:31 -0400 (Sun, 21 Mar 2010) $
  */
 public class GammaDistributionImpl extends AbstractContinuousDistribution
-    implements GammaDistribution, Serializable  {
+        implements GammaDistribution, Serializable {
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -3239549463135430361L;
 
-    /** The shape parameter. */
+    /**
+     * The shape parameter.
+     */
     private double alpha;
 
-    /** The scale parameter. */
+    /**
+     * The scale parameter.
+     */
     private double beta;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Create a new gamma distribution with the given alpha and beta values.
+     *
      * @param alpha the shape parameter.
-     * @param beta the scale parameter.
+     * @param beta  the scale parameter.
      */
     public GammaDistributionImpl(double alpha, double beta) {
         this(alpha, beta, DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
@@ -59,10 +69,11 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Create a new gamma distribution with the given alpha and beta values.
-     * @param alpha the shape parameter.
-     * @param beta the scale parameter.
+     *
+     * @param alpha              the shape parameter.
+     * @param beta               the scale parameter.
      * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     *                           (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
     public GammaDistributionImpl(double alpha, double beta, double inverseCumAccuracy) {
@@ -74,7 +85,7 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * For this distribution, X, this method returns P(X &lt; x).
-     *
+     * <p/>
      * The implementation of this method is based on:
      * <ul>
      * <li>
@@ -87,9 +98,9 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      * @param x the value at which the CDF is evaluated.
      * @return CDF for this distribution.
      * @throws MathException if the cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
-    public double cumulativeProbability(double x) throws MathException{
+    public double cumulativeProbability(double x) throws MathException {
         double ret;
 
         if (x <= 0.0) {
@@ -109,14 +120,14 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      *
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
-     * @throws MathException if the inverse cumulative probability can not be
-     *         computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     @Override
     public double inverseCumulativeProbability(final double p)
-    throws MathException {
+            throws MathException {
         if (p == 0) {
             return 0d;
         }
@@ -128,6 +139,7 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the shape parameter, alpha.
+     *
      * @param alpha the new shape parameter.
      * @throws IllegalArgumentException if <code>alpha</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
@@ -139,20 +151,22 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the shape parameter, alpha.
+     *
      * @param newAlpha the new shape parameter.
      * @throws IllegalArgumentException if <code>newAlpha</code> is not positive.
      */
     private void setAlphaInternal(double newAlpha) {
         if (newAlpha <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "alpha must be positive ({0})",
-                  newAlpha);
+                    "alpha must be positive ({0})",
+                    newAlpha);
         }
         this.alpha = newAlpha;
     }
 
     /**
      * Access the shape parameter, alpha
+     *
      * @return alpha.
      */
     public double getAlpha() {
@@ -161,6 +175,7 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the scale parameter, beta.
+     *
      * @param newBeta the new scale parameter.
      * @throws IllegalArgumentException if <code>newBeta</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
@@ -172,20 +187,22 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the scale parameter, beta.
+     *
      * @param newBeta the new scale parameter.
      * @throws IllegalArgumentException if <code>newBeta</code> is not positive.
      */
     private void setBetaInternal(double newBeta) {
         if (newBeta <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "beta must be positive ({0})",
-                  newBeta);
+                    "beta must be positive ({0})",
+                    newBeta);
         }
         this.beta = newBeta;
     }
 
     /**
      * Access the scale parameter, beta
+     *
      * @return beta.
      */
     public double getBeta() {

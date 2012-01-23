@@ -42,7 +42,7 @@ public class BeagleJNIImpl implements Beagle {
                 categoryCount,
                 scaleBufferCount,
                 resourceList,
-                (resourceList != null? resourceList.length: 0),
+                (resourceList != null ? resourceList.length : 0),
                 preferenceFlags,
                 requirementFlags,
                 details);
@@ -96,7 +96,7 @@ public class BeagleJNIImpl implements Beagle {
         }
     }
 
-    public void getPartials(int bufferIndex, int scaleIndex, final double []outPartials) {
+    public void getPartials(int bufferIndex, int scaleIndex, final double[] outPartials) {
         int errCode = BeagleJNIWrapper.INSTANCE.getPartials(instance, bufferIndex, scaleIndex, outPartials);
         if (errCode != 0) {
             throw new BeagleException("getPartials", errCode);
@@ -122,8 +122,8 @@ public class BeagleJNIImpl implements Beagle {
         }
     }
 
-    public void setCategoryWeights( int categoryWeightsIndex,
-                                    final double[] categoryWeights) {
+    public void setCategoryWeights(int categoryWeightsIndex,
+                                   final double[] categoryWeights) {
         int errCode = BeagleJNIWrapper.INSTANCE.setCategoryWeights(instance,
                 categoryWeightsIndex, categoryWeights);
         if (errCode != 0) {

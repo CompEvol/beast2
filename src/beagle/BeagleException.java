@@ -7,7 +7,7 @@ package beagle;
 public class BeagleException extends RuntimeException {
     public BeagleException(String functionName, int errCode) {
         this.functionName = functionName;
-        this.errCode = errCode;        
+        this.errCode = errCode;
     }
 
     @Override

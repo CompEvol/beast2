@@ -42,12 +42,13 @@ public interface UnivariateRealSolver extends ConvergingAlgorithm {
      *
      * @param accuracy the accuracy.
      * @throws IllegalArgumentException if the accuracy can't be achieved by
-     * the solver or is otherwise deemed unreasonable.
+     *                                  the solver or is otherwise deemed unreasonable.
      */
     void setFunctionValueAccuracy(double accuracy);
 
     /**
      * Get the actual function value accuracy.
+     *
      * @return the accuracy
      */
     double getFunctionValueAccuracy();
@@ -67,18 +68,18 @@ public interface UnivariateRealSolver extends ConvergingAlgorithm {
      * @param min the lower bound for the interval.
      * @param max the upper bound for the interval.
      * @return a value where the function is zero
-     * @throws ConvergenceException if the maximum iteration count is exceeded
-     * or the solver detects convergence problems otherwise.
+     * @throws ConvergenceException        if the maximum iteration count is exceeded
+     *                                     or the solver detects convergence problems otherwise.
      * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function
-     * @throws IllegalArgumentException if min > max or the endpoints do not
-     * satisfy the requirements specified by the solver
+     *                                     function
+     * @throws IllegalArgumentException    if min > max or the endpoints do not
+     *                                     satisfy the requirements specified by the solver
      * @deprecated replaced by {@link #solve(UnivariateRealFunction, double, double)}
-     * since 2.0
+     *             since 2.0
      */
     @Deprecated
     double solve(double min, double max) throws ConvergenceException,
-        FunctionEvaluationException;
+            FunctionEvaluationException;
 
     /**
      * Solve for a zero root in the given interval.
@@ -86,21 +87,21 @@ public interface UnivariateRealSolver extends ConvergingAlgorithm {
      * Solvers that do require bracketing should be able to handle the case
      * where one of the endpoints is itself a root.</p>
      *
-     * @param f the function to solve.
+     * @param f   the function to solve.
      * @param min the lower bound for the interval.
      * @param max the upper bound for the interval.
      * @return a value where the function is zero
-     * @throws ConvergenceException if the maximum iteration count is exceeded
-     * or the solver detects convergence problems otherwise.
+     * @throws ConvergenceException        if the maximum iteration count is exceeded
+     *                                     or the solver detects convergence problems otherwise.
      * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function
-     * @throws IllegalArgumentException if min > max or the endpoints do not
-     * satisfy the requirements specified by the solver
+     *                                     function
+     * @throws IllegalArgumentException    if min > max or the endpoints do not
+     *                                     satisfy the requirements specified by the solver
      * @since 2.0
      */
     double solve(UnivariateRealFunction f, double min, double max)
-        throws ConvergenceException,
-        FunctionEvaluationException;
+            throws ConvergenceException,
+            FunctionEvaluationException;
 
     /**
      * Solve for a zero in the given interval, start at startValue.
@@ -108,22 +109,22 @@ public interface UnivariateRealSolver extends ConvergingAlgorithm {
      * Solvers that do require bracketing should be able to handle the case
      * where one of the endpoints is itself a root.</p>
      *
-     * @param min the lower bound for the interval.
-     * @param max the upper bound for the interval.
+     * @param min        the lower bound for the interval.
+     * @param max        the upper bound for the interval.
      * @param startValue the start value to use
      * @return a value where the function is zero
-     * @throws ConvergenceException if the maximum iteration count is exceeded
-     * or the solver detects convergence problems otherwise.
+     * @throws ConvergenceException        if the maximum iteration count is exceeded
+     *                                     or the solver detects convergence problems otherwise.
      * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function
-     * @throws IllegalArgumentException if min > max or the arguments do not
-     * satisfy the requirements specified by the solver
+     *                                     function
+     * @throws IllegalArgumentException    if min > max or the arguments do not
+     *                                     satisfy the requirements specified by the solver
      * @deprecated replaced by {@link #solve(UnivariateRealFunction, double, double, double)}
-     * since 2.0
+     *             since 2.0
      */
     @Deprecated
     double solve(double min, double max, double startValue)
-        throws ConvergenceException, FunctionEvaluationException, IllegalArgumentException;
+            throws ConvergenceException, FunctionEvaluationException, IllegalArgumentException;
 
     /**
      * Solve for a zero in the given interval, start at startValue.
@@ -131,28 +132,28 @@ public interface UnivariateRealSolver extends ConvergingAlgorithm {
      * Solvers that do require bracketing should be able to handle the case
      * where one of the endpoints is itself a root.</p>
      *
-     * @param f the function to solve.
-     * @param min the lower bound for the interval.
-     * @param max the upper bound for the interval.
+     * @param f          the function to solve.
+     * @param min        the lower bound for the interval.
+     * @param max        the upper bound for the interval.
      * @param startValue the start value to use
      * @return a value where the function is zero
-     * @throws ConvergenceException if the maximum iteration count is exceeded
-     * or the solver detects convergence problems otherwise.
+     * @throws ConvergenceException        if the maximum iteration count is exceeded
+     *                                     or the solver detects convergence problems otherwise.
      * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function
-     * @throws IllegalArgumentException if min > max or the arguments do not
-     * satisfy the requirements specified by the solver
+     *                                     function
+     * @throws IllegalArgumentException    if min > max or the arguments do not
+     *                                     satisfy the requirements specified by the solver
      * @since 2.0
      */
     double solve(UnivariateRealFunction f, double min, double max, double startValue)
-        throws ConvergenceException, FunctionEvaluationException, IllegalArgumentException;
+            throws ConvergenceException, FunctionEvaluationException, IllegalArgumentException;
 
     /**
      * Get the result of the last run of the solver.
      *
      * @return the last result.
      * @throws IllegalStateException if there is no result available, either
-     * because no result was yet computed or the last attempt failed.
+     *                               because no result was yet computed or the last attempt failed.
      */
     double getResult();
 
@@ -161,7 +162,7 @@ public interface UnivariateRealSolver extends ConvergingAlgorithm {
      *
      * @return the value of the function at the last result.
      * @throws IllegalStateException if there is no result available, either
-     * because no result was yet computed or the last attempt failed.
+     *                               because no result was yet computed or the last attempt failed.
      */
     double getFunctionValue();
 }

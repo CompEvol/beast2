@@ -55,9 +55,9 @@ import java.util.Set;
  */
 public class DocMaker {
 
-	private static final long serialVersionUID = 1L;
-	
-	/**
+    private static final long serialVersionUID = 1L;
+
+    /**
      * output directory *
      */
     String m_sDir = "/tmp";
@@ -79,14 +79,14 @@ public class DocMaker {
     HashMap<String, String> m_descriptions;
 
     Set<String> m_sLoggables;
-    
+
     public DocMaker(String[] args) {
-    	this();
+        this();
         if (args.length > 0) {
-        	if (args[0].equals("-javadoc")) {
-        		makeJavaDoc();
-        		System.exit(0);
-        	}
+            if (args[0].equals("-javadoc")) {
+                makeJavaDoc();
+                System.exit(0);
+            }
             m_sDir = args[0];
         }
     } // c'tor
@@ -103,45 +103,46 @@ public class DocMaker {
             m_ancestors.put(sPlugin, new ArrayList<String>());
         }
         for (String sPlugin : m_sPluginNames) {
-        	try {
-        		Class _class = Class.forName(sPlugin);
-	            Plugin plugin = (Plugin) _class.newInstance();
-	            String sDescription = getInheritableDescription(plugin.getClass());
-	            System.err.println(sPlugin + " => " + sDescription);
-	            m_descriptions.put(sPlugin, sDescription);
-	            String[] sImplementations = getImplementations(plugin);
-	            m_isa.put(sPlugin, sImplementations);
-	            for (String sImp : sImplementations) {
-	                m_ancestors.get(sImp).add(sPlugin);
-	            }
-	            if (plugin instanceof Loggable) {
-	            	m_sLoggables.add(sPlugin);
-	            }
-        	} catch (Exception e) {
-        		System.err.println(sPlugin + " not documented :" + e.getMessage());
-        	}
+            try {
+                Class _class = Class.forName(sPlugin);
+                Plugin plugin = (Plugin) _class.newInstance();
+                String sDescription = getInheritableDescription(plugin.getClass());
+                System.err.println(sPlugin + " => " + sDescription);
+                m_descriptions.put(sPlugin, sDescription);
+                String[] sImplementations = getImplementations(plugin);
+                m_isa.put(sPlugin, sImplementations);
+                for (String sImp : sImplementations) {
+                    m_ancestors.get(sImp).add(sPlugin);
+                }
+                if (plugin instanceof Loggable) {
+                    m_sLoggables.add(sPlugin);
+                }
+            } catch (Exception e) {
+                System.err.println(sPlugin + " not documented :" + e.getMessage());
+            }
         }
     } // c'tor
 
-    
-    /** print @Description and Input.description info so that it can 
+
+    /**
+     * print @Description and Input.description info so that it can
      * be inserted in the code before creating Javadoc documentation
      * for the Beast II SDK.
      */
-	void makeJavaDoc() {
+    void makeJavaDoc() {
         for (String sPlugin : m_sPluginNames) {
-    		try {
-    			Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
-    			System.out.println(sPlugin + ":@description:" + plugin.getDescription());
-    			for (Input<?> input : plugin.listInputs()) {
-    				System.out.println(sPlugin + ":" + input.getName() + ":" + input.getTipText());
-    			}
-    		} catch (Exception e) {
-				e.printStackTrace();
-			}
+            try {
+                Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+                System.out.println(sPlugin + ":@description:" + plugin.getDescription());
+                for (Input<?> input : plugin.listInputs()) {
+                    System.out.println(sPlugin + ":" + input.getName() + ":" + input.getTipText());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-	}
-    
+    }
+
     /**
      * create CSS style sheet for all pages *
      */
@@ -151,60 +152,60 @@ public class DocMaker {
     }
 
     String getCSS() {
-    	return "table {\n" +
-        "	width: 550px;\n" +
-        "	border-collapse:collapse;\n" +
-        "	border:1px solid #2E2E2E;\n" +
-        "}\n" +
-        "caption {\n" +
-        "	font:  20pt Arial, Helvetica, sans-serif;\n" +
-        "	text-align: left;\n" +
-        "	text-indent: 10px;\n" +
-        "	height: 45px;\n" +
-        "	color: #243D02;\n" +
-        "	border-top: 1px solid #243D02;\n" +
-        "}\n" +
-        "thead {\n" +
-        "background: #AAAAAA;\n" +
-        "	color: #FFFFFF;\n" +
-        "	font-size: 0.8em;\n" +
-        "	font-weight: bold;\n" +
-        "	margin: 20px 0px 0px;\n" +
-        "	text-align: left;\n" +
-        "	border-right: 1px solid #8D8D8D;\n" +
-        "}\n" +
-        "tbody tr {\n" +
-        "}\n" +
+        return "table {\n" +
+                "	width: 550px;\n" +
+                "	border-collapse:collapse;\n" +
+                "	border:1px solid #2E2E2E;\n" +
+                "}\n" +
+                "caption {\n" +
+                "	font:  20pt Arial, Helvetica, sans-serif;\n" +
+                "	text-align: left;\n" +
+                "	text-indent: 10px;\n" +
+                "	height: 45px;\n" +
+                "	color: #243D02;\n" +
+                "	border-top: 1px solid #243D02;\n" +
+                "}\n" +
+                "thead {\n" +
+                "background: #AAAAAA;\n" +
+                "	color: #FFFFFF;\n" +
+                "	font-size: 0.8em;\n" +
+                "	font-weight: bold;\n" +
+                "	margin: 20px 0px 0px;\n" +
+                "	text-align: left;\n" +
+                "	border-right: 1px solid #8D8D8D;\n" +
+                "}\n" +
+                "tbody tr {\n" +
+                "}\n" +
 
-        "tbody th,td {\n" +
-        "	font-size: 0.8em;\n" +
-        "	line-height: 1.4em;\n" +
-        "	font-family: Arial, Helvetica, sans-serif;\n" +
-        "	color: #2E2E2E;\n" +
-        "	border-top: 1px solid #243D02;\n" +
-        "	border-right: 1px solid #8D8D8D;\n" +
-        "	text-align: left;\n" +
-        "}\n" +
-        "a {\n" +
-        "	color: #2E2E2E;\n" +
-        "	font-weight: bold;\n" +
-        "	text-decoration: underline;\n" +
-        "}\n" +
-        "a:hover {\n" +
-        "	color: #FFFF50;\n" +
-        "	text-decoration: underline;\n" +
-        "}\n" +
-        "tfoot th {\n" +
-        "	background: #243D02;\n" +
-        "	border-top: 1px solid #243D02;\n" +
-        "	color: #FFFFFF;\n" +
-        "	height: 30px;\n" +
-        "}\n" +
-        "tfoot td {\n" +
-        "	background: #243D02;\n" +
-        "	color: #FFFFFF;\n" +
-        "	height: 30px;\n" +
-        "}";
+                "tbody th,td {\n" +
+                "	font-size: 0.8em;\n" +
+                "	line-height: 1.4em;\n" +
+                "	font-family: Arial, Helvetica, sans-serif;\n" +
+                "	color: #2E2E2E;\n" +
+                "	border-top: 1px solid #243D02;\n" +
+                "	border-right: 1px solid #8D8D8D;\n" +
+                "	text-align: left;\n" +
+                "}\n" +
+                "a {\n" +
+                "	color: #2E2E2E;\n" +
+                "	font-weight: bold;\n" +
+                "	text-decoration: underline;\n" +
+                "}\n" +
+                "a:hover {\n" +
+                "	color: #FFFF50;\n" +
+                "	text-decoration: underline;\n" +
+                "}\n" +
+                "tfoot th {\n" +
+                "	background: #243D02;\n" +
+                "	border-top: 1px solid #243D02;\n" +
+                "	color: #FFFFFF;\n" +
+                "	height: 30px;\n" +
+                "}\n" +
+                "tfoot td {\n" +
+                "	background: #243D02;\n" +
+                "	color: #FFFFFF;\n" +
+                "	height: 30px;\n" +
+                "}";
     }
 
     /**
@@ -301,19 +302,19 @@ public class DocMaker {
         String sStr = "";
         Class<?> superClass = pluginClass.getSuperclass();
         if (superClass != null) {
-        	String sSuper = getInheritableDescription(superClass);
-        	if (sSuper != null) {
-        		sStr += sSuper + "<br/>"; 
-        	}
+            String sSuper = getInheritableDescription(superClass);
+            if (sSuper != null) {
+                sStr += sSuper + "<br/>";
+            }
         }
-    	Annotation [] classAnnotations = pluginClass.getAnnotations();
+        Annotation[] classAnnotations = pluginClass.getAnnotations();
         for (Annotation annotation : classAnnotations) {
             if (annotation instanceof Description) {
                 Description description = (Description) annotation;
                 if (description.isInheritable()) {
-                	sStr += description.value();
+                    sStr += description.value();
                 } else {
-                	return  null;
+                    return null;
                 }
             }
         }
@@ -326,22 +327,22 @@ public class DocMaker {
     void createPluginPage(String sPlugin) throws Exception {
         PrintStream out = new PrintStream(m_sDir + "/" + sPlugin + ".html");
         try {
-        	out.print(getHTML(sPlugin, true));
+            out.print(getHTML(sPlugin, true));
         } catch (Exception e) {
-			System.err.println("Page creation failed for " +sPlugin + ": " + e.getMessage());
-		}
+            System.err.println("Page creation failed for " + sPlugin + ": " + e.getMessage());
+        }
     } // createPluginPage
 
-    
+
     public String getHTML(String sPlugin, boolean bUseExternalStyleSheet) throws Exception {
-    	StringBuffer buf = new StringBuffer();
+        StringBuffer buf = new StringBuffer();
         buf.append("<html>\n<head>\n<title>BEAST 2.0 Documentation: " + sPlugin + "</title>\n");
         if (bUseExternalStyleSheet) {
-        	buf.append("<link rel='StyleSheet' href='doc.css' type='text/css'>\n");
+            buf.append("<link rel='StyleSheet' href='doc.css' type='text/css'>\n");
         } else {
-        	buf.append("<style type='text/css'>\n");
-        	buf.append(getCSS());
-        	buf.append("</style>\n");
+            buf.append("<style type='text/css'>\n");
+            buf.append(getCSS());
+            buf.append("</style>\n");
         }
         buf.append("</head>\n");
         buf.append("<body>\n");
@@ -351,13 +352,13 @@ public class DocMaker {
         // show all implementation of this plug-in
         String[] sImplementations = m_isa.get(sPlugin);
         if (sImplementations == null) {
-        	// this class is not documented, perhaps outside ClassDiscover path?
-        	buf.append("No documentation available for " + sPlugin + ". Perhaps it is not in the ClassDiscovery path\n");
+            // this class is not documented, perhaps outside ClassDiscover path?
+            buf.append("No documentation available for " + sPlugin + ". Perhaps it is not in the ClassDiscovery path\n");
             buf.append("</body>\n");
             buf.append("</html>\n");
-        	return buf.toString();
+            return buf.toString();
         }
-        
+
         if (sImplementations.length > 0) {
             buf.append("<table border='1px'>\n");
             buf.append("<thead><tr><td>implemented by the following</td></tr></thead>\n");
@@ -379,16 +380,16 @@ public class DocMaker {
             }
         }
 
-        
+
         // show if this is Loggable
         if (m_sLoggables.contains(sPlugin)) {
-        	buf.append("<p>Logable:");
-        	buf.append(" yes, this can be used in a log.");
-        	buf.append("</p>\n");
+            buf.append("<p>Logable:");
+            buf.append(" yes, this can be used in a log.");
+            buf.append("</p>\n");
 //        } else {
 //        	buf.append(" no, this cannot be used in a log.");
         }
-        
+
         // list its inputs
         buf.append("<h2>Inputs:</h2>\n");
         List<Input<?>> inputs = plugin.listInputs();
@@ -427,7 +428,7 @@ public class DocMaker {
         buf.append("</html>\n");
         return buf.toString();
     } // getHTML
-    
+
     /**
      * determine type of input of a plug in with name sName
      */
@@ -441,10 +442,10 @@ public class DocMaker {
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
                         if (input.getType() != null) {
-                            return (input.getType().isAssignableFrom(Plugin.class) ?"<a href='" + input.getType().getName() + ".html'>":"") +
-                                input.getType().getName() + 
-                            	(input.get() != null && input.get() instanceof List<?> ? "***" : "") + 
-                            	(input.getType().isAssignableFrom(Plugin.class) ?"</a>" :"");
+                            return (input.getType().isAssignableFrom(Plugin.class) ? "<a href='" + input.getType().getName() + ".html'>" : "") +
+                                    input.getType().getName() +
+                                    (input.get() != null && input.get() instanceof List<?> ? "***" : "") +
+                                    (input.getType().isAssignableFrom(Plugin.class) ? "</a>" : "");
                         }
                         if (input.get() != null && input.get() instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
@@ -499,7 +500,7 @@ public class DocMaker {
     } // generateDocs
 
 
-	/**
+    /**
      * Usage: DocMaker <target directory>
      * where <target directory> is the place where the HTML files
      * should go. Default directory is /tmp

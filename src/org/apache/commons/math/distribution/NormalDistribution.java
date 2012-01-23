@@ -19,7 +19,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * Normal (Gauss) Distribution.
- *
+ * <p/>
  * <p>
  * References:</p><p>
  * <ul>
@@ -33,23 +33,30 @@ package org.apache.commons.math.distribution;
 public interface NormalDistribution extends ContinuousDistribution, HasDensity<Double> {
     /**
      * Access the mean.
+     *
      * @return mean for this distribution
      */
     double getMean();
+
     /**
      * Modify the mean.
+     *
      * @param mean for this distribution
      * @deprecated as of v2.1
      */
     @Deprecated
     void setMean(double mean);
+
     /**
      * Access the standard deviation.
+     *
      * @return standard deviation for this distribution
      */
     double getStandardDeviation();
+
     /**
      * Modify the standard deviation.
+     *
      * @param sd standard deviation for this distribution
      * @deprecated as of v2.1
      */
@@ -58,8 +65,9 @@ public interface NormalDistribution extends ContinuousDistribution, HasDensity<D
 
     /**
      * Return the probability density for a particular point.
-     * @param x  The point at which the density should be computed.
-     * @return  The pdf at point x.
+     *
+     * @param x The point at which the density should be computed.
+     * @return The pdf at point x.
      */
     double density(Double x);
 }

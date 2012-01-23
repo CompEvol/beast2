@@ -21,9 +21,9 @@ public class ViewsMenuFactory implements MenuFactory {
         JMenuItem item;
 
         if (frame instanceof ViewsMenuHandler) {
-	        item = new JMenuItem(((ViewsMenuHandler)frame).getExampleAction());
-	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK));
-	        menu.add(item);
+            item = new JMenuItem(((ViewsMenuHandler) frame).getExampleAction());
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK));
+            menu.add(item);
         }
 
     }

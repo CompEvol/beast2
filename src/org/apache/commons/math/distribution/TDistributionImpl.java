@@ -30,31 +30,38 @@ import org.apache.commons.math.special.Gamma;
  * @version $Revision: 925812 $ $Date: 2010-03-21 11:49:31 -0400 (Sun, 21 Mar 2010) $
  */
 public class TDistributionImpl
-    extends AbstractContinuousDistribution
-    implements TDistribution, Serializable  {
+        extends AbstractContinuousDistribution
+        implements TDistribution, Serializable {
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
-    */
+     */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -5852615386664158222L;
 
-    /** The degrees of freedom*/
+    /**
+     * The degrees of freedom
+     */
     private double degreesOfFreedom;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Create a t distribution using the given degrees of freedom and the
      * specified inverse cumulative probability absolute accuracy.
      *
-     * @param degreesOfFreedom the degrees of freedom.
+     * @param degreesOfFreedom   the degrees of freedom.
      * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     *                           (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
     public TDistributionImpl(double degreesOfFreedom, double inverseCumAccuracy) {
@@ -65,6 +72,7 @@ public class TDistributionImpl
 
     /**
      * Create a t distribution using the given degrees of freedom.
+     *
      * @param degreesOfFreedom the degrees of freedom.
      */
     public TDistributionImpl(double degreesOfFreedom) {
@@ -73,6 +81,7 @@ public class TDistributionImpl
 
     /**
      * Modify the degrees of freedom.
+     *
      * @param degreesOfFreedom the new degrees of freedom.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
@@ -80,21 +89,24 @@ public class TDistributionImpl
     public void setDegreesOfFreedom(double degreesOfFreedom) {
         setDegreesOfFreedomInternal(degreesOfFreedom);
     }
+
     /**
      * Modify the degrees of freedom.
+     *
      * @param newDegreesOfFreedom the new degrees of freedom.
      */
     private void setDegreesOfFreedomInternal(double newDegreesOfFreedom) {
         if (newDegreesOfFreedom <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "degrees of freedom must be positive ({0})",
-                  newDegreesOfFreedom);
+                    "degrees of freedom must be positive ({0})",
+                    newDegreesOfFreedom);
         }
         this.degreesOfFreedom = newDegreesOfFreedom;
     }
 
     /**
      * Access the degrees of freedom.
+     *
      * @return the degrees of freedom.
      */
     public double getDegreesOfFreedom() {
@@ -113,26 +125,27 @@ public class TDistributionImpl
         final double n = degreesOfFreedom;
         final double nPlus1Over2 = (n + 1) / 2;
         return Math.exp(Gamma.logGamma(nPlus1Over2) - 0.5 * (Math.log(Math.PI) + Math.log(n)) -
-                Gamma.logGamma(n/2) - nPlus1Over2 * Math.log(1 + x * x /n));
+                Gamma.logGamma(n / 2) - nPlus1Over2 * Math.log(1 + x * x / n));
     }
 
     /**
      * For this distribution, X, this method returns P(X &lt; <code>x</code>).
+     *
      * @param x the value at which the CDF is evaluated.
      * @return CDF evaluted at <code>x</code>.
      * @throws MathException if the cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
-    public double cumulativeProbability(double x) throws MathException{
+    public double cumulativeProbability(double x) throws MathException {
         double ret;
         if (x == 0.0) {
             ret = 0.5;
         } else {
             double t =
-                Beta.regularizedBeta(
-                    degreesOfFreedom / (degreesOfFreedom + (x * x)),
-                    0.5 * degreesOfFreedom,
-                    0.5);
+                    Beta.regularizedBeta(
+                            degreesOfFreedom / (degreesOfFreedom + (x * x)),
+                            0.5 * degreesOfFreedom,
+                            0.5);
             if (x < 0.0) {
                 ret = 0.5 * t;
             } else {
@@ -152,14 +165,14 @@ public class TDistributionImpl
      *
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
-     * @throws MathException if the inverse cumulative probability can not be
-     *         computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     @Override
     public double inverseCumulativeProbability(final double p)
-    throws MathException {
+            throws MathException {
         if (p == 0) {
             return Double.NEGATIVE_INFINITY;
         }

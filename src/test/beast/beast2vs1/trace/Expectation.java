@@ -82,8 +82,8 @@ public class Expectation extends Plugin {
 //        }
 //        return stderr;
     }
-    
+
     public String toString() {
-    	return traceName.get() + " " + expValue.get();
+        return traceName.get() + " " + expValue.get();
     }
 }

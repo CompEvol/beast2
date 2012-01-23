@@ -19,7 +19,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
     SmallButton m_editPluginButton;
 
     PluginInputEditor _this;
-    
+
     public PluginInputEditor() {
         super();
         _this = this;
@@ -39,59 +39,61 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
      */
     @Override
     public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
-		m_bAddButtons = bAddButtons;
+        m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
-    	if (bExpandOption == ExpandOption.FALSE) {
-    		simpleInit(input, plugin);
-    	} else {
-    		expandedInit(input, plugin);
-    	}
+        if (bExpandOption == ExpandOption.FALSE) {
+            simpleInit(input, plugin);
+        } else {
+            expandedInit(input, plugin);
+        }
     } // init
-    
-    /** add combobox with available plugins 
+
+    /**
+     * add combobox with available plugins
      * a button to edit that plugin +
      * a validation icon
-     * **/
-	void simpleInit(Input <?> input, Plugin plugin) {
+     * *
+     */
+    void simpleInit(Input<?> input, Plugin plugin) {
 
         addInputLabel();
 
         addComboBox(this, input, plugin);
 
         if (m_bAddButtons) {
-        	if (PluginPanel.countInputs((Plugin)m_input.get(), doc) > 0) {
-		        m_editPluginButton = new SmallButton("e", true);
-		        if (input.get() == null) {
-		            m_editPluginButton.setEnabled(false);
-		        }
-		        m_editPluginButton.setToolTipText("Edit " + m_inputLabel.getText());
-		
-		        m_editPluginButton.addActionListener(new ActionListener() {
-		            // implements ActionListener
-		            public void actionPerformed(ActionEvent e) {
-		                PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType(), doc);
-		                dlg.setVisible(true);
-		                if (dlg.getOK(doc)) {
-		                	try {
-		                		dlg.accept((Plugin) m_input.get());
-		                	} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-		                }
-		                refresh();
-		                checkValidation();
-		            }
-		        });
-		        add(m_editPluginButton);
-        	}
+            if (PluginPanel.countInputs((Plugin) m_input.get(), doc) > 0) {
+                m_editPluginButton = new SmallButton("e", true);
+                if (input.get() == null) {
+                    m_editPluginButton.setEnabled(false);
+                }
+                m_editPluginButton.setToolTipText("Edit " + m_inputLabel.getText());
+
+                m_editPluginButton.addActionListener(new ActionListener() {
+                    // implements ActionListener
+                    public void actionPerformed(ActionEvent e) {
+                        PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType(), doc);
+                        dlg.setVisible(true);
+                        if (dlg.getOK(doc)) {
+                            try {
+                                dlg.accept((Plugin) m_input.get());
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        refresh();
+                        checkValidation();
+                    }
+                });
+                add(m_editPluginButton);
+            }
         }
         addValidationLabel();
     } // init
 
     void refresh() {
         String sOldID = (String) m_selectPluginBox.getSelectedItem();
-        String sID = ((Plugin)m_input.get()).getID();
+        String sID = ((Plugin) m_input.get()).getID();
         if (!sID.equals(sOldID)) {
             m_selectPluginBox.addItem(sID);
             m_selectPluginBox.setSelectedItem(sID);
@@ -111,24 +113,24 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
         List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
         if (sAvailablePlugins.size() > 0) {
             sAvailablePlugins.add(NO_VALUE);
-        	for (int i = 0; i < sAvailablePlugins.size(); i++) {
-        		String sPlugin = sAvailablePlugins.get(i);
-        		if (sPlugin.startsWith("new ")) {
-        			sPlugin = sPlugin.substring(sPlugin.lastIndexOf('.'));
-        			sAvailablePlugins.set(i, sPlugin);
-        		}
+            for (int i = 0; i < sAvailablePlugins.size(); i++) {
+                String sPlugin = sAvailablePlugins.get(i);
+                if (sPlugin.startsWith("new ")) {
+                    sPlugin = sPlugin.substring(sPlugin.lastIndexOf('.'));
+                    sAvailablePlugins.set(i, sPlugin);
+                }
 
-        	}
+            }
             m_selectPluginBox.removeAllItems();
             for (String sStr : sAvailablePlugins.toArray(new String[0])) {
-            	m_selectPluginBox.addItem(sStr);
+                m_selectPluginBox.addItem(sStr);
             }
             m_selectPluginBox.setSelectedItem(m_plugin.getID());
-        }		
-	}
-	
-	Box m_expansionBox = null;
-	
+        }
+    }
+
+    Box m_expansionBox = null;
+
     void expandedInit(Input<?> input, Plugin plugin) {
         addInputLabel();
         Box box = Box.createVerticalBox();
@@ -136,20 +138,21 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
         Box combobox = Box.createHorizontalBox();
         addComboBox(combobox, input, plugin);
         box.add(combobox);
-       
-    	PluginPanel.addInputs(box, (Plugin) input.get(), this, this, doc);
+
+        PluginPanel.addInputs(box, (Plugin) input.get(), this, this, doc);
 
         box.setBorder(new EtchedBorder());
         add(box);
         m_expansionBox = box;
     } // expandedInit
-    
-    
-    /** add combobox with Plugins to choose from
+
+
+    /**
+     * add combobox with Plugins to choose from
      * On choosing a new value, create plugin (if is not already an object)
-     * Furthermore, if expanded, update expanded inputs 
+     * Furthermore, if expanded, update expanded inputs
      */
-    protected void addComboBox(Box box, Input <?> input, Plugin plugin) {
+    protected void addComboBox(Box box, Input<?> input, Plugin plugin) {
         List<BeautiSubTemplate> availableTemplates = PluginPanel.getAvailableTemplates(m_input, m_plugin, null, doc);
         if (availableTemplates.size() > 0) {
 //        	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {
@@ -164,32 +167,32 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
 //
 //        	}
             m_selectPluginBox = new JComboBox(availableTemplates.toArray());
-            
+
             Object o = input.get();
             String sID;
             if (o == null) {
-            	sID = plugin.getID();
+                sID = plugin.getID();
             } else {
-            	sID = ((Plugin) o).getID();
+                sID = ((Plugin) o).getID();
             }
             sID = sID.substring(0, sID.indexOf('.'));
             for (BeautiSubTemplate template : availableTemplates) {
-            	if (template.matchesName(sID)) {
-            		m_selectPluginBox.setSelectedItem(template);
-            	}
+                if (template.matchesName(sID)) {
+                    m_selectPluginBox.setSelectedItem(template);
+                }
             }
 
             m_selectPluginBox.addActionListener(new ActionListener() {
                 // implements ActionListener
                 public void actionPerformed(ActionEvent e) {
-                	
+
 //                	SwingUtilities.invokeLater(new Runnable() {
 //						
 //						@Override
 //						public void run() {
-                	
-                	// get a handle of the selected plugin
-                	BeautiSubTemplate sSelected = (BeautiSubTemplate) m_selectPluginBox.getSelectedItem();
+
+                    // get a handle of the selected plugin
+                    BeautiSubTemplate sSelected = (BeautiSubTemplate) m_selectPluginBox.getSelectedItem();
                     Plugin plugin = (Plugin) m_input.get();
                     String sID = plugin.getID();
                     String sPartition = sID.substring(sID.indexOf('.') + 1);
@@ -201,7 +204,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
 //                    	plugin = PluginPanel.g_plugins.get(sNewID);
                     } else {
                         try {
-                        	plugin = sSelected.createSubNet(sPartition, m_plugin, m_input);
+                            plugin = sSelected.createSubNet(sPartition, m_plugin, m_input);
                             //PluginPanel.addPluginToMap(plugin);
                             // tricky: try to connect up new inputs with old inputs of existing name
 //                            Plugin oldPlugin = (Plugin) m_input.get();
@@ -229,24 +232,24 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
                         }
                     }
 
-                    
+
                     try {
                         if (plugin == null) {
                             m_selectPluginBox.setSelectedItem(NO_VALUE);
                             // is this input expanded?
                             if (m_expansionBox != null) {
-                            	// remove items from Expansion Box, if any
-                            	for (int i = 1; i < m_expansionBox.getComponentCount(); i++) {
-                            		m_expansionBox.remove(i);
-                            	}
+                                // remove items from Expansion Box, if any
+                                for (int i = 1; i < m_expansionBox.getComponentCount(); i++) {
+                                    m_expansionBox.remove(i);
+                                }
                             } else { // not expanded
-                            	if (m_bAddButtons) {
-                            		m_editPluginButton.setEnabled(false);
-                            	}
+                                if (m_bAddButtons) {
+                                    m_editPluginButton.setEnabled(false);
+                                }
                             }
                         } else {
                             if (!m_input.canSetValue(plugin, m_plugin)) {
-                            	throw new Exception("Cannot set input to this value");
+                                throw new Exception("Cannot set input to this value");
                             }
 //                        	// get handle on ID of the plugin, and add to combobox if necessary
 //                            String sID = plugin.getID();
@@ -258,47 +261,47 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
 //                            m_selectPluginBox.setSelectedItem(sID);
                             sID = plugin.getID();
                             sID = sID.substring(0, sID.indexOf('.'));
-        					for (int i = 0; i < m_selectPluginBox.getItemCount(); i++) {
-        						BeautiSubTemplate template = (BeautiSubTemplate) m_selectPluginBox.getItemAt(i);
-                            	if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
-                            		m_selectPluginBox.setSelectedItem(template);
-                            	}
+                            for (int i = 0; i < m_selectPluginBox.getItemCount(); i++) {
+                                BeautiSubTemplate template = (BeautiSubTemplate) m_selectPluginBox.getItemAt(i);
+                                if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
+                                    m_selectPluginBox.setSelectedItem(template);
+                                }
                             }
                         }
-                        
+
                         m_input.setValue(plugin, m_plugin);
-                        
+
                         if (m_expansionBox != null) {
-                        	// remove items from Expansion Box
-                        	for (int i = 1; i < m_expansionBox.getComponentCount(); ) {
-                        		m_expansionBox.remove(i);
-                        	}
-                        	// add new items to Expansion Box
-                        	if (plugin != null) {
-                        		PluginPanel.addInputs(m_expansionBox, plugin, _this, _this, doc);
-                        	}
+                            // remove items from Expansion Box
+                            for (int i = 1; i < m_expansionBox.getComponentCount(); ) {
+                                m_expansionBox.remove(i);
+                            }
+                            // add new items to Expansion Box
+                            if (plugin != null) {
+                                PluginPanel.addInputs(m_expansionBox, plugin, _this, _this, doc);
+                            }
                         } else {
-                        	// it is not expanded, enable the edit button
-                        	if (m_bAddButtons) {
-                        		m_editPluginButton.setEnabled(true);
-                        	}
+                            // it is not expanded, enable the edit button
+                            if (m_bAddButtons) {
+                                m_editPluginButton.setEnabled(true);
+                            }
                             checkValidation();
                         }
                         sync();
                         refreshPanel();
                     } catch (Exception ex) {
-                        sID = ((Plugin)m_input.get()).getID();
+                        sID = ((Plugin) m_input.get()).getID();
                         m_selectPluginBox.setSelectedItem(sID);
-                    	//ex.printStackTrace();
+                        //ex.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Could not change plugin: " +
                                 ex.getClass().getName() + " " +
                                 ex.getMessage()
                         );
                     }
                 }
-						
-					}
-				);
+
+            }
+            );
 //            }
 //            });
             m_selectPluginBox.setToolTipText(input.getTipText());

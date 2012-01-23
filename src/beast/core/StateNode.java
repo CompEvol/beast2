@@ -8,111 +8,128 @@ import org.w3c.dom.Node;
  * This class represents a node of the state. Concrete classes include Parameters and Trees.
  * StateNodes differ from CalculationNodes in that they
  * 1. Do not calculate anything, with the exception of initialisation time
- * 2. can be changed by Operators 
+ * 2. can be changed by Operators
  *
  * @author Alexei Drummond
  */
 @Description("A node that can be part of the state.")
-public abstract class StateNode extends Plugin  implements Loggable, Cloneable, Valuable {
-	/** Flag to indicate the StateNode is not constant.
-	 * This is particularly useful for Beauti **/
-	public Input<Boolean> m_bIsEstimated = new Input<Boolean>("estimate", "whether to estimate this item or keep constant to its initial value", true); 
-	
-	/** Returns this StateNode if it is not in the State.
-     * If it is in the State, return the version that is currently valid 
-     * (i.e. not the stored one). 
+public abstract class StateNode extends Plugin implements Loggable, Cloneable, Valuable {
+    /**
+     * Flag to indicate the StateNode is not constant.
+     * This is particularly useful for Beauti *
+     */
+    public Input<Boolean> m_bIsEstimated = new Input<Boolean>("estimate", "whether to estimate this item or keep constant to its initial value", true);
+
+    /**
+     * Returns this StateNode if it is not in the State.
+     * If it is in the State, return the version that is currently valid
+     * (i.e. not the stored one).
      */
     public StateNode getCurrent() {
-    	if (m_state == null) {
-    		return this;
-    	}
-    	return m_state.getStateNode(index);
+        if (m_state == null) {
+            return this;
+        }
+        return m_state.getStateNode(index);
     }
-    /** Return StateNode for an operation to do its magic on.
+
+    /**
+     * Return StateNode for an operation to do its magic on.
      * The State will make a copy first, if there is not already
      * one available.
+     *
      * @param operator explain here why operator is useful
      */
     public StateNode getCurrentEditable(Operator operator) {
-		startEditing(operator);
-		return this;
+        startEditing(operator);
+        return this;
     }
 
-    /** Getting/setting global dirtiness state for this StateNode.
+    /**
+     * Getting/setting global dirtiness state for this StateNode.
      * Every StateNode has a flag (somethingIsDirty) that represents whether anything
      * in the state has changed. StateNode implementations like Parameters and Trees
      * have their own internal flag to represent which part of a StateNode (e.g.
      * an element in an array, or a node in a tree) has changed.
-     * **/
+     * *
+     */
     public boolean somethingIsDirty() {
         return this.m_bHasStartedEditing;
     }
-    
+
     public void setSomethingIsDirty(final boolean isDirty) {
-    	this.m_bHasStartedEditing = isDirty;
+        this.m_bHasStartedEditing = isDirty;
     }
-    /** mark every internal element of a StateNode as isDirty.
+
+    /**
+     * mark every internal element of a StateNode as isDirty.
      * So both the global flag for this StateNode (somethingIsDirty) should be set as
      * well as all the local flags.
+     *
      * @param isDirty
      */
     abstract public void setEverythingDirty(final boolean isDirty);
 
     /**
-     * @return a deep copy of this node in the state. 
-     * This will generally be called only for stochastic nodes.
+     * @return a deep copy of this node in the state.
+     *         This will generally be called only for stochastic nodes.
      */
     public abstract StateNode copy();
-    
-    /** 
-     * other := this 
-     * Assign all values of this to other 
+
+    /**
+     * other := this
+     * Assign all values of this to other
      * NB: Should only be used for initialisation!
-     **/
+     */
     public abstract void assignTo(StateNode other);
-    
-    /** 
-     * this := other 
+
+    /**
+     * this := other
      * Assign all values of other to this
      * NB: Should only be used for initialisation!
-     **/
+     */
     public abstract void assignFrom(StateNode other);
-    
-    /** 
-     * As assignFrom, but without copying the ID 
+
+    /**
+     * As assignFrom, but without copying the ID
      * NB: Should only be used for initialisation!
-     **/
+     */
     public void assignFromWithoutID(StateNode other) {
-    	String sID = m_sID;
-    	assignFrom(other);
-    	m_sID = sID;
+        String sID = m_sID;
+        assignFrom(other);
+        m_sID = sID;
     }
-    
-    /** As assignFrom, but only those parts are assigned that 
+
+    /**
+     * As assignFrom, but only those parts are assigned that
      * are variable, for instance for parameters bounds and dimension
      * do not need to be copied.
      */
     public abstract void assignFromFragile(StateNode other);
 
-    /** for storing a state **/
+    /**
+     * for storing a state *
+     */
     final public void toXML(PrintStream out) {
-    	out.print("<statenode id='" + getID() +"'>");
-    	out.print(toString());
-    	out.print("</statenode>\n");
+        out.print("<statenode id='" + getID() + "'>");
+        out.print(toString());
+        out.print("</statenode>\n");
     }
-    
-    /** stores a state node in XML format, to be restored by fromXML() **/
+
+    /**
+     * stores a state node in XML format, to be restored by fromXML() *
+     */
     final public String toXML() {
-    	return "<statenode id='" + getID() +"'>" +
-    		toString() +
-    		"</statenode>\n";
+        return "<statenode id='" + getID() + "'>" +
+                toString() +
+                "</statenode>\n";
     }
-    
-    /** for restoring a state that was stored using toXML() above
-     * from a DOM Node. **/
+
+    /**
+     * for restoring a state that was stored using toXML() above
+     * from a DOM Node. *
+     */
     public abstract void fromXML(Node node);
 
-    
 
 //    /**
 //     * @return true if this node is acting as a random variable, false if this node is fixed and effectively data.
@@ -131,26 +148,29 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
 //
 //    boolean isStochastic = true;
 
-    /** Scale StateNode with amount fScale and
-     * @return the number of degrees of freedom used in this operation. This number varies
-     * for the different types of StateNodes. For example, for real
-     * valued n-dimensional parameters, it is n, for a tree it is the
-     * number of internal nodes being scaled.
-     * 
-     * @throws Exception when StateNode become not valid, e.g. has
-     * values outside bounds or negative branch lengths.
+    /**
+     * Scale StateNode with amount fScale and
      *
      * @param fScale scaling factor
+     * @return the number of degrees of freedom used in this operation. This number varies
+     *         for the different types of StateNodes. For example, for real
+     *         valued n-dimensional parameters, it is n, for a tree it is the
+     *         number of internal nodes being scaled.
+     * @throws Exception when StateNode become not valid, e.g. has
+     *                   values outside bounds or negative branch lengths.
      */
     abstract public int scale(double fScale) throws Exception;
-    
-    
-    /** 
+
+
+    /**
      * Pointer to state, null if not part of a State.
      */
     protected State m_state = null;
-    public State getState() {return m_state;}
-    
+
+    public State getState() {
+        return m_state;
+    }
+
     /**
      * flag to indicate some value has changed after operation is performed on state
      * For multidimensional parameters, there is an internal flag to indicate which
@@ -159,26 +179,31 @@ public abstract class StateNode extends Plugin  implements Loggable, Cloneable, 
     protected boolean m_bHasStartedEditing = false;
 
     /**
-     * The index of the parameter for identifying this StateNode 
+     * The index of the parameter for identifying this StateNode
      * in the State.
      */
     public int index = -1;
-    public int getIndex() {return index;}
-    
-    /** should be called before an Operator proposes a new State **/
+
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * should be called before an Operator proposes a new State *
+     */
     public void startEditing(Operator operator) {
-    	if (m_bHasStartedEditing) {
-    		// we are already editing
-    		return;
-    	}
-    	m_bHasStartedEditing = true;
-    	// notify the state
-    	m_state.getEditableStateNode(this.index, operator);
-    	store();
-    } 
-    
+        if (m_bHasStartedEditing) {
+            // we are already editing
+            return;
+        }
+        m_bHasStartedEditing = true;
+        // notify the state
+        m_state.getEditableStateNode(this.index, operator);
+        store();
+    }
+
     abstract protected void store();
-    
+
     abstract public void restore();
 
 } // class StateNode

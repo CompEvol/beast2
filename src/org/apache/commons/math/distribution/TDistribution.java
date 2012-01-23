@@ -18,7 +18,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * Student's t-Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -32,6 +32,7 @@ package org.apache.commons.math.distribution;
 public interface TDistribution extends ContinuousDistribution {
     /**
      * Modify the degrees of freedom.
+     *
      * @param degreesOfFreedom the new degrees of freedom.
      * @deprecated as of v2.1
      */
@@ -40,6 +41,7 @@ public interface TDistribution extends ContinuousDistribution {
 
     /**
      * Access the degrees of freedom.
+     *
      * @return the degrees of freedom.
      */
     double getDegreesOfFreedom();

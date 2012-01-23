@@ -35,7 +35,6 @@ import org.apache.commons.math.distribution.GammaDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 
-
 /**
  * Site model with
  * o gamma site model,
@@ -47,34 +46,34 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
         "and proportion of the sites invariant (also optional).")
 public class SiteModel extends SiteModelInterface.Base {
 
-    
+
     public Input<RealParameter> muParameterInput = new Input<RealParameter>("mutationRate", "mutation rate (defaults to 1.0)");
     public Input<Integer> gammaCategoryCount =
             new Input<Integer>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
-    public Input<RealParameter> shapeParameterInput  =
+    public Input<RealParameter> shapeParameterInput =
             new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
-    public Input<RealParameter> invarParameterInput  =
+    public Input<RealParameter> invarParameterInput =
             new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
 
     RealParameter muParameter;
     RealParameter shapeParameter;
     RealParameter invarParameter;
-    
+
     @Override
     public void initAndValidate() throws Exception {
         muParameter = muParameterInput.get();
         if (muParameter == null) {
-        	muParameter = new RealParameter("1.0");
+            muParameter = new RealParameter("1.0");
         }
         shapeParameter = shapeParameterInput.get();
         invarParameter = invarParameterInput.get();
         if (invarParameter == null) {
-        	invarParameter = new RealParameter("0.0");
+            invarParameter = new RealParameter("0.0");
             invarParameter.setBounds(Math.max(0.0, invarParameter.getLower()), Math.min(1.0, invarParameter.getUpper()));
         }
 
         //if (muParameter != null) {
-            muParameter.setBounds(Math.max(muParameter.getLower(), 0.0), Math.min(muParameter.getUpper(), Double.POSITIVE_INFINITY));
+        muParameter.setBounds(Math.max(muParameter.getLower(), 0.0), Math.min(muParameter.getUpper(), Double.POSITIVE_INFINITY));
         //}
         if (shapeParameter != null) {
             // The quantile calculator fails when the shape parameter goes much below
@@ -82,43 +81,43 @@ public class SiteModel extends SiteModelInterface.Base {
             // the category rates can go to 0 and cause a -Inf likelihood (whilst this
             // is not a problem as the state will be rejected, it could mask other issues
             // and this seems the better approach.
-            shapeParameter.setBounds(Math.max(shapeParameter.getLower(),1.0E-3), Math.min(shapeParameter.getUpper(), 1.0E3));
+            shapeParameter.setBounds(Math.max(shapeParameter.getLower(), 1.0E-3), Math.min(shapeParameter.getUpper(), 1.0E3));
         }
-            
-            
+
+
         if (/*invarParameter != null && */(invarParameter.getValue() < 0 || invarParameter.getValue() > 1)) {
-        	throw new Exception("proportion invariant should be between 0 and 1");
+            throw new Exception("proportion invariant should be between 0 and 1");
         }
         refresh();
-        
+
         addCondition(muParameterInput);
         addCondition(invarParameterInput);
         addCondition(shapeParameterInput);
     }
 
     @Override
-	protected void refresh() {
+    protected void refresh() {
         if (shapeParameter != null) {
             categoryCount = gammaCategoryCount.get();
             if (categoryCount < 1) {
-            	System.out.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
-               	categoryCount = 1;
+                System.out.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
+                categoryCount = 1;
             }
         } else {
             categoryCount = 1;
         }
 
         if (/*invarParameter != null && */invarParameter.getValue() > 0) {
-        	if (m_bPropInvariantIsCategory) {        	
-        		categoryCount += 1;
-        	}
+            if (m_bPropInvariantIsCategory) {
+                categoryCount += 1;
+            }
         }
 
         categoryRates = new double[categoryCount];
         categoryProportions = new double[categoryCount];
         calculateCategoryRates(null);
         //ratesKnown = false;
-	}
+    }
 
 
     // *****************************************************************
@@ -142,8 +141,7 @@ public class SiteModel extends SiteModelInterface.Base {
 
     @Override
     public double getRateForCategory(int category, Node node) {
-        synchronized (this) 
-        {
+        synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
             }
@@ -154,15 +152,16 @@ public class SiteModel extends SiteModelInterface.Base {
         return categoryRates[category] * muParameter.getValue();
     }
 
-    
-    /** return category rates
+
+    /**
+     * return category rates
+     *
      * @param node rates to which the rates apply. Typically, the rates will be uniform
-     * throughout the tree and the node argument is ignored.
+     *             throughout the tree and the node argument is ignored.
      */
     @Override
     public double[] getCategoryRates(Node node) {
-        synchronized (this) 
-        {
+        synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
             }
@@ -178,7 +177,9 @@ public class SiteModel extends SiteModelInterface.Base {
         return rates;
     }
 
-    /** @return substitution model **/
+    /**
+     * @return substitution model *
+     */
     @Override
     public SubstitutionModel getSubstitutionModel() {
         return m_pSubstModel.get();
@@ -186,15 +187,15 @@ public class SiteModel extends SiteModelInterface.Base {
 
     /**
      * Get the expected proportion of sites in this category.
+     *
      * @param category the category number
-     * @param node node to which the proportions apply. Typically, proportions
-     * will be uniform throughout the tree and this argument is ignored.
+     * @param node     node to which the proportions apply. Typically, proportions
+     *                 will be uniform throughout the tree and this argument is ignored.
      * @return the proportion.
      */
     @Override
     public double getProportionForCategory(int category, Node node) {
-        synchronized (this) 
-        {
+        synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
             }
@@ -210,8 +211,7 @@ public class SiteModel extends SiteModelInterface.Base {
      */
     @Override
     public double[] getCategoryProportions(Node node) {
-        synchronized (this) 
-        {
+        synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
             }
@@ -229,13 +229,13 @@ public class SiteModel extends SiteModelInterface.Base {
         int cat = 0;
 
         if (/*invarParameter != null && */invarParameter.getValue() > 0) {
-        	if (m_bPropInvariantIsCategory) {        	
-        		categoryRates[0] = 0.0;
-        		categoryProportions[0] = invarParameter.getValue();
-        	}
+            if (m_bPropInvariantIsCategory) {
+                categoryRates[0] = 0.0;
+                categoryProportions[0] = invarParameter.getValue();
+            }
             propVariable = 1.0 - invarParameter.getValue();
-            if (m_bPropInvariantIsCategory) {        	
-            	cat = 1;
+            if (m_bPropInvariantIsCategory) {
+                cat = 1;
             }
         }
 
@@ -245,13 +245,13 @@ public class SiteModel extends SiteModelInterface.Base {
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
-       	 	GammaDistribution g = new GammaDistributionImpl(a, 1.0 / a);
+            GammaDistribution g = new GammaDistributionImpl(a, 1.0 / a);
             for (int i = 0; i < gammaCatCount; i++) {
                 try {
-                	// RRB: alternative implementation that seems equally good in
-                	// the first 5 significant digits, but uses a standard distribution object
-                	 categoryRates[i + cat] = g.inverseCumulativeProbability((2.0 * i + 1.0) / (2.0 * gammaCatCount));
-                	
+                    // RRB: alternative implementation that seems equally good in
+                    // the first 5 significant digits, but uses a standard distribution object
+                    categoryRates[i + cat] = g.inverseCumulativeProbability((2.0 * i + 1.0) / (2.0 * gammaCatCount));
+
                     //categoryRates[i + cat] = GammaDistributionQuantile((2.0 * i + 1.0) / (2.0 * gammaCatCount), a, 1.0 / a);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -279,7 +279,9 @@ public class SiteModel extends SiteModelInterface.Base {
     }
 
 
-    /** CalculationNode methods **/
+    /**
+     * CalculationNode methods *
+     */
     @Override
     public void store() {
         super.store();
@@ -290,20 +292,21 @@ public class SiteModel extends SiteModelInterface.Base {
         super.restore();
         ratesKnown = false;
     }
+
     @Override
     protected boolean requiresRecalculation() {
-    	// do explicit check whether any of the non-substitution model parameters changed
-    	if (categoryCount > 1) {
-    		if (shapeParameter != null && shapeParameter.somethingIsDirty() || 
-        			muParameter.somethingIsDirty() ||
-        			invarParameter.somethingIsDirty()) {
-        		ratesKnown = false;
-    		}
-    	} else {
-    		if (muParameter.somethingIsDirty() || !m_bPropInvariantIsCategory && invarParameter.somethingIsDirty()) {
-    			ratesKnown = false; 
-    		}
-    	}
+        // do explicit check whether any of the non-substitution model parameters changed
+        if (categoryCount > 1) {
+            if (shapeParameter != null && shapeParameter.somethingIsDirty() ||
+                    muParameter.somethingIsDirty() ||
+                    invarParameter.somethingIsDirty()) {
+                ratesKnown = false;
+            }
+        } else {
+            if (muParameter.somethingIsDirty() || !m_bPropInvariantIsCategory && invarParameter.somethingIsDirty()) {
+                ratesKnown = false;
+            }
+        }
 //    	ratesKnown = false;
         // we only get here if something is dirty in its inputs, so always return true
         return true;
@@ -346,7 +349,7 @@ public class SiteModel extends SiteModelInterface.Base {
         }
         g = GammaFunctionlnGamma(v / 2);
         xx = v / 2;
-        
+
         c = xx - 1;
         if (v < -1.24 * Math.log(prob)) {
             ch = Math.pow((prob * xx * Math.exp(g + xx * aa)), 1 / xx);
@@ -583,11 +586,11 @@ public class SiteModel extends SiteModelInterface.Base {
         return (prob < 0.5 ? -z : z);
     }
 
-	public double getProportianInvariant() {
-		//if (invarParameter == null) {
-		//	return 0;
-		//}
-		return invarParameter.getValue();
-	}
-	
+    public double getProportianInvariant() {
+        //if (invarParameter == null) {
+        //	return 0;
+        //}
+        return invarParameter.getValue();
+    }
+
 } // class SiteModel

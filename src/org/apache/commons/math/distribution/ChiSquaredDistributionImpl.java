@@ -26,26 +26,34 @@ import org.apache.commons.math.MathException;
  * @version $Revision: 925812 $ $Date: 2010-03-21 11:49:31 -0400 (Sun, 21 Mar 2010) $
  */
 public class ChiSquaredDistributionImpl
-    extends AbstractContinuousDistribution
-    implements ChiSquaredDistribution, Serializable  {
+        extends AbstractContinuousDistribution
+        implements ChiSquaredDistribution, Serializable {
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -8352658048349159782L;
 
-    /** Internal Gamma distribution. */
+    /**
+     * Internal Gamma distribution.
+     */
     private GammaDistribution gamma;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Create a Chi-Squared distribution with the given degrees of freedom.
+     *
      * @param df degrees of freedom.
      */
     public ChiSquaredDistributionImpl(double df) {
@@ -54,11 +62,12 @@ public class ChiSquaredDistributionImpl
 
     /**
      * Create a Chi-Squared distribution with the given degrees of freedom.
+     *
      * @param df degrees of freedom.
-     * @param g the underlying gamma distribution used to compute probabilities.
+     * @param g  the underlying gamma distribution used to compute probabilities.
      * @since 1.2
      * @deprecated as of 2.1 (to avoid possibly inconsistent state, the
-     * "GammaDistribution" will be instantiated internally)
+     *             "GammaDistribution" will be instantiated internally)
      */
     @Deprecated
     public ChiSquaredDistributionImpl(double df, GammaDistribution g) {
@@ -71,9 +80,10 @@ public class ChiSquaredDistributionImpl
     /**
      * Create a Chi-Squared distribution with the given degrees of freedom and
      * inverse cumulative probability accuracy.
-     * @param df degrees of freedom.
+     *
+     * @param df                 degrees of freedom.
      * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     *                           (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
     public ChiSquaredDistributionImpl(double df, double inverseCumAccuracy) {
@@ -85,6 +95,7 @@ public class ChiSquaredDistributionImpl
 
     /**
      * Modify the degrees of freedom.
+     *
      * @param degreesOfFreedom the new degrees of freedom.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
@@ -92,8 +103,10 @@ public class ChiSquaredDistributionImpl
     public void setDegreesOfFreedom(double degreesOfFreedom) {
         setDegreesOfFreedomInternal(degreesOfFreedom);
     }
+
     /**
      * Modify the degrees of freedom.
+     *
      * @param degreesOfFreedom the new degrees of freedom.
      */
     private void setDegreesOfFreedomInternal(double degreesOfFreedom) {
@@ -102,6 +115,7 @@ public class ChiSquaredDistributionImpl
 
     /**
      * Access the degrees of freedom.
+     *
      * @return the degrees of freedom.
      */
     public double getDegreesOfFreedom() {
@@ -133,10 +147,11 @@ public class ChiSquaredDistributionImpl
 
     /**
      * For this distribution, X, this method returns P(X &lt; x).
+     *
      * @param x the value at which the CDF is evaluated.
      * @return CDF for this distribution.
      * @throws MathException if the cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
     public double cumulativeProbability(double x) throws MathException {
         return gamma.cumulativeProbability(x);
@@ -150,14 +165,14 @@ public class ChiSquaredDistributionImpl
      *
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
-     * @throws MathException if the inverse cumulative probability can not be
-     *         computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     @Override
     public double inverseCumulativeProbability(final double p)
-        throws MathException {
+            throws MathException {
         if (p == 0) {
             return 0d;
         }
@@ -237,6 +252,7 @@ public class ChiSquaredDistributionImpl
     /**
      * Modify the underlying gamma distribution.  The caller is responsible for
      * insuring the gamma distribution has the proper parameter settings.
+     *
      * @param g the new distribution.
      * @since 1.2 made public
      * @deprecated as of 2.1 (class will become immutable in 3.0)
@@ -245,9 +261,11 @@ public class ChiSquaredDistributionImpl
     public void setGamma(GammaDistribution g) {
         setGammaInternal(g);
     }
+
     /**
      * Modify the underlying gamma distribution.  The caller is responsible for
      * insuring the gamma distribution has the proper parameter settings.
+     *
      * @param g the new distribution.
      * @since 1.2 made public
      */

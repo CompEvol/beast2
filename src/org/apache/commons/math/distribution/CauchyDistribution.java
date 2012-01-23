@@ -19,7 +19,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * Cauchy Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -28,25 +28,28 @@ package org.apache.commons.math.distribution;
  * </ul>
  * </p>
  *
- * @since 1.1
  * @version $Revision: 920852 $ $Date: 2010-03-09 07:53:44 -0500 (Tue, 09 Mar 2010) $
+ * @since 1.1
  */
 public interface CauchyDistribution extends ContinuousDistribution {
 
     /**
      * Access the median.
+     *
      * @return median for this distribution
      */
     double getMedian();
 
     /**
      * Access the scale parameter.
+     *
      * @return scale parameter for this distribution
      */
     double getScale();
 
     /**
      * Modify the median.
+     *
      * @param median for this distribution
      * @deprecated as of v2.1
      */
@@ -55,6 +58,7 @@ public interface CauchyDistribution extends ContinuousDistribution {
 
     /**
      * Modify the scale parameter.
+     *
      * @param s scale parameter for this distribution
      * @deprecated as of v2.1
      */

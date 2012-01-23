@@ -25,17 +25,19 @@ import java.util.ResourceBundle;
 
 
 /**
-* Base class for commons-math checked exceptions.
-* <p>
-* Supports nesting, emulating JDK 1.4 behavior if necessary.</p>
-* <p>
-* Adapted from <a href="http://commons.apache.org/collections/api-release/org/apache/commons/collections/FunctorException.html"/>.</p>
-*
-* @version $Revision: 822850 $ $Date: 2009-10-07 14:56:42 -0400 (Wed, 07 Oct 2009) $
-*/
+ * Base class for commons-math checked exceptions.
+ * <p>
+ * Supports nesting, emulating JDK 1.4 behavior if necessary.</p>
+ * <p>
+ * Adapted from <a href="http://commons.apache.org/collections/api-release/org/apache/commons/collections/FunctorException.html"/>.</p>
+ *
+ * @version $Revision: 822850 $ $Date: 2009-10-07 14:56:42 -0400 (Wed, 07 Oct 2009) $
+ */
 public class MathException extends Exception {
 
-    /** Serializable version identifier. */
+    /**
+     * Serializable version identifier.
+     */
     private static final long serialVersionUID = -9004610152740737812L;
 
     /**
@@ -53,7 +55,7 @@ public class MathException extends Exception {
      * detail message.
      */
     public MathException() {
-        this.pattern   = null;
+        this.pattern = null;
         this.arguments = new Object[0];
     }
 
@@ -61,24 +63,25 @@ public class MathException extends Exception {
      * Constructs a new <code>MathException</code> with specified
      * formatted detail message.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
-     * @param pattern format specifier
+     *
+     * @param pattern   format specifier
      * @param arguments format arguments
      */
-    public MathException(String pattern, Object ... arguments) {
-      this.pattern   = pattern;
-      this.arguments = (arguments == null) ? new Object[0] : arguments.clone();
+    public MathException(String pattern, Object... arguments) {
+        this.pattern = pattern;
+        this.arguments = (arguments == null) ? new Object[0] : arguments.clone();
     }
 
     /**
      * Constructs a new <code>MathException</code> with specified
      * nested <code>Throwable</code> root cause.
      *
-     * @param rootCause  the exception or error that caused this exception
-     *                   to be thrown.
+     * @param rootCause the exception or error that caused this exception
+     *                  to be thrown.
      */
     public MathException(Throwable rootCause) {
         super(rootCause);
-        this.pattern   = getMessage();
+        this.pattern = getMessage();
         this.arguments = new Object[0];
     }
 
@@ -86,24 +89,26 @@ public class MathException extends Exception {
      * Constructs a new <code>MathException</code> with specified
      * formatted detail message and nested <code>Throwable</code> root cause.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
+     *
      * @param rootCause the exception or error that caused this exception
-     * to be thrown.
-     * @param pattern format specifier
+     *                  to be thrown.
+     * @param pattern   format specifier
      * @param arguments format arguments
      * @since 1.2
      */
-    public MathException(Throwable rootCause, String pattern, Object ... arguments) {
-      super(rootCause);
-      this.pattern   = pattern;
-      this.arguments = (arguments == null) ? new Object[0] : arguments.clone();
+    public MathException(Throwable rootCause, String pattern, Object... arguments) {
+        super(rootCause);
+        this.pattern = pattern;
+        this.arguments = (arguments == null) ? new Object[0] : arguments.clone();
     }
 
     /**
      * Translate a string to a given locale.
-     * @param s string to translate
+     *
+     * @param s      string to translate
      * @param locale locale into which to translate the string
      * @return translated string or original string
-     * for unsupported locales or unknown strings
+     *         for unsupported locales or unknown strings
      */
     private static String translate(String s, Locale locale) {
         try {
@@ -124,7 +129,8 @@ public class MathException extends Exception {
 
     }
 
-    /** Gets the pattern used to build the message of this throwable.
+    /**
+     * Gets the pattern used to build the message of this throwable.
      *
      * @return the pattern used to build the message of this throwable
      * @since 1.2
@@ -133,7 +139,8 @@ public class MathException extends Exception {
         return pattern;
     }
 
-    /** Gets the arguments used to build the message of this throwable.
+    /**
+     * Gets the arguments used to build the message of this throwable.
      *
      * @return the arguments used to build the message of this throwable
      * @since 1.2
@@ -142,10 +149,10 @@ public class MathException extends Exception {
         return arguments.clone();
     }
 
-    /** Gets the message in a specified locale.
+    /**
+     * Gets the message in a specified locale.
      *
      * @param locale Locale in which the message should be translated
-     *
      * @return localized message
      * @since 1.2
      */
@@ -153,13 +160,17 @@ public class MathException extends Exception {
         return (pattern == null) ? "" : new MessageFormat(translate(pattern, locale), locale).format(arguments);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getMessage() {
         return getMessage(Locale.US);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLocalizedMessage() {
         return getMessage(Locale.getDefault());
@@ -176,7 +187,7 @@ public class MathException extends Exception {
     /**
      * Prints the stack trace of this exception to the specified stream.
      *
-     * @param out  the <code>PrintStream</code> to use for output
+     * @param out the <code>PrintStream</code> to use for output
      */
     @Override
     public void printStackTrace(PrintStream out) {

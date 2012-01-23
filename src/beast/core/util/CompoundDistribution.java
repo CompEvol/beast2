@@ -47,111 +47,114 @@ public class CompoundDistribution extends Distribution {
     public Input<List<Distribution>> pDistributions =
             new Input<List<Distribution>>("distribution",
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
-                    new ArrayList<Distribution>()); 
-    public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads","calculated the distributions in parallel using threads (default false)", false);
+                    new ArrayList<Distribution>());
+    public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads", "calculated the distributions in parallel using threads (default false)", false);
 
-    /** flag to indicate threads should be used. Only effective if the useThreadsInput is 
-     * true and BeasMCMC.nrOfThreads > 1 */
+    /**
+     * flag to indicate threads should be used. Only effective if the useThreadsInput is
+     * true and BeasMCMC.nrOfThreads > 1
+     */
     boolean useThreads;
-    
+
     @Override
     public void initAndValidate() throws Exception {
-    	super.initAndValidate();
-    	useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
-    	
-    	if (pDistributions.get().size() == 0) {
-    		logP = 0;
-    	}
+        super.initAndValidate();
+        useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
+
+        if (pDistributions.get().size() == 0) {
+            logP = 0;
+        }
 //        for(Distribution dists : pDistributions.get()) {
 //        	logP += dists.calculateLogP();
 //        }
     }
-    
-    
-    /** Distribution implementation follows **/
+
+
+    /**
+     * Distribution implementation follows *
+     */
     @Override
     public double calculateLogP() throws Exception {
         logP = 0;
         if (useThreads) {
-        	logP = calculateLogPUsingThreads();
+            logP = calculateLogPUsingThreads();
         } else {
-	        for(Distribution dists : pDistributions.get()) {
-	        	if (dists.isDirtyCalculation()) {
-	        		logP += dists.calculateLogP();
-	        	} else {
-	        		logP += dists.getCurrentLogP();
-	        	}
-	            if (Double.isInfinite(logP) || Double.isNaN(logP)) {
-	            	return logP;
-	            }
-	        }
+            for (Distribution dists : pDistributions.get()) {
+                if (dists.isDirtyCalculation()) {
+                    logP += dists.calculateLogP();
+                } else {
+                    logP += dists.getCurrentLogP();
+                }
+                if (Double.isInfinite(logP) || Double.isNaN(logP)) {
+                    return logP;
+                }
+            }
         }
         return logP;
     }
 
-	class CoreRunnable implements Runnable {
-		Distribution distr;
-		
-		CoreRunnable(Distribution core) {
-				distr = core;
-		}
+    class CoreRunnable implements Runnable {
+        Distribution distr;
 
-        public void run() {
-  		  	try {
-	        	if (distr.isDirtyCalculation()) {
-	        		logP += distr.calculateLogP();
-	        	} else {
-	        		logP += distr.getCurrentLogP();
-	        	}
-  		  	} catch (Exception e) {
-  		  		System.err.println("Something went wrong in a calculation of " + distr.getID());
-				e.printStackTrace();
-				System.exit(0);
-			}
-  		    m_nCountDown.countDown();
+        CoreRunnable(Distribution core) {
+            distr = core;
         }
 
-	} // CoreRunnable
+        public void run() {
+            try {
+                if (distr.isDirtyCalculation()) {
+                    logP += distr.calculateLogP();
+                } else {
+                    logP += distr.getCurrentLogP();
+                }
+            } catch (Exception e) {
+                System.err.println("Something went wrong in a calculation of " + distr.getID());
+                e.printStackTrace();
+                System.exit(0);
+            }
+            m_nCountDown.countDown();
+        }
 
-	CountDownLatch m_nCountDown;
-	
+    } // CoreRunnable
+
+    CountDownLatch m_nCountDown;
+
     private double calculateLogPUsingThreads() throws Exception {
-		try {
+        try {
 
-			int nrOfDirtyDistrs = 0;
-	        for(Distribution dists : pDistributions.get()) {
-	        	if (dists.isDirtyCalculation()) {
-	        		nrOfDirtyDistrs++;
-	        	}
-	        }			
-			m_nCountDown = new CountDownLatch(nrOfDirtyDistrs);
-			// kick off the threads
-	        for(Distribution dists : pDistributions.get()) {
-	        	if (dists.isDirtyCalculation()) {
-	        		CoreRunnable coreRunnable = new CoreRunnable(dists);
-	        		BeastMCMC.g_exec.execute(coreRunnable);
-	        	}
-	    	}
-			m_nCountDown.await();
-			logP = 0;
-	        for(Distribution distr : pDistributions.get()) {
-        		logP += distr.getCurrentLogP();
-	        }
-	        return logP;
-		} catch (RejectedExecutionException e) {
-			useThreads = false;
-			System.err.println("Stop using threads: " + e.getMessage());
-			// refresh thread pool
-			BeastMCMC.g_exec = Executors.newFixedThreadPool(BeastMCMC.m_nThreads);
-			return calculateLogP();
-		}
+            int nrOfDirtyDistrs = 0;
+            for (Distribution dists : pDistributions.get()) {
+                if (dists.isDirtyCalculation()) {
+                    nrOfDirtyDistrs++;
+                }
+            }
+            m_nCountDown = new CountDownLatch(nrOfDirtyDistrs);
+            // kick off the threads
+            for (Distribution dists : pDistributions.get()) {
+                if (dists.isDirtyCalculation()) {
+                    CoreRunnable coreRunnable = new CoreRunnable(dists);
+                    BeastMCMC.g_exec.execute(coreRunnable);
+                }
+            }
+            m_nCountDown.await();
+            logP = 0;
+            for (Distribution distr : pDistributions.get()) {
+                logP += distr.getCurrentLogP();
+            }
+            return logP;
+        } catch (RejectedExecutionException e) {
+            useThreads = false;
+            System.err.println("Stop using threads: " + e.getMessage());
+            // refresh thread pool
+            BeastMCMC.g_exec = Executors.newFixedThreadPool(BeastMCMC.m_nThreads);
+            return calculateLogP();
+        }
     }
-    
 
 
-	@Override
+    @Override
     public void sample(State state, Random random) {
-        for(Distribution distribution : pDistributions.get()) {
+        for (Distribution distribution : pDistributions.get()) {
             distribution.sample(state, random);
         }
     }
@@ -159,7 +162,7 @@ public class CompoundDistribution extends Distribution {
     @Override
     public List<String> getArguments() {
         List<String> arguments = new ArrayList<String>();
-        for(Distribution distribution : pDistributions.get()) {
+        for (Distribution distribution : pDistributions.get()) {
             arguments.addAll(distribution.getArguments());
         }
         return arguments;
@@ -168,7 +171,7 @@ public class CompoundDistribution extends Distribution {
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<String>();
-        for(Distribution distribution : pDistributions.get()) {
+        for (Distribution distribution : pDistributions.get()) {
             conditions.addAll(distribution.getConditions());
         }
         return conditions;

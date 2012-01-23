@@ -1,7 +1,9 @@
 package beast.evolution.likelihood;
 
 
-/** standard likelihood core, uses no caching **/
+/**
+ * standard likelihood core, uses no caching *
+ */
 public class BeerLikelihoodCore extends LikelihoodCore {
     protected int m_nStates;
     protected int m_nNodes;
@@ -30,372 +32,365 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     private double m_fScalingThreshold = 1.0E-100;
     double SCALE = 2;
 
-	public BeerLikelihoodCore(int nStateCount) {
-		this.m_nStates = nStateCount;
-	} // c'tor
-	
+    public BeerLikelihoodCore(int nStateCount) {
+        this.m_nStates = nStateCount;
+    } // c'tor
 
-	/**
-	 * Calculates partial likelihoods at a node when both children have states.
-	 */
-	protected void calculateStatesStatesPruning(int[] iStates1, double[] fMatrices1,
-												int[] iStates2, double[] fMatrices2,
-												double[] fPartials3)
-	{
-		int v = 0;
 
-		for (int l = 0; l < m_nMatrices; l++) {
+    /**
+     * Calculates partial likelihoods at a node when both children have states.
+     */
+    protected void calculateStatesStatesPruning(int[] iStates1, double[] fMatrices1,
+                                                int[] iStates2, double[] fMatrices2,
+                                                double[] fPartials3) {
+        int v = 0;
 
-			for (int k = 0; k < m_nPatterns; k++) {
+        for (int l = 0; l < m_nMatrices; l++) {
 
-				int state1 = iStates1[k];
-				int state2 = iStates2[k];
+            for (int k = 0; k < m_nPatterns; k++) {
 
-				int w = l * m_nMatrixSize;
+                int state1 = iStates1[k];
+                int state2 = iStates2[k];
+
+                int w = l * m_nMatrixSize;
 
                 if (state1 < m_nStates && state2 < m_nStates) {
 
-					for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < m_nStates; i++) {
 
-						fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
+                        fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
 
-						v++;
-						w += m_nStates;
-					}
+                        v++;
+                        w += m_nStates;
+                    }
 
-				} else if (state1 < m_nStates) {
-					// child 2 has a gap or unknown state so treat it as unknown
+                } else if (state1 < m_nStates) {
+                    // child 2 has a gap or unknown state so treat it as unknown
 
-					for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < m_nStates; i++) {
 
-						fPartials3[v] = fMatrices1[w + state1];
+                        fPartials3[v] = fMatrices1[w + state1];
 
-						v++;
-						w += m_nStates;
-					}
-				} else if (state2 < m_nStates) {
-					// child 2 has a gap or unknown state so treat it as unknown
+                        v++;
+                        w += m_nStates;
+                    }
+                } else if (state2 < m_nStates) {
+                    // child 2 has a gap or unknown state so treat it as unknown
 
-					for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < m_nStates; i++) {
 
-						fPartials3[v] = fMatrices2[w + state2];
+                        fPartials3[v] = fMatrices2[w + state2];
 
-						v++;
-						w += m_nStates;
-					}
-				} else {
-					// both children have a gap or unknown state so set partials to 1
+                        v++;
+                        w += m_nStates;
+                    }
+                } else {
+                    // both children have a gap or unknown state so set partials to 1
 
-					for (int j = 0; j < m_nStates; j++) {
-						fPartials3[v] = 1.0;
-						v++;
-					}
-				}
-			}
-		}
-	}
+                    for (int j = 0; j < m_nStates; j++) {
+                        fPartials3[v] = 1.0;
+                        v++;
+                    }
+                }
+            }
+        }
+    }
 
-	/**
-	 * Calculates partial likelihoods at a node when one child has states and one has partials.
-	 */
-	protected void calculateStatesPartialsPruning(	int[] iStates1, double[] fMatrices1,
-													double[] fPartials2, double[] fMatrices2,
-													double[] fPartials3)
-	{
+    /**
+     * Calculates partial likelihoods at a node when one child has states and one has partials.
+     */
+    protected void calculateStatesPartialsPruning(int[] iStates1, double[] fMatrices1,
+                                                  double[] fPartials2, double[] fMatrices2,
+                                                  double[] fPartials3) {
 
-		double sum, tmp;
+        double sum, tmp;
 
-		int u = 0;
-		int v = 0;
-
-		for (int l = 0; l < m_nMatrices; l++) {
-			for (int k = 0; k < m_nPatterns; k++) {
-
-				int state1 = iStates1[k];
-
-                int w = l * m_nMatrixSize;
-
-				if (state1 < m_nStates) {
-
-
-					for (int i = 0; i < m_nStates; i++) {
-
-						tmp = fMatrices1[w + state1];
-
-						sum = 0.0;
-						for (int j = 0; j < m_nStates; j++) {
-							sum += fMatrices2[w] * fPartials2[v + j];
-							w++;
-						}
-
-						fPartials3[u] = tmp * sum;
-						u++;
-					}
-
-					v += m_nStates;
-				} else {
-					// Child 1 has a gap or unknown state so don't use it
-
-					for (int i = 0; i < m_nStates; i++) {
-
-						sum = 0.0;
-						for (int j = 0; j < m_nStates; j++) {
-							sum += fMatrices2[w] * fPartials2[v + j];
-							w++;
-						}
-
-						fPartials3[u] = sum;
-						u++;
-					}
-
-					v += m_nStates;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Calculates partial likelihoods at a node when both children have partials.
-	 */
-	protected void calculatePartialsPartialsPruning(double[] fPartials1, double[] fMatrices1,
-													double[] fPartials2, double[] fMatrices2,
-													double[] fPartials3)
-	{
-		double sum1, sum2;
-
-		int u = 0;
-		int v = 0;
-
-		for (int l = 0; l < m_nMatrices; l++) {
-
-			for (int k = 0; k < m_nPatterns; k++) {
-
-                int w = l * m_nMatrixSize;
-
-				for (int i = 0; i < m_nStates; i++) {
-
-					sum1 = sum2 = 0.0;
-
-					for (int j = 0; j < m_nStates; j++) {
-						sum1 += fMatrices1[w] * fPartials1[v + j];
-						sum2 += fMatrices2[w] * fPartials2[v + j];
-
-						w++;
-					}
-
-					fPartials3[u] = sum1 * sum2;
-					u++;
-				}
-				v += m_nStates;
-			}
-		}
-	}
-
-	/**
-	 * Calculates partial likelihoods at a node when both children have states.
-	 */
-	protected void calculateStatesStatesPruning(int[] iStates1, double[] fMatrices1,
-												int[] iStates2, double[] fMatrices2,
-												double[] fPartials3, int[] iMatrixMap)
-	{
-		int v = 0;
-
-		for (int k = 0; k < m_nPatterns; k++) {
-
-			int state1 = iStates1[k];
-			int state2 = iStates2[k];
-
-			int w = iMatrixMap[k] * m_nMatrixSize;
-
-			if (state1 < m_nStates && state2 < m_nStates) {
-
-				for (int i = 0; i < m_nStates; i++) {
-
-					fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
-
-					v++;
-					w += m_nStates;
-				}
-
-			} else if (state1 < m_nStates) {
-				// child 2 has a gap or unknown state so treat it as unknown
-
-				for (int i = 0; i < m_nStates; i++) {
-
-					fPartials3[v] = fMatrices1[w + state1];
-
-					v++;
-					w += m_nStates;
-				}
-			} else if (state2 < m_nStates) {
-				// child 2 has a gap or unknown state so treat it as unknown
-
-				for (int i = 0; i < m_nStates; i++) {
-
-					fPartials3[v] = fMatrices2[w + state2];
-
-					v++;
-					w += m_nStates;
-				}
-			} else {
-				// both children have a gap or unknown state so set partials to 1
-
-				for (int j = 0; j < m_nStates; j++) {
-					fPartials3[v] = 1.0;
-					v++;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Calculates partial likelihoods at a node when one child has states and one has partials.
-	 */
-	protected void calculateStatesPartialsPruning(	int[] iStates1, double[] fMatrices1,
-													double[] fPartials2, double[] fMatrices2,
-													double[] fPartials3, int[] iMatrixMap)
-	{
-
-		double sum, tmp;
-
-		int u = 0;
-		int v = 0;
-
-		for (int k = 0; k < m_nPatterns; k++) {
-
-			int state1 = iStates1[k];
-
-			int w = iMatrixMap[k] * m_nMatrixSize;
-
-			if (state1 < m_nStates) {
-
-				for (int i = 0; i < m_nStates; i++) {
-
-					tmp = fMatrices1[w + state1];
-
-					sum = 0.0;
-					for (int j = 0; j < m_nStates; j++) {
-						sum += fMatrices2[w] * fPartials2[v + j];
-						w++;
-					}
-
-					fPartials3[u] = tmp * sum;
-					u++;
-				}
-
-				v += m_nStates;
-			} else {
-				// Child 1 has a gap or unknown state so don't use it
-
-				for (int i = 0; i < m_nStates; i++) {
-
-					sum = 0.0;
-					for (int j = 0; j < m_nStates; j++) {
-						sum += fMatrices2[w] * fPartials2[v + j];
-						w++;
-					}
-
-					fPartials3[u] = sum;
-					u++;
-				}
-
-				v += m_nStates;
-			}
-		}
-	}
-
-	/**
-	 * Calculates partial likelihoods at a node when both children have partials.
-	 */
-	protected void calculatePartialsPartialsPruning(double[] fPartials1, double[] fMatrices1,
-													double[] fPartials2, double[] fMatrices2,
-													double[] fPartials3, int[] iMatrixMap)
-	{
-		double sum1, sum2;
-
-		int u = 0;
-		int v = 0;
-
-		for (int k = 0; k < m_nPatterns; k++) {
-
-			int w = iMatrixMap[k] * m_nMatrixSize;
-
-			for (int i = 0; i < m_nStates; i++) {
-
-				sum1 = sum2 = 0.0;
-
-				for (int j = 0; j < m_nStates; j++) {
-					sum1 += fMatrices1[w] * fPartials1[v + j];
-					sum2 += fMatrices2[w] * fPartials2[v + j];
-
-					w++;
-				}
-
-				fPartials3[u] = sum1 * sum2;
-				u++;
-			}
-			v += m_nStates;
-		}
-	}
-
-	/**
-	 * Integrates partials across categories.
-     * @param fInPartials the array of partials to be integrated
-	 * @param fProportions the proportions of sites in each category
-	 * @param fOutPartials an array into which the partials will go
-	 */
-	protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials)
-	{
-
-		int u = 0;
-		int v = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
-
-			for (int i = 0; i < m_nStates; i++) {
-
-				fOutPartials[u] = fInPartials[v] * fProportions[0];
-				u++;
-				v++;
-			}
-		}
-
-
-		for (int l = 1; l < m_nMatrices; l++) {
-			u = 0;
-
-			for (int k = 0; k < m_nPatterns; k++) {
-
-				for (int i = 0; i < m_nStates; i++) {
-
-					fOutPartials[u] += fInPartials[v] * fProportions[l];
-					u++;
-					v++;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Calculates pattern log likelihoods at a node.
-	 * @param fPartials the partials used to calculate the likelihoods
-	 * @param fFrequencies an array of state frequencies
-	 * @param fOutLogLikelihoods an array into which the likelihoods will go
-	 */
-	public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods)
-	{
+        int u = 0;
         int v = 0;
-		for (int k = 0; k < m_nPatterns; k++) {
+
+        for (int l = 0; l < m_nMatrices; l++) {
+            for (int k = 0; k < m_nPatterns; k++) {
+
+                int state1 = iStates1[k];
+
+                int w = l * m_nMatrixSize;
+
+                if (state1 < m_nStates) {
+
+
+                    for (int i = 0; i < m_nStates; i++) {
+
+                        tmp = fMatrices1[w + state1];
+
+                        sum = 0.0;
+                        for (int j = 0; j < m_nStates; j++) {
+                            sum += fMatrices2[w] * fPartials2[v + j];
+                            w++;
+                        }
+
+                        fPartials3[u] = tmp * sum;
+                        u++;
+                    }
+
+                    v += m_nStates;
+                } else {
+                    // Child 1 has a gap or unknown state so don't use it
+
+                    for (int i = 0; i < m_nStates; i++) {
+
+                        sum = 0.0;
+                        for (int j = 0; j < m_nStates; j++) {
+                            sum += fMatrices2[w] * fPartials2[v + j];
+                            w++;
+                        }
+
+                        fPartials3[u] = sum;
+                        u++;
+                    }
+
+                    v += m_nStates;
+                }
+            }
+        }
+    }
+
+    /**
+     * Calculates partial likelihoods at a node when both children have partials.
+     */
+    protected void calculatePartialsPartialsPruning(double[] fPartials1, double[] fMatrices1,
+                                                    double[] fPartials2, double[] fMatrices2,
+                                                    double[] fPartials3) {
+        double sum1, sum2;
+
+        int u = 0;
+        int v = 0;
+
+        for (int l = 0; l < m_nMatrices; l++) {
+
+            for (int k = 0; k < m_nPatterns; k++) {
+
+                int w = l * m_nMatrixSize;
+
+                for (int i = 0; i < m_nStates; i++) {
+
+                    sum1 = sum2 = 0.0;
+
+                    for (int j = 0; j < m_nStates; j++) {
+                        sum1 += fMatrices1[w] * fPartials1[v + j];
+                        sum2 += fMatrices2[w] * fPartials2[v + j];
+
+                        w++;
+                    }
+
+                    fPartials3[u] = sum1 * sum2;
+                    u++;
+                }
+                v += m_nStates;
+            }
+        }
+    }
+
+    /**
+     * Calculates partial likelihoods at a node when both children have states.
+     */
+    protected void calculateStatesStatesPruning(int[] iStates1, double[] fMatrices1,
+                                                int[] iStates2, double[] fMatrices2,
+                                                double[] fPartials3, int[] iMatrixMap) {
+        int v = 0;
+
+        for (int k = 0; k < m_nPatterns; k++) {
+
+            int state1 = iStates1[k];
+            int state2 = iStates2[k];
+
+            int w = iMatrixMap[k] * m_nMatrixSize;
+
+            if (state1 < m_nStates && state2 < m_nStates) {
+
+                for (int i = 0; i < m_nStates; i++) {
+
+                    fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
+
+                    v++;
+                    w += m_nStates;
+                }
+
+            } else if (state1 < m_nStates) {
+                // child 2 has a gap or unknown state so treat it as unknown
+
+                for (int i = 0; i < m_nStates; i++) {
+
+                    fPartials3[v] = fMatrices1[w + state1];
+
+                    v++;
+                    w += m_nStates;
+                }
+            } else if (state2 < m_nStates) {
+                // child 2 has a gap or unknown state so treat it as unknown
+
+                for (int i = 0; i < m_nStates; i++) {
+
+                    fPartials3[v] = fMatrices2[w + state2];
+
+                    v++;
+                    w += m_nStates;
+                }
+            } else {
+                // both children have a gap or unknown state so set partials to 1
+
+                for (int j = 0; j < m_nStates; j++) {
+                    fPartials3[v] = 1.0;
+                    v++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Calculates partial likelihoods at a node when one child has states and one has partials.
+     */
+    protected void calculateStatesPartialsPruning(int[] iStates1, double[] fMatrices1,
+                                                  double[] fPartials2, double[] fMatrices2,
+                                                  double[] fPartials3, int[] iMatrixMap) {
+
+        double sum, tmp;
+
+        int u = 0;
+        int v = 0;
+
+        for (int k = 0; k < m_nPatterns; k++) {
+
+            int state1 = iStates1[k];
+
+            int w = iMatrixMap[k] * m_nMatrixSize;
+
+            if (state1 < m_nStates) {
+
+                for (int i = 0; i < m_nStates; i++) {
+
+                    tmp = fMatrices1[w + state1];
+
+                    sum = 0.0;
+                    for (int j = 0; j < m_nStates; j++) {
+                        sum += fMatrices2[w] * fPartials2[v + j];
+                        w++;
+                    }
+
+                    fPartials3[u] = tmp * sum;
+                    u++;
+                }
+
+                v += m_nStates;
+            } else {
+                // Child 1 has a gap or unknown state so don't use it
+
+                for (int i = 0; i < m_nStates; i++) {
+
+                    sum = 0.0;
+                    for (int j = 0; j < m_nStates; j++) {
+                        sum += fMatrices2[w] * fPartials2[v + j];
+                        w++;
+                    }
+
+                    fPartials3[u] = sum;
+                    u++;
+                }
+
+                v += m_nStates;
+            }
+        }
+    }
+
+    /**
+     * Calculates partial likelihoods at a node when both children have partials.
+     */
+    protected void calculatePartialsPartialsPruning(double[] fPartials1, double[] fMatrices1,
+                                                    double[] fPartials2, double[] fMatrices2,
+                                                    double[] fPartials3, int[] iMatrixMap) {
+        double sum1, sum2;
+
+        int u = 0;
+        int v = 0;
+
+        for (int k = 0; k < m_nPatterns; k++) {
+
+            int w = iMatrixMap[k] * m_nMatrixSize;
+
+            for (int i = 0; i < m_nStates; i++) {
+
+                sum1 = sum2 = 0.0;
+
+                for (int j = 0; j < m_nStates; j++) {
+                    sum1 += fMatrices1[w] * fPartials1[v + j];
+                    sum2 += fMatrices2[w] * fPartials2[v + j];
+
+                    w++;
+                }
+
+                fPartials3[u] = sum1 * sum2;
+                u++;
+            }
+            v += m_nStates;
+        }
+    }
+
+    /**
+     * Integrates partials across categories.
+     *
+     * @param fInPartials  the array of partials to be integrated
+     * @param fProportions the proportions of sites in each category
+     * @param fOutPartials an array into which the partials will go
+     */
+    protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials) {
+
+        int u = 0;
+        int v = 0;
+        for (int k = 0; k < m_nPatterns; k++) {
+
+            for (int i = 0; i < m_nStates; i++) {
+
+                fOutPartials[u] = fInPartials[v] * fProportions[0];
+                u++;
+                v++;
+            }
+        }
+
+
+        for (int l = 1; l < m_nMatrices; l++) {
+            u = 0;
+
+            for (int k = 0; k < m_nPatterns; k++) {
+
+                for (int i = 0; i < m_nStates; i++) {
+
+                    fOutPartials[u] += fInPartials[v] * fProportions[l];
+                    u++;
+                    v++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Calculates pattern log likelihoods at a node.
+     *
+     * @param fPartials          the partials used to calculate the likelihoods
+     * @param fFrequencies       an array of state frequencies
+     * @param fOutLogLikelihoods an array into which the likelihoods will go
+     */
+    public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods) {
+        int v = 0;
+        for (int k = 0; k < m_nPatterns; k++) {
 
             double sum = 0.0;
-			for (int i = 0; i < m_nStates; i++) {
+            for (int i = 0; i < m_nStates; i++) {
 
-				sum += fFrequencies[i] * fPartials[v];
-				v++;
-			}
+                sum += fFrequencies[i] * fPartials[v];
+                v++;
+            }
             fOutLogLikelihoods[k] = Math.log(sum) + getLogScalingFactor(k);
-		}
-	}
-
+        }
+    }
 
 
     /**
@@ -445,7 +440,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * cleans up and deallocates arrays.
      */
-    public void finalize() throws java.lang.Throwable  {
+    public void finalize() throws java.lang.Throwable {
         m_nNodes = 0;
         m_nPatterns = 0;
         m_nMatrices = 0;
@@ -462,8 +457,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     }
 
     @Override
-    public void setUseScaling(double  fScale) {
-   		m_bUseScaling = (fScale != 1.0);
+    public void setUseScaling(double fScale) {
+        m_bUseScaling = (fScale != 1.0);
 
         if (m_bUseScaling) {
             m_fScalingFactors = new double[2][m_nNodes][m_nPatterns];
@@ -500,9 +495,9 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 
     @Override
     public void getNodePartials(int iNodeIndex, double[] fPartials) {
-    	System.arraycopy(m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex], 0, fPartials, 0, fPartials.length);
+        System.arraycopy(m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex], 0, fPartials, 0, fPartials.length);
     }
-    
+
     /**
      * Allocates states for a node
      */
@@ -528,7 +523,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     public void getNodeStates(int iNodeIndex, int[] iStates) {
         System.arraycopy(this.m_iStates[iNodeIndex], 0, iStates, 0, m_nPatterns);
     }
-    
+
     @Override
     public void setNodeMatrixForUpdate(int iNodeIndex) {
         m_iCurrentMatrices[iNodeIndex] = 1 - m_iCurrentMatrices[iNodeIndex];
@@ -544,12 +539,11 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                 iMatrixIndex * m_nMatrixSize, m_nMatrixSize);
     }
 
-	public void setPaddedNodeMatrices(int iNode, double[] fMatrix) {
+    public void setPaddedNodeMatrices(int iNode, double[] fMatrix) {
         System.arraycopy(fMatrix, 0, m_fMatrices[m_iCurrentMatrices[iNode]][iNode],
                 0, m_nMatrices * m_nMatrixSize);
     }
-    
-    
+
 
     /**
      * Gets probability matrix for a node
@@ -671,7 +665,6 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     }
 
 
-
     public void integratePartials(int iNodeIndex, double[] fProportions, double[] fOutPartials) {
         calculateIntegratePartials(m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex], fProportions, fOutPartials);
     }
@@ -753,7 +746,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //    	} else {
 //    		return 0;
 //    	}        
-    	double logScalingFactor = 0.0;
+        double logScalingFactor = 0.0;
         if (m_bUseScaling) {
             for (int i = 0; i < m_nNodes; i++) {
                 logScalingFactor += m_fScalingFactors[m_iCurrentPartials[i]][i][iPattern];
@@ -777,8 +770,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Store current state
      */
-	@Override
-	public void restore() {
+    @Override
+    public void restore() {
         // Rather than copying the stored stuff back, just swap the pointers...
         int[] iTmp1 = m_iCurrentMatrices;
         m_iCurrentMatrices = m_iStoredMatrices;
@@ -793,12 +786,12 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         System.arraycopy(m_iStoredMatrices, 0, m_iCurrentMatrices, 0, m_nNodes);
         System.arraycopy(m_iStoredPartials, 0, m_iCurrentPartials, 0, m_nNodes);
     }
-    
+
     /**
      * Restore the stored state
      */
-	@Override
-	public void store() {
+    @Override
+    public void store() {
         System.arraycopy(m_iCurrentMatrices, 0, m_iStoredMatrices, 0, m_nNodes);
         System.arraycopy(m_iCurrentPartials, 0, m_iStoredPartials, 0, m_nNodes);
     }

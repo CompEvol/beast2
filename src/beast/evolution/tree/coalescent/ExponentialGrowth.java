@@ -39,9 +39,9 @@ import java.util.List;
 @Description("Coalescent intervals for a exponentially growing population.")
 public class ExponentialGrowth extends PopulationFunction.Abstract {
     public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize",
-    		"present-day population size (defaults to 1.0). ");
-    public Input<RealParameter> growthRateParameter = new Input<RealParameter>("growthRate", 
-    		"growth rate is the exponent of the exponential growth");
+            "present-day population size (defaults to 1.0). ");
+    public Input<RealParameter> growthRateParameter = new Input<RealParameter>("growthRate",
+            "growth rate is the exponent of the exponential growth");
 
     //
     // Public stuff
@@ -99,7 +99,6 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
 //    }
 
     // Implementation of abstract methods
-
     public double getPopSize(double t) {
 
         double r = getGrowthRate();

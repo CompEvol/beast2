@@ -70,7 +70,7 @@ public class SubtreeSlide extends TreeOperator {
 
     public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
     public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
-    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise","flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
+    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
 
     // shadows m_size
     double m_fSize;
@@ -83,7 +83,8 @@ public class SubtreeSlide extends TreeOperator {
     /**
      * Do a probabilistic subtree slide move.
      *
-	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
+     * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted *
+     */
     @Override
     public double proposal() {
         Tree tree = m_tree.get(this);
@@ -210,7 +211,7 @@ public class SubtreeSlide extends TreeOperator {
         }
     }
 
-    private int intersectingEdges(Node node, double height, List<Node> directChildren) { 
+    private int intersectingEdges(Node node, double height, List<Node> directChildren) {
         final Node parent = node.getParent();
 
         if (parent.getHeight() < height) return 0;
@@ -235,11 +236,11 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public void optimize(double logAlpha) {
-    	if (m_bOptimise.get()) {
-	        double fDelta = calcDelta(logAlpha);
-	        fDelta += Math.log(m_fSize);
-	        m_fSize = Math.exp(fDelta);
-    	}
+        if (m_bOptimise.get()) {
+            double fDelta = calcDelta(logAlpha);
+            fDelta += Math.log(m_fSize);
+            m_fSize = Math.exp(fDelta);
+        }
     }
 
     @Override
@@ -249,12 +250,12 @@ public class SubtreeSlide extends TreeOperator {
 
     @Override
     public void setCoercableParameterValue(double fValue) {
-    	m_fSize = fValue;
+        m_fSize = fValue;
     }
-    
+
     @Override
     public String getPerformanceSuggestion() {
-        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
         double targetProb = getTargetAcceptanceProbability();
 
         double ratio = prob / targetProb;
@@ -270,5 +271,5 @@ public class SubtreeSlide extends TreeOperator {
             return "Try increasing size to about " + newDelta;
         } else return "";
     }
-    
+
 }

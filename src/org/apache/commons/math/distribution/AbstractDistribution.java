@@ -27,9 +27,11 @@ import org.apache.commons.math.MathRuntimeException;
  * @version $Revision: 811685 $ $Date: 2009-09-05 13:36:48 -0400 (Sat, 05 Sep 2009) $
  */
 public abstract class AbstractDistribution
-    implements Distribution, Serializable {
+        implements Distribution, Serializable {
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -38038050983108802L;
 
     /**
@@ -50,18 +52,18 @@ public abstract class AbstractDistribution
      * @param x0 the (inclusive) lower bound
      * @param x1 the (inclusive) upper bound
      * @return the probability that a random variable with this distribution
-     * will take a value between <code>x0</code> and <code>x1</code>,
-     * including the endpoints.
-     * @throws MathException if the cumulative probability can not be
-     * computed due to convergence or other numerical errors.
+     *         will take a value between <code>x0</code> and <code>x1</code>,
+     *         including the endpoints.
+     * @throws MathException            if the cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>x0 > x1</code>
      */
     public double cumulativeProbability(double x0, double x1)
-        throws MathException {
+            throws MathException {
         if (x0 > x1) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "lower endpoint ({0}) must be less than or equal to upper endpoint ({1})",
-                  x0, x1);
+                    "lower endpoint ({0}) must be less than or equal to upper endpoint ({1})",
+                    x0, x1);
         }
         return cumulativeProbability(x1) - cumulativeProbability(x0);
     }

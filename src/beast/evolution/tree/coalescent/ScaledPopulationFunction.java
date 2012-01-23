@@ -17,13 +17,14 @@ import java.util.List;
 @Description("Scale a demographic function by a constant factor")
 public class ScaledPopulationFunction extends PopulationFunction.Abstract {
     public Input<PopulationFunction> popParameter = new Input<PopulationFunction>("population",
-    		"population function to scale. ", Validate.REQUIRED);
+            "population function to scale. ", Validate.REQUIRED);
 
     public Input<RealParameter> scaleFactor = new Input<RealParameter>("factor",
-    		"scale population by this facor.", Validate.REQUIRED);
+            "scale population by this facor.", Validate.REQUIRED);
 
-    public ScaledPopulationFunction() {}
-    
+    public ScaledPopulationFunction() {
+    }
+
     // Implementation of abstract methods
 
     public List<String> getParameterIds() {
@@ -37,17 +38,17 @@ public class ScaledPopulationFunction extends PopulationFunction.Abstract {
     }
 
     public double getIntensity(double t) {
-    	double fIntensity =  popParameter.get().getIntensity(t);
-    	double fScale = scaleFactor.get().getValue(); 
-        return fIntensity / fScale ;
+        double fIntensity = popParameter.get().getIntensity(t);
+        double fScale = scaleFactor.get().getValue();
+        return fIntensity / fScale;
     }
 
     public double getInverseIntensity(double x) {
-         throw new RuntimeException("unimplemented");
+        throw new RuntimeException("unimplemented");
     }
 
     @Override
     protected boolean requiresRecalculation() {
-        return ((CalculationNode)popParameter.get()).isDirtyCalculation() || scaleFactor.get().somethingIsDirty();
+        return ((CalculationNode) popParameter.get()).isDirtyCalculation() || scaleFactor.get().somethingIsDirty();
     }
 }

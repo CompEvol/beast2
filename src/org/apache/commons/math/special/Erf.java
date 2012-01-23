@@ -35,7 +35,7 @@ public class Erf {
 
     /**
      * Returns the error function erf(x).
-     *
+     * <p/>
      * The implementation of this method is based on:
      * <ul>
      * <li>

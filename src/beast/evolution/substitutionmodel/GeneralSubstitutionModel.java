@@ -42,52 +42,56 @@ import beast.evolution.tree.Node;
 public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     public Input<Valuable> m_rates =
             new Input<Valuable>("rates", "Rate parameter which defines the transition rate matrix. " +
-            		"Only the off-diagonal entries need to be specified (diagonal makes row sum to zero in a " +
-            		"rate matrix). Entry i specifies the rate of from i%n to floor(i/(n-1)) where " +
-            		"n is the number of states.", Validate.REQUIRED);
+                    "Only the off-diagonal entries need to be specified (diagonal makes row sum to zero in a " +
+                    "rate matrix). Entry i specifies the rate of from i%n to floor(i/(n-1)) where " +
+                    "n is the number of states.", Validate.REQUIRED);
 
-    public Input<String> eigenSystemClass = new Input<String>("eigenSystem","Name of the class used for creating an EigenSystem", DefaultEigenSystem.class.getName());
-    /** a square m_nStates x m_nStates matrix containing current rates  **/
-    double [][] m_rateMatrix;
-    
-    
+    public Input<String> eigenSystemClass = new Input<String>("eigenSystem", "Name of the class used for creating an EigenSystem", DefaultEigenSystem.class.getName());
+    /**
+     * a square m_nStates x m_nStates matrix containing current rates  *
+     */
+    double[][] m_rateMatrix;
+
+
     @Override
     public void initAndValidate() throws Exception {
-    	super.initAndValidate();
+        super.initAndValidate();
         updateMatrix = true;
         m_nStates = m_frequencies.getFreqs().length;
-        if (m_rates.get().getDimension() != m_nStates * (m_nStates-1)) {
-        	throw new Exception("Dimension of input 'rates' is " + m_rates.get().getDimension() + " but a " +
-        			"rate matrix of dimension " + m_nStates + "x" + (m_nStates -1) + "=" + m_nStates * (m_nStates -1) + " was " +
-        			"expected");
+        if (m_rates.get().getDimension() != m_nStates * (m_nStates - 1)) {
+            throw new Exception("Dimension of input 'rates' is " + m_rates.get().getDimension() + " but a " +
+                    "rate matrix of dimension " + m_nStates + "x" + (m_nStates - 1) + "=" + m_nStates * (m_nStates - 1) + " was " +
+                    "expected");
         }
-        
+
         eigenSystem = createEigenSystem();
         //eigenSystem = new DefaultEigenSystem(m_nStates);
-        
+
         m_rateMatrix = new double[m_nStates][m_nStates];
         relativeRates = new double[m_rates.get().getDimension()];
         storedRelativeRates = new double[m_rates.get().getDimension()];
     } // initAndValidate
 
-    /** create an EigenSystem of the class indicated by the eigenSystemClass input **/
+    /**
+     * create an EigenSystem of the class indicated by the eigenSystemClass input *
+     */
     protected EigenSystem createEigenSystem() throws Exception {
         Constructor<?>[] ctors = Class.forName(eigenSystemClass.get()).getDeclaredConstructors();
-    	Constructor<?> ctor = null;
-    	for (int i = 0; i < ctors.length; i++) {
-    	    ctor = ctors[i];
-    	    if (ctor.getGenericParameterTypes().length == 1)
-    		break;
-    	}
-   	    ctor.setAccessible(true);
-   	    return (EigenSystem)ctor.newInstance(m_nStates);
+        Constructor<?> ctor = null;
+        for (int i = 0; i < ctors.length; i++) {
+            ctor = ctors[i];
+            if (ctor.getGenericParameterTypes().length == 1)
+                break;
+        }
+        ctor.setAccessible(true);
+        return (EigenSystem) ctor.newInstance(m_nStates);
     }
 
     protected double[] relativeRates;
     protected double[] storedRelativeRates;
 
     protected EigenSystem eigenSystem;
-    
+
     protected EigenDecomposition eigenDecomposition;
     private EigenDecomposition storedEigenDecomposition;
 
@@ -96,8 +100,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
     @Override
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
-    	double distance = (fStartTime - fEndTime) * fRate;
-    	
+        double distance = (fStartTime - fEndTime) * fRate;
+
         int i, j, k;
         double temp;
 
@@ -105,10 +109,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         // two different likelihood threads - AJD
         synchronized (this) {
             if (updateMatrix) {
-            	setupRelativeRates();
-            	setupRateMatrix();
-            	eigenDecomposition = eigenSystem.decomposeMatrix(m_rateMatrix);
-            	updateMatrix = false;
+                setupRelativeRates();
+                setupRateMatrix();
+                eigenDecomposition = eigenSystem.decomposeMatrix(m_rateMatrix);
+                updateMatrix = false;
             }
         }
 
@@ -144,33 +148,39 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         }
     } // getTransitionProbabilities
 
-    /** access to (copy of) rate matrix **/
-    protected double [][] getRateMatrix() {return m_rateMatrix.clone();}
-    
-    protected void setupRelativeRates() {
-    	Valuable rates = m_rates.get();
-    	for (int i = 0; i < rates.getDimension(); i++) {
-    		relativeRates[i] = rates.getArrayValue(i);
-    	}
+    /**
+     * access to (copy of) rate matrix *
+     */
+    protected double[][] getRateMatrix() {
+        return m_rateMatrix.clone();
     }
 
-    /** sets up rate matrix **/
+    protected void setupRelativeRates() {
+        Valuable rates = m_rates.get();
+        for (int i = 0; i < rates.getDimension(); i++) {
+            relativeRates[i] = rates.getArrayValue(i);
+        }
+    }
+
+    /**
+     * sets up rate matrix *
+     */
     protected void setupRateMatrix() {
-    	double [] fFreqs = m_frequencies.getFreqs();
-	    for (int i = 0; i < m_nStates; i++) {
-	    	m_rateMatrix[i][i] = 0;
-		    for (int j = 0; j < i; j++) {
-		    	m_rateMatrix[i][j] = relativeRates[i * (m_nStates -1) + j];
-		    }
-		    for (int j = i+1; j < m_nStates; j++) {
-		    	m_rateMatrix[i][j] = relativeRates[i * (m_nStates -1) + j-1];
-		    }
-	    }
-	    // bring in frequencies
+        double[] fFreqs = m_frequencies.getFreqs();
+        for (int i = 0; i < m_nStates; i++) {
+            m_rateMatrix[i][i] = 0;
+            for (int j = 0; j < i; j++) {
+                m_rateMatrix[i][j] = relativeRates[i * (m_nStates - 1) + j];
+            }
+            for (int j = i + 1; j < m_nStates; j++) {
+                m_rateMatrix[i][j] = relativeRates[i * (m_nStates - 1) + j - 1];
+            }
+        }
+        // bring in frequencies
         for (int i = 0; i < m_nStates; i++) {
             for (int j = i + 1; j < m_nStates; j++) {
-            	m_rateMatrix[i][j] *= fFreqs[j];
-            	m_rateMatrix[j][i] *= fFreqs[i];
+                m_rateMatrix[i][j] *= fFreqs[j];
+                m_rateMatrix[j][i] *= fFreqs[i];
             }
         }
         // set up diagonal
@@ -189,20 +199,21 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
         for (int i = 0; i < m_nStates; i++) {
             for (int j = 0; j < m_nStates; j++) {
-            	m_rateMatrix[i][j] = m_rateMatrix[i][j] / fSubst;
+                m_rateMatrix[i][j] = m_rateMatrix[i][j] / fSubst;
             }
-        }        
-	} // setupRateMatrix
+        }
+    } // setupRateMatrix
 
-    
 
-    /** CalculationNode implementation follows **/
+    /**
+     * CalculationNode implementation follows *
+     */
     @Override
     public void store() {
         storedUpdateMatrix = updateMatrix;
         storedEigenDecomposition = eigenDecomposition.copy();
 //        System.arraycopy(relativeRates, 0, storedRelativeRates, 0, relativeRates.length);
-        
+
         super.store();
     }
 
@@ -228,13 +239,12 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
     @Override
     protected boolean requiresRecalculation() {
-    	// we only get here if something is dirty
+        // we only get here if something is dirty
         updateMatrix = true;
-    	return true;
+        return true;
     }
 
-    
-    
+
     /**
      * This function returns the Eigen vectors.
      *
@@ -244,21 +254,21 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     public EigenDecomposition getEigenDecomposition(Node node) {
         synchronized (this) {
             if (updateMatrix) {
-            	setupRelativeRates();
+                setupRelativeRates();
                 setupRateMatrix();
                 eigenDecomposition = eigenSystem.decomposeMatrix(m_rateMatrix);
                 updateMatrix = false;
             }
         }
         return eigenDecomposition;
-    }    
+    }
 
     @Override
     public boolean canHandleDataType(DataType dataType) throws Exception {
-    	if (dataType.getStateCount() == Integer.MAX_VALUE) {
-    		return false;
-    	}
-	   return true;
+        if (dataType.getStateCount() == Integer.MAX_VALUE) {
+            return false;
+        }
+        return true;
     }
 
 } // class GeneralSubstitutionModel

@@ -20,7 +20,7 @@ import org.apache.commons.math.MathException;
 
 /**
  * <p>Base interface for continuous distributions.</p>
- *
+ * <p/>
  * <p>Note: this interface will be extended in version 3.0 to include
  * <br/><code>public double density(double x)</code><br/> RRB: already added this.
  * that is, from version 3.0 forward, continuous distributions <strong>must</strong>
@@ -34,18 +34,21 @@ public interface ContinuousDistribution extends Distribution {
 
     /**
      * For this distribution, X, this method returns x such that P(X &lt; x) = p.
+     *
      * @param p the cumulative probability.
      * @return x.
      * @throws MathException if the inverse cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
     double inverseCumulativeProbability(double p) throws MathException;
-    
+
     /**
      * Return the probability density for a particular point.
-     * @param x  The point at which the density should be computed.
-     * @return  The pdf at point x.
-     */    
+     *
+     * @param x The point at which the density should be computed.
+     * @return The pdf at point x.
+     */
     double density(double x);
+
     double logDensity(double x);// {return Math.log(density(x));
 }

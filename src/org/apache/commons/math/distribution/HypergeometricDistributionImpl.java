@@ -30,28 +30,36 @@ import org.apache.commons.math.util.MathUtils;
 public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
         implements HypergeometricDistribution, Serializable {
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -436928820673516179L;
 
-    /** The number of successes in the population. */
+    /**
+     * The number of successes in the population.
+     */
     private int numberOfSuccesses;
 
-    /** The population size. */
+    /**
+     * The population size.
+     */
     private int populationSize;
 
-    /** The sample size. */
+    /**
+     * The sample size.
+     */
     private int sampleSize;
 
     /**
      * Construct a new hypergeometric distribution with the given the population
      * size, the number of successes in the population, and the sample size.
      *
-     * @param populationSize the population size.
+     * @param populationSize    the population size.
      * @param numberOfSuccesses number of successes in the population.
-     * @param sampleSize the sample size.
+     * @param sampleSize        the sample size.
      */
     public HypergeometricDistributionImpl(int populationSize,
-            int numberOfSuccesses, int sampleSize) {
+                                          int numberOfSuccesses, int sampleSize) {
         super();
         if (numberOfSuccesses > populationSize) {
             throw MathRuntimeException
@@ -88,7 +96,7 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
             ret = 1.0;
         } else {
             ret = innerCumulativeProbability(domain[0], x, 1, populationSize,
-                                             numberOfSuccesses, sampleSize);
+                    numberOfSuccesses, sampleSize);
         }
 
         return ret;
@@ -104,7 +112,7 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      *         hypergeometric distribution.
      */
     private int[] getDomain(int n, int m, int k) {
-        return new int[] { getLowerDomain(n, m, k), getUpperDomain(m, k) };
+        return new int[]{getLowerDomain(n, m, k), getUpperDomain(m, k)};
     }
 
     /**
@@ -203,10 +211,10 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
             double p1 = SaddlePointExpansion.logBinomialProbability(x,
                     numberOfSuccesses, p, q);
             double p2 =
-                SaddlePointExpansion.logBinomialProbability(sampleSize - x,
-                    populationSize - numberOfSuccesses, p, q);
+                    SaddlePointExpansion.logBinomialProbability(sampleSize - x,
+                            populationSize - numberOfSuccesses, p, q);
             double p3 =
-                SaddlePointExpansion.logBinomialProbability(sampleSize, populationSize, p, q);
+                    SaddlePointExpansion.logBinomialProbability(sampleSize, populationSize, p, q);
             ret = Math.exp(p1 + p2 - p3);
         }
 
@@ -225,8 +233,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      */
     private double probability(int n, int m, int k, int x) {
         return Math.exp(MathUtils.binomialCoefficientLog(m, x) +
-               MathUtils.binomialCoefficientLog(n - m, k - x) -
-               MathUtils.binomialCoefficientLog(n, k));
+                MathUtils.binomialCoefficientLog(n - m, k - x) -
+                MathUtils.binomialCoefficientLog(n, k));
     }
 
     /**
@@ -240,6 +248,7 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
     public void setNumberOfSuccesses(int num) {
         setNumberOfSuccessesInternal(num);
     }
+
     /**
      * Modify the number of successes.
      *
@@ -265,6 +274,7 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
     public void setPopulationSize(int size) {
         setPopulationSizeInternal(size);
     }
+
     /**
      * Modify the population size.
      *
@@ -290,6 +300,7 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
     public void setSampleSize(int size) {
         setSampleSizeInternal(size);
     }
+
     /**
      * Modify the sample size.
      *
@@ -334,14 +345,14 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      * @param x0 the inclusive, lower bound
      * @param x1 the inclusive, upper bound
      * @param dx the direction of summation. 1 indicates summing from x0 to x1.
-     *            0 indicates summing from x1 to x0.
-     * @param n the population size.
-     * @param m number of successes in the population.
-     * @param k the sample size.
+     *           0 indicates summing from x1 to x0.
+     * @param n  the population size.
+     * @param m  number of successes in the population.
+     * @param k  the sample size.
      * @return P(x0 &le; X &le; x1).
      */
     private double innerCumulativeProbability(int x0, int x1, int dx, int n,
-            int m, int k) {
+                                              int m, int k) {
         double ret = probability(n, m, k, x0);
         while (x0 != x1) {
             x0 += dx;

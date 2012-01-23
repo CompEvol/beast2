@@ -43,13 +43,15 @@ import java.net.URL;
  */
 
 public class ModelBuilder extends JPanel {
-    /** for serialisation */
+    /**
+     * for serialisation
+     */
     static final long serialVersionUID = 1L;
 
     public static void main(String args[]) {
         Randomizer.setSeed(127);
         try {
-        	AddOnManager.loadExternalJars();
+            AddOnManager.loadExternalJars();
         } catch (Exception e) {
             e.printStackTrace();// ignore
         }
@@ -65,11 +67,11 @@ public class ModelBuilder extends JPanel {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        java.net.URL tempURL = ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
         try {
-            URL url = (URL)ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
+            URL url = (URL) ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
             ImageIcon icon = new ImageIcon(url);
             f.setIconImage(icon.getImage());
         } catch (Exception e) {
-        	System.err.println("error loading icon");
+            System.err.println("error loading icon");
             e.printStackTrace();
             // ignore
         }

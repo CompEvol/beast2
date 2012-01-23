@@ -29,7 +29,7 @@ import java.text.DecimalFormat;
 
 /**
  * The world's most intelligent number formatter with the following features :-)
- * <P>
+ * <p/>
  * It guarantee's the display of a user-specified number of significant figures, sf <BR>
  * It displays decimal format for numbers with absolute values between 1 and 10^(sf-1) <BR>
  * It displays scientific notation for all other numbers (i.e. really big and really small absolute values) <BR>
@@ -60,16 +60,16 @@ public class NumberFormatter {
 
     public void setSignificantFigures(int sf) {
         this.sf = sf;
-        upperCutoff = Math.pow(10,sf-1);
+        upperCutoff = Math.pow(10, sf - 1);
         cutoffTable = new double[sf];
         long num = 10;
-        for (int i =0; i < cutoffTable.length; i++) {
-            cutoffTable[i] = (double)num;
+        for (int i = 0; i < cutoffTable.length; i++) {
+            cutoffTable[i] = (double) num;
             num *= 10;
         }
         decimalFormat.setMinimumIntegerDigits(1);
-        decimalFormat.setMaximumFractionDigits(sf-1);
-        decimalFormat.setMinimumFractionDigits(sf-1);
+        decimalFormat.setMaximumFractionDigits(sf - 1);
+        decimalFormat.setMinimumFractionDigits(sf - 1);
         decimalFormat.setGroupingUsed(false);
         scientificFormat = new DecimalFormat(getScientificPattern(sf));
         fieldWidth = sf;
@@ -80,26 +80,28 @@ public class NumberFormatter {
     }
 
     public void setFieldWidth(int fw) {
-        if (fw < sf+4) throw new IllegalArgumentException();
+        if (fw < sf + 4) throw new IllegalArgumentException();
         fieldWidth = fw;
     }
 
-    public int getFieldWidth() { return fieldWidth; }
+    public int getFieldWidth() {
+        return fieldWidth;
+    }
 
     public String formatToFieldWidth(String s, int fieldWidth) {
         int size = fieldWidth - s.length();
         StringBuffer buffer = new StringBuffer(s);
-        for (int i =0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             buffer.append(' ');
         }
         return buffer.toString();
     }
 
     /**
-     * @param value                 value
-     * @param numFractionDigits     numFractionDigits
+     * @param value             value
+     * @param numFractionDigits numFractionDigits
      * @return the given value formatted to have exactly then number of
-     * fraction digits specified.
+     *         fraction digits specified.
      */
     public String formatDecimal(double value, int numFractionDigits) {
 
@@ -114,7 +116,8 @@ public class NumberFormatter {
      * It displays decimal format for numbers with absolute values between 1 and 10^(sf-1) <BR>
      * It displays scientific notation for all other numbers (i.e. really big and really small absolute values) <BR>
      * <b>note</b>: Its display integers for doubles with integer value <BR>
-     * @param value    value
+     *
+     * @param value value
      * @return a nicely formatted number.
      */
     public String format(double value) {
@@ -127,7 +130,7 @@ public class NumberFormatter {
             buffer.append(scientificFormat.format(value));
         } else {
             int numFractionDigits = 0;
-            if (value != (int)value) {
+            if (value != (int) value) {
                 numFractionDigits = getNumFractionDigits(value);
             }
             buffer.append(formatDecimal(value, numFractionDigits));
@@ -135,7 +138,7 @@ public class NumberFormatter {
 
         if (isPadding) {
             int size = fieldWidth - buffer.length();
-            for (int i =0; i < size; i++) {
+            for (int i = 0; i < size; i++) {
                 buffer.append(' ');
             }
         }
@@ -144,15 +147,15 @@ public class NumberFormatter {
 
     private int getNumFractionDigits(double value) {
         value = Math.abs(value);
-        for (int i =0; i < cutoffTable.length; i++) {
-            if (value < cutoffTable[i]) return sf-i-1;
+        for (int i = 0; i < cutoffTable.length; i++) {
+            if (value < cutoffTable[i]) return sf - i - 1;
         }
         return sf - 1;
     }
 
     private String getScientificPattern(int sf) {
         String pattern = "0.";
-        for (int i =0; i < sf-1; i++) {
+        for (int i = 0; i < sf - 1; i++) {
             pattern += "#";
         }
         pattern += "E0";

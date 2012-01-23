@@ -107,7 +107,7 @@ public class SubstitutionModelTest extends TestFramework {
                 addExpIntoList(expList, "coalescent", 6.2171, 1.1266E-2);
                 break;
 
-           default:
+            default:
                 throw new Exception("No such XML");
         }
 

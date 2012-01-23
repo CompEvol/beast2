@@ -22,19 +22,19 @@ public class BeastDialog {
 
     private final OptionsPanel optionPanel;
 
-    private final WholeNumberField seedText = new WholeNumberField((long)1, Long.MAX_VALUE);
-//    private final JCheckBox overwriteCheckBox = new JCheckBox("Allow overwriting of log files");
-    private final JComboBox logginMode = new JComboBox(new String[] {"default: only write new log files",
-    															"overwrite: overwrite log files",
-																"resume: appends log to existing files (if any)"});
+    private final WholeNumberField seedText = new WholeNumberField((long) 1, Long.MAX_VALUE);
+    //    private final JCheckBox overwriteCheckBox = new JCheckBox("Allow overwriting of log files");
+    private final JComboBox logginMode = new JComboBox(new String[]{"default: only write new log files",
+            "overwrite: overwrite log files",
+            "resume: appends log to existing files (if any)"});
 
     private final JCheckBox beagleCheckBox = new JCheckBox("Use BEAGLE library if available:");
     private final JCheckBox beagleInfoCheckBox = new JCheckBox("Show list of available BEAGLE resources and Quit");
-    private final JComboBox beagleResourceCombo = new JComboBox(new Object[] { "CPU", "GPU" });
+    private final JComboBox beagleResourceCombo = new JComboBox(new Object[]{"CPU", "GPU"});
     private final JCheckBox beagleSSECheckBox = new JCheckBox("Use CPU's SSE extensions");
-    private final JComboBox beaglePrecisionCombo = new JComboBox(new Object[] { "Double", "Single"});
+    private final JComboBox beaglePrecisionCombo = new JComboBox(new Object[]{"Double", "Single"});
 
-    private final JComboBox threadsCombo = new JComboBox(new Object[] { "Automatic", 0, 1, 2, 3, 4, 5, 6, 7, 8 });
+    private final JComboBox threadsCombo = new JComboBox(new Object[]{"Automatic", 0, 1, 2, 3, 4, 5, 6, 7, 8});
 
     private File inputFile = null;
 
@@ -56,14 +56,14 @@ public class BeastDialog {
         final JButton inputFileButton = new JButton("Choose File...");
         final JTextField inputFileNameText = new JTextField("not selected", 16);
 
-        inputFileButton.addActionListener( new ActionListener() {
+        inputFileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-            	File file = beast.app.util.Utils.getLoadFile("Load xml file", inputFile, "Beast xml files",".xml");
-            	if (file != null) {
-            		inputFile = file;	
+                File file = beast.app.util.Utils.getLoadFile("Load xml file", inputFile, "Beast xml files", ".xml");
+                if (file != null) {
+                    inputFile = file;
                     inputFileNameText.setText(inputFile.getName());
-            	}
-            	
+                }
+
 //            	if (!Utils.isMacOSX()) {
 //	        		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 //	        		fc.addChoosableFileFilter(new FileFilter() {
@@ -105,10 +105,11 @@ public class BeastDialog {
 //                    inputFileNameText.setText(inputFile.getName());
 //
 //                }
-        	}});
+            }
+        });
         inputFileNameText.setEditable(false);
 
-        JPanel panel1 = new JPanel(new BorderLayout(0,0));
+        JPanel panel1 = new JPanel(new BorderLayout(0, 0));
         panel1.add(inputFileNameText, BorderLayout.CENTER);
         panel1.add(inputFileButton, BorderLayout.EAST);
         optionPanel.addComponentWithLabel("BEAST XML File: ", panel1);
@@ -128,11 +129,11 @@ public class BeastDialog {
         optionPanel.addSpanningComponent(beagleCheckBox);
         beagleCheckBox.setSelected(true);
 
-        final OptionsPanel optionPanel1 = new OptionsPanel(0,12);
+        final OptionsPanel optionPanel1 = new OptionsPanel(0, 12);
 //        optionPanel1.setBorder(BorderFactory.createEmptyBorder());
         optionPanel1.setBorder(new TitledBorder(""));
 
-        OptionsPanel optionPanel2 = new OptionsPanel(0,12);
+        OptionsPanel optionPanel2 = new OptionsPanel(0, 12);
         optionPanel2.setBorder(BorderFactory.createEmptyBorder());
         final JLabel label1 = optionPanel2.addComponentWithLabel("Prefer use of: ", beagleResourceCombo);
 //        optionPanel2.addComponent(beagleSSECheckBox);
@@ -177,7 +178,7 @@ public class BeastDialog {
                 JOptionPane.PLAIN_MESSAGE,
                 JOptionPane.OK_CANCEL_OPTION,
                 null,
-                new String[] { "Run", "Quit" },
+                new String[]{"Run", "Quit"},
                 "Run");
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
@@ -190,7 +191,7 @@ public class BeastDialog {
         dialog.setVisible(true);
 
         if (optionPane.getValue() == null) {
-        	System.exit(0);
+            System.exit(0);
         }
 
         return optionPane.getValue().equals("Run");
@@ -205,7 +206,7 @@ public class BeastDialog {
 //    }
 
     public int getLogginMode() {
-    	return logginMode.getSelectedIndex();
+        return logginMode.getSelectedIndex();
     }
 
     public boolean useBeagle() {
@@ -242,7 +243,7 @@ public class BeastDialog {
             // Automatic
             return -1;
         }
-        return (Integer)threadsCombo.getSelectedItem();
+        return (Integer) threadsCombo.getSelectedItem();
     }
 
     public File getInputFile() {

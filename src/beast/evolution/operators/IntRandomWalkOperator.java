@@ -36,12 +36,12 @@ public class IntRandomWalkOperator extends Operator {
         int newValue = value + Randomizer.nextInt(2 * windowSize + 1) - windowSize;
 
         if (newValue < param.getLower() || newValue > param.getUpper()) {
-        	// invalid move, can be rejected immediately
-        	return Double.NEGATIVE_INFINITY;
+            // invalid move, can be rejected immediately
+            return Double.NEGATIVE_INFINITY;
         }
         if (newValue == value) {
-        	// this saves calculating the posterior
-        	return Double.NEGATIVE_INFINITY;
+            // this saves calculating the posterior
+            return Double.NEGATIVE_INFINITY;
         }
 
         param.setValue(i, newValue);

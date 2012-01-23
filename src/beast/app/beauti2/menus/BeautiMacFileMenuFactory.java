@@ -78,22 +78,22 @@ public class BeautiMacFileMenuFactory implements MenuFactory {
 
         menu.addSeparator();
 
-		// On Windows and Linux platforms, each window has its own menu so items which are not needed
-		// are simply missing. In contrast, on Mac, the menu is for the application so items should
-		// be enabled/disabled as frames come to the front.
+        // On Windows and Linux platforms, each window has its own menu so items which are not needed
+        // are simply missing. In contrast, on Mac, the menu is for the application so items should
+        // be enabled/disabled as frames come to the front.
         if (frame instanceof BeautiFileMenuHandler) {
-		    item = new JMenuItem(((BeautiFileMenuHandler)frame).getAddonManagerAction());
+            item = new JMenuItem(((BeautiFileMenuHandler) frame).getAddonManagerAction());
 //		    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, MenuBarFactory.MENU_MASK));
-		    menu.add(item);
+            menu.add(item);
             menu.addSeparator();
-		} else {
-		    // If the frame is not a BeautiFileMenuHandler then add a disabled version.
+        } else {
+            // If the frame is not a BeautiFileMenuHandler then add a disabled version.
             item = new JMenuItem(BeautiFileMenuHandler.ADD_ON_MANAGER);
 //            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK));
             item.setEnabled(false);
             menu.add(item);
             menu.addSeparator();
-		}
+        }
 
         item = new JMenuItem(frame.getPrintAction());
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, MenuBarFactory.MENU_MASK));

@@ -18,7 +18,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * F-Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -32,6 +32,7 @@ package org.apache.commons.math.distribution;
 public interface FDistribution extends ContinuousDistribution {
     /**
      * Modify the numerator degrees of freedom.
+     *
      * @param degreesOfFreedom the new numerator degrees of freedom.
      * @deprecated as of v2.1
      */
@@ -40,12 +41,14 @@ public interface FDistribution extends ContinuousDistribution {
 
     /**
      * Access the numerator degrees of freedom.
+     *
      * @return the numerator degrees of freedom.
      */
     double getNumeratorDegreesOfFreedom();
 
     /**
      * Modify the denominator degrees of freedom.
+     *
      * @param degreesOfFreedom the new denominator degrees of freedom.
      * @deprecated as of v2.1
      */
@@ -54,6 +57,7 @@ public interface FDistribution extends ContinuousDistribution {
 
     /**
      * Access the denominator degrees of freedom.
+     *
      * @return the denominator degrees of freedom.
      */
     double getDenominatorDegreesOfFreedom();

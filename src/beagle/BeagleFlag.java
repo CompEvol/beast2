@@ -12,13 +12,13 @@ public enum BeagleFlag {
     COMPUTATION_SYNCH(1 << 2, "synchronous computation (blocking"),
     COMPUTATION_ASYNCH(1 << 3, "asynchronous computation (non-blocking)"),
 
-    EIGEN_REAL(1 <<4, "real eigenvalue computation"),
-    EIGEN_COMPLEX(1 <<5, "complex eigenvalue computation"),
+    EIGEN_REAL(1 << 4, "real eigenvalue computation"),
+    EIGEN_COMPLEX(1 << 5, "complex eigenvalue computation"),
 
     SCALING_MANUAL(1 << 6, "manual scaling"),
     SCALING_AUTO(1 << 7, "auto-scaling on"),
     SCALING_ALWAYS(1 << 8, "scale at every update"),
-    SCALING_DYNAMIC(1 << 19, "manual scaling with dynamic checking"),            
+    SCALING_DYNAMIC(1 << 19, "manual scaling with dynamic checking"),
 
     SCALERS_RAW(1 << 9, "save raw scalers"),
     SCALERS_LOG(1 << 10, "save log scalers"),

@@ -39,8 +39,8 @@ import java.util.List;
  */
 @Description("coalescent intervals for a constant population")
 public class ConstantPopulation extends PopulationFunction.Abstract {
-    public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize", 
-    		"present-day population size (defaults to 1.0). ", Validate.REQUIRED);
+    public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize",
+            "present-day population size (defaults to 1.0). ", Validate.REQUIRED);
 
     //
     // Public stuff
@@ -50,7 +50,7 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
      * @return initial population size.
      */
     public double getN0() {
-    	N0 = popSizeParameter.get().getValue();
+        N0 = popSizeParameter.get().getValue();
         return N0;
     }
 

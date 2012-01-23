@@ -13,17 +13,17 @@ import beast.core.Input;
 import beast.evolution.sitemodel.SiteModel;
 
 public class SiteModelInputEditor extends PluginInputEditor {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	IntegerInputEditor categoryCountEditor;
-	JTextField categoryCountEntry;
-	InputEditor gammaShapeEditor;
-	
+    IntegerInputEditor categoryCountEditor;
+    JTextField categoryCountEntry;
+    InputEditor gammaShapeEditor;
+
 //	public SiteModelInputEditor(BeautiDoc doc) {
 //		super(doc);
 //	}
 
-	@Override
+    @Override
     public Class<?> type() {
         return SiteModel.Base.class;
     }
@@ -34,43 +34,45 @@ public class SiteModelInputEditor extends PluginInputEditor {
 //    }
 
 
-	public InputEditor createGammaCategoryCountEditor() throws Exception {
-		Input<?> input = ((SiteModel) m_input.get()).gammaCategoryCount;
-		categoryCountEditor = (IntegerInputEditor) PluginPanel.createInputEditor(input, m_plugin, doc);
-		categoryCountEntry = categoryCountEditor.getEntry();
-		categoryCountEntry.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				processEntry2();
-			}
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				processEntry2();
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				processEntry2();
-			}
-		});
-		
-		return categoryCountEditor;
-	}
-	
-	void processEntry2() {
-		String sCategories = categoryCountEntry.getText();
-		try {
-			int nCategories = Integer.parseInt(sCategories);
-			gammaShapeEditor.setVisible(nCategories >= 2);
-			repaint();
-		} catch (java.lang.NumberFormatException e) {
-			// ignore. 
-		}
-	}
-	
-	public InputEditor createShapeEditor() throws Exception {
-		Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
-		gammaShapeEditor = PluginPanel.createInputEditor(input, m_plugin, doc);
-		gammaShapeEditor.setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
-		return gammaShapeEditor;
-	}
+    public InputEditor createGammaCategoryCountEditor() throws Exception {
+        Input<?> input = ((SiteModel) m_input.get()).gammaCategoryCount;
+        categoryCountEditor = (IntegerInputEditor) PluginPanel.createInputEditor(input, m_plugin, doc);
+        categoryCountEntry = categoryCountEditor.getEntry();
+        categoryCountEntry.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                processEntry2();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                processEntry2();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                processEntry2();
+            }
+        });
+
+        return categoryCountEditor;
+    }
+
+    void processEntry2() {
+        String sCategories = categoryCountEntry.getText();
+        try {
+            int nCategories = Integer.parseInt(sCategories);
+            gammaShapeEditor.setVisible(nCategories >= 2);
+            repaint();
+        } catch (java.lang.NumberFormatException e) {
+            // ignore.
+        }
+    }
+
+    public InputEditor createShapeEditor() throws Exception {
+        Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
+        gammaShapeEditor = PluginPanel.createInputEditor(input, m_plugin, doc);
+        gammaShapeEditor.setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
+        return gammaShapeEditor;
+    }
 }

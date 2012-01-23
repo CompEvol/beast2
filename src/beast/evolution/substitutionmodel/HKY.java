@@ -39,29 +39,37 @@ import beast.evolution.tree.Node;
 public class HKY extends SubstitutionModel.Base {
     public Input<RealParameter> kappa = new Input<RealParameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
-    /** applies to nucleotides only **/
+    /**
+     * applies to nucleotides only *
+     */
     public static final int STATE_COUNT = 4;
 
-    /** Eigenvalue decomposition of rate matrix + its stored version **/ 
+    /**
+     * Eigenvalue decomposition of rate matrix + its stored version *
+     */
     private EigenDecomposition eigenDecomposition = null;
     private EigenDecomposition storedEigenDecomposition = null;
 
-    /** flag to indicate eigen decomposition is up to date **/
+    /**
+     * flag to indicate eigen decomposition is up to date *
+     */
     private boolean updateEigen = true;
-    /** flag to indicate matrix is up to date **/
+    /**
+     * flag to indicate matrix is up to date *
+     */
     protected boolean updateMatrix = true;
 
     @Override
     public void initAndValidate() throws Exception {
-    	super.initAndValidate();
-    	kappa.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+        super.initAndValidate();
+        kappa.get().setBounds(0.0, Double.POSITIVE_INFINITY);
 
         m_nStates = STATE_COUNT;
     }
 
     @Override
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
-      	double distance = (fStartTime - fEndTime) * fRate;
+        double distance = (fStartTime - fEndTime) * fRate;
 
         if (updateMatrix) {
             setupMatrix();
@@ -109,16 +117,16 @@ public class HKY extends SubstitutionModel.Base {
             double[] eval = new double[STATE_COUNT];
             eigenDecomposition = new EigenDecomposition(evec, ivec, eval);
 
-            ivec[2 * STATE_COUNT + 1] =  1; // left eigenvectors 3 = (0,1,0,-1); 4 = (1,0,-1,0)
+            ivec[2 * STATE_COUNT + 1] = 1; // left eigenvectors 3 = (0,1,0,-1); 4 = (1,0,-1,0)
             ivec[2 * STATE_COUNT + 3] = -1;
 
-            ivec[3 * STATE_COUNT + 0] =  1;
+            ivec[3 * STATE_COUNT + 0] = 1;
             ivec[3 * STATE_COUNT + 2] = -1;
 
-            evec[0 * STATE_COUNT + 0] =  1; // right eigenvector 1 = (1,1,1,1)'
-            evec[1 * STATE_COUNT + 0] =  1;
-            evec[2 * STATE_COUNT + 0] =  1;
-            evec[3 * STATE_COUNT + 0] =  1;
+            evec[0 * STATE_COUNT + 0] = 1; // right eigenvector 1 = (1,1,1,1)'
+            evec[1 * STATE_COUNT + 0] = 1;
+            evec[2 * STATE_COUNT + 0] = 1;
+            evec[3 * STATE_COUNT + 0] = 1;
 
             updateEigen = true;
         }
@@ -138,36 +146,36 @@ public class HKY extends SubstitutionModel.Base {
             ivec[0 * STATE_COUNT + 3] = pi[3];
 
             // left eigenvector #2
-            ivec[1 * STATE_COUNT + 0] =  pi[0]*piY;
-            ivec[1 * STATE_COUNT + 1] = -pi[1]*piR;
-            ivec[1 * STATE_COUNT + 2] =  pi[2]*piY;
-            ivec[1 * STATE_COUNT + 3] = -pi[3]*piR;
+            ivec[1 * STATE_COUNT + 0] = pi[0] * piY;
+            ivec[1 * STATE_COUNT + 1] = -pi[1] * piR;
+            ivec[1 * STATE_COUNT + 2] = pi[2] * piY;
+            ivec[1 * STATE_COUNT + 3] = -pi[3] * piR;
 
             // right eigenvector #2
-            evec[0 * STATE_COUNT + 1] =  1.0/piR;
-            evec[1 * STATE_COUNT + 1] = -1.0/piY;
-            evec[2 * STATE_COUNT + 1] =  1.0/piR;
-            evec[3 * STATE_COUNT + 1] = -1.0/piY;
+            evec[0 * STATE_COUNT + 1] = 1.0 / piR;
+            evec[1 * STATE_COUNT + 1] = -1.0 / piY;
+            evec[2 * STATE_COUNT + 1] = 1.0 / piR;
+            evec[3 * STATE_COUNT + 1] = -1.0 / piY;
 
             // right eigenvector #3
-            evec[1 * STATE_COUNT + 2] =  pi[3]/piY;
-            evec[3 * STATE_COUNT + 2] = -pi[1]/piY;
+            evec[1 * STATE_COUNT + 2] = pi[3] / piY;
+            evec[3 * STATE_COUNT + 2] = -pi[1] / piY;
 
             // right eigenvector #4
-            evec[0 * STATE_COUNT + 3] =  pi[2]/piR;
-            evec[2 * STATE_COUNT + 3] = -pi[0]/piR;
+            evec[0 * STATE_COUNT + 3] = pi[2] / piR;
+            evec[2 * STATE_COUNT + 3] = -pi[0] / piR;
 
             // eigenvectors
             double[] eval = eigenDecomposition.getEigenValues();
             final double k = kappa.get().getValue();
 
             final double beta = -1.0 / (2.0 * (piR * piY + k * (pi[0] * pi[2] + pi[1] * pi[3])));
-            final double A_R  =  1.0 + piR * (k - 1);
-            final double A_Y  =  1.0 + piY * (k - 1);
+            final double A_R = 1.0 + piR * (k - 1);
+            final double A_Y = 1.0 + piY * (k - 1);
 
             eval[1] = beta;
-            eval[2] = beta*A_Y;
-            eval[3] = beta*A_R;
+            eval[2] = beta * A_Y;
+            eval[3] = beta * A_R;
 
             updateEigen = false;
 
@@ -234,13 +242,15 @@ public class HKY extends SubstitutionModel.Base {
     }
 
 
-    /** CalculationNode implementations **/
+    /**
+     * CalculationNode implementations *
+     */
     @Override
     protected boolean requiresRecalculation() {
-    	// we only get here if something is dirty
+        // we only get here if something is dirty
         updateMatrix = true;
         updateEigen = true;
-    	return true;
+        return true;
     }
 
     @Override
@@ -261,12 +271,12 @@ public class HKY extends SubstitutionModel.Base {
         super.restore();
     }
 
-	@Override
-	public boolean canHandleDataType(DataType dataType) throws Exception {
-		if (dataType instanceof Nucleotide) {
-			return true;
-		}
-		throw new Exception("Can only handle nucleotide data");
-	}
+    @Override
+    public boolean canHandleDataType(DataType dataType) throws Exception {
+        if (dataType instanceof Nucleotide) {
+            return true;
+        }
+        throw new Exception("Can only handle nucleotide data");
+    }
 
 }

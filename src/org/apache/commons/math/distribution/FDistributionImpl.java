@@ -29,34 +29,46 @@ import org.apache.commons.math.special.Beta;
  * @version $Revision: 925897 $ $Date: 2010-03-21 17:06:46 -0400 (Sun, 21 Mar 2010) $
  */
 public class FDistributionImpl
-    extends AbstractContinuousDistribution
-    implements FDistribution, Serializable  {
+        extends AbstractContinuousDistribution
+        implements FDistribution, Serializable {
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Message for non positive degrees of freddom. */
+    /**
+     * Message for non positive degrees of freddom.
+     */
     private static final String NON_POSITIVE_DEGREES_OF_FREEDOM_MESSAGE =
-        "degrees of freedom must be positive ({0})";
+            "degrees of freedom must be positive ({0})";
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -8516354193418641566L;
 
-    /** The numerator degrees of freedom*/
+    /**
+     * The numerator degrees of freedom
+     */
     private double numeratorDegreesOfFreedom;
 
-    /** The numerator degrees of freedom*/
+    /**
+     * The numerator degrees of freedom
+     */
     private double denominatorDegreesOfFreedom;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Create a F distribution using the given degrees of freedom.
-     * @param numeratorDegreesOfFreedom the numerator degrees of freedom.
+     *
+     * @param numeratorDegreesOfFreedom   the numerator degrees of freedom.
      * @param denominatorDegreesOfFreedom the denominator degrees of freedom.
      */
     public FDistributionImpl(double numeratorDegreesOfFreedom,
@@ -66,14 +78,15 @@ public class FDistributionImpl
 
     /**
      * Create a F distribution using the given degrees of freedom and inverse cumulative probability accuracy.
-     * @param numeratorDegreesOfFreedom the numerator degrees of freedom.
+     *
+     * @param numeratorDegreesOfFreedom   the numerator degrees of freedom.
      * @param denominatorDegreesOfFreedom the denominator degrees of freedom.
-     * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     * @param inverseCumAccuracy          the maximum absolute error in inverse cumulative probability estimates
+     *                                    (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
     public FDistributionImpl(double numeratorDegreesOfFreedom, double denominatorDegreesOfFreedom,
-            double inverseCumAccuracy) {
+                             double inverseCumAccuracy) {
         super();
         setNumeratorDegreesOfFreedomInternal(numeratorDegreesOfFreedom);
         setDenominatorDegreesOfFreedomInternal(denominatorDegreesOfFreedom);
@@ -95,13 +108,13 @@ public class FDistributionImpl
         final double logn = Math.log(numeratorDegreesOfFreedom);
         final double logm = Math.log(denominatorDegreesOfFreedom);
         final double lognxm = Math.log(numeratorDegreesOfFreedom * x + denominatorDegreesOfFreedom);
-        return Math.exp(nhalf*logn + nhalf*logx - logx + mhalf*logm - nhalf*lognxm -
-               mhalf*lognxm - Beta.logBeta(nhalf, mhalf));
+        return Math.exp(nhalf * logn + nhalf * logx - logx + mhalf * logm - nhalf * lognxm -
+                mhalf * lognxm - Beta.logBeta(nhalf, mhalf));
     }
 
     /**
      * For this distribution, X, this method returns P(X &lt; x).
-     *
+     * <p/>
      * The implementation of this method is based on:
      * <ul>
      * <li>
@@ -112,7 +125,7 @@ public class FDistributionImpl
      * @param x the value at which the CDF is evaluated.
      * @return CDF for this distribution.
      * @throws MathException if the cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
     public double cumulativeProbability(double x) throws MathException {
         double ret;
@@ -123,8 +136,8 @@ public class FDistributionImpl
             double m = denominatorDegreesOfFreedom;
 
             ret = Beta.regularizedBeta((n * x) / (m + n * x),
-                0.5 * n,
-                0.5 * m);
+                    0.5 * n,
+                    0.5 * m);
         }
         return ret;
     }
@@ -137,14 +150,14 @@ public class FDistributionImpl
      *
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
-     * @throws MathException if the inverse cumulative probability can not be
-     *         computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     @Override
     public double inverseCumulativeProbability(final double p)
-        throws MathException {
+            throws MathException {
         if (p == 0) {
             return 0d;
         }
@@ -203,9 +216,10 @@ public class FDistributionImpl
 
     /**
      * Modify the numerator degrees of freedom.
+     *
      * @param degreesOfFreedom the new numerator degrees of freedom.
      * @throws IllegalArgumentException if <code>degreesOfFreedom</code> is not
-     *         positive.
+     *                                  positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
@@ -215,20 +229,22 @@ public class FDistributionImpl
 
     /**
      * Modify the numerator degrees of freedom.
+     *
      * @param degreesOfFreedom the new numerator degrees of freedom.
      * @throws IllegalArgumentException if <code>degreesOfFreedom</code> is not
-     *         positive.
+     *                                  positive.
      */
     private void setNumeratorDegreesOfFreedomInternal(double degreesOfFreedom) {
         if (degreesOfFreedom <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  NON_POSITIVE_DEGREES_OF_FREEDOM_MESSAGE, degreesOfFreedom);
+                    NON_POSITIVE_DEGREES_OF_FREEDOM_MESSAGE, degreesOfFreedom);
         }
         this.numeratorDegreesOfFreedom = degreesOfFreedom;
     }
 
     /**
      * Access the numerator degrees of freedom.
+     *
      * @return the numerator degrees of freedom.
      */
     public double getNumeratorDegreesOfFreedom() {
@@ -237,9 +253,10 @@ public class FDistributionImpl
 
     /**
      * Modify the denominator degrees of freedom.
+     *
      * @param degreesOfFreedom the new denominator degrees of freedom.
      * @throws IllegalArgumentException if <code>degreesOfFreedom</code> is not
-     *         positive.
+     *                                  positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
@@ -249,20 +266,22 @@ public class FDistributionImpl
 
     /**
      * Modify the denominator degrees of freedom.
+     *
      * @param degreesOfFreedom the new denominator degrees of freedom.
      * @throws IllegalArgumentException if <code>degreesOfFreedom</code> is not
-     *         positive.
+     *                                  positive.
      */
     private void setDenominatorDegreesOfFreedomInternal(double degreesOfFreedom) {
         if (degreesOfFreedom <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  NON_POSITIVE_DEGREES_OF_FREEDOM_MESSAGE, degreesOfFreedom);
+                    NON_POSITIVE_DEGREES_OF_FREEDOM_MESSAGE, degreesOfFreedom);
         }
         this.denominatorDegreesOfFreedom = degreesOfFreedom;
     }
 
     /**
      * Access the denominator degrees of freedom.
+     *
      * @return the denominator degrees of freedom.
      */
     public double getDenominatorDegreesOfFreedom() {

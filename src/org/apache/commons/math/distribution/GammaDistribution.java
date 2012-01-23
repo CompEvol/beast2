@@ -18,7 +18,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * The Gamma Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -32,6 +32,7 @@ package org.apache.commons.math.distribution;
 public interface GammaDistribution extends ContinuousDistribution, HasDensity<Double> {
     /**
      * Modify the shape parameter, alpha.
+     *
      * @param alpha the new shape parameter.
      * @deprecated as of v2.1
      */
@@ -40,12 +41,14 @@ public interface GammaDistribution extends ContinuousDistribution, HasDensity<Do
 
     /**
      * Access the shape parameter, alpha
+     *
      * @return alpha.
      */
     double getAlpha();
 
     /**
      * Modify the scale parameter, beta.
+     *
      * @param beta the new scale parameter.
      * @deprecated as of v2.1
      */
@@ -54,14 +57,16 @@ public interface GammaDistribution extends ContinuousDistribution, HasDensity<Do
 
     /**
      * Access the scale parameter, beta
+     *
      * @return beta.
      */
     double getBeta();
 
     /**
      * Return the probability density for a particular point.
-     * @param x  The point at which the density should be computed.
-     * @return  The pdf at point x.
+     *
+     * @param x The point at which the density should be computed.
+     * @return The pdf at point x.
      */
     double density(Double x);
 }

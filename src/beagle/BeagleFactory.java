@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 /**
  * @author Marc Suchard
  * @author Andrew Rambaut
- *
  */
 public class BeagleFactory {
 
@@ -55,7 +54,7 @@ public class BeagleFactory {
 //                    scaleBufferCount
 //            );
 //    	}
-    	
+
 //        boolean forceHybrid = Boolean.valueOf(System.getProperty("force.hybrid"));
 
         getBeagleJNIWrapper();
@@ -87,7 +86,7 @@ public class BeagleFactory {
                     return beagle;
 
             } catch (BeagleException beagleException) {
-                Logger.getLogger("beagle").info("  "+beagleException.getMessage());
+                Logger.getLogger("beagle").info("  " + beagleException.getMessage());
             }
         }
 
@@ -231,16 +230,16 @@ public class BeagleFactory {
 
         // create an instance of the BEAGLE library
         Beagle instance = loadBeagleInstance(
-                3,				/**< Number of tip data elements (input) */
-                5,	            /**< Number of partials buffers to create (input) */
-                3,		        /**< Number of compact state representation buffers to create (input) */
-                stateCount,		/**< Number of states in the continuous-time Markov chain (input) */
-                nPatterns,		/**< Number of site patterns to be handled by the instance (input) */
-                1,		        /**< Number of rate matrix eigen-decomposition buffers to allocate (input) */
-                4,		        /**< Number of rate matrix buffers (input) */
+                3,                /**< Number of tip data elements (input) */
+                5,                /**< Number of partials buffers to create (input) */
+                3,                /**< Number of compact state representation buffers to create (input) */
+                stateCount,        /**< Number of states in the continuous-time Markov chain (input) */
+                nPatterns,        /**< Number of site patterns to be handled by the instance (input) */
+                1,                /**< Number of rate matrix eigen-decomposition buffers to allocate (input) */
+                4,                /**< Number of rate matrix buffers (input) */
                 1,              /**< Number of rate categories (input) */
                 3,               /**< Number of scale buffers (input) */
-                new int[] {1, 0},
+                new int[]{1, 0},
                 0,
 //                BeagleFlag.PROCESSOR_GPU.getMask(),
                 0
@@ -273,40 +272,40 @@ public class BeagleFactory {
 //        instance.setPartials(1, getPartials(chimp));
 //        instance.setPartials(2, getPartials(gorilla));
 
-        final double[] rates = { 1.0, 1.0 };
+        final double[] rates = {1.0, 1.0};
         instance.setCategoryRates(rates);
 
         // create an array containing site category weights
-        final double[] weights = { 0.5, 0.5 };
+        final double[] weights = {0.5, 0.5};
         instance.setCategoryWeights(0, weights);
 
         // create base frequency array
-        final double[] freqs = { 0.25, 0.25, 0.25, 0.25 };
+        final double[] freqs = {0.25, 0.25, 0.25, 0.25};
         instance.setStateFrequencies(0, freqs);
 
         // an eigen decomposition for the JC69 model
         final double[] evec = {
-                1.0,  2.0,  0.0,  0.5,
-                1.0,  -2.0,  0.5,  0.0,
-                1.0,  2.0, 0.0,  -0.5,
-                1.0,  -2.0,  -0.5,  0.0
+                1.0, 2.0, 0.0, 0.5,
+                1.0, -2.0, 0.5, 0.0,
+                1.0, 2.0, 0.0, -0.5,
+                1.0, -2.0, -0.5, 0.0
         };
 
         final double[] ivec = {
-                0.25,  0.25,  0.25,  0.25,
-                0.125,  -0.125,  0.125,  -0.125,
-                0.0,  1.0,  0.0,  -1.0,
-                1.0,  0.0,  -1.0,  0.0
+                0.25, 0.25, 0.25, 0.25,
+                0.125, -0.125, 0.125, -0.125,
+                0.0, 1.0, 0.0, -1.0,
+                1.0, 0.0, -1.0, 0.0
         };
 
-        double[] eval = { 0.0, -1.3333333333333333, -1.3333333333333333, -1.3333333333333333 };
+        double[] eval = {0.0, -1.3333333333333333, -1.3333333333333333, -1.3333333333333333};
 
         // set the Eigen decomposition
         instance.setEigenDecomposition(0, evec, ivec, eval);
 
         // a list of indices and edge lengths
-        int[] nodeIndices = { 0, 1, 2, 3 };
-        double[] edgeLengths = { 0.1, 0.1, 0.2, 0.1 };
+        int[] nodeIndices = {0, 1, 2, 3};
+        double[] edgeLengths = {0.1, 0.1, 0.2, 0.1};
 
         // tell BEAGLE to populate the transition matrices for the above edge lengths
         instance.updateTransitionMatrices(
@@ -325,7 +324,7 @@ public class BeagleFactory {
                 3, 0, 0, 0, 0, 1, 1,
                 4, 1, 1, 2, 2, 3, 3
         };
-        int[] rootIndices = { 4 };
+        int[] rootIndices = {4};
 
         // update the partials
         instance.updatePartials(
@@ -337,8 +336,8 @@ public class BeagleFactory {
 
         // TODO Need to call accumulateScaleFactors if scaling is enabled
 
-        int[] weightIndices = { 0 };
-        int[] freqIndices = { 0 };
+        int[] weightIndices = {0};
+        int[] freqIndices = {0};
 
         double[] sumLogLik = new double[1];
 

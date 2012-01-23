@@ -34,21 +34,28 @@ public class BrentSolver extends UnivariateRealSolverImpl {
 
     /**
      * Default absolute accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_ABSOLUTE_ACCURACY = 1E-6;
 
-    /** Default maximum number of iterations
+    /**
+     * Default maximum number of iterations
+     *
      * @since 2.1
      */
     public static final int DEFAULT_MAXIMUM_ITERATIONS = 100;
 
-    /** Error message for non-bracketing interval. */
+    /**
+     * Error message for non-bracketing interval.
+     */
     private static final String NON_BRACKETING_MESSAGE =
-        "function values at endpoints do not have different signs.  " +
-        "Endpoints: [{0}, {1}], Values: [{2}, {3}]";
+            "function values at endpoints do not have different signs.  " +
+                    "Endpoints: [{0}, {1}], Values: [{2}, {3}]";
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = 7694577816772532779L;
 
     /**
@@ -56,9 +63,9 @@ public class BrentSolver extends UnivariateRealSolverImpl {
      *
      * @param f function to solve.
      * @deprecated as of 2.0 the function to solve is passed as an argument
-     * to the {@link #solve(UnivariateRealFunction, double, double)} or
-     * {@link UnivariateRealSolverImpl#solve(UnivariateRealFunction, double, double, double)}
-     * method.
+     *             to the {@link #solve(UnivariateRealFunction, double, double)} or
+     *             {@link UnivariateRealSolverImpl#solve(UnivariateRealFunction, double, double, double)}
+     *             method.
      */
     @Deprecated
     public BrentSolver(UnivariateRealFunction f) {
@@ -86,24 +93,28 @@ public class BrentSolver extends UnivariateRealSolverImpl {
      * Contstruct a solver with the given maximum iterations and absolute accuracy.
      *
      * @param maximumIterations maximum number of iterations
-     * @param absoluteAccuracy lower bound for absolute accuracy of solutions returned by the solver
+     * @param absoluteAccuracy  lower bound for absolute accuracy of solutions returned by the solver
      * @since 2.1
      */
     public BrentSolver(int maximumIterations, double absoluteAccuracy) {
         super(maximumIterations, absoluteAccuracy);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double solve(double min, double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double solve(double min, double max, double initial)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max, initial);
     }
 
@@ -114,28 +125,28 @@ public class BrentSolver extends UnivariateRealSolverImpl {
      * allowed to have endpoints with the same sign if the initial point has
      * opposite sign function-wise).</p>
      *
-     * @param f function to solve.
-     * @param min the lower bound for the interval.
-     * @param max the upper bound for the interval.
+     * @param f       function to solve.
+     * @param min     the lower bound for the interval.
+     * @param max     the upper bound for the interval.
      * @param initial the start value to use (must be set to min if no
-     * initial point is known).
+     *                initial point is known).
      * @return the value where the function is zero
      * @throws MaxIterationsExceededException the maximum iteration count
-     * is exceeded
-     * @throws FunctionEvaluationException if an error occurs evaluating
-     *  the function
-     * @throws IllegalArgumentException if initial is not between min and max
-     * (even if it <em>is</em> a root)
+     *                                        is exceeded
+     * @throws FunctionEvaluationException    if an error occurs evaluating
+     *                                        the function
+     * @throws IllegalArgumentException       if initial is not between min and max
+     *                                        (even if it <em>is</em> a root)
      */
     public double solve(final UnivariateRealFunction f,
                         final double min, final double max, final double initial)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
 
         clearResult();
         if ((initial < min) || (initial > max)) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "invalid interval, initial value parameters:  lower={0}, initial={1}, upper={2}",
-                  min, initial, max);
+                    "invalid interval, initial value parameters:  lower={0}, initial={1}, upper={2}",
+                    min, initial, max);
         }
 
         // return the initial guess if it is good enough
@@ -170,7 +181,7 @@ public class BrentSolver extends UnivariateRealSolverImpl {
         }
 
         throw MathRuntimeException.createIllegalArgumentException(
-              NON_BRACKETING_MESSAGE, min, max, yMin, yMax);
+                NON_BRACKETING_MESSAGE, min, max, yMin, yMax);
 
     }
 
@@ -181,20 +192,20 @@ public class BrentSolver extends UnivariateRealSolverImpl {
      * signs. An <code>IllegalArgumentException</code> is thrown if this is not
      * the case.</p>
      *
-     * @param f the function to solve
+     * @param f   the function to solve
      * @param min the lower bound for the interval.
      * @param max the upper bound for the interval.
      * @return the value where the function is zero
      * @throws MaxIterationsExceededException if the maximum iteration count is exceeded
-     * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function
-     * @throws IllegalArgumentException if min is not less than max or the
-     * signs of the values of the function at the endpoints are not opposites
+     * @throws FunctionEvaluationException    if an error occurs evaluating the
+     *                                        function
+     * @throws IllegalArgumentException       if min is not less than max or the
+     *                                        signs of the values of the function at the endpoints are not opposites
      */
     public double solve(final UnivariateRealFunction f,
                         final double min, final double max)
-        throws MaxIterationsExceededException,
-        FunctionEvaluationException {
+            throws MaxIterationsExceededException,
+            FunctionEvaluationException {
 
         clearResult();
         verifyInterval(min, max);
@@ -219,7 +230,7 @@ public class BrentSolver extends UnivariateRealSolverImpl {
                 throw MathRuntimeException.createIllegalArgumentException(
                         NON_BRACKETING_MESSAGE, min, max, yMin, yMax);
             }
-        } else if (sign < 0){
+        } else if (sign < 0) {
             // solve using only the first endpoint as initial guess
             ret = solve(f, min, yMin, max, yMax, min, yMin);
         } else {
@@ -236,26 +247,27 @@ public class BrentSolver extends UnivariateRealSolverImpl {
 
     /**
      * Find a zero starting search according to the three provided points.
-     * @param f the function to solve
+     *
+     * @param f  the function to solve
      * @param x0 old approximation for the root
      * @param y0 function value at the approximation for the root
      * @param x1 last calculated approximation for the root
      * @param y1 function value at the last calculated approximation
-     * for the root
+     *           for the root
      * @param x2 bracket point (must be set to x0 if no bracket point is
-     * known, this will force starting with linear interpolation)
+     *           known, this will force starting with linear interpolation)
      * @param y2 function value at the bracket point.
      * @return the value where the function is zero
      * @throws MaxIterationsExceededException if the maximum iteration count
-     * is exceeded
-     * @throws FunctionEvaluationException if an error occurs evaluating
-     * the function
+     *                                        is exceeded
+     * @throws FunctionEvaluationException    if an error occurs evaluating
+     *                                        the function
      */
     private double solve(final UnivariateRealFunction f,
                          double x0, double y0,
                          double x1, double y1,
                          double x2, double y2)
-    throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
 
         double delta = x1 - x0;
         double oldDelta = delta;
@@ -280,7 +292,7 @@ public class BrentSolver extends UnivariateRealSolverImpl {
             }
             double dx = x2 - x1;
             double tolerance =
-                Math.max(relativeAccuracy * Math.abs(x1), absoluteAccuracy);
+                    Math.max(relativeAccuracy * Math.abs(x1), absoluteAccuracy);
             if (Math.abs(dx) <= tolerance) {
                 setResult(x1, i);
                 return result;

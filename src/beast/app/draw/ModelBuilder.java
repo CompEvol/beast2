@@ -86,16 +86,20 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     boolean m_bViewSequences = true;
     boolean m_bViewState = true;
 
-//	boolean m_bViewOperators = false;
+    //	boolean m_bViewOperators = false;
 //	boolean m_bViewLoggers = false;
 //	boolean m_bViewSequences = false;
 //	boolean m_bViewState = false;
     boolean m_bRelax = false;
-    
+
     // flag to indicate the model can be edited.
     // set to false for read only view of the model, e.g. from beauti
     boolean m_bIsEditable = true;
-    public void setEditable(boolean bIsEditable) {m_bIsEditable = bIsEditable;}
+
+    public void setEditable(boolean bIsEditable) {
+        m_bIsEditable = bIsEditable;
+    }
+
     /**
      * number of seconds to 'relax' after loading a file *
      */
@@ -150,7 +154,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     Action a_viewLoggers = new ActionViewLoggers();
     Action a_viewSequences = new ActionViewSequences();
     Action a_layout = new ActionLayout();
-    
+
 
     ClipBoard m_clipboard = new ClipBoard();
     /**
@@ -194,8 +198,6 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     } // class ClipBoard
 
     Selection m_Selection = new Selection();
-
-
 
 
     ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
@@ -401,16 +403,16 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 //            int rval = fc.showSaveDialog(g_panel);
 //            if (rval == JFileChooser.APPROVE_OPTION) {
 //	            String sFileName = fc.getSelectedFile().toString();
-        	try {
+            try {
 
-        		File file = Utils.getSaveFile("Export image (type determined by extention)", new File(m_sDir), "Image files", "png", "bmp", "jpg", "svg");
-            
-        		if (file != null) {
-                String sFileName = file.getAbsolutePath();
-                if (sFileName.lastIndexOf('/') > 0) {
-                    m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-                }
-                if (sFileName != null && !sFileName.equals("")) {
+                File file = Utils.getSaveFile("Export image (type determined by extention)", new File(m_sDir), "Image files", "png", "bmp", "jpg", "svg");
+
+                if (file != null) {
+                    String sFileName = file.getAbsolutePath();
+                    if (sFileName.lastIndexOf('/') > 0) {
+                        m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+                    }
+                    if (sFileName != null && !sFileName.equals("")) {
 //                    if (!sFileName.toLowerCase().endsWith(".png")
 //                            && sFileName.toLowerCase().endsWith(".jpg")
 //                            && sFileName.toLowerCase().endsWith(".bmp")
@@ -419,65 +421,65 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 //                                .getExtention();
 //                    }
 
-                    if (sFileName.toLowerCase().endsWith(".png")
-                            || sFileName.toLowerCase().endsWith(".jpg")
-                            || sFileName.toLowerCase().endsWith(".bmp")) {
-                        BufferedImage bi;
-                        Graphics g;
-                        bi = new BufferedImage(g_panel.getWidth(), g_panel
-                                .getHeight(), BufferedImage.TYPE_INT_RGB);
-                        g = bi.getGraphics();
-                        g.setPaintMode();
-                        g.setColor(getBackground());
-                        g.fillRect(0, 0, g_panel.getWidth(), g_panel
-                                .getHeight());
-                        g_panel.printAll(g);
-                        try {
-                            if (sFileName.toLowerCase().endsWith(".png")) {
-                                ImageIO.write(bi, "png", new File(sFileName));
-                            } else if (sFileName.toLowerCase().endsWith(".jpg")) {
-                                ImageIO.write(bi, "jpg", new File(sFileName));
-                            } else if (sFileName.toLowerCase().endsWith(".bmp")) {
-                                ImageIO.write(bi, "bmp", new File(sFileName));
+                        if (sFileName.toLowerCase().endsWith(".png")
+                                || sFileName.toLowerCase().endsWith(".jpg")
+                                || sFileName.toLowerCase().endsWith(".bmp")) {
+                            BufferedImage bi;
+                            Graphics g;
+                            bi = new BufferedImage(g_panel.getWidth(), g_panel
+                                    .getHeight(), BufferedImage.TYPE_INT_RGB);
+                            g = bi.getGraphics();
+                            g.setPaintMode();
+                            g.setColor(getBackground());
+                            g.fillRect(0, 0, g_panel.getWidth(), g_panel
+                                    .getHeight());
+                            g_panel.printAll(g);
+                            try {
+                                if (sFileName.toLowerCase().endsWith(".png")) {
+                                    ImageIO.write(bi, "png", new File(sFileName));
+                                } else if (sFileName.toLowerCase().endsWith(".jpg")) {
+                                    ImageIO.write(bi, "jpg", new File(sFileName));
+                                } else if (sFileName.toLowerCase().endsWith(".bmp")) {
+                                    ImageIO.write(bi, "bmp", new File(sFileName));
+                                }
+                            } catch (Exception e) {
+                                JOptionPane.showMessageDialog(null, sFileName
+                                        + " was not written properly: "
+                                        + e.getMessage());
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            JOptionPane.showMessageDialog(null, sFileName
-                                    + " was not written properly: "
-                                    + e.getMessage());
-                            e.printStackTrace();
+                            return;
+                        } else if (sFileName.toLowerCase().endsWith(".svg")) {
+                            writeSVG(sFileName);
+                            return;
                         }
-                        return;
-                    } else if (sFileName.toLowerCase().endsWith(".svg")) {
-                   		writeSVG(sFileName);
-                    	return;
+                        JOptionPane.showMessageDialog(null, "Extention of file "
+                                + sFileName
+                                + " not recognized as png,bmp,jpg or svg file");
                     }
-                    JOptionPane.showMessageDialog(null, "Extention of file "
-                            + sFileName
-                            + " not recognized as png,bmp,jpg or svg file");
                 }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Something went wrong while exporting image: " + e.getMessage());
             }
-        	} catch (Exception e) {
-				JOptionPane.showMessageDialog(null, "Something went wrong while exporting image: " + e.getMessage());
-			}
 
             m_bIsExporting = false;
             repaint();
         }
 
         private void writeSVG(String sFileName) throws Exception {
-			PrintStream out = new PrintStream(sFileName);
-			out.println("<?xml version='1.0'?>\n" + "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n"
-					+ "  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n"
-					+ "<svg xmlns='http://www.w3.org/2000/svg' version='1.1'\n" + "      width='" + getWidth()
-					+ "' height='" + getHeight() + "' viewBox='0 0 " + getWidth() + " " + getHeight() + "'>\n"
-					+ "<rect fill='#fff' width='" + getWidth() + "' height='" + getHeight() + "'/>");
-			for (Shape shape : m_doc.m_objects) {
-				shape.toSVG(out);
-			}
-			out.println("</svg>");
-		}
+            PrintStream out = new PrintStream(sFileName);
+            out.println("<?xml version='1.0'?>\n" + "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n"
+                    + "  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n"
+                    + "<svg xmlns='http://www.w3.org/2000/svg' version='1.1'\n" + "      width='" + getWidth()
+                    + "' height='" + getHeight() + "' viewBox='0 0 " + getWidth() + " " + getHeight() + "'>\n"
+                    + "<rect fill='#fff' width='" + getWidth() + "' height='" + getHeight() + "'/>");
+            for (Shape shape : m_doc.m_objects) {
+                shape.toSVG(out);
+            }
+            out.println("</svg>");
+        }
 
-		public boolean isExporting() {
+        public boolean isExporting() {
             return m_bIsExporting;
         }
     } // class ActionExport
@@ -1054,7 +1056,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         }
     } // class ActionAbout
 
-    
+
     class ActionRelax extends MyAction {
         private static final long serialVersionUID = -1;
 
@@ -1068,7 +1070,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             g_panel.repaint();
         }
     } // class ActionRelax
-    
+
     class ActionViewLoggers extends MyAction {
         private static final long serialVersionUID = -1;
 
@@ -1110,7 +1112,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             g_panel.repaint();
         }
     } // class ActionViewSequences
-    
+
     class ActionLayout extends MyAction {
         private static final long serialVersionUID = -1;
 
@@ -1124,10 +1126,10 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             m_doc.adjustArrows();
             repaint();
             g_panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        }    
+        }
     } // class ActionViewSequences
-    
-    
+
+
     void updateStatus() {
         a_undo.setEnabled(m_doc.canUndo());
         a_redo.setEnabled(m_doc.canRedo());
@@ -1215,7 +1217,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         setLayout(new BorderLayout());
         // add("North", m_jTbTools);
         // add("Center", g_panel);
-        
+
         m_jTbTools2 = new JToolBar();
         m_jTbTools2.setFloatable(false);
         m_jTbTools2.add(a_relax);
@@ -1223,7 +1225,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         m_jTbTools2.add(a_viewOperators);
         m_jTbTools2.add(a_viewSequences);
         m_jTbTools2.add(a_layout);
-        
+
     } // init
 
     boolean needsDrawing(Plugin plugin) {
@@ -1570,7 +1572,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 }
                             }
                             if (iSelection < 0) {
-                            	return;
+                                return;
                             }
                         }
                         if ((me.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
@@ -1623,9 +1625,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             } // handleDoubleClick
 
             void handleRightClick(MouseEvent me) {
-            	if (!m_bIsEditable) {
-            		return;
-            	}
+                if (!m_bIsEditable) {
+                    return;
+                }
                 JPopupMenu popupMenu = new JPopupMenu("Choose a value");
 
                 if (!m_Selection.hasSelection()) {
@@ -1650,7 +1652,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                         String sName = (String) JOptionPane.showInputDialog(
                                 null, shape.getID(), "New label",
                                 JOptionPane.OK_CANCEL_OPTION, null, null, shape
-                                        .getID());
+                                .getID());
                         if (sName == null || sName.equals("")) {
                             return;
                         }
@@ -2036,10 +2038,10 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     public static void main(String args[]) {
         Randomizer.setSeed(127);
         try {
-        	AddOnManager.loadExternalJars();
+            AddOnManager.loadExternalJars();
         } catch (Exception e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
         JFrame f = new JFrame("Model Builder");
         ModelBuilder drawTest = new ModelBuilder();
         drawTest.init();

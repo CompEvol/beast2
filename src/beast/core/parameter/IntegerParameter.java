@@ -1,7 +1,6 @@
 package beast.core.parameter;
 
 
-
 import beast.core.Description;
 import beast.core.Input;
 
@@ -20,41 +19,44 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
 
     public IntegerParameter() {
     }
-    public IntegerParameter(Integer [] fValues) {
-    	super(fValues);
+
+    public IntegerParameter(Integer[] fValues) {
+        super(fValues);
     }
 
-    /** Constructor used by Input.setValue(String) **/
+    /**
+     * Constructor used by Input.setValue(String) *
+     */
     public IntegerParameter(String sValue) throws Exception {
-    	init(0, 0, sValue, 1);
+        init(0, 0, sValue, 1);
     }
+
     /**
      * Constructor for testing.
      */
 //    public IntegerParameter(String value, Integer lower, Integer upper, Integer dimension) throws Exception {
 //    	init(lower, upper, value, dimension);
 //    }
-
     @Override
     public void initAndValidate() throws Exception {
-    	if (lowerValueInput.get() != null) {
-    		m_fLower = lowerValueInput.get();
-    	} else {
-    		m_fLower = Integer.MIN_VALUE+1;
-    	}
-    	if (upperValueInput.get() != null) {
-    		m_fUpper = upperValueInput.get();
-    	} else {
-    		m_fUpper = Integer.MAX_VALUE-1;
-    	}
-    	String sValue = m_pValues.get();
-    	// remove start and end spaces
-    	sValue = sValue.replaceAll("^\\s+", "");
-    	sValue = sValue.replaceAll("\\s+$", "");
-    	// split into space-separated bits
-    	String [] sValues = sValue.split("\\s+");
-    	int nDimension = Math.max(m_nDimension.get(), sValues.length);
-    	m_nDimension.setValue(nDimension, this);
+        if (lowerValueInput.get() != null) {
+            m_fLower = lowerValueInput.get();
+        } else {
+            m_fLower = Integer.MIN_VALUE + 1;
+        }
+        if (upperValueInput.get() != null) {
+            m_fUpper = upperValueInput.get();
+        } else {
+            m_fUpper = Integer.MAX_VALUE - 1;
+        }
+        String sValue = m_pValues.get();
+        // remove start and end spaces
+        sValue = sValue.replaceAll("^\\s+", "");
+        sValue = sValue.replaceAll("\\s+$", "");
+        // split into space-separated bits
+        String[] sValues = sValue.split("\\s+");
+        int nDimension = Math.max(m_nDimension.get(), sValues.length);
+        m_nDimension.setValue(nDimension, this);
         values = new java.lang.Integer[nDimension];
         storedValues = new java.lang.Integer[nDimension];
         for (int i = 0; i < values.length; i++) {
@@ -63,21 +65,39 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         super.initAndValidate();
     }
 
-    Integer getMax() {return Integer.MAX_VALUE-1;}
-    Integer getMin() {return Integer.MIN_VALUE+1;}
+    Integer getMax() {
+        return Integer.MAX_VALUE - 1;
+    }
+
+    Integer getMin() {
+        return Integer.MIN_VALUE + 1;
+    }
 
     /** Valuable implementation follows **/
-    /** we need this here, because the base implementation (public T getValue()) fails
+    /**
+     * we need this here, because the base implementation (public T getValue()) fails
      * for some reason
      */
     @Override
     public Integer getValue() {
         return values[0];
     }
-    @Override public double getArrayValue() {return (double) values[0];}
-    @Override public double getArrayValue(int iValue) {return (double) values[iValue];};
 
-    /** Loggable implementation follows **/
+    @Override
+    public double getArrayValue() {
+        return (double) values[0];
+    }
+
+    @Override
+    public double getArrayValue(int iValue) {
+        return (double) values[iValue];
+    }
+
+    ;
+
+    /**
+     * Loggable implementation follows *
+     */
     @Override
     public void log(int nSample, PrintStream out) {
         IntegerParameter var = (IntegerParameter) getCurrent();
@@ -87,21 +107,23 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         }
     }
 
-    /** StateNode methods **/
-	@Override
-	public int scale(double fScale) {
-		// nothing to do
-		System.err.println("Attempt to scale Integer parameter " + getID() + "  has no effect");
-		return 0;
-	}
+    /**
+     * StateNode methods *
+     */
+    @Override
+    public int scale(double fScale) {
+        // nothing to do
+        System.err.println("Attempt to scale Integer parameter " + getID() + "  has no effect");
+        return 0;
+    }
 
-	@Override
-    void fromXML(int nDimension, String sLower, String sUpper, String [] sValues) {
-    	setLower(Integer.parseInt(sLower));
-    	setUpper(Integer.parseInt(sUpper));
-    	values = new Integer[nDimension];
-    	for (int i = 0; i < sValues.length; i++) {
-    		values[i] = Integer.parseInt(sValues[i]);
-    	}
+    @Override
+    void fromXML(int nDimension, String sLower, String sUpper, String[] sValues) {
+        setLower(Integer.parseInt(sLower));
+        setUpper(Integer.parseInt(sUpper));
+        values = new Integer[nDimension];
+        for (int i = 0; i < sValues.length; i++) {
+            values[i] = Integer.parseInt(sValues[i]);
+        }
     }
 }

@@ -87,9 +87,9 @@ public class Input<T> {
      */
     public Input() {
     }
-    
-    /** 
-     * simple constructor, requiring only the input name and tiptext 
+
+    /**
+     * simple constructor, requiring only the input name and tiptext
      */
     public Input(String sName, String sTipText) {
         name = sName;
@@ -97,37 +97,37 @@ public class Input<T> {
         value = null;
         checkName();
     } // c'tor
-    
-    /** 
+
+    /**
      * simple constructor as above but with type pre-specified.
      * This allows inputs of types that cannot be determined through
-     * introspection, such as template class inputs, e.g. Input<Parameter<?>> 
+     * introspection, such as template class inputs, e.g. Input<Parameter<?>>
      */
     public Input(String sName, String sTipText, Class<?> theClass) {
-    	this(sName, sTipText);
+        this(sName, sTipText);
         this.theClass = theClass;
     } // c'tor
 
     /**
      * constructor for List<>
-     **/
+     */
     public Input(String sName, String sTipText, T startValue) {
-    	this(sName, sTipText);
+        this(sName, sTipText);
         value = startValue;
         defaultValue = startValue;
     } // c'tor
 
     /**
      * constructor for List<> with type specified
-     **/
+     */
     public Input(String sName, String sTipText, T startValue, Class<?> theClass) {
-    	this(sName, sTipText, startValue);
+        this(sName, sTipText, startValue);
         this.theClass = theClass;
     } // c'tor
 
     /**
      * constructor for List<> with XOR rules
-     **/
+     */
     public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other) {
         this(sName, sTipText, startValue);
         if (rule != Validate.XOR) {
@@ -142,17 +142,17 @@ public class Input<T> {
 
     /**
      * constructor for List<> with XOR rules with type specified
-     **/
+     */
     public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other, Class<?> theClass) {
-    	this(sName, sTipText, startValue, rule, other);
-    	this.theClass = theClass;
+        this(sName, sTipText, startValue, rule, other);
+        this.theClass = theClass;
     } // c'tor
-    
+
 
     /**
      * Constructor for REQUIRED rules for List-inputs, i.e. lists that require
-     * at least one value to be specified. 
-     * If optional (i.e. no value need to be specified), leave the rule out 
+     * at least one value to be specified.
+     * If optional (i.e. no value need to be specified), leave the rule out
      */
     public Input(String sName, String sTipText, T startValue, Validate rule) {
         this(sName, sTipText, startValue);
@@ -164,18 +164,18 @@ public class Input<T> {
     } // c'tor
 
     /**
-     * constructor for REQUIRED rules for List-inputs, with type pre-specified 
+     * constructor for REQUIRED rules for List-inputs, with type pre-specified
      */
     public Input(String sName, String sTipText, T startValue, Validate rule, Class<?> type) {
-    	this(sName, sTipText, startValue, rule);
+        this(sName, sTipText, startValue, rule);
         theClass = type;
     } // c'tor
 
     /**
-     * constructor for REQUIRED rules 
+     * constructor for REQUIRED rules
      */
     public Input(String sName, String sTipText, Validate rule) {
-    	this(sName, sTipText);
+        this(sName, sTipText);
         if (rule != Validate.REQUIRED) {
             System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + sName + ")");
@@ -184,18 +184,18 @@ public class Input<T> {
     } // c'tor
 
     /**
-     * constructor for REQUIRED rules, with type pre-specified 
+     * constructor for REQUIRED rules, with type pre-specified
      */
     public Input(String sName, String sTipText, Validate rule, Class<?> type) {
-    	this(sName, sTipText, rule);
-    	this.theClass = type;
+        this(sName, sTipText, rule);
+        this.theClass = type;
     }
-    
+
     /**
      * constructor for XOR rules *
      */
     public Input(String sName, String sTipText, Validate rule, Input<?> other) {
-    	this(sName, sTipText);
+        this(sName, sTipText);
         if (rule != Validate.XOR) {
             System.err.println("Programmer error: input rule should be XOR for this Input constructor");
         }
@@ -209,8 +209,8 @@ public class Input<T> {
      * constructor for XOR rules, with type pre-specified
      */
     public Input(String sName, String sTipText, Validate rule, Input<?> other, Class<?> type) {
-    	this(sName, sTipText, rule, other);
-    	this.theClass = type;
+        this(sName, sTipText, rule, other);
+        this.theClass = type;
     }
 
     /**
@@ -229,16 +229,18 @@ public class Input<T> {
         checkName();
     } // c'tor
 
-    /** check name is not one of the reserved ones **/
+    /**
+     * check name is not one of the reserved ones *
+     */
     private void checkName() {
-    	if (name.toLowerCase().equals("id") ||
-    			name.toLowerCase().equals("idref") ||
-    			name.toLowerCase().equals("spec") ||
-    			name.toLowerCase().equals("name")) {
-    		System.err.println("Found an input with invalid name: " + name);
-    		System.err.println("'id', 'idref', 'spec' and 'name' are reserved and cannot be used");
-    		System.exit(0);
-    	}
+        if (name.toLowerCase().equals("id") ||
+                name.toLowerCase().equals("idref") ||
+                name.toLowerCase().equals("spec") ||
+                name.toLowerCase().equals("name")) {
+            System.err.println("Found an input with invalid name: " + name);
+            System.err.println("'id', 'idref', 'spec' and 'name' are reserved and cannot be used");
+            System.exit(0);
+        }
     }
 
     /**
@@ -348,11 +350,11 @@ public class Input<T> {
     @SuppressWarnings("unchecked")
     public void setValue(Object value, Plugin plugin) throws Exception {
         if (value == null) {
-           	if (this.value != null) {
+            if (this.value != null) {
                 if (this.value instanceof Plugin) {
-                	((Plugin)this.value).outputs.remove(plugin);
+                    ((Plugin) this.value).outputs.remove(plugin);
                 }
-           	}
+            }
             this.value = null;
             return;
         }
@@ -376,7 +378,7 @@ public class Input<T> {
 //                }
                 vector.add(value);
                 if (value instanceof Plugin) {
-                	((Plugin)value).outputs.add(plugin);
+                    ((Plugin) value).outputs.add(plugin);
                 }
             } else {
                 throw new Exception("Input 101: type mismatch for input " + getName());
@@ -385,10 +387,10 @@ public class Input<T> {
         } else {
             if (theClass.isAssignableFrom(value.getClass())) {
                 if (value instanceof Plugin) {
-                	if (this.value != null) {
-                		((Plugin)this.value).outputs.remove(plugin);
-                	}
-                	((Plugin)value).outputs.add(plugin);
+                    if (this.value != null) {
+                        ((Plugin) this.value).outputs.remove(plugin);
+                    }
+                    ((Plugin) value).outputs.add(plugin);
                 }
                 this.value = (T) value;
             } else {
@@ -397,31 +399,32 @@ public class Input<T> {
         }
     }
 
-	/** Call custom input validation.
-	 * For an input with name "name", the method canSetName will be invoked,
-	 * that is, 'canSet' + the name of the input with first letter capitalised.
-	 * The canSetName(Object o) method should have one argument of type Object.
-	 * 
-	 * It is best for Beauti to throw an Exception from canSetName() with some 
-	 * diagnostic info when the value cannot be set.
-	 */
+    /**
+     * Call custom input validation.
+     * For an input with name "name", the method canSetName will be invoked,
+     * that is, 'canSet' + the name of the input with first letter capitalised.
+     * The canSetName(Object o) method should have one argument of type Object.
+     * <p/>
+     * It is best for Beauti to throw an Exception from canSetName() with some
+     * diagnostic info when the value cannot be set.
+     */
     public boolean canSetValue(Object value, Plugin plugin) throws Exception {
-    	String sName = new String(name.charAt(0)+"").toUpperCase() + name.substring(1);
-    	try {
-    		Method method = plugin.getClass().getMethod("canSet"+sName, Object.class);
-    		//System.err.println("Calling method " + plugin.getClass().getName() +"."+ method.getName());
-    		Object o = method.invoke(plugin, value);
-    		return (Boolean) o;
-    	} catch (java.lang.NoSuchMethodException e) {
-        	return true;
-    	} catch (java.lang.reflect.InvocationTargetException e) {
-    		if (e.getCause() != null) {
-    			throw new Exception(e.getCause().getMessage());
-    		}
-        	return false;
-		}
+        String sName = new String(name.charAt(0) + "").toUpperCase() + name.substring(1);
+        try {
+            Method method = plugin.getClass().getMethod("canSet" + sName, Object.class);
+            //System.err.println("Calling method " + plugin.getClass().getName() +"."+ method.getName());
+            Object o = method.invoke(plugin, value);
+            return (Boolean) o;
+        } catch (java.lang.NoSuchMethodException e) {
+            return true;
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            if (e.getCause() != null) {
+                throw new Exception(e.getCause().getMessage());
+            }
+            return false;
+        }
     }
-    
+
     /**
      * Determine class through introspection,
      * This sets the m_class member of Input<T> to the actual value of T.
@@ -439,23 +442,23 @@ public class Input<T> {
                 if (fields[i].getType().isAssignableFrom(Input.class)) {
                     Input<?> input = (Input<?>) fields[i].get(plugin);
                     if (input == this) {
-                    	// found the input, now determine the type of the input
+                        // found the input, now determine the type of the input
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
                         // check if it is a List
                         // NB: if the List is not initialised, there is no way 
                         // to determine the type (that I know of...)
                         if (value != null && value instanceof List<?>) {
-                        		Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
-                        		theClass = (Class<?>) genericTypes2[0];
+                            Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
+                            theClass = (Class<?>) genericTypes2[0];
                         } else {
-                        	// it is not a list (or if it is, this will fail)
+                            // it is not a list (or if it is, this will fail)
                             try {
                                 theClass = (Class<?>) genericTypes[0];
                             } catch (Exception e) {
                                 System.err.println(plugin.getClass().getName() + " " + plugin.getID() + " failed. " +
-                                		"Possibly template or abstract Plugin used " +
-                                		"or if it is a list, the list was not initilised???");
+                                        "Possibly template or abstract Plugin used " +
+                                        "or if it is a list, the list was not initilised???");
                                 System.err.println("class is " + plugin.getClass());
                                 e.printStackTrace(System.err);
                                 System.exit(0);
@@ -537,7 +540,7 @@ public class Input<T> {
         } catch (Exception e) {
             throw new Exception("Input 103: type mismatch, cannot initialize input '" + getName() +
                     "' with value '" + sValue + "'.\nExpected something of type " + getType().getName() +
-            		". " + (e.getMessage() != null ? e.getMessage() : ""));
+                    ". " + (e.getMessage() != null ? e.getMessage() : ""));
         }
     } // setStringValue
 

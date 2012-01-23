@@ -43,17 +43,18 @@ public interface IntegerDistribution extends DiscreteDistribution {
      * @param x the value at which the PDF is evaluated.
      * @return PDF for this distribution.
      * @throws MathException if the cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
     double cumulativeProbability(int x) throws MathException;
 
     /**
      * For this distribution, X, this method returns P(x0 &le; X &le; x1).
+     *
      * @param x0 the inclusive, lower bound
      * @param x1 the inclusive, upper bound
      * @return the cumulative probability.
-     * @throws MathException if the cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     * @throws MathException            if the cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if x0 > x1
      */
     double cumulativeProbability(int x0, int x1) throws MathException;
@@ -76,8 +77,8 @@ public interface IntegerDistribution extends DiscreteDistribution {
      *
      * @param p the cumulative probability.
      * @return the largest x such that P(X &le; x) <= p
-     * @throws MathException if the inverse cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if p is not between 0 and 1 (inclusive)
      */
     int inverseCumulativeProbability(double p) throws MathException;

@@ -10,9 +10,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 
-/** dialog for managing Add-ons.
+/**
+ * dialog for managing Add-ons.
  * List, install and uninstall add-ons
- *  **/
+ * *
+ */
 public class AddOnManagerDialog {
     private static final long serialVersionUID = 1L;
 
@@ -32,7 +34,7 @@ public class AddOnManagerDialog {
         final DefaultListModel model = new DefaultListModel();
         model.addElement("Fetching...");
 
-        final JList list  = new JList(model);
+        final JList list = new JList(model);
         list.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(list);
@@ -94,12 +96,12 @@ public class AddOnManagerDialog {
 
         // show dialog and then populate list
         SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-              populateList(model);
-              list.setEnabled(true);
-              list.setSelectedIndex(0);
-              installButton.setEnabled(true);
-          }
+            public void run() {
+                populateList(model);
+                list.setEnabled(true);
+                list.setSelectedIndex(0);
+                installButton.setEnabled(true);
+            }
         });
 
         dialog.setVisible(true);
@@ -111,6 +113,7 @@ public class AddOnManagerDialog {
         String sAddOnURL;
         String sAddOnDescription;
         boolean bIsInstalled;
+
         AddOn(List<String> list) {
             sAddOnDescription = list.get(0);
             sAddOnURL = list.get(1);

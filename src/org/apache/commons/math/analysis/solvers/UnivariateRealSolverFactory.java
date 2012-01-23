@@ -30,7 +30,7 @@ package org.apache.commons.math.analysis.solvers;
  * <p>
  * Common usage:<pre>
  * SolverFactory factory = UnivariateRealSolverFactory.newInstance();</p>
- *
+ * <p/>
  * // create a Brent solver to use
  * BrentSolver solver = factory.newBrentSolver();
  * </pre>
@@ -46,6 +46,7 @@ public abstract class UnivariateRealSolverFactory {
 
     /**
      * Create a new factory.
+     *
      * @return a new factory.
      */
     public static UnivariateRealSolverFactory newInstance() {
@@ -55,6 +56,7 @@ public abstract class UnivariateRealSolverFactory {
     /**
      * Create a new {@link UnivariateRealSolver}.  The
      * actual solver returned is determined by the underlying factory.
+     *
      * @return the new solver.
      */
     public abstract UnivariateRealSolver newDefaultSolver();
@@ -62,6 +64,7 @@ public abstract class UnivariateRealSolverFactory {
     /**
      * Create a new {@link UnivariateRealSolver}.  The
      * solver is an implementation of the bisection method.
+     *
      * @return the new solver.
      */
     public abstract UnivariateRealSolver newBisectionSolver();
@@ -69,6 +72,7 @@ public abstract class UnivariateRealSolverFactory {
     /**
      * Create a new {@link UnivariateRealSolver}.  The
      * solver is an implementation of the Brent method.
+     *
      * @return the new solver.
      */
     public abstract UnivariateRealSolver newBrentSolver();
@@ -76,6 +80,7 @@ public abstract class UnivariateRealSolverFactory {
     /**
      * Create a new {@link UnivariateRealSolver}.  The
      * solver is an implementation of Newton's Method.
+     *
      * @return the new solver.
      */
     public abstract UnivariateRealSolver newNewtonSolver();
@@ -83,6 +88,7 @@ public abstract class UnivariateRealSolverFactory {
     /**
      * Create a new {@link UnivariateRealSolver}.  The
      * solver is an implementation of the secant method.
+     *
      * @return the new solver.
      */
     public abstract UnivariateRealSolver newSecantSolver();

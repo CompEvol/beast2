@@ -87,44 +87,45 @@ public class LaplaceDistribution extends ParametricDistribution {
 
     @Override
     public ContinuousDistribution getDistribution() {
-		refresh();
-		return m_dist;
+        refresh();
+        return m_dist;
 //        throw new UnsupportedOperationException();
     }
 
-	class LaplaceImpl implements ContinuousDistribution {
+    class LaplaceImpl implements ContinuousDistribution {
 
-		@Override
-		public double cumulativeProbability(double x) throws MathException {
-			// =0.5\,[1 + \sgn(x-\mu)\,(1-\exp(-|x-\mu|/b))].
-			//return 0.5 * (1.0 + Math.signum(x - m_fMu) * (1.0 - Math.exp(-Math.abs(x-m_fMu)/m_fScale)));
-	        if (x == mu) {
-	            return 0.5;
-	        } else {
-	            return (0.5) * (1 + ((x - mu) / Math.abs(x - mu)) * (1 - Math.exp(-Math.abs(x - mu) / scale)));
-	        }
-		}
+        @Override
+        public double cumulativeProbability(double x) throws MathException {
+            // =0.5\,[1 + \sgn(x-\mu)\,(1-\exp(-|x-\mu|/b))].
+            //return 0.5 * (1.0 + Math.signum(x - m_fMu) * (1.0 - Math.exp(-Math.abs(x-m_fMu)/m_fScale)));
+            if (x == mu) {
+                return 0.5;
+            } else {
+                return (0.5) * (1 + ((x - mu) / Math.abs(x - mu)) * (1 - Math.exp(-Math.abs(x - mu) / scale)));
+            }
+        }
 
-		@Override
-		public double cumulativeProbability(double x0, double x1) throws MathException {
-			return cumulativeProbability(x1) - cumulativeProbability(x0);
-		}
+        @Override
+        public double cumulativeProbability(double x0, double x1) throws MathException {
+            return cumulativeProbability(x1) - cumulativeProbability(x0);
+        }
 
-		@Override
-		public double inverseCumulativeProbability(double p) throws MathException {
-			//     \mu - b\,\sgn(p-0.5)\,\ln(1 - 2|p-0.5|). 
+        @Override
+        public double inverseCumulativeProbability(double p) throws MathException {
+            //     \mu - b\,\sgn(p-0.5)\,\ln(1 - 2|p-0.5|).
             return mu - scale * Math.signum(p - 0.5) * Math.log(1.0 - 2.0 * Math.abs(p - 0.5));
-		}
+        }
 
-		@Override
-		public double density(double fX) {
-			// f(x|\mu,b) = \frac{1}{2b} \exp \left( -\frac{|x-\mu|}{b} \right) \,\!
-	        return c * Math.exp(-Math.abs(fX - mu) / scale);
-		}
-		@Override
-		public double logDensity(double fX) {
-	        return Math.log(c) - (Math.abs(fX - mu) / scale);
-		}
-	} // class LaplaceImpl
+        @Override
+        public double density(double fX) {
+            // f(x|\mu,b) = \frac{1}{2b} \exp \left( -\frac{|x-\mu|}{b} \right) \,\!
+            return c * Math.exp(-Math.abs(fX - mu) / scale);
+        }
+
+        @Override
+        public double logDensity(double fX) {
+            return Math.log(c) - (Math.abs(fX - mu) / scale);
+        }
+    } // class LaplaceImpl
 
 } // class

@@ -22,7 +22,7 @@ package org.apache.commons.math.distribution;
  * distribution as defined by
  * <a href="http://mathworld.wolfram.com/WeibullDistribution.html">
  * Weibull Distribution</a>, equations (1) and (2).
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -31,25 +31,28 @@ package org.apache.commons.math.distribution;
  * </ul>
  * </p>
  *
- * @since 1.1
  * @version $Revision: 920852 $ $Date: 2010-03-09 07:53:44 -0500 (Tue, 09 Mar 2010) $
+ * @since 1.1
  */
 public interface WeibullDistribution extends ContinuousDistribution {
 
     /**
      * Access the shape parameter.
+     *
      * @return the shape parameter.
      */
     double getShape();
 
     /**
      * Access the scale parameter.
+     *
      * @return the scale parameter.
      */
     double getScale();
 
     /**
      * Modify the shape parameter.
+     *
      * @param alpha The new shape parameter value.
      * @deprecated as of v2.1
      */
@@ -58,6 +61,7 @@ public interface WeibullDistribution extends ContinuousDistribution {
 
     /**
      * Modify the scale parameter.
+     *
      * @param beta The new scale parameter value.
      * @deprecated as of v2.1
      */

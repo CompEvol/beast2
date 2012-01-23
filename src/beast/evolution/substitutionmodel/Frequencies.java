@@ -43,73 +43,83 @@ public class Frequencies extends CalculationNode {
     public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
     public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
     public Input<RealParameter> frequencies = new Input<RealParameter>("frequencies", "A set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
-    
-    /** contains frequency distribution **/
+
+    /**
+     * contains frequency distribution *
+     */
     protected double[] m_fFreqs;
 
-    /** flag to indicate m_fFreqs is up to date **/
+    /**
+     * flag to indicate m_fFreqs is up to date *
+     */
     boolean m_bNeedsUpdate;
 
-    
+
     @Override
     public void initAndValidate() throws Exception {
-    	update();
+        update();
         double fSum = getSumOfFrequencies(getFreqs());
         // sanity check
-        if (Math.abs(fSum-1.0)>1e-6) {
-    		throw new Exception("Frequencies do not add up to 1");
-    	}
-        
-    }
-    
-    /** return up to date frequencies **/
-    public double[] getFreqs(){
-    	    if (m_bNeedsUpdate) {
+        if (Math.abs(fSum - 1.0) > 1e-6) {
+            throw new Exception("Frequencies do not add up to 1");
+        }
 
-    		    update();
-    	    }
+    }
+
+    /**
+     * return up to date frequencies *
+     */
+    public double[] getFreqs() {
+        if (m_bNeedsUpdate) {
+
+            update();
+        }
 
         return m_fFreqs;
     }
 
-    /** recalculate frequencies, unless it is fixed **/
+    /**
+     * recalculate frequencies, unless it is fixed *
+     */
     void update() {
         if (frequencies.get() != null) {
 
-        	// if user specified, parse frequencies from space delimited string
+            // if user specified, parse frequencies from space delimited string
             m_fFreqs = new double[frequencies.get().getDimension()];
 
-    		for (int i = 0; i < m_fFreqs.length; i++) {
-    			m_fFreqs[i] = frequencies.get().getValue(i);
-    		}
+            for (int i = 0; i < m_fFreqs.length; i++) {
+                m_fFreqs[i] = frequencies.get().getValue(i);
+            }
 
 
-    	}else if (m_bEstimate.get()) { // if not user specified, either estimate from data or set as fixed
-    		// estimate
+        } else if (m_bEstimate.get()) { // if not user specified, either estimate from data or set as fixed
+            // estimate
             estimateFrequencies();
             checkFrequencies();
         } else {
-    		// uniformly distributed
+            // uniformly distributed
             int nStates = m_data.get().getMaxStateCount();
             m_fFreqs = new double[nStates];
             for (int i = 0; i < nStates; i++) {
                 m_fFreqs[i] = 1.0 / nStates;
             }
         }
-    	m_bNeedsUpdate = false;
+        m_bNeedsUpdate = false;
     } // update
 
 
-    /** Estimate from sequence alignment.
-     *  This version matches the implementation in Beast 1 & PAUP  **/
+    /**
+     * Estimate from sequence alignment.
+     * This version matches the implementation in Beast 1 & PAUP  *
+     */
     void estimateFrequencies() {
-    	Alignment alignment = m_data.get();
+        Alignment alignment = m_data.get();
         DataType dataType = alignment.getDataType();
         int stateCount = alignment.getMaxStateCount();
 
         m_fFreqs = new double[stateCount];
         Arrays.fill(m_fFreqs, 1.0 / stateCount);
-        
+
         int nAttempts = 0;
         double fDifference;
         do {
@@ -121,18 +131,18 @@ public class Frequencies extends CalculationNode {
                 double fWeight = alignment.getPatternWeight(i);
 
                 for (int iValue : nPattern) {
-                	int [] codes = dataType.getStatesForCode(iValue);
+                    int[] codes = dataType.getStatesForCode(iValue);
 
                     double sum = 0.0;
-                	for (int iCode : codes) {
-                         sum += m_fFreqs[iCode];
-                	}
+                    for (int iCode : codes) {
+                        sum += m_fFreqs[iCode];
+                    }
 
-                	for (int iCode : codes) {
+                    for (int iCode : codes) {
                         double fTmp = (m_fFreqs[iCode] * fWeight) / sum;
                         fTmpFreq[iCode] += fTmp;
                         fTotal += fTmp;
-                	}
+                    }
                 }
             }
 
@@ -171,7 +181,7 @@ public class Frequencies extends CalculationNode {
 //            m_fFreqs[i] /= fSum;
 //        }
         System.err.println("Starting frequencies: " + Arrays.toString(m_fFreqs));
-   } // calcFrequencies
+    } // calcFrequencies
 
     /**
      * Ensures that frequencies are not smaller than MINFREQ and
@@ -210,21 +220,23 @@ public class Frequencies extends CalculationNode {
             }
         }
     } // checkFrequencies
-    
-    /** CalculationNode implementation **/
+
+    /**
+     * CalculationNode implementation *
+     */
     @Override
     protected boolean requiresRecalculation() {
         boolean recalculates = false;
-        if(frequencies.get().somethingIsDirty()){
+        if (frequencies.get().somethingIsDirty()) {
 
-    	    m_bNeedsUpdate = true;
+            m_bNeedsUpdate = true;
             recalculates = true;
         }
-        
-    	return recalculates;
+
+        return recalculates;
     }
 
-/**
+    /**
      * @param frequencies the frequencies
      * @return return the sum of frequencies
      */
@@ -236,9 +248,9 @@ public class Frequencies extends CalculationNode {
         return total;
     }
 
-    public void restore(){
+    public void restore() {
         m_bNeedsUpdate = true;
         super.restore();
     }
-    
+
 } // class Frequencies

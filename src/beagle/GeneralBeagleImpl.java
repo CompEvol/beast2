@@ -114,7 +114,7 @@ public class GeneralBeagleImpl implements Beagle {
             for (int i = 0; i < SCALING_FACTOR_COUNT; i++) {
                 scalingFactors[i] = Math.pow(2.0, exponent);
                 logScalingFactors[i] = Math.log(scalingFactors[i]);
-                exponent ++;
+                exponent++;
             }
         }
 
@@ -141,7 +141,7 @@ public class GeneralBeagleImpl implements Beagle {
      * @param states   an array of patternCount state indices
      */
     public void setTipStates(int tipIndex, int[] states) {
-        assert(tipIndex >= 0 && tipIndex < tipCount);
+        assert (tipIndex >= 0 && tipIndex < tipCount);
         if (this.tipStates[tipIndex] == null) {
             tipStates[tipIndex] = new int[patternCount];
         }
@@ -154,7 +154,7 @@ public class GeneralBeagleImpl implements Beagle {
     }
 
     public void getTipStates(int tipIndex, int[] states) {
-        assert(tipIndex >= 0 && tipIndex < tipCount);
+        assert (tipIndex >= 0 && tipIndex < tipCount);
         if (this.tipStates[tipIndex] == null) {
             throw new RuntimeException("Unset tip states");
         }
@@ -162,7 +162,7 @@ public class GeneralBeagleImpl implements Beagle {
     }
 
     public void setTipPartials(int tipIndex, double[] inPartials) {
-        assert(tipIndex >= 0 && tipIndex < tipCount);
+        assert (tipIndex >= 0 && tipIndex < tipCount);
         if (this.partials[tipIndex] == null) {
             this.partials[tipIndex] = new double[partialsSize];
         }
@@ -174,7 +174,7 @@ public class GeneralBeagleImpl implements Beagle {
     }
 
     public void setPartials(final int bufferIndex, final double[] partials) {
-        assert(this.partials[bufferIndex] != null);
+        assert (this.partials[bufferIndex] != null);
         System.arraycopy(partials, 0, this.partials[bufferIndex], 0, partialsSize);
     }
 
@@ -183,7 +183,7 @@ public class GeneralBeagleImpl implements Beagle {
     }
 
     public void setEigenDecomposition(int eigenIndex, double[] eigenVectors, double[] inverseEigenValues, double[] eigenValues) {
-        int l =0;
+        int l = 0;
         for (int i = 0; i < stateCount; i++) {
             for (int j = 0; j < stateCount; j++) {
                 for (int k = 0; k < stateCount; k++) {
@@ -212,7 +212,7 @@ public class GeneralBeagleImpl implements Beagle {
     }
 
     public void getTransitionMatrix(final int matrixIndex, final double[] outMatrix) {
-        System.arraycopy(this.matrices[matrixIndex],0,outMatrix,0,outMatrix.length);
+        System.arraycopy(this.matrices[matrixIndex], 0, outMatrix, 0, outMatrix.length);
     }
 
     public void updateTransitionMatrices(final int eigenIndex,
@@ -232,7 +232,7 @@ public class GeneralBeagleImpl implements Beagle {
             for (int l = 0; l < categoryCount; l++) {
 //	    if (DEBUG) System.err.println("1: Rate "+l+" = "+categoryRates[l]);
                 for (int i = 0; i < stateCount; i++) {
-                    tmp[i] =  Math.exp(eigenValues[eigenIndex][i] * edgeLengths[u] * categoryRates[l]);
+                    tmp[i] = Math.exp(eigenValues[eigenIndex][i] * edgeLengths[u] * categoryRates[l]);
                 }
 //            if (DEBUG) System.err.println(new dr.math.matrixAlgebra.Vector(tmp));
                 //        if (DEBUG) System.exit(-1);
@@ -263,13 +263,12 @@ public class GeneralBeagleImpl implements Beagle {
     /**
      * Operations list is a list of 7-tuple integer indices, with one 7-tuple per operation.
      * Format of 7-tuple operation: {destinationPartials,
-     *                               destinationScaleWrite,
-     *                               destinationScaleRead,
-     *                               child1Partials,
-     *                               child1TransitionMatrix,
-     *                               child2Partials,
-     *                               child2TransitionMatrix}
-     *
+     * destinationScaleWrite,
+     * destinationScaleRead,
+     * child1Partials,
+     * child1TransitionMatrix,
+     * child2Partials,
+     * child2TransitionMatrix}
      */
     public void updatePartials(final int[] operations, final int operationCount, final int cumulativeScaleIndex) {
 
@@ -317,7 +316,7 @@ public class GeneralBeagleImpl implements Beagle {
         int[] counts = scalingFactorCounts[bufferIndex];
 
         if (DEBUG) {
-            System.err.println("rescaling buffer "+ bufferIndex);
+            System.err.println("rescaling buffer " + bufferIndex);
         }
 
         int u = 0;
@@ -344,7 +343,7 @@ public class GeneralBeagleImpl implements Beagle {
                     // increment the count of how many times this factor has been used
                     counts[index] += patternWeights[k];
                     if (DEBUG) {
-                        System.err.println("exponent "+ exponent + ", index " + index + ", factor " + scalingFactor);
+                        System.err.println("exponent " + exponent + ", index " + index + ", factor " + scalingFactor);
                     }
 
                     // do the rescaling
@@ -376,10 +375,10 @@ public class GeneralBeagleImpl implements Beagle {
 
     /**
      * Calculates partial likelihoods at a node when both children have states.
+     *
      * @returns the larges absolute exponent
      */
-    protected int updateStatesStates(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3)
-    {
+    protected int updateStatesStates(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3) {
         double[] matrices1 = matrices[matrixIndex1];
         double[] matrices2 = matrices[matrixIndex2];
 
@@ -455,8 +454,7 @@ public class GeneralBeagleImpl implements Beagle {
     /**
      * Calculates partial likelihoods at a node when one child has states and one has partials.
      */
-    protected int updateStatesPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3)
-    {
+    protected int updateStatesPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3) {
         double[] matrices1 = matrices[matrixIndex1];
         double[] matrices2 = matrices[matrixIndex2];
 
@@ -538,8 +536,7 @@ public class GeneralBeagleImpl implements Beagle {
         return exponent;
     }
 
-    protected int updatePartialsPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3)
-    {
+    protected int updatePartialsPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3) {
         double[] matrices1 = matrices[matrixIndex1];
         double[] matrices2 = matrices[matrixIndex2];
 
@@ -612,7 +609,7 @@ public class GeneralBeagleImpl implements Beagle {
 
     public void calculateRootLogLikelihoods(final int[] bufferIndices, final int[] categoryWeightsIndices, final int[] stateFrequenciesIndices, final int[] cumulativeScaleIndices, final int count, final double[] outSumLogLikelihood) {
 
-        assert(count == 1); // @todo implement integration across multiple subtrees
+        assert (count == 1); // @todo implement integration across multiple subtrees
 
         double[] rootPartials = partials[bufferIndices[0]];
 
@@ -636,7 +633,7 @@ public class GeneralBeagleImpl implements Beagle {
 
                 for (int i = 0; i < stateCount; i++) {
 
-                    tmpPartials[u] += rootPartials[v] *  categoryWeights[categoryWeightsIndices[0]][l];
+                    tmpPartials[u] += rootPartials[v] * categoryWeights[categoryWeightsIndices[0]][l];
                     u++;
                     v++;
                 }
@@ -645,7 +642,7 @@ public class GeneralBeagleImpl implements Beagle {
 
         u = 0;
         outSumLogLikelihood[0] = 0.0;
-        double [] patternLogLikelihood = new double[patternCount];
+        double[] patternLogLikelihood = new double[patternCount];
         for (int k = 0; k < patternCount; k++) {
 
             double sum = 0.0;

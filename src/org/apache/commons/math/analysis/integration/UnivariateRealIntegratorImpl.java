@@ -27,43 +27,56 @@ import org.apache.commons.math.analysis.UnivariateRealFunction;
  * @since 1.2
  */
 public abstract class UnivariateRealIntegratorImpl
-    extends ConvergingAlgorithmImpl implements UnivariateRealIntegrator {
+        extends ConvergingAlgorithmImpl implements UnivariateRealIntegrator {
 
-    /** Serializable version identifier. */
+    /**
+     * Serializable version identifier.
+     */
     private static final long serialVersionUID = 6248808456637441533L;
 
-    /** minimum number of iterations */
+    /**
+     * minimum number of iterations
+     */
     protected int minimalIterationCount;
 
-    /** default minimum number of iterations */
+    /**
+     * default minimum number of iterations
+     */
     protected int defaultMinimalIterationCount;
 
-    /** indicates whether an integral has been computed */
+    /**
+     * indicates whether an integral has been computed
+     */
     protected boolean resultComputed = false;
 
-    /** the last computed integral */
+    /**
+     * the last computed integral
+     */
     protected double result;
 
-    /** The integrand functione.
+    /**
+     * The integrand functione.
+     *
      * @deprecated as of 2.0 the integrand function is passed as an argument
-     * to the {@link #integrate(UnivariateRealFunction, double, double)}method. */
+     *             to the {@link #integrate(UnivariateRealFunction, double, double)}method.
+     */
     @Deprecated
     protected UnivariateRealFunction f;
 
     /**
      * Construct an integrator with given iteration count and accuracy.
      *
-     * @param f the integrand function
+     * @param f                            the integrand function
      * @param defaultMaximalIterationCount maximum number of iterations
      * @throws IllegalArgumentException if f is null or the iteration
-     * limits are not valid
+     *                                  limits are not valid
      * @deprecated as of 2.0 the integrand function is passed as an argument
-     * to the {@link #integrate(UnivariateRealFunction, double, double)}method.
+     *             to the {@link #integrate(UnivariateRealFunction, double, double)}method.
      */
     @Deprecated
     protected UnivariateRealIntegratorImpl(final UnivariateRealFunction f,
                                            final int defaultMaximalIterationCount)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         super(defaultMaximalIterationCount, 1.0e-15);
         if (f == null) {
             throw MathRuntimeException.createIllegalArgumentException("function is null");
@@ -84,10 +97,10 @@ public abstract class UnivariateRealIntegratorImpl
      *
      * @param defaultMaximalIterationCount maximum number of iterations
      * @throws IllegalArgumentException if f is null or the iteration
-     * limits are not valid
+     *                                  limits are not valid
      */
     protected UnivariateRealIntegratorImpl(final int defaultMaximalIterationCount)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         super(defaultMaximalIterationCount, 1.0e-15);
 
         // parameters that are problem specific
@@ -115,11 +128,11 @@ public abstract class UnivariateRealIntegratorImpl
     /**
      * Convenience function for implementations.
      *
-     * @param newResult the result to set
+     * @param newResult      the result to set
      * @param iterationCount the iteration count to set
      */
     protected final void setResult(double newResult, int iterationCount) {
-        this.result         = newResult;
+        this.result = newResult;
         this.iterationCount = iterationCount;
         this.resultComputed = true;
     }
@@ -132,17 +145,23 @@ public abstract class UnivariateRealIntegratorImpl
         this.resultComputed = false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void setMinimalIterationCount(int count) {
         minimalIterationCount = count;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getMinimalIterationCount() {
         return minimalIterationCount;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void resetMinimalIterationCount() {
         minimalIterationCount = defaultMinimalIterationCount;
     }
@@ -155,7 +174,7 @@ public abstract class UnivariateRealIntegratorImpl
      * @throws IllegalArgumentException if not interval
      */
     protected void verifyInterval(double lower, double upper) throws
-        IllegalArgumentException {
+            IllegalArgumentException {
         if (lower >= upper) {
             throw MathRuntimeException.createIllegalArgumentException(
                     "endpoints do not specify an interval: [{0}, {1}]",

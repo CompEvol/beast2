@@ -17,23 +17,24 @@ import java.util.Random;
  */
 
 @Description("Calculates the probability of a beast.tree conditional on a population size function. " +
-	"Note that this does not take the number of possible tree interval/tree topology combinations " +
-	"in account, in other words, the constant required for making this a proper distribution that integrates " +
-	"to unity is not calculated (partly, because we don't know how for sequentially samples data).")
+        "Note that this does not take the number of possible tree interval/tree topology combinations " +
+        "in account, in other words, the constant required for making this a proper distribution that integrates " +
+        "to unity is not calculated (partly, because we don't know how for sequentially samples data).")
 public class Coalescent extends TreeDistribution {
     public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model", Validate.REQUIRED);
 
     TreeIntervals intervals;
-	@Override
-	public void initAndValidate() throws Exception {
-		intervals = treeIntervals.get();
-		if (intervals == null) {
-			throw new Exception("Expected treeIntervals to be specified");
-		}
-		calculateLogP();
-	}
 
-    
+    @Override
+    public void initAndValidate() throws Exception {
+        intervals = treeIntervals.get();
+        if (intervals == null) {
+            throw new Exception("Expected treeIntervals to be specified");
+        }
+        calculateLogP();
+    }
+
+
     /**
      * do the actual calculation *
      */
@@ -133,6 +134,6 @@ public class Coalescent extends TreeDistribution {
 
     @Override
     protected boolean requiresRecalculation() {
-        return ((CalculationNode)popSize.get()).isDirtyCalculation() || super.requiresRecalculation();
+        return ((CalculationNode) popSize.get()).isDirtyCalculation() || super.requiresRecalculation();
     }
 }

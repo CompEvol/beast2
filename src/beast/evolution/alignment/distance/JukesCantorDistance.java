@@ -29,53 +29,51 @@ import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 
 /**
- * @version $Id: JukesCantorDistanceMatrix.java,v 1.4 2005/05/24 20:25:56 rambaut Exp $
- *
  * @author Andrew Rambaut
  * @author Korbinian Strimmer
+ * @version $Id: JukesCantorDistanceMatrix.java,v 1.4 2005/05/24 20:25:56 rambaut Exp $
  */
 @Description("compute jukes-cantor corrected distance")
-public class JukesCantorDistance extends Distance
-{
-	
-	
-	/**
-	 * set the pattern source
-	 */
-	public void setPatterns(Alignment patterns) {
-		super.setPatterns(patterns);
+public class JukesCantorDistance extends Distance {
+
+
+    /**
+     * set the pattern source
+     */
+    public void setPatterns(Alignment patterns) {
+        super.setPatterns(patterns);
 
         final int stateCount = dataType.getStateCount();
 
-		const1 = ((double) stateCount - 1) / stateCount;
-		const2 = ((double) stateCount) / (stateCount - 1) ;
-	}
-		
-	/**
-	 * Calculate a pairwise distance
-	 */
-	public double calculatePairwiseDistance(int i, int j) {
-		final double obsDist = super.calculatePairwiseDistance(i, j);
-		
-		if (obsDist == 0.0) return 0.0;
-	
-		if (obsDist >= const1) {
-			return MAX_DISTANCE;
-		} 
-        
-		final double expDist = -const1 * Math.log(1.0 - (const2 * obsDist));
+        const1 = ((double) stateCount - 1) / stateCount;
+        const2 = ((double) stateCount) / (stateCount - 1);
+    }
 
-		if (expDist < MAX_DISTANCE) {
-			return expDist;
-		} else {
-			return MAX_DISTANCE;
-		}
-	}
-	
-	//
-	// Private stuff
-	//
+    /**
+     * Calculate a pairwise distance
+     */
+    public double calculatePairwiseDistance(int i, int j) {
+        final double obsDist = super.calculatePairwiseDistance(i, j);
+
+        if (obsDist == 0.0) return 0.0;
+
+        if (obsDist >= const1) {
+            return MAX_DISTANCE;
+        }
+
+        final double expDist = -const1 * Math.log(1.0 - (const2 * obsDist));
+
+        if (expDist < MAX_DISTANCE) {
+            return expDist;
+        } else {
+            return MAX_DISTANCE;
+        }
+    }
+
+    //
+    // Private stuff
+    //
 
     //used in correction formula
-	private double const1, const2;
+    private double const1, const2;
 }

@@ -72,8 +72,11 @@ public class WilsonBalding extends TreeOperator {
     /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
-    /** override this for proposals,
-	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
+    /**
+     * override this for proposals,
+     *
+     * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted *
+     */
     @Override
     public double proposal() {
         Tree tree = m_tree.get(this);
@@ -116,13 +119,13 @@ public class WilsonBalding extends TreeOperator {
         oldMinAge = Math.max(i.getHeight(), CiP.getHeight());
         oldRange = PiP.getHeight() - oldMinAge;
         fHastingsRatio = newRange / Math.abs(oldRange);
-        
+
         if (oldRange == 0 || newRange == 0) {
-        	// This happens when some branch lengths are zero.
-        	// If oldRange = 0, fHastingsRatio == Double.POSITIVE_INFINITY and 
-        	// node i can be catapulted anywhere in the tree, resulting in 
-        	// very bad trees that are always accepted.
-        	// For symmetry, newRange = 0 should therefore be ruled out as well
+            // This happens when some branch lengths are zero.
+            // If oldRange = 0, fHastingsRatio == Double.POSITIVE_INFINITY and
+            // node i can be catapulted anywhere in the tree, resulting in
+            // very bad trees that are always accepted.
+            // For symmetry, newRange = 0 should therefore be ruled out as well
             return Double.NEGATIVE_INFINITY;
         }
 
@@ -142,7 +145,7 @@ public class WilsonBalding extends TreeOperator {
             // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
             // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
 
-        	replace(jP, j, iP);
+            replace(jP, j, iP);
             //replace(iP, CiP, iP);
             replace(iP, CiP, j);
 
@@ -154,7 +157,7 @@ public class WilsonBalding extends TreeOperator {
             // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
             // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
 
-        	// disconnect iP
+            // disconnect iP
             replace(iP.getParent(), iP, CiP);
             // re-attach, first child node to iP
             replace(iP, CiP, j);

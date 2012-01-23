@@ -18,7 +18,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * The Exponential Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -32,6 +32,7 @@ package org.apache.commons.math.distribution;
 public interface ExponentialDistribution extends ContinuousDistribution, HasDensity<Double> {
     /**
      * Modify the mean.
+     *
      * @param mean the new mean.
      * @deprecated as of v2.1
      */
@@ -40,14 +41,16 @@ public interface ExponentialDistribution extends ContinuousDistribution, HasDens
 
     /**
      * Access the mean.
+     *
      * @return the mean.
      */
     double getMean();
 
     /**
      * Return the probability density for a particular point.
-     * @param x  The point at which the density should be computed.
-     * @return  The pdf at point x.
+     *
+     * @param x The point at which the density should be computed.
+     * @return The pdf at point x.
      */
     double density(Double x);
 }

@@ -58,7 +58,7 @@ public class DefaultEigenSystem implements EigenSystem {
     private int[] ordr;
     /* imaginary part of eigenvalues **/
     private double[] evali;
-    
+
     /* transforms a real general matrix to upper Hessenberg form */
     private void elmhes(double[][] a, int[] ordr, int n) {
         int m, j, i;
@@ -122,10 +122,10 @@ public class DefaultEigenSystem implements EigenSystem {
         cr = (ars * brs + ais * bis) / s;
         ci = (ais * brs - ars * bis) / s;
     }
-    
+
     /* computes eigenvalues and eigenvectors of a real upper Hessenberg matrix */
     private void hqr2(int n, int low, int hgh, double[][] h, double[][] zz,
-              double[] wr, double[] wi) throws ArithmeticException {
+                      double[] wr, double[] wi) throws ArithmeticException {
         int i, j, k, l = 0, m, en, na, itn, its;
         double p = 0, q = 0, r = 0, s = 0, t, w, x = 0, y, ra, sa, vi, vr, z = 0, norm, tst1, tst2;
         boolean notLast;

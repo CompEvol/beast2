@@ -29,42 +29,42 @@ package beast.math;
 /**
  * determines machine accuracy
  *
- * @version $Id: MachineAccuracy.java,v 1.4 2005/05/24 20:26:01 rambaut Exp $
- *
  * @author Korbinian Strimmer
  * @author Alexei Drummond
+ * @version $Id: MachineAccuracy.java,v 1.4 2005/05/24 20:26:01 rambaut Exp $
  */
-public class MachineAccuracy
-{
-	//
-	// Public stuff
-	//
+public class MachineAccuracy {
+    //
+    // Public stuff
+    //
 
-	/** machine accuracy constant */
-	public static double EPSILON = 2.220446049250313E-16;
-	
-	public static double SQRT_EPSILON = 1.4901161193847656E-8;
-	public static double SQRT_SQRT_EPSILON = 1.220703125E-4;
+    /**
+     * machine accuracy constant
+     */
+    public static double EPSILON = 2.220446049250313E-16;
 
-	/** compute EPSILON from scratch */
-	public static double computeEpsilon()
-	{
-		double eps = 1.0;
+    public static double SQRT_EPSILON = 1.4901161193847656E-8;
+    public static double SQRT_SQRT_EPSILON = 1.220703125E-4;
 
-		while( eps + 1.0 != 1.0 )
-		{
-			eps /= 2.0;
-		}
-		eps *= 2.0;
-		
-		return eps;
-	}
+    /**
+     * compute EPSILON from scratch
+     */
+    public static double computeEpsilon() {
+        double eps = 1.0;
 
-	/**
-	 * @return true if the relative difference between the two parameters
-	 * is smaller than SQRT_EPSILON.
-	 */
-	public static boolean same(double a, double b) {
-		return Math.abs((a/b)-1.0) <= SQRT_EPSILON;
-	}
+        while (eps + 1.0 != 1.0) {
+            eps /= 2.0;
+        }
+        eps *= 2.0;
+
+        return eps;
+    }
+
+    /**
+     * @return true if the relative difference between the two parameters
+     *         is smaller than SQRT_EPSILON.
+     */
+    public static boolean same(double a, double b) {
+        return Math.abs((a / b) - 1.0) <= SQRT_EPSILON;
+    }
 }

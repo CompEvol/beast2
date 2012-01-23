@@ -138,20 +138,19 @@ public class BeagleJNIWrapper {
     public native int getSiteLogLikelihoods(final int instance,
                                             final double[] outLogLikelihoods);
 
-    
+
 //    public native void setProportionInvariantCorrection(final int instance,
 //    		double[] proportionInvariantCorrection);
-    
+
     /* Library loading routines */
 
-    private static String getPlatformSpecificLibraryName()
-    {
+    private static String getPlatformSpecificLibraryName() {
         String osName = System.getProperty("os.name").toLowerCase();
         String osArch = System.getProperty("os.arch").toLowerCase();
         if (osName.startsWith("windows")) {
-            if(osArch.contains("64")) return "hmsbeagle64";
-            if(osArch.equals("i386")) return "hmsbeagle32";
-            if(osArch.startsWith("amd64")||osArch.startsWith("x86_64")) return "hmsbeagle64";
+            if (osArch.contains("64")) return "hmsbeagle64";
+            if (osArch.equals("i386")) return "hmsbeagle32";
+            if (osArch.startsWith("amd64") || osArch.startsWith("x86_64")) return "hmsbeagle64";
             return "hmsbeagle32";
         }
         return "hmsbeagle-jni";

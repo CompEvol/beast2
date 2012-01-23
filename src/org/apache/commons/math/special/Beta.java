@@ -27,7 +27,9 @@ import org.apache.commons.math.util.ContinuedFraction;
  */
 public class Beta {
 
-    /** Maximum allowed numerical error. */
+    /**
+     * Maximum allowed numerical error.
+     */
     private static final double DEFAULT_EPSILON = 10e-15;
 
     /**
@@ -49,8 +51,7 @@ public class Beta {
      * @throws MathException if the algorithm fails to converge.
      */
     public static double regularizedBeta(double x, double a, double b)
-        throws MathException
-    {
+            throws MathException {
         return regularizedBeta(x, a, b, DEFAULT_EPSILON, Integer.MAX_VALUE);
     }
 
@@ -59,9 +60,9 @@ public class Beta {
      * <a href="http://mathworld.wolfram.com/RegularizedBetaFunction.html">
      * regularized beta function</a> I(x, a, b).
      *
-     * @param x the value.
-     * @param a the a parameter.
-     * @param b the b parameter.
+     * @param x       the value.
+     * @param a       the a parameter.
+     * @param b       the b parameter.
      * @param epsilon When the absolute value of the nth item in the
      *                series is less than epsilon the approximation ceases
      *                to calculate further elements in the series.
@@ -69,30 +70,28 @@ public class Beta {
      * @throws MathException if the algorithm fails to converge.
      */
     public static double regularizedBeta(double x, double a, double b,
-        double epsilon) throws MathException
-    {
+                                         double epsilon) throws MathException {
         return regularizedBeta(x, a, b, epsilon, Integer.MAX_VALUE);
     }
 
     /**
      * Returns the regularized beta function I(x, a, b).
      *
-     * @param x the value.
-     * @param a the a parameter.
-     * @param b the b parameter.
+     * @param x             the value.
+     * @param a             the a parameter.
+     * @param b             the b parameter.
      * @param maxIterations Maximum number of "iterations" to complete.
      * @return the regularized beta function I(x, a, b)
      * @throws MathException if the algorithm fails to converge.
      */
     public static double regularizedBeta(double x, double a, double b,
-        int maxIterations) throws MathException
-    {
+                                         int maxIterations) throws MathException {
         return regularizedBeta(x, a, b, DEFAULT_EPSILON, maxIterations);
     }
 
     /**
      * Returns the regularized beta function I(x, a, b).
-     *
+     * <p/>
      * The implementation of this method is based on:
      * <ul>
      * <li>
@@ -103,24 +102,22 @@ public class Beta {
      * Regularized Beta Function</a>.</li>
      * </ul>
      *
-     * @param x the value.
-     * @param a the a parameter.
-     * @param b the b parameter.
-     * @param epsilon When the absolute value of the nth item in the
-     *                series is less than epsilon the approximation ceases
-     *                to calculate further elements in the series.
+     * @param x             the value.
+     * @param a             the a parameter.
+     * @param b             the b parameter.
+     * @param epsilon       When the absolute value of the nth item in the
+     *                      series is less than epsilon the approximation ceases
+     *                      to calculate further elements in the series.
      * @param maxIterations Maximum number of "iterations" to complete.
      * @return the regularized beta function I(x, a, b)
      * @throws MathException if the algorithm fails to converge.
      */
     public static double regularizedBeta(double x, final double a,
-        final double b, double epsilon, int maxIterations) throws MathException
-    {
+                                         final double b, double epsilon, int maxIterations) throws MathException {
         double ret;
 
         if (Double.isNaN(x) || Double.isNaN(a) || Double.isNaN(b) || (x < 0) ||
-            (x > 1) || (a <= 0.0) || (b <= 0.0))
-        {
+                (x > 1) || (a <= 0.0) || (b <= 0.0)) {
             ret = Double.NaN;
         } else if (x > (a + 1.0) / (a + b + 2.0)) {
             ret = 1.0 - regularizedBeta(1.0 - x, b, a, epsilon, maxIterations);
@@ -134,7 +131,7 @@ public class Beta {
                     if (n % 2 == 0) { // even
                         m = n / 2.0;
                         ret = (m * (b - m) * x) /
-                            ((a + (2 * m) - 1) * (a + (2 * m)));
+                                ((a + (2 * m) - 1) * (a + (2 * m)));
                     } else {
                         m = (n - 1.0) / 2.0;
                         ret = -((a + m) * (a + b + m) * x) /
@@ -149,8 +146,8 @@ public class Beta {
                 }
             };
             ret = Math.exp((a * Math.log(x)) + (b * Math.log(1.0 - x)) -
-                Math.log(a) - logBeta(a, b, epsilon, maxIterations)) *
-                1.0 / fraction.evaluate(x, epsilon, maxIterations);
+                    Math.log(a) - logBeta(a, b, epsilon, maxIterations)) *
+                    1.0 / fraction.evaluate(x, epsilon, maxIterations);
         }
 
         return ret;
@@ -169,23 +166,23 @@ public class Beta {
 
     /**
      * Returns the natural logarithm of the beta function B(a, b).
-     *
+     * <p/>
      * The implementation of this method is based on:
      * <ul>
      * <li><a href="http://mathworld.wolfram.com/BetaFunction.html">
      * Beta Function</a>, equation (1).</li>
      * </ul>
      *
-     * @param a the a parameter.
-     * @param b the b parameter.
-     * @param epsilon When the absolute value of the nth item in the
-     *                series is less than epsilon the approximation ceases
-     *                to calculate further elements in the series.
+     * @param a             the a parameter.
+     * @param b             the b parameter.
+     * @param epsilon       When the absolute value of the nth item in the
+     *                      series is less than epsilon the approximation ceases
+     *                      to calculate further elements in the series.
      * @param maxIterations Maximum number of "iterations" to complete.
      * @return log(B(a, b))
      */
     public static double logBeta(double a, double b, double epsilon,
-        int maxIterations) {
+                                 int maxIterations) {
 
         double ret;
 
@@ -193,7 +190,7 @@ public class Beta {
             ret = Double.NaN;
         } else {
             ret = Gamma.logGamma(a) + Gamma.logGamma(b) -
-                Gamma.logGamma(a + b);
+                    Gamma.logGamma(a + b);
         }
 
         return ret;

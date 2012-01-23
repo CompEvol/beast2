@@ -50,8 +50,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     // This property is a comma-delimited list of resource numbers (0 == CPU) to
     // allocate each BEAGLE instance to. If less than the number of instances then
     // will wrap around.
-	// note: to use a different device, say device 2, start beast with 
-	// java -Dbeagle.resource.order=2 beast.app.BeastMCMC 
+    // note: to use a different device, say device 2, start beast with
+    // java -Dbeagle.resource.order=2 beast.app.BeastMCMC
     private static final String RESOURCE_ORDER_PROPERTY = "beagle.resource.order";
     private static final String PREFERRED_FLAGS_PROPERTY = "beagle.preferred.flags";
     private static final String REQUIRED_FLAGS_PROPERTY = "beagle.required.flags";
@@ -69,12 +69,12 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     boolean m_bUseAmbiguities;
     int m_nStateCount;
     int m_nNodeCount;
-    
+
     @Override
     public void initAndValidate() {
-    	initialize();
+        initialize();
     }
-    
+
     boolean initialize() {
         m_nNodeCount = m_tree.get().getNodeCount();
         m_bUseAmbiguities = m_useAmbiguities.get();
@@ -83,207 +83,207 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
         m_branchRateModel = m_pBranchRateModel.get();
         if (m_branchRateModel != null) {
-        	m_branchLengths = new double[m_nNodeCount];
-        	m_StoredBranchLengths = new double[m_nNodeCount];
+            m_branchLengths = new double[m_nNodeCount];
+            m_StoredBranchLengths = new double[m_nNodeCount];
         } else {
-        	m_branchLengths = new double[0];
-        	m_StoredBranchLengths = new double[0];
+            m_branchLengths = new double[0];
+            m_StoredBranchLengths = new double[0];
         }
 
         m_nStateCount = m_data.get().getMaxStateCount();
         m_nPatternCount = m_data.get().getPatternCount();
 
-        	//System.err.println("Attempt to load BEAGLE TreeLikelihood");
+        //System.err.println("Attempt to load BEAGLE TreeLikelihood");
 
-            eigenCount = 1;//this.branchSubstitutionModel.getEigenCount();
+        eigenCount = 1;//this.branchSubstitutionModel.getEigenCount();
 
-            this.categoryCount = m_siteModel.getCategoryCount();
-            tipCount  = m_tree.get().getLeafNodeCount();
+        this.categoryCount = m_siteModel.getCategoryCount();
+        tipCount = m_tree.get().getLeafNodeCount();
 
-            internalNodeCount = m_nNodeCount - tipCount;
+        internalNodeCount = m_nNodeCount - tipCount;
 
-            int compactPartialsCount = tipCount;
-            if (m_bUseAmbiguities) {
-                // if we are using ambiguities then we don't use tip partials
-                compactPartialsCount = 0;
+        int compactPartialsCount = tipCount;
+        if (m_bUseAmbiguities) {
+            // if we are using ambiguities then we don't use tip partials
+            compactPartialsCount = 0;
+        }
+
+        // one partials buffer for each tip and two for each internal node (for store restore)
+        partialBufferHelper = new BufferIndexHelper(m_nNodeCount, tipCount);
+
+        // two eigen buffers for each decomposition for store and restore.
+        eigenBufferHelper = new BufferIndexHelper(eigenCount, 0);
+
+        // two matrices for each node less the root
+        matrixBufferHelper = new BufferIndexHelper(m_nNodeCount, 0);
+
+        // one scaling buffer for each internal node plus an extra for the accumulation, then doubled for store/restore
+        scaleBufferHelper = new BufferIndexHelper(getScaleBufferCount(), 0);
+
+        // Attempt to get the resource order from the System Property
+        if (resourceOrder == null) {
+            resourceOrder = parseSystemPropertyIntegerArray(RESOURCE_ORDER_PROPERTY);
+        }
+        if (preferredOrder == null) {
+            preferredOrder = parseSystemPropertyIntegerArray(PREFERRED_FLAGS_PROPERTY);
+        }
+        if (requiredOrder == null) {
+            requiredOrder = parseSystemPropertyIntegerArray(REQUIRED_FLAGS_PROPERTY);
+        }
+        if (scalingOrder == null) {
+            scalingOrder = parseSystemPropertyStringArray(SCALING_PROPERTY);
+        }
+
+        // first set the rescaling scheme to use from the parser
+        rescalingScheme = PartialsRescalingScheme.DEFAULT;// = rescalingScheme;
+        int[] resourceList = null;
+        long preferenceFlags = 0;
+        long requirementFlags = 0;
+
+        if (scalingOrder.size() > 0) {
+            this.rescalingScheme = PartialsRescalingScheme.parseFromString(
+                    scalingOrder.get(instanceCount % scalingOrder.size()));
+        }
+
+        if (resourceOrder.size() > 0) {
+            // added the zero on the end so that a CPU is selected if requested resource fails
+            resourceList = new int[]{resourceOrder.get(instanceCount % resourceOrder.size()), 0};
+            if (resourceList[0] > 0) {
+                preferenceFlags |= BeagleFlag.PROCESSOR_GPU.getMask(); // Add preference weight against CPU
             }
+        }
 
-            // one partials buffer for each tip and two for each internal node (for store restore)
-            partialBufferHelper = new BufferIndexHelper(m_nNodeCount, tipCount);
+        if (preferredOrder.size() > 0) {
+            preferenceFlags = preferredOrder.get(instanceCount % preferredOrder.size());
+        }
 
-            // two eigen buffers for each decomposition for store and restore.
-            eigenBufferHelper = new BufferIndexHelper(eigenCount, 0);
+        if (requiredOrder.size() > 0) {
+            requirementFlags = requiredOrder.get(instanceCount % requiredOrder.size());
+        }
 
-            // two matrices for each node less the root
-            matrixBufferHelper = new BufferIndexHelper(m_nNodeCount, 0);
-
-            // one scaling buffer for each internal node plus an extra for the accumulation, then doubled for store/restore
-            scaleBufferHelper = new BufferIndexHelper(getScaleBufferCount(), 0);
-
-            // Attempt to get the resource order from the System Property
-            if (resourceOrder == null) {
-                resourceOrder = parseSystemPropertyIntegerArray(RESOURCE_ORDER_PROPERTY);
-            }
-            if (preferredOrder == null) {
-                preferredOrder = parseSystemPropertyIntegerArray(PREFERRED_FLAGS_PROPERTY);
-            }
-            if (requiredOrder == null) {
-                requiredOrder = parseSystemPropertyIntegerArray(REQUIRED_FLAGS_PROPERTY);
-            }
-            if (scalingOrder == null) {
-                scalingOrder = parseSystemPropertyStringArray(SCALING_PROPERTY);
-            }
-
-            // first set the rescaling scheme to use from the parser
-            rescalingScheme = PartialsRescalingScheme.DEFAULT;// = rescalingScheme;
-            int[] resourceList = null;
-            long preferenceFlags = 0;
-            long requirementFlags = 0;
-
-            if (scalingOrder.size() > 0) {
-                this.rescalingScheme = PartialsRescalingScheme.parseFromString(
-                        scalingOrder.get(instanceCount % scalingOrder.size()));
-            }
-        
-            if (resourceOrder.size() > 0) {
-                // added the zero on the end so that a CPU is selected if requested resource fails
-                resourceList = new int[]{resourceOrder.get(instanceCount % resourceOrder.size()), 0};
-                if (resourceList[0] > 0) {
-                    preferenceFlags |= BeagleFlag.PROCESSOR_GPU.getMask(); // Add preference weight against CPU
-                }
-            }
-
-            if (preferredOrder.size() > 0) {
-                preferenceFlags = preferredOrder.get(instanceCount % preferredOrder.size());
-            }
-
-            if (requiredOrder.size() > 0) {
-                requirementFlags = requiredOrder.get(instanceCount % requiredOrder.size());
-            }
-
-            // Define default behaviour here
-            if (this.rescalingScheme == PartialsRescalingScheme.DEFAULT) {
-                //if GPU: the default is^H^Hwas dynamic scaling in BEAST, now NONE
-                if (resourceList != null && resourceList[0] > 1) {
-                    //this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
-                    this.rescalingScheme = PartialsRescalingScheme.NONE;
-                } else { // if CPU: just run as fast as possible
+        // Define default behaviour here
+        if (this.rescalingScheme == PartialsRescalingScheme.DEFAULT) {
+            //if GPU: the default is^H^Hwas dynamic scaling in BEAST, now NONE
+            if (resourceList != null && resourceList[0] > 1) {
+                //this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
+                this.rescalingScheme = PartialsRescalingScheme.NONE;
+            } else { // if CPU: just run as fast as possible
 //                    this.rescalingScheme = PartialsRescalingScheme.NONE;
-                    // Dynamic should run as fast as none until first underflow
-                    this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
-                }
+                // Dynamic should run as fast as none until first underflow
+                this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
             }
+        }
 
-            if (this.rescalingScheme == PartialsRescalingScheme.AUTO) {
-                preferenceFlags |= BeagleFlag.SCALING_AUTO.getMask();
-                useAutoScaling = true;
-            } else {
+        if (this.rescalingScheme == PartialsRescalingScheme.AUTO) {
+            preferenceFlags |= BeagleFlag.SCALING_AUTO.getMask();
+            useAutoScaling = true;
+        } else {
 //                preferenceFlags |= BeagleFlag.SCALING_MANUAL.getMask();
-            }
+        }
 
-            if (preferenceFlags == 0 && resourceList == null) { // else determine dataset characteristics
-                if (m_nStateCount == 4 && m_nPatternCount < 10000) // TODO determine good cut-off
-                    preferenceFlags |= BeagleFlag.PROCESSOR_CPU.getMask();
-            }
+        if (preferenceFlags == 0 && resourceList == null) { // else determine dataset characteristics
+            if (m_nStateCount == 4 && m_nPatternCount < 10000) // TODO determine good cut-off
+                preferenceFlags |= BeagleFlag.PROCESSOR_CPU.getMask();
+        }
 
-            if (m_substitutionModel.canReturnComplexDiagonalization()) {
-                requirementFlags |= BeagleFlag.EIGEN_COMPLEX.getMask();
-            }
+        if (m_substitutionModel.canReturnComplexDiagonalization()) {
+            requirementFlags |= BeagleFlag.EIGEN_COMPLEX.getMask();
+        }
 
-            instanceCount++;
+        instanceCount++;
 
-            beagle = BeagleFactory.loadBeagleInstance(
-                    tipCount,
-                    partialBufferHelper.getBufferCount(),
-                    compactPartialsCount,
-                    m_nStateCount,
-                    m_nPatternCount,
-                    eigenBufferHelper.getBufferCount(),            // eigenBufferCount
-                    matrixBufferHelper.getBufferCount(),
-                    categoryCount,
-                    scaleBufferHelper.getBufferCount(), // Always allocate; they may become necessary
-                    resourceList,
-                    preferenceFlags,
-                    requirementFlags
-            );
-            if (beagle == null) {
-            	return false;
-            }
+        beagle = BeagleFactory.loadBeagleInstance(
+                tipCount,
+                partialBufferHelper.getBufferCount(),
+                compactPartialsCount,
+                m_nStateCount,
+                m_nPatternCount,
+                eigenBufferHelper.getBufferCount(),            // eigenBufferCount
+                matrixBufferHelper.getBufferCount(),
+                categoryCount,
+                scaleBufferHelper.getBufferCount(), // Always allocate; they may become necessary
+                resourceList,
+                preferenceFlags,
+                requirementFlags
+        );
+        if (beagle == null) {
+            return false;
+        }
 
-            InstanceDetails instanceDetails = beagle.getDetails();
-            ResourceDetails resourceDetails = null;
+        InstanceDetails instanceDetails = beagle.getDetails();
+        ResourceDetails resourceDetails = null;
 
-            if (instanceDetails != null) {
-                resourceDetails = BeagleFactory.getResourceDetails(instanceDetails.getResourceNumber());
-                if (resourceDetails != null) {
-                    StringBuilder sb = new StringBuilder("  Using BEAGLE resource ");
-                    sb.append(resourceDetails.getNumber()).append(": ");
-                    sb.append(resourceDetails.getName()).append("\n");
-                    if (resourceDetails.getDescription() != null) {
-                        String[] description = resourceDetails.getDescription().split("\\|");
-                        for (String desc : description) {
-                            if (desc.trim().length() > 0) {
-                                sb.append("    ").append(desc.trim()).append("\n");
-                            }
+        if (instanceDetails != null) {
+            resourceDetails = BeagleFactory.getResourceDetails(instanceDetails.getResourceNumber());
+            if (resourceDetails != null) {
+                StringBuilder sb = new StringBuilder("  Using BEAGLE resource ");
+                sb.append(resourceDetails.getNumber()).append(": ");
+                sb.append(resourceDetails.getName()).append("\n");
+                if (resourceDetails.getDescription() != null) {
+                    String[] description = resourceDetails.getDescription().split("\\|");
+                    for (String desc : description) {
+                        if (desc.trim().length() > 0) {
+                            sb.append("    ").append(desc.trim()).append("\n");
                         }
                     }
-                    sb.append("    with instance flags: ").append(instanceDetails.toString());
-                    System.out.println(sb.toString());
-                } else {
-                	System.err.println("  Error retrieving BEAGLE resource for instance: " + instanceDetails.toString());
-                	beagle = null;
-                    return false;
                 }
+                sb.append("    with instance flags: ").append(instanceDetails.toString());
+                System.out.println(sb.toString());
             } else {
-            	System.err.println("  No external BEAGLE resources available, or resource list/requirements not met, using Java implementation");
-            	beagle = null;
+                System.err.println("  Error retrieving BEAGLE resource for instance: " + instanceDetails.toString());
+                beagle = null;
                 return false;
             }
-            System.err.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
-            System.err.println("  With " + m_nPatternCount + " unique site patterns.");
+        } else {
+            System.err.println("  No external BEAGLE resources available, or resource list/requirements not met, using Java implementation");
+            beagle = null;
+            return false;
+        }
+        System.err.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
+        System.err.println("  With " + m_nPatternCount + " unique site patterns.");
 
-            for (int i = 0; i < tipCount; i++) {
-               if (m_bUseAmbiguities) {
-                   setPartials(beagle, i);
-                } else {
-                   setStates(beagle, i);
-                }
-            }
-
-            if (m_data.get() instanceof AscertainedAlignment) {
-                ascertainedSitePatterns = true;
-            }
-                
-            double [] fPatternWeights = new double[m_nPatternCount];
-            for (int i = 0; i < m_nPatternCount; i++) {
-            	fPatternWeights[i] = m_data.get().getPatternWeight(i);
-            }
-            beagle.setPatternWeights(fPatternWeights);
-
-            if (this.rescalingScheme == PartialsRescalingScheme.AUTO &&
-                    resourceDetails != null &&
-                    (resourceDetails.getFlags() & BeagleFlag.SCALING_AUTO.getMask()) == 0) {
-                // If auto scaling in BEAGLE is not supported then do it here
-                this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
-                System.err.println("  Auto rescaling not supported in BEAGLE, using : " + this.rescalingScheme.getText());
+        for (int i = 0; i < tipCount; i++) {
+            if (m_bUseAmbiguities) {
+                setPartials(beagle, i);
             } else {
-            	System.err.println("  Using rescaling scheme : " + this.rescalingScheme.getText());
+                setStates(beagle, i);
             }
+        }
 
-            if (this.rescalingScheme == PartialsRescalingScheme.DYNAMIC) {
-            	// TODO: uncomment following line once bug in java impl. is fixed
-                everUnderflowed = true; // If commented out, BEAST does not rescale until first under-/over-flow.
-            }
+        if (m_data.get() instanceof AscertainedAlignment) {
+            ascertainedSitePatterns = true;
+        }
 
-            updateSubstitutionModel = true;
-            updateSiteModel = true;
-            // some subst models (e.g. WAG) never become dirty, so set up subst models right now
-            setUpSubstModel();
-            // set up sitemodel
-            double[] categoryRates = m_siteModel.getCategoryRates(null);
-            beagle.setCategoryRates(categoryRates);
-            
-            
+        double[] fPatternWeights = new double[m_nPatternCount];
+        for (int i = 0; i < m_nPatternCount; i++) {
+            fPatternWeights[i] = m_data.get().getPatternWeight(i);
+        }
+        beagle.setPatternWeights(fPatternWeights);
+
+        if (this.rescalingScheme == PartialsRescalingScheme.AUTO &&
+                resourceDetails != null &&
+                (resourceDetails.getFlags() & BeagleFlag.SCALING_AUTO.getMask()) == 0) {
+            // If auto scaling in BEAGLE is not supported then do it here
+            this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
+            System.err.println("  Auto rescaling not supported in BEAGLE, using : " + this.rescalingScheme.getText());
+        } else {
+            System.err.println("  Using rescaling scheme : " + this.rescalingScheme.getText());
+        }
+
+        if (this.rescalingScheme == PartialsRescalingScheme.DYNAMIC) {
+            // TODO: uncomment following line once bug in java impl. is fixed
+            everUnderflowed = true; // If commented out, BEAST does not rescale until first under-/over-flow.
+        }
+
+        updateSubstitutionModel = true;
+        updateSiteModel = true;
+        // some subst models (e.g. WAG) never become dirty, so set up subst models right now
+        setUpSubstModel();
+        // set up sitemodel
+        double[] categoryRates = m_siteModel.getCategoryRates(null);
+        beagle.setCategoryRates(categoryRates);
+
+
 //            m_fProportionInvariant = m_siteModel.getProportianInvariant();
 //            double [] fProportionInvariantCorrection = new double[m_nPatternCount * m_nStateCount];
 //            if (!SiteModel.g_bUseOriginal && m_fProportionInvariant > 0) {
@@ -293,7 +293,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 //            	}
 //            }
 //            beagle.setProportionInvariantCorrection(fProportionInvariantCorrection);
-            return true;
+        return true;
     }
 
     private static List<Integer> parseSystemPropertyIntegerArray(String propertyName) {
@@ -346,8 +346,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      */
     protected final void setPartials(Beagle beagle,
                                      int nodeIndex) {
-    	Alignment data = m_data.get();
-    	
+        Alignment data = m_data.get();
+
         double[] partials = new double[m_nPatternCount * m_nStateCount * categoryCount];
 
         boolean[] stateSet;
@@ -355,7 +355,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         int v = 0;
         for (int i = 0; i < m_nPatternCount; i++) {
 
-            int state = data.getPattern(nodeIndex, i); 
+            int state = data.getPattern(nodeIndex, i);
             stateSet = data.getStateSet(state);
 
             for (int j = 0; j < m_nStateCount; j++) {
@@ -384,21 +384,22 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     }
 
     void setUpSubstModel() {
-    	// we are currently assuming a no-category model...
-    	// TODO More efficient to update only the substitution model that changed, instead of all
-	    for (int i = 0; i < eigenCount; i++) {
-	        //EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(i, 0);
-	        EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(null);
-	
-	        eigenBufferHelper.flipOffset(i);
-	
-	        beagle.setEigenDecomposition(
-	            eigenBufferHelper.getOffsetIndex(i),
-	            ed.getEigenVectors(),
-	            ed.getInverseEigenVectors(),
-	            ed.getEigenValues());
-	    }
-	}
+        // we are currently assuming a no-category model...
+        // TODO More efficient to update only the substitution model that changed, instead of all
+        for (int i = 0; i < eigenCount; i++) {
+            //EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(i, 0);
+            EigenDecomposition ed = m_substitutionModel.getEigenDecomposition(null);
+
+            eigenBufferHelper.flipOffset(i);
+
+            beagle.setEigenDecomposition(
+                    eigenBufferHelper.getOffsetIndex(i),
+                    ed.getEigenVectors(),
+                    ed.getInverseEigenVectors(),
+                    ed.getEigenValues());
+        }
+    }
+
     /**
      * Sets the partials from a sequence in an alignment.
      *
@@ -409,13 +410,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      */
     protected final void setStates(Beagle beagle,
                                    int nodeIndex) {
-    	Alignment data = m_data.get();
+        Alignment data = m_data.get();
         int i;
 
         int[] states = new int[m_nPatternCount];
 
         for (i = 0; i < m_nPatternCount; i++) {
-            int state = data.getPattern(nodeIndex, i); 
+            int state = data.getPattern(nodeIndex, i);
             states[i] = state;
         }
 
@@ -441,10 +442,10 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     @Override
     protected boolean requiresRecalculation() {
         m_nHasDirt = Tree.IS_CLEAN;
-        
+
         updateSiteModel |= m_siteModel.isDirtyCalculation();
         updateSubstitutionModel |= m_substitutionModel.isDirtyCalculation();
-        
+
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
             return true;
@@ -496,7 +497,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
 //        updateRestrictedNodePartials = true;
         super.restore();
-        double [] tmp = m_branchLengths;
+        double[] tmp = m_branchLengths;
         m_branchLengths = m_StoredBranchLengths;
         m_StoredBranchLengths = tmp;
     }
@@ -561,8 +562,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         final Node root = m_tree.get().getRoot();
         traverse(root, null, true);
 
-        if (updateSubstitutionModel) { 
-        	setUpSubstModel();
+        if (updateSubstitutionModel) {
+            setUpSubstModel();
         }
 
         if (updateSiteModel) {
@@ -573,12 +574,12 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         for (int i = 0; i < eigenCount; i++) {
             if (branchUpdateCount[i] > 0) {
                 beagle.updateTransitionMatrices(
-                    eigenBufferHelper.getOffsetIndex(i),
-                    matrixUpdateIndices[i],
-                    null,
-                    null,
-                    branchLengths[i],
-                    branchUpdateCount[i]);
+                        eigenBufferHelper.getOffsetIndex(i),
+                        matrixUpdateIndices[i],
+                        null,
+                        null,
+                        branchLengths[i],
+                        branchUpdateCount[i]);
             }
         }
 
@@ -598,7 +599,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         do {
 
-        	beagle.updatePartials(operations[0], operationCount[0], Beagle.NONE);
+            beagle.updatePartials(operations[0], operationCount[0], Beagle.NONE);
 
             int rootIndex = partialBufferHelper.getOffsetIndex(root.getNr());
 
@@ -736,7 +737,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 //        }
         if (!node.isRoot() && (update != Tree.IS_CLEAN)) {
 
-            final double branchRate = (m_branchRateModel == null ? 1.0:m_branchRateModel.getRateForBranch(node));
+            final double branchRate = (m_branchRateModel == null ? 1.0 : m_branchRateModel.getRateForBranch(node));
 
             // Get the operational time of the branch
             final double branchTime = branchRate * (parent.getHeight() - node.getHeight());
@@ -754,7 +755,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             final int eigenIndex = 0;// = m_substitutionModel.getBranchIndex(node);
             final int updateCount = branchUpdateCount[eigenIndex];
             matrixUpdateIndices[eigenIndex][updateCount] = matrixBufferHelper.getOffsetIndex(nodeNum);
-            
+
 //            if (!m_substitutionModel.canReturnDiagonalization()) {
 //            	m_substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), branchRate, m_fProbabilities);
 //            	int matrixIndex = matrixBufferHelper.getOffsetIndex(nodeNum);
@@ -828,7 +829,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
                 operationCount[operationListCount]++;
 
-                update |= (update1|update2);
+                update |= (update1 | update2);
 
             }
         }
@@ -963,7 +964,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         private int[] storedIndexOffsets;
 
     } // class BufferIndexHelper
-    
+
     public enum PartialsRescalingScheme {
 
         DEFAULT("default"),
@@ -984,7 +985,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         private final String text;
 
         public static PartialsRescalingScheme parseFromString(String text) {
-            for(PartialsRescalingScheme scheme : PartialsRescalingScheme.values()) {
+            for (PartialsRescalingScheme scheme : PartialsRescalingScheme.values()) {
                 if (scheme.getText().compareToIgnoreCase(text) == 0)
                     return scheme;
             }

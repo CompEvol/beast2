@@ -27,25 +27,33 @@ import org.apache.commons.math.MathRuntimeException;
  * @version $Revision: 925900 $ $Date: 2010-03-21 17:10:07 -0400 (Sun, 21 Mar 2010) $
  */
 public class ExponentialDistributionImpl extends AbstractContinuousDistribution
-    implements ExponentialDistribution, Serializable {
+        implements ExponentialDistribution, Serializable {
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = 2401296428283614780L;
 
-    /** The mean of this distribution. */
+    /**
+     * The mean of this distribution.
+     */
     private double mean;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Create a exponential distribution with the given mean.
+     *
      * @param mean mean of this distribution.
      */
     public ExponentialDistributionImpl(double mean) {
@@ -54,9 +62,10 @@ public class ExponentialDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Create a exponential distribution with the given mean.
-     * @param mean mean of this distribution.
+     *
+     * @param mean               mean of this distribution.
      * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     *                           (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
     public ExponentialDistributionImpl(double mean, double inverseCumAccuracy) {
@@ -67,6 +76,7 @@ public class ExponentialDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the mean.
+     *
      * @param mean the new mean.
      * @throws IllegalArgumentException if <code>mean</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
@@ -75,21 +85,24 @@ public class ExponentialDistributionImpl extends AbstractContinuousDistribution
     public void setMean(double mean) {
         setMeanInternal(mean);
     }
+
     /**
      * Modify the mean.
+     *
      * @param newMean the new mean.
      * @throws IllegalArgumentException if <code>newMean</code> is not positive.
      */
     private void setMeanInternal(double newMean) {
         if (newMean <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "mean must be positive ({0})", newMean);
+                    "mean must be positive ({0})", newMean);
         }
         this.mean = newMean;
     }
 
     /**
      * Access the mean.
+     *
      * @return the mean.
      */
     public double getMean() {
@@ -124,7 +137,7 @@ public class ExponentialDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * For this distribution, X, this method returns P(X &lt; x).
-     *
+     * <p/>
      * The implementation of this method is based on:
      * <ul>
      * <li>
@@ -135,9 +148,9 @@ public class ExponentialDistributionImpl extends AbstractContinuousDistribution
      * @param x the value at which the CDF is evaluated.
      * @return CDF for this distribution.
      * @throws MathException if the cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
-    public double cumulativeProbability(double x) throws MathException{
+    public double cumulativeProbability(double x) throws MathException {
         double ret;
         if (x <= 0.0) {
             ret = 0.0;
@@ -155,8 +168,8 @@ public class ExponentialDistributionImpl extends AbstractContinuousDistribution
      *
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
-     * @throws MathException if the inverse cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if p < 0 or p > 1.
      */
     @Override
@@ -165,7 +178,7 @@ public class ExponentialDistributionImpl extends AbstractContinuousDistribution
 
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
+                    "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
         } else if (p == 1.0) {
             ret = Double.POSITIVE_INFINITY;
         } else {

@@ -18,10 +18,11 @@ public class RealRandomWalkOperator extends Operator {
     public Input<RealParameter> parameterInput =
             new Input<RealParameter>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
     public Input<Boolean> useGaussianInput =
-        new Input<Boolean>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
+            new Input<Boolean>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
 
     double windowSize = 1;
     boolean m_bUseGaussian;
+
     public void initAndValidate() {
         windowSize = windowSizeInput.get();
         m_bUseGaussian = useGaussianInput.get();
@@ -34,23 +35,23 @@ public class RealRandomWalkOperator extends Operator {
     @Override
     public double proposal() {
 
-    	RealParameter param = parameterInput.get(this);
+        RealParameter param = parameterInput.get(this);
 
         int i = Randomizer.nextInt(param.getDimension());
         double value = param.getValue(i);
         double newValue = value;
         if (m_bUseGaussian) {
-        	newValue += Randomizer.nextGaussian()* windowSize; 
+            newValue += Randomizer.nextGaussian() * windowSize;
         } else {
-        	newValue += Randomizer.nextDouble() * 2 * windowSize - windowSize;
+            newValue += Randomizer.nextDouble() * 2 * windowSize - windowSize;
         }
 
         if (newValue < param.getLower() || newValue > param.getUpper()) {
-        	return Double.NEGATIVE_INFINITY;
+            return Double.NEGATIVE_INFINITY;
         }
         if (newValue == value) {
-        	// this saves calculating the posterior
-        	return Double.NEGATIVE_INFINITY;
+            // this saves calculating the posterior
+            return Double.NEGATIVE_INFINITY;
         }
 
         param.setValue(i, newValue);
@@ -58,18 +59,17 @@ public class RealRandomWalkOperator extends Operator {
         return 0.0;
     }
 
-    
-    
+
     @Override
     public double getCoercableParameterValue() {
         return windowSize;
     }
-    
+
     @Override
     public void setCoercableParameterValue(double fValue) {
-    	windowSize = fValue;
+        windowSize = fValue;
     }
-    
+
     /**
      * called after every invocation of this operator to see whether
      * a parameter can be optimised for better acceptance hence faster
@@ -81,14 +81,14 @@ public class RealRandomWalkOperator extends Operator {
     public void optimize(double logAlpha) {
         // must be overridden by operator implementation to have an effect
         double fDelta = calcDelta(logAlpha);
-        
+
         fDelta += Math.log(windowSize);
         windowSize = Math.exp(fDelta);
     }
 
     @Override
     public final String getPerformanceSuggestion() {
-        double prob = m_nNrAccepted/(m_nNrAccepted+m_nNrRejected+0.0);
+        double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
         double targetProb = getTargetAcceptanceProbability();
 
         double ratio = prob / targetProb;

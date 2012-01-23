@@ -37,7 +37,7 @@ public class Sequence extends Plugin {
     public Input<String> m_sTaxon = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
     public Input<String> m_sData = new Input<String>("value",
             "sequence data, either encoded as a string or as comma separated list of integers." +
-            "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
+                    "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
 
     public Sequence() {
     }
@@ -65,7 +65,7 @@ public class Sequence extends Plugin {
         // remove spaces
         sData = sData.replaceAll("\\s", "");
         List<Integer> sequence = dataType.string2state(sData);
-        
+
         if (m_nTotalCount.get() == null) {
             // derive default from char-map
             m_nTotalCount.setValue(dataType.getStateCount(), this);

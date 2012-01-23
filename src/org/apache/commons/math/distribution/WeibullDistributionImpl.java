@@ -25,50 +25,61 @@ import org.apache.commons.math.MathRuntimeException;
  * Default implementation of
  * {@link org.apache.commons.math.distribution.WeibullDistribution}.
  *
- * @since 1.1
  * @version $Revision: 925812 $ $Date: 2010-03-21 11:49:31 -0400 (Sun, 21 Mar 2010) $
+ * @since 1.1
  */
 public class WeibullDistributionImpl extends AbstractContinuousDistribution
         implements WeibullDistribution, Serializable {
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = 8589540077390120676L;
 
-    /** The shape parameter. */
+    /**
+     * The shape parameter.
+     */
     private double shape;
 
-    /** The scale parameter. */
+    /**
+     * The scale parameter.
+     */
     private double scale;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Creates weibull distribution with the given shape and scale and a
      * location equal to zero.
+     *
      * @param alpha the shape parameter.
-     * @param beta the scale parameter.
+     * @param beta  the scale parameter.
      */
-    public WeibullDistributionImpl(double alpha, double beta){
+    public WeibullDistributionImpl(double alpha, double beta) {
         this(alpha, beta, DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
     }
 
     /**
      * Creates weibull distribution with the given shape, scale and inverse
      * cumulative probability accuracy and a location equal to zero.
-     * @param alpha the shape parameter.
-     * @param beta the scale parameter.
+     *
+     * @param alpha              the shape parameter.
+     * @param beta               the scale parameter.
      * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     *                           (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
-    public WeibullDistributionImpl(double alpha, double beta, double inverseCumAccuracy){
+    public WeibullDistributionImpl(double alpha, double beta, double inverseCumAccuracy) {
         super();
         setShapeInternal(alpha);
         setScaleInternal(beta);
@@ -77,6 +88,7 @@ public class WeibullDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * For this distribution, X, this method returns P(X &lt; <code>x</code>).
+     *
      * @param x the value at which the CDF is evaluated.
      * @return CDF evaluted at <code>x</code>.
      */
@@ -92,6 +104,7 @@ public class WeibullDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Access the shape parameter.
+     *
      * @return the shape parameter.
      */
     public double getShape() {
@@ -100,6 +113,7 @@ public class WeibullDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Access the scale parameter.
+     *
      * @return the scale parameter.
      */
     public double getScale() {
@@ -142,17 +156,17 @@ public class WeibullDistributionImpl extends AbstractContinuousDistribution
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     @Override
     public double inverseCumulativeProbability(double p) {
         double ret;
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
+                    "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
         } else if (p == 0) {
             ret = 0.0;
-        } else  if (p == 1) {
+        } else if (p == 1) {
             ret = Double.POSITIVE_INFINITY;
         } else {
             ret = scale * Math.pow(-Math.log(1.0 - p), 1.0 / shape);
@@ -162,6 +176,7 @@ public class WeibullDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the shape parameter.
+     *
      * @param alpha the new shape parameter value.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
@@ -169,21 +184,24 @@ public class WeibullDistributionImpl extends AbstractContinuousDistribution
     public void setShape(double alpha) {
         setShapeInternal(alpha);
     }
+
     /**
      * Modify the shape parameter.
+     *
      * @param alpha the new shape parameter value.
      */
     private void setShapeInternal(double alpha) {
         if (alpha <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "shape must be positive ({0})",
-                  alpha);
+                    "shape must be positive ({0})",
+                    alpha);
         }
         this.shape = alpha;
     }
 
     /**
      * Modify the scale parameter.
+     *
      * @param beta the new scale parameter value.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
@@ -191,15 +209,17 @@ public class WeibullDistributionImpl extends AbstractContinuousDistribution
     public void setScale(double beta) {
         setScaleInternal(beta);
     }
+
     /**
      * Modify the scale parameter.
+     *
      * @param beta the new scale parameter value.
      */
     private void setScaleInternal(double beta) {
         if (beta <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "scale must be positive ({0})",
-                  beta);
+                    "scale must be positive ({0})",
+                    beta);
         }
         this.scale = beta;
     }

@@ -65,7 +65,7 @@ public class WholeNumberField extends JTextField
     protected void errorMsg() {
         JOptionPane.showMessageDialog(this,
                 "Illegal entry\nValue must be between " + min + " and " +
-                max + " inclusive", "Error", JOptionPane.ERROR_MESSAGE);
+                        max + " inclusive", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public void setValue(int value) {
@@ -142,7 +142,7 @@ public class WholeNumberField extends JTextField
     }
 
     static char[] numberSet = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
 
     class WholeNumberFieldDocument extends PlainDocument {

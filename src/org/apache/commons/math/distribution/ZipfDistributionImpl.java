@@ -27,15 +27,21 @@ import org.apache.commons.math.MathRuntimeException;
  * @version $Revision: 920852 $ $Date: 2010-03-09 07:53:44 -0500 (Tue, 09 Mar 2010) $
  */
 public class ZipfDistributionImpl extends AbstractIntegerDistribution
-    implements ZipfDistribution, Serializable {
+        implements ZipfDistribution, Serializable {
 
-    /** Serializable version identifier. */
+    /**
+     * Serializable version identifier.
+     */
     private static final long serialVersionUID = -140627372283420404L;
 
-    /** Number of elements. */
+    /**
+     * Number of elements.
+     */
     private int numberOfElements;
 
-    /** Exponent parameter of the distribution. */
+    /**
+     * Exponent parameter of the distribution.
+     */
     private double exponent;
 
     /**
@@ -44,11 +50,11 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      * <code>IllegalArgumentException</code> is thrown.
      *
      * @param numberOfElements the number of elements
-     * @param exponent the exponent
-     * @exception IllegalArgumentException if n &le; 0 or s &le; 0.0
+     * @param exponent         the exponent
+     * @throws IllegalArgumentException if n &le; 0 or s &le; 0.0
      */
     public ZipfDistributionImpl(final int numberOfElements, final double exponent)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         setNumberOfElementsInternal(numberOfElements);
         setExponentInternal(exponent);
     }
@@ -68,23 +74,24 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      * <code>IllegalArgumentException</code> is thrown.
      *
      * @param n the number of elements
-     * @exception IllegalArgumentException if n &le; 0
+     * @throws IllegalArgumentException if n &le; 0
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
     public void setNumberOfElements(final int n) {
         setNumberOfElementsInternal(n);
     }
+
     /**
      * Set the number of elements (e.g. corpus size) for the distribution.
      * The parameter value must be positive; otherwise an
      * <code>IllegalArgumentException</code> is thrown.
      *
      * @param n the number of elements
-     * @exception IllegalArgumentException if n &le; 0
+     * @throws IllegalArgumentException if n &le; 0
      */
     private void setNumberOfElementsInternal(final int n)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         if (n <= 0) {
             throw MathRuntimeException.createIllegalArgumentException(
                     "invalid number of elements {0} (must be positive)",
@@ -108,23 +115,24 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      * <code>IllegalArgumentException</code> is thrown.
      *
      * @param s the exponent
-     * @exception IllegalArgumentException if s &le; 0.0
+     * @throws IllegalArgumentException if s &le; 0.0
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
     public void setExponent(final double s) {
         setExponentInternal(s);
     }
+
     /**
      * Set the exponent characterising the distribution.
      * The parameter value must be positive; otherwise an
      * <code>IllegalArgumentException</code> is thrown.
      *
      * @param s the exponent
-     * @exception IllegalArgumentException if s &le; 0.0
+     * @throws IllegalArgumentException if s &le; 0.0
      */
     private void setExponentInternal(final double s)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         if (s <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
                     "invalid exponent {0} (must be positive)",

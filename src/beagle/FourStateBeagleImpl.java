@@ -11,8 +11,7 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
         Logger.getLogger("beagle").info("Constructing double-precision 4-state Java BEAGLE implementation.");
     }
 
-    protected int updateStatesStates(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3)
-    {
+    protected int updateStatesStates(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3) {
         double[] matrices1 = matrices[matrixIndex1];
         double[] matrices2 = matrices[matrixIndex2];
 
@@ -43,39 +42,51 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
                 if (state1 < 4 && state2 < 4) {
 
                     partials3[v] = matrices1[w + state1] * matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
 
                     partials3[v] = matrices1[w + state1] * matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
 
                     partials3[v] = matrices1[w + state1] * matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
 
                     partials3[v] = matrices1[w + state1] * matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
 
                 } else if (state1 < 4) {
                     // child 2 has a gap or unknown state so don't use it
 
                     partials3[v] = matrices1[w + state1];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
                     partials3[v] = matrices1[w + state1];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
                     partials3[v] = matrices1[w + state1];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
                     partials3[v] = matrices1[w + state1];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
 
                 } else if (state2 < 4) {
                     // child 2 has a gap or unknown state so don't use it
                     partials3[v] = matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
                     partials3[v] = matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
                     partials3[v] = matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
                     partials3[v] = matrices2[w + state2];
-                    v++;	w += 4;
+                    v++;
+                    w += 4;
 
                 } else {
                     // both children have a gap or unknown state so set partials to 1
@@ -95,8 +106,7 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
         return 0; // don't bother checking exponents for cherries
     }
 
-    protected int updateStatesPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3)
-    {
+    protected int updateStatesPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3) {
         double[] matrices1 = matrices[matrixIndex1];
         double[] matrices2 = matrices[matrixIndex2];
 
@@ -128,40 +138,40 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
 
                     double sum;
 
-                    sum =	matrices2[w] * partials2[v];
-                    sum +=	matrices2[w + 1] * partials2[v + 1];
-                    sum +=	matrices2[w + 2] * partials2[v + 2];
-                    sum +=	matrices2[w + 3] * partials2[v + 3];
+                    sum = matrices2[w] * partials2[v];
+                    sum += matrices2[w + 1] * partials2[v + 1];
+                    sum += matrices2[w + 2] * partials2[v + 2];
+                    sum += matrices2[w + 3] * partials2[v + 3];
                     partials3[u] = matrices1[w + state1] * sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
                     }
                     u++;
 
-                    sum =	matrices2[w + 4] * partials2[v];
-                    sum +=	matrices2[w + 5] * partials2[v + 1];
-                    sum +=	matrices2[w + 6] * partials2[v + 2];
-                    sum +=	matrices2[w + 7] * partials2[v + 3];
+                    sum = matrices2[w + 4] * partials2[v];
+                    sum += matrices2[w + 5] * partials2[v + 1];
+                    sum += matrices2[w + 6] * partials2[v + 2];
+                    sum += matrices2[w + 7] * partials2[v + 3];
                     partials3[u] = matrices1[w + 4 + state1] * sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
                     }
                     u++;
 
-                    sum =	matrices2[w + 8] * partials2[v];
-                    sum +=	matrices2[w + 9] * partials2[v + 1];
-                    sum +=	matrices2[w + 10] * partials2[v + 2];
-                    sum +=	matrices2[w + 11] * partials2[v + 3];
+                    sum = matrices2[w + 8] * partials2[v];
+                    sum += matrices2[w + 9] * partials2[v + 1];
+                    sum += matrices2[w + 10] * partials2[v + 2];
+                    sum += matrices2[w + 11] * partials2[v + 3];
                     partials3[u] = matrices1[w + 8 + state1] * sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
                     }
                     u++;
 
-                    sum =	matrices2[w + 12] * partials2[v];
-                    sum +=	matrices2[w + 13] * partials2[v + 1];
-                    sum +=	matrices2[w + 14] * partials2[v + 2];
-                    sum +=	matrices2[w + 15] * partials2[v + 3];
+                    sum = matrices2[w + 12] * partials2[v];
+                    sum += matrices2[w + 13] * partials2[v + 1];
+                    sum += matrices2[w + 14] * partials2[v + 2];
+                    sum += matrices2[w + 15] * partials2[v + 3];
                     partials3[u] = matrices1[w + 12 + state1] * sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
@@ -175,40 +185,40 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
 
                     double sum;
 
-                    sum =	matrices2[w] * partials2[v];
-                    sum +=	matrices2[w + 1] * partials2[v + 1];
-                    sum +=	matrices2[w + 2] * partials2[v + 2];
-                    sum +=	matrices2[w + 3] * partials2[v + 3];
+                    sum = matrices2[w] * partials2[v];
+                    sum += matrices2[w + 1] * partials2[v + 1];
+                    sum += matrices2[w + 2] * partials2[v + 2];
+                    sum += matrices2[w + 3] * partials2[v + 3];
                     partials3[u] = sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
                     }
                     u++;
 
-                    sum =	matrices2[w + 4] * partials2[v];
-                    sum +=	matrices2[w + 5] * partials2[v + 1];
-                    sum +=	matrices2[w + 6] * partials2[v + 2];
-                    sum +=	matrices2[w + 7] * partials2[v + 3];
+                    sum = matrices2[w + 4] * partials2[v];
+                    sum += matrices2[w + 5] * partials2[v + 1];
+                    sum += matrices2[w + 6] * partials2[v + 2];
+                    sum += matrices2[w + 7] * partials2[v + 3];
                     partials3[u] = sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
                     }
                     u++;
 
-                    sum =	matrices2[w + 8] * partials2[v];
-                    sum +=	matrices2[w + 9] * partials2[v + 1];
-                    sum +=	matrices2[w + 10] * partials2[v + 2];
-                    sum +=	matrices2[w + 11] * partials2[v + 3];
+                    sum = matrices2[w + 8] * partials2[v];
+                    sum += matrices2[w + 9] * partials2[v + 1];
+                    sum += matrices2[w + 10] * partials2[v + 2];
+                    sum += matrices2[w + 11] * partials2[v + 3];
                     partials3[u] = sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
                     }
                     u++;
 
-                    sum =	matrices2[w + 12] * partials2[v];
-                    sum +=	matrices2[w + 13] * partials2[v + 1];
-                    sum +=	matrices2[w + 14] * partials2[v + 2];
-                    sum +=	matrices2[w + 15] * partials2[v + 3];
+                    sum = matrices2[w + 12] * partials2[v];
+                    sum += matrices2[w + 13] * partials2[v + 1];
+                    sum += matrices2[w + 14] * partials2[v + 2];
+                    sum += matrices2[w + 15] * partials2[v + 3];
                     partials3[u] = sum;
                     if (SCALING) {
                         exponent |= Math.abs(Math.getExponent(partials3[u]));
@@ -225,8 +235,7 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
         return exponent;
     }
 
-    protected int updatePartialsPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3)
-    {
+    protected int updatePartialsPartials(int bufferIndex1, int matrixIndex1, int bufferIndex2, int matrixIndex2, int bufferIndex3) {
         double[] matrices1 = matrices[matrixIndex1];
         double[] matrices2 = matrices[matrixIndex2];
 
@@ -332,19 +341,35 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
         int v = 0;
         for (int k = 0; k < patternCount; k++) {
 
-            tmpPartials[u] = rootPartials[v] * weights[0]; u++; v++;
-            tmpPartials[u] = rootPartials[v] * weights[0]; u++; v++;
-            tmpPartials[u] = rootPartials[v] * weights[0]; u++; v++;
-            tmpPartials[u] = rootPartials[v] * weights[0]; u++; v++;
+            tmpPartials[u] = rootPartials[v] * weights[0];
+            u++;
+            v++;
+            tmpPartials[u] = rootPartials[v] * weights[0];
+            u++;
+            v++;
+            tmpPartials[u] = rootPartials[v] * weights[0];
+            u++;
+            v++;
+            tmpPartials[u] = rootPartials[v] * weights[0];
+            u++;
+            v++;
         }
 
         for (int j = 1; j < categoryCount; j++) {
             u = 0;
             for (int k = 0; k < patternCount; k++) {
-                tmpPartials[u] += rootPartials[v] * weights[j]; u++; v++;
-                tmpPartials[u] += rootPartials[v] * weights[j]; u++; v++;
-                tmpPartials[u] += rootPartials[v] * weights[j]; u++; v++;
-                tmpPartials[u] += rootPartials[v] * weights[j]; u++; v++;
+                tmpPartials[u] += rootPartials[v] * weights[j];
+                u++;
+                v++;
+                tmpPartials[u] += rootPartials[v] * weights[j];
+                u++;
+                v++;
+                tmpPartials[u] += rootPartials[v] * weights[j];
+                u++;
+                v++;
+                tmpPartials[u] += rootPartials[v] * weights[j];
+                u++;
+                v++;
 
             }
         }
@@ -353,10 +378,14 @@ public class FourStateBeagleImpl extends GeneralBeagleImpl {
 
         v = 0;
         for (int k = 0; k < patternCount; k++) {
-            double sum = freqs[0] * tmpPartials[v];	v++;
-            sum += freqs[1] * tmpPartials[v];	v++;
-            sum += freqs[2] * tmpPartials[v];	v++;
-            sum += freqs[3] * tmpPartials[v];	v++;
+            double sum = freqs[0] * tmpPartials[v];
+            v++;
+            sum += freqs[1] * tmpPartials[v];
+            v++;
+            sum += freqs[2] * tmpPartials[v];
+            v++;
+            sum += freqs[3] * tmpPartials[v];
+            v++;
             outSumLogLikelihood[0] += Math.log(sum) * patternWeights[k];
         }
 

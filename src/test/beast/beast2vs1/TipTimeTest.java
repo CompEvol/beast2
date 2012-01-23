@@ -10,7 +10,7 @@ import test.beast.beast2vs1.trace.Expectation;
  * @author Walter Xie
  */
 public class TipTimeTest extends TestFramework {
-    private final String[] XML_FILES = new String[]{"testCoalescentTipDates.xml", "testCoalescentTipDates1.xml", 
+    private final String[] XML_FILES = new String[]{"testCoalescentTipDates.xml", "testCoalescentTipDates1.xml",
             "testStrictClockTipTime.xml", "testCoalescentTipDatesSampling.xml", "testStrictClockTipDatesSampling.xml"};//, "testTipDates.xml"};
 
     public void testCoalescentTipDates() throws Exception {
@@ -103,7 +103,7 @@ public class TipTimeTest extends TestFramework {
 //                addExpIntoList(expList, "tree.height", 38.6109296447932);
 //                addExpIntoList(expList, "hky.kappa", 2179.425239015365);
 //                break;
-           default:
+            default:
                 throw new Exception("No such XML");
         }
 

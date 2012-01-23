@@ -30,13 +30,19 @@ import org.apache.commons.math.special.Beta;
 public class BinomialDistributionImpl extends AbstractIntegerDistribution
         implements BinomialDistribution, Serializable {
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = 6751309484392813623L;
 
-    /** The number of trials. */
+    /**
+     * The number of trials.
+     */
     private int numberOfTrials;
 
-    /** The probability of success. */
+    /**
+     * The probability of success.
+     */
     private double probabilityOfSuccess;
 
     /**
@@ -44,7 +50,7 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      * probability of success.
      *
      * @param trials the number of trials.
-     * @param p the probability of success.
+     * @param p      the probability of success.
      */
     public BinomialDistributionImpl(int trials, double p) {
         super();
@@ -75,19 +81,20 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      *
      * @param trials the new number of trials.
      * @throws IllegalArgumentException if <code>trials</code> is not a valid
-     *             number of trials.
+     *                                  number of trials.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
     public void setNumberOfTrials(int trials) {
         setNumberOfTrialsInternal(trials);
     }
+
     /**
      * Change the number of trials for this distribution.
      *
      * @param trials the new number of trials.
      * @throws IllegalArgumentException if <code>trials</code> is not a valid
-     *             number of trials.
+     *                                  number of trials.
      */
     private void setNumberOfTrialsInternal(int trials) {
         if (trials < 0) {
@@ -102,19 +109,20 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      *
      * @param p the new probability of success.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *             probability.
+     *                                  probability.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
     public void setProbabilityOfSuccess(double p) {
         setProbabilityOfSuccessInternal(p);
     }
+
     /**
      * Change the probability of success for this distribution.
      *
      * @param p the new probability of success.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *             probability.
+     *                                  probability.
      */
     private void setProbabilityOfSuccessInternal(double p) {
         if (p < 0.0 || p > 1.0) {
@@ -156,7 +164,7 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      * @param x the value at which the PDF is evaluated.
      * @return PDF for this distribution.
      * @throws MathException if the cumulative probability can not be computed
-     *             due to convergence or other numerical errors.
+     *                       due to convergence or other numerical errors.
      */
     @Override
     public double cumulativeProbability(int x) throws MathException {
@@ -200,8 +208,8 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      *
      * @param p the desired probability
      * @return the largest x such that P(X &le; x) <= p
-     * @throws MathException if the inverse cumulative probability can not be
-     *             computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if p < 0 or p > 1
      */
     @Override

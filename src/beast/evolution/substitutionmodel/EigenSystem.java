@@ -7,6 +7,7 @@ package beast.evolution.substitutionmodel;
 public interface EigenSystem {
     /**
      * Set the instantaneous rate matrix
+     *
      * @param matrix
      */
     EigenDecomposition decomposeMatrix(double[][] matrix);

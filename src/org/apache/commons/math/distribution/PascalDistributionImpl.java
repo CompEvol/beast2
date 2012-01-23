@@ -25,24 +25,32 @@ import org.apache.commons.math.util.MathUtils;
 
 /**
  * The default implementation of {@link PascalDistribution}.
+ *
  * @version $Revision: 920852 $ $Date: 2010-03-09 07:53:44 -0500 (Tue, 09 Mar 2010) $
  * @since 1.2
  */
 public class PascalDistributionImpl extends AbstractIntegerDistribution
-    implements PascalDistribution, Serializable {
+        implements PascalDistribution, Serializable {
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = 6751309484392813623L;
 
-    /** The number of successes */
+    /**
+     * The number of successes
+     */
     private int numberOfSuccesses;
 
-    /** The probability of success */
+    /**
+     * The probability of success
+     */
     private double probabilityOfSuccess;
 
     /**
      * Create a binomial distribution with the given number of trials and
      * probability of success.
+     *
      * @param r the number of successes
      * @param p the probability of success
      */
@@ -54,6 +62,7 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
 
     /**
      * Access the number of successes for this distribution.
+     *
      * @return the number of successes
      */
     public int getNumberOfSuccesses() {
@@ -62,6 +71,7 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
 
     /**
      * Access the probability of success for this distribution.
+     *
      * @return the probability of success
      */
     public double getProbabilityOfSuccess() {
@@ -70,51 +80,57 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
 
     /**
      * Change the number of successes for this distribution.
+     *
      * @param successes the new number of successes
      * @throws IllegalArgumentException if <code>successes</code> is not
-     *         positive.
+     *                                  positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
     public void setNumberOfSuccesses(int successes) {
         setNumberOfSuccessesInternal(successes);
     }
+
     /**
      * Change the number of successes for this distribution.
+     *
      * @param successes the new number of successes
      * @throws IllegalArgumentException if <code>successes</code> is not
-     *         positive.
+     *                                  positive.
      */
     private void setNumberOfSuccessesInternal(int successes) {
         if (successes < 0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "number of successes must be non-negative ({0})",
-                  successes);
+                    "number of successes must be non-negative ({0})",
+                    successes);
         }
         numberOfSuccesses = successes;
     }
 
     /**
      * Change the probability of success for this distribution.
+     *
      * @param p the new probability of success
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
     public void setProbabilityOfSuccess(double p) {
         setProbabilityOfSuccessInternal(p);
     }
+
     /**
      * Change the probability of success for this distribution.
+     *
      * @param p the new probability of success
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     private void setProbabilityOfSuccessInternal(double p) {
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
+                    "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
         }
         probabilityOfSuccess = p;
     }
@@ -122,6 +138,7 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
     /**
      * Access the domain value lower bound, based on <code>p</code>, used to
      * bracket a PDF root.
+     *
      * @param p the desired probability for the critical value
      * @return domain value lower bound, i.e. P(X &lt; <i>lower bound</i>) &lt;
      *         <code>p</code>
@@ -134,6 +151,7 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
     /**
      * Access the domain value upper bound, based on <code>p</code>, used to
      * bracket a PDF root.
+     *
      * @param p the desired probability for the critical value
      * @return domain value upper bound, i.e. P(X &lt; <i>upper bound</i>) &gt;
      *         <code>p</code>
@@ -146,10 +164,11 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
 
     /**
      * For this distribution, X, this method returns P(X &le; x).
+     *
      * @param x the value at which the PDF is evaluated
      * @return PDF for this distribution
      * @throws MathException if the cumulative probability can not be computed
-     *         due to convergence or other numerical errors
+     *                       due to convergence or other numerical errors
      */
     @Override
     public double cumulativeProbability(int x) throws MathException {
@@ -158,13 +177,14 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
             ret = 0.0;
         } else {
             ret = Beta.regularizedBeta(probabilityOfSuccess,
-                numberOfSuccesses, x + 1);
+                    numberOfSuccesses, x + 1);
         }
         return ret;
     }
 
     /**
      * For this distribution, X, this method returns P(X = x).
+     *
      * @param x the value at which the PMF is evaluated
      * @return PMF for this distribution
      */
@@ -174,9 +194,9 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
             ret = 0.0;
         } else {
             ret = MathUtils.binomialCoefficientDouble(x +
-                  numberOfSuccesses - 1, numberOfSuccesses - 1) *
-                  Math.pow(probabilityOfSuccess, numberOfSuccesses) *
-                  Math.pow(1.0 - probabilityOfSuccess, x);
+                    numberOfSuccesses - 1, numberOfSuccesses - 1) *
+                    Math.pow(probabilityOfSuccess, numberOfSuccesses) *
+                    Math.pow(1.0 - probabilityOfSuccess, x);
         }
         return ret;
     }
@@ -187,15 +207,16 @@ public class PascalDistributionImpl extends AbstractIntegerDistribution
      * <p>
      * Returns <code>-1</code> for p=0 and <code>Integer.MAX_VALUE</code>
      * for p=1.</p>
+     *
      * @param p the desired probability
      * @return the largest x such that P(X &le; x) <= p
-     * @throws MathException if the inverse cumulative probability can not be
-     *         computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if p < 0 or p > 1
      */
     @Override
     public int inverseCumulativeProbability(final double p)
-        throws MathException {
+            throws MathException {
         int ret;
 
         // handle extreme values explicitly

@@ -28,15 +28,20 @@ import org.apache.commons.math.ConvergenceException;
  */
 public class MaxEvaluationsExceededException extends ConvergenceException {
 
-    /** Serializable version identifier. */
+    /**
+     * Serializable version identifier.
+     */
     private static final long serialVersionUID = -5921271447220129118L;
 
-    /** Maximal number of evaluations allowed. */
+    /**
+     * Maximal number of evaluations allowed.
+     */
     private final int maxEvaluations;
 
     /**
      * Constructs an exception with specified formatted detail message.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
+     *
      * @param maxEvaluations maximal number of evaluations allowed
      */
     public MaxEvaluationsExceededException(final int maxEvaluations) {
@@ -47,17 +52,20 @@ public class MaxEvaluationsExceededException extends ConvergenceException {
     /**
      * Constructs an exception with specified formatted detail message.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
+     *
      * @param maxEvaluations the exceeded maximal number of evaluations
-     * @param pattern format specifier
-     * @param arguments format arguments
+     * @param pattern        format specifier
+     * @param arguments      format arguments
      */
     public MaxEvaluationsExceededException(final int maxEvaluations,
-                                          final String pattern, final Object ... arguments) {
+                                           final String pattern, final Object... arguments) {
         super(pattern, arguments);
         this.maxEvaluations = maxEvaluations;
     }
 
-    /** Get the maximal number of evaluations allowed.
+    /**
+     * Get the maximal number of evaluations allowed.
+     *
      * @return maximal number of evaluations allowed
      */
     public int getMaxEvaluations() {

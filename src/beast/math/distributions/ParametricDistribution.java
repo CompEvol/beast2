@@ -44,87 +44,90 @@ import beast.util.Randomizer;
  */
 
 @Description("A class that describes a parametric distribution, that is, a distribution that takes some " +
-		"parameters/valuables as inputs and can produce (cummulative) densities and inverse " +
-		"cummulative densities.")
+        "parameters/valuables as inputs and can produce (cummulative) densities and inverse " +
+        "cummulative densities.")
 public abstract class ParametricDistribution extends CalculationNode implements ContinuousDistribution {
-	public Input<Double> m_offset = new Input<Double>("offset","offset of origin (defaults to 0)", 0.0); 
+    public Input<Double> m_offset = new Input<Double>("offset", "offset of origin (defaults to 0)", 0.0);
 
     abstract public org.apache.commons.math.distribution.Distribution getDistribution();
 
-    /** Calculate log probability of a valuable x for this distribution.
-	 * If x is multidimensional, the components of x are assumed to be independent,
-	 * so the sum of log probabilities of all elements of x is returned as the prior.
-	**/
+    /**
+     * Calculate log probability of a valuable x for this distribution.
+     * If x is multidimensional, the components of x are assumed to be independent,
+     * so the sum of log probabilities of all elements of x is returned as the prior.
+     */
     public double calcLogP(Valuable x) throws Exception {
-		double fOffset = m_offset.get();
-		double fLogP = 0;
-		for (int i = 0; i < x.getDimension(); i++) {
-			double fX = x.getArrayValue(i) - fOffset;
-			//fLogP += Math.log(density(fX));
-			fLogP += logDensity(fX);
-		}
-		return fLogP;
+        double fOffset = m_offset.get();
+        double fLogP = 0;
+        for (int i = 0; i < x.getDimension(); i++) {
+            double fX = x.getArrayValue(i) - fOffset;
+            //fLogP += Math.log(density(fX));
+            fLogP += logDensity(fX);
+        }
+        return fLogP;
     }
 
     /*
      * This implemenatation is only suitable for univariate distributions.
      * Must be overwritten for multivariate ones.
      */
-    public Double[][] sample(int size) throws Exception{
+    public Double[][] sample(int size) throws Exception {
         Double[][] sample = new Double[size][];
-        for(int i = 0; i < sample.length; i++){
+        for (int i = 0; i < sample.length; i++) {
             double p = Randomizer.nextDouble();
             sample[i] = new Double[]{inverseCumulativeProbability(p)};
         }
         return sample;
 
     }
-    
+
     /**
      * For this distribution, X, this method returns x such that P(X &lt; x) = p.
+     *
      * @param p the cumulative probability.
      * @return x.
      * @throws MathException if the inverse cumulative probability can not be
-     *            computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
     @Override
     public double inverseCumulativeProbability(double p) throws MathException {
-    	org.apache.commons.math.distribution.Distribution dist = getDistribution();
-    	if (dist instanceof ContinuousDistribution) {
-    		return ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
-    	} else if (dist instanceof IntegerDistribution) {
-    		return dist.cumulativeProbability(p);
-    	}
-   		return 0.0;
+        org.apache.commons.math.distribution.Distribution dist = getDistribution();
+        if (dist instanceof ContinuousDistribution) {
+            return ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
+        } else if (dist instanceof IntegerDistribution) {
+            return dist.cumulativeProbability(p);
+        }
+        return 0.0;
     }
-    
+
     /**
      * Return the probability density for a particular point.
-     * NB this does not take offset in account 
-     * @param x  The point at which the density should be computed.
-     * @return  The pdf at point x.
-     */    
+     * NB this does not take offset in account
+     *
+     * @param x The point at which the density should be computed.
+     * @return The pdf at point x.
+     */
     @Override
     public double density(double x) {
-    	org.apache.commons.math.distribution.Distribution dist = getDistribution();
-    	if (dist instanceof ContinuousDistribution) {
+        org.apache.commons.math.distribution.Distribution dist = getDistribution();
+        if (dist instanceof ContinuousDistribution) {
             return ((ContinuousDistribution) dist).density(x);
-    	} else if (dist instanceof IntegerDistribution) {
-    		return ((IntegerDistribution)dist).probability(x);
-    	}
-   		return 0.0;
+        } else if (dist instanceof IntegerDistribution) {
+            return ((IntegerDistribution) dist).probability(x);
+        }
+        return 0.0;
     }
 
     @Override
     /** NB logDensity does not take offset in account **/
     public double logDensity(double x) {
-    	org.apache.commons.math.distribution.Distribution dist = getDistribution();
-    	if (dist instanceof ContinuousDistribution) {
+        org.apache.commons.math.distribution.Distribution dist = getDistribution();
+        if (dist instanceof ContinuousDistribution) {
             return ((ContinuousDistribution) dist).logDensity(x);
-    	} else if (dist instanceof IntegerDistribution) {
-    		return Math.log(((IntegerDistribution)dist).probability(x));
-    	}
-   		return 0.0;
+        } else if (dist instanceof IntegerDistribution) {
+            return Math.log(((IntegerDistribution) dist).probability(x));
+        }
+        return 0.0;
     }
 
     /**
@@ -135,13 +138,13 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      *
      * @param x the value at which the distribution function is evaluated.
      * @return the probability that a random variable with this
-     * distribution takes a value less than or equal to <code>x</code>
+     *         distribution takes a value less than or equal to <code>x</code>
      * @throws MathException if the cumulative probability can not be
-     * computed due to convergence or other numerical errors.
+     *                       computed due to convergence or other numerical errors.
      */
     @Override
     public double cumulativeProbability(double x) throws MathException {
-    	return getDistribution().cumulativeProbability(x);
+        return getDistribution().cumulativeProbability(x);
     }
 
     /**
@@ -151,14 +154,14 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @param x0 the (inclusive) lower bound
      * @param x1 the (inclusive) upper bound
      * @return the probability that a random variable with this distribution
-     * will take a value between <code>x0</code> and <code>x1</code>,
-     * including the endpoints
-     * @throws MathException if the cumulative probability can not be
-     * computed due to convergence or other numerical errors.
+     *         will take a value between <code>x0</code> and <code>x1</code>,
+     *         including the endpoints
+     * @throws MathException            if the cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>x0 > x1</code>
      */
     @Override
     public double cumulativeProbability(double x0, double x1) throws MathException {
-    	return getDistribution().cumulativeProbability(x0, x1);
+        return getDistribution().cumulativeProbability(x0, x1);
     }
 }

@@ -18,7 +18,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * The Chi-Squared Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -32,6 +32,7 @@ package org.apache.commons.math.distribution;
 public interface ChiSquaredDistribution extends ContinuousDistribution, HasDensity<Double> {
     /**
      * Modify the degrees of freedom.
+     *
      * @param degreesOfFreedom the new degrees of freedom.
      * @deprecated as of v2.1
      */
@@ -40,14 +41,16 @@ public interface ChiSquaredDistribution extends ContinuousDistribution, HasDensi
 
     /**
      * Access the degrees of freedom.
+     *
      * @return the degrees of freedom.
      */
     double getDegreesOfFreedom();
 
     /**
      * Return the probability density for a particular point.
-     * @param x  The point at which the density should be computed.
-     * @return  The pdf at point x.
+     *
+     * @param x The point at which the density should be computed.
+     * @return The pdf at point x.
      */
     double density(Double x);
 }

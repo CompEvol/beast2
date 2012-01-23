@@ -15,12 +15,12 @@ public class StrictClockModel extends BranchRateModel.Base {
     //public Input<RealParameter> muParameterInput = new Input<RealParameter>("clock.rate", "the clock rate (defaults to 1.0)");
 
     RealParameter muParameter;
-    
+
     @Override
     public void initAndValidate() throws Exception {
-    	muParameter = meanRateInput.get();
+        muParameter = meanRateInput.get();
         if (muParameter != null) {
-        	muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);
+            muParameter.setBounds(0.0, Double.POSITIVE_INFINITY);
             mu = muParameter.getValue();
         }
     }
@@ -32,21 +32,21 @@ public class StrictClockModel extends BranchRateModel.Base {
 
     @Override
     public boolean requiresRecalculation() {
-		mu = muParameter.getValue();
-		return true;
+        mu = muParameter.getValue();
+        return true;
     }
 
     @Override
     protected void restore() {
-		mu = muParameter.getValue();
-    	super.restore();
+        mu = muParameter.getValue();
+        super.restore();
     }
 
     @Override
     protected void store() {
-		mu = muParameter.getValue();
-    	super.store();
+        mu = muParameter.getValue();
+        super.store();
     }
-    
+
     private double mu = 1.0;
 }

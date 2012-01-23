@@ -35,9 +35,9 @@ public class BisectionSolver extends UnivariateRealSolverImpl {
      *
      * @param f function to solve.
      * @deprecated as of 2.0 the function to solve is passed as an argument
-     * to the {@link #solve(UnivariateRealFunction, double, double)} or
-     * {@link UnivariateRealSolverImpl#solve(UnivariateRealFunction, double, double, double)}
-     * method.
+     *             to the {@link #solve(UnivariateRealFunction, double, double)} or
+     *             {@link UnivariateRealSolverImpl#solve(UnivariateRealFunction, double, double, double)}
+     *             method.
      */
     @Deprecated
     public BisectionSolver(UnivariateRealFunction f) {
@@ -46,38 +46,45 @@ public class BisectionSolver extends UnivariateRealSolverImpl {
 
     /**
      * Construct a solver.
-     *
      */
     public BisectionSolver() {
         super(100, 1E-6);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double solve(double min, double max, double initial)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double solve(double min, double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double solve(final UnivariateRealFunction f, double min, double max, double initial)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(min, max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double solve(final UnivariateRealFunction f, double min, double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
 
         clearResult();
-        verifyInterval(min,max);
+        verifyInterval(min, max);
         double m;
         double fm;
         double fmin;
@@ -85,8 +92,8 @@ public class BisectionSolver extends UnivariateRealSolverImpl {
         int i = 0;
         while (i < maximalIterationCount) {
             m = UnivariateRealSolverUtils.midpoint(min, max);
-           fmin = f.value(min);
-           fm = f.value(m);
+            fmin = f.value(min);
+            fm = f.value(m);
 
             if (fm * fmin > 0.0) {
                 // max and m bracket the root.

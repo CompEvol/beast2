@@ -45,50 +45,52 @@ import java.util.Random;
 abstract public class SpeciesTreeDistribution extends TreeDistribution {
 //	SpeciesTreeDistribution extends TreeDistribution
 
-   /**
+    /**
      * Calculates the log likelihood of this set of coalescent intervals,
      * given a demographic model.
      *
      * @return the log likelihood
      */
-	@Override
+    @Override
     public double calculateLogP() {
-      	final Tree tree = m_tree.get();
-	    logP = calculateTreeLogLikelihood(tree);
+        final Tree tree = m_tree.get();
+        logP = calculateTreeLogLikelihood(tree);
         return logP;
     } // calculateLogP
-	
-	
-	/** 
+
+
+    /**
      * Generic likelihood calculation
+     *
      * @param tree
      * @return log-likelihood of density
      */
-	abstract double calculateTreeLogLikelihood(Tree tree);
+    abstract double calculateTreeLogLikelihood(Tree tree);
 
     // ****************************************************************
     // Private and protected stuff
     // ****************************************************************
 
 
-
     /*****************************************/
     /** Distribution implementation follows **/
-    /*****************************************/
+    /**
+     * *************************************
+     */
     @Override
-	public List<String> getArguments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public List<String> getArguments() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public List<String> getConditions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<String> getConditions() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void sample(State state, Random random) {  
+    @Override
+    public void sample(State state, Random random) {
         throw new UnsupportedOperationException("This should eventually sample a tree conditional on provided speciation model.");
-	}
+    }
 }

@@ -14,19 +14,19 @@ import beast.evolution.tree.Tree;
 //    p *= exp(-lambda*height[i])
 // }
 
-@Description("Pure birth model (i.e. no deaths)")	 
+@Description("Pure birth model (i.e. no deaths)")
 public class YuleModel extends SpeciesTreeDistribution {
-    public Input<RealParameter> birthDiffRateParameter = 
+    public Input<RealParameter> birthDiffRateParameter =
             new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
     public Input<Boolean> m_pConditionlOnRoot =
             new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
 
     protected boolean conditionalOnRoot;
-    
+
     @Override
     public void initAndValidate() throws Exception {
-    	super.initAndValidate();
-    	conditionalOnRoot = m_pConditionlOnRoot.get();
+        super.initAndValidate();
+        conditionalOnRoot = m_pConditionlOnRoot.get();
     }
 
     @Override
@@ -40,74 +40,80 @@ public class YuleModel extends SpeciesTreeDistribution {
 
         double logL = logTreeProbability(taxonCount, r, rho, a);
 
-        final Node [] nodes = tree.getNodesAsArray();
+        final Node[] nodes = tree.getNodesAsArray();
         for (int i = taxonCount; i < nodes.length; i++) {
-            assert ( ! nodes[i].isLeaf() );
+            assert (!nodes[i].isLeaf());
             logL += calcLogNodeProbability(nodes[i], r, rho, a, taxonCount);
         }
 
         return logL;
     }
 
-    /** calculate contribution of the tree to the log likelihood
+    /**
+     * calculate contribution of the tree to the log likelihood
      *
      * @param taxonCount
-     * @param r   relative birth rate (birth rate - death rate)
-     * @param rho parameter in Gernhard 2008 birth death model
-     * @param a  death/birth rates ratio
+     * @param r          relative birth rate (birth rate - death rate)
+     * @param rho        parameter in Gernhard 2008 birth death model
+     * @param a          death/birth rates ratio
      * @return
-     **/
+     */
     protected double logTreeProbability(final int taxonCount, double r, double rho, double a) {
         double c1 = logCoeff(taxonCount);
-        if( ! conditionalOnRoot ) {
+        if (!conditionalOnRoot) {
             c1 += (taxonCount - 1) * Math.log(r * rho) + taxonCount * Math.log(1 - a);
         }
         return c1;
     }
 
-    /** default implementation, equivalent with unscaled tree in Gernhard 2008 model
+    /**
+     * default implementation, equivalent with unscaled tree in Gernhard 2008 model
+     *
      * @param taxonCount
      * @return
-     **/
-    protected double logCoeff(final int taxonCount) {return 0.0;}
+     */
+    protected double logCoeff(final int taxonCount) {
+        return 0.0;
+    }
 
-    /** contribution of a single node to the log likelihood 
-    * r = relative birth rate (birth rate - death rate)
-    * rho = rho parameter in Gernhard 2008 birth death model
-    * a = death rate relative to birth rate
-    *
+    /**
+     * contribution of a single node to the log likelihood
+     * r = relative birth rate (birth rate - death rate)
+     * rho = rho parameter in Gernhard 2008 birth death model
+     * a = death rate relative to birth rate
+     *
      * @param node
      * @param r
      * @param rho
      * @param a
      * @param taxonCount
      * @return
-     **/
+     */
     protected double calcLogNodeProbability(Node node, double r, double rho, double a, int taxonCount) {
         final double height = node.getHeight();
         final double mrh = -r * height;
 
-        if( ! conditionalOnRoot ) {
+        if (!conditionalOnRoot) {
             final double z = Math.log(rho + ((1 - rho) - a) * Math.exp(mrh));
             double l = -2 * z + mrh;
 
-            if(node.isRoot()) {
+            if (node.isRoot()) {
                 l += mrh - z;
             }
             return l;
         } else {
             double l;
-            if( !node.isRoot() ) {
+            if (!node.isRoot()) {
                 final double z = Math.log(1 - a * Math.exp(mrh));
                 l = -2 * z + mrh;
             } else {
                 // Root dependent coefficient from each internal node
                 final double ca = 1 - a;
                 final double emrh = Math.exp(-mrh);
-                if( emrh != 1.0 ) {
-                  l = (taxonCount - 2) * Math.log(r * ca * (1 + ca /(emrh - 1)));
+                if (emrh != 1.0) {
+                    l = (taxonCount - 2) * Math.log(r * ca * (1 + ca / (emrh - 1)));
                 } else {  // use exp(x)-1 = x for x near 0
-                  l = (taxonCount - 2) * Math.log(ca * (r + ca/height));
+                    l = (taxonCount - 2) * Math.log(ca * (r + ca / height));
                 }
             }
             return l;
@@ -117,9 +123,9 @@ public class YuleModel extends SpeciesTreeDistribution {
 //    public boolean includeExternalNodesInLikelihoodCalculation() {
 //        return false;
 //    }
-    
+
     @Override
     protected boolean requiresRecalculation() {
-    	return super.requiresRecalculation() || birthDiffRateParameter.get().somethingIsDirty();
+        return super.requiresRecalculation() || birthDiffRateParameter.get().somethingIsDirty();
     }
 }

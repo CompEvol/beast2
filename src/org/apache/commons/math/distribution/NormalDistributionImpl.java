@@ -35,31 +35,43 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Default inverse cumulative probability accuracy
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = 8589540077390120676L;
 
-    /** &sqrt;(2 &pi;) */
+    /**
+     * &sqrt;(2 &pi;)
+     */
     private static final double SQRT2PI = Math.sqrt(2 * Math.PI);
 
-    /** The mean of this distribution. */
+    /**
+     * The mean of this distribution.
+     */
     private double mean = 0;
 
-    /** The standard deviation of this distribution. */
+    /**
+     * The standard deviation of this distribution.
+     */
     private double standardDeviation = 1;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Create a normal distribution using the given mean and standard deviation.
+     *
      * @param mean mean for this distribution
-     * @param sd standard deviation for this distribution
+     * @param sd   standard deviation for this distribution
      */
-    public NormalDistributionImpl(double mean, double sd){
+    public NormalDistributionImpl(double mean, double sd) {
         this(mean, sd, DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
     }
 
@@ -67,8 +79,8 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      * Create a normal distribution using the given mean, standard deviation and
      * inverse cumulative distribution accuracy.
      *
-     * @param mean mean for this distribution
-     * @param sd standard deviation for this distribution
+     * @param mean               mean for this distribution
+     * @param sd                 standard deviation for this distribution
      * @param inverseCumAccuracy inverse cumulative probability accuracy
      * @since 2.1
      */
@@ -83,12 +95,13 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      * Creates normal distribution with the mean equal to zero and standard
      * deviation equal to one.
      */
-    public NormalDistributionImpl(){
+    public NormalDistributionImpl() {
         this(0.0, 1.0);
     }
 
     /**
      * Access the mean.
+     *
      * @return mean for this distribution
      */
     public double getMean() {
@@ -97,6 +110,7 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the mean.
+     *
      * @param mean for this distribution
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
@@ -104,8 +118,10 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
     public void setMean(double mean) {
         setMeanInternal(mean);
     }
+
     /**
      * Modify the mean.
+     *
      * @param newMean for this distribution
      */
     private void setMeanInternal(double newMean) {
@@ -114,6 +130,7 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Access the standard deviation.
+     *
      * @return standard deviation for this distribution
      */
     public double getStandardDeviation() {
@@ -122,6 +139,7 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * Modify the standard deviation.
+     *
      * @param sd standard deviation for this distribution
      * @throws IllegalArgumentException if <code>sd</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
@@ -130,16 +148,18 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
     public void setStandardDeviation(double sd) {
         setStandardDeviationInternal(sd);
     }
+
     /**
      * Modify the standard deviation.
+     *
      * @param sd standard deviation for this distribution
      * @throws IllegalArgumentException if <code>sd</code> is not positive.
      */
     private void setStandardDeviationInternal(double sd) {
         if (sd <= 0.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "standard deviation must be positive ({0})",
-                  sd);
+                    "standard deviation must be positive ({0})",
+                    sd);
         }
         standardDeviation = sd;
     }
@@ -167,6 +187,7 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
         double x0 = x - mean;
         return Math.exp(-x0 * x0 / (2 * standardDeviation * standardDeviation)) / (standardDeviation * SQRT2PI);
     }
+
     @Override
     public double logDensity(double x) {
         double a = 1.0 / (Math.sqrt(2.0 * Math.PI) * standardDeviation);
@@ -177,11 +198,12 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
 
     /**
      * For this distribution, X, this method returns P(X &lt; <code>x</code>).
+     *
      * @param x the value at which the CDF is evaluated.
      * @return CDF evaluted at <code>x</code>.
      * @throws MathException if the algorithm fails to converge; unless
-     * x is more than 20 standard deviations from the mean, in which case the
-     * convergence exception is caught and 0 or 1 is returned.
+     *                       x is more than 20 standard deviations from the mean, in which case the
+     *                       convergence exception is caught and 0 or 1 is returned.
      */
     public double cumulativeProbability(double x) throws MathException {
         try {
@@ -219,14 +241,14 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      *
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
-     * @throws MathException if the inverse cumulative probability can not be
-     *         computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     @Override
     public double inverseCumulativeProbability(final double p)
-    throws MathException {
+            throws MathException {
         if (p == 0) {
             return Double.NEGATIVE_INFINITY;
         }

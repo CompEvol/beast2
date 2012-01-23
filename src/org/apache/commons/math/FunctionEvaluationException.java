@@ -20,33 +20,39 @@ package org.apache.commons.math;
 
 /**
  * Exception thrown when an error occurs evaluating a function.
- * <p>
+ * <p/>
  * Maintains an <code>argument</code> property holding the input value that
  * caused the function evaluation to fail.
  *
  * @version $Revision: 885278 $ $Date: 2009-11-29 16:47:51 -0500 (Sun, 29 Nov 2009) $
  */
-public class FunctionEvaluationException extends MathException  {
+public class FunctionEvaluationException extends MathException {
 
-    /** Serializable version identifier. */
+    /**
+     * Serializable version identifier.
+     */
     private static final long serialVersionUID = -4305020489115478365L;
 
-    /** Message for failed evaluation. */
+    /**
+     * Message for failed evaluation.
+     */
     private static final String FAILED_EVALUATION_MESSAGE =
-        "evaluation failed for argument = {0}";
+            "evaluation failed for argument = {0}";
 
-    /** Argument causing function evaluation failure */
+    /**
+     * Argument causing function evaluation failure
+     */
     private double[] argument;
 
     /**
      * Construct an exception indicating the argument value
      * that caused the function evaluation to fail.
      *
-     * @param argument  the failing function argument
+     * @param argument the failing function argument
      */
     public FunctionEvaluationException(double argument) {
         super(FAILED_EVALUATION_MESSAGE, argument);
-        this.argument = new double[] { argument };
+        this.argument = new double[]{argument};
     }
 
     /**
@@ -64,27 +70,29 @@ public class FunctionEvaluationException extends MathException  {
     /**
      * Constructs an exception with specified formatted detail message.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
+     *
      * @param argument  the failing function argument
-     * @param pattern format specifier
+     * @param pattern   format specifier
      * @param arguments format arguments
      * @since 1.2
      */
     public FunctionEvaluationException(double argument,
-                                       String pattern, Object ... arguments) {
+                                       String pattern, Object... arguments) {
         super(pattern, arguments);
-        this.argument = new double[] { argument };
+        this.argument = new double[]{argument};
     }
 
     /**
      * Constructs an exception with specified formatted detail message.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
+     *
      * @param argument  the failing function argument
-     * @param pattern format specifier
+     * @param pattern   format specifier
      * @param arguments format arguments
      * @since 2.0
      */
     public FunctionEvaluationException(double[] argument,
-                                       String pattern, Object ... arguments) {
+                                       String pattern, Object... arguments) {
         super(pattern, arguments);
         this.argument = argument.clone();
     }
@@ -92,20 +100,22 @@ public class FunctionEvaluationException extends MathException  {
     /**
      * Constructs an exception with specified root cause.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
-     * @param cause  the exception or error that caused this exception to be thrown
-     * @param argument  the failing function argument
+     *
+     * @param cause    the exception or error that caused this exception to be thrown
+     * @param argument the failing function argument
      * @since 1.2
      */
     public FunctionEvaluationException(Throwable cause, double argument) {
         super(cause);
-        this.argument = new double[] { argument };
+        this.argument = new double[]{argument};
     }
 
     /**
      * Constructs an exception with specified root cause.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
-     * @param cause  the exception or error that caused this exception to be thrown
-     * @param argument  the failing function argument
+     *
+     * @param cause    the exception or error that caused this exception to be thrown
+     * @param argument the failing function argument
      * @since 2.0
      */
     public FunctionEvaluationException(Throwable cause, double[] argument) {
@@ -116,31 +126,33 @@ public class FunctionEvaluationException extends MathException  {
     /**
      * Constructs an exception with specified formatted detail message and root cause.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
-     * @param cause  the exception or error that caused this exception to be thrown
+     *
+     * @param cause     the exception or error that caused this exception to be thrown
      * @param argument  the failing function argument
-     * @param pattern format specifier
+     * @param pattern   format specifier
      * @param arguments format arguments
      * @since 1.2
      */
     public FunctionEvaluationException(Throwable cause,
                                        double argument, String pattern,
-                                       Object ... arguments) {
+                                       Object... arguments) {
         super(cause, pattern, arguments);
-        this.argument = new double[] { argument };
+        this.argument = new double[]{argument};
     }
 
     /**
      * Constructs an exception with specified formatted detail message and root cause.
      * Message formatting is delegated to {@link java.text.MessageFormat}.
-     * @param cause  the exception or error that caused this exception to be thrown
+     *
+     * @param cause     the exception or error that caused this exception to be thrown
      * @param argument  the failing function argument
-     * @param pattern format specifier
+     * @param pattern   format specifier
      * @param arguments format arguments
      * @since 2.0
      */
     public FunctionEvaluationException(Throwable cause,
                                        double[] argument, String pattern,
-                                       Object ... arguments) {
+                                       Object... arguments) {
         super(cause, pattern, arguments);
         this.argument = argument.clone();
     }
@@ -148,7 +160,7 @@ public class FunctionEvaluationException extends MathException  {
     /**
      * Returns the function argument that caused this exception.
      *
-     * @return  argument that caused function evaluation to fail
+     * @return argument that caused function evaluation to fail
      */
     public double[] getArgument() {
         return argument.clone();

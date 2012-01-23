@@ -7,8 +7,8 @@ package beast.evolution.substitutionmodel;
  *
  * @author Andrew Rambaut
  * @author Alexei Drummond
- * @Author Marc A. Suchard
  * @version $Id$
+ * @Author Marc A. Suchard
  */
 public class EigenDecomposition {
 
@@ -36,6 +36,7 @@ public class EigenDecomposition {
 
     /**
      * This function returns the Eigen vectors.
+     *
      * @return the array
      */
     public final double[] getEigenVectors() {
@@ -44,6 +45,7 @@ public class EigenDecomposition {
 
     /**
      * This function returns the inverse Eigen vectors.
+     *
      * @return the array
      */
     public final double[] getInverseEigenVectors() {
@@ -52,6 +54,7 @@ public class EigenDecomposition {
 
     /**
      * This function returns the Eigen values.
+     *
      * @return the Eigen values
      */
     public final double[] getEigenValues() {
@@ -60,6 +63,7 @@ public class EigenDecomposition {
 
     /**
      * This function returns the imaginary part of the Eigen values.
+     *
      * @return the Eigen values
      */
     public final double[] getImEigenValues() {
@@ -68,6 +72,7 @@ public class EigenDecomposition {
 
     /**
      * This functions returns true if the diagonalization may be complex
+     *
      * @return bool
      */
     public boolean canReturnComplexDiagonalization() {
@@ -85,10 +90,10 @@ public class EigenDecomposition {
             Eval[i] /= scale;
     }
 
-    public Boolean hasImagEigenvectors(){
-        if (Evali==null) return false;
-        for (int i=0; i<Evali.length; i++)
-            if (Evali[i]!=0) {
+    public Boolean hasImagEigenvectors() {
+        if (Evali == null) return false;
+        for (int i = 0; i < Evali.length; i++)
+            if (Evali[i] != 0) {
 //                System.err.println("Imaginary eigenvectors found. Discard.");
                 return true;
             }

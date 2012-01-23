@@ -33,20 +33,26 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
 
     /**
      * Default maximum number of iterations for cumulative probability calculations.
+     *
      * @since 2.1
      */
     public static final int DEFAULT_MAX_ITERATIONS = 10000000;
 
     /**
      * Default convergence criterion.
+     *
      * @since 2.1
      */
     public static final double DEFAULT_EPSILON = 1E-12;
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -3349935121172596109L;
 
-    /** Distribution used to compute normal approximation. */
+    /**
+     * Distribution used to compute normal approximation.
+     */
     private NormalDistribution normal;
 
     /**
@@ -56,7 +62,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
 
     /**
      * Maximum number of iterations for cumulative probability.
-     *
+     * <p/>
      * Cumulative probabilities are estimated using either Lanczos series approximation of
      * Gamma#regularizedGammaP or continued fraction approximation of Gamma#regularizedGammaQ.
      */
@@ -82,8 +88,8 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
      * Create a new Poisson distribution with the given mean, convergence criterion
      * and maximum number of iterations.
      *
-     * @param p the Poisson mean
-     * @param epsilon the convergence criteria for cumulative probabilites
+     * @param p             the Poisson mean
+     * @param epsilon       the convergence criteria for cumulative probabilites
      * @param maxIterations the maximum number of iterations for cumulative probabilites
      * @since 2.1
      */
@@ -96,7 +102,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
     /**
      * Create a new Poisson distribution with the given mean and convergence criterion.
      *
-     * @param p the Poisson mean
+     * @param p       the Poisson mean
      * @param epsilon the convergence criteria for cumulative probabilites
      * @since 2.1
      */
@@ -108,7 +114,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
     /**
      * Create a new Poisson distribution with the given mean and maximum number of iterations.
      *
-     * @param p the Poisson mean
+     * @param p             the Poisson mean
      * @param maxIterations the maximum number of iterations for cumulative probabilites
      * @since 2.1
      */
@@ -127,7 +133,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
      * @throws IllegalArgumentException if p &le; 0
      * @since 1.2
      * @deprecated as of 2.1 (to avoid possibly inconsistent state, the
-     * "NormalDistribution" will be instantiated internally)
+     *             "NormalDistribution" will be instantiated internally)
      */
     @Deprecated
     public PoissonDistributionImpl(double p, NormalDistribution z) {
@@ -156,6 +162,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
     public void setMean(double p) {
         setNormalAndMeanInternal(normal, p);
     }
+
     /**
      * Set the Poisson mean for the distribution. The mean value must be
      * positive; otherwise an <code>IllegalArgument</code> is thrown.
@@ -180,7 +187,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
      * The probability mass function P(X = x) for a Poisson distribution.
      *
      * @param x the value at which the probability density function is
-     *            evaluated.
+     *          evaluated.
      * @return the value of the probability mass function at x
      */
     public double probability(int x) {
@@ -191,8 +198,8 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
             ret = Math.exp(-mean);
         } else {
             ret = Math.exp(-SaddlePointExpansion.getStirlingError(x) -
-                  SaddlePointExpansion.getDeviancePart(x, mean)) /
-                  Math.sqrt(MathUtils.TWO_PI * x);
+                    SaddlePointExpansion.getDeviancePart(x, mean)) /
+                    Math.sqrt(MathUtils.TWO_PI * x);
         }
         return ret;
     }
@@ -204,7 +211,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
      * @param x the value at which the PDF is evaluated.
      * @return Poisson distribution function evaluated at x
      * @throws MathException if the cumulative probability can not be computed
-     *             due to convergence or other numerical errors.
+     *                       due to convergence or other numerical errors.
      */
     @Override
     public double cumulativeProbability(int x) throws MathException {
@@ -230,7 +237,7 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
      * @return the distribution function value calculated using a normal
      *         approximation
      * @throws MathException if an error occurs computing the normal
-     *             approximation
+     *                       approximation
      */
     public double normalApproximateProbability(int x) throws MathException {
         // calculate the probability using half-correction

@@ -23,7 +23,7 @@ public class SampleOffValues extends Operator {
 
     public void initAndValidate() {
     }
-    
+
     @Override
     public double proposal() {
         final BooleanParameter indicators = m_indicators.get(this);
@@ -40,7 +40,7 @@ public class SampleOffValues extends Operator {
         int nLoc = 0;
 
         for (int i = 0; i < idim; ++i) {
-            if (! indicators.getValue(i)) {
+            if (!indicators.getValue(i)) {
                 loc[nLoc] = i + offset;
                 ++nLoc;
             }

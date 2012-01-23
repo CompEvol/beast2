@@ -56,7 +56,7 @@ import beast.util.Randomizer;
 
 
 @Description("Randomly selects true internal tree node (i.e. not the root) and move node height uniformly in interval " +
-		"restricted by the nodes parent and children.")
+        "restricted by the nodes parent and children.")
 public class Uniform extends TreeOperator {
 
     @Override
@@ -65,7 +65,9 @@ public class Uniform extends TreeOperator {
 
     /**
      * change the parameter and return the hastings ratio.
-	 * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted **/
+     *
+     * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal should not be accepted *
+     */
     @Override
     public double proposal() {
         Tree tree = m_tree.get(this);

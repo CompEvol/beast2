@@ -20,7 +20,7 @@ import org.apache.commons.math.MathException;
 
 /**
  * Interface representing the Poisson Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>

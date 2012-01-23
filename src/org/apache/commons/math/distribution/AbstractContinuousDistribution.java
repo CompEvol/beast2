@@ -34,17 +34,20 @@ import org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils;
  * @version $Revision: 925812 $ $Date: 2010-03-21 11:49:31 -0400 (Sun, 21 Mar 2010) $
  */
 public abstract class AbstractContinuousDistribution
-    extends AbstractDistribution
-    implements ContinuousDistribution, Serializable {
+        extends AbstractDistribution
+        implements ContinuousDistribution, Serializable {
 
-    /** Serializable version identifier */
+    /**
+     * Serializable version identifier
+     */
     private static final long serialVersionUID = -38038050983108802L;
 
     /**
      * Solver absolute accuracy for inverse cum computation
+     *
      * @since 2.1
      */
-    private double solverAbsoluteAccuracy =  1E-6;
+    private double solverAbsoluteAccuracy = 1E-6;
 
     /**
      * Default constructor.
@@ -55,8 +58,9 @@ public abstract class AbstractContinuousDistribution
 
     /**
      * Return the probability density for a particular point.
-     * @param x  The point at which the density should be computed.
-     * @return  The pdf at point x.
+     *
+     * @param x The point at which the density should be computed.
+     * @return The pdf at point x.
      * @throws MathRuntimeException if the specialized class hasn't implemented this function
      * @since 2.1
      */
@@ -66,7 +70,9 @@ public abstract class AbstractContinuousDistribution
     }
 
     @Override
-    public double logDensity(double x) {return Math.log(density(x));}
+    public double logDensity(double x) {
+        return Math.log(density(x));
+    }
 
     /**
      * For this distribution, X, this method returns the critical point x, such
@@ -74,36 +80,36 @@ public abstract class AbstractContinuousDistribution
      *
      * @param p the desired probability
      * @return x, such that P(X &lt; x) = <code>p</code>
-     * @throws MathException if the inverse cumulative probability can not be
-     *         computed due to convergence or other numerical errors.
+     * @throws MathException            if the inverse cumulative probability can not be
+     *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>p</code> is not a valid
-     *         probability.
+     *                                  probability.
      */
     public double inverseCumulativeProbability(final double p)
-        throws MathException {
+            throws MathException {
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
-                  "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
+                    "{0} out of [{1}, {2}] range", p, 0.0, 1.0);
         }
 
         // by default, do simple root finding using bracketing and default solver.
         // subclasses can override if there is a better method.
         UnivariateRealFunction rootFindingFunction =
-            new UnivariateRealFunction() {
-            public double value(double x) throws FunctionEvaluationException {
-                double ret = Double.NaN;
-                try {
-                    ret = cumulativeProbability(x) - p;
-                } catch (MathException ex) {
-                    throw new FunctionEvaluationException(ex, x, ex.getPattern(), ex.getArguments());
-                }
-                if (Double.isNaN(ret)) {
-                    throw new FunctionEvaluationException(x,
-                        "Cumulative probability function returned NaN for argument {0} p = {1}", x, p);
-                }
-                return ret;
-            }
-        };
+                new UnivariateRealFunction() {
+                    public double value(double x) throws FunctionEvaluationException {
+                        double ret = Double.NaN;
+                        try {
+                            ret = cumulativeProbability(x) - p;
+                        } catch (MathException ex) {
+                            throw new FunctionEvaluationException(ex, x, ex.getPattern(), ex.getArguments());
+                        }
+                        if (Double.isNaN(ret)) {
+                            throw new FunctionEvaluationException(x,
+                                    "Cumulative probability function returned NaN for argument {0} p = {1}", x, p);
+                        }
+                        return ret;
+                    }
+                };
 
         // Try to bracket root, test domain endoints if this fails
         double lowerBound = getDomainLowerBound(p);
@@ -113,7 +119,7 @@ public abstract class AbstractContinuousDistribution
             bracket = UnivariateRealSolverUtils.bracket(
                     rootFindingFunction, getInitialDomain(p),
                     lowerBound, upperBound);
-        }  catch (ConvergenceException ex) {
+        } catch (ConvergenceException ex) {
             /*
              * Check domain endpoints to see if one gives value that is within
              * the default solver's defaultAbsoluteAccuracy of 0 (will be the
@@ -133,7 +139,7 @@ public abstract class AbstractContinuousDistribution
         double root = UnivariateRealSolverUtils.solve(rootFindingFunction,
                 // override getSolverAbsoluteAccuracy() to use a Brent solver with
                 // absolute accuracy different from BrentSolver default
-                bracket[0],bracket[1], getSolverAbsoluteAccuracy());
+                bracket[0], bracket[1], getSolverAbsoluteAccuracy());
         return root;
     }
 

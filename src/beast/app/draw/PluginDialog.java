@@ -52,14 +52,14 @@ public class PluginDialog extends JDialog {
 
     /* to be called when Cancel is pressed **/
     public void accept(Plugin plugin) {
-    	try {
-    		for (Input<?> input : m_panel.m_plugin.listInputs()) {
-    			plugin.setInputValue(input.getName(), input.get());
-    		}
-    		plugin.setID(m_panel.m_plugin.getID());
-    	} catch (Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            for (Input<?> input : m_panel.m_plugin.listInputs()) {
+                plugin.setInputValue(input.getName(), input.get());
+            }
+            plugin.setID(m_panel.m_plugin.getID());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     void init(PluginPanel panel) {
@@ -115,12 +115,12 @@ public class PluginDialog extends JDialog {
     public boolean getOK(BeautiDoc doc) {
         //PluginDialog.m_position.x -= 30;
         //PluginDialog.m_position.y -= 30;
-    	if (m_bOK) {
-    		String sOldID = m_panel.m_plugin.getID();
-			PluginPanel.g_plugins.remove(sOldID);
-			m_panel.m_plugin.setID(m_panel.m_identry.getText());
-			PluginPanel.registerPlugin(m_panel.m_plugin.getID(), m_panel.m_plugin, doc);
-    	}
+        if (m_bOK) {
+            String sOldID = m_panel.m_plugin.getID();
+            PluginPanel.g_plugins.remove(sOldID);
+            m_panel.m_plugin.setID(m_panel.m_identry.getText());
+            PluginPanel.registerPlugin(m_panel.m_plugin.getID(), m_panel.m_plugin, doc);
+        }
         return m_bOK;
     }
 
@@ -140,8 +140,7 @@ public class PluginDialog extends JDialog {
                     while (scanner.hasNextLine()) {
                         text.append(scanner.nextLine() + NL);
                     }
-                }
-                finally {
+                } finally {
                     scanner.close();
                 }
                 Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);

@@ -99,7 +99,7 @@ public class BeastMain {
 
         } catch (java.io.IOException ioe) {
             infoLogger.severe("File error: " + ioe.getMessage());
-        /* Catch exceptions and report useful information
+            /* Catch exceptions and report useful information
 
         }  catch (org.xml.sax.SAXParseException spe) {
             if (spe.getMessage() != null && spe.getMessage().equals("Content is not allowed in prolog")) {
@@ -153,12 +153,12 @@ public class BeastMain {
                 rex.printStackTrace(System.err);
             }
             */
-		} catch (XMLParserException e) {
-			System.out.println(e.getMessage());
-			//e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
+        } catch (XMLParserException e) {
+            System.out.println(e.getMessage());
+            //e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
 //            infoLogger.warning("Error running file: " + fileName);
 //            infoLogger.severe("Fatal exception: " + ex.getMessage());
 //            System.err.println("Fatal exception: " + ex.getMessage());
@@ -228,7 +228,7 @@ public class BeastMain {
 
     //Main method
     public static void main(String[] args) throws java.io.IOException {
-    	List<String> MCMCargs = new ArrayList<String>();
+        List<String> MCMCargs = new ArrayList<String>();
 //    	Utils.loadUIManager();
 
         Arguments arguments = new Arguments(
@@ -406,16 +406,21 @@ public class BeastMain {
             BeastDialog dialog = new BeastDialog(new JFrame(), titleString, icon);
 
             if (!dialog.showDialog(nameString, seed)) {
-               	System.exit(0);
+                System.exit(0);
             }
 
 //            if (dialog.allowOverwrite()) {
 //                allowOverwrite = true;
 //            }
             switch (dialog.getLogginMode()) {
-            case 0:/* do not ovewrite */ break;
-            case 1: MCMCargs.add("-overwrite"); break;
-            case 2: MCMCargs.add("-resume"); break;
+                case 0:/* do not ovewrite */
+                    break;
+                case 1:
+                    MCMCargs.add("-overwrite");
+                    break;
+                case 2:
+                    MCMCargs.add("-resume");
+                    break;
             }
 
             seed = dialog.getSeed();
@@ -448,11 +453,11 @@ public class BeastMain {
             }
 
         } else {
-        	if (arguments.hasOption("overwrite")) {
-        		MCMCargs.add("-overwrite");	
-        	} else if (arguments.hasOption("resume")) {
-        		MCMCargs.add("-resume");	
-        	}
+            if (arguments.hasOption("overwrite")) {
+                MCMCargs.add("-overwrite");
+            } else if (arguments.hasOption("resume")) {
+                MCMCargs.add("-resume");
+            }
         }
 
         if (beagleShowInfo) {
@@ -533,11 +538,11 @@ public class BeastMain {
 
         try {
             // set all the settings...
-        	MCMCargs.add(inputFile.getAbsolutePath());
+            MCMCargs.add(inputFile.getAbsolutePath());
             beastMCMC.parseArgs(MCMCargs.toArray(new String[0]));
-            
+
             new BeastMain(beastMCMC, consoleApp, maxErrorCount);
-       } catch (RuntimeException rte) {
+        } catch (RuntimeException rte) {
             if (window) {
                 // This sleep for 2 seconds is to ensure that the final message
                 // appears at the end of the console.
@@ -550,10 +555,10 @@ public class BeastMain {
                 System.out.println("BEAST has terminated with an error. Please select QUIT from the menu.");
             }
             // logger.severe will throw a RTE but we want to keep the console visible
-		} catch (XMLParserException e) {
-			System.out.println(e.getMessage());
+        } catch (XMLParserException e) {
+            System.out.println(e.getMessage());
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
 
         if (!window) {

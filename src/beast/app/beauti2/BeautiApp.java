@@ -57,12 +57,12 @@ public class BeautiApp extends SingleDocApplication {
 
     // Main entry point
     static public void main(String[] args) {
-    	try {
-    		AddOnManager.loadExternalJars();
-    		PluginPanel.init();
+        try {
+            AddOnManager.loadExternalJars();
+            PluginPanel.init();
             BeautiDoc doc = new BeautiDoc();
             if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
-               	return;
+                return;
             }
 
 
@@ -82,8 +82,8 @@ public class BeautiApp extends SingleDocApplication {
 //
 //        } else {
 
-    	beast.app.util.Utils.loadUIManager();
-    	
+            beast.app.util.Utils.loadUIManager();
+
 /*        boolean lafLoaded = false;
 
         if (Utils.isMacOSX()) {

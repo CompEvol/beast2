@@ -41,7 +41,7 @@ public class RombergIntegrator extends UnivariateRealIntegratorImpl {
      *
      * @param f function to integrate
      * @deprecated as of 2.0 the integrand function is passed as an argument
-     * to the {@link #integrate(UnivariateRealFunction, double, double)}method.
+     *             to the {@link #integrate(UnivariateRealFunction, double, double)}method.
      */
     @Deprecated
     public RombergIntegrator(UnivariateRealFunction f) {
@@ -55,21 +55,25 @@ public class RombergIntegrator extends UnivariateRealIntegratorImpl {
         super(32);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double integrate(final double min, final double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
+            throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
         return integrate(f, min, max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double integrate(final UnivariateRealFunction f,
                             final double min, final double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
+            throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
 
         final int m = maximalIterationCount + 1;
         double previousRow[] = new double[m];
-        double currentRow[]  = new double[m];
+        double currentRow[] = new double[m];
 
         clearResult();
         verifyInterval(min, max);
@@ -94,7 +98,7 @@ public class RombergIntegrator extends UnivariateRealIntegratorImpl {
             }
             final double s = currentRow[i];
             if (i >= minimalIterationCount) {
-                final double delta  = Math.abs(s - olds);
+                final double delta = Math.abs(s - olds);
                 final double rLimit = relativeAccuracy * (Math.abs(olds) + Math.abs(s)) * 0.5;
                 if ((delta <= rLimit) || (delta <= absoluteAccuracy)) {
                     setResult(s, i);
@@ -106,7 +110,9 @@ public class RombergIntegrator extends UnivariateRealIntegratorImpl {
         throw new MaxIterationsExceededException(maximalIterationCount);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void verifyIterationCount() throws IllegalArgumentException {
         super.verifyIterationCount();

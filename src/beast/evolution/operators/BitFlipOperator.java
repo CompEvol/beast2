@@ -33,7 +33,6 @@ import beast.util.Randomizer;
 
 /**
  * @author Joseph Heled
- *
  */
 
 @Description("Flip one bit in an array of boolean bits. The hastings ratio is designed so that all subsets of vectors with the" +
@@ -47,8 +46,8 @@ public class BitFlipOperator extends Operator {
     private boolean usesPriorOnSum = true;
 
     public void initAndValidate() {
-        Boolean b =  uniform.get();
-        if( b != null ) {
+        Boolean b = uniform.get();
+        if (b != null) {
             usesPriorOnSum = b;
         }
     }
@@ -68,9 +67,9 @@ public class BitFlipOperator extends Operator {
         final int dim = p.getDimension();
 
         double sum = 0.0;
-        if( usesPriorOnSum ) {
-            for(int i = 0; i < dim; i++) {
-                if( p.getValue(i) ) sum += 1;
+        if (usesPriorOnSum) {
+            for (int i = 0; i < dim; i++) {
+                if (p.getValue(i)) sum += 1;
             }
         }
 
@@ -79,10 +78,10 @@ public class BitFlipOperator extends Operator {
         final boolean value = p.getValue(pos);
 
         double logq = 0.0;
-        if ( ! value ) {
+        if (!value) {
             p.setValue(pos, true);
 
-            if( usesPriorOnSum ) {
+            if (usesPriorOnSum) {
                 logq = -Math.log((dim - sum) / (sum + 1));
             }
 
@@ -90,7 +89,7 @@ public class BitFlipOperator extends Operator {
             assert value;
 
             p.setValue(pos, false);
-            if( usesPriorOnSum ) {
+            if (usesPriorOnSum) {
                 logq = -Math.log(sum / (dim - sum + 1));
             }
         }

@@ -18,7 +18,7 @@ package org.apache.commons.math.distribution;
 
 /**
  * The Binomial Distribution.
- *
+ * <p/>
  * <p>
  * References:
  * <ul>
@@ -32,18 +32,21 @@ package org.apache.commons.math.distribution;
 public interface BinomialDistribution extends IntegerDistribution {
     /**
      * Access the number of trials for this distribution.
+     *
      * @return the number of trials.
      */
     int getNumberOfTrials();
 
     /**
      * Access the probability of success for this distribution.
+     *
      * @return the probability of success.
      */
     double getProbabilityOfSuccess();
 
     /**
      * Change the number of trials for this distribution.
+     *
      * @param trials the new number of trials.
      * @deprecated as of v2.1
      */
@@ -52,6 +55,7 @@ public interface BinomialDistribution extends IntegerDistribution {
 
     /**
      * Change the probability of success for this distribution.
+     *
      * @param p the new probability of success.
      * @deprecated as of v2.1
      */

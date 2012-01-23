@@ -15,7 +15,7 @@ public class IntUniformOperator extends Operator {
 
 
     public void initAndValidate() {
-    	System.err.println("\n\nIntUniformOperator is depracated. Use UniformOperator instead.\n\n");
+        System.err.println("\n\nIntUniformOperator is depracated. Use UniformOperator instead.\n\n");
     }
 
     /**

@@ -30,41 +30,53 @@ import org.apache.commons.math.special.Beta;
  * Beta distribution</a></li>
  * </ul>
  * </p>
+ *
  * @version $Revision: 925900 $ $Date: 2010-03-21 17:10:07 -0400 (Sun, 21 Mar 2010) $
  * @since 2.0
  */
 public class BetaDistributionImpl
-    extends AbstractContinuousDistribution implements BetaDistribution {
+        extends AbstractContinuousDistribution implements BetaDistribution {
 
     /**
      * Default inverse cumulative probability accurac
+     *
      * @since 2.1
      */
     public static final double DEFAULT_INVERSE_ABSOLUTE_ACCURACY = 1e-9;
 
-    /** Serializable version identifier. */
+    /**
+     * Serializable version identifier.
+     */
     private static final long serialVersionUID = -1221965979403477668L;
 
-    /** First shape parameter. */
+    /**
+     * First shape parameter.
+     */
     private double alpha;
 
-    /** Second shape parameter. */
+    /**
+     * Second shape parameter.
+     */
     private double beta;
 
-    /** Normalizing factor used in density computations.
+    /**
+     * Normalizing factor used in density computations.
      * updated whenever alpha or beta are changed.
      */
     private double z;
 
-    /** Inverse cumulative probability accuracy */
+    /**
+     * Inverse cumulative probability accuracy
+     */
     private final double solverAbsoluteAccuracy;
 
     /**
      * Build a new instance.
-     * @param alpha first shape parameter (must be positive)
-     * @param beta second shape parameter (must be positive)
+     *
+     * @param alpha              first shape parameter (must be positive)
+     * @param beta               second shape parameter (must be positive)
      * @param inverseCumAccuracy the maximum absolute error in inverse cumulative probability estimates
-     * (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
+     *                           (defaults to {@link #DEFAULT_INVERSE_ABSOLUTE_ACCURACY})
      * @since 2.1
      */
     public BetaDistributionImpl(double alpha, double beta, double inverseCumAccuracy) {
@@ -76,14 +88,17 @@ public class BetaDistributionImpl
 
     /**
      * Build a new instance.
+     *
      * @param alpha first shape parameter (must be positive)
-     * @param beta second shape parameter (must be positive)
+     * @param beta  second shape parameter (must be positive)
      */
     public BetaDistributionImpl(double alpha, double beta) {
         this(alpha, beta, DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
     }
 
-    /** {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     *
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
@@ -92,12 +107,16 @@ public class BetaDistributionImpl
         z = Double.NaN;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double getAlpha() {
         return alpha;
     }
 
-    /** {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     *
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
     @Deprecated
@@ -106,7 +125,9 @@ public class BetaDistributionImpl
         z = Double.NaN;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double getBeta() {
         return beta;
     }
@@ -161,7 +182,9 @@ public class BetaDistributionImpl
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double inverseCumulativeProbability(double p) throws MathException {
         if (p == 0) {
@@ -173,25 +196,33 @@ public class BetaDistributionImpl
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected double getInitialDomain(double p) {
         return p;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected double getDomainLowerBound(double p) {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected double getDomainUpperBound(double p) {
         return 1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double cumulativeProbability(double x) throws MathException {
         if (x <= 0) {
             return 0;
@@ -202,7 +233,9 @@ public class BetaDistributionImpl
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double cumulativeProbability(double x0, double x1) throws MathException {
         return cumulativeProbability(x1) - cumulativeProbability(x0);

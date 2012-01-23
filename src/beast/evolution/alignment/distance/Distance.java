@@ -1,4 +1,3 @@
-
 package beast.evolution.alignment.distance;
 
 import beast.core.Description;
@@ -9,13 +8,13 @@ import beast.evolution.datatype.DataType;
 
 @Description("Provides distance between two sequences in an alignment")
 public class Distance extends Plugin {
-	
+
     //public static final double MAX_DISTANCE = 1000.0;
     public static final double MAX_DISTANCE = 5.0;
 
     @Override
     public void initAndValidate() throws Exception {
-    	// nothing to do
+        // nothing to do
     }
 
     /**
@@ -24,10 +23,10 @@ public class Distance extends Plugin {
     public void setPatterns(Alignment patterns) {
         this.taxa = new TaxonSet();
         try {
-        	this.taxa.m_alignment.setValue(patterns, this.taxa);
+            this.taxa.m_alignment.setValue(patterns, this.taxa);
         } catch (Exception e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
         this.patterns = patterns;
         dimension = patterns.getNrTaxa();
         dataType = patterns.getDataType();
@@ -69,7 +68,6 @@ public class Distance extends Plugin {
     }
 
 
-
     //
     // Private stuff
     //
@@ -77,7 +75,7 @@ public class Distance extends Plugin {
     protected DataType dataType = null;
     int dimension = 0;
     boolean distancesKnown;
-//    private double[][] distances = null;
+    //    private double[][] distances = null;
     protected Alignment patterns = null;
     private TaxonSet taxa = null;
 }

@@ -1,8 +1,6 @@
 package beast.app.beauti;
 
 
-
-
 import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
@@ -30,11 +28,11 @@ import java.util.List;
 
 
 public class Beauti extends JTabbedPane implements BeautiDocListener {
-	private static final long serialVersionUID = 1L;
-	
+    private static final long serialVersionUID = 1L;
+
 //    ExtensionFileFilter ef0 = new ExtensionFileFilter(".nex", "Nexus files");
 //    ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
-	
+
     /**
      * current directory for opening files *
      */
@@ -44,63 +42,73 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      */
     static public final String FILE_EXT = ".xml";
 
-	/** document in document-view pattern. BTW this class is the view */
+    /**
+     * document in document-view pattern. BTW this class is the view
+     */
     public BeautiDoc doc;
     public JFrame frame;
-    
-    /** currently selected tab **/
-    public BeautiPanel currentTab;
-    
-    public boolean [] bPaneIsVisible;
-	public BeautiPanel [] panels;
 
-	/** menu for switching templates **/
+    /**
+     * currently selected tab *
+     */
+    public BeautiPanel currentTab;
+
+    public boolean[] bPaneIsVisible;
+    public BeautiPanel[] panels;
+
+    /**
+     * menu for switching templates *
+     */
     JMenu templateMenu;
-	/** menu for making showing/hiding tabs **/
+    /**
+     * menu for making showing/hiding tabs *
+     */
     JMenu viewMenu;
 
-    
-    /** flag indicating beauti is in the process of being set up and panels should not sync with current model **/
-    public boolean isInitialising = true;
-	
-	public Beauti(BeautiDoc doc) {
-		bPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
-		Arrays.fill(bPaneIsVisible, true);
-		//m_panels = new BeautiPanel[NR_OF_PANELS];
-		this.doc = doc;
-		this.doc.addBeautiDocListener(this);
-	}
-	
-	void setTitle() {
-		frame.setTitle("Beauti 2: " + this.doc.getTemplateName() + " " + doc.getFileName());
-	}
-	
-	void toggleVisible(int nPanelNr) {
-		if (bPaneIsVisible[nPanelNr]) {
-			bPaneIsVisible[nPanelNr] = false;
-			int nTabNr = tabNrForPanel(nPanelNr);
-			removeTabAt(nTabNr);
-		} else {
-			bPaneIsVisible[nPanelNr] = true;
-			int nTabNr = tabNrForPanel(nPanelNr);
-				BeautiPanelConfig panel = doc.beautiConfig.panels.get(nPanelNr);
-				insertTab(doc.beautiConfig.getButtonLabel(this, panel.sNameInput.get()), null, panels[nPanelNr], panel.sTipTextInput.get(), nTabNr);
-//			}
-			setSelectedIndex(nTabNr);
-		}
-	}
-	
-	int tabNrForPanel(int nPanelNr) {
-		int k = 0;
-		for (int i = 0; i < nPanelNr; i++) {
-			if (bPaneIsVisible[i]) {
-				k++;
-			}
-		}
-		return k;
-	}
 
-	
+    /**
+     * flag indicating beauti is in the process of being set up and panels should not sync with current model *
+     */
+    public boolean isInitialising = true;
+
+    public Beauti(BeautiDoc doc) {
+        bPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
+        Arrays.fill(bPaneIsVisible, true);
+        //m_panels = new BeautiPanel[NR_OF_PANELS];
+        this.doc = doc;
+        this.doc.addBeautiDocListener(this);
+    }
+
+    void setTitle() {
+        frame.setTitle("Beauti 2: " + this.doc.getTemplateName() + " " + doc.getFileName());
+    }
+
+    void toggleVisible(int nPanelNr) {
+        if (bPaneIsVisible[nPanelNr]) {
+            bPaneIsVisible[nPanelNr] = false;
+            int nTabNr = tabNrForPanel(nPanelNr);
+            removeTabAt(nTabNr);
+        } else {
+            bPaneIsVisible[nPanelNr] = true;
+            int nTabNr = tabNrForPanel(nPanelNr);
+            BeautiPanelConfig panel = doc.beautiConfig.panels.get(nPanelNr);
+            insertTab(doc.beautiConfig.getButtonLabel(this, panel.sNameInput.get()), null, panels[nPanelNr], panel.sTipTextInput.get(), nTabNr);
+//			}
+            setSelectedIndex(nTabNr);
+        }
+    }
+
+    int tabNrForPanel(int nPanelNr) {
+        int k = 0;
+        for (int i = 0; i < nPanelNr; i++) {
+            if (bPaneIsVisible[i]) {
+                k++;
+            }
+        }
+        return k;
+    }
+
+
     Action a_new = new ActionNew();
     public Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
@@ -110,7 +118,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     Action a_saveas = new ActionSaveAs();
     Action a_quit = new ActionQuit();
     Action a_viewall = new ActionViewAllPanels();
-    
+
     Action a_help = new ActionHelp();
     Action a_citation = new ActionCitation();
     Action a_about = new ActionAbout();
@@ -150,9 +158,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
         } // actionPerformed
 
-        
-        
+
     } // class ActionSave
+
     class ActionSaveAs extends ActionSave {
         /**
          * for serialisation
@@ -175,21 +183,21 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
         File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(doc.getFileName()), null, (String[]) null);
         if (file != null) {
-        	if (file.exists()) {
-        		if (JOptionPane.showConfirmDialog(null, 
-        				"File " + file.getName() + " already exists. Do you want to overwrite?", "Overwrite file?", 
-        				JOptionPane.YES_NO_CANCEL_OPTION) != JOptionPane.YES_OPTION) {
-        			return false;
-        		}
-        	}
+            if (file.exists()) {
+                if (JOptionPane.showConfirmDialog(null,
+                        "File " + file.getName() + " already exists. Do you want to overwrite?", "Overwrite file?",
+                        JOptionPane.YES_NO_CANCEL_OPTION) != JOptionPane.YES_OPTION) {
+                    return false;
+                }
+            }
             // System.out.println("Saving to file \""+
             // f.getAbsoluteFile().toString()+"\"");
-        	doc.setFileName(file.getAbsolutePath());//fc.getSelectedFile().toString();
+            doc.setFileName(file.getAbsolutePath());//fc.getSelectedFile().toString();
             if (doc.getFileName().lastIndexOf('/') > 0) {
                 g_sDir = doc.getFileName().substring(0, doc.getFileName().lastIndexOf('/'));
             }
             if (!doc.getFileName().endsWith(FILE_EXT))
-            	doc.setFileName(doc.getFileName().concat(FILE_EXT));
+                doc.setFileName(doc.getFileName().concat(FILE_EXT));
             saveFile(doc.getFileName());
             setTitle();
             return true;
@@ -199,11 +207,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     public void saveFile(String sFileName) {
         try {
-        	if (currentTab != null) {
-        		currentTab.config.sync(currentTab.iPartition);
-        	} else {
-        		panels[0].config.sync(0);
-        	}
+            if (currentTab != null) {
+                currentTab.config.sync(currentTab.iPartition);
+            } else {
+                panels[0].config.sync(0);
+            }
             doc.save(sFileName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,14 +224,14 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         public ActionNew() {
             super("New", "Start new analysis", "new", "ctrl N");
         } // c'tor
-        
+
         public void actionPerformed(ActionEvent ae) {
-        	doc.newAnalysis();
-			a_save.setEnabled(false);
-			a_saveas.setEnabled(false);
+            doc.newAnalysis();
+            a_save.setEnabled(false);
+            a_saveas.setEnabled(false);
         }
     }
-    
+
     class ActionLoad extends MyAction {
         private static final long serialVersionUID = 1;
 
@@ -237,26 +245,26 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	File file = beast.app.util.Utils.getLoadFile("Load Beast XML File", new File(g_sDir), "Beast XML files", "xml");
+            File file = beast.app.util.Utils.getLoadFile("Load Beast XML File", new File(g_sDir), "Beast XML files", "xml");
 //    		JFileChooser fileChooser = new JFileChooser(g_sDir);
 //    		fileChooser.addChoosableFileFilter(ef1);
 //    		fileChooser.setDialogTitle("Load Beast XML File");
 //    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 //        		sFileName = fileChooser.getSelectedFile().toString();
-        	if (file != null) {
-        		doc.setFileName(file.getAbsolutePath());
+            if (file != null) {
+                doc.setFileName(file.getAbsolutePath());
                 if (doc.getFileName().lastIndexOf('/') > 0) {
                     g_sDir = doc.getFileName().substring(0, doc.getFileName().lastIndexOf('/'));
                 }
-    			try {
-    				doc.loadXML(new File(doc.getFileName()));
-    				a_save.setEnabled(true);
-    				a_saveas.setEnabled(true);
-    				setTitle();
-    			} catch (Exception e) {
-    				e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Something went wrong loading the file: " + e.getMessage());
-				}
+                try {
+                    doc.loadXML(new File(doc.getFileName()));
+                    a_save.setEnabled(true);
+                    a_saveas.setEnabled(true);
+                    setTitle();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Something went wrong loading the file: " + e.getMessage());
+                }
             }
         } // actionPerformed
     }
@@ -269,25 +277,25 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	File file = beast.app.util.Utils.getLoadFile("Load Template XML File");
+            File file = beast.app.util.Utils.getLoadFile("Load Template XML File");
 //    		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir")+"/templates");
 //    		fileChooser.addChoosableFileFilter(ef1);
 //    		fileChooser.setDialogTitle("Load Template XML File");
 //    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 //    			String sFileName = fileChooser.getSelectedFile().toString();
-        	if (file != null) {
-        		String sFileName = file.getAbsolutePath();
-    			try {
-    				doc.loadNewTemplate(sFileName);
-    			} catch (Exception e) {
-    				e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + e.getMessage());
-				}
+            if (file != null) {
+                String sFileName = file.getAbsolutePath();
+                try {
+                    doc.loadNewTemplate(sFileName);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + e.getMessage());
+                }
             }
         } // actionPerformed
     } // ActionTemplate
 
-    
+
     class ActionAddOn extends MyAction {
         private static final long serialVersionUID = 1;
 
@@ -296,16 +304,16 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	JAddOnDialog dlg = new JAddOnDialog(frame);
-        	dlg.setVisible(true);
-        	// refresh template menu item
-        	templateMenu.removeAll();
-    		List<AbstractAction> templateActions = getTemplateActions();
-    		for (AbstractAction a: templateActions) {
-    			templateMenu.add(a);
-    		}
-    		templateMenu.addSeparator();
-    		templateMenu.add(a_template);
+            JAddOnDialog dlg = new JAddOnDialog(frame);
+            dlg.setVisible(true);
+            // refresh template menu item
+            templateMenu.removeAll();
+            List<AbstractAction> templateActions = getTemplateActions();
+            for (AbstractAction a : templateActions) {
+                templateMenu.add(a);
+            }
+            templateMenu.addSeparator();
+            templateMenu.add(a_template);
 
         } // actionPerformed
     }
@@ -318,12 +326,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public ActionImport(String sName, String sToolTipText, String sIcon,
-                          String sAcceleratorKey) {
+                            String sAcceleratorKey) {
             super(sName, sToolTipText, sIcon, sAcceleratorKey);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	
+
 //    		JFileChooser fileChooser = new JFileChooser(g_sDir);
 //    		fileChooser.addChoosableFileFilter(ef1);
 //    		fileChooser.addChoosableFileFilter(ef0);
@@ -331,34 +339,34 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 //    		fileChooser.setDialogTitle("Import alignment File");
 //
 //    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			try {
-    			File[] files = Utils.getLoadFiles("Import alignment File", new File(g_sDir), "alignment files", "nex","nexus","xml");
-    			if (files == null) {
-    				return;
-    			}
-    			for (File file : files) {
-    				String sFileName = file.getAbsolutePath();
+            try {
+                File[] files = Utils.getLoadFiles("Import alignment File", new File(g_sDir), "alignment files", "nex", "nexus", "xml");
+                if (files == null) {
+                    return;
+                }
+                for (File file : files) {
+                    String sFileName = file.getAbsolutePath();
                     // AR - this looks very UNIX specific path (i.e., '/' not a System dependent separator char).
 //    				if (sFileName.lastIndexOf('/') > 0) {
 //    					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
 //    				}
-    				if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs") || sFileName.toLowerCase().endsWith(".nexus")) {
-            			doc.importNexus(file);
-    				}
-    				if (sFileName.toLowerCase().endsWith(".xml")) {
-            			doc.importXMLAlignment(file);
-    				}
-    			}
-				a_save.setEnabled(true);
-				a_saveas.setEnabled(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
-			}
+                    if (sFileName.toLowerCase().endsWith(".nex") || sFileName.toLowerCase().endsWith(".nxs") || sFileName.toLowerCase().endsWith(".nexus")) {
+                        doc.importNexus(file);
+                    }
+                    if (sFileName.toLowerCase().endsWith(".xml")) {
+                        doc.importXMLAlignment(file);
+                    }
+                }
+                a_save.setEnabled(true);
+                a_saveas.setEnabled(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
+            }
 //            }
         } // actionPerformed
     }
-    
+
     class ActionQuit extends ActionSave {
         /**
          * for serialisation
@@ -371,15 +379,15 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         public void actionPerformed(ActionEvent ae) {
 //            if (!m_doc.m_bIsSaved) {
-        	if (!quit()) {
-        		return;
-        	}
+            if (!quit()) {
+                return;
+            }
             System.exit(0);
         }
     } // class ActionQuit
 
     boolean quit() {
-    	if (doc.validateModel() == DOC_STATUS.DIRTY) {
+        if (doc.validateModel() == DOC_STATUS.DIRTY) {
             int result = JOptionPane.showConfirmDialog(null,
                     "Do you want to save the Beast specification?",
                     "Save before closing?",
@@ -394,31 +402,35 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 }
             }
         }
-    	return true;
+        return true;
     }
-    
-    ViewPanelCheckBoxMenuItem [] m_viewPanelCheckBoxMenuItems;
-    
-    class ViewPanelCheckBoxMenuItem extends JCheckBoxMenuItem{
-		private static final long serialVersionUID = 1L;
-		int m_iPanel;
-		
-    	ViewPanelCheckBoxMenuItem(int iPanel) {
-    		super("Show " +	doc.beautiConfig.panels.get(iPanel).sNameInput.get() + " panel", 
-    				doc.beautiConfig.panels.get(iPanel).bIsVisibleInput.get());
-    		m_iPanel = iPanel;
-    		if (m_viewPanelCheckBoxMenuItems == null) {
-    			m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[ doc.beautiConfig.panels.size()];
-    		}
-    		m_viewPanelCheckBoxMenuItems[iPanel] = this;
-    	} // c'tor
-    	
-    	void doAction() {
-    		toggleVisible(m_iPanel);
-    	}
-    };
 
-    /** makes all panels visible **/
+    ViewPanelCheckBoxMenuItem[] m_viewPanelCheckBoxMenuItems;
+
+    class ViewPanelCheckBoxMenuItem extends JCheckBoxMenuItem {
+        private static final long serialVersionUID = 1L;
+        int m_iPanel;
+
+        ViewPanelCheckBoxMenuItem(int iPanel) {
+            super("Show " + doc.beautiConfig.panels.get(iPanel).sNameInput.get() + " panel",
+                    doc.beautiConfig.panels.get(iPanel).bIsVisibleInput.get());
+            m_iPanel = iPanel;
+            if (m_viewPanelCheckBoxMenuItems == null) {
+                m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[doc.beautiConfig.panels.size()];
+            }
+            m_viewPanelCheckBoxMenuItems[iPanel] = this;
+        } // c'tor
+
+        void doAction() {
+            toggleVisible(m_iPanel);
+        }
+    }
+
+    ;
+
+    /**
+     * makes all panels visible *
+     */
     class ActionViewAllPanels extends MyAction {
         private static final long serialVersionUID = -1;
 
@@ -427,12 +439,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	for(int nPanelNr = 0; nPanelNr < bPaneIsVisible.length; nPanelNr++) {
-        		if (!bPaneIsVisible[nPanelNr]) {
-        			toggleVisible(nPanelNr);
-        			m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
-        		}
-        	}
+            for (int nPanelNr = 0; nPanelNr < bPaneIsVisible.length; nPanelNr++) {
+                if (!bPaneIsVisible[nPanelNr]) {
+                    toggleVisible(nPanelNr);
+                    m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
+                }
+            }
         } // actionPerformed
     } // class ActionViewAllPanels
 
@@ -444,7 +456,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	BeastVersion version = new BeastVersion();
+            BeastVersion version = new BeastVersion();
             JOptionPane.showMessageDialog(null, version.getCredits(), "About Beauti 2", JOptionPane.PLAIN_MESSAGE, BeautiPanel.getIcon(0, null));
         }
     } // class ActionAbout
@@ -474,23 +486,23 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-        	String sCitations = doc.mcmc.get().getCitations();
-        	try {
-	            StringSelection stringSelection = new StringSelection( sCitations );
-	            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-	            clipboard.setContents(stringSelection, this);
-        	} catch (Exception e) {
-        		e.printStackTrace();
-			}
+            String sCitations = doc.mcmc.get().getCitations();
+            try {
+                StringSelection stringSelection = new StringSelection(sCitations);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             JOptionPane.showMessageDialog(null, sCitations + "\nCitations copied to clipboard", "Citation(s) applicable to this model:", JOptionPane.INFORMATION_MESSAGE);
-        	
+
         } // getCitations
 
-		@Override
-		public void lostOwnership(Clipboard clipboard, Transferable contents) {
-			// do nothing
-		}
-     } // class ActionAbout
+        @Override
+        public void lostOwnership(Clipboard clipboard, Transferable contents) {
+            // do nothing
+        }
+    } // class ActionAbout
 
     class ActionViewModel extends MyAction {
         private static final long serialVersionUID = -1;
@@ -512,21 +524,21 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             frame.setVisible(true);
         }
     } // class ActionViewModel
-    
-    
+
+
     public void refreshPanel() {
-		try {
-			BeautiPanel panel = (BeautiPanel) getSelectedComponent();
-			if (panel != null) {
-				this.doc.determinePartitions();
-				panel.updateList();
-				panel.refreshPanel();
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            BeautiPanel panel = (BeautiPanel) getSelectedComponent();
+            if (panel != null) {
+                this.doc.determinePartitions();
+                panel.updateList();
+                panel.refreshPanel();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
-    
+
     public JMenuBar makeMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -536,51 +548,51 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         fileMenu.add(a_load);
         fileMenu.add(a_import);
         fileMenu.addSeparator();
-		templateMenu = new JMenu("Template");
-		fileMenu.add(templateMenu);
-		List<AbstractAction> templateActions = getTemplateActions();
-		for (AbstractAction a: templateActions) {
-			templateMenu.add(a);
-		}
-		templateMenu.addSeparator();
-		templateMenu.add(a_template);
-		fileMenu.add(a_addOn);
+        templateMenu = new JMenu("Template");
+        fileMenu.add(templateMenu);
+        List<AbstractAction> templateActions = getTemplateActions();
+        for (AbstractAction a : templateActions) {
+            templateMenu.add(a);
+        }
+        templateMenu.addSeparator();
+        templateMenu.add(a_template);
+        fileMenu.add(a_addOn);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
         fileMenu.add(a_saveas);
         if (!Utils.isMac()) {
             fileMenu.addSeparator();
-        	fileMenu.add(a_quit);
+            fileMenu.add(a_quit);
         }
-        
+
         JMenu modeMenu = new JMenu("Mode");
         menuBar.add(modeMenu);
         modeMenu.setMnemonic('M');
-                
-		final JCheckBoxMenuItem autoSetClockRate = new JCheckBoxMenuItem("Automatic set clock rate", this.doc.bAutoSetClockRate);
-		autoSetClockRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				doc.bAutoSetClockRate = autoSetClockRate.getState();
-				refreshPanel();
-			}
-		});
-		modeMenu.add(autoSetClockRate);
 
-		final JCheckBoxMenuItem muteSound = new JCheckBoxMenuItem("Mute sound", false);
-		muteSound.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				BeautiPanel.soundIsPlaying = muteSound.getState();
-				refreshPanel();
-			}
-		});
-		modeMenu.add(muteSound);
-        
-        
+        final JCheckBoxMenuItem autoSetClockRate = new JCheckBoxMenuItem("Automatic set clock rate", this.doc.bAutoSetClockRate);
+        autoSetClockRate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                doc.bAutoSetClockRate = autoSetClockRate.getState();
+                refreshPanel();
+            }
+        });
+        modeMenu.add(autoSetClockRate);
+
+        final JCheckBoxMenuItem muteSound = new JCheckBoxMenuItem("Mute sound", false);
+        muteSound.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                BeautiPanel.soundIsPlaying = muteSound.getState();
+                refreshPanel();
+            }
+        });
+        modeMenu.add(muteSound);
+
+
         viewMenu = new JMenu("View");
         menuBar.add(viewMenu);
         viewMenu.setMnemonic('V');
         setUpViewMenu();
-        
+
 
         JMenu helpMenu = new JMenu("Help");
         menuBar.add(helpMenu);
@@ -589,161 +601,161 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
         if (!Utils.isMac()) {
-        	helpMenu.add(a_about);
+            helpMenu.add(a_about);
         }
-    	
-    	setMenuVisibiliy("", menuBar);
-    	
+
+        setMenuVisibiliy("", menuBar);
+
         return menuBar;
     } // makeMenuBar
-	
-    
+
+
     void setUpViewMenu() {
-    	m_viewPanelCheckBoxMenuItems = null;
-    	viewMenu.removeAll();
-		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
-        	final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem( iPanel);
-        	viewPanelAction.addActionListener(new ActionListener() {
+        m_viewPanelCheckBoxMenuItems = null;
+        viewMenu.removeAll();
+        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+            final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(iPanel);
+            viewPanelAction.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                	viewPanelAction.doAction();
+                    viewPanelAction.doAction();
                 }
             });
-        	viewMenu.add(viewPanelAction);
-		}
+            viewMenu.add(viewPanelAction);
+        }
         viewMenu.addSeparator();
-    	viewMenu.add(a_viewall);
-	}
-
-
-	class TemplateAction extends AbstractAction {
-		private static final long serialVersionUID = 1L;
-		
-		String m_sFileName;
-		
-    	public TemplateAction(File file) {
-    		super("xx");
-    		m_sFileName = file.getAbsolutePath();
-    		String sName = m_sFileName.substring(m_sFileName.lastIndexOf("/") + 1, m_sFileName.length() - 4);
-    		putValue(Action.NAME, sName);
-    	}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				if (JOptionPane.showConfirmDialog(frame, "Changing templates means the information input so far will be lost. " +
-						"Are you sure you want to change templates?", "Are you sure?", JOptionPane.YES_NO_CANCEL_OPTION) == 
-							JOptionPane.YES_OPTION) {
-    				doc.loadNewTemplate(m_sFileName);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + ex.getMessage());
-			}
-		}
+        viewMenu.add(a_viewall);
     }
-    
+
+
+    class TemplateAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
+        String m_sFileName;
+
+        public TemplateAction(File file) {
+            super("xx");
+            m_sFileName = file.getAbsolutePath();
+            String sName = m_sFileName.substring(m_sFileName.lastIndexOf("/") + 1, m_sFileName.length() - 4);
+            putValue(Action.NAME, sName);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                if (JOptionPane.showConfirmDialog(frame, "Changing templates means the information input so far will be lost. " +
+                        "Are you sure you want to change templates?", "Are you sure?", JOptionPane.YES_NO_CANCEL_OPTION) ==
+                        JOptionPane.YES_OPTION) {
+                    doc.loadNewTemplate(m_sFileName);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + ex.getMessage());
+            }
+        }
+    }
+
     private List<AbstractAction> getTemplateActions() {
-    	List<AbstractAction> actions = new ArrayList<AbstractAction>();
-    	List<String> sBeastDirectories = AddOnManager.getBeastDirectories();
-    	for (String sDir : sBeastDirectories) {
-    		File dir = new File(sDir + "/templates");
-    		getTemplateActionForDir(dir, actions);
-    	}
-    	return actions;
-	}
+        List<AbstractAction> actions = new ArrayList<AbstractAction>();
+        List<String> sBeastDirectories = AddOnManager.getBeastDirectories();
+        for (String sDir : sBeastDirectories) {
+            File dir = new File(sDir + "/templates");
+            getTemplateActionForDir(dir, actions);
+        }
+        return actions;
+    }
 
-	private void getTemplateActionForDir(File dir, List<AbstractAction> actions) {
-		if (dir.exists() && dir.isDirectory()) {
-			File[] files = dir.listFiles();
-			if (files != null) {
-				for (File template : files) {
-					if (template.getName().toLowerCase().endsWith(".xml")) {
-						try {
-						String sXML2 = BeautiDoc.load(template.getAbsolutePath());
-						if (sXML2.contains("<mergepoint ")) {
-							actions.add(new TemplateAction(template));
-						}
-						} catch (Exception e) {
-							System.err.println(e.getMessage());
-						}
-					}
-				}
-			}
-		}
-	}
+    private void getTemplateActionForDir(File dir, List<AbstractAction> actions) {
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File template : files) {
+                    if (template.getName().toLowerCase().endsWith(".xml")) {
+                        try {
+                            String sXML2 = BeautiDoc.load(template.getAbsolutePath());
+                            if (sXML2.contains("<mergepoint ")) {
+                                actions.add(new TemplateAction(template));
+                            }
+                        } catch (Exception e) {
+                            System.err.println(e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	void setMenuVisibiliy(String sParentName, Component c) {
-    	String sName = "";
-    	if (c instanceof JMenu) {
-    		sName = ((JMenu)c).getText();
-    	} else if (c instanceof JMenuItem) {
-    		sName = ((JMenuItem)c).getText();
-    	}
-   		if (sName.length() > 0 && doc.beautiConfig.menuIsInvisible(sParentName+sName)) {
-   			c.setVisible(false);
-   		}
-       	if (c instanceof JMenu) {
-       		for (Component x: ((JMenu)c).getMenuComponents()){
-        		setMenuVisibiliy(sParentName + sName + (sName.length() > 0 ? ".":""),  x);
-       		}
-       	} else if (c instanceof Container) {
-        	for (int i =0 ; i < ((Container)c).getComponentCount(); i++) {
-        		setMenuVisibiliy(sParentName,  ((Container)c).getComponent(i));
-        	}
-       	}
-   	}
+    void setMenuVisibiliy(String sParentName, Component c) {
+        String sName = "";
+        if (c instanceof JMenu) {
+            sName = ((JMenu) c).getText();
+        } else if (c instanceof JMenuItem) {
+            sName = ((JMenuItem) c).getText();
+        }
+        if (sName.length() > 0 && doc.beautiConfig.menuIsInvisible(sParentName + sName)) {
+            c.setVisible(false);
+        }
+        if (c instanceof JMenu) {
+            for (Component x : ((JMenu) c).getMenuComponents()) {
+                setMenuVisibiliy(sParentName + sName + (sName.length() > 0 ? "." : ""), x);
+            }
+        } else if (c instanceof Container) {
+            for (int i = 0; i < ((Container) c).getComponentCount(); i++) {
+                setMenuVisibiliy(sParentName, ((Container) c).getComponent(i));
+            }
+        }
+    }
 
-    
+
     // hide panels as indicated in the hidepanels attribute in the XML template,
     // or use default tabs to hide otherwise.
-	public void hidePanels() {
+    public void hidePanels() {
 //		for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++) {
 //			BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
 //			if (!panelConfig.m_bIsVisibleInput.get()) {
 //				toggleVisible(iPanel);
 //			}
 //		}
-	} // hidePanels
-	
+    } // hidePanels
+
     public void setUpPanels() throws Exception {
-    	isInitialising = true;
-    	// remove any existing tabs
-    	if (getTabCount() > 0) {
-	    	while (getTabCount() > 0) {
-	    		removeTabAt(0);
-	    	}
-			bPaneIsVisible = new boolean[ doc.beautiConfig.panels.size()];
-			Arrays.fill(bPaneIsVisible, true);
-    	}
-		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
-			bPaneIsVisible[iPanel] = panelConfig.bIsVisibleInput.get();
-		}    		
-    	// add panels according to BeautiConfig 
-		panels = new BeautiPanel[ doc.beautiConfig.panels.size()];
-		for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
-			BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
-			panels[ iPanel] = new BeautiPanel( iPanel, this.doc, panelConfig);
-			addTab(doc.beautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[ iPanel], panelConfig.getTipText());
-		}
-		
-		for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
-			if (!bPaneIsVisible[iPanel]) {
-				removeTabAt(iPanel);
-			}
-		}
-    	isInitialising = false;
+        isInitialising = true;
+        // remove any existing tabs
+        if (getTabCount() > 0) {
+            while (getTabCount() > 0) {
+                removeTabAt(0);
+            }
+            bPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
+            Arrays.fill(bPaneIsVisible, true);
+        }
+        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
+            bPaneIsVisible[iPanel] = panelConfig.bIsVisibleInput.get();
+        }
+        // add panels according to BeautiConfig
+        panels = new BeautiPanel[doc.beautiConfig.panels.size()];
+        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
+            panels[iPanel] = new BeautiPanel(iPanel, this.doc, panelConfig);
+            addTab(doc.beautiConfig.getButtonLabel(this, panelConfig.getName()), null, panels[iPanel], panelConfig.getTipText());
+        }
+
+        for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
+            if (!bPaneIsVisible[iPanel]) {
+                removeTabAt(iPanel);
+            }
+        }
+        isInitialising = false;
     }
 
-	public static void main(String[] args) {
-		try {
-			AddOnManager.loadExternalJars();
-			Utils.loadUIManager();
-			PluginPanel.init();
-			
-	        BeautiDoc doc = new BeautiDoc();
-	        if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
-               	return;
+    public static void main(String[] args) {
+        try {
+            AddOnManager.loadExternalJars();
+            Utils.loadUIManager();
+            PluginPanel.init();
+
+            BeautiDoc doc = new BeautiDoc();
+            if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
+                return;
             }
 
 //            boolean lafLoaded = false;
@@ -796,11 +808,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 //            if (!lafLoaded) {
 //                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //            }
-	        
-	        final Beauti beauti = new Beauti(doc);
 
-	     if (Utils.isMac()) {
-	    	// set up application about-menu for Mac
+            final Beauti beauti = new Beauti(doc);
+
+            if (Utils.isMac()) {
+                // set up application about-menu for Mac
 // Mac-only stuff
 //	            new com.apple.eawt.Application() {
 //	                {
@@ -825,52 +837,51 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 //             BeautiApp app = new BeautiApp("BEAUti 2", version.getHTMLCredits(), BeautiPanel.getIcon(0, null),
 //                     "http://beast2.cs.auckland.ac.nz", "http://beast2.cs.auckland.ac.nz");
 
-		} 
-	        beauti.setUpPanels();
-			
-			beauti.currentTab = beauti.panels[0];
-			beauti.hidePanels();
+            }
+            beauti.setUpPanels();
 
-			beauti.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					if (beauti.currentTab == null) {
-						beauti.currentTab = beauti.panels[0];
-					}
-					if (beauti.currentTab != null) {
-						if (!beauti.isInitialising) {
-							beauti.currentTab.config.sync(beauti.currentTab.iPartition);
-						}
-						BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
-						beauti.currentTab = panel;
-						beauti.refreshPanel();
-					}
-				}
-			});
-			
-			
-			
-			beauti.setVisible(true);
-			beauti.refreshPanel();
-			JFrame frame = new JFrame("BEAUti 2: " + doc.getTemplateName() + " " + doc.getFileName());
-			beauti.frame = frame;
-			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
+            beauti.currentTab = beauti.panels[0];
+            beauti.hidePanels();
 
-			JMenuBar menuBar = beauti.makeMenuBar(); 
-			frame.setJMenuBar(menuBar);
-			
-			if (doc.getFileName() != null || doc.alignments.size()> 0) {
-				beauti.a_save.setEnabled(true);
-				beauti.a_saveas.setEnabled(true);
-			}
-			
-			frame.add(beauti);
-	        frame.setSize(1024, 768);
-	        frame.setVisible(true);
+            beauti.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    if (beauti.currentTab == null) {
+                        beauti.currentTab = beauti.panels[0];
+                    }
+                    if (beauti.currentTab != null) {
+                        if (!beauti.isInitialising) {
+                            beauti.currentTab.config.sync(beauti.currentTab.iPartition);
+                        }
+                        BeautiPanel panel = (BeautiPanel) beauti.getSelectedComponent();
+                        beauti.currentTab = panel;
+                        beauti.refreshPanel();
+                    }
+                }
+            });
 
-	        // check file needs to be save on closing main frame
-	        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-			frame.addWindowListener(new WindowAdapter() {
+
+            beauti.setVisible(true);
+            beauti.refreshPanel();
+            JFrame frame = new JFrame("BEAUti 2: " + doc.getTemplateName() + " " + doc.getFileName());
+            beauti.frame = frame;
+            frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
+
+            JMenuBar menuBar = beauti.makeMenuBar();
+            frame.setJMenuBar(menuBar);
+
+            if (doc.getFileName() != null || doc.alignments.size() > 0) {
+                beauti.a_save.setEnabled(true);
+                beauti.a_saveas.setEnabled(true);
+            }
+
+            frame.add(beauti);
+            frame.setSize(1024, 768);
+            frame.setVisible(true);
+
+            // check file needs to be save on closing main frame
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     if (!beauti.quit()) {
                         return;
@@ -878,9 +889,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     System.exit(0);
                 }
             });
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     } // main
 
 } // class Beauti

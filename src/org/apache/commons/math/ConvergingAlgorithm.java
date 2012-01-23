@@ -23,8 +23,9 @@ package org.apache.commons.math;
  * This interface only deals with convergence parameters setting, not
  * execution of the algorithms per se.
  * </p>
- * @see ConvergenceException
+ *
  * @version $Revision: 811786 $ $Date: 2009-09-06 05:36:08 -0400 (Sun, 06 Sep 2009) $
+ * @see ConvergenceException
  * @since 2.0
  */
 public interface ConvergingAlgorithm {
@@ -72,7 +73,7 @@ public interface ConvergingAlgorithm {
      *
      * @param accuracy the accuracy.
      * @throws IllegalArgumentException if the accuracy can't be achieved by
-     * the solver or is otherwise deemed unreasonable.
+     *                                  the solver or is otherwise deemed unreasonable.
      */
     void setAbsoluteAccuracy(double accuracy);
 
@@ -102,12 +103,13 @@ public interface ConvergingAlgorithm {
      *
      * @param accuracy the relative accuracy.
      * @throws IllegalArgumentException if the accuracy can't be achieved by
-     *  the algorithm or is otherwise deemed unreasonable.
+     *                                  the algorithm or is otherwise deemed unreasonable.
      */
     void setRelativeAccuracy(double accuracy);
 
     /**
      * Get the actual relative accuracy.
+     *
      * @return the accuracy
      */
     double getRelativeAccuracy();
@@ -129,7 +131,7 @@ public interface ConvergingAlgorithm {
      *
      * @return the last iteration count.
      * @throws IllegalStateException if there is no result available, either
-     * because no result was yet computed or the last attempt failed.
+     *                               because no result was yet computed or the last attempt failed.
      */
     int getIterationCount();
 

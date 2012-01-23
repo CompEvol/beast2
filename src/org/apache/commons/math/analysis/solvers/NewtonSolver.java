@@ -35,11 +35,12 @@ public class NewtonSolver extends UnivariateRealSolverImpl {
 
     /**
      * Construct a solver for the given function.
+     *
      * @param f function to solve.
      * @deprecated as of 2.0 the function to solve is passed as an argument
-     * to the {@link #solve(UnivariateRealFunction, double, double)} or
-     * {@link UnivariateRealSolverImpl#solve(UnivariateRealFunction, double, double, double)}
-     * method.
+     *             to the {@link #solve(UnivariateRealFunction, double, double)} or
+     *             {@link UnivariateRealSolverImpl#solve(UnivariateRealFunction, double, double, double)}
+     *             method.
      */
     @Deprecated
     public NewtonSolver(DifferentiableUnivariateRealFunction f) {
@@ -53,61 +54,65 @@ public class NewtonSolver extends UnivariateRealSolverImpl {
         super(100, 1E-6);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double solve(final double min, final double max)
-        throws MaxIterationsExceededException,
-        FunctionEvaluationException  {
+            throws MaxIterationsExceededException,
+            FunctionEvaluationException {
         return solve(f, min, max);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     public double solve(final double min, final double max, final double startValue)
-        throws MaxIterationsExceededException, FunctionEvaluationException  {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max, startValue);
     }
 
     /**
      * Find a zero near the midpoint of <code>min</code> and <code>max</code>.
      *
-     * @param f the function to solve
+     * @param f   the function to solve
      * @param min the lower bound for the interval
      * @param max the upper bound for the interval
      * @return the value where the function is zero
      * @throws MaxIterationsExceededException if the maximum iteration count is exceeded
-     * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function or derivative
-     * @throws IllegalArgumentException if min is not less than max
+     * @throws FunctionEvaluationException    if an error occurs evaluating the
+     *                                        function or derivative
+     * @throws IllegalArgumentException       if min is not less than max
      */
     public double solve(final UnivariateRealFunction f,
                         final double min, final double max)
-        throws MaxIterationsExceededException, FunctionEvaluationException  {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max, UnivariateRealSolverUtils.midpoint(min, max));
     }
 
     /**
      * Find a zero near the value <code>startValue</code>.
      *
-     * @param f the function to solve
-     * @param min the lower bound for the interval (ignored).
-     * @param max the upper bound for the interval (ignored).
+     * @param f          the function to solve
+     * @param min        the lower bound for the interval (ignored).
+     * @param max        the upper bound for the interval (ignored).
      * @param startValue the start value to use.
      * @return the value where the function is zero
      * @throws MaxIterationsExceededException if the maximum iteration count is exceeded
-     * @throws FunctionEvaluationException if an error occurs evaluating the
-     * function or derivative
-     * @throws IllegalArgumentException if startValue is not between min and max or
-     * if function is not a {@link DifferentiableUnivariateRealFunction} instance
+     * @throws FunctionEvaluationException    if an error occurs evaluating the
+     *                                        function or derivative
+     * @throws IllegalArgumentException       if startValue is not between min and max or
+     *                                        if function is not a {@link DifferentiableUnivariateRealFunction} instance
      */
     public double solve(final UnivariateRealFunction f,
                         final double min, final double max, final double startValue)
-        throws MaxIterationsExceededException, FunctionEvaluationException {
+            throws MaxIterationsExceededException, FunctionEvaluationException {
 
         try {
 
             final UnivariateRealFunction derivative =
-                ((DifferentiableUnivariateRealFunction) f).derivative();
+                    ((DifferentiableUnivariateRealFunction) f).derivative();
             clearResult();
             verifySequence(min, startValue, max);
 

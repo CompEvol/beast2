@@ -22,12 +22,12 @@ package org.apache.commons.math.analysis;
  * @version $Revision: 811786 $ $Date: 2009-09-06 05:36:08 -0400 (Sun, 06 Sep 2009) $
  */
 public interface DifferentiableUnivariateRealFunction
-    extends UnivariateRealFunction {
+        extends UnivariateRealFunction {
 
     /**
      * Returns the derivative of the function
      *
-     * @return  the derivative function
+     * @return the derivative function
      */
     UnivariateRealFunction derivative();
 
