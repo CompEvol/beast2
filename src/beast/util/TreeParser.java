@@ -67,6 +67,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
 
 
+    boolean createUnrecognizedTaxa = false;
     /**
      * op
      * assure the class behaves properly, even when inputs are not specified *
@@ -78,7 +79,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         } else if (m_taxonset.get() != null) {
             m_sLabels = m_taxonset.get().asStringList();
         } else {
-            m_sLabels = null;
+        	if (m_bIsLabelledNewick.get()) {
+        		m_sLabels = new ArrayList<String>();
+        		createUnrecognizedTaxa = true;
+        	} else {
+        		m_sLabels = null;
+        	}
 //            m_bIsLabelledNewick = false;
         }
         String sNewick = m_oNewick.get();
@@ -209,6 +215,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 checkTaxaIsAvailable(sStr, nIndex);
                 return nIndex;
             }
+        }
+        if (createUnrecognizedTaxa) {
+        	m_sLabels.add(sStr);
+        	int nIndex = m_sLabels.size() - 1;
+            checkTaxaIsAvailable(sStr, nIndex);
+        	return nIndex;
         }
         throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified");
     }
