@@ -105,4 +105,4 @@ public class RealRandomWalkOperator extends Operator {
             return "Try setting window size to about " + formatter.format(newWindowSize);
         } else return "";
     }
-} // class IntRandomWalkOperator
+} // class RealRandomWalkOperator

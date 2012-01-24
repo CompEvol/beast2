@@ -91,7 +91,7 @@ public class ScaleOperator extends Operator {
     }
 
 
-    private boolean outsideBounds(double value, RealParameter param) {
+    protected boolean outsideBounds(double value, RealParameter param) {
         final Double l = param.getLower();
         final Double h = param.getUpper();
 
@@ -99,7 +99,7 @@ public class ScaleOperator extends Operator {
         //return (l != null && value < l || h != null && value > h);
     }
 
-    private double getScaler() {
+    protected  double getScaler() {
         return (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
     }
 

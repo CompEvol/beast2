@@ -28,7 +28,7 @@ import beast.util.XMLProducer;
 @Description("Performs random sequence generation for a given site model. " +
         "Sequences for the leave nodes in the tree are returned as an alignment.")
 public class SequenceSimulator extends beast.core.Runnable {
-    public Input<Alignment> m_data = new Input<Alignment>("data", "alignment data which specifies the taxa of the beast.tree", Validate.REQUIRED);
+    public Input<Alignment> m_data = new Input<Alignment>("data", "alignment data which specifies datatype and taxa of the beast.tree", Validate.REQUIRED);
     public Input<Tree> m_treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
     public Input<SiteModel.Base> m_pSiteModelInput = new Input<SiteModel.Base>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     public Input<BranchRateModel.Base> m_pBranchRateModelInput = new Input<BranchRateModel.Base>("branchRateModel",
@@ -80,7 +80,7 @@ public class SequenceSimulator extends beast.core.Runnable {
     @Override
     public void run() throws Exception {
         Alignment alignment = simulate();
-        System.out.println(alignment);
+        System.out.println(new XMLProducer().toRawXML(alignment));
     }
 
     /**

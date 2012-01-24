@@ -49,8 +49,12 @@ public class Node extends Plugin {
 
     /**
      * list of children of this node *
+     * Don't use m_left and m_right directly
+     * Use getChildCount() and getChild(x) or getChildren() instead
      */
+    @Deprecated
     public Node m_left;
+    @Deprecated
     public Node m_right;
 
     /**

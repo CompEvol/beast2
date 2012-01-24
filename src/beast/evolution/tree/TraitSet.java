@@ -7,7 +7,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 
 import java.util.Arrays;
