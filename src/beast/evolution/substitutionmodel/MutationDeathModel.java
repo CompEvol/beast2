@@ -91,10 +91,12 @@ public class MutationDeathModel extends SubstitutionModel.Base {
 
     @Override
     public boolean canHandleDataType(DataType dataType) throws Exception {
-        if (dataType.getStateCount() == Integer.MAX_VALUE) {
-            return false;
-        }
-        return true;
+    	if (m_CTMCModel.get() == null) {
+    		return dataType.getStateCount() == 2;
+    	} else {
+    		int states = m_CTMCModel.get().m_nStates;
+    		return dataType.getStateCount() == states + 1;
+    	}
     }
 
 } // class MutationDeathModel
