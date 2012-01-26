@@ -12,12 +12,14 @@ public class TreeUtils {
      */
     public static void rotateNodeByComparator(Node node, Comparator<Node> comparator) {
 
-        if (!node.isLeaf()) {
+        if (node.getChildCount() > 2) throw new RuntimeException("Not implemented yet!");
+        
+        for (Node child : node.getChildren()) {
+            rotateNodeByComparator(child, comparator);
+        }
 
-            rotateNodeByComparator(node.m_left, comparator);
-            rotateNodeByComparator(node.m_right, comparator);
-
-            if (comparator.compare(node.m_left, node.m_right) > 0) {
+        if (node.getChildCount() > 1) {
+                if (comparator.compare(node.m_left, node.m_right) > 0) {
                 Node temp = node.m_left;
                 node.m_left = node.m_right;
                 node.m_right = temp;
@@ -49,9 +51,9 @@ public class TreeUtils {
 
                 if (larger != 0) return larger;
 
-                double tipRecent = getMinNodeHeight(node2) - getMinNodeHeight(node1);
-                if (tipRecent > 0.0) return 1;
-                if (tipRecent < 0.0) return -1;
+                double tipRecent = getMinNodeHeight(node1) - getMinNodeHeight(node2);
+                if (tipRecent > 0.0) return -1;
+                if (tipRecent < 0.0) return 1;
                 return 0;
             }
 
@@ -64,11 +66,12 @@ public class TreeUtils {
             public int compare(Node node1, Node node2) {
                 int larger = node2.getLeafNodeCount() - node1.getLeafNodeCount();
 
+
                 if (larger != 0) return larger;
 
                 double tipRecent = getMinNodeHeight(node2) - getMinNodeHeight(node1);
-                if (tipRecent > 0.0) return 1;
-                if (tipRecent < 0.0) return -1;
+                if (tipRecent > 0.0) return -1;
+                if (tipRecent < 0.0) return 1;
                 return 0;
             }
 
