@@ -78,6 +78,13 @@ public class Node extends Plugin {
      */
     protected Tree m_tree;
 
+    public Node() {}
+    
+    public Node(String id) throws Exception {
+        setID(id);
+        initAndValidate();
+    }
+
     public Tree getTree() {
         return m_tree;
     }
@@ -220,6 +227,16 @@ public class Node extends Plugin {
         return m_left == null && m_right == null;
     }
 
+    public void addChild(Node child) {
+        if (m_left == null) {
+            m_left = child;
+            child.setParent(this);
+        } else if (m_right == null) {
+            m_right = child;
+            m_right.setParent(this);
+        } else throw new RuntimeException("Can't have more than 2 children right now because of Remco.");
+    }
+    
     /**
      * @return count number of nodes in beast.tree, starting with current node *
      */
