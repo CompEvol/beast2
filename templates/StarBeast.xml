@@ -15,6 +15,7 @@
             beast.core.State.stateNode'
         collapsedPlugins ='beast.core.MCMC.logger'
         suppressPlugins = 'beast.core.MCMC.operator,
+		beast.core.MCMC.operatorschedule,
 	        beast.evolution.tree.coalescent.Coalescent.treeIntervals,
 	        beast.evolution.tree.coalescent.Coalescent.tree,
 	        beast.core.MCMC.state,
@@ -165,7 +166,7 @@
 
             <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
-            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="1000" fileName="beast.$(seed).trees" mode='tree'>
+            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="5000" fileName="beast.$(seed).trees" mode='tree'>
                 <log idref="Tree.$(n)"/>
             </logger>
 
@@ -193,6 +194,7 @@
 
             <connect srcID='treePrior.$(n)'            targetID='speciescoalescent' inputName='distribution' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='ClockPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect srcID='popMean.prior'             targetID='prior' inputName='distribution' if='popMean/estimate=true'/>
 
             <connect srcID='Tree.$(n)'                 targetID='state' inputName='stateNode' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='proportionInvariant.$(n)'  targetID='state' inputName='stateNode' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
@@ -204,6 +206,7 @@
             <connect srcID='mutationRateScaler.$(n)'        targetID='mcmc' inputName='operator' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
             <connect srcID='gammaShapeScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
             <connect srcID='StrictClockRateScaler.$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect srcID='popMeanScale'                   targetID='mcmc' inputName='operator' if='popMean/estimate=true'/>
 
             <connect srcID='treeScaler.$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='UniformOperator.$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
@@ -244,13 +247,14 @@
 	<treetop spec='TreeTopFinder' id='treeTopFinder'/>
 
 <!-- framework for main model -->
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <run spec="MCMC" id="mcmc" storeEvery="5000" chainLength="10000000">
 
-        <state storeEvery='1000' id='state'>
+        <state storeEvery='5000' id='state'>
 	        <stateNode idref='popSize'/> 
 	        <stateNode idref='popSizeTop'/> 
 	        <stateNode idref='Tree.Species'/> 
 	        <stateNode idref='birthRate.Species'/> 
+	        <stateNode idref='popMean'/> 
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
@@ -259,7 +263,7 @@
 						popFunction='constant' taxonset='@taxonsuperset'>
 				    <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
 			        <topPopSize spec='parameter.RealParameter' id='popSizeTop' value='1'/> 
-				    <parameter name='gammaParameter' id='popMean' value='0.004'/>
+				    <parameter name='gammaParameter' id='popMean' value='1' estimate="true"/>
 				</distribution>
 			</distribution>
             <distribution spec="CompoundDistribution" id="prior">
@@ -267,20 +271,26 @@
 		        <distribution id="YuleModel.Species" spec="speciation.YuleModel" tree='@Tree.Species'>
 		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.Species" value='213.2021' lower='0' upper='10000' />
 		        </distribution>
-	            <distribution id='YuleBirthRatePrior.Species' spec='Prior' x='@birthRate.Species'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></distribution>
+	            <distribution id='YuleBirthRatePrior.Species' spec='Prior' x='@birthRate.Species'>
+		      <distr spec="beast.math.distributions.OneOnX"/>
+		    </distribution>
+	            <distribution id='popMean.prior' spec='Prior' x='@popMean'>
+		      <distr spec="beast.math.distributions.OneOnX"/>
+		    </distribution>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
             </distribution>
         </distribution>
 
-		<operator id="Reheight" spec="NodeReheight" tree="@Tree.Species" weight="94" taxonset='@taxonsuperset'/>
-	    <operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
-	    <operator degreesOfFreedom="1" id="popSizeTopScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSizeTop" weight="5.0"/>
+	<operator id="Reheight" spec="NodeReheight" tree="@Tree.Species" weight="94" taxonset='@taxonsuperset'/>
+	<operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
+	<operator degreesOfFreedom="1" id="popSizeTopScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSizeTop" weight="5.0"/>
 
-	    <operator id='YuleBirthRateScaler.Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.Species"/>
+	<operator id='YuleBirthRateScaler.Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.Species"/>
 
+	<operator id='popMeanScale' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popMean"/>
 
-        <logger id='tracelog' logEvery="1000" fileName="beast_$(seed).log">
+        <logger id='tracelog' logEvery="5000" fileName="beast_$(seed).log">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
@@ -289,11 +299,11 @@
 			<log idref="YuleModel.Species"/>
         </logger>
 
-		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="1000" mode="tree">
+		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="5000" mode="tree">
 		    <log spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@Tree.Species" speciesTreePrior='@SpeciesTreePopSize.Species' treetop='@treeTopFinder'/>
 		</logger>
 
-        <logger id='screenlog' logEvery="1000">
+        <logger id='screenlog' logEvery="5000">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
       	    <ESS spec='ESS' name='log' arg="@posterior"/>
