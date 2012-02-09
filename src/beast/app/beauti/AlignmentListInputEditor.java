@@ -9,9 +9,12 @@ import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
@@ -27,6 +30,11 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.ListInputEditor;
@@ -36,9 +44,12 @@ import beast.core.Plugin;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.util.NexusParser;
@@ -578,9 +589,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
     } // pluginSelector
 
     static public Plugin getXMLData(File file) {
-        XMLParser parser = new XMLParser();
+        String sXML = "";
         try {
-            String sXML = "";
+        	// parse as BEAST 2 xml fragment
+            XMLParser parser = new XMLParser();
             BufferedReader fin = new BufferedReader(new FileReader(file));
             while (fin.ready()) {
                 sXML += fin.readLine();
@@ -589,13 +601,74 @@ public class AlignmentListInputEditor extends ListInputEditor {
             Plugin runnable = parser.parseFragment(sXML, false);
             return getAlignment(runnable);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + ex.getMessage());
+        	// attempt to parse as BEAST 1 xml
+        	try {
+        		Plugin alignment = parseBeast1XML(sXML);
+        		if (alignment != null) {
+        			alignment.setID(file.getName().substring(0, file.getName().length() - 4));
+        		}
+        		return alignment;
+            } catch (Exception ex2) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + ex.getMessage() + "\n" + ex2.getMessage());
+            }
             return null;
         }
     }
 
-    static Plugin getAlignment(Plugin plugin) throws IllegalArgumentException, IllegalAccessException {
+    private static Plugin parseBeast1XML(String sXML) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        doc.normalize();
+
+        NodeList alignments = doc.getElementsByTagName("alignment");
+        Alignment alignment = new Alignment();
+        alignment.m_sDataType.setValue("nucleotide", alignment);
+
+        // parse first alignment
+        org.w3c.dom.Node node = alignments.item(0);
+        
+        String sDataType = node.getAttributes().getNamedItem("dataType").getNodeValue();
+        int nTotalCount = 4;
+        if (sDataType == null) {
+            alignment.m_sDataType.setValue("integer", alignment);
+        } else if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
+            alignment.m_sDataType.setValue("nucleotide", alignment);
+            nTotalCount = 4;
+        } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
+            alignment.m_sDataType.setValue("aminoacid", alignment);
+            nTotalCount = 20;
+        } else {
+            alignment.m_sDataType.setValue("integer", alignment);
+        }
+        
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+        	org.w3c.dom.Node child = children.item(i);
+        	if (child.getNodeName().equals("sequence")) {
+                Sequence sequence = new Sequence();
+                // find the taxon
+                String taxon = "";
+                NodeList sequenceChildren = child.getChildNodes();
+                for (int j = 0; j < sequenceChildren.getLength(); j++) {
+                	org.w3c.dom.Node child2 = sequenceChildren.item(j);
+                	if (child2.getNodeName().equals("taxon")) {
+                		taxon = child2.getAttributes().getNamedItem("idref").getNodeValue();
+                	}
+                }
+                String data = child.getTextContent();
+                sequence.initByName("totalcount", nTotalCount, "taxon", taxon, "value", data);
+                sequence.setID("seq_" + taxon);
+                alignment.m_pSequences.setValue(sequence, alignment);
+        		
+        	}
+        }
+    	//alignment.initAndValidate();
+        alignment.setID("beast1");
+    	return alignment;
+	} // parseBeast1XML
+
+	static Plugin getAlignment(Plugin plugin) throws IllegalArgumentException, IllegalAccessException {
         if (plugin instanceof Alignment) {
             return plugin;
         }

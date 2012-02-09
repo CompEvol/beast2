@@ -340,17 +340,20 @@ public class TaxonSetInputEditor extends InputEditor {
         return nIgnored;
     }
 
+    String m_sPattern = "^(.+)[-_\\. ](.*)$";
+
     class GuessDlg extends JDialog {
         private static final long serialVersionUID = 1L;
 
-        String m_sPattern = "^(.+)[-_\\. ](.*)$";
         Component m_parent;
         Box guessPanel;
         ButtonGroup group;
         JRadioButton b1 = new JRadioButton("use everything");
-        JRadioButton b2 = new JRadioButton("use regular expression");
+        JRadioButton b2 = new JRadioButton("split on character, and take group(s):");
+        JRadioButton b3 = new JRadioButton("use regular expression");
 
         int m_location = 0;
+        int m_splitlocation = 0;
         String m_sDelimiter = ".";
         JTextField regexpEntry;
 
@@ -361,11 +364,14 @@ public class TaxonSetInputEditor extends InputEditor {
             group = new ButtonGroup();
             group.add(b1);
             group.add(b2);
+            group.add(b3);
             group.setSelected(b1.getModel(), true);
 
             guessPanel.add(createDelimiterBox(b1));
             guessPanel.add(Box.createVerticalStrut(20));
-            guessPanel.add(createRegExtpBox(b2));
+            guessPanel.add(createSplitBox(b2));
+            guessPanel.add(Box.createVerticalStrut(20));            
+            guessPanel.add(createRegExtpBox(b3));
             guessPanel.add(Box.createVerticalStrut(20));
         }
 
@@ -381,6 +387,7 @@ public class TaxonSetInputEditor extends InputEditor {
                 public void actionPerformed(ActionEvent e) {
                     JComboBox combo = (JComboBox) e.getSource();
                     m_location = combo.getSelectedIndex();
+                    b1.setSelected(true);
                 }
             });
 
@@ -392,6 +399,38 @@ public class TaxonSetInputEditor extends InputEditor {
                 public void actionPerformed(ActionEvent e) {
                     JComboBox combo = (JComboBox) e.getSource();
                     m_sDelimiter = (String) combo.getSelectedItem();
+                    b1.setSelected(true);
+                }
+            });
+            box.add(Box.createHorizontalGlue());
+            return box;
+        }
+
+        private Component createSplitBox(JRadioButton b) {
+            Box box = Box.createHorizontalBox();
+            box.add(b);
+
+            JComboBox combo = new JComboBox(new String[]{"1","2","3","4","1-2","2-3","3-4","1-3","2-4"});
+            box.add(Box.createHorizontalGlue());
+            box.add(combo);
+            combo.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox combo = (JComboBox) e.getSource();
+                    m_splitlocation = combo.getSelectedIndex();
+                    b2.setSelected(true);
+                }
+            });
+
+            JComboBox combo2 = new JComboBox(new String[]{".", ",", "_", "-", " ", "/", ":", ";"});
+            box.add(Box.createHorizontalGlue());
+            box.add(combo2);
+            combo2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox combo = (JComboBox) e.getSource();
+                    m_sDelimiter = (String) combo.getSelectedItem();
+                    b2.setSelected(true);
                 }
             });
             box.add(Box.createHorizontalGlue());
@@ -409,6 +448,22 @@ public class TaxonSetInputEditor extends InputEditor {
             box.add(Box.createHorizontalGlue());
             box.add(regexpEntry);
             box.add(Box.createHorizontalGlue());
+            regexpEntry.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    b3.setSelected(true);
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    b3.setSelected(true);
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    b3.setSelected(true);
+                }
+            });
             return box;
         }
 
@@ -427,27 +482,57 @@ public class TaxonSetInputEditor extends InputEditor {
             // if (optionPane.getValue() == null) {
             // System.exit(0);
             // }
+            String sDelimiter = m_sDelimiter;
+            if (sDelimiter.equals(".") || sDelimiter.equals("/")) {
+                sDelimiter = "\\" + sDelimiter;
+            }
             if (b1.getModel() == group.getSelection()) {
-                String sDelimiter = m_sDelimiter;
-                if (sDelimiter.equals(".") || sDelimiter.equals("/")) {
-                    sDelimiter = "\\" + sDelimiter;
-                }
                 switch (m_location) {
-                    case 0:
+                    case 0: // "after first", 
                         m_sPattern = "^[^" + sDelimiter + "]+" + sDelimiter + "(.*)$";
                         break;
-                    case 1:
+                    case 1: // "after last", 
                         m_sPattern = "^.*" + sDelimiter + "(.*)$";
                         break;
-                    case 2:
+                    case 2: // "before first", 
                         m_sPattern = "^([^" + sDelimiter + "]+)" + sDelimiter + ".*$";
                         break;
-                    case 3:
+                    case 3: // "before last"
                         m_sPattern = "^(.*)" + sDelimiter + ".*$";
                         break;
                 }
             }
             if (b2.getModel() == group.getSelection()) {
+            	switch (m_splitlocation) {
+            	case 0: // "1"
+                    m_sPattern = "^([^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 1: // "2"
+                    m_sPattern = "^[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 2: // "3"
+                    m_sPattern = "^[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 3: // "4"
+                    m_sPattern = "^[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 4: // "1-2"
+                    m_sPattern = "^([^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 5: // "2-3"
+                    m_sPattern = "^[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 6: // "3-4"
+                    m_sPattern = "^[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 7: // "1-3"
+                    m_sPattern = "^([^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+                    break;
+            	case 8: // "2-4"
+                    m_sPattern = "^[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+            	}
+            }
+            if (b3.getModel() == group.getSelection()) {
                 m_sPattern = regexpEntry.getText();
             }
 

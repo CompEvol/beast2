@@ -345,6 +345,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     return;
                 }
                 for (File file : files) {
+                    if (file.getAbsolutePath().lastIndexOf('/') > 0) {
+                        g_sDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf('/'));
+                    }
                     String sFileName = file.getAbsolutePath();
                     // AR - this looks very UNIX specific path (i.e., '/' not a System dependent separator char).
 //    				if (sFileName.lastIndexOf('/') > 0) {
@@ -642,7 +645,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                if (JOptionPane.showConfirmDialog(frame, "Changing templates means the information input so far will be lost. " +
+            	if (doc.validateModel() == DOC_STATUS.NO_DOCUMENT) {
+                    doc.loadNewTemplate(m_sFileName);            		
+            	} else if (JOptionPane.showConfirmDialog(frame, "Changing templates means the information input so far will be lost. " +
                         "Are you sure you want to change templates?", "Are you sure?", JOptionPane.YES_NO_CANCEL_OPTION) ==
                         JOptionPane.YES_OPTION) {
                     doc.loadNewTemplate(m_sFileName);
