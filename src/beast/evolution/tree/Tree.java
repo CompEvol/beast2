@@ -107,7 +107,7 @@ public class Tree extends StateNode {
         }
     }
 
-    void initArrays() {
+    protected void initArrays() {
         // initialise tree-as-array representation + its stored variant
         m_nodes = new Node[nodeCount];
         listNodes(root, m_nodes);
@@ -120,13 +120,16 @@ public class Tree extends StateNode {
     public Tree() {
     }
 
+    public Tree(Node rootNode) {
+        setRoot(rootNode);
+        initArrays();
+    }
+
     /**
      * Constructor used by Input.setValue(String) *
      */
     public Tree(String sNewick) throws Exception {
-        TreeParser parser = new TreeParser();
-        setRoot(parser.parseNewick(sNewick));
-        initArrays();
+        this(new TreeParser().parseNewick(sNewick));
     }
 
     /**
@@ -193,6 +196,8 @@ public class Tree extends StateNode {
         if (nodeCount < 0) {
             nodeCount = this.root.getNodeCount();
         }
+
+        //System.out.println("nodeCount=" + nodeCount);
         return nodeCount;
     }
 
@@ -217,6 +222,7 @@ public class Tree extends StateNode {
     public List<Node> getExternalNodes() {
         ArrayList<Node> externalNodes = new ArrayList<Node>();
         for (int i = 0; i < getNodeCount(); i++) {
+            System.out.println("i=" + i);
             Node node = getNode(i);
             if (node.isLeaf()) externalNodes.add(node);
         }
