@@ -1,5 +1,6 @@
 package beast.evolution.tree.coalescent;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
@@ -14,6 +15,7 @@ import java.util.List;
 /**
  * @author Alexei Drummond
  */
+@Description("A tree generated randomly from the structured coalescent process, with the given population sizes, migration rates and per-deme sample sizes.")
 public class StructuredCoalescentTree extends Tree {
 
     public Input<RealParameter> popSizesMigrationRates = new Input<RealParameter>("popSizesMigrationRates", "A matrix of migration rates and population sizes. Population sizes occupy the diagonal and migration rates occupy the off-diagonals");
@@ -144,7 +146,7 @@ public class StructuredCoalescentTree extends Tree {
 
                     double V = U / rates[i][j];
 
-                    event.time = time + (Math.log(V) / totalRate);
+                    event.time = time + (-Math.log(V) / totalRate);
 
                     return event;
                 }
@@ -177,7 +179,7 @@ public class StructuredCoalescentTree extends Tree {
         int pop;
 
         // if the event is a migration this is the population the parent node is in 
-        // (so the deme that the lineage travels to when going backwards in time)
+        // (i.e. the deme that the lineage migrates to when going backwards in time)
         int toPop;
 
         EventType type;
