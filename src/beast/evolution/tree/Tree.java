@@ -222,7 +222,6 @@ public class Tree extends StateNode {
     public List<Node> getExternalNodes() {
         ArrayList<Node> externalNodes = new ArrayList<Node>();
         for (int i = 0; i < getNodeCount(); i++) {
-            System.out.println("i=" + i);
             Node node = getNode(i);
             if (node.isLeaf()) externalNodes.add(node);
         }

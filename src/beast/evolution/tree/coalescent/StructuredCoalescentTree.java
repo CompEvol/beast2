@@ -102,8 +102,8 @@ public class StructuredCoalescentTree extends Tree {
             rootNodes.addAll(nodeList);
         }
 
-        System.out.println(rootNodes.size() + " root nodes remain");
-        System.out.println(" rootNodes.get(0).getNodeCount() == " + rootNodes.get(0).getNodeCount());
+        //System.out.println(rootNodes.size() + " root nodes remain");
+        //System.out.println(" rootNodes.get(0).getNodeCount() == " + rootNodes.get(0).getNodeCount());
 
 
         return rootNodes;
