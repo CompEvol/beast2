@@ -21,6 +21,15 @@ public class StructuredCoalescentTree extends Tree {
     public Input<RealParameter> popSizesMigrationRates = new Input<RealParameter>("popSizesMigrationRates", "A matrix of migration rates and population sizes. Population sizes occupy the diagonal and migration rates occupy the off-diagonals");
     public Input<IntegerParameter> sampleSizes = new Input<IntegerParameter>("sampleSizes", "The sample sizes for each population");
 
+    public StructuredCoalescentTree() {
+    }
+
+    public StructuredCoalescentTree(RealParameter popSizesMigrationRatesParameter, IntegerParameter sampleSizesParameter) throws Exception {
+        popSizesMigrationRates.setValue(popSizesMigrationRatesParameter, this);
+        sampleSizes.setValue(sampleSizesParameter, this);
+        initAndValidate();
+    }
+
     enum EventType {coalescent, migration}
 
     public void initAndValidate() {
@@ -164,7 +173,7 @@ public class StructuredCoalescentTree extends Tree {
             for (int j = 0; j < rates.length; j++) {
                 double popSizej = popSizesMigrationRates.getMatrixValue(j, j);
                 if (i == j) {
-                    rates[i][i] = Binomial.choose2(nodes.get(i).size()) * popSizej;
+                    rates[i][i] = Binomial.choose2(nodes.get(i).size()) / popSizej;
                 } else {
                     rates[i][j] = popSizesMigrationRates.getMatrixValue(i, j) * popSizej * nodes.get(i).size();
                 }
@@ -184,6 +193,37 @@ public class StructuredCoalescentTree extends Tree {
 
         EventType type;
         double time;
+
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        //List<Tree> trees = new ArrayList<Tree>();
+
+        int reps = 10000;
+
+        double[] popSize1 = new double[]{1, 1, 1, 1, 1};
+        double[] popSize2 = new double[]{1, 2, 4, 8, 16};
+
+
+        for (double m = 0.125; m < 32; m *= 2) {
+            for (int i = 0; i < popSize1.length; i++) {
+                int count = 0;
+                for (int j = 0; j < reps; j++) {
+
+                    Tree tree = new StructuredCoalescentTree(
+                            new RealParameter(new Double[]{popSize1[i], m, popSize2[i], m}),
+                            new IntegerParameter(new Integer[]{2, 2})
+                    );
+
+                    //trees.add(tree);
+
+                    if ((Integer) tree.getRoot().getMetaData("deme") == 0) count += 1;
+
+                }
+                System.out.println(popSize1[i] + "\t" + popSize2[i] + "\t" + m + "\t" + ((double) count / (double) reps));
+            }
+        }
 
     }
 }
