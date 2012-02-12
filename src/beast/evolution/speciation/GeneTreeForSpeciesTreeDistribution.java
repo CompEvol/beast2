@@ -149,8 +149,8 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      */
     private void traverseSpeciesTree(Node node) {
         if (!node.isLeaf()) {
-            traverseSpeciesTree(node.m_left);
-            traverseSpeciesTree(node.m_right);
+            traverseSpeciesTree(node.getLeft());
+            traverseSpeciesTree(node.getRight());
         }
         // calculate contribution of a branch in the species tree to the log probability
         int iNode = node.getNr();
@@ -191,7 +191,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
                 break;
             case linear_with_constant_root:
                 if (node.isRoot()) {
-                    double fPopSize = getTopPopSize(node.m_left.getNr()) + getTopPopSize(node.m_right.getNr());
+                    double fPopSize = getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr());
                     calcConstantPopSizeContribution(nLineagesBottom, fPopSize, fTimes, k);
                 } else {
                     calcLinearPopSizeContribution(nLineagesBottom, iNode, fTimes, k, node);
@@ -222,7 +222,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             fPopSizeBottom = m_fPopSizesBottom.getValue(iNode) * m_fPloidy;
         } else {
             // use sum of left and right child branches for internal nodes
-            fPopSizeBottom = (getTopPopSize(node.m_left.getNr()) + getTopPopSize(node.m_right.getNr())) * m_fPloidy;
+            fPopSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr())) * m_fPloidy;
         }
         double fPopSizeTop = getTopPopSize(iNode) * m_fPloidy;
         double a = (fPopSizeTop - fPopSizeBottom) / (fTimes[k + 1] - fTimes[0]);
@@ -254,8 +254,8 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             m_nLineages[nSpecies]++;
             return nSpecies;
         } else {
-            int nSpeciesLeft = traverseLineageTree(speciesNodes, node.m_left);
-            int nSpeciesRight = traverseLineageTree(speciesNodes, node.m_right);
+            int nSpeciesLeft = traverseLineageTree(speciesNodes, node.getLeft());
+            int nSpeciesRight = traverseLineageTree(speciesNodes, node.getRight());
             double fHeight = node.getHeight();
 
             while (!speciesNodes[nSpeciesLeft].isRoot() && fHeight > speciesNodes[nSpeciesLeft].getParent().getHeight()) {

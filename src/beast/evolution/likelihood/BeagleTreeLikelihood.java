@@ -772,11 +772,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         if (!node.isLeaf()) {
 
             // Traverse down the two child nodes
-            Node child1 = node.m_left;
+            Node child1 = node.getLeft();
             final int[] op1 = {-1};
             final int update1 = traverse(child1, op1, flip);
 
-            Node child2 = node.m_right;
+            Node child2 = node.getRight();
             final int[] op2 = {-1};
             final int update2 = traverse(child2, op2, flip);
 

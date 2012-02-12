@@ -77,9 +77,9 @@ public class Tree extends StateNode {
                     parent.m_iLabel = sTaxa.size() + i - 1;
                     parent.m_fHeight = i;
                     left.m_Parent = parent;
-                    parent.m_left = left;
+                    parent.setLeft(left);
                     right.m_Parent = parent;
-                    parent.m_right = right;
+                    parent.setRight(right);
                     left = parent;
                 }
                 root = left;
@@ -143,13 +143,13 @@ public class Tree extends StateNode {
         if (node.isLeaf()) {
             node.setMetaData(m_trait.get().getTraitName(), m_trait.get().getValue(node.getNr()));
         } else {
-            adjustTreeToNodeHeights(node.m_left);
-            adjustTreeToNodeHeights(node.m_right);
-            if (node.m_fHeight < node.m_left.getHeight() + EPSILON) {
-                node.m_fHeight = node.m_left.getHeight() + EPSILON;
+            adjustTreeToNodeHeights(node.getLeft());
+            adjustTreeToNodeHeights(node.getRight());
+            if (node.m_fHeight < node.getLeft().getHeight() + EPSILON) {
+                node.m_fHeight = node.getLeft().getHeight() + EPSILON;
             }
-            if (node.m_fHeight < node.m_right.getHeight() + EPSILON) {
-                node.m_fHeight = node.m_right.getHeight() + EPSILON;
+            if (node.m_fHeight < node.getRight().getHeight() + EPSILON) {
+                node.m_fHeight = node.getRight().getHeight() + EPSILON;
             }
         }
     }
@@ -274,8 +274,8 @@ public class Tree extends StateNode {
         if (node.isLeaf()) {
             m_sTaxaNames[node.getNr()] = node.getID();
         } else {
-            collectTaxaNames(node.m_left);
-            collectTaxaNames(node.m_right);
+            collectTaxaNames(node.getLeft());
+            collectTaxaNames(node.getRight());
         }
     }
 
@@ -290,9 +290,9 @@ public class Tree extends StateNode {
     public void getMetaData(Node node, Double[] fT, String sPattern) {
         fT[Math.abs(node.getNr())] = (Double) node.getMetaData(sPattern);
         if (!node.isLeaf()) {
-            getMetaData(node.m_left, fT, sPattern);
-            if (node.m_right != null) {
-                getMetaData(node.m_right, fT, sPattern);
+            getMetaData(node.getLeft(), fT, sPattern);
+            if (node.getRight() != null) {
+                getMetaData(node.getRight(), fT, sPattern);
             }
         }
     }
@@ -306,9 +306,9 @@ public class Tree extends StateNode {
     public void setMetaData(Node node, Double[] fT, String sPattern) {
         node.setMetaData(sPattern, fT[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
-            setMetaData(node.m_left, fT, sPattern);
-            if (node.m_right != null) {
-                setMetaData(node.m_right, fT, sPattern);
+            setMetaData(node.getLeft(), fT, sPattern);
+            if (node.getRight() != null) {
+                setMetaData(node.getRight(), fT, sPattern);
             }
         }
     }
@@ -321,9 +321,9 @@ public class Tree extends StateNode {
         nodes[node.getNr()] = node;
         node.m_tree = this;
         if (!node.isLeaf()) {
-            listNodes(node.m_left, nodes);
-            if (node.m_right != null) {
-                listNodes(node.m_right, nodes);
+            listNodes(node.getLeft(), nodes);
+            if (node.getRight() != null) {
+                listNodes(node.getRight(), nodes);
             }
         }
     }
@@ -407,15 +407,15 @@ public class Tree extends StateNode {
         assignFrom(0, iRoot, otherNodes);
         root.m_fHeight = otherNodes[iRoot].m_fHeight;
         root.m_Parent = null;
-        if (otherNodes[iRoot].m_left != null) {
-            root.m_left = m_nodes[otherNodes[iRoot].m_left.getNr()];
+        if (otherNodes[iRoot].getLeft() != null) {
+            root.setLeft(m_nodes[otherNodes[iRoot].getLeft().getNr()]);
         } else {
-            root.m_left = null;
+            root.setLeft(null);
         }
-        if (otherNodes[iRoot].m_right != null) {
-            root.m_right = m_nodes[otherNodes[iRoot].m_right.getNr()];
+        if (otherNodes[iRoot].getRight() != null) {
+            root.setRight(m_nodes[otherNodes[iRoot].getRight().getNr()]);
         } else {
-            root.m_right = null;
+            root.setRight(null);
         }
         assignFrom(iRoot + 1, nodeCount, otherNodes);
     }
@@ -429,12 +429,12 @@ public class Tree extends StateNode {
             Node src = otherNodes[i];
             sink.m_fHeight = src.m_fHeight;
             sink.m_Parent = m_nodes[src.m_Parent.getNr()];
-            if (src.m_left != null) {
-                sink.m_left = m_nodes[src.m_left.getNr()];
-                if (src.m_right != null) {
-                    sink.m_right = m_nodes[src.m_right.getNr()];
+            if (src.getLeft() != null) {
+                sink.setLeft(m_nodes[src.getLeft().getNr()]);
+                if (src.getRight() != null) {
+                    sink.setRight(m_nodes[src.getRight().getNr()]);
                 } else {
-                    sink.m_right = null;
+                    sink.setRight(null);
                 }
             }
         }
@@ -491,9 +491,9 @@ public class Tree extends StateNode {
             }
             translateLines.add(sLine);
         } else {
-            printTranslate(node.m_left, translateLines, nNodeCount);
-            if (node.m_right != null) {
-                printTranslate(node.m_right, translateLines, nNodeCount);
+            printTranslate(node.getLeft(), translateLines, nNodeCount);
+            if (node.getRight() != null) {
+                printTranslate(node.getRight(), translateLines, nNodeCount);
             }
         }
     }
@@ -589,15 +589,15 @@ public class Tree extends StateNode {
         storeNodes(0, iRoot);
         storedRoot.m_fHeight = m_nodes[iRoot].m_fHeight;
         storedRoot.m_Parent = null;
-        if (root.m_left != null) {
-            storedRoot.m_left = m_storedNodes[root.m_left.getNr()];
+        if (root.getLeft() != null) {
+            storedRoot.setLeft(m_storedNodes[root.getLeft().getNr()]);
         } else {
-            storedRoot.m_left = null;
+            storedRoot.setLeft(null);
         }
-        if (root.m_right != null) {
-            storedRoot.m_right = m_storedNodes[root.m_right.getNr()];
+        if (root.getRight() != null) {
+            storedRoot.setRight(m_storedNodes[root.getRight().getNr()]);
         } else {
-            storedRoot.m_right = null;
+            storedRoot.setRight(null);
         }
         storeNodes(iRoot + 1, nodeCount);
     }
@@ -611,12 +611,12 @@ public class Tree extends StateNode {
             Node src = m_nodes[i];
             sink.m_fHeight = src.m_fHeight;
             sink.m_Parent = m_storedNodes[src.m_Parent.getNr()];
-            if (src.m_left != null) {
-                sink.m_left = m_storedNodes[src.m_left.getNr()];
-                if (src.m_right != null) {
-                    sink.m_right = m_storedNodes[src.m_right.getNr()];
+            if (src.getLeft() != null) {
+                sink.setLeft(m_storedNodes[src.getLeft().getNr()]);
+                if (src.getRight() != null) {
+                    sink.setRight(m_storedNodes[src.getRight().getNr()]);
                 } else {
-                    sink.m_right = null;
+                    sink.setRight(null);
                 }
             }
         }

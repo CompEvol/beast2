@@ -250,8 +250,8 @@ public class TreeLikelihood extends Distribution {
             m_likelihoodCore.setNodeStates(node.getNr(), states);
 
         } else {
-            setStates(node.m_left, patternCount);
-            setStates(node.m_right, patternCount);
+            setStates(node.getLeft(), patternCount);
+            setStates(node.getRight(), patternCount);
         }
     }
 
@@ -275,8 +275,8 @@ public class TreeLikelihood extends Distribution {
             m_likelihoodCore.setNodePartials(node.getNr(), partials);
 
         } else {
-            setPartials(node.m_left, patternCount);
-            setPartials(node.m_right, patternCount);
+            setPartials(node.getLeft(), patternCount);
+            setPartials(node.getRight(), patternCount);
         }
     }
 
@@ -365,10 +365,10 @@ public class TreeLikelihood extends Distribution {
         if (!node.isLeaf()) {
 
             // Traverse down the two child nodes
-            Node child1 = node.m_left; //Two children
+            Node child1 = node.getLeft(); //Two children
             int update1 = traverse(child1);
 
-            Node child2 = node.m_right;
+            Node child2 = node.getRight();
             int update2 = traverse(child2);
 
             // If either child node was updated then update this node too

@@ -130,9 +130,9 @@ public class Exchange extends TreeOperator {
 
         final Node iParent = i.getParent();
         final Node iGrandParent = iParent.getParent();
-        Node iUncle = iGrandParent.m_left;
+        Node iUncle = iGrandParent.getLeft();
         if (iUncle.getNr() == iParent.getNr()) {
-            iUncle = iGrandParent.m_right;
+            iUncle = iGrandParent.getRight();
             assert (iUncle.getNr() != iParent.getNr());
         }
         assert iUncle == getOtherChild(iGrandParent, iParent);

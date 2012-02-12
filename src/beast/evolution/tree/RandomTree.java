@@ -545,9 +545,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //		System.err.println(2 * m_taxa.get().getNrTaxa() - nodeList.size());
         newNode.setNr(m_nNextNodeNr++);
         newNode.setHeight(height);
-        newNode.m_left = left;
+        newNode.setLeft(left);
         left.setParent(newNode);
-        newNode.m_right = right;
+        newNode.setRight(right);
         right.setParent(newNode);
 
         nodeList.remove(left);
@@ -614,11 +614,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 return 0;
             }
         } else {
-            int iTaxons = traverse(node.m_left, MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
+            int iTaxons = traverse(node.getLeft(), MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
             int nLeftTaxa = nTaxonCount[0];
             nTaxonCount[0] = 0;
-            if (node.m_right != null) {
-                iTaxons += traverse(node.m_right, MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
+            if (node.getRight() != null) {
+                iTaxons += traverse(node.getRight(), MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
                 int nRightTaxa = nTaxonCount[0];
                 nTaxonCount[0] = nLeftTaxa + nRightTaxa;
             }

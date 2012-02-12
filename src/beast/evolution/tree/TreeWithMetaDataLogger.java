@@ -56,12 +56,12 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
 
     String toNewick(Node node, Valuable metadata, BranchRateModel.Base branchRateModel) {
         StringBuffer buf = new StringBuffer();
-        if (node.m_left != null) {
+        if (node.getLeft() != null) {
             buf.append("(");
-            buf.append(toNewick(node.m_left, metadata, branchRateModel));
-            if (node.m_right != null) {
+            buf.append(toNewick(node.getLeft(), metadata, branchRateModel));
+            if (node.getRight() != null) {
                 buf.append(',');
-                buf.append(toNewick(node.m_right, metadata, branchRateModel));
+                buf.append(toNewick(node.getRight(), metadata, branchRateModel));
             }
             buf.append(")");
         } else {

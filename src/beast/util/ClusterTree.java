@@ -107,9 +107,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 parent.setNr(sTaxa.size() + i - 1);
                 parent.setHeight(i);
                 left.setParent(parent);
-                parent.m_left = left;
+                parent.setLeft(left);
                 right.setParent(parent);
-                parent.m_right = right;
+                parent.setRight(right);
                 left = parent;
             }
             root = left;
@@ -270,38 +270,38 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             Node node = newNode();
             node.setHeight(m_fHeight);
             if (m_left == null) {
-                node.m_left = newNode();
-                node.m_left.setNr(m_iLeftInstance);
-                node.m_left.setID(m_pData.get().getTaxaNames().get(m_iLeftInstance));
-                node.m_left.setHeight(m_fHeight - m_fLeftLength);
+                node.setLeft(newNode());
+                node.getLeft().setNr(m_iLeftInstance);
+                node.getLeft().setID(m_pData.get().getTaxaNames().get(m_iLeftInstance));
+                node.getLeft().setHeight(m_fHeight - m_fLeftLength);
                 if (m_right == null) {
-                    node.m_right = newNode();
-                    node.m_right.setNr(m_iRightInstance);
-                    node.m_right.setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
-                    node.m_right.setHeight(m_fHeight - m_fRightLength);
+                    node.setRight(newNode());
+                    node.getRight().setNr(m_iRightInstance);
+                    node.getRight().setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
+                    node.getRight().setHeight(m_fHeight - m_fRightLength);
                 } else {
-                    node.m_right = m_right.toNode();
+                    node.setRight(m_right.toNode());
                 }
             } else {
-                node.m_left = m_left.toNode();
+                node.setLeft(m_left.toNode());
                 if (m_right == null) {
-                    node.m_right = newNode();
-                    node.m_right.setNr(m_iRightInstance);
-                    node.m_right.setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
-                    node.m_right.setHeight(m_fHeight - m_fRightLength);
+                    node.setRight(newNode());
+                    node.getRight().setNr(m_iRightInstance);
+                    node.getRight().setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
+                    node.getRight().setHeight(m_fHeight - m_fRightLength);
                 } else {
-                    node.m_right = m_right.toNode();
+                    node.setRight(m_right.toNode());
                 }
             }
-            if (node.getHeight() < node.m_left.getHeight() + EPSILON) {
-                node.setHeight(node.m_left.getHeight() + EPSILON);
+            if (node.getHeight() < node.getLeft().getHeight() + EPSILON) {
+                node.setHeight(node.getLeft().getHeight() + EPSILON);
             }
-            if (node.getHeight() < node.m_right.getHeight() + EPSILON) {
-                node.setHeight(node.m_right.getHeight() + EPSILON);
+            if (node.getHeight() < node.getRight().getHeight() + EPSILON) {
+                node.setHeight(node.getRight().getHeight() + EPSILON);
             }
 
-            node.m_right.setParent(node);
-            node.m_left.setParent(node);
+            node.getRight().setParent(node);
+            node.getLeft().setParent(node);
             return node;
         }
     } // class NodeX

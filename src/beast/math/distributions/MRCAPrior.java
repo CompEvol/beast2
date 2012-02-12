@@ -139,11 +139,11 @@ public class MRCAPrior extends Distribution {
                 return 0;
             }
         } else {
-            int iTaxons = calcMRCAtime(node.m_left, nTaxonCount);
+            int iTaxons = calcMRCAtime(node.getLeft(), nTaxonCount);
             int nLeftTaxa = nTaxonCount[0];
             nTaxonCount[0] = 0;
-            if (node.m_right != null) {
-                iTaxons += calcMRCAtime(node.m_right, nTaxonCount);
+            if (node.getRight() != null) {
+                iTaxons += calcMRCAtime(node.getRight(), nTaxonCount);
                 int nRightTaxa = nTaxonCount[0];
                 nTaxonCount[0] = nLeftTaxa + nRightTaxa;
                 if (iTaxons == m_nNrOfTaxa) {

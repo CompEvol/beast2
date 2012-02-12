@@ -154,9 +154,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 node.setID(m_sLabels.get(node.getNr()));
             }
         } else {
-            processMetadata(node.m_left);
-            if (node.m_right != null) {
-                processMetadata(node.m_right);
+            processMetadata(node.getLeft());
+            if (node.getRight() != null) {
+                processMetadata(node.getRight());
             }
         }
     }
@@ -172,11 +172,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         if (node.isLeaf()) {
             return node.getHeight();
         } else {
-            double fLeft = convertLengthToHeight(node.m_left, fHeight - fLength);
-            if (node.m_right == null) {
+            double fLeft = convertLengthToHeight(node.getLeft(), fHeight - fLength);
+            if (node.getRight() == null) {
                 return fLeft;
             }
-            double fRight = convertLengthToHeight(node.m_right, fHeight - fLength);
+            double fRight = convertLengthToHeight(node.getRight(), fHeight - fLength);
             return Math.min(fLeft, fRight);
         }
     }
@@ -189,9 +189,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             }
         }
         if (!node.isLeaf()) {
-            offset(node.m_left, fDelta);
-            if (node.m_right != null) {
-                offset(node.m_right, fDelta);
+            offset(node.getLeft(), fDelta);
+            if (node.getRight() != null) {
+                offset(node.getRight(), fDelta);
             }
         }
     }
@@ -329,8 +329,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                                 stack.remove(stack.size() - 1);
                                 isFirstChild.remove(isFirstChild.size() - 1);
                                 Node parent = stack.lastElement();
-                                parent.m_left = left;
-                                parent.m_right = null;
+                                parent.setLeft(left);
+                                parent.setRight(null);
                                 left.setParent(parent);
                                 break;
                             } else {
@@ -348,9 +348,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                             isFirstChild.remove(isFirstChild.size() - 1);
                             Node dummyparent = newNode();
                             dummyparent.setHeight(DEFAULT_LENGTH);
-                            dummyparent.m_left = left;
+                            dummyparent.setLeft(left);
                             left.setParent(dummyparent);
-                            dummyparent.m_right = right;
+                            dummyparent.setRight(right);
                             right.setParent(dummyparent);
                             stack.add(dummyparent);
                             isFirstChild.add(false);
@@ -363,9 +363,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                         stack.remove(stack.size() - 1);
                         isFirstChild.remove(isFirstChild.size() - 1);
                         Node parent = stack.lastElement();
-                        parent.m_left = left;
+                        parent.setLeft(left);
                         left.setParent(parent);
-                        parent.m_right = right;
+                        parent.setRight(right);
                         right.setParent(parent);
                     }
                     break;

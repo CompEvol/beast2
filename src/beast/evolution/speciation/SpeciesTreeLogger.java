@@ -63,12 +63,12 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
 
     String toNewick(Node node, Valuable metadata, Valuable metadataTop) {
         StringBuffer buf = new StringBuffer();
-        if (node.m_left != null) {
+        if (node.getLeft() != null) {
             buf.append("(");
-            buf.append(toNewick(node.m_left, metadata, metadataTop));
-            if (node.m_right != null) {
+            buf.append(toNewick(node.getLeft(), metadata, metadataTop));
+            if (node.getRight() != null) {
                 buf.append(',');
-                buf.append(toNewick(node.m_right, metadata, metadataTop));
+                buf.append(toNewick(node.getRight(), metadata, metadataTop));
             }
             buf.append(")");
         } else {
@@ -89,7 +89,7 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
                 if (node.isLeaf()) {
                     buf.append("{" + metadata.getArrayValue(node.getNr()));
                 } else {
-                    buf.append("{" + (metadataTop.getArrayValue(node.m_left.getNr()) + metadataTop.getArrayValue(node.m_right.getNr())));
+                    buf.append("{" + (metadataTop.getArrayValue(node.getLeft().getNr()) + metadataTop.getArrayValue(node.getRight().getNr())));
                 }
                 buf.append("," + getMetaDataTopValue(node, metadataTop) + "}");
                 break;
@@ -97,10 +97,10 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
                 if (node.isLeaf()) {
                     buf.append("{" + metadata.getArrayValue(node.getNr()));
                 } else {
-                    buf.append("{" + (getMetaDataTopValue(node.m_left, metadataTop) + getMetaDataTopValue(node.m_right, metadataTop)));
+                    buf.append("{" + (getMetaDataTopValue(node.getLeft(), metadataTop) + getMetaDataTopValue(node.getRight(), metadataTop)));
                 }
                 if (node.isRoot()) {
-                    buf.append("," + (getMetaDataTopValue(node.m_left, metadataTop) + getMetaDataTopValue(node.m_right, metadataTop)) + "}");
+                    buf.append("," + (getMetaDataTopValue(node.getLeft(), metadataTop) + getMetaDataTopValue(node.getRight(), metadataTop)) + "}");
                 } else {
                     buf.append("," + getMetaDataTopValue(node, metadataTop) + "}");
                 }

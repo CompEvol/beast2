@@ -44,10 +44,10 @@ abstract public class TreeOperator extends Operator {
      * @return the other child of the given parent.
      */
     protected Node getOtherChild(Node parent, Node child) {
-        if (parent.m_left.getNr() == child.getNr()) {
-            return parent.m_right;
+        if (parent.getLeft().getNr() == child.getNr()) {
+            return parent.getRight();
         } else {
-            return parent.m_left;
+            return parent.getLeft();
         }
     }
 
@@ -59,11 +59,11 @@ abstract public class TreeOperator extends Operator {
      * @param replacement
      */
     public void replace(Node node, Node child, Node replacement) {
-        if (node.m_left.getNr() == child.getNr()) {
-            node.m_left = replacement;
+        if (node.getLeft().getNr() == child.getNr()) {
+            node.setLeft(replacement);
         } else {
             // it must be the right child
-            node.m_right = replacement;
+            node.setRight(replacement);
         }
         node.makeDirty(Tree.IS_FILTHY);
         replacement.setParent(node);

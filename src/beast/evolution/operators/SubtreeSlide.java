@@ -225,8 +225,8 @@ public class SubtreeSlide extends TreeOperator {
             // TODO: verify that this makes sense
             return 0;
         } else {
-            int count = intersectingEdges(node.m_left, height, directChildren) +
-                    intersectingEdges(node.m_right, height, directChildren);
+            int count = intersectingEdges(node.getLeft(), height, directChildren) +
+                    intersectingEdges(node.getRight(), height, directChildren);
             return count;
         }
     }

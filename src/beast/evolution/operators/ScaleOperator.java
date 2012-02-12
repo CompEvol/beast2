@@ -120,7 +120,7 @@ public class ScaleOperator extends Operator {
                 if (m_pRootOnly.get()) {
                     Node root = tree.getRoot();
                     double fNewHeight = root.getHeight() * scale;
-                    if (fNewHeight < Math.max(root.m_left.getHeight(), root.m_right.getHeight())) {
+                    if (fNewHeight < Math.max(root.getLeft().getHeight(), root.getRight().getHeight())) {
                         return Double.NEGATIVE_INFINITY;
                     }
                     root.setHeight(fNewHeight);

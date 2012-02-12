@@ -53,9 +53,9 @@ public class Node extends Plugin {
      * Use getChildCount() and getChild(x) or getChildren() instead
      */
     @Deprecated
-    public Node m_left;
+	private Node m_left;
     @Deprecated
-    public Node m_right;
+	private Node m_right;
 
     /**
      * parent node in the beast.tree, null if root *
@@ -122,9 +122,9 @@ public class Node extends Plugin {
         m_fHeight = fHeight;
         m_bIsDirty |= Tree.IS_DIRTY;
         if (!isLeaf()) {
-            m_left.m_bIsDirty |= Tree.IS_DIRTY;
-            if (m_right != null) {
-                m_right.m_bIsDirty |= Tree.IS_DIRTY;
+            getLeft().m_bIsDirty |= Tree.IS_DIRTY;
+            if (getRight() != null) {
+                getRight().m_bIsDirty |= Tree.IS_DIRTY;
             }
         }
     }
@@ -157,9 +157,9 @@ public class Node extends Plugin {
     public void makeAllDirty(int nDirty) {
         m_bIsDirty = nDirty;
         if (!isLeaf()) {
-            m_left.makeAllDirty(nDirty);
-            if (m_right != null) {
-                m_right.makeAllDirty(nDirty);
+            getLeft().makeAllDirty(nDirty);
+            if (getRight() != null) {
+                getRight().makeAllDirty(nDirty);
             }
         }
     }
@@ -187,8 +187,8 @@ public class Node extends Plugin {
         if (isLeaf()) return Collections.emptyList();
 
         List<Node> children = new ArrayList<Node>();
-        if (m_left != null) children.add(m_left);
-        if (m_right != null) children.add(m_right);
+        if (getLeft() != null) children.add(getLeft());
+        if (getRight() != null) children.add(getRight());
 
         return children;
     }
@@ -208,8 +208,8 @@ public class Node extends Plugin {
     public void getAllChildNodes(List<Node> childNodes) {
         childNodes.add(this);
         if (!this.isLeaf()) {
-            m_right.getAllChildNodes(childNodes);
-            m_left.getAllChildNodes(childNodes);
+            getRight().getAllChildNodes(childNodes);
+            getLeft().getAllChildNodes(childNodes);
         }
     }
 
@@ -224,16 +224,16 @@ public class Node extends Plugin {
      * @return true if current node is a leaf node *
      */
     public boolean isLeaf() {
-        return m_left == null && m_right == null;
+        return getLeft() == null && getRight() == null;
     }
 
     public void addChild(Node child) {
-        if (m_left == null) {
-            m_left = child;
+        if (getLeft() == null) {
+            setLeft(child);
             child.setParent(this);
-        } else if (m_right == null) {
-            m_right = child;
-            m_right.setParent(this);
+        } else if (getRight() == null) {
+            setRight(child);
+            getRight().setParent(this);
         } else throw new RuntimeException("Can't have more than 2 children right now because of Remco.");
     }
     
@@ -244,10 +244,10 @@ public class Node extends Plugin {
         if (isLeaf()) {
             return 1;
         }
-        if (m_right != null) {
-            return 1 + m_left.getNodeCount() + m_right.getNodeCount();
+        if (getRight() != null) {
+            return 1 + getLeft().getNodeCount() + getRight().getNodeCount();
         } else {
-            return 1 + m_left.getNodeCount();
+            return 1 + getLeft().getNodeCount();
         }
     }
 
@@ -255,9 +255,9 @@ public class Node extends Plugin {
         if (isLeaf()) {
             return 1;
         }
-        int nCount = m_left.getLeafNodeCount();
-        if (m_right != null) {
-            nCount += m_right.getLeafNodeCount();
+        int nCount = getLeft().getLeafNodeCount();
+        if (getRight() != null) {
+            nCount += getRight().getLeafNodeCount();
         }
         return nCount;
     }
@@ -266,9 +266,9 @@ public class Node extends Plugin {
         if (isLeaf()) {
             return 0;
         }
-        int nCount = 1 + m_left.getInternalNodeCount();
-        if (m_right != null) {
-            nCount += m_right.getInternalNodeCount();
+        int nCount = 1 + getLeft().getInternalNodeCount();
+        if (getRight() != null) {
+            nCount += getRight().getInternalNodeCount();
         }
         return nCount;
     }
@@ -283,15 +283,15 @@ public class Node extends Plugin {
      */
     public String toShortNewick(boolean bPrintInternalNodeLabels) {
         StringBuffer buf = new StringBuffer();
-        if (m_left != null) {
+        if (getLeft() != null) {
             if (bPrintInternalNodeLabels) {
                 buf.append(m_iLabel + ":");
             }
             buf.append("(");
-            buf.append(m_left.toShortNewick(bPrintInternalNodeLabels));
-            if (m_right != null) {
+            buf.append(getLeft().toShortNewick(bPrintInternalNodeLabels));
+            if (getRight() != null) {
                 buf.append(',');
-                buf.append(m_right.toShortNewick(bPrintInternalNodeLabels));
+                buf.append(getRight().toShortNewick(bPrintInternalNodeLabels));
             }
             buf.append(")");
         } else {
@@ -308,12 +308,12 @@ public class Node extends Plugin {
      */
     String toSortedNewick(int[] iMaxNodeInClade) {
         StringBuffer buf = new StringBuffer();
-        if (m_left != null) {
+        if (getLeft() != null) {
             buf.append("(");
-            String sChild1 = m_left.toSortedNewick(iMaxNodeInClade);
+            String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade);
             int iChild1 = iMaxNodeInClade[0];
-            if (m_right != null) {
-                String sChild2 = m_right.toSortedNewick(iMaxNodeInClade);
+            if (getRight() != null) {
+                String sChild2 = getRight().toSortedNewick(iMaxNodeInClade);
                 int iChild2 = iMaxNodeInClade[0];
                 if (iChild1 > iChild2) {
                     buf.append(sChild2);
@@ -343,12 +343,12 @@ public class Node extends Plugin {
      */
     public String toNewick(List<String> sLabels) {
         StringBuffer buf = new StringBuffer();
-        if (m_left != null) {
+        if (getLeft() != null) {
             buf.append("(");
-            buf.append(m_left.toNewick(sLabels));
-            if (m_right != null) {
+            buf.append(getLeft().toNewick(sLabels));
+            if (getRight() != null) {
                 buf.append(',');
-                buf.append(m_right.toNewick(sLabels));
+                buf.append(getRight().toNewick(sLabels));
             }
             buf.append(")");
         } else {
@@ -377,12 +377,12 @@ public class Node extends Plugin {
      */
     public String toString(List<String> sLabels) {
         StringBuffer buf = new StringBuffer();
-        if (m_left != null) {
+        if (getLeft() != null) {
             buf.append("(");
-            buf.append(m_left.toString(sLabels));
-            if (m_right != null) {
+            buf.append(getLeft().toString(sLabels));
+            if (getRight() != null) {
                 buf.append(',');
-                buf.append(m_right.toString(sLabels));
+                buf.append(getRight().toString(sLabels));
             }
             buf.append(")");
         } else {
@@ -407,14 +407,14 @@ public class Node extends Plugin {
      * @return
      */
     public int sort() {
-        if (m_left != null) {
-            int iChild1 = m_left.sort();
-            if (m_right != null) {
-                int iChild2 = m_right.sort();
+        if (getLeft() != null) {
+            int iChild1 = getLeft().sort();
+            if (getRight() != null) {
+                int iChild2 = getRight().sort();
                 if (iChild1 > iChild2) {
-                    Node tmp = m_left;
-                    m_left = m_right;
-                    m_right = tmp;
+                    Node tmp = getLeft();
+                    setLeft(getRight());
+                    setRight(tmp);
                     return iChild2;
                 }
             }
@@ -436,9 +436,9 @@ public class Node extends Plugin {
         if (isLeaf()) {
             return iLabel;
         } else {
-            iLabel = m_left.labelInternalNodes(iLabel);
-            if (m_right != null) {
-                iLabel = m_right.labelInternalNodes(iLabel);
+            iLabel = getLeft().labelInternalNodes(iLabel);
+            if (getRight() != null) {
+                iLabel = getRight().labelInternalNodes(iLabel);
             }
             m_iLabel = iLabel++;
         }
@@ -455,12 +455,12 @@ public class Node extends Plugin {
         node.m_sMetaData = m_sMetaData;
         node.m_Parent = null;
         node.m_sID = m_sID;
-        if (m_left != null) {
-            node.m_left = m_left.copy();
-            node.m_left.m_Parent = node;
-            if (m_right != null) {
-                node.m_right = m_right.copy();
-                node.m_right.m_Parent = node;
+        if (getLeft() != null) {
+            node.setLeft(getLeft().copy());
+            node.getLeft().m_Parent = node;
+            if (getRight() != null) {
+                node.setRight(getRight().copy());
+                node.getRight().m_Parent = node;
             }
         }
         return node;
@@ -476,14 +476,14 @@ public class Node extends Plugin {
         node.m_sMetaData = m_sMetaData;
         node.m_Parent = null;
         node.m_sID = m_sID;
-        if (m_left != null) {
-            node.m_left = nodes[m_left.getNr()];
-            m_left.assignTo(nodes);
-            node.m_left.m_Parent = node;
-            if (m_right != null) {
-                node.m_right = nodes[m_right.getNr()];
-                m_right.assignTo(nodes);
-                node.m_right.m_Parent = node;
+        if (getLeft() != null) {
+            node.setLeft(nodes[getLeft().getNr()]);
+            getLeft().assignTo(nodes);
+            node.getLeft().m_Parent = node;
+            if (getRight() != null) {
+                node.setRight(nodes[getRight().getNr()]);
+                getRight().assignTo(nodes);
+                node.getRight().m_Parent = node;
             }
         }
     }
@@ -497,14 +497,14 @@ public class Node extends Plugin {
         m_sMetaData = node.m_sMetaData;
         m_Parent = null;
         m_sID = node.m_sID;
-        if (node.m_left != null) {
-            m_left = nodes[node.m_left.getNr()];
-            m_left.assignFrom(nodes, node.m_left);
-            m_left.m_Parent = this;
-            if (node.m_right != null) {
-                m_right = nodes[node.m_right.getNr()];
-                m_right.assignFrom(nodes, node.m_right);
-                m_right.m_Parent = this;
+        if (node.getLeft() != null) {
+            setLeft(nodes[node.getLeft().getNr()]);
+            getLeft().assignFrom(nodes, node.getLeft());
+            getLeft().m_Parent = this;
+            if (node.getRight() != null) {
+                setRight(nodes[node.getRight().getNr()]);
+                getRight().assignFrom(nodes, node.getRight());
+                getRight().m_Parent = this;
             }
         }
     }
@@ -550,11 +550,11 @@ public class Node extends Plugin {
         m_bIsDirty |= Tree.IS_DIRTY;
         if (!isLeaf()) {
             m_fHeight *= fScale;
-            m_left.scale(fScale);
-            if (m_right != null) {
-                m_right.scale(fScale);
+            getLeft().scale(fScale);
+            if (getRight() != null) {
+                getRight().scale(fScale);
             }
-            if (m_fHeight < m_left.m_fHeight || m_fHeight < m_right.m_fHeight) {
+            if (m_fHeight < getLeft().m_fHeight || m_fHeight < getRight().m_fHeight) {
                 throw new Exception("Scale gives negative branch length");
             }
         }
@@ -571,18 +571,34 @@ public class Node extends Plugin {
      */
     public int getChildCount() {
         int childCount = 0;
-        if (m_left != null) childCount += 1;
-        if (m_right != null) childCount += 1;
+        if (getLeft() != null) childCount += 1;
+        if (getRight() != null) childCount += 1;
         return childCount;
     }
 
     public Node getChild(int iChild) {
         if (iChild == 0) {
-            return m_left;
+            return getLeft();
         } else {
-            return m_right;
+            return getRight();
         }
     }
+
+	public void setLeft(Node m_left) {
+		this.m_left = m_left;
+	}
+
+	public Node getLeft() {
+		return m_left;
+	}
+
+	public void setRight(Node m_right) {
+		this.m_right = m_right;
+	}
+
+	public Node getRight() {
+		return m_right;
+	}
 
 
 } // class Node

@@ -61,8 +61,8 @@ public class NodeReheight extends TreeOperator {
         if (node.isLeaf()) {
             map.put(node.getNr(), taxonMap.get(node.getID()));
         } else {
-            setupTaxaMap(node.m_left, map, taxonMap);
-            setupTaxaMap(node.m_right, map, taxonMap);
+            setupTaxaMap(node.getLeft(), map, taxonMap);
+            setupTaxaMap(node.getRight(), map, taxonMap);
         }
     }
 
@@ -102,7 +102,7 @@ public class NodeReheight extends TreeOperator {
         }
         bUsed[node.getNr()] = true;
         if (!node.isLeaf()) {
-            return checkConsistency(node.m_left, bUsed) && checkConsistency(node.m_right, bUsed);
+            return checkConsistency(node.getLeft(), bUsed) && checkConsistency(node.getRight(), bUsed);
         }
         return true;
     }
@@ -169,9 +169,9 @@ public class NodeReheight extends TreeOperator {
             taxonSet[iSpecies] = true;
         } else {
             boolean[] bLeftTaxonSet = new boolean[m_nSpecies];
-            findMaximaInGeneTree(node.m_left, bLeftTaxonSet, taxonMap, fMaxHeight);
+            findMaximaInGeneTree(node.getLeft(), bLeftTaxonSet, taxonMap, fMaxHeight);
             boolean[] bRightTaxonSet = new boolean[m_nSpecies];
-            findMaximaInGeneTree(node.m_right, bRightTaxonSet, taxonMap, fMaxHeight);
+            findMaximaInGeneTree(node.getRight(), bRightTaxonSet, taxonMap, fMaxHeight);
             for (int i = 0; i < m_nSpecies; i++) {
                 if (bLeftTaxonSet[i]) {
                     for (int j = 0; j < m_nSpecies; j++) {
@@ -229,14 +229,14 @@ public class NodeReheight extends TreeOperator {
             }
         }
 
-        node.m_left = m_nodes[iReverseOrder[iLeft]];
-        node.m_left.setParent(node);
-        node.m_right = m_nodes[iReverseOrder[iRight]];
-        node.m_right.setParent(node);
-        if (node.m_left.isLeaf()) {
+        node.setLeft(m_nodes[iReverseOrder[iLeft]]);
+        node.getLeft().setParent(node);
+        node.setRight(m_nodes[iReverseOrder[iRight]]);
+        node.getRight().setParent(node);
+        if (node.getLeft().isLeaf()) {
             fHeights[iLeft] = Double.NEGATIVE_INFINITY;
         }
-        if (node.m_right.isLeaf()) {
+        if (node.getRight().isLeaf()) {
             fHeights[iRight] = Double.NEGATIVE_INFINITY;
         }
         bHasParent[iLeft] = true;
@@ -271,11 +271,11 @@ public class NodeReheight extends TreeOperator {
             iReverseOrder[iCurrent] = node.getNr();
             iCurrent++;
         } else {
-            iCurrent = collectHeights(node.m_left, fHeights, iReverseOrder, iCurrent);
+            iCurrent = collectHeights(node.getLeft(), fHeights, iReverseOrder, iCurrent);
             fHeights[iCurrent] = node.getHeight();
             iReverseOrder[iCurrent] = node.getNr();
             iCurrent++;
-            iCurrent = collectHeights(node.m_right, fHeights, iReverseOrder, iCurrent);
+            iCurrent = collectHeights(node.getRight(), fHeights, iReverseOrder, iCurrent);
         }
         return iCurrent;
     }
@@ -286,12 +286,12 @@ public class NodeReheight extends TreeOperator {
     private void reorder(Node node) {
         if (!node.isLeaf()) {
             if (Randomizer.nextBoolean()) {
-                Node tmp = node.m_left;
-                node.m_left = node.m_right;
-                node.m_right = tmp;
+                Node tmp = node.getLeft();
+                node.setLeft(node.getRight());
+                node.setRight(tmp);
             }
-            reorder(node.m_left);
-            reorder(node.m_right);
+            reorder(node.getLeft());
+            reorder(node.getRight());
         }
     }
 } // class NodeReheight

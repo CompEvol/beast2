@@ -374,7 +374,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
                     //assert childCounts[indices[nodeNo]] == beast.tree.getChildCount(parent);
                     //for (int j = 0; j < lineagesRemoved + 1; j++) {
                     for (int j = 0; j < childCount; j++) {
-                        Node child = j == 0 ? parent.m_left : parent.m_right;
+                        Node child = j == 0 ? parent.getLeft() : parent.getRight();
                         removeLineage(intervalCount, child);
                     }
 

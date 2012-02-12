@@ -80,7 +80,7 @@ public class Uniform extends TreeOperator {
             node = tree.getNode(iNodeNr);
         } while (node.isRoot() || node.isLeaf());
         double fUpper = node.getParent().getHeight();
-        double fLower = Math.max(node.m_left.getHeight(), node.m_right.getHeight());
+        double fLower = Math.max(node.getLeft().getHeight(), node.getRight().getHeight());
         final double newValue = (Randomizer.nextDouble() * (fUpper - fLower)) + fLower;
         node.setHeight(newValue);
 

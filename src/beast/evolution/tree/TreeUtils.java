@@ -19,10 +19,10 @@ public class TreeUtils {
         }
 
         if (node.getChildCount() > 1) {
-                if (comparator.compare(node.m_left, node.m_right) > 0) {
-                Node temp = node.m_left;
-                node.m_left = node.m_right;
-                node.m_right = temp;
+                if (comparator.compare(node.getLeft(), node.getRight()) > 0) {
+                Node temp = node.getLeft();
+                node.setLeft(node.getRight());
+                node.setRight(temp);
             }
         }
     }
