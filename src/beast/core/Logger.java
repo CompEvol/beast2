@@ -118,7 +118,7 @@ public class Logger extends Plugin {
             }
         } else if (sMode.equals(LOGMODE.tree)) {
             m_mode = TREE_LOGGER;
-        } else if (sMode.equals(LOGMODE.tree)) {
+        } else if (sMode.equals(LOGMODE.compound)) {
             m_mode = COMPOUND_LOGGER;
         } else {
             throw new Exception("Mode '" + sMode + "' is not supported. Choose one of " + LOGMODE.values());
