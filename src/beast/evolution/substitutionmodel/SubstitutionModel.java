@@ -43,7 +43,8 @@ public interface SubstitutionModel {
      * @param fStartTime
      * @param fEndTime   we assume start time is larger than end time
      * @param fRate      rate, includes gamma rates and branch rates
-     * @param matrix     an array to store the matrix
+     * @param matrix     an array to store the matrix which represents the transition probability
+     * matrix in the form of an array. So, matrix must be of size n*n where n is number of states.
      */
     void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix);
 

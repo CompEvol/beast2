@@ -66,7 +66,7 @@ public class Input<T> {
      * validation rules *
      */
     public enum Validate {
-        OPTIONAL, REQUIRED, XOR
+        OPTIONAL, REQUIRED, XOR, FORBIDDEN
     }
 
     Validate rule = Validate.OPTIONAL;
@@ -588,6 +588,15 @@ public class Input<T> {
                     }
                 }
                 // noting to do
+                break;
+            case FORBIDDEN:
+                if (get() instanceof List<?>) {
+                    if (((List<?>) get()).size() > 0) {
+                        throw new Exception("No input of name '" + getName() + "' must be specified.");
+                    }
+                } else if (get() == null) {
+                    throw new Exception("Input '" + getName() + "' must not be specified.");
+                }
                 break;
         }
     } // validate

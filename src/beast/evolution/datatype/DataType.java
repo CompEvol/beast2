@@ -263,6 +263,11 @@ public interface DataType {
         public String toString() {
             return getDescription();
         }
+        
+        /** return state associated with a character */
+        public Integer char2state(String character) throws Exception {
+        	return string2state(character).get(0);
+        }
     } // class Base
 
 } // class DataType
