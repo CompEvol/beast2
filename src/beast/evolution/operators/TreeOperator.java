@@ -59,12 +59,14 @@ abstract public class TreeOperator extends Operator {
      * @param replacement
      */
     public void replace(Node node, Node child, Node replacement) {
-        if (node.getLeft().getNr() == child.getNr()) {
-            node.setLeft(replacement);
-        } else {
-            // it must be the right child
-            node.setRight(replacement);
-        }
+    	node.getChildren().remove(child);
+    	node.getChildren().add(replacement);
+//        if (node.getLeft().getNr() == child.getNr()) {
+//            node.setLeft(replacement);
+//        } else {
+//            // it must be the right child
+//            node.setRight(replacement);
+//        }
         node.makeDirty(Tree.IS_FILTHY);
         replacement.setParent(node);
         replacement.makeDirty(Tree.IS_FILTHY);

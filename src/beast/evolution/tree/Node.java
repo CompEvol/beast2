@@ -186,13 +186,14 @@ public class Node extends Plugin {
      * @return a list of immediate child nodes of this node.
      */
     public List<Node> getChildren() {
-        if (isLeaf()) return Collections.emptyList();
-
-        List<Node> children = new ArrayList<Node>();
-        if (getLeft() != null) children.add(getLeft());
-        if (getRight() != null) children.add(getRight());
-
-        return children;
+    	return children;
+//        if (isLeaf()) return Collections.emptyList();
+//
+//        List<Node> children = new ArrayList<Node>();
+//        if (getLeft() != null) children.add(getLeft());
+//        if (getRight() != null) children.add(getRight());
+//
+//        return children;
     }
 
     /**
@@ -578,6 +579,14 @@ public class Node extends Plugin {
     	return children.get(iChild);
     }
 
+    public void setChild(int iChild, Node node) {
+    	while (children.size() < iChild) {
+    		children.add(null);
+    	}
+    	children.set(iChild, node);
+    }
+    
+    
 	public void setLeft(Node m_left) {
 		if (children.size() == 0) {
 	    	children.add(m_left);
