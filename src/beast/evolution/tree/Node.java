@@ -226,54 +226,52 @@ public class Node extends Plugin {
      * @return true if current node is a leaf node *
      */
     public boolean isLeaf() {
-        return getLeft() == null && getRight() == null;
+    	return children.size() == 0;
+        //return getLeft() == null && getRight() == null;
     }
 
     public void addChild(Node child) {
     	children.add(child);
-        if (getLeft() == null) {
-            setLeft(child);
-            child.setParent(this);
-        } else if (getRight() == null) {
-            setRight(child);
-            getRight().setParent(this);
-        } else throw new RuntimeException("Can't have more than 2 children right now because of Remco.");
+//        if (getLeft() == null) {
+//            setLeft(child);
+//            child.setParent(this);
+//        } else if (getRight() == null) {
+//            setRight(child);
+//            getRight().setParent(this);
+//        } else throw new RuntimeException("Can't have more than 2 children right now because of Remco.");
     }
     
     /**
      * @return count number of nodes in beast.tree, starting with current node *
      */
     public int getNodeCount() {
-        if (isLeaf()) {
-            return 1;
+        int nodes = 1;
+        for (Node child : children) {
+        	nodes += child.getNodeCount();
         }
-        if (getRight() != null) {
-            return 1 + getLeft().getNodeCount() + getRight().getNodeCount();
-        } else {
-            return 1 + getLeft().getNodeCount();
-        }
+        return nodes;
     }
 
     public int getLeafNodeCount() {
         if (isLeaf()) {
             return 1;
         }
-        int nCount = getLeft().getLeafNodeCount();
-        if (getRight() != null) {
-            nCount += getRight().getLeafNodeCount();
+        int nodes = 0;
+        for (Node child : children) {
+       		nodes += child.getLeafNodeCount();
         }
-        return nCount;
+        return nodes;
     }
 
     public int getInternalNodeCount() {
         if (isLeaf()) {
             return 0;
         }
-        int nCount = 1 + getLeft().getInternalNodeCount();
-        if (getRight() != null) {
-            nCount += getRight().getInternalNodeCount();
+        int nodes = 1;
+        for (Node child : children) {
+        	nodes += child.getInternalNodeCount();
         }
-        return nCount;
+        return nodes;
     }
 
     /**
@@ -570,21 +568,14 @@ public class Node extends Plugin {
     }
 
     /**
-     * some methods that are usefule for porting from BEAST 1 *
+     * some methods that are usefull for porting from BEAST 1 *
      */
     public int getChildCount() {
-        int childCount = 0;
-        if (getLeft() != null) childCount += 1;
-        if (getRight() != null) childCount += 1;
-        return childCount;
+    	return children.size();
     }
 
     public Node getChild(int iChild) {
-        if (iChild == 0) {
-            return getLeft();
-        } else {
-            return getRight();
-        }
+    	return children.get(iChild);
     }
 
 	public void setLeft(Node m_left) {
@@ -593,7 +584,6 @@ public class Node extends Plugin {
 		} else {
 			children.set(0, m_left);
     	}
-//		this.m_left = m_left;
 	}
 
 	public Node getLeft() {
@@ -601,7 +591,6 @@ public class Node extends Plugin {
 			return null;
 		}
 		return children.get(0);
-		//return m_left;
 	}
 
 	public void setRight(Node m_right) {
@@ -615,7 +604,6 @@ public class Node extends Plugin {
 			children.set(1, m_right);
 	    	break;
     	}
-//		this.m_right = m_right;
 	}
 
 	public Node getRight() {
@@ -623,7 +611,6 @@ public class Node extends Plugin {
 			return null;
 		}
 		return children.get(1);
-		//return m_right;
 	}
 
 

@@ -6,6 +6,7 @@ import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.operators.UniformOperator;
+import beast.util.Randomizer;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -21,7 +22,7 @@ public class UniformIntegerOperatorTest extends TestCase {
     public void testParameterBound() {
     	try {
 	        count = new int[dimension][4]; // 4 vaules {0, 1, 2, 3}
-	        RealParameter parameter = new RealParameter(new Double[]{1.0, 0.0, 3.0});
+	        RealParameter parameter = new RealParameter(new Double[]{1.0, 0.0, 2.0});
 	        parameter.setLower(0.0);
 	        parameter.setUpper(3.0);
 
@@ -31,7 +32,7 @@ public class UniformIntegerOperatorTest extends TestCase {
     		
 	        UniformOperator uniformOperator = new UniformOperator();
 	        uniformOperator.initByName("parameter", parameter, "howMany", 3, "weight", 1.0);
-	       
+
 	        for (int i = 0; i < 400; i++) {
 	            uniformOperator.proposal();
 	            Double [] values = parameter.getValues();
@@ -45,9 +46,9 @@ public class UniformIntegerOperatorTest extends TestCase {
 		        System.out.println("x[" +j + "] = " + Arrays.toString(count[j]));
 			}
 	
-	        assertTrue("Expected count[0][0-3] > 0", count[0][0] > 0 && count[0][1] > 0 && count[0][2] > 0 && count[0][3] == 0);
-	        assertTrue("Expected count[1][0-3] > 0", count[1][0] > 0 && count[1][1] > 0 && count[1][2] > 0 && count[1][3] == 0);
-	        assertTrue("Expected count[2][0-3] > 0", count[2][0] > 0 && count[2][1] > 0 && count[2][2] > 0 && count[2][3] == 0);
+	        assertTrue("Expected count[0][0-2] > 0 && count[0][3] == 0", (count[0][0] > 0) && (count[0][1] > 0) && (count[0][2] > 0) && (count[0][3] == 0));
+	        assertTrue("Expected count[1][0-2] > 0 && count[1][3] == 0", (count[1][0] > 0) && (count[1][1] > 0) && (count[1][2] > 0) && (count[1][3] == 0));
+	        assertTrue("Expected count[2][0-2] > 0 && count[2][3] == 0", (count[2][0] > 0) && (count[2][1] > 0) && (count[2][2] > 0) && (count[2][3] == 0));
     	} catch (Exception e) {
 			e.printStackTrace();
 		}
