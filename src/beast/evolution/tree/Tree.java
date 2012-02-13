@@ -99,7 +99,7 @@ public class Tree extends StateNode {
             }
         }
         if (m_trait.get() != null) {
-            adjustTreeToNodeHeights(root);
+            adjustTreeToNodeHeights(root, m_trait.get());
         }
 
         if (nodeCount >= 0) {
@@ -139,12 +139,12 @@ public class Tree extends StateNode {
      */
     final static double EPSILON = 0.0000001;
 
-    protected void adjustTreeToNodeHeights(Node node) {
+    protected void adjustTreeToNodeHeights(Node node, TraitSet trait) {
         if (node.isLeaf()) {
-            node.setMetaData(m_trait.get().getTraitName(), m_trait.get().getValue(node.getNr()));
+            node.setMetaData(trait.getTraitName(), trait.getValue(node.getNr()));
         } else {
-            adjustTreeToNodeHeights(node.getLeft());
-            adjustTreeToNodeHeights(node.getRight());
+            adjustTreeToNodeHeights(node.getLeft(), trait);
+            adjustTreeToNodeHeights(node.getRight(), trait);
             if (node.m_fHeight < node.getLeft().getHeight() + EPSILON) {
                 node.m_fHeight = node.getLeft().getHeight() + EPSILON;
             }

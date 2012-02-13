@@ -52,10 +52,12 @@ public class Node extends Plugin {
      * Don't use m_left and m_right directly
      * Use getChildCount() and getChild(x) or getChildren() instead
      */
-    @Deprecated
-	private Node m_left;
-    @Deprecated
-	private Node m_right;
+    List<Node> children = new ArrayList<Node>();
+    
+//    @Deprecated
+//	private Node m_left;
+//    @Deprecated
+//	private Node m_right;
 
     /**
      * parent node in the beast.tree, null if root *
@@ -228,6 +230,7 @@ public class Node extends Plugin {
     }
 
     public void addChild(Node child) {
+    	children.add(child);
         if (getLeft() == null) {
             setLeft(child);
             child.setParent(this);
@@ -585,19 +588,42 @@ public class Node extends Plugin {
     }
 
 	public void setLeft(Node m_left) {
-		this.m_left = m_left;
+		if (children.size() == 0) {
+	    	children.add(m_left);
+		} else {
+			children.set(0, m_left);
+    	}
+//		this.m_left = m_left;
 	}
 
 	public Node getLeft() {
-		return m_left;
+		if (children.size() == 0) {
+			return null;
+		}
+		return children.get(0);
+		//return m_left;
 	}
 
 	public void setRight(Node m_right) {
-		this.m_right = m_right;
+		switch (children.size()) {
+		case 0:
+	    	children.add(null);
+		case 1:
+	    	children.add(m_right);
+	    	break;
+		default:
+			children.set(1, m_right);
+	    	break;
+    	}
+//		this.m_right = m_right;
 	}
 
 	public Node getRight() {
-		return m_right;
+		if (children.size() <= 1) {
+			return null;
+		}
+		return children.get(1);
+		//return m_right;
 	}
 
 
