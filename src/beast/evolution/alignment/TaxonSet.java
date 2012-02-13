@@ -1,11 +1,11 @@
 package beast.evolution.alignment;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import beast.core.Description;
 import beast.core.Input;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Description("Set of taxa, useful for instance for multi-gene analysis")
 public class TaxonSet extends Taxon {
@@ -17,7 +17,7 @@ public class TaxonSet extends Taxon {
     public TaxonSet() {
     }
 
-    public TaxonSet(List<Taxon> taxa) throws Exception {
+    public TaxonSet(final List<Taxon> taxa) throws Exception {
         m_taxonset.setValue(taxa, this);
         initAndValidate();
     }
@@ -34,7 +34,7 @@ public class TaxonSet extends Taxon {
                 throw new Exception("One of taxon and alignment should be specified, (but not both).");
             }
             m_taxonList = new ArrayList<String>();
-            for (Taxon taxon : m_taxonset.get()) {
+            for (final Taxon taxon : m_taxonset.get()) {
                 m_taxonList.add(taxon.getID());
             }
         }
@@ -42,5 +42,43 @@ public class TaxonSet extends Taxon {
 
     public List<String> asStringList() {
         return m_taxonList;
+    }
+
+    //  convenience methods
+
+    public boolean containsAny(final List<String> taxa) {
+        final List<String> me = asStringList();
+        for (final String taxon : taxa ) {
+            if (me.contains(taxon)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsAll(final List<String> taxa) {
+        final List<String> me = asStringList();
+        for (final String taxon : taxa ) {
+            if (!me.contains(taxon)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return true if at least 1 member of taxa contained in this set.
+     * @param taxa a collection of taxa
+     */
+    public boolean containsAny(final TaxonSet taxa) {
+        return containsAny(taxa.asStringList());
+    }
+
+    /**
+     * @return true if taxa is a subset of this set
+     * @param    taxa
+     */
+    public boolean containsAll(final TaxonSet taxa) {
+        return containsAll(taxa.asStringList());
     }
 }

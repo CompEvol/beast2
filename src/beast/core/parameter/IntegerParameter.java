@@ -83,17 +83,13 @@ public class IntegerParameter extends Parameter<java.lang.Integer> {
         return values[0];
     }
 
-    @Override
-    public double getArrayValue() {
-        return (double) values[0];
-    }
+    @Override public double getArrayValue() {return (double) values[0];}
+    public int getNativeValue(final int iValue) {return values[iValue];}
 
     @Override
     public double getArrayValue(int iValue) {
         return (double) values[iValue];
     }
-
-    ;
 
     /**
      * Loggable implementation follows *
