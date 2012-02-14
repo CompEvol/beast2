@@ -592,6 +592,16 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 ]]>
         </subtemplate>
 
+<!-- Beta -->
+        <subtemplate id='Beta' class='beast.math.distributions.Beta' mainid='[top]'>
+<![CDATA[
+        <distr offset="0.0" spec="beast.math.distributions.Beta">
+            <parameter name='alpha' value="2" estimate='false'/>
+            <parameter name='beta' value="2" estimate='false'/>
+        </distr>
+]]>
+        </subtemplate>
+
 <!-- Laplace -->
 <!-- TODO: IMPLEMENT beast.math.distributions.LaplaceDistribution.getDistribution() before uncommenting this
 -->
