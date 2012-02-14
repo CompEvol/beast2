@@ -317,6 +317,7 @@ public class LogAnalyser {
     /**
      * print statistics for each column except first column (sample nr). *
      */
+    final static String SPACE = " ";
     public void print(PrintStream out) {
         try {
             // delay so that stars can be flushed from stderr
@@ -330,12 +331,12 @@ public class LogAnalyser {
         for (int i = 0; i < nMax; i++)
             sSpace += " ";
 
-        out.println("item" + sSpace.substring(4) + "\tmean\tstderr\tstddev\tmedian\t95%HPup\t95%HPlo\tACT\tESS\tgeometric-mean");
+        out.println("item" + sSpace.substring(4) + " " + format("mean") + format("stderr")  + format("stddev")  + format("median")  + format("95%HPup")  + format("95%HPlo")  + format("ACT")  + format("ESS")  + format("geometric-mean"));
         for (int i = 1; i < m_sLabels.length; i++) {
-            out.println(m_sLabels[i] + sSpace.substring(m_sLabels[i].length()) + "\t" +
-                    format(m_fMean[i]) + "\t" + format(m_fStdError[i]) + "\t" + format(m_fStdDev[i]) +
-                    "\t" + format(m_fMedian[i]) + "\t" + format(m_f95HPDlow[i]) + "\t" + format(m_f95HPDup[i]) +
-                    "\t" + format(m_fACT[i]) + "\t" + format(m_fESS[i]) + "\t" + format(m_fGeometricMean[i]));
+            out.println(m_sLabels[i] + sSpace.substring(m_sLabels[i].length()) + SPACE +
+                    format(m_fMean[i]) + SPACE + format(m_fStdError[i]) + SPACE + format(m_fStdDev[i]) +
+                    SPACE + format(m_fMedian[i]) + SPACE + format(m_f95HPDlow[i]) + SPACE + format(m_f95HPDup[i]) +
+                    SPACE + format(m_fACT[i]) + SPACE + format(m_fESS[i]) + SPACE + format(m_fGeometricMean[i]));
         }
     }
 
@@ -347,19 +348,39 @@ public class LogAnalyser {
         System.err.println(s);
     }
 
+    String format(String s) {
+        while (s.length() < 8) {
+            s += " ";
+        }
+    	return s + SPACE;
+    }
+    
     String format(Double d) {
         if (Double.isNaN(d)) {
-            return "NaN    ";
+            return "NaN     ";
         }
-        DecimalFormat f = new DecimalFormat("#0.#####", new DecimalFormatSymbols(Locale.US));
-        String sStr = f.format(d);
-        if (sStr.length() > 7) {
-            sStr = sStr.substring(0, 7);
+        if (Math.abs(d) > 1e-4 || d == 0) {
+	        DecimalFormat f = new DecimalFormat("#0.######", new DecimalFormatSymbols(Locale.US));
+	        String sStr = f.format(d);
+	        if (sStr.length() > 8) {
+	            sStr = sStr.substring(0, 8);
+	        }
+	        while (sStr.length() < 8) {
+	            sStr += " ";
+	        }
+	        return sStr;
+        } else {
+	        DecimalFormat f = new DecimalFormat("0.##E0", new DecimalFormatSymbols(Locale.US));
+	        String sStr = f.format(d);
+	        if (sStr.length() > 8) {
+		        String [] sStrs = sStr.split("E");
+	            sStr =  sStrs[0].substring(0, 8 - sStrs[1].length() - 1) + "E" + sStrs[1];
+	        }
+	        while (sStr.length() < 8) {
+	            sStr += " ";
+	        }
+	        return sStr;        	
         }
-        while (sStr.length() < 7) {
-            sStr += " ";
-        }
-        return sStr;
     }
 
     /**
