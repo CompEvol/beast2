@@ -331,7 +331,7 @@ public class LogAnalyser {
         for (int i = 0; i < nMax; i++)
             sSpace += " ";
 
-        out.println("item" + sSpace.substring(4) + " " + format("mean") + format("stderr")  + format("stddev")  + format("median")  + format("95%HPup")  + format("95%HPlo")  + format("ACT")  + format("ESS")  + format("geometric-mean"));
+        out.println("item" + sSpace.substring(4) + " " + format("mean") + format("stderr")  + format("stddev")  + format("median")  + format("95%HPDlo")  + format("95%HPDup")  + format("ACT")  + format("ESS")  + format("geometric-mean"));
         for (int i = 1; i < m_sLabels.length; i++) {
             out.println(m_sLabels[i] + sSpace.substring(m_sLabels[i].length()) + SPACE +
                     format(m_fMean[i]) + SPACE + format(m_fStdError[i]) + SPACE + format(m_fStdDev[i]) +

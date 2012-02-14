@@ -24,6 +24,10 @@
 */
 package beast.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
@@ -31,10 +35,6 @@ import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
@@ -83,7 +83,17 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         		m_sLabels = new ArrayList<String>();
         		createUnrecognizedTaxa = true;
         	} else {
-        		m_sLabels = null;
+        		if (m_initial.get() != null) {
+            		// try to pick up taxa from initial tree
+        			Tree tree = m_initial.get();
+        	        if (tree.m_taxonset.get() != null) {
+        	            m_sLabels = tree.m_taxonset.get().asStringList();
+        	        } else {
+            			m_sLabels = null;
+        	        }        			
+        		} else {
+        			m_sLabels = null;
+        		}
         	}
 //            m_bIsLabelledNewick = false;
         }
@@ -209,28 +219,38 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * If that does not work, look in list of labels to see whether it is there.
      */
     private int getLabelIndex(String sStr) throws Exception {
-        if (!m_bIsLabelledNewick.get()) {
+        if (!m_bIsLabelledNewick.get() && m_sLabels == null) {
             try {
                 int nIndex = Integer.parseInt(sStr) - m_nOffset.get();
                 checkTaxaIsAvailable(sStr, nIndex);
                 return nIndex;
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println(e.getClass().getName() + " " + e.getMessage() + ". Perhaps taxa or taxonset is not specified?");
             }
         }
+        // look it up in list of taxa
         for (int nIndex = 0; nIndex < m_sLabels.size(); nIndex++) {
             if (sStr.equals(m_sLabels.get(nIndex))) {
                 checkTaxaIsAvailable(sStr, nIndex);
                 return nIndex;
             }
         }
+        // perhaps it is an integer number indiicating the taxon id
+        try {
+            int nIndex = Integer.parseInt(sStr) - m_nOffset.get();
+            checkTaxaIsAvailable(sStr, nIndex);
+            return nIndex;
+        } catch (NumberFormatException e) {
+        	// apparetnly not a number
+        }
+        // we have to create a new taxon, if this is allowed
         if (createUnrecognizedTaxa) {
         	m_sLabels.add(sStr);
         	int nIndex = m_sLabels.size() - 1;
             checkTaxaIsAvailable(sStr, nIndex);
         	return nIndex;
         }
-        throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified");
+        throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified. Perhaps taxa or taxonset is not specified?");
     }
 
     void checkTaxaIsAvailable(String sStr, int nIndex) throws Exception {
