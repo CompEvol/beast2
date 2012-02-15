@@ -333,7 +333,7 @@ public class Node extends Plugin {
             buf.append(")");
         } else {
             iMaxNodeInClade[0] = m_iLabel;
-            buf.append(m_iLabel);
+            buf.append(m_iLabel+1);
         }
         buf.append(":").append(getLength());
         return buf.toString();

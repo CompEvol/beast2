@@ -65,7 +65,7 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
             }
             buf.append(")");
         } else {
-            buf.append(node.m_iLabel);
+            buf.append(node.m_iLabel + 1);
         }
         buf.append("[");
         if (metadata != null) {

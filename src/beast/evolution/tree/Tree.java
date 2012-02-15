@@ -484,7 +484,7 @@ public class Tree extends StateNode {
      */
     static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
         if (node.isLeaf()) {
-            String sNr = node.getNr() + "";
+            String sNr = (node.getNr()+1) + "";
             String sLine = "\t\t" + "    ".substring(sNr.length()) + sNr + " " + node.getID();
             if (node.getNr() < nNodeCount) {
                 sLine += ",";
