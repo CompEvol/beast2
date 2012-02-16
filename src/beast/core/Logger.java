@@ -140,7 +140,7 @@ public class Logger extends Plugin {
                 // print model at top of log
                 String sXML = new XMLProducer().modelToXML(m_pModelPlugin.get());
                 sXML = "#" + sXML.replaceAll("\\n", "\n#");
-                m_out.println("\n#model:\n#");
+                m_out.println("#\n#model:\n#");
                 m_out.println(sXML);
                 m_out.println("#");
             }
