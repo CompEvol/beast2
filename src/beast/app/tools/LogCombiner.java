@@ -284,7 +284,7 @@ public class LogCombiner extends LogAnalyser {
                     m_out.print("\n");
                     nLines++;
                 }
-                if (i % (nData / 80) == 0) {
+                if ((nData / 80 > 0) && i % (nData / 80) == 0) {
                     log("*");
                 }
             }

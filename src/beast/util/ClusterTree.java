@@ -166,6 +166,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             super.initAndValidate();
         }
 
+        if (m_initial.get() != null && m_initial.get().m_trait.get() != null) {
+            adjustTreeToNodeHeights(root, m_initial.get().m_trait.get());
+        } else if (m_trait.get() == null) {
+        	// all nodes should be at zero height if no date-trait is available
+        	for (int i = 0; i < getLeafNodeCount(); i++) {
+        		getNode(i).setHeight(0);
+        	}
+        }
+
+        
         initStateNodes();
     }
 

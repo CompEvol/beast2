@@ -167,36 +167,38 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
         for (MRCAPrior prior : calibrations) {
             TaxonSet taxonSet = prior.m_taxonset.get();
-            BitSet bTaxa = new BitSet(m_nTaxa);
-            for (String sTaxonID : taxonSet.asStringList()) {
-                int iID = sTaxa.indexOf(sTaxonID);
-                if (iID < 0) {
-                    throw new Exception("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
-                }
-                bTaxa.set(iID);
-            }
-            ParametricDistribution distr = prior.m_distInput.get();
-            Bound bounds = new Bound();
-            if (distr != null) {
-                bounds.m_fLower = distr.inverseCumulativeProbability(0.0);
-                bounds.m_fUpper = distr.inverseCumulativeProbability(1.0);
-            }
-
-            if (prior.m_bIsMonophyleticInput.get()) {
-                // add any monophyletic constraint
-                m_bTaxonSets.add(m_nIsMonophyletic, bTaxa);
-                m_distributions.add(m_nIsMonophyletic, distr);
-                m_bounds.add(m_nIsMonophyletic, bounds);
-                m_sTaxonSetIDs.add(prior.getID());
-                m_nIsMonophyletic++;
-            } else {
-                // only calibrations with finite bounds are added
-                if (!Double.isInfinite(bounds.m_fLower) || !Double.isInfinite(bounds.m_fUpper)) {
-                    m_bTaxonSets.add(bTaxa);
-                    m_distributions.add(distr);
-                    m_bounds.add(bounds);
-                    m_sTaxonSetIDs.add(prior.getID());
-                }
+            if (taxonSet != null && prior.m_bOnlyUseTipsInput.get() == false) {
+	            BitSet bTaxa = new BitSet(m_nTaxa);
+	            for (String sTaxonID : taxonSet.asStringList()) {
+	                int iID = sTaxa.indexOf(sTaxonID);
+	                if (iID < 0) {
+	                    throw new Exception("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
+	                }
+	                bTaxa.set(iID);
+	            }
+	            ParametricDistribution distr = prior.m_distInput.get();
+	            Bound bounds = new Bound();
+	            if (distr != null) {
+	                bounds.m_fLower = distr.inverseCumulativeProbability(0.0);
+	                bounds.m_fUpper = distr.inverseCumulativeProbability(1.0);
+	            }
+	
+	            if (prior.m_bIsMonophyleticInput.get()) {
+	                // add any monophyletic constraint
+	                m_bTaxonSets.add(m_nIsMonophyletic, bTaxa);
+	                m_distributions.add(m_nIsMonophyletic, distr);
+	                m_bounds.add(m_nIsMonophyletic, bounds);
+	                m_sTaxonSetIDs.add(prior.getID());
+	                m_nIsMonophyletic++;
+	            } else {
+	                // only calibrations with finite bounds are added
+	                if (!Double.isInfinite(bounds.m_fLower) || !Double.isInfinite(bounds.m_fUpper)) {
+	                    m_bTaxonSets.add(bTaxa);
+	                    m_distributions.add(distr);
+	                    m_bounds.add(bounds);
+	                    m_sTaxonSetIDs.add(prior.getID());
+	                }
+	            }
             }
         }
 
