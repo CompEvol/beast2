@@ -233,6 +233,7 @@ public class Node extends Plugin {
 
     public void addChild(Node child) {
     	children.add(child);
+        child.setParent(this);
 //        if (getLeft() == null) {
 //            setLeft(child);
 //            child.setParent(this);
