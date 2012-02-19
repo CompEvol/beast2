@@ -134,6 +134,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
     public TreeParser(String newick) throws Exception {
         m_oNewick.setValue(newick, this);
+        //m_bIsLabelledNewick.setValue(true, this);      // Q2R (JH) I think this is needed as well
         initAndValidate();
     }
 

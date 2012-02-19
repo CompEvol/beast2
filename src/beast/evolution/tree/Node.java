@@ -623,5 +623,12 @@ public class Node extends Plugin {
 		return children.get(1);
 	}
 
+    public static Node connect(Node left, Node right, double h) {
+        Node n =  new Node();
+        n.setHeight(h);
+        n.setLeft(left);
+        n.setRight(right);
+        return n;
+    }
 
 } // class Node
