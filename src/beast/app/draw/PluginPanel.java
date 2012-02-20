@@ -472,7 +472,7 @@ public class PluginPanel extends JPanel {
         Class<?> type = input.getType();
         List<BeautiSubTemplate> candidates = doc.beautiConfig.getInputCandidates(parent, input, type);
         if (input.getRule().equals(Validate.OPTIONAL)) {
-            candidates.add(BeautiConfig.getNullTemplate());
+            candidates.add(BeautiConfig.getNullTemplate(doc));
         }
         return candidates;
     }

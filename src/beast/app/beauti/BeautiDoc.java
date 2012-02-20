@@ -1030,23 +1030,23 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                                 }
                                 if (connector.atInitialisationOnly()) {
                                     if (bInitial) {
-                                        System.err.println("connect: " + connector);
+                                    	warning("connect: " + connector + "\n");
                                         connect(connector, sPartition);
                                     }
                                 } else if (connector.isActivated(sPartition, posteriorPredecessors, this)) {
-                                    System.err.println("connect: " + connector);
+                                	warning("connect: " + connector  + "\n");
                                     try {
                                         connect(connector, sPartition);
                                     } catch (Exception e) {
-                                        System.err.println(e.getMessage());
+                                    	warning(e.getMessage());
                                     }
 
                                 } else {
-                                    System.err.println("DISconnect: " + connector);
+                                	warning("DISconnect: " + connector + "\n");
                                     try {
                                         disconnect(connector, sPartition);
                                     } catch (Exception e) {
-                                        System.err.println(e.getMessage());
+                                       warning(e.getMessage() + "\n");
                                     }
                                 }
                             }
@@ -1593,7 +1593,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             if (o instanceof List) {
                 //System.err.println("   " + ((List)o).size());
                 if (((List<?>) o).contains(srcPlugin)) {
-                    System.err.println("   " + sTargetID + "/" + sInputName + " already contains " + srcPlugin.getID());
+                	warning("   " + sTargetID + "/" + sInputName + " already contains " + srcPlugin.getID() + "\n");
                     return;
                 }
             }
@@ -1795,4 +1795,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         return null;
     }
 
+    private void warning(String s) {
+    	if (Boolean.valueOf(System.getProperty("beast.debug"))) {
+    		System.err.print(s);
+    	}
+    }
 } // class BeautiDoc

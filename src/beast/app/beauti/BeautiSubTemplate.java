@@ -104,7 +104,7 @@ public class BeautiSubTemplate extends Plugin {
         String sPartition = sID.substring(sID.indexOf(".") + 1);
         sID = sID.substring(0, sID.indexOf("."));
         BeautiSubTemplate template = null;
-        for (BeautiSubTemplate template2 : doc.beautiConfig.subTemplatesInpupt.get()) {
+        for (BeautiSubTemplate template2 : doc.beautiConfig.subTemplatesInput.get()) {
             if (template2.matchesName(sID)) {
                 template = template2;
                 break;

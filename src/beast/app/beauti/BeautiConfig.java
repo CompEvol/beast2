@@ -40,7 +40,7 @@ public class BeautiConfig extends Plugin {
 
 
     public Input<BeautiSubTemplate> partitionTemplate = new Input<BeautiSubTemplate>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
-    public Input<List<BeautiSubTemplate>> subTemplatesInpupt = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes",
+    public Input<List<BeautiSubTemplate>> subTemplatesInput = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes",
             new ArrayList<BeautiSubTemplate>());
 
 
@@ -97,7 +97,7 @@ public class BeautiConfig extends Plugin {
             }
         }
         InputEditor.setExpertMode(bIsExpertInput.get());
-        subTemplates = subTemplatesInpupt.get();
+        subTemplates = subTemplatesInput.get();
     }
 
     public void setDoc(BeautiDoc doc) {
@@ -194,9 +194,10 @@ public class BeautiConfig extends Plugin {
 
     static BeautiSubTemplate NULL_TEMPLATE = new BeautiSubTemplate();
 
-    public static BeautiSubTemplate getNullTemplate() {
+    public static BeautiSubTemplate getNullTemplate(BeautiDoc doc) {
         NULL_TEMPLATE.setID("[none]");
         NULL_TEMPLATE._class = Object.class;
+        NULL_TEMPLATE.doc = doc;
         return NULL_TEMPLATE;
     }
 
