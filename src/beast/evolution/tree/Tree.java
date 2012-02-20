@@ -479,12 +479,14 @@ public class Tree extends StateNode {
         }
     }
 
+    static public int taxaTranslationOffset = 1;
+
     /**
      * need this helper so that we can sort list of entries *
      */
     static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
         if (node.isLeaf()) {
-            String sNr = (node.getNr()+1) + "";
+            String sNr = (node.getNr()+taxaTranslationOffset) + "";
             String sLine = "\t\t" + "    ".substring(sNr.length()) + sNr + " " + node.getID();
             if (node.getNr() < nNodeCount) {
                 sLine += ",";

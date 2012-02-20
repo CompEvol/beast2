@@ -63,6 +63,7 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
 
     String toNewick(Node node, Valuable metadata, Valuable metadataTop) {
         StringBuffer buf = new StringBuffer();
+
         if (node.getLeft() != null) {
             buf.append("(");
             buf.append(toNewick(node.getLeft(), metadata, metadataTop));
@@ -72,7 +73,7 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
             }
             buf.append(")");
         } else {
-            buf.append(node.getNr());
+            buf.append(node.getNr()+Tree.taxaTranslationOffset);
         }
         buf.append("[&dmt=");
         if (node.isRoot()) {
@@ -89,6 +90,7 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
                 if (node.isLeaf()) {
                     buf.append("{" + metadata.getArrayValue(node.getNr()));
                 } else {
+
                     buf.append("{" + (metadataTop.getArrayValue(node.getLeft().getNr()) + metadataTop.getArrayValue(node.getRight().getNr())));
                 }
                 buf.append("," + getMetaDataTopValue(node, metadataTop) + "}");
