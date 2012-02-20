@@ -225,9 +225,16 @@
 
             <connect srcID='GammaShapePrior.$(n)'      targetID='prior' inputName='distribution' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
             <connect srcID='Tree.$(n)'        targetID='Reheight' inputName='genetree' if='Tree.$(n)/estimate=true'/>
+
             <connect srcID='popSizeTopScaler' targetID='mcmc' inputName='operator' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='Tree.$(n)'        targetID='treeTopFinder' inputName='tree' if='Tree.$(n)/estimate=true'/>
             <connect srcID='treeTopFinder'    targetID='treePrior.$(n)' inputName='treetop' if='SpeciesTreePopSize.Species/popFunction=linear'/>
+			<!-- 
+			Since 'Species' is treated as a separate partition, we need the following
+			hack to get rid of undesirable Tree.Species connections 
+			-->
+            <connect srcID='Tree.Species'     targetID='Reheight' inputName='genetree' if='Tree.$(n)/estimate=XXX'/>
+            <connect srcID='Tree.Species'     targetID='treeTopFinder' inputName='tree' if='Tree.$(n)/estimate=XXX'/>
         </partitiontemplate>
 
 		<mergepoint id='substModelTemplates'/>
@@ -274,11 +281,11 @@
 		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.Species" value='213.2021' lower='0' upper='10000' />
 		        </distribution>
 	            <distribution id='YuleBirthRatePrior.Species' spec='Prior' x='@birthRate.Species'>
-		      <distr spec="beast.math.distributions.OneOnX"/>
-		    </distribution>
+		             <distr spec="beast.math.distributions.OneOnX"/>
+		        </distribution>
 	            <distribution id='popMean.prior' spec='Prior' x='@popMean'>
-		      <distr spec="beast.math.distributions.OneOnX"/>
-		    </distribution>
+		            <distr spec="beast.math.distributions.OneOnX"/>
+		        </distribution>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
             </distribution>
@@ -297,6 +304,7 @@
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
+			<log idref="speciescoalescent"/>
 			<log idref="birthRate.Species"/>
 			<log idref="YuleModel.Species"/>
         </logger>

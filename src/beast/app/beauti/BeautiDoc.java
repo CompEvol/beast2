@@ -1626,7 +1626,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                 //System.err.println("   " + ((List)o).size());
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i) == srcPlugin) {
-                        System.err.println("  DEL " + sTargetID + "/" + sInputName + " already contains " + srcPlugin.getID());
+                        warning("  DEL " + sTargetID + "/" + sInputName + " contains " + srcPlugin.getID() + "\n");
                         list.remove(i);
                     }
                 }
