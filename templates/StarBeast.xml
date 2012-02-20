@@ -182,6 +182,11 @@
             <operator id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.$(n)"/>
             <operator id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@Tree.$(n)"/>
 
+            <operator id='updown.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="5">
+                <up idref="clockRate.$(n)"/>
+                <down idref="Tree.$(n)"/>
+            </operator>
+
             <prior id='GammaShapePrior.$(n)' spec='Prior' x='@gammaShape.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
 			<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
@@ -216,6 +221,7 @@
             <connect srcID='narrow.$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='wide.$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='WilsonBalding.$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
+            <connect srcID='updown.$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true and clockRate.$(n)/estimate=true'/>
 
             <connect srcID='TreeHeight.$(n)'           targetID='tracelog' inputName='log' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='proportionInvariant.$(n)'  targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
@@ -226,8 +232,11 @@
             <connect srcID='GammaShapePrior.$(n)'      targetID='prior' inputName='distribution' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
             <connect srcID='Tree.$(n)'        targetID='Reheight' inputName='genetree' if='Tree.$(n)/estimate=true'/>
 
+	    <connect srcID='Tree.$(n)'        targetID='updown.all' inputName='down' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
+	    <connect srcID='clockRate.$(n)'   targetID='updown.all' inputName='up' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+
             <connect srcID='popSizeTopScaler' targetID='mcmc' inputName='operator' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
-            <connect srcID='Tree.$(n)'        targetID='treeTopFinder' inputName='tree' if='Tree.$(n)/estimate=true'/>
+            <connect srcID='Tree.$(n)'        targetID='treeTopFinder' inputName='tree' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='treeTopFinder'    targetID='treePrior.$(n)' inputName='treetop' if='SpeciesTreePopSize.Species/popFunction=linear'/>
 			<!-- 
 			Since 'Species' is treated as a separate partition, we need the following
@@ -295,6 +304,13 @@
 	<operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
 	<operator degreesOfFreedom="1" id="popSizeTopScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSizeTop" weight="5.0"/>
 
+	<operator id="updown.all" spec='UpDownOperator' scaleFactor="0.75" weight="20">
+	  <up idref="birthRate.Species"/>
+	  <down idref="popMean"/>
+
+	  <down idref="Tree.Species"/>
+	</operator>
+	
 	<operator id='YuleBirthRateScaler.Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.Species"/>
 
 	<operator id='popMeanScale' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popMean"/>
