@@ -142,6 +142,7 @@
             </plugin>
 
 	        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="OneOnX"/></plugin>
+	        <plugin id='MutationRatePrior.$(n)' spec='Prior' x='@mutationRate.$(n)'><distr spec="OneOnX"/></plugin>
 
             <!-- tree and its properties -->
             <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
@@ -199,6 +200,7 @@
             <connect srcID='RandomTree.$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.$(n))'/>
 
             <connect srcID='ClockPrior.$(n)'                targetID='prior' inputName='distribution' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
+            <connect srcID='MutationRatePrior.$(n)'         targetID='prior' inputName='distribution' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
 
             <connect srcID='Tree.$(n)'                      targetID='state' inputName='stateNode' if='inposterior(Tree.$(n))'/>
             <connect srcID='proportionInvariant.$(n)'       targetID='state' inputName='stateNode' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
