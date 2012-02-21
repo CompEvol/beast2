@@ -51,7 +51,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
              " is possible only in a few special cases (a single clade or two nested clades).",
              Type.OVER_ALL_TOPOS, Type.values());
 
-    public Input<RPNcalculator> userMar = new Input<RPNcalculator>("logMarginal", "", (RPNcalculator)null);
+    public Input<RPNcalculator> userMar = new Input<RPNcalculator>("logMarginal",
+            "Used provided correction (log of marginal) for special cases.", (RPNcalculator)null);
 
     // Which correction to apply
     private Type type;
