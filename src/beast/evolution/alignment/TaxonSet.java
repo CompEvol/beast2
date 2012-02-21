@@ -10,7 +10,7 @@ import java.util.List;
 @Description("Set of taxa, useful for instance for multi-gene analysis")
 public class TaxonSet extends Taxon {
     public Input<List<Taxon>> m_taxonset = new Input<List<Taxon>>("taxon", "list of taxa making up the set", new ArrayList<Taxon>());
-    public Input<Alignment> m_alignment = new Input<Alignment>("alignment", "alignment where each seaquence represents a taxon");
+    public Input<Alignment> m_alignment = new Input<Alignment>("alignment", "alignment where each sequence represents a taxon");
 
     List<String> m_taxonList;
 

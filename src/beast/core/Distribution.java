@@ -105,17 +105,17 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      * Loggable interface implementation follows *
      */
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(final PrintStream out) throws Exception {
         out.print(getID() + "\t");
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(final int nSample, final PrintStream out) {
         out.print(getCurrentLogP() + "\t");
     }
 
     @Override
-    public void close(PrintStream out) {
+    public void close(final PrintStream out) {
         // nothing to do
     }
 
@@ -133,7 +133,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     }
 
     @Override
-    public double getArrayValue(int iDim) {
+    public double getArrayValue(final int iDim) {
         if (iDim == 0) return getArrayValue();
         return 0;
     }

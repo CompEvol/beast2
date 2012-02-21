@@ -7,7 +7,8 @@ package beast.core;
  * where the possibilities of calculations are limitless.
  * *
  */
-// RRB: Should be renamed Statistic?
+    // RRB: Should be renamed Statistic?
+    // (Q2R): how come trees and other bizzare stuff are valuable's??
 public interface Valuable {
 
     /**

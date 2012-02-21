@@ -46,7 +46,7 @@ public class BitFlipOperator extends Operator {
     private boolean usesPriorOnSum = true;
 
     public void initAndValidate() {
-        Boolean b = uniform.get();
+        final Boolean b = uniform.get();
         if (b != null) {
             usesPriorOnSum = b;
         }
@@ -56,7 +56,7 @@ public class BitFlipOperator extends Operator {
      * Change the parameter and return the hastings ratio.
      * Flip (Switch a 0 to 1 or 1 to 0) for a random bit in a bit vector.
      * Return the hastings ratio which makes all subsets of vectors with the same number of 1 bits
-     * equiprobable, unless usesPriorOnSum = false then all configurations are equiprobable
+     * equiprobable, unless !usesPriorOnSum , then all configurations are equiprobable
      */
 
     @Override
@@ -86,7 +86,7 @@ public class BitFlipOperator extends Operator {
             }
 
         } else {
-            assert value;
+            //assert value;
 
             p.setValue(pos, false);
             if (usesPriorOnSum) {

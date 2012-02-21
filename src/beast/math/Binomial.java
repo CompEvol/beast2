@@ -37,7 +37,7 @@ public class Binomial {
     // Public stuff
     //
 
-    public static double logChoose(int n, int k) {
+    public static double logChoose(final int n, final int k) {
         return GammaFunction.lnGamma(n + 1.0) - GammaFunction.lnGamma(k + 1.0)
                 - GammaFunction.lnGamma(n - k + 1.0);
     }
@@ -52,7 +52,7 @@ public class Binomial {
         n = Math.floor(n + 0.5);
         k = Math.floor(k + 0.5);
 
-        double lchoose = GammaFunction.lnGamma(n + 1.0) -
+        final double lchoose = GammaFunction.lnGamma(n + 1.0) -
                 GammaFunction.lnGamma(k + 1.0) - GammaFunction.lnGamma(n - k + 1.0);
 
         return Math.floor(Math.exp(lchoose) + 0.5);
@@ -62,7 +62,7 @@ public class Binomial {
      * @param n # elements
      * @return n choose 2 (number of distinct ways to choose a pair from n elements)
      */
-    public static double choose2(int n) {
+    public static double choose2(final int n) {
         // not sure how much overhead there is with try-catch blocks
         // i.e. would an if statement be better?
 

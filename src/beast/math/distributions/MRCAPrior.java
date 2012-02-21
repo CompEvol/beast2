@@ -17,15 +17,15 @@ import java.util.Random;
 @Description("Prior over set of taxa, useful for defining monophyletic constraints and "
         + "distributions over MRCA times or (sets of) tips of trees")
 public class MRCAPrior extends Distribution {
-    public Input<Tree> m_treeInput = new Input<Tree>("tree", "the tree containing the taxon set", Validate.REQUIRED);
-    public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset",
+    public final Input<Tree> m_treeInput = new Input<Tree>("tree", "the tree containing the taxon set", Validate.REQUIRED);
+    public final Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset",
             "set of taxa for which prior information is available");
-    public Input<Boolean> m_bIsMonophyleticInput = new Input<Boolean>("monophyletic",
+    public final Input<Boolean> m_bIsMonophyleticInput = new Input<Boolean>("monophyletic",
             "whether the taxon set is monophyletic (forms a clade without other taxa) or nor. Default is false.", false);
-    public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distr",
+    public final Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("distr",
             "distribution used to calculate prior over MRCA time, "
                     + "e.g. normal, beta, gamma. If not specified, monophyletic must be true");
-    public Input<Boolean> m_bOnlyUseTipsInput = new Input<Boolean>("tipsonly",
+    public final Input<Boolean> m_bOnlyUseTipsInput = new Input<Boolean>("tipsonly",
             "flag to indicate tip dates are to be used instead of the MRCA node. " +
                     "If set to true, the prior is applied to the height of all tips in the taxonset " +
                     "and the monophyletic flag is ignored. Default is false.", false);
@@ -52,8 +52,8 @@ public class MRCAPrior extends Distribution {
     public void initAndValidate() throws Exception {
         m_dist = m_distInput.get();
         m_tree = m_treeInput.get();
-        List<String> sTaxaNames = new ArrayList<String>();
-        for (String sTaxon : m_tree.getTaxaNames()) {
+        final List<String> sTaxaNames = new ArrayList<String>();
+        for (final String sTaxon : m_tree.getTaxaNames()) {
             sTaxaNames.add(sTaxon);
         }
         // determine nr of taxa in taxon set
@@ -80,11 +80,11 @@ public class MRCAPrior extends Distribution {
 
         // determine which taxa are in the set
         m_iTaxa = new int[m_nNrOfTaxa];
-        if (m_taxonset.get() != null) {
+        if ( set != null )  {  // m_taxonset.get() != null) {
             m_bTaxaSet = new boolean[sTaxaNames.size()];
             int k = 0;
-            for (String sTaxon : set) {
-                int iTaxon = sTaxaNames.indexOf(sTaxon);
+            for (final String sTaxon : set) {
+                final int iTaxon = sTaxaNames.indexOf(sTaxon);
                 if (iTaxon < 0) {
                     throw new Exception("Cannot find taxon " + sTaxon + " in data");
                 }
@@ -106,7 +106,7 @@ public class MRCAPrior extends Distribution {
         logP = 0;
         if (m_bOnlyUseTips) {
             // tip date
-            for (int i : m_iTaxa) {
+            for (final int i : m_iTaxa) {
                 m_fMRCATime = m_tree.getNode(i).getDate();
                 logP += m_dist.logDensity(m_fMRCATime);
             }
@@ -129,8 +129,10 @@ public class MRCAPrior extends Distribution {
      * Recursively visit all leaf nodes, and collect number of taxa in the taxon
      * set. When all taxa in the set are visited, record the time.
      * *
+     * @param node
+     * @param nTaxonCount
      */
-    int calcMRCAtime(Node node, int[] nTaxonCount) {
+    int calcMRCAtime(final Node node, final int[] nTaxonCount) {
         if (node.isLeaf()) {
             nTaxonCount[0]++;
             if (m_bTaxaSet[node.getNr()]) {
@@ -140,11 +142,11 @@ public class MRCAPrior extends Distribution {
             }
         } else {
             int iTaxons = calcMRCAtime(node.getLeft(), nTaxonCount);
-            int nLeftTaxa = nTaxonCount[0];
+            final int nLeftTaxa = nTaxonCount[0];
             nTaxonCount[0] = 0;
             if (node.getRight() != null) {
                 iTaxons += calcMRCAtime(node.getRight(), nTaxonCount);
-                int nRightTaxa = nTaxonCount[0];
+                final int nRightTaxa = nTaxonCount[0];
                 nTaxonCount[0] = nLeftTaxa + nRightTaxa;
                 if (iTaxons == m_nNrOfTaxa) {
                     // we are at the MRCA, so record the height
@@ -182,12 +184,12 @@ public class MRCAPrior extends Distribution {
      * Loggable interface implementation follows *
      */
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(final PrintStream out) throws Exception {
         if (m_bOnlyUseTips) {
             if (m_dist != null) {
                 out.print("logP(mrca(" + getID() + "))\t");
             }
-            for (int i : m_iTaxa) {
+            for (final int i : m_iTaxa) {
                 out.print("height(" + m_tree.getTaxaNames()[i] + ")\t");
             }
         } else {
@@ -199,12 +201,12 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(final int nSample, final PrintStream out) {
         if (m_bOnlyUseTips) {
             if (m_dist != null) {
                 out.print(getCurrentLogP() + "\t");
             }
-            for (int i : m_iTaxa) {
+            for (final int i : m_iTaxa) {
                 out.print(m_tree.getNode(i).getDate() + "\t");
             }
         } else {
@@ -218,7 +220,7 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public void close(PrintStream out) {
+    public void close(final PrintStream out) {
         // nothing to do
     }
 
@@ -236,7 +238,7 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public double getArrayValue(int iDim) {
+    public double getArrayValue(final int iDim) {
         switch (iDim) {
             case 0:
                 return logP;
@@ -248,7 +250,7 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public void sample(State state, Random random) {
+    public void sample(final State state, final Random random) {
     }
 
     @Override

@@ -29,11 +29,11 @@ public class IntRandomWalkOperator extends Operator {
     @Override
     public double proposal() {
 
-        IntegerParameter param = parameterInput.get(this);
+        final IntegerParameter param = parameterInput.get(this);
 
-        int i = Randomizer.nextInt(param.getDimension());
-        int value = param.getValue(i);
-        int newValue = value + Randomizer.nextInt(2 * windowSize + 1) - windowSize;
+        final int i = Randomizer.nextInt(param.getDimension());
+        final int value = param.getValue(i);
+        final int newValue = value + Randomizer.nextInt(2 * windowSize + 1) - windowSize;
 
         if (newValue < param.getLower() || newValue > param.getUpper()) {
             // invalid move, can be rejected immediately
@@ -50,7 +50,7 @@ public class IntRandomWalkOperator extends Operator {
     }
 
     @Override
-    public void optimize(double logAlpha) {
+    public void optimize(final double logAlpha) {
         // nothing to optimise
     }
 

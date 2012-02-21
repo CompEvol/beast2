@@ -21,15 +21,15 @@ public class SpeciesTreePrior extends TreeDistribution {
 
     protected enum PopSizeFunction {constant, linear, linear_with_constant_root}
 
-    public Input<PopSizeFunction> m_popFunctionInput = new Input<PopSizeFunction>("popFunction", "Population function. " +
+    public final Input<PopSizeFunction> m_popFunctionInput = new Input<PopSizeFunction>("popFunction", "Population function. " +
             "This can be " + Arrays.toString(PopSizeFunction.values()) + " (default 'constant')", PopSizeFunction.constant, PopSizeFunction.values());
 
-    public Input<RealParameter> m_popSizesBottom = new Input<RealParameter>("bottomPopSize", "population size parameter for populations at the bottom of a branch. " +
+    public final Input<RealParameter> m_popSizesBottom = new Input<RealParameter>("bottomPopSize", "population size parameter for populations at the bottom of a branch. " +
             "For linear population function, this is the same at the top of the branch.", Validate.REQUIRED);
-    public Input<RealParameter> m_popSizesTop = new Input<RealParameter>("topPopSize", "population size parameter at the top of a branch. " +
+    public final Input<RealParameter> m_popSizesTop = new Input<RealParameter>("topPopSize", "population size parameter at the top of a branch. " +
             "Ignored for constant population function, but required for linear population function.");
 
-    public Input<RealParameter> m_gammaParameter = new Input<RealParameter>("gammaParameter", "shape parameter of the gamma distribution", Validate.REQUIRED);
+    public final Input<RealParameter> m_gammaParameter = new Input<RealParameter>("gammaParameter", "shape parameter of the gamma distribution", Validate.REQUIRED);
 
 //	public Input<RealParameter> m_rootHeightParameter = new Input<RealParameter>("rootBranchHeight","height of the node above the root, representing the root branch", Validate.REQUIRED);
     /**
@@ -38,12 +38,12 @@ public class SpeciesTreePrior extends TreeDistribution {
     public Input<TaxonSet> m_taxonSet = new Input<TaxonSet>("taxonset", "set of taxa mapping lineages to species", Validate.REQUIRED);
 
 
-    PopSizeFunction m_popFunction;
-    RealParameter m_fPopSizesBottom;
-    RealParameter m_fPopSizesTop;
+    private PopSizeFunction m_popFunction;
+    private RealParameter m_fPopSizesBottom;
+    private RealParameter m_fPopSizesTop;
 
-    Gamma m_gamma2Prior;
-    Gamma m_gamma4Prior;
+    private Gamma m_gamma2Prior;
+    private Gamma m_gamma4Prior;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -52,8 +52,8 @@ public class SpeciesTreePrior extends TreeDistribution {
         m_fPopSizesTop = m_popSizesTop.get();
 
         // set up sizes of population functions
-        int nSpecies = m_tree.get().getLeafNodeCount();
-        int nNodes = m_tree.get().getNodeCount();
+        final int nSpecies = m_tree.get().getLeafNodeCount();
+        final int nNodes = m_tree.get().getNodeCount();
         switch (m_popFunction) {
             case constant:
                 m_fPopSizesBottom.setDimension(nNodes);
@@ -80,7 +80,7 @@ public class SpeciesTreePrior extends TreeDistribution {
 
         // top prior = Gamma(4,Psi)
         m_gamma4Prior = new Gamma();
-        RealParameter parameter = new RealParameter(new Double[]{4.0});
+        final RealParameter parameter = new RealParameter(new Double[]{4.0});
         m_gamma4Prior.m_alpha.setValue(parameter, m_gamma4Prior);
         m_gamma4Prior.m_beta.setValue(m_gammaParameter.get(), m_gamma4Prior);
 
@@ -105,7 +105,7 @@ public class SpeciesTreePrior extends TreeDistribution {
 //			return logP;
 //		}
 
-        Node[] speciesNodes = m_tree.get().getNodesAsArray();
+        final Node[] speciesNodes = m_tree.get().getNodesAsArray();
         try {
             switch (m_popFunction) {
                 case constant:
@@ -126,14 +126,14 @@ public class SpeciesTreePrior extends TreeDistribution {
 //			logP += m_gamma2Prior.calcLogP(m_fPopSizesTop);
 
                     for (int i = 0; i < speciesNodes.length; i++) {
-                        Node node = speciesNodes[i];
-                        double fPopSizeBottom;
+                        final Node node = speciesNodes[i];
+                        final double fPopSizeBottom;
                         if (node.isLeaf()) {
                             // Gamma(4, fPsi) prior
                             fPopSizeBottom = m_fPopSizesBottom.getValue(i);
                             logP += m_gamma4Prior.logDensity(fPopSizeBottom);
                         }
-                        double fPopSizeTop = m_fPopSizesTop.getValue(i);
+                        final double fPopSizeTop = m_fPopSizesTop.getValue(i);
                         logP += m_gamma2Prior.logDensity(fPopSizeTop);
                     }
                     break;
@@ -145,18 +145,18 @@ public class SpeciesTreePrior extends TreeDistribution {
 //			logP -= m_gamma2Prior.logDensity(fPopSize); 
 
                     for (int i = 0; i < speciesNodes.length; i++) {
-                        Node node = speciesNodes[i];
+                        final Node node = speciesNodes[i];
                         if (node.isLeaf()) {
-                            double fPopSizeBottom = m_fPopSizesBottom.getValue(i);
+                            final double fPopSizeBottom = m_fPopSizesBottom.getValue(i);
                             logP += m_gamma4Prior.logDensity(fPopSizeBottom);
                         }
                         if (!node.isRoot()) {
                             if (i < speciesNodes.length - 1) {
-                                double fPopSizeTop = m_fPopSizesTop.getArrayValue(i);
+                                final double fPopSizeTop = m_fPopSizesTop.getArrayValue(i);
                                 logP += m_gamma2Prior.logDensity(fPopSizeTop);
                             } else {
-                                int iNode = m_tree.get().getRoot().getNr();
-                                double fPopSizeTop = m_fPopSizesTop.getArrayValue(iNode);
+                                final int iNode = m_tree.get().getRoot().getNr();
+                                final double fPopSizeTop = m_fPopSizesTop.getArrayValue(iNode);
                                 logP += m_gamma2Prior.logDensity(fPopSizeTop);
                             }
                         }
@@ -187,6 +187,6 @@ public class SpeciesTreePrior extends TreeDistribution {
     }
 
     @Override
-    public void sample(State state, Random random) {
+    public void sample(final State state, final Random random) {
     }
 }

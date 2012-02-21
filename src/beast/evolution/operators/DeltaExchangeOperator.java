@@ -24,16 +24,16 @@ import java.util.List;
 public class DeltaExchangeOperator extends Operator {
     //public Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
 
-    public Input<List<RealParameter>> parameterInput = new Input<List<RealParameter>>("parameter",
+    public final Input<List<RealParameter>> parameterInput = new Input<List<RealParameter>>("parameter",
             "if specified, this parameter is operated on", new ArrayList<RealParameter>());
-    public Input<List<IntegerParameter>> intparameterInput = new Input<List<IntegerParameter>>("intparameter",
+    public final Input<List<IntegerParameter>> intparameterInput = new Input<List<IntegerParameter>>("intparameter",
             "if specified, this parameter is operated on", new ArrayList<IntegerParameter>());
 
-    public Input<Double> input_delta = new Input<Double>("delta", "Magnitude of change for two randomly picked values.", 1.0);
-    public Input<Boolean> input_autoOptimize =
+    public final Input<Double> input_delta = new Input<Double>("delta", "Magnitude of change for two randomly picked values.", 1.0);
+    public final Input<Boolean> input_autoOptimize =
             new Input<Boolean>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
-    public Input<Boolean> input_isIntegerOperator = new Input<Boolean>("integer", "if true, changes are all integers.", false);
-    public Input<IntegerParameter> input_parameterWeights = new Input<IntegerParameter>("weightvector", "weights on a vector parameter");
+    public final Input<Boolean> input_isIntegerOperator = new Input<Boolean>("integer", "if true, changes are all integers.", false);
+    public final Input<IntegerParameter> input_parameterWeights = new Input<IntegerParameter>("weightvector", "weights on a vector parameter");
 
     private boolean autoOptimize;
     private double delta;
@@ -50,7 +50,7 @@ public class DeltaExchangeOperator extends Operator {
 
         if (parameterInput.get().isEmpty()) {
             if (intparameterInput.get().size() > 1)
-                compoundParameter = new CompoundParameterHelper(intparameterInput.get());
+                compoundParameter = new CompoundParameterHelper((intparameterInput.get()));
         } else {
             if (parameterInput.get().size() > 1)
                 compoundParameter = new CompoundParameterHelper(parameterInput.get());
@@ -116,7 +116,7 @@ public class DeltaExchangeOperator extends Operator {
                 double scalar2 = realparameter.getValue(dim2);
 
                 if (isIntegerOperator) {
-                    int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
+                    final int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
                     if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
                     scalar1 = Math.round(scalar1 - d);
@@ -146,7 +146,7 @@ public class DeltaExchangeOperator extends Operator {
                 int scalar1 = intparameter.getValue(dim1);
                 int scalar2 = intparameter.getValue(dim2);
 
-                int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
+                final int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
                 if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
                 scalar1 = Math.round(scalar1 - d);
@@ -180,7 +180,7 @@ public class DeltaExchangeOperator extends Operator {
                 double scalar2 = (Double) compoundParameter.getValue(dim2);
 
                 if (isIntegerOperator) {
-                    int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
+                    final int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
                     if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
                     scalar1 = Math.round(scalar1 - d);
@@ -212,7 +212,7 @@ public class DeltaExchangeOperator extends Operator {
                 int scalar1 = (Integer) compoundParameter.getValue(dim1);
                 int scalar2 = (Integer) compoundParameter.getValue(dim2);
 
-                int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
+                final int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
                 if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
                 scalar1 = Math.round(scalar1 - d);
@@ -244,7 +244,7 @@ public class DeltaExchangeOperator extends Operator {
     }
 
     @Override
-    public void setCoercableParameterValue(double fValue) {
+    public void setCoercableParameterValue(final double fValue) {
         delta = fValue;
     }
 
@@ -256,7 +256,7 @@ public class DeltaExchangeOperator extends Operator {
      * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
      */
     @Override
-    public void optimize(double logAlpha) {
+    public void optimize(final double logAlpha) {
         // must be overridden by operator implementation to have an effect
         if (autoOptimize) {
             double fDelta = calcDelta(logAlpha);
@@ -268,17 +268,17 @@ public class DeltaExchangeOperator extends Operator {
 
     @Override
     public final String getPerformanceSuggestion() {
-        double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
-        double targetProb = getTargetAcceptanceProbability();
+        final double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
+        final double targetProb = getTargetAcceptanceProbability();
 
         double ratio = prob / targetProb;
         if (ratio > 2.0) ratio = 2.0;
         if (ratio < 0.5) ratio = 0.5;
 
         // new scale factor
-        double newDelta = delta * ratio;
+        final double newDelta = delta * ratio;
 
-        DecimalFormat formatter = new DecimalFormat("#.###");
+        final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {
             return "Try setting delta to about " + formatter.format(newDelta);
         } else if (prob > 0.40) {

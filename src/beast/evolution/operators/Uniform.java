@@ -70,17 +70,17 @@ public class Uniform extends TreeOperator {
      */
     @Override
     public double proposal() {
-        Tree tree = m_tree.get(this);
+        final Tree tree = m_tree.get(this);
 
         // randomly select internal node
-        int nNodeCount = tree.getNodeCount();
+        final int nNodeCount = tree.getNodeCount();
         Node node;
         do {
             final int iNodeNr = nNodeCount / 2 + 1 + Randomizer.nextInt(nNodeCount / 2);
             node = tree.getNode(iNodeNr);
         } while (node.isRoot() || node.isLeaf());
-        double fUpper = node.getParent().getHeight();
-        double fLower = Math.max(node.getLeft().getHeight(), node.getRight().getHeight());
+        final double fUpper = node.getParent().getHeight();
+        final double fLower = Math.max(node.getLeft().getHeight(), node.getRight().getHeight());
         final double newValue = (Randomizer.nextDouble() * (fUpper - fLower)) + fLower;
         node.setHeight(newValue);
 

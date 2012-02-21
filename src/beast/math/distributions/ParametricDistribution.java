@@ -47,7 +47,7 @@ import beast.util.Randomizer;
         "parameters/valuables as inputs and can produce (cummulative) densities and inverse " +
         "cummulative densities.")
 public abstract class ParametricDistribution extends CalculationNode implements ContinuousDistribution {
-    public Input<Double> m_offset = new Input<Double>("offset", "offset of origin (defaults to 0)", 0.0);
+    public final Input<Double> m_offset = new Input<Double>("offset", "offset of origin (defaults to 0)", 0.0);
 
     abstract public org.apache.commons.math.distribution.Distribution getDistribution();
 
@@ -56,11 +56,11 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * If x is multidimensional, the components of x are assumed to be independent,
      * so the sum of log probabilities of all elements of x is returned as the prior.
      */
-    public double calcLogP(Valuable x) throws Exception {
-        double fOffset = m_offset.get();
+    public double calcLogP(final Valuable x) throws Exception {
+        final double fOffset = m_offset.get();
         double fLogP = 0;
         for (int i = 0; i < x.getDimension(); i++) {
-            double fX = x.getArrayValue(i) - fOffset;
+            final double fX = x.getArrayValue(i) - fOffset;
             //fLogP += Math.log(density(fX));
             fLogP += logDensity(fX);
         }
@@ -71,10 +71,10 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * This implemenatation is only suitable for univariate distributions.
      * Must be overwritten for multivariate ones.
      */
-    public Double[][] sample(int size) throws Exception {
-        Double[][] sample = new Double[size][];
+    public Double[][] sample(final int size) throws Exception {
+        final Double[][] sample = new Double[size][];
         for (int i = 0; i < sample.length; i++) {
-            double p = Randomizer.nextDouble();
+            final double p = Randomizer.nextDouble();
             sample[i] = new Double[]{inverseCumulativeProbability(p)};
         }
         return sample;
@@ -90,8 +90,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      *                       computed due to convergence or other numerical errors.
      */
     @Override
-    public double inverseCumulativeProbability(double p) throws MathException {
-        org.apache.commons.math.distribution.Distribution dist = getDistribution();
+    public double inverseCumulativeProbability(final double p) throws MathException {
+        final org.apache.commons.math.distribution.Distribution dist = getDistribution();
         if (dist instanceof ContinuousDistribution) {
             return ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
         } else if (dist instanceof IntegerDistribution) {
@@ -108,8 +108,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @return The pdf at point x.
      */
     @Override
-    public double density(double x) {
-        org.apache.commons.math.distribution.Distribution dist = getDistribution();
+    public double density(final double x) {
+        final org.apache.commons.math.distribution.Distribution dist = getDistribution();
         if (dist instanceof ContinuousDistribution) {
             return ((ContinuousDistribution) dist).density(x);
         } else if (dist instanceof IntegerDistribution) {
@@ -120,8 +120,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
 
     @Override
     /** NB logDensity does not take offset in account **/
-    public double logDensity(double x) {
-        org.apache.commons.math.distribution.Distribution dist = getDistribution();
+    public double logDensity(final double x) {
+        final org.apache.commons.math.distribution.Distribution dist = getDistribution();
         if (dist instanceof ContinuousDistribution) {
             return ((ContinuousDistribution) dist).logDensity(x);
         } else if (dist instanceof IntegerDistribution) {
@@ -143,7 +143,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      *                       computed due to convergence or other numerical errors.
      */
     @Override
-    public double cumulativeProbability(double x) throws MathException {
+    public double cumulativeProbability(final double x) throws MathException {
         return getDistribution().cumulativeProbability(x);
     }
 
@@ -161,7 +161,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @throws IllegalArgumentException if <code>x0 > x1</code>
      */
     @Override
-    public double cumulativeProbability(double x0, double x1) throws MathException {
+    public double cumulativeProbability(final double x0, final double x1) throws MathException {
         return getDistribution().cumulativeProbability(x0, x1);
     }
 }

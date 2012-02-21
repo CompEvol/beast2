@@ -69,6 +69,8 @@ public class Input<T> {
         OPTIONAL, REQUIRED, XOR, FORBIDDEN
     }
 
+    // (Q2R) I am surprised the default is not required ....
+
     Validate rule = Validate.OPTIONAL;
     /**
      * used only if validation rule is XOR *
@@ -262,7 +264,7 @@ public class Input<T> {
         return rule;
     }
 
-    public void setRule(Validate rule) {
+    public void setRule(final Validate rule) {
         this.rule = rule;
     }
 
@@ -294,7 +296,7 @@ public class Input<T> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public T get(Operator operator) {
+    public T get(final Operator operator) {
         return (T) ((StateNode) value).getCurrentEditable(operator);
     }
 
@@ -306,7 +308,7 @@ public class Input<T> {
      * *
      */
     public boolean isDirty() {
-        T value = get();
+        final T value = get();
 
         if (value == null) {
             return false;
@@ -321,10 +323,10 @@ public class Input<T> {
         }
 
         if (value instanceof List<?>) {
-            for (Object o : (List<?>) value) {
-                if (o instanceof CalculationNode && ((CalculationNode) o).isDirtyCalculation()) {
+            for (final Object obj : (List<?>) value) {
+                if (obj instanceof CalculationNode && ((CalculationNode) obj).isDirtyCalculation()) {
                     return true;
-                } else if (o instanceof StateNode && ((StateNode) o).somethingIsDirty()) {
+                } else if (obj instanceof StateNode && ((StateNode) obj).somethingIsDirty()) {
                     return true;
                 }
             }
@@ -348,7 +350,7 @@ public class Input<T> {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void setValue(Object value, Plugin plugin) throws Exception {
+    public void setValue(final Object value, final Plugin plugin) throws Exception {
         if (value == null) {
             if (this.value != null) {
                 if (this.value instanceof Plugin) {
@@ -365,7 +367,7 @@ public class Input<T> {
             setStringValue((String) value, plugin);
         } else if (this.value != null && this.value instanceof List<?>) {
             if (theClass.isAssignableFrom(value.getClass())) {
-                @SuppressWarnings("rawtypes")
+                @SuppressWarnings("rawtypes") final
                 List vector = (List) this.value;
 //              // don't insert duplicates
                 // RRB: DO insert duplicates: this way CompoundValuable can be set up to 
@@ -427,16 +429,16 @@ public class Input<T> {
 
     /**
      * Determine class through introspection,
-     * This sets the m_class member of Input<T> to the actual value of T.
+     * This sets the theClass member of Input<T> to the actual value of T.
      * If T is a vector, i.e. Input<List<S>>, the actual value of S
      * is assigned instead
      *
      * @param plugin whose type is to be determined
      * @throws Exception
      */
-    public void determineClass(Plugin plugin) throws Exception {
+    public void determineClass(final Plugin plugin) throws Exception {
         try {
-            Field[] fields = plugin.getClass().getFields();
+            final Field[] fields = plugin.getClass().getFields();
             // find this input in the plugin
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getType().isAssignableFrom(Input.class)) {
@@ -481,7 +483,7 @@ public class Input<T> {
      * @throws Exception when all conversions fail
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setStringValue(String sValue, Plugin plugin) throws Exception {
+    private void setStringValue(final String sValue, final Plugin plugin) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (theClass.equals(Integer.class)) {
             value = (T) new Integer(sValue);
@@ -492,7 +494,7 @@ public class Input<T> {
             return;
         }
         if (theClass.equals(Boolean.class)) {
-            String sValue2 = sValue.toLowerCase();
+            final String sValue2 = sValue.toLowerCase();
             if (sValue2.equals("yes") || sValue2.equals("true")) {
                 value = (T) Boolean.TRUE;
                 return;
@@ -502,7 +504,7 @@ public class Input<T> {
             }
         }
         if (theClass.equals(Valuable.class)) {
-            RealParameter param = new RealParameter();
+            final RealParameter param = new RealParameter();
             param.initByName("value", sValue, "upper", 0.0, "lower", 0.0, "dimension", 1);
             param.initAndValidate();
             if (value != null && value instanceof List) {
@@ -515,7 +517,7 @@ public class Input<T> {
         }
 
         if (theClass.isEnum()) {
-            for (T t : possibleValues) {
+            for (final T t : possibleValues) {
                 if (sValue.equals(t.toString())) {
                     value = t;
                     return;
@@ -526,9 +528,9 @@ public class Input<T> {
 
         // call a string constructor of theClass
         try {
-            Constructor ctor = theClass.getDeclaredConstructor(String.class);
+            final Constructor ctor = theClass.getDeclaredConstructor(String.class);
             ctor.setAccessible(true);
-            Object o = ctor.newInstance(sValue);
+            final Object o = ctor.newInstance(sValue);
             if (value != null && value instanceof List) {
                 ((List) value).add(o);
             } else {
@@ -553,7 +555,7 @@ public class Input<T> {
         if (possibleValues != null) {
             // it is an enumeration, check the value is in the list
             boolean bFound = false;
-            for (T value : possibleValues) {
+            for (final T value : possibleValues) {
                 if (value.equals(this.value)) {
                     bFound = true;
                 }

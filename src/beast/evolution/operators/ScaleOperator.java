@@ -39,16 +39,16 @@ import beast.util.Randomizer;
 @Description("Scales a parameter or a complete beast.tree (depending on which of the two is specified.")
 public class ScaleOperator extends Operator {
 
-    public Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
+    public final Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
 
-    public Input<RealParameter> m_pParameter = new Input<RealParameter>("parameter", "if specified, this parameter is scaled",
+    public final Input<RealParameter> m_pParameter = new Input<RealParameter>("parameter", "if specified, this parameter is scaled",
             Input.Validate.XOR, m_pTree);
 
-    public Input<Double> m_pScaleFactor = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
-    public Input<Boolean> m_pScaleAll =
+    public final Input<Double> m_pScaleFactor = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
+    public final Input<Boolean> m_pScaleAll =
             new Input<Boolean>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
                     false);
-    public Input<Boolean> m_pScaleAllIndependently =
+    public final Input<Boolean> m_pScaleAllIndependently =
             new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
                     "a different factor, otherwise a single factor is used", false);
 
@@ -179,7 +179,7 @@ public class ScaleOperator extends Operator {
                 hastingsRatio = -Math.log(scale);
 
                 // which position to scale
-                int index;
+                final int index;
                 final BooleanParameter indicators = m_indicator.get();
                 if (indicators != null) {
                     final int nDim = indicators.getDimension();
@@ -187,7 +187,7 @@ public class ScaleOperator extends Operator {
                     final boolean impliedOne = nDim == (dim - 1);
 
                     // available bit locations. there can be hundreds of them. scan list only once.
-                    int[] loc = new int[nDim + 1];
+                    final int[] loc = new int[nDim + 1];
                     int nLoc = 0;
 
                     if (impliedOne) {
@@ -273,9 +273,9 @@ public class ScaleOperator extends Operator {
         if (ratio < 0.5) ratio = 0.5;
 
         // new scale factor
-        double sf = Math.pow(m_fScaleFactor, ratio);
+        final double sf = Math.pow(m_fScaleFactor, ratio);
 
-        DecimalFormat formatter = new DecimalFormat("#.###");
+        final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {
             return "Try setting scaleFactor to about " + formatter.format(sf);
         } else if (prob > 0.40) {

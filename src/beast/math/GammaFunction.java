@@ -43,7 +43,7 @@ public class GammaFunction {
      * @param alpha argument
      * @return the log of the gamma function of the given alpha
      */
-    public static double lnGamma(double alpha) {
+    public static double lnGamma(final double alpha) {
         // Pike MC & Hill ID (1966) Algorithm 291: Logarithm of the gamma function.
         // Communications of the Association for Computing Machinery, 9:684
 
@@ -75,7 +75,7 @@ public class GammaFunction {
      * @param x argument
      * @return function value
      */
-    public static double incompleteGammaQ(double a, double x) {
+    public static double incompleteGammaQ(final double a, final double x) {
         return 1.0 - incompleteGamma(x, a, lnGamma(a));
     }
 
@@ -88,7 +88,7 @@ public class GammaFunction {
      * @param x argument
      * @return function value
      */
-    public static double incompleteGammaP(double a, double x) {
+    public static double incompleteGammaP(final double a, final double x) {
         return incompleteGamma(x, a, lnGamma(a));
     }
 
@@ -102,7 +102,7 @@ public class GammaFunction {
      * @param lnGammaA precomputed lnGamma(a)
      * @return function value
      */
-    public static double incompleteGammaP(double a, double x, double lnGammaA) {
+    public static double incompleteGammaP(final double a, final double x, final double lnGammaA) {
         return incompleteGamma(x, a, lnGammaA);
     }
 
@@ -116,15 +116,23 @@ public class GammaFunction {
      * @param ln_gamma_alpha the log gamma function for alpha
      * @return the incomplete gamma ratio
      */
-    private static double incompleteGamma(double x, double alpha, double ln_gamma_alpha) {
+    private static double incompleteGamma(final double x, final double alpha, final double ln_gamma_alpha) {
         // (1) series expansion     if (alpha>x || x<=1)
         // (2) continued fraction   otherwise
         // RATNEST FORTRAN by
         // Bhattacharjee GP (1970) The incomplete gamma integral.  Applied Statistics,
         // 19: 285-287 (AS32)
 
-        double accurate = 1e-8, overflow = 1e30;
-        double factor, gin, rn, a, b, an, dif, term;
+        final double accurate = 1e-8;
+        final double overflow = 1e30;
+        final double factor;
+        double gin;
+        double rn;
+        double a;
+        double b;
+        double an;
+        double dif;
+        double term;
         double pn0, pn1, pn2, pn3, pn4, pn5;
 
         if (x == 0.0) {
