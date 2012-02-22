@@ -26,7 +26,7 @@ public class BeastMain {
 
     static class BeastConsoleApp extends jam.console.ConsoleApplication {
 
-        public BeastConsoleApp(String nameString, String aboutString, javax.swing.Icon icon) throws IOException {
+        public BeastConsoleApp(final String nameString, final String aboutString, final javax.swing.Icon icon) throws IOException {
             super(nameString, aboutString, icon, false);
             getDefaultFrame().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         }
@@ -40,14 +40,14 @@ public class BeastMain {
 //            }
         }
 
-        public void setTitle(String title) {
+        public void setTitle(final String title) {
             getDefaultFrame().setTitle(title);
         }
 
         BeastMCMC beastMCMC;
     }
 
-    public BeastMain(BeastMCMC beastMCMC, BeastConsoleApp consoleApp, int maxErrorCount) {
+    public BeastMain(final BeastMCMC beastMCMC, final BeastConsoleApp consoleApp, final int maxErrorCount) {
 
         final Logger infoLogger = Logger.getLogger("beast.app");
         try {
@@ -58,11 +58,11 @@ public class BeastMain {
 
             // Add a handler to handle warnings and errors. This is a ConsoleHandler
             // so the messages will go to StdOut..
-            Logger logger = Logger.getLogger("beast");
+            final Logger logger = Logger.getLogger("beast");
 
             Handler handler = new MessageLogHandler();
             handler.setFilter(new Filter() {
-                public boolean isLoggable(LogRecord record) {
+                public boolean isLoggable(final LogRecord record) {
                     return record.getLevel().intValue() < Level.WARNING.intValue();
                 }
             });
@@ -166,14 +166,14 @@ public class BeastMain {
 //        }
     }
 
-    static String getFileNameByDialog(String title) {
-        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+    static String getFileNameByDialog(final String title) {
+        final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
         fc.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File f) {
+            public boolean accept(final File f) {
                 if (f.isDirectory()) {
                     return true;
                 }
-                String name = f.getName().toLowerCase();
+                final String name = f.getName().toLowerCase();
                 if (name.endsWith(".xml")) {
                     return true;
                 }
@@ -187,7 +187,7 @@ public class BeastMain {
         });
 
         fc.setDialogTitle(title);
-        int rval = fc.showOpenDialog(null);
+        final int rval = fc.showOpenDialog(null);
 
         if (rval == JFileChooser.APPROVE_OPTION) {
             return fc.getSelectedFile().toString();
@@ -196,9 +196,9 @@ public class BeastMain {
     } // getFileNameByDialog
 
 
-    public static void centreLine(String line, int pageWidth) {
-        int n = pageWidth - line.length();
-        int n1 = n / 2;
+    public static void centreLine(final String line, final int pageWidth) {
+        final int n = pageWidth - line.length();
+        final int n1 = n / 2;
         for (int i = 0; i < n1; i++) {
             System.out.print(" ");
         }
@@ -209,14 +209,14 @@ public class BeastMain {
         System.out.println();
         centreLine("BEAST " + version.getVersionString() + ", " + version.getDateString(), 60);
         centreLine("Bayesian Evolutionary Analysis Sampling Trees", 60);
-        for (String creditLine : version.getCredits()) {
+        for (final String creditLine : version.getCredits()) {
             centreLine(creditLine, 60);
         }
         System.out.println();
 
     }
 
-    public static void printUsage(Arguments arguments) {
+    public static void printUsage(final Arguments arguments) {
 
         arguments.printUsage("beast", "[<input-file-name>]");
         System.out.println();
@@ -227,11 +227,11 @@ public class BeastMain {
     }
 
     //Main method
-    public static void main(String[] args) throws java.io.IOException {
-        List<String> MCMCargs = new ArrayList<String>();
+    public static void main(final String[] args) throws java.io.IOException {
+        final List<String> MCMCargs = new ArrayList<String>();
 //    	Utils.loadUIManager();
 
-        Arguments arguments = new Arguments(
+        final Arguments arguments = new Arguments(
                 new Arguments.Option[]{
 
 //                        new Arguments.Option("verbose", "Give verbose XML parsing messages"),
@@ -373,7 +373,7 @@ public class BeastMain {
 
         BeastConsoleApp consoleApp = null;
 
-        String nameString = "BEAST " + version.getVersionString();
+        final String nameString = "BEAST " + version.getVersionString();
 
         if (window) {
             Utils.loadUIManager();
@@ -382,9 +382,9 @@ public class BeastMain {
             System.setProperty("apple.awt.showGrowBox", "true");
             System.setProperty("beast.useWindow", "true");
 
-            javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");
+            final javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");
 
-            String aboutString = "<html><div style=\"font-family:sans-serif;\"><center>" +
+            final String aboutString = "<html><div style=\"font-family:sans-serif;\"><center>" +
                     "<div style=\"font-size:12;\"><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
                     "Version " + version.getVersionString() + ", " + version.getDateString() + "</p>" +
                     version.getHTMLCredits() +
@@ -399,11 +399,11 @@ public class BeastMain {
 
         if (options) {
 
-            String titleString = "<html><center><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
+            final String titleString = "<html><center><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
                     "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
-            javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");
+            final javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");
 
-            BeastDialog dialog = new BeastDialog(new JFrame(), titleString, icon);
+            final BeastDialog dialog = new BeastDialog(new JFrame(), titleString, icon);
 
             if (!dialog.showDialog(nameString, seed)) {
                 System.exit(0);
@@ -455,7 +455,9 @@ public class BeastMain {
         } else {
             if (arguments.hasOption("overwrite")) {
                 MCMCargs.add("-overwrite");
-            } else if (arguments.hasOption("resume")) {
+            }
+
+            if (arguments.hasOption("resume")) {
                 MCMCargs.add("-resume");
             }
         }
@@ -467,7 +469,7 @@ public class BeastMain {
 
         if (inputFile == null) {
 
-            String[] args2 = arguments.getLeftoverArguments();
+            final String[] args2 = arguments.getLeftoverArguments();
 
             if (args2.length > 1) {
                 System.err.println("Unknown option: " + args2[1]);
@@ -534,7 +536,7 @@ public class BeastMain {
         System.out.println();
 
         // Construct the beast object
-        BeastMCMC beastMCMC = new BeastMCMC();
+        final BeastMCMC beastMCMC = new BeastMCMC();
 
         try {
             // set all the settings...
