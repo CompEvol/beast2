@@ -1,6 +1,7 @@
 package beast.app.draw;
 
 
+import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
 import beast.core.Input;
 import beast.core.Plugin;
@@ -20,8 +21,9 @@ public class PluginInputEditor extends InputEditor.Base {
 
     PluginInputEditor _this;
 
-    public PluginInputEditor() {
-        super();
+    //public PluginInputEditor() {}
+    public PluginInputEditor(BeautiDoc doc) {
+        super(doc);
         _this = this;
     }
 
@@ -39,6 +41,8 @@ public class PluginInputEditor extends InputEditor.Base {
      */
     @Override
     public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    	setAlignmentY(LEFT_ALIGNMENT);
+    	
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;

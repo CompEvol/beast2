@@ -28,6 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import beast.app.draw.InputEditor;
 import beast.app.draw.PluginPanel;
 import beast.core.Description;
 import beast.core.Distribution;
@@ -125,6 +126,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
     private boolean isExpertMode = false;
 
+    public Set<InputEditor> currentInputEditors = new HashSet<InputEditor>();
+    
     /**
      * name of current file, used for saving (as opposed to saveAs) *
      */

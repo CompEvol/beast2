@@ -83,7 +83,7 @@ public interface InputEditor {
     /** propagate status of predecesor inputs through list of plugins **/
     void notifyValidationListeners(ValidationStatus state);
 
-public abstract class Base extends Box implements InputEditor { //, ValidateListener {
+public abstract class Base extends Box /*Panel*/ implements InputEditor { //, ValidateListener {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -140,22 +140,32 @@ public abstract class Base extends Box implements InputEditor { //, ValidateList
         }
     }
 
-    static public Set<InputEditor> g_currentInputEditors = new HashSet<InputEditor>();
 
     public static Integer g_nLabelWidth = 150;
 
-    public Base() {
-        super(BoxLayout.X_AXIS);
-    }
+//    Box box;
+    
+//    public Base() {
+////    	box = Box.createHorizontalBox();
+//        super(BoxLayout.X_AXIS);
+//        //g_currentInputEditors.add(this);
+////    	super.add(box);
+//    }
 
-//	public InputEditor(BeautiDoc doc) {
-//		super(BoxLayout.X_AXIS);
-//		//setAlignmentX(LEFT_ALIGNMENT);
-//		g_currentInputEditors.add(this);
-//	} // c'tor
+//    @Override
+//   	public Component add(Component comp) {
+//   		return box.add(comp);
+//   	}
 
+	public Base(BeautiDoc doc) {
+		super(BoxLayout.X_AXIS);
+		this.doc = doc;
+		if (doc != null) {
+			doc.currentInputEditors.add(this);
+		}
+	} // c'tor
 
-    protected BeautiDoc getDoc() {
+	protected BeautiDoc getDoc() {
         if (doc == null) {
             Component c = this;
             while (((Component) c).getParent() != null) {
@@ -291,7 +301,7 @@ public abstract class Base extends Box implements InputEditor { //, ValidateList
 
     /* check the input is valid, continue checking recursively */
     protected void validateAllEditors() {
-        for (InputEditor editor : g_currentInputEditors) {
+        for (InputEditor editor : doc.currentInputEditors) {
             editor.validateInput();
         }
     }

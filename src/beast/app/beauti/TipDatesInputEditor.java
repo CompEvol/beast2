@@ -36,7 +36,12 @@ import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
 
 public class TipDatesInputEditor extends PluginInputEditor {
-    private static final long serialVersionUID = 1L;
+
+	public TipDatesInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
+
+	private static final long serialVersionUID = 1L;
 
 
     @Override
@@ -62,7 +67,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
             m_plugin = tree;
             traitSet = tree.m_trait.get();
 
-            Box box = createVerticalBox();
+            Box box = Box.createVerticalBox();
 
             JCheckBox useTipDates = new JCheckBox("Use tip dates", traitSet != null);
             useTipDates.addActionListener(new ActionListener() {

@@ -48,9 +48,9 @@ public class PriorListInputEditor extends ListInputEditor {
 
     List<JButton> taxonButtons;
 
-//	public PriorListInputEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+	public PriorListInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
     @Override
     public Class<?> type() {
@@ -370,7 +370,7 @@ public class PriorListInputEditor extends ListInputEditor {
             itemBox.add(tipTextLabel);
         }
 
-        itemBox.add(createGlue());
+        itemBox.add(Box.createGlue());
     } // addPluginItem
 
 

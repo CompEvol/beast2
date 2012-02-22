@@ -20,6 +20,7 @@ import javax.swing.event.DocumentListener;
 
 import java.awt.*;
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
@@ -94,10 +95,16 @@ public class PluginPanel extends JPanel {
     }
 
     private static void registerInputEditors(String[] sInputEditors) {
+    	BeautiDoc doc = new BeautiDoc();
         for (String sInputEditor : sInputEditors) {
             try {
                 Class<?> _class = Class.forName(sInputEditor);
-                InputEditor editor = (InputEditor) _class.newInstance();
+                
+                
+                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
+                InputEditor editor = (InputEditor) con.newInstance(doc);
+                
+                //InputEditor editor = (InputEditor) _class.newInstance();
                 Class<?>[] types = editor.types();
                 for (Class<?> type : types) {
                     g_inputEditorMap.put(type, sInputEditor);
@@ -321,24 +328,30 @@ public class PluginPanel extends JPanel {
             if (g_listInputEditorMap.containsKey(inputClass)) {
                 // use custom list input editor
                 String sInputEditor = g_listInputEditorMap.get(inputClass);
-                inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
+                Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+                inputEditor = (InputEditor) con.newInstance(doc);
+
+                //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
             } else {
                 // otherwise, use generic list editor
-                inputEditor = new ListInputEditor();
+                inputEditor = new ListInputEditor(doc);
             }
             ((ListInputEditor) inputEditor).setButtonStatus(buttonStatus);
         } else if (input.possibleValues != null) {
             // handle enumeration inputs
-            inputEditor = new EnumInputEditor();
+            inputEditor = new EnumInputEditor(doc);
         } else if (g_inputEditorMap.containsKey(inputClass)) {
             // handle Plugin-input with custom input editors
             String sInputEditor = g_inputEditorMap.get(inputClass);
-            inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
+            
+            Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+            inputEditor = (InputEditor) con.newInstance(doc);
+            //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance(doc);
             //} else if (inputClass.isEnum()) {
             //    inputEditor = new EnumInputEditor();
         } else {
             // assume it is a general Plugin, so create a default Plugin input editor
-            inputEditor = new PluginInputEditor();
+            inputEditor = new PluginInputEditor(doc);
         }
         String sFullInputName = plugin.getClass().getName() + "." + input.getName();
         //System.err.println(sFullInputName);

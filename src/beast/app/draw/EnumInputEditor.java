@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -14,7 +15,12 @@ import beast.core.Plugin;
  * Input editor for enumeration inputs *
  */
 public class EnumInputEditor extends InputEditor.Base {
-    private static final long serialVersionUID = 1L;
+    public EnumInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
+    //public EnumInputEditor() {}
+
+	private static final long serialVersionUID = 1L;
     JComboBox m_selectPluginBox;
 
     @Override

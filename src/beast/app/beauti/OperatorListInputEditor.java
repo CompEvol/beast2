@@ -19,9 +19,9 @@ public class OperatorListInputEditor extends ListInputEditor {
     List<JTextField> textFields = new ArrayList<JTextField>();
     List<Operator> operators = new ArrayList<Operator>();
 
-//	public OperatorListInputEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+	public OperatorListInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
     @Override
     public Class<?> type() {

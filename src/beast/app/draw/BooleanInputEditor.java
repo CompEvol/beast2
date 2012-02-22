@@ -6,11 +6,17 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 
 public class BooleanInputEditor extends InputEditor.Base {
-    private static final long serialVersionUID = 1L;
+    public BooleanInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
+    //public BooleanInputEditor() {}
+
+	private static final long serialVersionUID = 1L;
     JCheckBox m_entry;
 
 

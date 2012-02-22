@@ -21,9 +21,9 @@ public class FrequenciesInputEditor extends PluginInputEditor {
     private static final long serialVersionUID = 1L;
     boolean bUseDefaultBehavior;
 
-//	public FrequenciesInputEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+	public FrequenciesInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
     @Override
     public Class<?> type() {

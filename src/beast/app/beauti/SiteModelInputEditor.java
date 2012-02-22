@@ -21,9 +21,9 @@ public class SiteModelInputEditor extends PluginInputEditor {
     JTextField categoryCountEntry;
     InputEditor gammaShapeEditor;
 
-//	public SiteModelInputEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+	public SiteModelInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
     @Override
     public Class<?> type() {

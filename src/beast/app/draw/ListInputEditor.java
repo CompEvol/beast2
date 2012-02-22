@@ -1,6 +1,7 @@
 package beast.app.draw;
 
 
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -70,8 +71,9 @@ public class ListInputEditor extends InputEditor.Base {
         }
     }
 
-    public ListInputEditor() {
-        super();
+    //public ListInputEditor() {}
+    public ListInputEditor(BeautiDoc doc) {
+        super(doc);
         m_entries = new ArrayList<JTextField>();
         m_delButton = new ArrayList<SmallButton>();
         m_editButton = new ArrayList<SmallButton>();

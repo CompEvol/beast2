@@ -76,9 +76,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
     Object[][] tableData;
     JTable table;
 
-//	public AlignmentListInputEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+	//public AlignmentListInputEditor() {}
+	public AlignmentListInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
     @Override
     public Class<?> type() {
@@ -110,7 +111,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
         }
         nPartitions = alignments.size();
         // super.init(input, plugin, bExpandOption, false);
-        Box box = createVerticalBox();
+        Box box = Box.createVerticalBox();
         box.add(Box.createVerticalStrut(5));
         box.add(createButtonBox());
         box.add(Box.createVerticalStrut(5));

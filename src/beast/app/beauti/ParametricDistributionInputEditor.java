@@ -24,7 +24,11 @@ import beast.math.distributions.ParametricDistribution;
 
 public class ParametricDistributionInputEditor extends PluginInputEditor {
 
-    private static final long serialVersionUID = 1L;
+    public ParametricDistributionInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
+
+	private static final long serialVersionUID = 1L;
     boolean useDefaultBehavior;
 
     @Override

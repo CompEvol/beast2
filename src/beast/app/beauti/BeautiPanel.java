@@ -218,7 +218,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     }
 
     void refreshInputPanel() throws Exception {
-        InputEditor.Base.g_currentInputEditors.clear();
+    	doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
         Plugin plugin = config;
         Input<?> input = config.resolveInput(doc, iPartition);

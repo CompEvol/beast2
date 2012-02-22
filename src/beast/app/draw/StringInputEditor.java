@@ -1,12 +1,13 @@
 package beast.app.draw;
 
-import java.awt.Dimension;
+import beast.app.beauti.BeautiDoc;
 
 public class StringInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
 
-    public StringInputEditor() {
-        super();
+    //public StringInputEditor()) {}
+    public StringInputEditor(BeautiDoc doc) {
+        super(doc);
     }
 
     @Override

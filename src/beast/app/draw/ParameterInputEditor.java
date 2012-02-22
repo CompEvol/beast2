@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.Plugin;
@@ -15,7 +16,12 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 
 public class ParameterInputEditor extends PluginInputEditor {
-    private static final long serialVersionUID = 1L;
+    //public ParameterInputEditor() {}
+    public ParameterInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
+
+	private static final long serialVersionUID = 1L;
     JCheckBox m_isEstimatedBox;
 
     @Override

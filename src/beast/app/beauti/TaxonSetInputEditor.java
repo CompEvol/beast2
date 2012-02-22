@@ -43,9 +43,9 @@ public class TaxonSetInputEditor extends InputEditor.Base {
     int m_sortByColumn = 0;
     boolean m_bIsAscending = true;
 
-//	public TaxonSetInputEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+	public TaxonSetInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
     @Override
     public Class<?> type() {
