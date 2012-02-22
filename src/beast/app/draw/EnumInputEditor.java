@@ -13,7 +13,7 @@ import beast.core.Plugin;
 /**
  * Input editor for enumeration inputs *
  */
-public class EnumInputEditor extends InputEditor {
+public class EnumInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
     JComboBox m_selectPluginBox;
 

@@ -173,17 +173,16 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
             // draw ticks on edge
             Font smallFont = new Font(font.getName(), font.getStyle(), 8);
             g.setFont(smallFont);
-            DecimalFormat myFormatter = new DecimalFormat("##.##", new DecimalFormatSymbols(Locale.US));
             fMinValue += m_distr.m_offset.get();
             for (int i = 0; i <= NR_OF_TICKS_X; i++) {
                 int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;
                 g.drawLine(x, graphoffset + nGraphHeight, x, graphoffset + nGraphHeight + 5);
-                g.drawString(myFormatter.format(fMinValue + fXRange * i / NR_OF_TICKS_X), x + 2, graphoffset + nGraphHeight + 5 + 2);
+                g.drawString(format(fMinValue + fXRange * i / NR_OF_TICKS_X), x + 2, graphoffset + nGraphHeight + 5 + 2);
             }
             for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
                 int y = graphoffset + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
                 g.drawLine(graphoffset - 5, y, graphoffset, y);
-                g.drawString(myFormatter.format(fYMax * i / NR_OF_TICKS_Y), 0, y + 3);
+                g.drawString(format(fYMax * i / NR_OF_TICKS_Y), 0, y + 3);
             }
 
             g.setFont(new Font(font.getName(), font.getStyle(), 10));
@@ -192,19 +191,29 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
                 String[] sStrs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
                 Double[] fQuantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
                 for (k = 0; k < 5; k++) {
-                    g.drawString(myFormatter.format(m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                	try {
+                		g.drawString(format(m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                    } catch (MathException e) {
+                    	g.drawString("not available", nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                    }
                     g.drawString(sStrs[k], nGraphWidth / 2 - fontMetrics.stringWidth(sStrs[k]), graphoffset + nGraphHeight + 20 + k * 10);
                 }
-            } catch (MathException e) {
-                g.drawString("Quantiles not available", graphoffset, graphoffset + nGraphHeight + 20);
             } catch (Exception e) {
                 // probably something wrong with the parameters of the parametric distribution
                 g.drawString("Improper parameters", graphoffset, graphoffset + nGraphHeight + 20);
             }
         }
-
-        ;
-
+        
+        DecimalFormat myFormatter = new DecimalFormat("##.##", new DecimalFormatSymbols(Locale.US));
+        DecimalFormat myFormatter2 = new DecimalFormat("##.E0#", new DecimalFormatSymbols(Locale.US));
+        
+        private String format(double value) {
+            if (value > 1e-3) {
+            	return myFormatter.format(value);
+            }
+            return myFormatter2.format(value);
+        }
+        
         private double adjust(double fYMax) {
             // adjust fYMax so that the ticks come out right
             int k = 0;

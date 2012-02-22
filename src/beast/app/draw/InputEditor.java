@@ -22,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
+import beast.app.draw.ValidateListener.ValidationStatus;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -35,18 +36,41 @@ import beast.core.Plugin;
  * To change the behaviour, override
  * public void init(Input<?> input, Plugin plugin) {
  */
-public abstract class InputEditor extends Box implements ValidateListener {
+
+public interface InputEditor {
     final public static String NO_VALUE = "<none>";
 
-    public enum ExpandOption {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM}
+    public enum ExpandOption {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM};
 
-    ;
+    public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY};
+    
+//    public enum ValidationStatus {
+//        IS_VALID,
+//        IS_INVALID,
+//        HAS_INVALIDMEMBERS
+//    }
+//
+//    void validate(ValidationStatus state);
 
-    public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY}
+    void setExpertMode(boolean b);
+    boolean isExpertMode();
+    void checkValidation();
 
-    ;
+    void addValidationListener(ValidateListener validateListener);
+    void notifyValidationListeners(ValidationStatus state);
 
-    private static boolean isExpertMode = false;
+    Class<?> type();
+
+    Class<?>[] types();
+
+    void setDoc(BeautiDoc doc);
+
+    void setBorder(Border border);
+    
+    void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons);
+
+public abstract class Base extends Box implements InputEditor, ValidateListener {
+
 
     private static final long serialVersionUID = 1L;
     /**
@@ -95,7 +119,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
         m_validateListeners.add(validateListener);
     }
 
-    void notifyValidationListeners(ValidationStatus state) {
+    public void notifyValidationListeners(ValidationStatus state) {
         if (m_validateListeners != null) {
             for (ValidateListener listener : m_validateListeners) {
                 listener.validate(state);
@@ -107,7 +131,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
 
     public static Integer g_nLabelWidth = 150;
 
-    public InputEditor() {
+    public Base() {
         super(BoxLayout.X_AXIS);
     }
 
@@ -259,7 +283,7 @@ public abstract class InputEditor extends Box implements ValidateListener {
         }
     }
 
-    protected void checkValidation() {
+    public void checkValidation() {
         try {
             m_input.validate();
             if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_plugin)) {
@@ -369,15 +393,22 @@ public abstract class InputEditor extends Box implements ValidateListener {
         // No border
     }
 
-    // STATIC MEMBER FUNCTIONS
-
-    public static boolean isExpertMode() {
-        return isExpertMode;
+    @Override
+    public boolean isExpertMode() {
+        return doc.isExpertMode();
     }
 
-    public static void setExpertMode(boolean expertMode) {
-        isExpertMode = expertMode;
+    @Override
+    public void setExpertMode(boolean expertMode) {
+    	doc.setExpertMode(expertMode);
+    }
+    
+    @Override
+    public void setDoc(BeautiDoc doc) {
+    	this.doc = doc;
     }
 
 
-} // class InputEditor
+} // class InputEditor.Base
+
+} // InputEditor interface

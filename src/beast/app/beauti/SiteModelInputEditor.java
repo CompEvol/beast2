@@ -1,6 +1,8 @@
 package beast.app.beauti;
 
 
+import java.awt.Component;
+
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -62,7 +64,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
         String sCategories = categoryCountEntry.getText();
         try {
             int nCategories = Integer.parseInt(sCategories);
-            gammaShapeEditor.setVisible(nCategories >= 2);
+            ((Component) gammaShapeEditor).setVisible(nCategories >= 2);
             repaint();
         } catch (java.lang.NumberFormatException e) {
             // ignore.
@@ -72,7 +74,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
     public InputEditor createShapeEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
         gammaShapeEditor = PluginPanel.createInputEditor(input, m_plugin, doc);
-        gammaShapeEditor.setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
+        ((Component) gammaShapeEditor).setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
 }

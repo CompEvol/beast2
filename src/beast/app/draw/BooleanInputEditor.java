@@ -9,7 +9,7 @@ import javax.swing.JCheckBox;
 import beast.core.Input;
 import beast.core.Plugin;
 
-public class BooleanInputEditor extends InputEditor {
+public class BooleanInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
     JCheckBox m_entry;
 

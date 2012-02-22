@@ -96,7 +96,7 @@ public class BeautiConfig extends Plugin {
                 }
             }
         }
-        InputEditor.setExpertMode(bIsExpertInput.get());
+        //InputEditor.setExpertMode(bIsExpertInput.get());
         subTemplates = subTemplatesInput.get();
     }
 
@@ -105,6 +105,7 @@ public class BeautiConfig extends Plugin {
         for (BeautiSubTemplate sub : subTemplates) {
             sub.setDoc(doc);
         }
+        doc.setExpertMode(bIsExpertInput.get());
     }
 
     public void clear() {

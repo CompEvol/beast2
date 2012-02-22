@@ -247,7 +247,7 @@ public class PluginPanel extends JPanel {
                 String sFullInputName = plugin.getClass().getName() + "." + input.getName();
                 if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
                     InputEditor inputEditor = createInputEditor(input, plugin, true, ExpandOption.FALSE, ButtonStatus.ALL, editor, doc);
-                    box.add(inputEditor);
+                    box.add((Component) inputEditor);
                     box.add(Box.createVerticalStrut(5));
                     //box.add(Box.createVerticalGlue());
                     if (validateListener != null) {
@@ -370,10 +370,10 @@ public class PluginPanel extends JPanel {
 
             }
         }
-        inputEditor.doc = doc;
+        inputEditor.setDoc(doc);
         inputEditor.init(input, plugin, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
-        inputEditor.setVisible(true);
+        ((Component) inputEditor).setVisible(true);
         return inputEditor;
     } // createInputEditor
 
@@ -477,7 +477,7 @@ public class PluginPanel extends JPanel {
         return candidates;
     }
 
-    public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList) {
+    public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList, BeautiDoc doc) {
 
         //List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
         List<String> sPlugins = new ArrayList<String>();
@@ -490,7 +490,7 @@ public class PluginPanel extends JPanel {
         if (sTabuList == null) {
             sTabuList = new ArrayList<String>();
         }
-        if (!InputEditor.isExpertMode()) {
+        if (!doc.isExpertMode()) {
             for (Plugin plugin : listAscendants(parent, g_plugins.values())) {
                 sTabuList.add(plugin.getID());
             }
@@ -521,7 +521,7 @@ public class PluginPanel extends JPanel {
             }
         }
         /* add all plugin-classes of type assignable to the input */
-        if (InputEditor.isExpertMode()) {
+        if (doc.isExpertMode()) {
             List<String> sClasses = AddOnManager.find(input.getType(), "beast");
             for (String sClass : sClasses) {
                 try {

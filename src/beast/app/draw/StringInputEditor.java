@@ -2,7 +2,7 @@ package beast.app.draw;
 
 import java.awt.Dimension;
 
-public class StringInputEditor extends InputEditor {
+public class StringInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
 
     public StringInputEditor() {

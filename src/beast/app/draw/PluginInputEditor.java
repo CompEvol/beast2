@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class PluginInputEditor extends InputEditor implements ValidateListener {
+public class PluginInputEditor extends InputEditor.Base implements ValidateListener {
     private static final long serialVersionUID = 1L;
     JComboBox m_selectPluginBox;
     SmallButton m_editPluginButton;
@@ -92,13 +92,15 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
     } // init
 
     void refresh() {
-        String sOldID = (String) m_selectPluginBox.getSelectedItem();
-        String sID = ((Plugin) m_input.get()).getID();
-        if (!sID.equals(sOldID)) {
-            m_selectPluginBox.addItem(sID);
-            m_selectPluginBox.setSelectedItem(sID);
-            m_selectPluginBox.removeItem(sOldID);
-        }
+    	if (m_selectPluginBox != null) {
+	        String sOldID = (String) m_selectPluginBox.getSelectedItem();
+	        String sID = ((Plugin) m_input.get()).getID();
+	        if (!sID.equals(sOldID)) {
+	            m_selectPluginBox.addItem(sID);
+	            m_selectPluginBox.setSelectedItem(sID);
+	            m_selectPluginBox.removeItem(sOldID);
+	        }
+    	}
         super.refreshPanel();
 //        Component c = this;
 //        while (((Component) c).getParent() != null) {
@@ -110,7 +112,7 @@ public class PluginInputEditor extends InputEditor implements ValidateListener {
     }
 
     void initSelectPluginBox() {
-        List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
+        List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null, doc);
         if (sAvailablePlugins.size() > 0) {
             sAvailablePlugins.add(NO_VALUE);
             for (int i = 0; i < sAvailablePlugins.size(); i++) {

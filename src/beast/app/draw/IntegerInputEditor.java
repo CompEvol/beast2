@@ -1,6 +1,6 @@
 package beast.app.draw;
 
-public class IntegerInputEditor extends InputEditor {
+public class IntegerInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
 
     public IntegerInputEditor() {

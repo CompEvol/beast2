@@ -203,11 +203,11 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
             InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
             Box box = Box.createVerticalBox();
-            box.add(inputEditor);
+            box.add((Component) inputEditor);
             // RRB: is there a better way than just pooring in glue at the bottom?
             //for (int i = 0; i < 30; i++) {
 
-            box.add(Box.createVerticalStrut(1024 - inputEditor.getPreferredSize().height));
+            box.add(Box.createVerticalStrut(1024 - ((Component)inputEditor).getPreferredSize().height));
             //}
             JScrollPane scroller = new JScrollPane(box);
             centralComponent = scroller;
@@ -218,8 +218,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     }
 
     void refreshInputPanel() throws Exception {
-        InputEditor.g_currentInputEditors.clear();
-        InputEditor.g_nLabelWidth = config.nLabelWidthInput.get();
+        InputEditor.Base.g_currentInputEditors.clear();
+        InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
         Plugin plugin = config;
         Input<?> input = config.resolveInput(doc, iPartition);
 

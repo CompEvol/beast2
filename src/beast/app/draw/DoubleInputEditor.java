@@ -1,6 +1,6 @@
 package beast.app.draw;
 
-public class DoubleInputEditor extends InputEditor {
+public class DoubleInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
 
     public DoubleInputEditor() {

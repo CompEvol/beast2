@@ -123,6 +123,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
      */
     public Set<Taxon> taxaset = null;
 
+    private boolean isExpertMode = false;
 
     /**
      * name of current file, used for saving (as opposed to saveAs) *
@@ -1800,4 +1801,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
     		System.err.print(s);
     	}
     }
+
+	public boolean isExpertMode() {
+		return isExpertMode;
+	}
+
+	public void setExpertMode(boolean expertMode) {
+		isExpertMode = expertMode;
+	}
 } // class BeautiDoc

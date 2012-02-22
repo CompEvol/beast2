@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ListInputEditor extends InputEditor {
+public class ListInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
     static Image DOWN_ICON;
     static Image LEFT_ICON;
@@ -139,7 +139,7 @@ public class ListInputEditor extends InputEditor {
                 for (int i = 0; i < m_entries.size(); i++) {
                     sTabuList.add(m_entries.get(i).getText());
                 }
-                List<String> sPlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, sTabuList);
+                List<String> sPlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, sTabuList, doc);
                 if (sPlugins.size() == 0) {
                     m_addButton.setVisible(false);
                 }
@@ -400,7 +400,7 @@ public class ListInputEditor extends InputEditor {
      */
     public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
         List<Plugin> selectedPlugins = new ArrayList<Plugin>();
-        List<String> sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList);
+        List<String> sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList, doc);
         /* select a plugin **/
         String sClassName = null;
         if (sPlugins.size() == 1) {
@@ -409,9 +409,9 @@ public class ListInputEditor extends InputEditor {
         } else if (sPlugins.size() == 0) {
             // no candidate => we cannot be in expert mode
             // create a new Plugin
-            InputEditor.setExpertMode(true);
-            sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList);
-            InputEditor.setExpertMode(false);
+            setExpertMode(true);
+            sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList, doc);
+            setExpertMode(false);
             sClassName = sPlugins.get(0);
         } else {
             // otherwise, pop up a list box

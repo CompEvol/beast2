@@ -30,7 +30,7 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 
-public class TaxonSetInputEditor extends InputEditor {
+public class TaxonSetInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
     List<Taxon> m_taxonset;
     List<Taxon> m_lineageset;
