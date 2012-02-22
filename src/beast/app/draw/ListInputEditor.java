@@ -133,7 +133,7 @@ public class ListInputEditor extends InputEditor.Base {
                 }
             });
             box.add(m_addButton);
-            if (!isExpertMode()) {
+            if (!doc.isExpertMode()) {
                 // if nothing can be added, make add button invisible
                 List<String> sTabuList = new ArrayList<String>();
                 for (int i = 0; i < m_entries.size(); i++) {
@@ -151,7 +151,7 @@ public class ListInputEditor extends InputEditor.Base {
         if (m_bAddButtons) {
             box.add(m_validateLabel);
             m_validateLabel.setVisible(true);
-            checkValidation();
+            validateInput();
         }
         box.add(Box.createHorizontalGlue());
         m_listBox.add(box);
@@ -344,7 +344,7 @@ public class ListInputEditor extends InputEditor.Base {
                 addSingleItem(plugin);
                 getDoc().addPlugin(plugin);
             }
-            checkValidation();
+            validateInput();
             updateState();
             repaint();
         }
@@ -381,7 +381,7 @@ public class ListInputEditor extends InputEditor.Base {
         safeRemove(m_delButton, i);
         safeRemove(m_editButton, i);
         safeRemove(m_validateLabels, i);
-        checkValidation();
+        validateInput();
         updateState();
         doLayout();
         repaint();
@@ -409,9 +409,9 @@ public class ListInputEditor extends InputEditor.Base {
         } else if (sPlugins.size() == 0) {
             // no candidate => we cannot be in expert mode
             // create a new Plugin
-            setExpertMode(true);
+            doc.setExpertMode(true);
             sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList, doc);
-            setExpertMode(false);
+            doc.setExpertMode(false);
             sClassName = sPlugins.get(0);
         } else {
             // otherwise, pop up a list box
@@ -457,14 +457,14 @@ public class ListInputEditor extends InputEditor.Base {
                 }
             }
         }
-        checkValidation();
+        validateInput();
         // this triggers properly re-layouting after an edit action
         setVisible(false);
         setVisible(true);
     } // updateState
 
     @Override
-    public void validate(ValidationStatus state) {
+    public void startValidating(ValidationStatus state) {
         updateState();
     }
 

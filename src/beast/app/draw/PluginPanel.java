@@ -233,7 +233,7 @@ public class PluginPanel extends JPanel {
     /**
      * add all inputs of a plugin to a box *
      */
-    public static List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor, ValidateListener validateListener, BeautiDoc doc) {
+    public static List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor, InputEditor validateListener, BeautiDoc doc) {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
         List<InputEditor> editors = new ArrayList<InputEditor>();

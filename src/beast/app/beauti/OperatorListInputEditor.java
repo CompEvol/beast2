@@ -107,7 +107,7 @@ public class OperatorListInputEditor extends ListInputEditor {
     ;
 
     @Override
-    protected void updateState() {
+    public void updateState() {
         super.updateState();
         for (int i = 0; i < textFields.size(); i++) {
             textFields.get(i).setText(operators.get(i).m_pWeight.get() + "");

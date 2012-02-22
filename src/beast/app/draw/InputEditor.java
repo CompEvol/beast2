@@ -22,7 +22,6 @@ import javax.swing.event.ListSelectionListener;
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
-import beast.app.draw.ValidateListener.ValidationStatus;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -36,7 +35,7 @@ import beast.core.Plugin;
  * To change the behaviour, override
  * public void init(Input<?> input, Plugin plugin) {
  */
-
+/** note that it is assumed that any InputEditor is a java.awt.Component **/
 public interface InputEditor {
     final public static String NO_VALUE = "<none>";
 
@@ -44,33 +43,47 @@ public interface InputEditor {
 
     public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY};
     
-//    public enum ValidationStatus {
-//        IS_VALID,
-//        IS_INVALID,
-//        HAS_INVALIDMEMBERS
-//    }
-//
-//    void validate(ValidationStatus state);
+    public enum ValidationStatus {
+        IS_VALID,
+        IS_INVALID,
+        HAS_INVALIDMEMBERS
+    }
 
-    void setExpertMode(boolean b);
-    boolean isExpertMode();
-    void checkValidation();
 
-    void addValidationListener(ValidateListener validateListener);
-    void notifyValidationListeners(ValidationStatus state);
-
+    /** type of Plugin to which this editor can be used **/ 
     Class<?> type();
 
+    /** list of types of Plugins to which this editor can be used **/ 
     Class<?>[] types();
 
-    void setDoc(BeautiDoc doc);
-
-    void setBorder(Border border);
-    
+    /** initialise InputEditor
+     * @param input to be edited
+     * @param plugin parent plugin containing the input
+     * @param bExpandOption start state of input editor
+     * @param bAddButtons button status of input editor
+     */
     void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons);
 
-public abstract class Base extends Box implements InputEditor, ValidateListener {
+    /** set document with the model containing the input **/
+    void setDoc(BeautiDoc doc);
 
+    /** set decoration **/
+    void setBorder(Border border);
+    
+
+    /** prepare to validate input **/
+    void startValidating(ValidationStatus state);
+    
+    /** validate input and update status of input editor if necessary **/
+    void validateInput();
+    
+    /** add input editor to listen for changes **/
+    void addValidationListener(InputEditor validateListener);
+    
+    /** propagate status of predecesor inputs through list of plugins **/
+    void notifyValidationListeners(ValidationStatus state);
+
+public abstract class Base extends Box implements InputEditor { //, ValidateListener {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -110,19 +123,19 @@ public abstract class Base extends Box implements InputEditor, ValidateListener 
     /**
      * list of objects that want to be notified of the validation state when it changes *
      */
-    List<ValidateListener> m_validateListeners;
+    List<InputEditor> m_validateListeners;
 
-    public void addValidationListener(ValidateListener validateListener) {
+    public void addValidationListener(InputEditor validateListener) {
         if (m_validateListeners == null) {
-            m_validateListeners = new ArrayList<ValidateListener>();
+            m_validateListeners = new ArrayList<InputEditor>();
         }
         m_validateListeners.add(validateListener);
     }
 
     public void notifyValidationListeners(ValidationStatus state) {
         if (m_validateListeners != null) {
-            for (ValidateListener listener : m_validateListeners) {
-                listener.validate(state);
+            for (InputEditor listener : m_validateListeners) {
+                listener.startValidating(state);
             }
         }
     }
@@ -224,7 +237,7 @@ public abstract class Base extends Box implements InputEditor, ValidateListener 
     void processEntry() {
         try {
             m_input.setValue(m_entry.getText(), m_plugin);
-            checkValidation();
+            validateInput();
             m_entry.requestFocusInWindow();
         } catch (Exception ex) {
 //			JOptionPane.showMessageDialog(null, "Error while setting " + m_input.getName() + ": " + ex.getMessage() +
@@ -272,18 +285,19 @@ public abstract class Base extends Box implements InputEditor, ValidateListener 
             m_validateLabel = new SmallLabel("x", new Color(200, 0, 0));
             add(m_validateLabel);
             m_validateLabel.setVisible(true);
-            checkValidation();
+            validateInput();
         }
     }
 
     /* check the input is valid, continue checking recursively */
     protected void validateAllEditors() {
         for (InputEditor editor : g_currentInputEditors) {
-            editor.checkValidation();
+            editor.validateInput();
         }
     }
 
-    public void checkValidation() {
+    @Override
+    public void validateInput() {
         try {
             m_input.validate();
             if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_plugin)) {
@@ -358,8 +372,8 @@ public abstract class Base extends Box implements InputEditor, ValidateListener 
     } // validateRecursively
 
     @Override
-    public void validate(ValidationStatus state) {
-        checkValidation();
+    public void startValidating(ValidationStatus state) {
+        validateInput();
     }
 
 
@@ -391,16 +405,6 @@ public abstract class Base extends Box implements InputEditor, ValidateListener 
     @Override
     public void setBorder(Border border) {
         // No border
-    }
-
-    @Override
-    public boolean isExpertMode() {
-        return doc.isExpertMode();
-    }
-
-    @Override
-    public void setExpertMode(boolean expertMode) {
-    	doc.setExpertMode(expertMode);
     }
     
     @Override

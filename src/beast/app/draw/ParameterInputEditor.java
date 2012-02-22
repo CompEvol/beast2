@@ -38,7 +38,7 @@ public class ParameterInputEditor extends PluginInputEditor {
             RealParameter parameter = (RealParameter) m_input.get();
             parameter.m_pValues.setValue(sValue, parameter);
             parameter.initAndValidate();
-            checkValidation();
+            validateInput();
         } catch (Exception ex) {
             m_validateLabel.setVisible(true);
             m_validateLabel.setToolTipText("<html><p>Parsing error: " + ex.getMessage() + ". Value was left at " + m_input.get() + ".</p></html>");
@@ -90,7 +90,7 @@ public class ParameterInputEditor extends PluginInputEditor {
             paramBox.add(m_isEstimatedBox);
 
             // only show the estimate flag if there is an operator that works on this parameter
-            m_isEstimatedBox.setVisible(isExpertMode());
+            m_isEstimatedBox.setVisible(doc.isExpertMode());
             //m_editPluginButton.setVisible(false);
             //m_bAddButtons = false;
             for (Plugin plugin2 : ((Plugin) m_input.get()).outputs) {

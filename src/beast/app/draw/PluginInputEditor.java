@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class PluginInputEditor extends InputEditor.Base implements ValidateListener {
+public class PluginInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
     JComboBox m_selectPluginBox;
     SmallButton m_editPluginButton;
@@ -82,7 +82,7 @@ public class PluginInputEditor extends InputEditor.Base implements ValidateListe
                             }
                         }
                         refresh();
-                        checkValidation();
+                        validateInput();
                     }
                 });
                 add(m_editPluginButton);
@@ -287,7 +287,7 @@ public class PluginInputEditor extends InputEditor.Base implements ValidateListe
                             if (m_bAddButtons) {
                                 m_editPluginButton.setEnabled(true);
                             }
-                            checkValidation();
+                            validateInput();
                         }
                         sync();
                         refreshPanel();
