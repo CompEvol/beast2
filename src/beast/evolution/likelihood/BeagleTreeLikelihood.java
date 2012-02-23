@@ -458,6 +458,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             m_nHasDirt = Tree.IS_DIRTY;
             return true;
         }
+
         return m_tree.get().somethingIsDirty();
     }
 
@@ -489,9 +490,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         if (useScaleFactors || useAutoScaling) {
             scaleBufferHelper.restoreState();
-            int[] tmp = storedScaleBufferIndices;
+            int[] tmp2 = storedScaleBufferIndices;
             storedScaleBufferIndices = scaleBufferIndices;
-            scaleBufferIndices = tmp;
+            scaleBufferIndices = tmp2;
 //            rescalingCount = storedRescalingCount;
         }
 
@@ -732,9 +733,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         // First update the transition probability matrix(ices) for this branch
         int update = (node.isDirty() | m_nHasDirt);
-//        if (parent!=null) {
-//        	update |= parent.isDirty();
-//        }
+        if (parent!=null) {
+        	update |= parent.isDirty();
+        }
         if (!node.isRoot() && (update != Tree.IS_CLEAN)) {
 
             final double branchRate = (m_branchRateModel == null ? 1.0 : m_branchRateModel.getRateForBranch(node));
