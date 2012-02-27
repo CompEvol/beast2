@@ -242,6 +242,7 @@ public class BeastMain {
                         new Arguments.Option("working", "Change working directory to input file's directory"),
                         new Arguments.LongOption("seed", "Specify a random number generator seed"),
                         new Arguments.StringOption("prefix", "PREFIX", "Specify a prefix for all output log filenames"),
+                        new Arguments.StringOption("statefile", "STATEFILE", "Specify the filename for storing/restoring the state"),
                         new Arguments.Option("overwrite", "Allow overwriting of log files"),
                         new Arguments.Option("resume", "Allow appending of log files"),
                         // RRB: not sure what effect this option has
@@ -284,6 +285,7 @@ public class BeastMain {
         final boolean options = arguments.hasOption("options");
         final boolean working = arguments.hasOption("working");
         String fileNamePrefix = null;
+        String stateFileName = null;
         //boolean allowOverwrite = arguments.hasOption("overwrite");
 
         long seed = Randomizer.getSeed();
@@ -297,6 +299,10 @@ public class BeastMain {
 
         if (arguments.hasOption("prefix")) {
             fileNamePrefix = arguments.getStringOption("prefix");
+        }
+
+        if (arguments.hasOption("statefile")) {
+        	stateFileName = arguments.getStringOption("statefile");
         }
 
         long beagleFlags = 0;
@@ -511,6 +517,11 @@ public class BeastMain {
         if (fileNamePrefix != null && fileNamePrefix.trim().length() > 0) {
             System.setProperty("file.name.prefix", fileNamePrefix.trim());
         }
+
+        if (stateFileName!= null && stateFileName.trim().length() > 0) {
+            System.setProperty("state.file.name", stateFileName.trim());
+        }
+        
 
 //        if (allowOverwrite) {
 //            System.setProperty("log.allow.overwrite", "true");

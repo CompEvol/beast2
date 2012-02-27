@@ -14,7 +14,11 @@ public abstract class Runnable extends Plugin {
      * State synchronising with the file *
      */
     public void setStateFile(String sFileName, boolean bRestoreFromFile) {
-        m_sStateFile = sFileName;
+    	if (System.getProperty("state.file.name") != null) {
+    		m_sStateFile = System.getProperty("state.file.name");
+    	} else {
+    		m_sStateFile = sFileName;
+    	}
         m_bRestoreFromFile = bRestoreFromFile;
     }
 

@@ -165,6 +165,9 @@ public class MCMC extends Runnable {
         }
         if (m_startState.get() != null) {
             this.state = m_startState.get();
+            if (m_storeEvery.get() > 0) {
+                this.state.m_storeEvery.setValue(m_storeEvery.get(), this.state);
+            }
         } else {
             // create state from scratch by collecting StateNode inputs from Operators
             this.state = new State();
