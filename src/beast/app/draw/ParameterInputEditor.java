@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
@@ -55,7 +56,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 
 
     @Override
-    protected void addComboBox(Box box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
         Box paramBox = Box.createHorizontalBox();
         RealParameter parameter = (RealParameter) input.get();
 

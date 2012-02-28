@@ -9,6 +9,9 @@ import beast.util.AddOnManager;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,7 +44,7 @@ public class PluginInputEditor extends InputEditor.Base {
      */
     @Override
     public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
-    	setAlignmentY(LEFT_ALIGNMENT);
+    	//box.setAlignmentY(LEFT_ALIGNMENT);
     	
         m_bAddButtons = bAddButtons;
         m_input = input;
@@ -148,6 +151,8 @@ public class PluginInputEditor extends InputEditor.Base {
         PluginPanel.addInputs(box, (Plugin) input.get(), this, this, doc);
 
         box.setBorder(new EtchedBorder());
+        //box.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        
         add(box);
         m_expansionBox = box;
     } // expandedInit
@@ -158,7 +163,7 @@ public class PluginInputEditor extends InputEditor.Base {
      * On choosing a new value, create plugin (if is not already an object)
      * Furthermore, if expanded, update expanded inputs
      */
-    protected void addComboBox(Box box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
         List<BeautiSubTemplate> availableTemplates = PluginPanel.getAvailableTemplates(m_input, m_plugin, null, doc);
         if (availableTemplates.size() > 0) {
 //        	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {
@@ -311,7 +316,7 @@ public class PluginInputEditor extends InputEditor.Base {
 //            }
 //            });
             m_selectPluginBox.setToolTipText(input.getTipText());
-            m_selectPluginBox.setMaximumSize(new Dimension(1024, 20));
+            m_selectPluginBox.setMaximumSize(new Dimension(1024, 200));
             box.add(m_selectPluginBox);
         }
     }

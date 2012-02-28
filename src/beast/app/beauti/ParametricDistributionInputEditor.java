@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.commons.math.MathException;
@@ -57,7 +58,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 
     @Override
     /** suppress combobox **/
-    protected void addComboBox(Box box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
         if (useDefaultBehavior) {
             super.addComboBox(box, input, plugin);
         }

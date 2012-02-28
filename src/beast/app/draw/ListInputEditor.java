@@ -79,7 +79,8 @@ public class ListInputEditor extends InputEditor.Base {
         m_editButton = new ArrayList<SmallButton>();
         m_validateLabels = new ArrayList<SmallLabel>();
         m_bExpandOption = ExpandOption.FALSE;
-        setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        //box.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     }
 
     @Override

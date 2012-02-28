@@ -1,11 +1,13 @@
 package beast.app.beauti;
 
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
@@ -39,7 +41,7 @@ public class FrequenciesInputEditor extends PluginInputEditor {
 
     @Override
     /** suppress combobox **/
-    protected void addComboBox(Box box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
         Frequencies freqs = (Frequencies) input.get();
 
         JComboBox comboBox = new JComboBox(new String[]{"Estimated", "Empirical", "All equal"});

@@ -4,6 +4,8 @@ package beast.app.draw;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
@@ -82,8 +85,10 @@ public interface InputEditor {
     
     /** propagate status of predecesor inputs through list of plugins **/
     void notifyValidationListeners(ValidationStatus state);
+    
+    Component getComponent();
 
-public abstract class Base extends Box /*Panel*/ implements InputEditor { //, ValidateListener {
+public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, ValidateListener {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -158,18 +163,23 @@ public abstract class Base extends Box /*Panel*/ implements InputEditor { //, Va
 //   	}
 
 	public Base(BeautiDoc doc) {
-		super(BoxLayout.X_AXIS);
+		//super(BoxLayout.X_AXIS);
+		//box = Box.createHorizontalBox();
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		//setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		//setLayout(new GridLayout());
 		this.doc = doc;
 		if (doc != null) {
 			doc.currentInputEditors.add(this);
 		}
+		//super.add(box);
 	} // c'tor
 
 	protected BeautiDoc getDoc() {
         if (doc == null) {
             Component c = this;
-            while (((Component) c).getParent() != null) {
-                c = ((Component) c).getParent();
+            while (c.getParent() != null) {
+                c = c.getParent();
                 if (c instanceof BeautiPanel) {
                     doc = ((BeautiPanel) c).getDoc();
                 }
@@ -279,13 +289,21 @@ public abstract class Base extends Box /*Panel*/ implements InputEditor { //, Va
         if (m_bAddButtons) {
             m_inputLabel = new JLabel(sLabel);
             m_inputLabel.setToolTipText(sTipText);
-            Dimension size = new Dimension(g_nLabelWidth, 20);
+            //Dimension size = new Dimension(g_nLabelWidth, 20);
+            Dimension size = new Dimension(200, 20);
             m_inputLabel.setMaximumSize(size);
             m_inputLabel.setMinimumSize(size);
             m_inputLabel.setPreferredSize(size);
             m_inputLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+
+//            m_inputLabel.setSize(size);
+//            m_inputLabel.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
             // RRB: temporary
             //m_inputLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+            if (sLabel.equals("Subst Model")) {
+            	int h = 3;
+            	h++;
+            }
             add(m_inputLabel);
         }
     }
@@ -389,8 +407,8 @@ public abstract class Base extends Box /*Panel*/ implements InputEditor { //, Va
 
     public void refreshPanel() {
         Component c = this;
-        while (((Component) c).getParent() != null) {
-            c = ((Component) c).getParent();
+        while (c.getParent() != null) {
+            c = c.getParent();
             if (c instanceof ListSelectionListener) {
                 ((ListSelectionListener) c).valueChanged(null);
             }
@@ -402,8 +420,8 @@ public abstract class Base extends Box /*Panel*/ implements InputEditor { //, Va
      */
     protected void sync() {
         Component c = this;
-        while (((Component) c).getParent() != null) {
-            c = ((Component) c).getParent();
+        while (c.getParent() != null) {
+            c = c.getParent();
             if (c instanceof BeautiPanel) {
                 BeautiPanel panel = (BeautiPanel) c;
                 BeautiPanelConfig cfgPanel = panel.config;
@@ -415,6 +433,7 @@ public abstract class Base extends Box /*Panel*/ implements InputEditor { //, Va
     @Override
     public void setBorder(Border border) {
         // No border
+		//super.setBorder(BorderFactory.createEtchedBorder());
     }
     
     @Override
@@ -422,7 +441,17 @@ public abstract class Base extends Box /*Panel*/ implements InputEditor { //, Va
     	this.doc = doc;
     }
 
-
+    @Override
+	public void repaint() {
+	this.repaint(0);
+		super.repaint();
+	}
+    
+    @Override
+	public Component getComponent() {
+		return this;
+	}
+    
 } // class InputEditor.Base
 
 } // InputEditor interface

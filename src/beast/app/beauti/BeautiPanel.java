@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
+//import java.awt.Panel;
 import java.net.URL;
 
 import javax.sound.sampled.AudioInputStream;
@@ -202,14 +203,23 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         if (input != null && input.get() != null) {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
             InputEditor inputEditor = PluginPanel.createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
-            Box box = Box.createVerticalBox();
-            box.add((Component) inputEditor);
+            
+            //Box box = Box.createVerticalBox();
+            //box.add(inputEditor.getComponent());
             // RRB: is there a better way than just pooring in glue at the bottom?
             //for (int i = 0; i < 30; i++) {
 
-            box.add(Box.createVerticalStrut(1024 - ((Component)inputEditor).getPreferredSize().height));
+            //box.add(Box.createVerticalStrut(1024 - ((Component)inputEditor).getPreferredSize().height));
             //}
-            JScrollPane scroller = new JScrollPane(box);
+            //JScrollPane scroller = new JScrollPane(box);
+            JPanel p = new JPanel();
+            p.setLayout(new BorderLayout());
+            p.add(inputEditor.getComponent(), BorderLayout.CENTER);
+            p.add(Box.createVerticalStrut(1024 - inputEditor.getComponent().getPreferredSize().height), BorderLayout.SOUTH);
+
+            
+            //p.setPreferredSize(new Dimension(1024,1024));
+            JScrollPane scroller = new JScrollPane(p);
             centralComponent = scroller;
         } else {
             centralComponent = new JLabel("Nothing to be specified");

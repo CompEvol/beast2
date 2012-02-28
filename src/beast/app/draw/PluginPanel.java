@@ -254,7 +254,7 @@ public class PluginPanel extends JPanel {
                 String sFullInputName = plugin.getClass().getName() + "." + input.getName();
                 if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
                     InputEditor inputEditor = createInputEditor(input, plugin, true, ExpandOption.FALSE, ButtonStatus.ALL, editor, doc);
-                    box.add((Component) inputEditor);
+                    box.add(inputEditor.getComponent());
                     box.add(Box.createVerticalStrut(5));
                     //box.add(Box.createVerticalGlue());
                     if (validateListener != null) {
@@ -386,7 +386,7 @@ public class PluginPanel extends JPanel {
         inputEditor.setDoc(doc);
         inputEditor.init(input, plugin, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
-        ((Component) inputEditor).setVisible(true);
+        inputEditor.getComponent().setVisible(true);
         return inputEditor;
     } // createInputEditor
 
