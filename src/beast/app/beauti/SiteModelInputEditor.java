@@ -36,7 +36,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 
     public InputEditor createGammaCategoryCountEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).gammaCategoryCount;
-        categoryCountEditor = (IntegerInputEditor) PluginPanel.createInputEditor(input, m_plugin, doc);
+        categoryCountEditor = (IntegerInputEditor) doc.getInpuEditorFactory().createInputEditor(input, m_plugin, doc);
         categoryCountEntry = categoryCountEditor.getEntry();
         categoryCountEntry.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -71,7 +71,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 
     public InputEditor createShapeEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
-        gammaShapeEditor = PluginPanel.createInputEditor(input, m_plugin, doc);
+        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, m_plugin, doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }

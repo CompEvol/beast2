@@ -29,6 +29,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import beast.app.draw.InputEditor;
+import beast.app.draw.InputEditorFactory;
 import beast.app.draw.PluginPanel;
 import beast.core.Description;
 import beast.core.Distribution;
@@ -132,11 +133,16 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
      * name of current file, used for saving (as opposed to saveAs) *
      */
     private String fileName = "";
+    
+    InputEditorFactory inputEditorFactory;
+
+    public InputEditorFactory getInpuEditorFactory() {return inputEditorFactory;}
 
     public BeautiDoc() {
         //g_doc = this;
         setID("BeautiDoc");
         clear();
+        inputEditorFactory = new InputEditorFactory(this);
     }
 
     public void setFileName(String fileName) {
@@ -872,7 +878,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             try {
                 TreeLikelihood treelikelihood = new TreeLikelihood();
                 treelikelihood.m_pBranchRateModel.setValue(new StrictClockModel(), treelikelihood);
-                List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(treelikelihood.m_pBranchRateModel, treelikelihood, null, this);
+                List<BeautiSubTemplate> sAvailablePlugins = inputEditorFactory.getAvailableTemplates(treelikelihood.m_pBranchRateModel, treelikelihood, null, this);
                 Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(clockModels.size()));
                 clockModels.add((BranchRateModel.Base) plugin);
             } catch (Exception e) {
@@ -902,7 +908,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             try {
                 CompoundDistribution distr = new CompoundDistribution();
                 distr.pDistributions.setValue(new YuleModel(), distr);
-                List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(distr.pDistributions, distr, null, this);
+                List<BeautiSubTemplate> sAvailablePlugins = inputEditorFactory.getAvailableTemplates(distr.pDistributions, distr, null, this);
                 for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
                     if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i)._class)) {
                         sAvailablePlugins.remove(i);

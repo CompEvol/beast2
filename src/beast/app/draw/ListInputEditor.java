@@ -142,7 +142,7 @@ public class ListInputEditor extends InputEditor.Base {
                 for (int i = 0; i < m_entries.size(); i++) {
                     sTabuList.add(m_entries.get(i).getText());
                 }
-                List<String> sPlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, sTabuList, doc);
+                List<String> sPlugins = doc.getInpuEditorFactory().getAvailablePlugins(m_input, m_plugin, sTabuList, doc);
                 if (sPlugins.size() == 0) {
                     m_addButton.setVisible(false);
                 }
@@ -209,7 +209,7 @@ public class ListInputEditor extends InputEditor.Base {
                 (m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
             Box expandBox = Box.createVerticalBox();
             //box.add(itemBox);
-            PluginPanel.addInputs(expandBox, plugin, this, null, doc);
+            doc.getInpuEditorFactory().addInputs(expandBox, plugin, this, null, doc);
             //System.err.print(expandBox.getComponentCount());
             if (expandBox.getComponentCount() > 1) {
                 // only go here if it is worth showing expanded box
@@ -403,7 +403,7 @@ public class ListInputEditor extends InputEditor.Base {
      */
     public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
         List<Plugin> selectedPlugins = new ArrayList<Plugin>();
-        List<String> sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList, doc);
+        List<String> sPlugins = doc.getInpuEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
         /* select a plugin **/
         String sClassName = null;
         if (sPlugins.size() == 1) {
@@ -413,7 +413,7 @@ public class ListInputEditor extends InputEditor.Base {
             // no candidate => we cannot be in expert mode
             // create a new Plugin
             doc.setExpertMode(true);
-            sPlugins = PluginPanel.getAvailablePlugins(input, parent, sTabuList, doc);
+            sPlugins = doc.getInpuEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
             doc.setExpertMode(false);
             sClassName = sPlugins.get(0);
         } else {

@@ -104,7 +104,7 @@ public class PriorListInputEditor extends ListInputEditor {
             itemBox.add(label);
 
 
-            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null, doc);
+            List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
 
             String sID = prior.m_distInput.get().getID();
@@ -183,7 +183,7 @@ public class PriorListInputEditor extends ListInputEditor {
             itemBox.add(label);
 //            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
 
-            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(m_input, m_plugin, null, doc);
+            List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin, null, doc);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
 
             for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
@@ -293,7 +293,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
             }
 
-            List<BeautiSubTemplate> sAvailablePlugins = PluginPanel.getAvailableTemplates(prior.m_distInput, prior, null, doc);
+            List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
             comboBox = new JComboBox(sAvailablePlugins.toArray());
 
             if (prior.m_distInput.get() != null) {

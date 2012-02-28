@@ -63,8 +63,8 @@ public class PluginPanel extends JPanel {
     /**
      * map that identifies the InputEditor to use for a particular type of Input *
      */
-    static HashMap<Class<?>, String> g_inputEditorMap;
-    static HashMap<Class<?>, String> g_listInputEditorMap;
+//    static HashMap<Class<?>, String> g_inputEditorMap;
+//    static HashMap<Class<?>, String> g_listInputEditorMap;
 
 
     static {
@@ -72,18 +72,18 @@ public class PluginPanel extends JPanel {
     } // finished registering input editors
 
     public static void init() {
-        // register input editors
-        g_inputEditorMap = new HashMap<Class<?>, String>();
-        g_listInputEditorMap = new HashMap<Class<?>, String>();
-
-//        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
-//        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
-//        registerInputEditors(sKnownEditors);
-        String[] PACKAGE_DIRS = {"beast.app",};
-        for (String sPackage : PACKAGE_DIRS) {
-            List<String> sInputEditors = AddOnManager.find("beast.app.draw.InputEditor", sPackage);
-            registerInputEditors(sInputEditors.toArray(new String[0]));
-        }
+//        // register input editors
+//        g_inputEditorMap = new HashMap<Class<?>, String>();
+//        g_listInputEditorMap = new HashMap<Class<?>, String>();
+//
+////        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
+////        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
+////        registerInputEditors(sKnownEditors);
+//        String[] PACKAGE_DIRS = {"beast.app",};
+//        for (String sPackage : PACKAGE_DIRS) {
+//            List<String> sInputEditors = AddOnManager.find("beast.app.draw.InputEditor", sPackage);
+//            registerInputEditors(sInputEditors.toArray(new String[0]));
+//        }
 
         m_position = new Point(0, 0);
         g_plugins = new HashMap<String, Plugin>();
@@ -94,33 +94,6 @@ public class PluginPanel extends JPanel {
         g_taxa = new HashSet<Taxon>();
     }
 
-    private static void registerInputEditors(String[] sInputEditors) {
-    	BeautiDoc doc = new BeautiDoc();
-        for (String sInputEditor : sInputEditors) {
-            try {
-                Class<?> _class = Class.forName(sInputEditor);
-                
-                
-                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
-                InputEditor editor = (InputEditor) con.newInstance(doc);
-                
-                //InputEditor editor = (InputEditor) _class.newInstance();
-                Class<?>[] types = editor.types();
-                for (Class<?> type : types) {
-                    g_inputEditorMap.put(type, sInputEditor);
-                    if (editor instanceof ListInputEditor) {
-                        Class<?> baseType = ((ListInputEditor) editor).baseType();
-                        g_listInputEditorMap.put(baseType, sInputEditor);
-                    }
-                }
-            } catch (java.lang.InstantiationException e) {
-                // ingore input editors that are inner classes
-            } catch (Exception e) {
-                // print message
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-        }
-    }
 
     public PluginPanel(Plugin plugin, Class<?> _pluginClass, List<Plugin> plugins, BeautiDoc doc) {
         //g_plugins = new HashMap<String, Plugin>();
@@ -216,8 +189,7 @@ public class PluginPanel extends JPanel {
             mainBox.add(Box.createVerticalStrut(5));
         }
 
-
-        addInputs(mainBox, m_plugin, null, null, doc);
+        doc.getInpuEditorFactory().addInputs(mainBox, m_plugin, null, null, doc);
 
 
         mainBox.add(Box.createVerticalStrut(5));
@@ -240,43 +212,6 @@ public class PluginPanel extends JPanel {
     /**
      * add all inputs of a plugin to a box *
      */
-    public static List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor, InputEditor validateListener, BeautiDoc doc) {
-        /* add individual inputs **/
-        List<Input<?>> inputs = null;
-        List<InputEditor> editors = new ArrayList<InputEditor>();
-        try {
-            inputs = plugin.listInputs();
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        for (Input<?> input : inputs) {
-            try {
-                String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-                if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
-                    InputEditor inputEditor = createInputEditor(input, plugin, true, ExpandOption.FALSE, ButtonStatus.ALL, editor, doc);
-                    box.add(inputEditor.getComponent());
-                    box.add(Box.createVerticalStrut(5));
-                    //box.add(Box.createVerticalGlue());
-                    if (validateListener != null) {
-                        inputEditor.addValidationListener(validateListener);
-                    }
-                    editors.add(inputEditor);
-                }
-            } catch (Exception e) {
-                // ignore
-                System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
-                        "input " + input.getName() + " could not be added.");
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Could not add entry for " + input.getName());
-            }
-        }
-        box.add(Box.createVerticalGlue());
-        return editors;
-    } // addInputs
-
-    /**
-     * add all inputs of a plugin to a box *
-     */
     public static int countInputs(Plugin plugin, BeautiDoc doc) {
         int nInputs = 0;
         try {
@@ -294,101 +229,6 @@ public class PluginPanel extends JPanel {
     } // addInputs
 
 
-    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, BeautiDoc doc) throws Exception {
-        return createInputEditor(input, plugin, true, InputEditor.ExpandOption.FALSE, ButtonStatus.ALL, null, doc);
-    }
-
-    public static InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons,
-                                                ExpandOption bForceExpansion, ButtonStatus buttonStatus,
-                                                InputEditor editor, BeautiDoc doc) throws Exception {
-        if (input.getType() == null) {
-            input.determineClass(plugin);
-        }
-        Class<?> inputClass = input.getType();
-
-        InputEditor inputEditor;
-
-        // check whether the super.editor has a custom method for creating an Editor
-        if (editor != null) {
-            try {
-                String sName = input.getName();
-                sName = new String(sName.charAt(0) + "").toUpperCase() + sName.substring(1);
-                sName = "create" + sName + "Editor";
-                Class<?> _class = editor.getClass();
-                Method method = _class.getMethod(sName);
-                inputEditor = (InputEditor) method.invoke(editor);
-                return inputEditor;
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-        if (List.class.isAssignableFrom(inputClass) ||
-                (input.get() != null && input.get() instanceof List<?>)) {
-            // handle list inputs
-            if (g_listInputEditorMap.containsKey(inputClass)) {
-                // use custom list input editor
-                String sInputEditor = g_listInputEditorMap.get(inputClass);
-                Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
-                inputEditor = (InputEditor) con.newInstance(doc);
-
-                //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
-            } else {
-                // otherwise, use generic list editor
-                inputEditor = new ListInputEditor(doc);
-            }
-            ((ListInputEditor) inputEditor).setButtonStatus(buttonStatus);
-        } else if (input.possibleValues != null) {
-            // handle enumeration inputs
-            inputEditor = new EnumInputEditor(doc);
-        } else if (g_inputEditorMap.containsKey(inputClass)) {
-            // handle Plugin-input with custom input editors
-            String sInputEditor = g_inputEditorMap.get(inputClass);
-            
-            Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
-            inputEditor = (InputEditor) con.newInstance(doc);
-            //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance(doc);
-            //} else if (inputClass.isEnum()) {
-            //    inputEditor = new EnumInputEditor();
-        } else {
-            // assume it is a general Plugin, so create a default Plugin input editor
-            inputEditor = new PluginInputEditor(doc);
-        }
-        String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-        //System.err.println(sFullInputName);
-        ExpandOption expandOption = bForceExpansion;
-        if (doc.beautiConfig.inlinePlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
-            expandOption = ExpandOption.TRUE;
-            // deal with initially collapsed plugins
-            if (doc.beautiConfig.collapsedPlugins.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
-                if (input.get() != null) {
-                    Object o = input.get();
-                    if (o instanceof ArrayList) {
-                        for (Object o2 : (ArrayList<?>) o) {
-                            if (o2 instanceof Plugin) {
-                                String sID = ((Plugin) o2).getID();
-                                if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
-                                    ListInputEditor.g_initiallyCollapsedIDs.add(sID);
-                                    ListInputEditor.g_collapsedIDs.add(sID);
-                                }
-                            }
-                        }
-                    } else if (o instanceof Plugin) {
-                        String sID = ((Plugin) o).getID();
-                        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
-                            ListInputEditor.g_initiallyCollapsedIDs.add(sID);
-                            ListInputEditor.g_collapsedIDs.add(sID);
-                        }
-                    }
-                }
-
-            }
-        }
-        inputEditor.setDoc(doc);
-        inputEditor.init(input, plugin, expandOption, bAddButtons);
-        inputEditor.setBorder(BorderFactory.createEmptyBorder());
-        inputEditor.getComponent().setVisible(true);
-        return inputEditor;
-    } // createInputEditor
 
     /**
      * create box for manipulating the plugin, or ask for help *
@@ -481,74 +321,7 @@ public class PluginPanel extends JPanel {
 //		PluginPanel.g_plugins.put(m_plugin.getID(), m_plugin);
     }
 
-    public static List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, Plugin parent, List<String> sTabuList, BeautiDoc doc) {
-        Class<?> type = input.getType();
-        List<BeautiSubTemplate> candidates = doc.beautiConfig.getInputCandidates(parent, input, type);
-        if (input.getRule().equals(Validate.OPTIONAL)) {
-            candidates.add(BeautiConfig.getNullTemplate(doc));
-        }
-        return candidates;
-    }
 
-    public static List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList, BeautiDoc doc) {
-
-        //List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
-        List<String> sPlugins = new ArrayList<String>();
-        if (sPlugins != null) {
-            return sPlugins;
-        }
-
-
-        /* add ascendants to tabu list */
-        if (sTabuList == null) {
-            sTabuList = new ArrayList<String>();
-        }
-        if (!doc.isExpertMode()) {
-            for (Plugin plugin : listAscendants(parent, g_plugins.values())) {
-                sTabuList.add(plugin.getID());
-            }
-        }
-        //System.err.println(sTabuList);
-
-        /* collect all plugins in the system, that are not in the tabu list*/
-        sPlugins = new ArrayList<String>();
-        for (Plugin plugin : g_plugins.values()) {
-            if (input.getType().isAssignableFrom(plugin.getClass())) {
-                boolean bIsTabu = false;
-                if (sTabuList != null) {
-                    for (String sTabu : sTabuList) {
-                        if (sTabu.equals(plugin.getID())) {
-                            bIsTabu = true;
-                        }
-                    }
-                }
-                if (!bIsTabu) {
-                    try {
-                        if (input.canSetValue(plugin, parent)) {
-                            sPlugins.add(plugin.getID());
-                        }
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                }
-            }
-        }
-        /* add all plugin-classes of type assignable to the input */
-        if (doc.isExpertMode()) {
-            List<String> sClasses = AddOnManager.find(input.getType(), "beast");
-            for (String sClass : sClasses) {
-                try {
-                    Object o = Class.forName(sClass).newInstance();
-                    if (input.canSetValue(o, parent)) {
-                        sPlugins.add("new " + sClass);
-                    }
-                } catch (Exception e) {
-                    // ignore
-                }
-            }
-        }
-        return sPlugins;
-    } // getAvailablePlugins
 
     /**
      * collect all plugins that can reach this input (actually, it's parent)

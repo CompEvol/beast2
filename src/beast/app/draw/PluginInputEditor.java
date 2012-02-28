@@ -119,7 +119,7 @@ public class PluginInputEditor extends InputEditor.Base {
     }
 
     void initSelectPluginBox() {
-        List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null, doc);
+        List<String> sAvailablePlugins = doc.getInpuEditorFactory().getAvailablePlugins(m_input, m_plugin, null, doc);
         if (sAvailablePlugins.size() > 0) {
             sAvailablePlugins.add(NO_VALUE);
             for (int i = 0; i < sAvailablePlugins.size(); i++) {
@@ -148,7 +148,7 @@ public class PluginInputEditor extends InputEditor.Base {
         addComboBox(combobox, input, plugin);
         box.add(combobox);
 
-        PluginPanel.addInputs(box, (Plugin) input.get(), this, this, doc);
+        doc.getInpuEditorFactory().addInputs(box, (Plugin) input.get(), this, this, doc);
 
         box.setBorder(new EtchedBorder());
         //box.setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -164,7 +164,7 @@ public class PluginInputEditor extends InputEditor.Base {
      * Furthermore, if expanded, update expanded inputs
      */
     protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
-        List<BeautiSubTemplate> availableTemplates = PluginPanel.getAvailableTemplates(m_input, m_plugin, null, doc);
+        List<BeautiSubTemplate> availableTemplates = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin, null, doc);
         if (availableTemplates.size() > 0) {
 //        	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {
 //        		sAvailablePlugins.add(NO_VALUE);
@@ -289,7 +289,7 @@ public class PluginInputEditor extends InputEditor.Base {
                             }
                             // add new items to Expansion Box
                             if (plugin != null) {
-                                PluginPanel.addInputs(m_expansionBox, plugin, _this, _this, doc);
+                            	doc.getInpuEditorFactory().addInputs(m_expansionBox, plugin, _this, _this, doc);
                             }
                         } else {
                             // it is not expanded, enable the edit button
