@@ -25,14 +25,20 @@ public class GTR extends GeneralSubstitutionModel {
     RealParameter m_rateGT;
 
     public GTR() {
-        m_rates.setRule(Validate.FORBIDDEN);
+        m_rates.setRule(Validate.OPTIONAL);
+        try {
+        	m_rates.setValue(null, this);
+        } catch (Exception e) {
+        	e.printStackTrace();
+			// TODO: handle exception
+		}
     }
 
     @Override
     public void initAndValidate() throws Exception {
-//        if (m_rates.get() != null) {
-//            throw new Exception("the rates attribute should not be used. Use the individual rates rateAC, rateCG, etc, instead.");
-//        }
+        if (m_rates.get() != null) {
+            throw new Exception("the rates attribute should not be used. Use the individual rates rateAC, rateCG, etc, instead.");
+        }
 
         m_frequencies = frequenciesInput.get();
         updateMatrix = true;
