@@ -146,14 +146,14 @@ abstract public class Plugin {
 
     private String getCitations(HashSet<String> bDone) {
         StringBuffer buf = new StringBuffer();
-        if (!bDone.contains(getID())) {
-            // only add citation if it is not already processed
-            if (getCitation() != null) {
+        if (getCitation() != null) {
+           // only add citation if it is not already processed
+           if (!bDone.contains(getCitation().value())) {
                 // and there is actually a citation to add
                 buf.append(getCitation().value());
                 buf.append("\n\n");
+                bDone.add(getCitation().value());
             }
-            bDone.add(getID());
             //return buf.toString();
         }
         try {
