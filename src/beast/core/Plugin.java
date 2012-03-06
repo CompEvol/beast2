@@ -141,24 +141,30 @@ abstract public class Plugin {
      * @return references for this plug in and all its inputs *
      */
     public final String getCitations() {
-        return getCitations(new HashSet<String>());
+        return getCitations(new HashSet<String>(), new HashSet<String>());
     }
 
-    private String getCitations(HashSet<String> bDone) {
+    private String getCitations(HashSet<String> citations, HashSet<String> IDs) {
+    	if (getID() != null) {
+    		if (IDs.contains(getID())) {
+    			return "";
+    		}
+    		IDs.add(getID());
+    	}
         StringBuffer buf = new StringBuffer();
         if (getCitation() != null) {
            // only add citation if it is not already processed
-           if (!bDone.contains(getCitation().value())) {
+           if (!citations.contains(getCitation().value())) {
                 // and there is actually a citation to add
                 buf.append(getCitation().value());
                 buf.append("\n\n");
-                bDone.add(getCitation().value());
+                citations.add(getCitation().value());
             }
             //return buf.toString();
         }
         try {
             for (Plugin plugin : listActivePlugins()) {
-                buf.append(plugin.getCitations(bDone));
+                buf.append(plugin.getCitations(citations, IDs));
             }
         } catch (Exception e) {
             e.printStackTrace();

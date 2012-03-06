@@ -24,6 +24,7 @@ public class DefaultEigenSystem implements EigenSystem {
 
     /**
      * set instantaneous rate matrix
+     * This changes the values in qMatrix as side effect
      */
     public EigenDecomposition decomposeMatrix(double[][] qMatrix) {
 

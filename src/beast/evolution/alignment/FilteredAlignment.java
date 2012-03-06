@@ -161,11 +161,12 @@ public class FilteredAlignment extends Alignment {
             m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCount1);
         }
         // report some statistics
-        for (int i = 0; i < m_sTaxaNames.size(); i++) {
-            System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
-        }
-        System.out.println(getNrTaxa() + " taxa");
-        System.out.println(getSiteCount() + " sites");
-        System.out.println(getPatternCount() + " patterns");
+        //for (int i = 0; i < m_sTaxaNames.size(); i++) {
+        //    System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
+        //}
+        System.err.println("Filter " + m_sFilterInput.get());
+        System.err.println(getNrTaxa() + " taxa");
+        System.err.println(getSiteCount() + " sites");
+        System.err.println(getPatternCount() + " patterns");
     }
 }

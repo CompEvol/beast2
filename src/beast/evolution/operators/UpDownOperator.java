@@ -5,6 +5,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.StateNode;
+import beast.core.parameter.Parameter;
 import beast.util.Randomizer;
 
 import java.text.DecimalFormat;
@@ -54,11 +55,17 @@ public class UpDownOperator extends Operator {
             for (StateNode up : m_up.get()) {
                 up = up.getCurrentEditable(this);
                 goingUp += up.scale(scale);
+                if (outsideBounds(up)) {
+                	return Double.NEGATIVE_INFINITY;
+                }
             }
 
             for (StateNode down : m_down.get()) {
                 down = down.getCurrentEditable(this);
                 goingDown += down.scale(1.0 / scale);
+                if (outsideBounds(down)) {
+                	return Double.NEGATIVE_INFINITY;
+                }
             }
         } catch (Exception e) {
             // scale resulted in invalid StateNode, abort proposal
@@ -67,7 +74,20 @@ public class UpDownOperator extends Operator {
         return (goingUp - goingDown - 2) * Math.log(scale);
     }
 
-    /**
+    private boolean outsideBounds(StateNode node) {
+    	if (node instanceof Parameter<?>) {
+    		Parameter<?> p = (Parameter) node;
+    		Double lower = (Double) p.getLower();
+    		Double upper = (Double) p.getUpper();
+    		Double value = (Double) p.getValue();
+    		if (value < lower || value > upper) {
+    			return false;
+    		}
+    	}
+		return true;
+	}
+
+	/**
      * automatic parameter tuning *
      */
     @Override
