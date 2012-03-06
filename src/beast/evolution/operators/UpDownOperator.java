@@ -81,10 +81,10 @@ public class UpDownOperator extends Operator {
     		Double upper = (Double) p.getUpper();
     		Double value = (Double) p.getValue();
     		if (value < lower || value > upper) {
-    			return false;
+    			return true;
     		}
     	}
-		return true;
+		return false;
 	}
 
 	/**
