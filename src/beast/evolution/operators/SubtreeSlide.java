@@ -56,6 +56,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -265,10 +266,11 @@ public class SubtreeSlide extends TreeOperator {
 
         double newDelta = m_fSize * ratio;
 
+        DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {
-            return "Try decreasing size to about " + newDelta;
+            return "Try decreasing size to about " + formatter.format(newDelta);
         } else if (prob > 0.40) {
-            return "Try increasing size to about " + newDelta;
+            return "Try increasing size to about " + formatter.format(newDelta);
         } else return "";
     }
 
