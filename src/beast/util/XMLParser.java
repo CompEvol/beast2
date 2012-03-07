@@ -873,6 +873,10 @@ public class XMLParser {
             }
             return;
         } catch (Exception e) {
+        	if (sName.equals("xml:base")) {
+        		// ignore xml:base attributes introduces by XML entities
+        		return;
+        	}
             if (e.getMessage().contains("101")) {
                 String sType = "?";
                 try {
@@ -896,6 +900,10 @@ public class XMLParser {
             plugin.setInputValue(sName, sValue);
             return;
         } catch (Exception e) {
+        	if (sName.equals("xml:base")) {
+        		// ignore xml:base attributes introduces by XML entities
+        		return;
+        	}
             throw new XMLParserException(node, e.getMessage(), 124);
         }
         //throw new XMLParserException(node, "no such input '"+sName+"' for element <" + node.getNodeName() + ">", 168);
