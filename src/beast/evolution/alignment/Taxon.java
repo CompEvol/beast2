@@ -23,4 +23,8 @@ public class Taxon extends Plugin {
     public void initAndValidate() throws Exception {
 
     }
+
+    protected String toString(String indent) {
+    	return indent + getID() + "\n";
+    }
 }

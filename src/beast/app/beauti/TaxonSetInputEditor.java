@@ -267,6 +267,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         if (sPattern != null) {
             try {
                 guessTaxonSets(sPattern, 0);
+                m_lineageset.clear();
                 for (Taxon taxonset2 : m_taxonset) {
                     for (Taxon taxon : ((TaxonSet) taxonset2).m_taxonset.get()) {
                         m_lineageset.add(taxon);

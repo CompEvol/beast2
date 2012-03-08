@@ -286,6 +286,7 @@ public class MCMC extends Runnable {
      * main MCMC loop *
      */
     protected void doLoop() throws Exception {
+    	int corrections = 0;
         for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
             final int currentState = iSample;
 
@@ -367,17 +368,40 @@ public class MCMC extends Runnable {
                 double fLogLikelihood = robustlyCalcPosterior(posterior);
                 if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
                     reportLogLikelihoods(posterior, "");
-                    throw new Exception("At sample " + iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood
+                    System.err.println("At sample " + iSample + "\nLikelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood
                             + " Operator: " + operator.getClass().getName());
                 }
                 if (iSample > NR_OF_DEBUG_SAMPLES * 3) {
                     // switch of debug mode once a sufficient large sample is checked
                     bDebug = false;
+                    if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
+                    	// incorrect calculation outside debug period.
+                    	// This happens infrequently enough that it should repair itself after a robust posterior calculation
+                        corrections++;
+                        if (corrections > 100) {
+                        	// after 100 repairs, there must be something seriously wrong with the implementation
+                        	System.err.println("Too many corrections. There is something seriously wrong that cannot be corrected");
+                        	state.storeToFile(iSample);
+                        	operatorSchedule.storeToFile();
+                        	System.exit(0);
+                        }
+                    	fOldLogLikelihood = fLogLikelihood;
+                    }
+                } else {
+                    if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
+                    	// halt due to incorrect posterior during intial debug period
+                    	state.storeToFile(iSample);
+                    	operatorSchedule.storeToFile();
+                    	System.exit(0);
+                    }
                 }
             } else {
                 operator.optimize(logAlpha);
             }
             callUserFunction(iSample);
+        }
+        if (corrections > 0) {
+        	System.err.println("\n\nNB: " + corrections +" posterior calculation corrections were required. This analysis may not be valid!\n\n");
         }
     }
 

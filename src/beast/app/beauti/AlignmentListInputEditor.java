@@ -265,7 +265,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
                 }
                 TreeDistribution d = getDoc().getTreePrior(sPartition);
                 CompoundDistribution prior = (CompoundDistribution) doc.pluginmap.get("prior");
-                if (!prior.pDistributions.get().contains(d)) {
+                if (!getDoc().posteriorPredecessors.contains(d)) {
                     prior.pDistributions.setValue(d, prior);
                 }
                 sPartition = treeLikelihood.m_tree.get().getID();

@@ -340,6 +340,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 //
 //    		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
+                setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 File[] files = Utils.getLoadFiles("Import alignment File", new File(g_sDir), "alignment files", "nex", "nexus", "xml");
                 if (files == null) {
                     return;
@@ -366,6 +367,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
             }
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 //            }
         } // actionPerformed
     }

@@ -81,4 +81,20 @@ public class TaxonSet extends Taxon {
     public boolean containsAll(final TaxonSet taxa) {
         return containsAll(taxa.asStringList());
     }
+    
+    @Override
+    public String toString() {
+    	return toString("\t");
+    }
+
+    @Override
+	protected String toString(String indent) {
+		StringBuffer buf = new StringBuffer();
+		buf.append(indent).append(getID()).append("\n");
+		indent += "\t";
+		for (Taxon taxon : m_taxonset.get()) {
+			buf.append(taxon.toString(indent));
+		}
+		return buf.toString();
+	}
 }

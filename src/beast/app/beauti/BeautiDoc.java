@@ -121,6 +121,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
      */
     public HashMap<String, Plugin> pluginmap = null;
     /**
+     * list of all plugins in the model that have an impact on the posterior
+     */
+    List<Plugin> posteriorPredecessors = null;
+    /**
      * set of all taxa in the model *
      */
     public Set<Taxon> taxaset = null;
@@ -925,18 +929,37 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                 e.printStackTrace();
             }
         }
-        int k = 0;
-        for (Distribution d : prior.pDistributions.get()) {
-            if (d instanceof TreeDistribution) {
-                String sID = d.getID();
-                sID = sID.substring(sID.indexOf('.') + 1);
-                String sPartition = alignments.get(k).getID();
-                if (sID.equals(sPartition)) {
-                    treePriors.set(k, (TreeDistribution) d);
-                }
-                k++;
-            }
+        
+        // find tree priors that are in the posterior somewhere
+        // by inspecting outputs of *[id=likelihood]/TreeLikelihood/Tree
+        // and match tree prior to partition of tree
+        CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
+        for (Distribution distr : likelihood.pDistributions.get()) {
+        	if (distr instanceof TreeLikelihood) {
+        		TreeLikelihood tl = (TreeLikelihood) distr;
+        		Tree tree = tl.m_tree.get();
+        		int partition = getPartitionNr(tree);
+        		for (Plugin plugin : tree.outputs) {
+        			if (plugin instanceof TreeDistribution && posteriorPredecessors.contains(plugin)) {
+                        treePriors.set(partition, (TreeDistribution) plugin);
+        			}
+        		}
+        	}
         }
+
+//        int k = 0;
+//        for (Distribution d : prior.pDistributions.get()) {
+//            if (d instanceof TreeDistribution) {
+//                String sID = d.getID();
+//                sID = sID.substring(sID.indexOf('.') + 1);
+//                String sPartition = alignments.get(k).getID();
+//                if (sID.equals(sPartition)) {
+//                    treePriors.set(k, (TreeDistribution) d);
+//                }
+//                k++;
+//            }
+//        }
+        
 //		for (TreeDistribution d : treePriors) {
 //			System.out.println(d);
 //		}
@@ -995,7 +1018,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             boolean bProgress = true;
             while (bProgress) {
                 bProgress = false;
-                List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
+                posteriorPredecessors = new ArrayList<Plugin>();
                 collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 
                 // process MRCA priors
