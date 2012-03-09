@@ -199,6 +199,9 @@
             <connect srcID='RandomGeneTree.$(n)'       targetID='mcmc' inputName='init' if='inposterior(Tree.$(n))'/>
 
             <connect srcID='treePrior.$(n)'            targetID='speciescoalescent' inputName='distribution' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
+<!-- trick to ensure that treePrior.$(n) is always deleted from prior, since it is already part of speciescoalescent -->
+            <connect srcID='treePrior.$(n)'            targetID='prior' inputName='distribution' if='Tree.$(n)/estimate=nonsense'/>
+
             <connect srcID='ClockPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
             <connect srcID='MutationRatePrior.$(n)'    targetID='prior' inputName='distribution' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
             <connect srcID='popMean.prior'             targetID='prior' inputName='distribution' if='popMean/estimate=true'/>
