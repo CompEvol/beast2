@@ -24,9 +24,12 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
     PopSizeFunction popSizeFunction;
     String m_sMetaDataLabel;
 
+    static final String dmv = "dmv";
+    static final String dmt = "dmt";
+
     @Override
     public void initAndValidate() {
-        m_sMetaDataLabel = "[&dmv=";
+        m_sMetaDataLabel = "[&" + dmv + "=";
         if (speciesTreePrior.get() != null) {
             popSizeFunction = speciesTreePrior.get().m_popFunctionInput.get();
         } else {
@@ -35,14 +38,14 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
     }
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(final PrintStream out) throws Exception {
         m_tree.get().init(out);
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(final int nSample, final PrintStream out) {
         // make sure we get the current version of the inputs
-        Tree tree = (Tree) m_tree.get().getCurrent();
+        final Tree tree = (Tree) m_tree.get().getCurrent();
         Valuable metadata = m_parameter.get();
         if (metadata instanceof StateNode) {
             metadata = ((StateNode) metadata).getCurrent();
@@ -61,8 +64,8 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
     }
 
 
-    String toNewick(Node node, Valuable metadata, Valuable metadataTop) {
-        StringBuffer buf = new StringBuffer();
+    String toNewick(final Node node, final Valuable metadata, final Valuable metadataTop) {
+        final StringBuilder buf = new StringBuilder();
 
         if (node.getLeft() != null) {
             buf.append("(");
@@ -75,37 +78,40 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
         } else {
             buf.append(node.getNr()+Tree.taxaTranslationOffset);
         }
-        buf.append("[&dmt=");
-        if (node.isRoot()) {
-            buf.append(treeTopFinder.get().getHighestTreeHeight() - node.getHeight());
-        } else {
-            buf.append(node.getLength());
-        }
-        buf.append(",dmv=");
+        buf.append("[&");
         switch (popSizeFunction) {
-            case constant:
-                buf.append("{" + metadata.getArrayValue(node.getNr()) + "}");
+            case constant: {
+                final double popStart = metadata.getArrayValue(node.getNr());
+                buf.append(dmv + "=").append(popStart);
                 break;
+            }
             case linear:
-                if (node.isLeaf()) {
-                    buf.append("{" + metadata.getArrayValue(node.getNr()));
-                } else {
-
-                    buf.append("{" + (metadataTop.getArrayValue(node.getLeft().getNr()) + metadataTop.getArrayValue(node.getRight().getNr())));
-                }
-                buf.append("," + getMetaDataTopValue(node, metadataTop) + "}");
-                break;
             case linear_with_constant_root:
-                if (node.isLeaf()) {
-                    buf.append("{" + metadata.getArrayValue(node.getNr()));
-                } else {
-                    buf.append("{" + (getMetaDataTopValue(node.getLeft(), metadataTop) + getMetaDataTopValue(node.getRight(), metadataTop)));
-                }
+                buf.append(dmt + "=");
+                final double b;
                 if (node.isRoot()) {
-                    buf.append("," + (getMetaDataTopValue(node.getLeft(), metadataTop) + getMetaDataTopValue(node.getRight(), metadataTop)) + "}");
+                    b = treeTopFinder.get().getHighestTreeHeight() - node.getHeight();
                 } else {
-                    buf.append("," + getMetaDataTopValue(node, metadataTop) + "}");
+                    b = node.getLength();
                 }
+                buf.append(b).append("," + dmv + "={");
+
+                final double popStart;
+                if (node.isLeaf()) {
+                    popStart = metadata.getArrayValue(node.getNr());
+                } else {
+                    popStart = (getMetaDataTopValue(node.getLeft(), metadataTop) +
+                            getMetaDataTopValue(node.getRight(), metadataTop));
+                }
+                buf.append(popStart);
+
+                final double popEnd;
+                if (node.isRoot() && popSizeFunction == PopSizeFunction.linear_with_constant_root) {
+                    popEnd = popStart;
+                } else {
+                  popEnd = getMetaDataTopValue(node, metadataTop);
+                }
+                buf.append(",").append(popEnd).append("}");
                 break;
         }
         buf.append(']');
@@ -115,17 +121,16 @@ public class SpeciesTreeLogger extends Plugin implements Loggable {
         return buf.toString();
     }
 
-    double getMetaDataTopValue(Node node, Valuable metadataTop) {
-        if (node.getNr() < metadataTop.getDimension()) {
-            return metadataTop.getArrayValue(node.getNr());
-        } else {
-            Node root = node.getTree().getRoot();
-            return metadataTop.getArrayValue(root.getNr());
+    double getMetaDataTopValue(final Node node, final Valuable metadataTop) {
+        int nr = node.getNr();
+        if (nr >= metadataTop.getDimension()) {
+            nr = node.getTree().getRoot().getNr();
         }
+        return metadataTop.getArrayValue(nr);
     }
 
     @Override
-    public void close(PrintStream out) {
+    public void close(final PrintStream out) {
         m_tree.get().close(out);
     }
 
