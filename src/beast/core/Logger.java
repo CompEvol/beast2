@@ -246,17 +246,14 @@ public class Logger extends Plugin {
                             String sStrLast = null;
                             String sStr = null;
                             while (fin.ready()) {
-                                sStrLast = sStr;
-                                buf.append(sStrLast);
-                                buf.append('\n');
                                 sStr = fin.readLine();
+                                if (!sStr.equals("End;")) {
+                                	buf.append(sStr);
+                                    buf.append('\n');
+                                    sStrLast = sStr;
+                                }
                             }
                             fin.close();
-                            if (!sStr.equals("End;")) {
-                                sStrLast = sStr;
-                                buf.append(sStr);
-                                buf.append('\n');
-                            }
                             // determine number of the last sample
                             sStr = sStrLast.split("\\s+")[1];
                             int nSampleOffset = Integer.parseInt(sStr.substring(6));
