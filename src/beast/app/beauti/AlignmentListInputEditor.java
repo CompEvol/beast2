@@ -184,13 +184,22 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
     private void link(int nColumn) {
         int[] nSelected = getTableRowSelection();
+        // do the actual linking
         for (int i = 1; i < nSelected.length; i++) {
             int iRow = nSelected[i];
+            Object old = tableData[iRow][nColumn]; 
             tableData[iRow][nColumn] = tableData[nSelected[0]][nColumn];
             try {
                 updateModel(nColumn, iRow);
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
+                // unlink if we could not link
+                tableData[iRow][nColumn] = old;
+                try {
+                	updateModel(nColumn, iRow);
+                } catch (Exception ex2) {
+                	// ignore
+                }
             }
         }
     }
@@ -256,13 +265,33 @@ public class AlignmentListInputEditor extends ListInputEditor {
             }
             break;
             case TREE_COLUMN: {
+            	Tree tree = null;
                 if (getDoc().getPartitionNr(sPartition) != iRow) {
-                    this.likelihoods[iRow].m_tree.setValue(treeLikelihood.m_tree.get(), this.likelihoods[iRow]);
+                	tree = treeLikelihood.m_tree.get();
                 } else {
-                    // String sPartition = (String) m_tableData[iRow][TREE_COLUMN];
-                    Tree tree = (Tree) doc.pluginmap.get("Tree." + sPartition);
-                    this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
+                    tree = (Tree) doc.pluginmap.get("Tree." + sPartition);
                 }
+                // sanity check: make sure taxon sets are compatible
+                String [] taxa = tree.getTaxaNames();
+                List<String> taxa2 = this.likelihoods[iRow].m_data.get().getTaxaNames();
+                if (taxa.length != taxa2.size()) {
+                	throw new Exception("Cannot link trees: incompatible taxon sets");
+                }
+                for (String taxon : taxa) {
+                	boolean found = false;
+                	for (String taxon2: taxa2) {
+                		if (taxon.equals(taxon2)) {
+                			found = true;
+                			break;
+                		}
+                	}
+                	if (!found) {
+                		throw new Exception("Cannot link trees: taxon" + taxon + "is not in alignment");
+                	}
+                }
+                
+                
+                this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
                 TreeDistribution d = getDoc().getTreePrior(sPartition);
                 CompoundDistribution prior = (CompoundDistribution) doc.pluginmap.get("prior");
                 if (!getDoc().posteriorPredecessors.contains(d)) {

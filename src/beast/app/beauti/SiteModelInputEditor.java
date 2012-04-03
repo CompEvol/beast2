@@ -7,9 +7,10 @@ import javax.swing.event.DocumentListener;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.IntegerInputEditor;
+import beast.app.draw.ParameterInputEditor;
 import beast.app.draw.PluginInputEditor;
-import beast.app.draw.PluginPanel;
 import beast.core.Input;
+import beast.core.parameter.RealParameter;
 import beast.evolution.sitemodel.SiteModel;
 
 public class SiteModelInputEditor extends PluginInputEditor {
@@ -18,6 +19,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
     IntegerInputEditor categoryCountEditor;
     JTextField categoryCountEntry;
     InputEditor gammaShapeEditor;
+    ParameterInputEditor inVarEditor;
 
 	public SiteModelInputEditor(BeautiDoc doc) {
 		super(doc);
@@ -75,4 +77,26 @@ public class SiteModelInputEditor extends PluginInputEditor {
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
+
+    public InputEditor createProportionInvariantEditor() throws Exception {
+        Input<?> input = ((SiteModel) m_input.get()).invarParameterInput;
+        inVarEditor = new ParameterInputEditor(doc) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public void validateInput() {
+				RealParameter p = (RealParameter) m_input.get();
+				if (p.m_bIsEstimated.get() && Double.parseDouble(p.m_pValues.get()) <= 0.0) {
+                    m_validateLabel.setVisible(true);
+                    m_validateLabel.setToolTipText("<html><p>Proportion invariant should be non-zero when estimating</p></html>");
+                    return;
+				}
+            	super.validateInput();
+            }
+        };
+        inVarEditor.init(input, m_plugin, ExpandOption.FALSE, true);
+        inVarEditor.addValidationListener(this);
+        return inVarEditor;
+    }
+
 }
