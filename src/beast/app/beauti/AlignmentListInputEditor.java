@@ -49,6 +49,7 @@ import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
@@ -232,15 +233,21 @@ public class AlignmentListInputEditor extends ListInputEditor {
     void updateModel(int nColumn, int iRow) throws Exception {
         getDoc();
         String sPartition = (String) tableData[iRow][nColumn];
-        TreeLikelihood treeLikelihood = (TreeLikelihood) doc.pluginmap.get("treeLikelihood." + sPartition);
+        TreeLikelihood treeLikelihood = (TreeLikelihood) doc.pluginmap.get("treeLikelihood." + sPartition);        
         switch (nColumn) {
             case SITEMODEL_COLUMN: {
+            	SiteModel.Base siteModel = null;            	
                 if (getDoc().getPartitionNr(sPartition) != iRow) {
-                    this.likelihoods[iRow].m_pSiteModel.setValue(treeLikelihood.m_pSiteModel.get(), this.likelihoods[iRow]);
+                	siteModel = treeLikelihood.m_pSiteModel.get();
                 } else {
-                    SiteModel siteModel = (SiteModel) doc.pluginmap.get("SiteModel." + sPartition);
-                    this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
+                    siteModel = (SiteModel) doc.pluginmap.get("SiteModel." + sPartition);
                 }
+                SiteModel.Base target = this.likelihoods[iRow].m_pSiteModel.get(); 
+                if (!target.m_pSubstModel.canSetValue(siteModel.m_pSubstModel.get(), target)) {
+                	throw new Exception("Cannot link site model: substitution models are incompatible");
+                }
+                this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
+                
                 sPartition = treeLikelihood.m_pSiteModel.get().getID();
                 sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
                 getDoc().setCurrentPartition(0, iRow, sPartition);

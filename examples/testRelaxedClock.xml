@@ -135,8 +135,10 @@
             <log idref="rateCategories"/>
             <log idref="posterior"/>
         </logger>
-        <logger logEvery="10000" fileName="test.$(seed).trees">
-            <log idref="tree"/>
+        <logger logEvery="10000" fileName="test.$(seed).trees" mode='tree'>
+			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>
+				<branchratemodel idref='branchRates'/>
+			</log>
         </logger>
         <logger logEvery="10000">
 	    <model idref='posterior'/>
