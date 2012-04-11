@@ -17,4 +17,9 @@ public class IntegerData extends Base {
     public String getDescription() {
         return "integer";
     }
+    
+    @Override
+    public boolean isAmbiguousState(int state) {
+    	return state < 0;
+    }
 }

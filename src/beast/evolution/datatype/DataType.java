@@ -139,7 +139,14 @@ public interface DataType {
                 } else {
                     // assume it is a string where each character is a state
                     for (byte c : sData.getBytes()) {
-                        sequence.add(Integer.parseInt((char) c + ""));
+                    	switch (c) {
+                    	case GAP_CHAR:
+                    	case MISSING_CHAR:
+                            sequence.add(-1);
+                            break;
+                    	default:
+                    		sequence.add(Integer.parseInt((char) c + ""));
+                    	}
                     }
                 }
             } else {

@@ -7,11 +7,11 @@ import beast.core.parameter.RealParameter;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 
-@Description("Exponential distribution.  f(x;\\lambda) = \\lambda e^{-\\lambda x}, if x >= 0 " +
+@Description("Exponential distribution.  f(x;\\lambda) = 1/\\lambda e^{-x/\\lambda}, if x >= 0 " +
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Exponential extends ParametricDistribution {
-    public Input<RealParameter> m_lambda = new Input<RealParameter>("lambda", "rate parameter, defaults to 1");
+    public Input<RealParameter> m_lambda = new Input<RealParameter>("lambda", "mean parameter, defaults to 1");
 
     static org.apache.commons.math.distribution.ExponentialDistribution m_dist = new ExponentialDistributionImpl(1);
 
