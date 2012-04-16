@@ -289,6 +289,7 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
         if (m_bAddButtons) {
             m_inputLabel = new JLabel(sLabel);
             m_inputLabel.setToolTipText(sTipText);
+            m_inputLabel.setHorizontalAlignment(JLabel.RIGHT);
             //Dimension size = new Dimension(g_nLabelWidth, 20);
             Dimension size = new Dimension(200, 20);
             m_inputLabel.setMaximumSize(size);

@@ -258,7 +258,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         while (nIndex + 1 > m_bTaxonIndexInUse.size()) {
             m_bTaxonIndexInUse.add(false);
         }
-        if (m_bTaxonIndexInUse.get(nIndex) == true) {
+        if (m_bTaxonIndexInUse.get(nIndex)) {
             throw new Exception("Duplicate taxon found: " + sStr);
         }
         m_bTaxonIndexInUse.set(nIndex, true);

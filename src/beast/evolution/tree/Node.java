@@ -29,7 +29,7 @@ import beast.core.Plugin;
 
 import java.util.*;
 
-@Description("Nodes in building binary beast.tree data structure.")
+@Description("Nodes in building beast.tree data structure.")
 public class Node extends Plugin {
 
     /**

@@ -13,13 +13,13 @@ public class TreeUtils {
     public static void rotateNodeByComparator(Node node, Comparator<Node> comparator) {
 
         if (node.getChildCount() > 2) throw new RuntimeException("Not implemented yet!");
-        
+
         for (Node child : node.getChildren()) {
             rotateNodeByComparator(child, comparator);
         }
 
         if (node.getChildCount() > 1) {
-                if (comparator.compare(node.getLeft(), node.getRight()) > 0) {
+            if (comparator.compare(node.getLeft(), node.getRight()) > 0) {
                 Node temp = node.getLeft();
                 node.setLeft(node.getRight());
                 node.setRight(temp);
@@ -91,4 +91,11 @@ public class TreeUtils {
         } else return node.getHeight();
     }
 
+    public static double getDoubleMetaData(Node node, String metaDataName) {
+        Object metaData = node.getMetaData(metaDataName);
+        if (metaData instanceof Integer) return (double) ((Integer) metaData);
+        if (metaData instanceof Double) return (Double) metaData;
+        if (metaData instanceof String) return Double.parseDouble((String) metaData);
+        return -1;
+    }
 }

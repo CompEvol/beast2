@@ -121,7 +121,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
         Box buttonBox = Box.createHorizontalBox();
 
-        m_addButton = new SmallButton("+", true);
+        m_addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
         m_addButton.setToolTipText("Add item to the list");
         m_addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
