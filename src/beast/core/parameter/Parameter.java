@@ -374,7 +374,7 @@ public abstract class Parameter<T> extends StateNode {
         return minorDimension;
     }
 
-    public int getMindorDimension2() {
+    public int getMinorDimension2() {
         return getDimension() / minorDimension;
     }
 
@@ -399,15 +399,15 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     public void getMatrixValues2(int j, T[] col) {
-        assert (col.length == getMindorDimension2());
-        for (int i = 0; i < getMindorDimension2(); i++) {
+        assert (col.length == getMinorDimension2());
+        for (int i = 0; i < getMinorDimension2(); i++) {
             col[i] = values[i * minorDimension + j];
         }
     }
 
     public void getMatrixValues2(int j, double[] col) {
-        assert (col.length == getMindorDimension2());
-        for (int i = 0; i < getMindorDimension2(); i++) {
+        assert (col.length == getMinorDimension2());
+        for (int i = 0; i < getMinorDimension2(); i++) {
             col[i] = getArrayValue(i * minorDimension + j);
         }
     }
