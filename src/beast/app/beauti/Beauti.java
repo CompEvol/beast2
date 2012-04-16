@@ -19,6 +19,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -135,13 +136,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionSave() {
-            super("Save", "Save Model", "save", "ctrl S");
+            super("Save", "Save Model", "save", KeyEvent.VK_C);
             setEnabled(false);
         } // c'tor
 
         public ActionSave(String sName, String sToolTipText, String sIcon,
-                          String sAcceleratorKey) {
-            super(sName, sToolTipText, sIcon, sAcceleratorKey);
+                          int acceleratorKey) {
+            super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -168,7 +169,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = -20389110859354L;
 
         public ActionSaveAs() {
-            super("Save As", "Save Model As", "saveas", "");
+            super("Save As", "Save Model As", "saveas", -1);
             setEnabled(false);
         } // c'tor
 
@@ -222,13 +223,14 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionNew() {
-            super("New", "Start new analysis", "new", "ctrl N");
+            super("New", "Start new analysis", "new", KeyEvent.VK_N);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
             doc.newAnalysis();
             a_save.setEnabled(false);
             a_saveas.setEnabled(false);
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
@@ -236,12 +238,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionLoad() {
-            super("Load", "Load Beast File", "open", "ctrl O");
+            super("Load", "Load Beast File", "open", KeyEvent.VK_O);
         } // c'tor
 
         public ActionLoad(String sName, String sToolTipText, String sIcon,
-                          String sAcceleratorKey) {
-            super(sName, sToolTipText, sIcon, sAcceleratorKey);
+                          int acceleratorKey) {
+            super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -273,10 +275,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionTemplate() {
-            super("Other Template", "Load Beast Analysis Template From File", "template", "");
+            super("Other Template", "Load Beast Analysis Template From File", "template", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
             File file = beast.app.util.Utils.getLoadFile("Load Template XML File");
 //    		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir")+"/templates");
 //    		fileChooser.addChoosableFileFilter(ef1);
@@ -292,6 +295,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     JOptionPane.showMessageDialog(null, "Something went wrong loading the template: " + e.getMessage());
                 }
             }
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         } // actionPerformed
     } // ActionTemplate
 
@@ -300,7 +304,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionAddOn() {
-            super("Manage Add-ons", "Manage Add-ons", "addon", "");
+            super("Manage Add-ons", "Manage Add-ons", "addon", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -314,7 +318,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
             templateMenu.addSeparator();
             templateMenu.add(a_template);
-
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         } // actionPerformed
     }
 
@@ -322,12 +326,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionImport() {
-            super("Import Alignment", "Import Alignment File", "import", "ctrl I");
+            super("Import Alignment", "Import Alignment File", "import", KeyEvent.VK_I);
         } // c'tor
 
         public ActionImport(String sName, String sToolTipText, String sIcon,
-                            String sAcceleratorKey) {
-            super(sName, sToolTipText, sIcon, sAcceleratorKey);
+                            int acceleratorKey) {
+            super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -379,7 +383,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = -2038911085935515L;
 
         public ActionQuit() {
-            super("Exit", "Exit Program", "exit", "alt F4");
+            super("Exit", "Exit Program", "exit", KeyEvent.VK_F4);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -440,7 +444,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = -1;
 
         public ActionViewAllPanels() {
-            super("View all", "View all panels", "viewall", "");
+            super("View all", "View all panels", "viewall", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -457,7 +461,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = -1;
 
         public ActionAbout() {
-            super("About", "Help about", "about", "");
+            super("About", "Help about", "about", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -470,7 +474,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = -1;
 
         public ActionHelp() {
-            super("Help", "Help on current panel", "help", "");
+            super("Help", "Help on current panel", "help", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -487,7 +491,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = -1;
 
         public ActionCitation() {
-            super("Citation", "Show appropriate citations and copy to clipboard", "citation", "");
+            super("Citation", "Show appropriate citations and copy to clipboard", "citation", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -513,7 +517,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = -1;
 
         public ActionViewModel() {
-            super("View model", "View model graph", "model", "");
+            super("View model", "View model graph", "model", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {

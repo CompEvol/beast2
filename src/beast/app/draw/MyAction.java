@@ -1,7 +1,11 @@
 package beast.app.draw;
 
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -17,18 +21,20 @@ public class MyAction extends AbstractAction {
      * for serialisation
      */
     private static final long serialVersionUID = -2038911111935517L;
-
+    
     /**
      * path for icons
      */
 
-    public MyAction(String sName, String sToolTipText, String sIcon, String sAcceleratorKey) {
+    public MyAction(String sName, String sToolTipText, String sIcon, int acceleratorKey) {
         super(sName);
         // setToolTipText(sToolTipText);
         putValue(Action.SHORT_DESCRIPTION, sToolTipText);
         putValue(Action.LONG_DESCRIPTION, sToolTipText);
-        if (sAcceleratorKey.length() > 0) {
-            KeyStroke keyStroke = KeyStroke.getKeyStroke(sAcceleratorKey);
+        if (acceleratorKey > 0) {
+            //KeyStroke keyStroke = KeyStroke.getKeyStroke(sAcceleratorKey);
+        	//int keyEvent = keyEventMap.get(sAcceleratorKey);
+            KeyStroke keyStroke = KeyStroke.getKeyStroke(acceleratorKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
             putValue(Action.ACCELERATOR_KEY, keyStroke);
         }
         putValue(Action.MNEMONIC_KEY, new Integer(sName.charAt(0)));

@@ -241,12 +241,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -20389110859355156L;
 
         public ActionSave() {
-            super("Save", "Save Graph", "save", "ctrl S");
+            super("Save", "Save Graph", "save", KeyEvent.VK_S);
         } // c'tor
 
         public ActionSave(String sName, String sToolTipText, String sIcon,
-                          String sAcceleratorKey) {
-            super(sName, sToolTipText, sIcon, sAcceleratorKey);
+                          int acceleratorKey) {
+            super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -311,7 +311,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         boolean m_bIsPrinting = false;
 
         public ActionPrint() {
-            super("Print", "Print Graph", "print", "ctrl P");
+            super("Print", "Print Graph", "print", KeyEvent.VK_P);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -340,7 +340,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -20389110859354L;
 
         public ActionSaveAs() {
-            super("Save As", "Save Graph As", "saveas", "");
+            super("Save As", "Save Graph As", "saveas", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -365,7 +365,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -3027642085935519L;
 
         public ActionExport() {
-            super("Export", "Export to graphics file", "export", "");
+            super("Export", "Export to graphics file", "export", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -491,7 +491,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038911085935515L;
 
         public ActionQuit() {
-            super("Exit", "Exit Program", "exit", "alt F4");
+            super("Exit", "Exit Program", "exit", KeyEvent.VK_F4);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -520,7 +520,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038911085935515L;
 
         public ActionNew() {
-            super("New", "New Network", "new", "");
+            super("New", "New Network", "new", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -541,7 +541,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038911085935515L;
 
         public ActionLoad() {
-            super("Load", "Load Graph", "open", "ctrl O");
+            super("Load", "Load Graph", "open", KeyEvent.VK_O);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -577,7 +577,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -3038910085935519L;
 
         public ActionUndo() {
-            super("Undo", "Undo", "undo", "ctrl Z");
+            super("Undo", "Undo", "undo", KeyEvent.VK_Z);
             setEnabled(false);
         } // c'tor
 
@@ -600,7 +600,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -4038910085935519L;
 
         public ActionRedo() {
-            super("Redo", "Redo", "redo", "ctrl Y");
+            super("Redo", "Redo", "redo", KeyEvent.VK_Y);
             setEnabled(false);
         } // c'tor
 
@@ -623,7 +623,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038912085935519L;
 
         public ActionSelectAll() {
-            super("Select All", "Select All", "selectall", "ctrl A");
+            super("Select All", "Select All", "selectall", KeyEvent.VK_A);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -645,7 +645,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038912085935519L;
 
         public ActionDeleteNode() {
-            super("Delete Node", "Delete Node", "delnode", "DELETE");
+            super("Delete Node", "Delete Node", "delnode", KeyEvent.VK_DELETE);
             setEnabled(false);
         } // c'tor
 
@@ -663,13 +663,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038732085935519L;
 
         public ActionCopyNode() {
-            super("Copy", "Copy Nodes", "copy", "ctrl C");
+            super("Copy", "Copy Nodes", "copy", KeyEvent.VK_C);
             setEnabled(false);
         } // c'tor
 
         public ActionCopyNode(String sName, String sToolTipText, String sIcon,
-                              String sAcceleratorKey) {
-            super(sName, sToolTipText, sIcon, sAcceleratorKey);
+                              int acceleratorKey) {
+            super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'rot
 
         public void actionPerformed(ActionEvent ae) {
@@ -695,7 +695,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038822085935519L;
 
         public ActionCutNode() {
-            super("Cut", "Cut Nodes", "cut", "ctrl X");
+            super("Cut", "Cut Nodes", "cut", KeyEvent.VK_X);
             setEnabled(false);
         } // c'tor
 
@@ -714,7 +714,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -2038732085935519L;
 
         public ActionPasteNode() {
-            super("Paste", "Paste Nodes", "paste", "ctrl V");
+            super("Paste", "Paste Nodes", "paste", KeyEvent.VK_V);
             setEnabled(false);
         } // c'tor
 
@@ -736,7 +736,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionCollapse() {
-            super("Collapse shapes", "Collapse", "collapse", "G");
+            super("Collapse shapes", "Collapse", "collapse", -1);
+            KeyStroke keyStroke = KeyStroke.getKeyStroke("G");
+            putValue(Action.ACCELERATOR_KEY, keyStroke);
             setEnabled(false);
         } // c'tor
 
@@ -763,7 +765,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionSelect() {
-            super("Select", "Select", "select", "");
+            super("Select", "Select", "select", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -775,7 +777,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionArrow() {
-            super("Arrow", "Arrow", "arrow", "");
+            super("Arrow", "Arrow", "arrow", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -787,7 +789,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionFunction() {
-            super("Function", "Function", "function", "");
+            super("Function", "Function", "function", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -799,7 +801,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionFillColor() {
-            super("Fill color", "Fill color", "fillcolor", "");
+            super("Fill color", "Fill color", "fillcolor", -1);
             setEnabled(false);
         } // c'tor
 
@@ -819,7 +821,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionPenColor() {
-            super("Pen color", "Pen color", "pencolor", "");
+            super("Pen color", "Pen color", "pencolor", -1);
             setEnabled(false);
         } // c'tor
 
@@ -843,7 +845,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionToFront() {
-            super("Bring to front", "To front", "tofront", "ctrl plus");
+            super("Bring to front", "To front", "tofront", KeyEvent.VK_PLUS);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -859,7 +861,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionForward() {
-            super("Bring forward", "Forward", "forward", "plus");
+            super("Bring forward", "Forward", "forward", -1);
+            KeyStroke keyStroke = KeyStroke.getKeyStroke("plus");
+            putValue(Action.ACCELERATOR_KEY, keyStroke);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -875,7 +879,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionToBack() {
-            super("Bring to back", "To back", "toback", "ctrl min");
+            super("Bring to back", "To back", "toback", KeyEvent.VK_MINUS);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -891,7 +895,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionBackward() {
-            super("Bring backward", "Backward", "backward", "minus");
+            super("Bring backward", "Backward", "backward", -1);
+            KeyStroke keyStroke = KeyStroke.getKeyStroke("minus");
+            putValue(Action.ACCELERATOR_KEY, keyStroke);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -907,7 +913,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -3138642085935519L;
 
         public ActionAlignLeft() {
-            super("Align Left", "Align Left", "alignleft", "");
+            super("Align Left", "Align Left", "alignleft", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -924,7 +930,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -4238642085935519L;
 
         public ActionAlignRight() {
-            super("Align Right", "Align Right", "alignright", "");
+            super("Align Right", "Align Right", "alignright", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -941,7 +947,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -5338642085935519L;
 
         public ActionAlignTop() {
-            super("Align Top", "Align Top", "aligntop", "");
+            super("Align Top", "Align Top", "aligntop", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -958,7 +964,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -6438642085935519L;
 
         public ActionAlignBottom() {
-            super("Align Bottom", "Align Bottom", "alignbottom", "");
+            super("Align Bottom", "Align Bottom", "alignbottom", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -976,7 +982,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
         public ActionCenterHorizontal() {
             super("Center Horizontal", "Center Horizontal", "centerhorizontal",
-                    "");
+                    -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -993,7 +999,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -8638642085935519L;
 
         public ActionCenterVertical() {
-            super("Center Vertical", "Center Vertical", "centervertical", "");
+            super("Center Vertical", "Center Vertical", "centervertical", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1010,7 +1016,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -9738642085935519L;
 
         public ActionSpaceHorizontal() {
-            super("Space Horizontal", "Space Horizontal", "spacehorizontal", "");
+            super("Space Horizontal", "Space Horizontal", "spacehorizontal", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1027,7 +1033,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -838642085935519L;
 
         public ActionSpaceVertical() {
-            super("Space Vertical", "Space Vertical", "spacevertical", "");
+            super("Space Vertical", "Space Vertical", "spacevertical", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1044,7 +1050,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -20389110859353L;
 
         public ActionAbout() {
-            super("About", "Help about", "about", "");
+            super("About", "Help about", "about", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1061,7 +1067,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionRelax() {
-            super("Relax", "Relax positions", "about", "");
+            super("Relax", "Relax positions", "about", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1075,7 +1081,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionViewLoggers() {
-            super("View loggers", "View loggers", "about", "");
+            super("View loggers", "View loggers", "about", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1089,7 +1095,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionViewOperators() {
-            super("View Operators", "View Operators", "viewoperators", "");
+            super("View Operators", "View Operators", "viewoperators", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1103,7 +1109,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionViewSequences() {
-            super("View Sequences", "View Sequences", "viewsequences", "");
+            super("View Sequences", "View Sequences", "viewsequences", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
@@ -1117,7 +1123,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         private static final long serialVersionUID = -1;
 
         public ActionLayout() {
-            super("Layout", "Layout graph", "layout", "");
+            super("Layout", "Layout graph", "layout", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent e) {
