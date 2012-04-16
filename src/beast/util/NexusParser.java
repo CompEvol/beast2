@@ -289,6 +289,7 @@ public class NexusParser {
      * begin assumptions;
      * charset firsthalf = 1-449;
      * charset secondhalf = 450-898;
+     * charset third = 1-457\3 662-896\3;
      * end;
      */
     void parseAssumptionsBlock(BufferedReader fin) throws Exception {
@@ -300,7 +301,11 @@ public class NexusParser {
                 sStr = sStr.replaceAll(";", "");
                 String[] sStrs = sStr.split("\\s+");
                 String sID = sStrs[1];
-                String sRange = sStrs[sStrs.length - 1];
+                String sRange = "";
+                for (int i =  3; i < sStrs.length; i++) {
+                	sRange += sStrs[i] + " ";
+                }
+                sRange = sRange.trim().replace(' ', ',');
                 FilteredAlignment alignment = new FilteredAlignment();
                 alignment.setID(sID);
                 alignment.m_alignmentInput.setValue(m_alignment, alignment);

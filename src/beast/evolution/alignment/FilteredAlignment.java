@@ -13,7 +13,7 @@ public class FilteredAlignment extends Alignment {
             "First site is 1." +
             "Filter specs are comma separated, either a range [from]-[to] or iteration [from]:[to]:[step]; " +
             "1-100 defines a range, " +
-            "1:100:3 defines every third in range 1-100, " +
+            "1-100\3 or 1:100:3 defines every third in range 1-100, " +
             "1::3,2::3 removes every third site. " +
             "Default for range [1]-[last site], default for iterator [1]:[last site]:[1]", Validate.REQUIRED);
     public Input<Alignment> m_alignmentInput = new Input<Alignment>("data", "alignment to be filtered", Validate.REQUIRED);
@@ -54,8 +54,14 @@ public class FilteredAlignment extends Alignment {
         for (int i = 0; i < sFilters.length; i++) {
             sFilter = " " + sFilters[i] + " ";
             if (sFilter.matches(".*-.*")) {
-                // range, e.g. 1-100
-                m_iStep[i] = 1;
+                // range, e.g. 1-100/3
+                if (sFilter.indexOf('\\') >= 0) {
+                	String sStr2 = sFilter.substring(sFilter.indexOf('\\') + 1); 
+                	m_iStep[i] = parseInt(sStr2, 1);
+                	sFilter = sFilter.substring(0, sFilter.indexOf('\\'));
+                } else {
+                	m_iStep[i] = 1;
+                }
                 String[] sStrs = sFilter.split("-");
                 m_iFrom[i] = parseInt(sStrs[0], 1) - 1;
                 m_iTo[i] = parseInt(sStrs[1], m_alignmentInput.get().getSiteCount()) - 1;
