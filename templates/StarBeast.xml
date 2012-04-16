@@ -153,7 +153,7 @@
                 </branchRateModel>
             </plugin>
 
-	        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="OneOnX"/></plugin>
+	        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
 	        <plugin id='MutationRatePrior.$(n)' spec='Prior' x='@mutationRate.$(n)'><distr spec="OneOnX"/></plugin>
 
             <!-- tree and its properties -->
@@ -226,6 +226,8 @@
             <connect srcID='WilsonBalding.$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='updown.$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true and clockRate.$(n)/estimate=true'/>
 
+            <connect srcID='treeLikelihood.$(n)'       targetID='tracelog' inputName='log'/>
+            <connect srcID='treePrior.$(n)'            targetID='tracelog' inputName='log'/>
             <connect srcID='TreeHeight.$(n)'           targetID='tracelog' inputName='log' if='inposterior(Tree.$(n)) and Tree.$(n)/estimate=true'/>
             <connect srcID='proportionInvariant.$(n)'  targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
             <connect srcID='mutationRate.$(n)'         targetID='tracelog' inputName='log' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
@@ -326,6 +328,7 @@
 			<log idref="speciescoalescent"/>
 			<log idref="birthRate.Species"/>
 			<log idref="YuleModel.Species"/>
+            <log id='TreeHeight.Species' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.Species'/>
         </logger>
 
 		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="5000" mode="tree">
