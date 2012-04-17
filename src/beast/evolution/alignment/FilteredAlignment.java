@@ -71,7 +71,10 @@ public class FilteredAlignment extends Alignment {
                 m_iFrom[i] = parseInt(sStrs[0], 1) - 1;
                 m_iTo[i] = parseInt(sStrs[1], m_alignmentInput.get().getSiteCount()) - 1;
                 m_iStep[i] = parseInt(sStrs[2], 1);
-
+            } else if (sFilter.trim().matches("[0-9]*")) {
+                m_iFrom[i] = parseInt(sFilter.trim(), 1) - 1;
+                m_iTo[i] = m_iFrom[i];
+            	m_iStep[i] = 1;
             } else {
                 throw new Exception("Don't know how to parse filter " + sFilter);
             }
