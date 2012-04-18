@@ -129,6 +129,7 @@
             path=''
             hasPartitions="none" icon='9.pngx' forceExpansion='TRUE'
         />
+		<mergepoint id='aux-panels'/>
 
 
         <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
@@ -288,6 +289,7 @@
 			        <topPopSize spec='parameter.RealParameter' id='popSizeTop' value='1'/> 
 				    <parameter name='gammaParameter' id='popMean' value='1' estimate="true"/>
 				</distribution>
+				<mergepoint id='aux-priors'/>
 			</distribution>
             <distribution spec="CompoundDistribution" id="prior">
 			    <!-- species tree priors -->
@@ -302,6 +304,7 @@
 		        </distribution>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
+				<mergepoint id='aux-likelihoods'/>
             </distribution>
         </distribution>
 

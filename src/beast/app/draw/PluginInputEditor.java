@@ -90,6 +90,7 @@ public class PluginInputEditor extends InputEditor.Base {
                         }
                         refresh();
                         validateInput();
+                        refreshPanel();
                     }
                 });
                 add(m_editPluginButton);

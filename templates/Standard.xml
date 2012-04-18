@@ -120,6 +120,7 @@
             path=''
             hasPartitions="none" icon='9.png.x' forceExpansion='TRUE'
         />
+		<mergepoint id='aux-panels'/>
 
 
         <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
@@ -286,8 +287,10 @@
 
         <distribution spec="CompoundDistribution" id="posterior">
             <distribution spec="CompoundDistribution" id="prior">
+				<mergepoint id='aux-priors'/>
             </distribution>
             <distribution spec="CompoundDistribution" id="likelihood">
+				<mergepoint id='aux-likelihoods'/>
             </distribution>
         </distribution>
 

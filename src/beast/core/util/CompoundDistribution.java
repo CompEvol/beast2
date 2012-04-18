@@ -28,8 +28,8 @@ import beast.app.BeastMCMC;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Distribution;
+import beast.core.Plugin;
 import beast.core.State;
-import beast.evolution.tree.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,17 +49,20 @@ public class CompoundDistribution extends Distribution {
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
                     new ArrayList<Distribution>());
     public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads", "calculated the distributions in parallel using threads (default false)", false);
-
+    public Input<Boolean> ignoreInput = new Input<Boolean>("ignore", "ignore all distributions and return 1 as distribution (default false)", false);
+    
     /**
      * flag to indicate threads should be used. Only effective if the useThreadsInput is
      * true and BeasMCMC.nrOfThreads > 1
      */
     boolean useThreads;
+    boolean ignore;
 
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
+        ignore = ignoreInput.get();
 
         if (pDistributions.get().size() == 0) {
             logP = 0;
@@ -76,6 +79,9 @@ public class CompoundDistribution extends Distribution {
     @Override
     public double calculateLogP() throws Exception {
         logP = 0;
+        if (ignore) {
+        	return logP;
+        }
         if (useThreads) {
             logP = calculateLogPUsingThreads();
         } else {
@@ -177,4 +183,13 @@ public class CompoundDistribution extends Distribution {
         return conditions;
     }
 
+    @Override
+    public List<Plugin> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    	if (ignoreInput.get()) {
+    		return new ArrayList<Plugin>();
+    	} else {
+    		return super.listActivePlugins();
+    	}
+    }
+    
 } // class CompoundProbabilityDistribution

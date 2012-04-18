@@ -89,6 +89,15 @@ public class BeautiSubTemplate extends Plugin {
         this.doc = doc;
     }
 
+    void removeSubNet(BeautiSubTemplate template, String sPartition) throws Exception {
+        // disconnect all connection points in the template
+        for (BeautiConnector connector : template.connectors) {
+//			Plugin src = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
+//			String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
+            doc.disconnect(connector, sPartition);
+        }
+    }
+    
     void removeSubNet(Object o) throws Exception {
         if (o == null) {
             // nothing to do
@@ -110,17 +119,10 @@ public class BeautiSubTemplate extends Plugin {
                 break;
             }
         }
-
         if (template == null) {
             throw new Exception("Cannot find template for removing " + plugin.getID());
         }
-
-        // disconnect all connection points in the template
-        for (BeautiConnector connector : template.connectors) {
-//			Plugin src = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
-//			String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
-            doc.disconnect(connector, sPartition);
-        }
+        removeSubNet(template, sPartition);
     }
 
     public Plugin createSubNet(String sPartition, Plugin plugin, Input<?> input) throws Exception {

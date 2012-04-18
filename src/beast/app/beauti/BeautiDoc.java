@@ -1695,6 +1695,20 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         determinePartitions();
     }
 
+    public void delAlignmentWithSubnet(Alignment data) {
+        alignments.remove(data);
+        try {
+        	BeautiSubTemplate template = beautiConfig.partitionTemplate.get();
+			template.removeSubNet(template, data.getID());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        // re-determine partitions
+        determinePartitions();
+		scrubAll(true, true);
+    }
+
     public void determinePartitions() {
         CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
         sPartitionNames = new ArrayList<String>();

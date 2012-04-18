@@ -12,9 +12,7 @@ import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
@@ -46,11 +44,8 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.substitutionmodel.SubstitutionModel;
-import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.util.NexusParser;
@@ -129,6 +124,16 @@ public class AlignmentListInputEditor extends ListInputEditor {
             }
         });
         buttonBox.add(m_addButton);
+
+        JButton delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
+        delButton.setToolTipText("Delete selected items from the list");
+        delButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                delItem();
+            }
+        });
+        buttonBox.add(delButton);
+        
         buttonBox.add(Box.createHorizontalGlue());
         box.add(buttonBox);
         add(box);
@@ -577,6 +582,17 @@ public class AlignmentListInputEditor extends ListInputEditor {
         }
     } // addItem
 
+    void delItem() {
+        int[] nSelected = getTableRowSelection();
+        // do the actual deleting
+        for (int i = nSelected.length - 1; i >= 0; i--) {
+            int iRow = nSelected[i];
+            getDoc().delAlignmentWithSubnet(alignments.get(iRow));
+            alignments.remove(iRow);
+        }
+        refreshPanel();
+    } // delItem
+    
     @Override
     public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
         List<Plugin> selectedPlugins = new ArrayList<Plugin>();
