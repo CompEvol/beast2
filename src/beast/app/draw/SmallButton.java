@@ -17,10 +17,13 @@ public class SmallButton extends JButton {
     public SmallButton(String label, boolean isEnabled, ButtonType buttonType) {
         super(label);
         setEnabled(isEnabled);
-        putClientProperty("JButton.buttonType", buttonType.toString());
+        setButtonType(buttonType);
     }
 
-
+    public void setButtonType(ButtonType buttonType) {
+        putClientProperty("JButton.buttonType", buttonType.toString());    
+    }
+    
     public void setImg(Image image) {
         setIcon(new ImageIcon(image));
     }

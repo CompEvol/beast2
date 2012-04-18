@@ -183,7 +183,7 @@ public class ListInputEditor extends InputEditor.Base {
         addPluginItem(itemBox, plugin);
 
 
-        SmallButton editButton = new SmallButton("e", true);
+        SmallButton editButton = new SmallButton("e", true, SmallButton.ButtonType.square);
         if (m_bExpandOption == ExpandOption.FALSE || m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() > 1) {
             editButton.setToolTipText("Edit item in the list");
             editButton.addActionListener(new ActionListenerObject(plugin) {
@@ -192,8 +192,9 @@ public class ListInputEditor extends InputEditor.Base {
                 }
             });
         } else {
-            editButton.setText("_");
+            editButton.setText("");
             editButton.setToolTipText("Expand/collapse item in the list");
+            editButton.setButtonType(SmallButton.ButtonType.toolbar);
         }
         m_editButton.add(editButton);
         itemBox.add(editButton);
