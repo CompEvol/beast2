@@ -549,6 +549,9 @@ public class AddOnManager {
         }
 
         String fileSep = System.getProperty("file.separator");
+        if (fileSep.equals("\\")) {
+        	fileSep = "\\\\";
+        }
         for (int i = 0; i < all_classes.size(); i++) {
             String sStr = all_classes.get(i);
             sStr = sStr.substring(0, sStr.length() - 6);
