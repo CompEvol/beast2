@@ -178,4 +178,9 @@ public class FilteredAlignment extends Alignment {
         System.err.println(getSiteCount() + " sites");
         System.err.println(getPatternCount() + " patterns");
     }
+    
+    /** return indices of the sites that the filter uses **/
+    public int [] indices() {
+    	return m_iFilter.clone();
+    }
 }

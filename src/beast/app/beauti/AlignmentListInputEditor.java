@@ -12,7 +12,9 @@ import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
@@ -584,6 +586,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
     void delItem() {
         int[] nSelected = getTableRowSelection();
+        if (nSelected.length == 0) {
+        	JOptionPane.showMessageDialog(this, "Select partitions to delete, before hitting the delete button");
+        }
         // do the actual deleting
         for (int i = nSelected.length - 1; i >= 0; i--) {
             int iRow = nSelected[i];
@@ -619,6 +624,32 @@ public class AlignmentListInputEditor extends ListInputEditor {
                     try {
                         parser.parseFile(file);
                         if (parser.m_filteredAlignments.size() > 0) {
+                        	/** sanity check: make sure the filters do not overlap **/
+                        	int [] used = new int[parser.m_alignment.getSiteCount()];
+                        	Set<Integer> overlap = new HashSet<Integer>();
+                        	int partitionNr = 1;
+                            for (Alignment data : parser.m_filteredAlignments) {
+                            	int [] indices = ((FilteredAlignment) data).indices();
+                            	for (int i : indices) {
+                            		if (used[i] > 0) {
+                            			overlap.add(used[i]*10000 + partitionNr);
+                            		} else {
+                            			used[i] = partitionNr;
+                            		}
+                            	}
+                            	partitionNr++;
+                            }
+                            if (overlap.size() > 0) {
+                            	String overlaps = "<html>Warning: The following partitions overlap:<br/>";
+	                            for (int i : overlap) {
+	                            	overlaps += parser.m_filteredAlignments.get(i/10000 - 1).getID() + 
+	                            		" overlaps with " +
+	                            		parser.m_filteredAlignments.get(i%10000 - 1).getID() + "<br/>";
+	                            }
+	                            overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
+	                            JOptionPane.showMessageDialog(this, overlaps);
+                            }
+                        	/** add alignments **/
                             for (Alignment data : parser.m_filteredAlignments) {
                                 selectedPlugins.add(data);
                             }
