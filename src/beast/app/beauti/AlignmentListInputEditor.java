@@ -125,7 +125,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
                 addItem();
             }
         });
+        buttonBox.add(Box.createHorizontalStrut(5));
         buttonBox.add(m_addButton);
+        buttonBox.add(Box.createHorizontalStrut(5));
 
         JButton delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
         delButton.setToolTipText("Delete selected items from the list");
@@ -135,6 +137,17 @@ public class AlignmentListInputEditor extends ListInputEditor {
             }
         });
         buttonBox.add(delButton);
+        buttonBox.add(Box.createHorizontalStrut(5));
+
+        JButton splitButton = new JButton("Split");
+        splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
+        splitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	splitItem();
+            }
+        });
+        buttonBox.add(splitButton);
+        
         
         buttonBox.add(Box.createHorizontalGlue());
         box.add(buttonBox);
@@ -597,7 +610,59 @@ public class AlignmentListInputEditor extends ListInputEditor {
         }
         refreshPanel();
     } // delItem
-    
+
+    void splitItem() {
+        int[] nSelected = getTableRowSelection();
+        if (nSelected.length == 0) {
+        	JOptionPane.showMessageDialog(this, "Select partitions to split, before hitting the split button");
+        	return;
+        }
+    	String [] options = { "{1,2} + 3", "1 + 2 + 3", "Cancel"};
+
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "Split selected alignments into partitions",
+                "Option",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[2]);
+        
+        String [] filters = null;
+        String [] ids = null;
+        switch (choice) {
+        case 0:
+        	filters = new String[]{"1::3,2::3", "3::3"};
+        	ids = new String[]{"1,2", "3"};
+        	break;
+        case 1:
+        	filters = new String[]{"1::3", "2::3", "3::3"};
+        	ids = new String[]{"1", "2", "3"};
+        	break;
+        default:
+        	return;
+        }
+
+        for (int i = nSelected.length - 1; i >= 0; i--) {
+            int iRow = nSelected[i];
+            Alignment alignment = alignments.remove(iRow);
+            getDoc().delAlignmentWithSubnet(alignment);
+            try {
+	            for (int j = 0; j < filters.length; j++) {
+		            FilteredAlignment f = new FilteredAlignment();
+		            f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.m_sDataType.get());
+		            f.setID( alignment.getID() + ids[j]);
+		            getDoc().addAlignmentWithSubnet(f);
+	            }
+            } catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
+        
+        refreshPanel();
+    } // splitItem
+
     @Override
     public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
         List<Plugin> selectedPlugins = new ArrayList<Plugin>();

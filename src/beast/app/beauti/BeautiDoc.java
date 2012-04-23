@@ -3,12 +3,16 @@ package beast.app.beauti;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +39,10 @@ import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.Logger;
 import beast.core.MCMC;
 import beast.core.Plugin;
+import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
@@ -62,34 +68,17 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         UNKNOWN, SHOW_DETAILS_USE_TEMPLATE, SHOW_DETAILS_USE_XML_SPEC, WRITE_XML
     }
 
-    // public Input<List<Alignment>> m_alignments = new
-    // Input<List<Alignment>>("alignment", "list of alignments or partitions",
-    // new ArrayList<Alignment>(), Validate.REQUIRED);
     public List<Alignment> alignments = new ArrayList<Alignment>();
 
     public Input<beast.core.Runnable> mcmc = new Input<beast.core.Runnable>("runnable", "main entry of analysis",
             Validate.REQUIRED);
 
-    /** points to input that contains prior distribution, if any **/
-//	Input<List<Distribution>> priors;
-    /**
-     * contains all Priors from the template *
-     */
-//	protected List<Distribution> potentialPriors;
-//	List<StateNodeInitialiser> potentitalInits;
-//	List<Logger> potentitalLoggers;
 
     protected List<BranchRateModel> clockModels;
     protected List<TreeDistribution> treePriors;
     /**
      * contains all loggers from the template *
      */
-//	List<List<Plugin>> loggerInputs;
-
-//	boolean bAutoScrubOperators = true;
-//	boolean bAutoScrubLoggers = true;
-//	boolean bAutoScrubPriors = true;
-//	boolean bAutoScrubState = true;
 
     public boolean bAutoSetClockRate = true;
 
@@ -102,14 +91,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
     // partition names
     List<String> sPartitionNames = new ArrayList<String>();
 
-    // RRB: hack to pass info to BeautiSubTemplate TODO: beautify this, since it
-    // prevents haveing multiple windows open
-    // All globals need to be removed to make multiple document view work on
-    // Macs
-    //static public BeautiDoc g_doc;
-
     public BeautiConfig beautiConfig;
-//	Beauti beauti;
 
     private String templateName = null;
     private String templateFileName = STANDARD_TEMPLATE;
@@ -269,9 +251,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
     @SuppressWarnings("unchecked")
     void clear() {
-//		potentialPriors = new ArrayList<Distribution>();
-//		potentitalInits = new ArrayList<StateNodeInitialiser>();
-//		potentitalLoggers = new ArrayList<Logger>();
         clockModels = new ArrayList<BranchRateModel>();
         treePriors = new ArrayList<TreeDistribution>();
         alignments = new ArrayList<Alignment>();
@@ -345,12 +324,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
     public void loadNewTemplate(String fileName) throws Exception {
         templateFileName = fileName;
         newAnalysis();
-//		BeautiConfig.clear();
-//		PluginPanel.init();
-//		String sXML = processTemplate(sFileName);
-//		extractSequences(sXML);
-//		connectModel();
-//		beauti.setUpPanels();
     }
 
     public void importNexus(File file) throws Exception {
@@ -543,6 +516,16 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             }
         }
         templateName = nameFromFile(sFileName);
+        
+        Writer out = new OutputStreamWriter(new FileOutputStream("/tmp/beast.xml"));
+        try {
+          out.write(sTemplateXML);
+        }
+        finally {
+          out.close();
+        }
+
+        
         return sTemplateXML;
     }
 
@@ -699,105 +682,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         }
         determinePartitions();
 
-        // // create XML for alignments
-        // String sAlignments = "";
-        // int n = 1;
-        // String sRange="range='";
-        // List<String> sAlignmentNames = new ArrayList<String>();
-        // for (Alignment alignment : m_alignments.get()) {
-        // sAlignmentNames.add(alignment.getID());
-        // alignment.setID(/*"alignment" + */alignment.getID());
-        // sRange += alignment.getID() +",";
-        // n++;
-        // }
-        //
-        // for (Alignment alignment : m_alignments.get()) {
-        // if (!(alignment instanceof FilteredAlignment)) {
-        // sAlignments += new XMLProducer().toRawXML(alignment);
-        // }
-        // }
-        // List<String> sDone = new ArrayList<String>();
-        // for (Alignment alignment : m_alignments.get()) {
-        // if (alignment instanceof FilteredAlignment) {
-        // FilteredAlignment data = (FilteredAlignment) alignment;
-        // Alignment baseData = data.m_alignmentInput.get();
-        // String sBaseID = baseData.getID();
-        // if (sDone.indexOf(sBaseID) < 0) {
-        // sAlignments += new XMLProducer().toRawXML(baseData);
-        // sDone.add(sBaseID);
-        // }
-        // // suppress alinmentInput
-        // data.m_alignmentInput.setValue(null, data);
-        // String sData = new XMLProducer().toRawXML(data);
-        // // restore alinmentInput
-        // data.m_alignmentInput.setValue(baseData, data);
-        // sData = sData.replaceFirst("<data ", "<data data='@" + sBaseID
-        // +"' ");
-        // sAlignments += sData;
-        // }
-        // }
-        //
-        // sRange = sRange.substring(0, sRange.length()-1)+"'";
-        //
-        // // process plates in template
-        // int i = -1;
-        // do {
-        // i = sXML.indexOf("<plate", i);
-        // if (i >= 0) {
-        // int j = sXML.indexOf("range='#alignments'");
-        // int j2 = sXML.indexOf("range=\"#alignments\"");
-        // if (j < 0 || (j2>=0 && j2 < j)) {
-        // j = j2;
-        // }
-        // // sanity check: no close of elements encountered underway...
-        // for (int k = i; k < j; k++) {
-        // if (sXML.charAt(k) == '>') {
-        // j = -1;
-        // }
-        // }
-        // if ( j >= 0) {
-        // sXML = sXML.substring(0, j) + sRange + sXML.substring(j+19);
-        // }
-        // i++;
-        // }
-        // } while (i >= 0);
-        //
-        //
-        // if (sAlignmentNames.size() == 1) {
-        // // process plates in template
-        // i = -1;
-        // do {
-        // i = sXML.indexOf("$(n).", i);
-        // if ( i >= 0) {
-        // sXML = sXML.substring(0, i) + sXML.substring(i+5);
-        // }
-        // } while (i >= 0);
-        // }
-        //
-        // // merge in the alignments
-        // i = sXML.indexOf("<data");
-        // int j = sXML.indexOf("/>",i);
-        // int k = sXML.indexOf("</data>",i);
-        // if (j < 0 || (k > 0 && k < j)) {
-        // j = k + 7;
-        // }
-        // sXML = sXML.substring(0, i) + sAlignments + sXML.substring(j);
-        //
-        // // parse the resulting XML
-        // FileWriter outfile = new FileWriter("beast.xml");
-        // outfile.write(sXML);
-        // outfile.close();
-        //
-        // XMLParser parser = new XMLParser();
-        // List<Plugin> plugins = parser.parseTemplate(sXML, new HashMap<String,
-        // Plugin>());
-        // for (Plugin plugin: plugins) {
-        // PluginPanel.addPluginToMap(plugin);
-        // if (plugin instanceof beast.core.Runnable) {
-        // m_mcmc.setValue(plugin, this);
-        // }
-        // }
-        // return sAlignmentNames;
     } // mergeSequences
 
     void loadTemplate(String sXML) throws Exception {
@@ -846,33 +730,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
      * @throws Exception *
      */
     void connectModel() throws Exception {
-//		try {
-        // MCMC mcmc = (MCMC) m_mcmc.get();
-        // build global list of loggers
-//			loggerInputs = new ArrayList<List<Plugin>>();
-//			for (Logger logger : ((MCMC) mcmc.get()).m_loggers.get()) {
-//				List<Plugin> loggers = new ArrayList<Plugin>();
-//				for (Plugin plugin : logger.m_pLoggers.get()) {
-//					loggers.add(plugin);
-//				}
-//				loggerInputs.add(loggers);
-//			}
-
-        // collect priors from template
-//			CompoundDistribution prior = (CompoundDistribution) PluginPanel.g_plugins.get("prior");
-//			this.priors = prior.pDistributions;
-//			List<Distribution> list = this.priors.get();
-//			for (Distribution prior2 : list) {
-//				if (!(prior2 instanceof TreeDistribution)) {
-//					potentialPriors.add(prior2);
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
         scrubAll(true, true);
-//		collectClockModels();
-//		collectTreePriors();
     }
 
     private void collectClockModels() {
@@ -946,23 +804,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         		}
         	}
         }
-
-//        int k = 0;
-//        for (Distribution d : prior.pDistributions.get()) {
-//            if (d instanceof TreeDistribution) {
-//                String sID = d.getID();
-//                sID = sID.substring(sID.indexOf('.') + 1);
-//                String sPartition = alignments.get(k).getID();
-//                if (sID.equals(sPartition)) {
-//                    treePriors.set(k, (TreeDistribution) d);
-//                }
-//                k++;
-//            }
-//        }
-        
-//		for (TreeDistribution d : treePriors) {
-//			System.out.println(d);
-//		}
     }
 
     BranchRateModel getClockModel(String sPartition) {
@@ -1005,16 +846,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 
             // go through all templates, and process connectors in relevant ones
-//			List<Plugin> mcmcPredecessors = new ArrayList<Plugin>();
-//			collectPredecessors(((MCMC) mcmc.get()), mcmcPredecessors);
-
-//			List<Plugin> getPosteriorPredecessors() {
-//				return posteriorPredecessors;
-//			}
-
-//			List<Plugin> posteriorPredecessors = getPosteriorPredecessors();
-
-
             boolean bProgress = true;
             while (bProgress) {
                 bProgress = false;
@@ -1103,19 +934,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                 }
             }
 
-//			if (bAutoScrubState) {
-//				scrubState(bUseNotEstimatedStateNodes);
-//			}
-//			if (bAutoScrubPriors) {
-//				scrubPriors();
-//			}
-//			if (bAutoScrubOperators) {
-//				scrubOperators();
-//			}
-//			if (bAutoScrubLoggers) {
-//				scrubLoggers();
-//			}
-//			scrubInits();
             collectClockModels();
             collectTreePriors();
 
@@ -1170,404 +988,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         }
     }
 
-//	/** remove operators on StateNodesthat have no impact on the posterior **/
-//	void scrubOperators() {
-//		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-//		collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
-//		// clear operatorsInput & add to global list of operators if not already
-//		// there
-//		List<Operator> operators0 = ((MCMC) mcmc.get()).operatorsInput.get();
-//		operators0.clear();
-//
-//		List<StateNode> stateNodes = ((MCMC) mcmc.get()).m_startState.get().stateNodeInput.get();
-//
-//		// add operators that have predecessors in posteriorPredecessors
-//		for (Operator operator : PluginPanel.g_operators) {
-//			List<Plugin> operatorPredecessors = new ArrayList<Plugin>();
-//			collectPredecessors(operator, operatorPredecessors);
-//			for (Plugin plugin : operatorPredecessors) {
-//				if (posteriorPredecessors.contains(plugin)) {
-//					// test at least one of the inputs is a StateNode that needs
-//					// to be estimated
-//					try {
-//						for (Plugin plugin2 : operator.listActivePlugins()) {
-//							if (plugin2 instanceof StateNode) {
-//								if (((StateNode) plugin2).m_bIsEstimated.get() && stateNodes.contains(plugin2)) {
-//									operators0.add(operator);
-//									break;
-//								}
-//							}
-//						}
-//					} catch (Exception e) {
-//						// TODO: handle exception
-//					}
-//					break;
-//				}
-//			}
-//		}
-//		// sort potential priors by ID
-//		final Map<String, String> map = new HashMap<String, String>();
-//		for (Operator operator : operators0) {
-//			String sStateNodes = "";
-//	        try {
-//	        	for (Plugin plugin2 : operator.listActivePlugins()) {
-//	        		if (plugin2 instanceof StateNode && ((StateNode) plugin2).m_bIsEstimated.get()) {
-//	        			sStateNodes += plugin2.getID() + " "; 
-//	        		}
-//	        	}
-//	        } catch (Exception e) {
-//				// ignore
-//			}
-//	        map.put(operator.getID(), sStateNodes+operator.getID());
-//		}
-//		
-//		
-//		Collections.sort(operators0, new Comparator<Operator>() {
-//			@Override
-//			public int compare(Operator o1, Operator o2) {
-//				return map.get(o1.getID()).compareTo(map.get(o2.getID()));
-//			}
-//		});
-//
-//	}
-//
-//
-//	
-//	/** remove loggers of StateNodes that have no impact on the posterior **/
-//	void scrubLoggers() {
-////		List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-////		collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
-//
-//		List<StateNode> stateNodes = ((State) PluginPanel.g_plugins.get("state")).stateNodeInput.get();
-//		List<Logger> loggers = ((MCMC) mcmc.get()).m_loggers.get();
-//		for (int k = 0; k < loggers.size(); k++) {
-//			Logger logger = loggers.get(k);
-//			if (!logger.m_sMode.get().equals(LOGMODE.tree)) {
-//				List<Plugin> loggerInput = loggerInputs.get(k);
-//				// clear logger & add to global list of loggers if not already there
-//				List<Plugin> loggers0 = logger.m_pLoggers.get();
-//				for (int i = loggers0.size() - 1; i >= 0; i--) {
-//					Plugin o = loggers0.remove(i);
-//					if (!loggerInput.contains(o)) {
-//						loggerInput.add(o);
-//					}
-//				}
-////			// add loggers that have predecessors in posteriorPredecessors
-////			for (Plugin newlogger : loggerInput) {
-////				List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
-////				collectPredecessors(newlogger, loggerPredecessors);
-////				for (Plugin plugin : loggerPredecessors) {
-////					if (posteriorPredecessors.contains(plugin)) {
-////						loggers0.add(newlogger);
-////						break;
-////					}
-////				}
-////			}
-//
-//				// add loggers that have all StateNode predecessors in the State
-//	            HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
-//	            try {
-//		            for (Operator op : ((MCMC)mcmc.get()).operatorsInput.get()) {
-//		            	for (Plugin o : op.listActivePlugins()) {
-//		            		if (o instanceof StateNode) {
-//		            			operatorStateNodes.add((StateNode) o);
-//		            		}
-//		            	}
-//		            }
-//	            } catch (Exception e) {
-//					// TODO: handle exception
-//				}
-//	            
-//	            for (Plugin newlogger : loggerInput) {
-//					if (newlogger instanceof StateNode) {
-//						if (stateNodes.contains(newlogger) && operatorStateNodes.contains(newlogger)) {
-//							// check there is an operator that operates on this StateNode
-//							loggers0.add(newlogger);
-//						}
-//					} else {
-//						List<Plugin> loggerPredecessors = new ArrayList<Plugin>();
-//						collectPredecessors(newlogger, loggerPredecessors);
-//						boolean bMatch = false;
-//						for (Plugin plugin : loggerPredecessors) {
-//							if (plugin instanceof StateNode) { // && ! stateNodes.contains(plugin)) {
-//								bMatch = true;
-//								break;
-//							}
-//						}
-//						if (bMatch) {
-//							loggers0.add(newlogger);
-//						}
-//					}
-//				}
-//			}		
-//		}
-//
-//		// find obsolete tree loggers
-//		for (int i = loggers.size() - 1; i >= 0; i--) {
-//			Logger logger = loggers.get(i);
-//			if (logger.m_sMode.get().equals(LOGMODE.tree)) {
-//				Object tree = logger.m_pLoggers.get().get(0);
-//				if (tree instanceof StateNode) {
-//					if (!stateNodes.contains(tree)) {
-//						loggers.remove(i);
-//						potentitalLoggers.add(logger);
-//					}
-//				}
-//			}
-//		}
-//		// check whether any potential logger is needed
-//		for (int i = potentitalLoggers.size() - 1; i >= 0; i--) {
-//			Logger logger = potentitalLoggers.get(i);
-//			if (logger.m_sMode.get().equals(LOGMODE.tree)) {
-//				Object tree = logger.m_pLoggers.get().get(0);
-//				if (stateNodes.contains(tree)) {
-//					loggers.add(logger);
-//					potentitalLoggers.remove(i);
-//				}
-//			}
-//		}
-//
-//	}
-
-//	private void scrubInits() {
-//		List<StateNodeInitialiser> inits = ((MCMC) mcmc.get()).m_initilisers.get();
-//		List<StateNode> stateNodes = ((State) PluginPanel.g_plugins.get("state")).stateNodeInput.get();
-//		// check whether all initialisers are still needed
-//		for (int i = inits.size() - 1; i >= 0; i--) {
-//			List<Plugin> initPredecessors = new ArrayList<Plugin>();
-//			collectPredecessors((Plugin) inits.get(i), initPredecessors);
-//			boolean bFound = false;
-//			for (Plugin plugin : initPredecessors) {
-//				if (stateNodes.contains(plugin)) {
-//					bFound = true;
-//					break;
-//				}
-//			}
-//			if (!bFound) {
-//				StateNodeInitialiser init = inits.get(i);
-//				inits.remove(i);
-//				potentitalInits.add(init);
-//			}
-//		}
-//		// check whether any potential initialiser is needed
-//		for (int i = potentitalInits.size() - 1; i >= 0; i--) {
-//			List<Plugin> initPredecessors = new ArrayList<Plugin>();
-//			collectPredecessors((Plugin) potentitalInits.get(i), initPredecessors);
-//			for (Plugin plugin : initPredecessors) {
-//				if (stateNodes.contains(plugin)) {
-//					StateNodeInitialiser init = potentitalInits.get(i);
-//					inits.add(init);
-//					potentitalInits.remove(i);
-//					break;
-//				}
-//			}
-//		}
-//
-//	}
-
-//	/**
-//	 * remove StateNodes that are not estimated or have no impact on the
-//	 * posterior
-//	 **/
-//	void scrubState(boolean bUseNotEstimatedStateNodes) {
-//		bUseNotEstimatedStateNodes = false;
-//		try {
-//
-//			State state = ((MCMC) mcmc.get()).m_startState.get();
-//			List<StateNode> stateNodes = state.stateNodeInput.get();
-//			stateNodes.clear();
-//
-//			// grab all statenodes that impact the posterior
-//			List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-//			Plugin posterior = ((MCMC) mcmc.get()).posteriorInput.get();
-//			collectPredecessors(posterior, posteriorPredecessors);
-//			for (Plugin plugin : posteriorPredecessors) {
-//				if ((plugin instanceof StateNode)
-//						&& (((StateNode) plugin).m_bIsEstimated.get() || bUseNotEstimatedStateNodes)) {
-//					if (!stateNodes.contains(plugin)) {
-//						stateNodes.add((StateNode) plugin);
-//					}
-//					// System.err.println(stateNode.getID());
-//				}
-//			}
-//			for (int i = stateNodes.size() - 1; i >= 0; i--) {
-//				Plugin stateNode = stateNodes.get(i);
-//				List<Plugin> ancestors = new ArrayList<Plugin>();
-//				collectNonTrivialAncestors(stateNode, ancestors);
-//				if (!ancestors.contains(posterior)) {
-//					stateNodes.remove(i);
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	/**
-//	 * collect priors that have predecessors in the State, i.e. a StateNode that
-//	 * is estimated
-//	 **/
-//	void scrubPriors() {
-//		if (this.priors == null) {
-//			return;
-//		}
-//		try {
-//			List<Plugin> likelihoodPredecessors = new ArrayList<Plugin>();
-//			Plugin likelihood = PluginPanel.g_plugins.get("likelihood");
-//			collectPredecessors(likelihood, likelihoodPredecessors);
-//
-//			List<Distribution> priors = this.priors.get();
-//			for (int i = priors.size() - 1; i >= 0; i--) {
-//				Distribution prior = priors.get(i);
-//				if (!potentialPriors.contains(prior) && !(prior instanceof TreeDistribution)) {
-//					potentialPriors.add(prior);
-//				}
-//				if (prior instanceof MRCAPrior) {
-//					if (((MRCAPrior) prior).m_bOnlyUseTipsInput.get()) {
-//						priors.remove(i);
-//					}
-//				} else if (prior instanceof TreeDistribution) {
-//					TreeDistribution distr = (TreeDistribution) prior;
-//					Tree tree = distr.m_tree.get();
-//					if (tree == null) {
-//						TreeIntervals intervals = distr.treeIntervals.get();
-//						tree = intervals.m_tree.get();
-//					}
-//					if (tree != null && !likelihoodPredecessors.contains(tree)) {
-//						priors.remove(i);
-//						if (!potentialPriors.contains(prior)) {
-//							potentialPriors.add(prior);
-//						}
-//					}
-//				} else if (!(prior instanceof TreeDistribution)) {
-//					priors.remove(i);
-//				}
-//			}
-//			// priors.clear();
-//			List<Plugin> posteriorPredecessors = new ArrayList<Plugin>();
-//			collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
-//
-//			List<StateNode> stateNodes = ((MCMC) mcmc.get()).m_startState.get().stateNodeInput.get();
-//
-//			for (int k = potentialPriors.size() - 1; k >= 0; k--) {
-//				Distribution prior = potentialPriors.get(k);
-//				List<Plugin> priorPredecessors = new ArrayList<Plugin>();
-//				collectPredecessors(prior, priorPredecessors);
-//				for (Plugin plugin : priorPredecessors) {
-//					if (// posteriorPredecessors.contains(plugin) &&
-//					plugin instanceof StateNode && ((StateNode) plugin).m_bIsEstimated.get()) {
-//						if (prior instanceof MRCAPrior) {
-//							if (((MRCAPrior) prior).m_bOnlyUseTipsInput.get()) {
-//								// It is a tip dates prior. Check there is a tip
-//								// dates operator.
-//								for (Plugin plugin2 : ((MRCAPrior) prior).m_treeInput.get().outputs) {
-//									if (plugin2 instanceof TipDatesScaler
-//											&& ((TipDatesScaler) plugin2).m_pWeight.get() > 0) {
-//										priors.add(prior);
-//									}
-//								}
-//							}
-//						} else if (prior instanceof TreeDistribution) {
-//							TreeDistribution distr = (TreeDistribution) prior;
-//							Tree tree = distr.m_tree.get();
-//							if (tree == null) {
-//								TreeIntervals intervals = distr.treeIntervals.get();
-//								tree = intervals.m_tree.get();
-//							}
-//							if (tree != null && likelihoodPredecessors.contains(tree)) {
-//								priors.add(prior);
-//								potentialPriors.remove(prior);
-//							}
-//						} else if (!(prior instanceof Prior)) {
-//							priors.add(prior);
-//							potentialPriors.remove(prior);
-//						} else if (!(prior instanceof MRCAPrior) && stateNodes.contains(plugin)) {
-//							// priors.add(prior);
-//						}
-//						break;
-//					}
-//				}
-//			}
-//
-//			// sort potential priors by ID
-//			Collections.sort(potentialPriors, new Comparator<Distribution>() {
-//				@Override
-//				public int compare(Distribution o1, Distribution o2) {
-//					return o1.getID().compareTo(o2.getID());
-//				}
-//			});
-//
-//			// add priors on parameters
-//			List<Plugin> nonTrivialPosteriorPredecessors = new ArrayList<Plugin>();
-//			collectNonTrivialPredecesors(((MCMC) mcmc.get()).posteriorInput.get(), nonTrivialPosteriorPredecessors);
-//			
-//			for (Distribution prior : potentialPriors) {
-//				List<Plugin> priorPredecessors = new ArrayList<Plugin>();
-//				collectPredecessors(prior, priorPredecessors);
-//				for (Plugin plugin : priorPredecessors) {
-//					if (plugin instanceof StateNode && ((StateNode) plugin).m_bIsEstimated.get()) {
-//						if (prior instanceof MRCAPrior) {
-//						} else if (prior instanceof TreeDistribution) {
-//						} else if (stateNodes.contains(plugin) && nonTrivialPosteriorPredecessors.contains(plugin)) {
-//							priors.add(prior);
-//						}
-//						break;
-//					}
-//				}
-//			}
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
-
-    private void collectPredecessors(Plugin plugin, List<Plugin> predecessors) {
-        predecessors.add(plugin);
-        try {
-            for (Plugin plugin2 : plugin.listActivePlugins()) {
-                if (!predecessors.contains(plugin2)) {
-                    collectPredecessors(plugin2, predecessors);
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-//	/** collect all ancestors (outputs, their outputs, etc) that are not Priors **/
-//	private void collectNonTrivialAncestors(Plugin plugin, List<Plugin> ancestors) {
-//		if (ancestors.contains(plugin)) {
-//			return;
-//		}
-//		ancestors.add(plugin);
-//		int nSize = ancestors.size();
-//		for (int i = 0; i < nSize; i++) {
-//			Plugin plugin2 = ancestors.get(i);
-//			for (Plugin output : plugin2.outputs) {
-//				if (!(output instanceof Prior)) {
-//					collectNonTrivialAncestors(output, ancestors);
-//				}
-//			}
-//		}
-//	}
-//
-//	private void collectNonTrivialPredecesors(Plugin plugin, List<Plugin> predecessors) {
-//		predecessors.add(plugin);
-//		try {
-//			for (Plugin plugin2 : plugin.listActivePlugins()) {
-//				if (!predecessors.contains(plugin2) && !(plugin2 instanceof Prior)) {
-//					collectNonTrivialPredecesors(plugin2, predecessors);
-//				}
-//			}
-//		} catch (IllegalArgumentException e) {
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			e.printStackTrace();
-//		}
-//	}
 
     public void addPlugin(final Plugin plugin) { //throws Exception {
         // SwingUtilities.invokeLater(new Runnable() {
@@ -1670,19 +1090,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                 input.setValue(null, target);
             }
 
-//			potentialPriors.remove(srcPlugin);
-//			potentitalInits.remove(srcPlugin);
-//			if (srcPlugin instanceof Logger) {
-//				potentitalLoggers.remove((Logger) srcPlugin);
-//			}
-//			PluginPanel.g_operators.remove(srcPlugin);
-//			PluginPanel.g_distributions.remove(srcPlugin);
-//			PluginPanel.g_loggers.remove(srcPlugin);
-//			PluginPanel.g_taxa.remove(srcPlugin);
-//			for (List<Plugin> logger : loggerInputs) {
-//				logger.remove(srcPlugin);
-//			}
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1767,9 +1174,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                     e.printStackTrace();
                 }
 
-                // m_pPartitionByAlignments[0].add(treeLikelihood.m_pSiteModel.get());
-                // m_pPartitionByAlignments[1].add(treeLikelihood.m_pBranchRateModel.get());
-                // m_pPartitionByAlignments[2].add(treeLikelihood.m_tree.get());
                 pPartitionByAlignments[0].add(treeLikelihood);
                 pPartitionByAlignments[1].add(treeLikelihood);
                 pPartitionByAlignments[2].add(treeLikelihood);
@@ -1855,4 +1259,159 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public void setExpertMode(boolean expertMode) {
 		isExpertMode = expertMode;
 	}
+	
+	/** Create a deep copy of a plugin, but in a different partition context
+	 *  First, find all plugins that are predecesors of the plugin to be copied
+	 *  that are ancestors of statenodes
+	 * @param plugin
+	 * @param partition
+	 * @return
+	 * @throws Exception 
+	 */
+	static Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partition) throws Exception {
+		/** tabu = list of plugins that should not be copied **/
+		Set<Plugin> tabu = new HashSet<Plugin>();
+		tabu.add(parent);
+		// add state
+		tabu.add(mcmc.m_startState.get());
+		// add likelihood and prior
+		if (mcmc.posteriorInput.get() instanceof CompoundDistribution) {
+			for (Distribution distr : ((CompoundDistribution) mcmc.posteriorInput.get()).pDistributions.get()) {
+				if (distr instanceof CompoundDistribution) {
+					tabu.add(distr);
+				}
+			}
+		}
+		// add posterior
+		tabu.add(mcmc.posteriorInput.get());
+		// paraent of operators
+		tabu.add(mcmc);
+		// add loggers
+		tabu.addAll(mcmc.m_loggers.get());
+		
+		// find predecessors of plugin to be copied
+        List<Plugin> predecessors = new ArrayList<Plugin>();
+        collectPredecessors(plugin, predecessors);
+        
+		// find ancestors of StateNodes that are predecessors + the plugin itself
+        Set<Plugin> ancestors = new HashSet<Plugin>();
+		collectAncestors(plugin, ancestors, tabu);
+        for (Plugin plugin2 : predecessors) {
+        	if (plugin2 instanceof StateNode) {
+                Set<Plugin> ancestors2 = new HashSet<Plugin>();
+        		collectAncestors(plugin2, ancestors2, tabu);
+        		ancestors.addAll(ancestors2);
+        	}
+        }
+		
+        // now the ancestors contain all plugins to be copied
+        // make a copy of all individual Pluings, before connecting them up
+        Map<String, Plugin> copySet = new HashMap<String, Plugin>();
+        for (Plugin plugin2 : ancestors) {
+        	Plugin copy = (Plugin) plugin2.getClass().newInstance();
+        	String id = plugin2.getID();
+        	copySet.put(id, copy);
+        }
+        
+        // set all inputs of copied plugins
+        for (Plugin plugin2 : ancestors) {
+        	String id = plugin2.getID();
+        	Plugin copy = copySet.get(id);
+        	for (Input<?> input : plugin2.listInputs()) {
+        		if (input.get() != null) {
+        			if (input.get() instanceof List) {
+            			// handle lists
+        				for (Object o : (List<?>) input.get()) {
+        					if (o instanceof Plugin) {
+                				Plugin value = (Plugin) o;
+                				if (copySet.containsKey(value.getID())) {
+                					value = copySet.get(value.getID());
+                				}
+                				copy.setInputValue(input.getName(), value);        						
+        					} else {
+                				// it is a primitive value
+                				copy.setInputValue(input.getName(), input.get());
+        					}
+        				}
+        			} else if (input.get() instanceof Plugin) {
+            			// handle Plugin
+        				Plugin value = (Plugin) input.get();
+        				if (copySet.containsKey(value.getID())) {
+        					value = copySet.get(value.getID());
+        				}
+        				copy.setInputValue(input.getName(), value);
+        			} else {
+        				// it is a primitive value
+        				copy.setInputValue(input.getName(), input.get());
+        			}
+        		}
+        	}
+        	copySet.put(id, copy);
+        	copy.setID(renameId(id, partition));
+        }
+        
+        // deep copy must be obtained from copyset, before sorting
+        // since the sorting changes (deletes items) from the copySet map
+        Plugin deepCopy = copySet.get(plugin.getID());
+
+        // first need to sort copySet by topology, before we can initAndValidate them
+        List<Plugin> sorted = new ArrayList<Plugin>();
+        Collection<Plugin> values = copySet.values();
+        while (values.size() > 0) {
+        	for (Plugin copy : values) {
+        		boolean found = false;
+        		for (Plugin plugin2: copy.listActivePlugins()) {
+        			if (values.contains(plugin2)) {
+        				found = true;
+        				break;
+        			}
+        		}
+        		if (!found) {
+        			sorted.add(copy);
+        		}
+        	}
+        	values.remove(sorted.get(sorted.size() - 1));
+        }
+        // initialise copied plugins
+        for (Plugin copy : sorted) {
+        	copy.initAndValidate();
+        }
+        
+        return deepCopy;
+	} // deepCopyPlugin
+
+	public static String renameId(String id, PartitionContext partition) {
+    	id = id.substring(0, id.indexOf('.')) + partition.partition;
+		return id;
+	}
+
+    static void collectPredecessors(Plugin plugin, List<Plugin> predecessors) {
+        predecessors.add(plugin);
+        try {
+            for (Plugin plugin2 : plugin.listActivePlugins()) {
+                if (!predecessors.contains(plugin2)) {
+                    collectPredecessors(plugin2, predecessors);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void collectAncestors(Plugin plugin, Set<Plugin> ancestors, Set<Plugin> tabu) {
+    	ancestors.add(plugin);
+        try {
+            for (Plugin plugin2 : plugin.outputs) {
+                if (!ancestors.contains(plugin2) && !tabu.contains(plugin2)) {
+                    collectAncestors(plugin2, ancestors, tabu);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	
 } // class BeautiDoc
