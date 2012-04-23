@@ -1,6 +1,6 @@
 \nonstopmode
 \documentclass{beamer}
-\def\part{2}
+\def\part{1}
 \usepackage{listings}
 \usepackage{fancyvrb}
 
@@ -273,7 +273,7 @@
 %
 %done: test all taxa in alignment are unique
 %done: test all taxa in tree are unique
-%done: taxon id -> name (beware impact on beauti)
+%done: taxon id -> name (beware impact on BEAUti)
 %done: ambiguous characters + custom data types 
 %done: sync SNAP
 %done: robustify StateNodes
@@ -284,13 +284,13 @@
 %TODO: port more substitution models
 %TODO: write test cases
 %TODO: add-on distribution mechanism
-%TODO: finish beauti
+%TODO: finish BEAUti
 \end{frame}
 
 \if \part 1
 
 
-\section{Beast 2 basics}
+\section{BEAST 2 basics}
 
 
 \begin{frame}{Jukes Cantor}
@@ -325,20 +325,20 @@ Inputs to alignments, which takes care of the patterns, DataType and set of Taxo
 \end{frame}
 
 
-\begin{frame}{What Beast 2 does}
+\begin{frame}{What BEAST 2 does}
 ...supposed to do...
 
 \begin{itemize}
-\item The kind of Bayesian analysis as per citations on the Beast 1 wiki.
-\item Beauti 2: GUI to specify analysis.
-\item Provide a platform to develop add-ons - powerful interface, easy extensible XML, templates for Beauti.
+\item The kind of Bayesian analysis as per citations on the BEAST 1 wiki.
+\item BEAUti 2: GUI to specify analysis.
+\item Provide a platform to develop add-ons - powerful interface, easy extensible XML, templates for BEAUti.
 \item Sequence generator for simulation studies.
 \item Documentation for all the above -- from user to developer, XML tweaker, etc.
 \end{itemize}
 
 \end{frame}
 
-\begin{frame}{What Beast 2 doesn't}
+\begin{frame}{What BEAST 2 doesn't}
 \begin{itemize}
 \item Post-analysis processing like Tracer, tree annotator, tree log analyser, DensiTree, KML producer
 \item Most non-Bayesian analysis
@@ -391,7 +391,7 @@ public class Plugin {
 {\color{blue}\begin{lstlisting}[language=java]
 @Description("Description of MyPlugin goes here")
 public class MyPlugin extends Plugin {
-    public Input<Integer> m_value = new Input<Integer>("value",
+    public Input<Integer> value = new Input<Integer>("value",
         "value used by my plugin");
 
     public void initAndValidate() throws Exception {
@@ -415,8 +415,8 @@ public class MyPlugin extends Plugin {
 @Citation("Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. " +
         "Journal of Molecular Evolution 22:160-174.")
 public class HKY extends 'Plugin' {
-    public Input<Frequencies> m_freqs = new Input<Frequencies>("frequencies", "frequencies nucleotide letters");
-    public Input<Parameter> m_kappa = new Input<Parameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
+    public Input<Frequencies> freqs = new Input<Frequencies>("frequencies", "frequencies nucleotide letters");
+    public Input<Parameter> kappa = new Input<Parameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
     @Override public void initAndValidate() throws Exception {
         initialiseEigen();        
@@ -446,7 +446,7 @@ public class HKY extends 'Plugin' {
 Simple primitives
 
 \begin{lstlisting}[language=java]
-public Input<Boolean> m_pScaleAll = 
+public Input<Boolean> scaleAll = 
     new Input<Boolean>("scaleAll", 
         "if true, all elements of a parameter are scaled, otherwise one is randomly selected");
 \end{lstlisting}
@@ -454,7 +454,7 @@ public Input<Boolean> m_pScaleAll =
 Other plugins
 
 \begin{lstlisting}[language=java]
-public Input<Frequencies> m_freqs = 
+public Input<Frequencies> freqs = 
     new Input<Frequencies>("frequencies", 
         "frequencies of nucleotide letters");
 \end{lstlisting}
@@ -462,7 +462,7 @@ public Input<Frequencies> m_freqs =
 Multiple inputs
 
 \begin{lstlisting}[language=java]
-public Input<List<Parameter>> m_pParameters = 
+public Input<List<Parameter>> parameters = 
     new Input<List<Parameter>>("parameter", 
         "parameter, part of the state",
         new ArrayList<Parameter>());
@@ -477,7 +477,7 @@ Enumerations
 \begin{lstlisting}[language=java]
 final static String [] UNITS =  {"year", "month", "day"};
 
-public Input<String> m_sUnits = new Input<String>("units", 
+public Input<String> units = new Input<String>("units", 
         "name of the units in which values are posed, " +
 		"used for conversion to a real value. This can be " + 
         Arrays.toString(UNITS) + " (default 'year')", 
@@ -494,14 +494,14 @@ Default: OPTIONAL (see previous slide)
 If input is REQUIRED:
 
 \begin{lstlisting}[language=java]
-public Input<Parameter> m_kappa = 
+public Input<Parameter> kappa = 
     new Input<Parameter>("kappa", 
         "kappa parameter in HKY model",
         Validate.REQUIRED);
 \end{lstlisting}
 
 \begin{lstlisting}[language=java]
-public Input<List<Operator>> m_operators = 
+public Input<List<Operator>> operators = 
     new Input<List<Operator>>("operator",
         "operator for generating proposals in MCMC state space",
         new ArrayList<Operator>(), Validate.REQUIRED);
@@ -510,13 +510,13 @@ public Input<List<Operator>> m_operators =
 If input is XOR:
 
 \begin{lstlisting}[language=java]
-public Input<Tree> m_pTree = 
+public Input<Tree> tree = 
     new Input<Tree>("tree", 
         "if specified, all tree branch length are scaled");
-public Input<Parameter> m_pParameter = 
+public Input<Parameter> parameter = 
     new Input<Parameter>("parameter", 
         "if specified, this parameter is scaled"
-        , Validate.XOR, m_pTree);
+        , Validate.XOR, tree);
 \end{lstlisting}
 
 \end{frame}
@@ -528,7 +528,7 @@ public Input<Parameter> m_pParameter =
 \begin{frame}[containsverbatim]
 {State}
 \begin{itemize}
-\item State is explicit in XML \& as object (unlike Beast 1)
+\item State is explicit in XML \& as object (unlike BEAST 1)
 \item Contains StateNodes, e.g., parameters and trees
 \item Operators work on the StateNodes
 \begin{lstlisting}[language=java]
@@ -599,7 +599,7 @@ Just parameters and trees
 
 \subsection{Classes}
 
-\begin{frame}{Beast class structure}
+\begin{frame}{BEAST class structure}
 \includegraphics[width=0.7\textwidth]{classes1.png}
 
 beast - main beast classes
@@ -610,10 +610,10 @@ test - for junit tests
 
 \end{frame}
 
-\begin{frame}{Beast core class structure}
+\begin{frame}{BEAST core class structure}
 \includegraphics[width=0.7\textwidth]{classes2.png}
 
-app - applications like BeastMCMC, Beauti, SequenceGenerator
+app - applications like BeastMCMC, BEAUti, SequenceGenerator
 
 core, evolution - MCMC and evolution libraries
 
@@ -623,11 +623,11 @@ util - utilities like parsers, XML producers, random nr generator, class discove
 
 \end{frame}
 
-\begin{frame}{Beast core class structure}
+\begin{frame}{BEAST core class structure}
 \includegraphics[width=\textwidth]{classes3.png}
 \end{frame}
 
-\begin{frame}{Beast core class structure}
+\begin{frame}{BEAST core class structure}
 \includegraphics[width=\textwidth]{classes4.png}
 \end{frame}
 
@@ -708,10 +708,10 @@ type
 @Description("Some sensible description of the Plugin")
 public class MyPlugin extends Plugin {
     <!-- inputs first -->
-    public Input<RealParamater> m_p = new Input<>...;
+    public Input<RealParamater> p = new Input<>...;
 
     <!-- members next -->
-    private Object m_o;
+    private Object o;
 
     <!-- initAndValidate -->
     @Override
@@ -731,7 +731,7 @@ public class MyPlugin extends Plugin {
 Let there be an input:
 
 \begin{lstlisting}[language=java]
-public Input<RealParamater> m_p = new Input<>...;
+public Input<RealParamater> p = new Input<>...;
 \end{lstlisting}\vskip0.5cm
 
 To get the parameter of input {\tt m\_p}, use\\ {\tt m\_p.get()}.\vskip0.5cm
@@ -741,7 +741,7 @@ To get the value of the parameter, use {\tt m\_p.get().getValue()}.\vskip0.5cm
 Alternatively 
 
 \begin{lstlisting}[language=java]
-    RealParamater p = m_p.get();
+    RealParamater p = pInput.get();
     double fValue = p.getValue();
 \end{lstlisting}
 
@@ -752,12 +752,12 @@ Alternatively
 \begin{lstlisting}[language=java]
 public boolean requiresRecalculation() {
 	// for StateNode inputs only
-	if (m_stateNodeInput.get().somethingIsDirty()) {
+	if (stateNodeInput.get().somethingIsDirty()) {
 		return true;
 	}
 
 	// for CalculationNode inputs only
-        if (m_calculationNodeInput.get().isDirtyCalculation()) {
+        if (calculationNodeInput.get().isDirtyCalculation()) {
 		return true;
 	}
 	return false;
@@ -771,29 +771,29 @@ public boolean requiresRecalculation() {
 
 
 \begin{lstlisting}[language=java]
-boolean m_bNeedsUpdate; // flag to indicate internal state is up to date
-public void initAndValidate() {m_bNeedsUpdate = true;}
+boolean needsUpdate; // flag to indicate internal state is up to date
+public void initAndValidate() {needsUpdate = true;}
 // CalculationNode specific interface that returns results
 public Object calculateSomeThing() {
-	if (m_bNeedsUpdate) {
+	if (needsUpdate) {
 		update();
 	}
 	return someThing;
 }
 void update() {
 	someThing = ...;
-	m_bNeedsUpdate = false;
+	needsUpdate = false;
 }
 public boolean requiresRecalculation() {
 	if (someInputIsDirty()) {
-		m_bNeedsUpdate = true;
+		needsUpdate = true;
 		return true;
 	}
 	return false;
 }
 public void store() {super.store();}
 public void restore() {
-	m_bNeedsUpdate = true;
+	needsUpdate = true;
 	super.restore();
 }
 \end{lstlisting}
@@ -804,25 +804,25 @@ public void restore() {
 As lean CalculationNode, but actually storing something
 
 \begin{lstlisting}[language=java]
-Object m_intermediateResult;
-Object m_storedIntermediateResult;
+Object intermediateResult;
+Object storedIntermediateResult;
 
 public void initAndValidate() {
 	// reserve space for result objects
-	m_intermediateResult = new ...;
- 	m_storedIntermediateResult = new ...;
+	intermediateResult = new ...;
+ 	storedIntermediateResult = new ...;
 }
 
 public void store() {
-	// copy m_intermediateResult to m_storedIntermediateResult
+	// copy intermediateResult to storedIntermediateResult
 	...
 	super.store();
 }
 public void restore() {
-	// m_bNeedsUpdate = true; <- don't need this now
-	Object tmp = m_intermediateResult;
-	m_intermediateResult = m_storedIntermediateResult;
-	m_storedIntermediateResult = tmp;
+	// needsUpdate = true; <- don't need this now
+	Object tmp = intermediateResult;
+	intermediateResult = storedIntermediateResult;
+	storedIntermediateResult = tmp;
 	super.restore();
 }
 \end{lstlisting}
@@ -884,8 +884,8 @@ and {\tt Node} can be ignored.
 Never shadow a StateNode
 
 \begin{lstlisting}[language=java]
-    public Input<RealParamater> m_p = new Input<>...;
-    private RealParameter m_pShadow;
+    public Input<RealParamater> p = new Input<>...;
+    private RealParameter pShadow;
 \end{lstlisting}
 
 
@@ -895,8 +895,8 @@ and others is fine.
 
 
 \begin{lstlisting}[language=java]
-    public Input<Integer> m_p = new Input<>...;
-    private Integer m_pShadow;
+    public Input<Integer> p = new Input<>...;
+    private Integer pShadow;
 \end{lstlisting}
 
 
@@ -912,7 +912,7 @@ add a constructor
 
 {\color{blue}\begin{lstlisting}[language=java]
 	public SNPSequence() {
-		m_sData.setRule(Validate.OPTIONAL);
+		data.setRule(Validate.OPTIONAL);
 	}
 \end{lstlisting}}
 Note that the constructor needs to be public, to prevent IllegalAccessExceptions
@@ -941,7 +941,7 @@ create a new Parameter X, and use {\tt input.get().assignFromWithoutID(X)}
 @Override
 public void initAndValidate() throws Exception {
     // determine dimension, number of Nodes in a tree here
-	int nNodes = m_tree.get().getNodeCount();
+	int nNodes = tree.get().getNodeCount();
 
     // create new Parameter
 	IntegerParameter positions = new IntegerParameter("0", 0, Integer.MAX_VALUE, nNodes);
@@ -951,7 +951,7 @@ public void initAndValidate() throws Exception {
 	}
 
     // copy values to the input
-	m_positions.get().assignFromWithoutID(positions);
+	positions.get().assignFromWithoutID(positions);
 	
 }
 \end{lstlisting}
@@ -987,7 +987,7 @@ instance the {\tt XMLParser}.\vskip1cm
 
 2. {\bf\color{red} Type of input is a template class (other than {\tt List}).}
 
-Thanks to limitations of Java introspection and the way Beast II is set up, Inputs should be 
+Thanks to limitations of Java introspection and the way BEAST II is set up, Inputs should be 
 of a type that is concrete, and apart from {\tt List<T>} no template class should be used.\vskip1cm
 
 \pause
@@ -1040,7 +1040,7 @@ First the hky-scale operator
 
 \end{frame}
 
-\begin{frame}[containsverbatim]{Beast 2 Reserved XML attributes}
+\begin{frame}[containsverbatim]{BEAST 2 Reserved XML attributes}
 
 {\tt name}, {\tt spec}, {\tt id}, {\tt idref}
 \begin{itemize}
@@ -1159,7 +1159,7 @@ equals
 \end{frame}
 
 
-\begin{frame}[containsverbatim]{Beast 2 Reserved XML elements}
+\begin{frame}[containsverbatim]{BEAST 2 Reserved XML elements}
 
 {\small
 %\pgfputat{\pgfxy(1.5,-4)}{\pgfbox[left,base]{\pgfimage[width=5cm]{BEAST.png}}}
@@ -1181,7 +1181,7 @@ element <xyz> is expanded to
 \textcolor{blue}{\bf <parameter}\textcolor{blue}{\bf >} spec=beast.core.parameter.RealParameter
 \textcolor{blue}{\bf <tree}\textcolor{blue}{\bf >}      spec=beast.evolution.tree.Tree
 
-\textcolor{blue}{\bf <plate}\textcolor{blue}{\bf >} mainly for Beauti templates
+\textcolor{blue}{\bf <plate}\textcolor{blue}{\bf >} mainly for BEAUti templates
 \end{Verbatim}
 }
 \end{frame}
@@ -1417,7 +1417,7 @@ Error detected about here:
 
 \section{Add-ons}
 \begin{frame}{Add-ons}
-A Beast 2 add-on is a library based on Beast 2\vskip1cm
+A BEAST 2 add-on is a library based on BEAST 2\vskip1cm
 
 Why add-ons:
 \begin{itemize}
@@ -1453,7 +1453,7 @@ Why add-ons:
 \item A jar file with the source
 \item Example XML files
 \item Documentation
-\item A Beauti 2 template
+\item A BEAUti 2 template
 \end{itemize}\vskip0.5cm
 
 Recommended directory structure:\\
@@ -1465,28 +1465,28 @@ Recommended directory structure:\\
 {\color{blue}\tt myAddOn/build/dist} &jar files\\
 {\color{black}\tt myAddOn/lib} &libraries used (if any)\\
 {\color{black}\tt myAddOn/doc} &documentation\\
-{\color{black}\tt myAddOn/templates} &Beauti templates (optional)
+{\color{black}\tt myAddOn/templates} &BEAUti templates (optional)
 \end{tabular}
 
 \end{frame}
 
 \begin{frame}{Setting up an Add-on}
-Checkout Beast 2 code, available at
+Checkout BEAST 2 code, available at
 \url{http://code.google.com/p/beast2}\vskip0.5cm
 
 Setting up an add-on in Intellij, basic steps
 \begin{itemize}
-\item Make a project containing Beast 2
+\item Make a project containing BEAST 2
 \item Create new module, e.g. called MyAddOn
-\item Create module dependency of MyAddOn on Beast 2
+\item Create module dependency of MyAddOn on BEAST 2
 \end{itemize}
 see SDK documentation for more details.\vskip0.5cm
 
 Setting up an add-on in Eclipse, basic steps
 \begin{itemize}
-\item Make a project containing Beast 2
+\item Make a project containing BEAST 2
 \item Create new project, e.g. called MyAddOn
-\item Add beast 2 to the Java build path of MyAddOn
+\item Add BEAST 2 to the Java build path of MyAddOn
 \end{itemize}
 see SDK documentation for more details.\vskip0.5cm
 
@@ -1499,7 +1499,7 @@ Setting up an add-on in Hudson (for automatic regression testing): ask Walter
 \item Create Add-on files containing add-on classes only
 \item Put on a web-site
 \item Download to \$BEAST\_HOME/beastlib
-\item It will be picked up from there when running BeastMCMC or Beauti
+\item It will be picked up from there when running BeastMCMC or BEAUti
 \end{itemize}
 
 Future work: automate this process, provide catalogue, GUI, etc.
@@ -1509,10 +1509,10 @@ Future work: automate this process, provide catalogue, GUI, etc.
 
 \section{Applications}
 
-\begin{frame}{Beauti 2: replacement of Beauti 1}
-\includegraphics[width=\textwidth]{beauti.png}
+\begin{frame}{BEAUti 2: replacement of BEAUti 1}
+\includegraphics[width=\textwidth]{BEAUti.png}
 
-More about Beauti in Part III
+More about BEAUti in Part III
 \end{frame}
 
 
@@ -1545,8 +1545,8 @@ XML documentation provided through
 
 \begin{frame}{Other}
 o Sequence generator, for simulation studies\\\vskip0.5cm
-o Sequence with XML merging through Beauti, handy for scripting\\\vskip0.5cm
-o XMLParser to beautify XML\\\vskip0.5cm
+o Sequence with XML merging through BEAUti, handy for scripting\\\vskip0.5cm
+o XMLParser to BEAUtify XML\\\vskip0.5cm
 o Alignment viewer: navigate an alignment\\\vskip0.5cm
 o Log analyser: prints statistics of a trace log from command line \\\vskip0.5cm
 %\includegraphics[width=\textwidth]{hkymodel2.png}
@@ -1562,7 +1562,7 @@ o Log analyser: prints statistics of a trace log from command line \\\vskip0.5cm
 ~> java beast.app.BeastMCMC
 
 Usage: BeastMCMC [options] <Beast.xml>
-where <Beast.xml> the name of a file specifying a Beast run
+where <Beast.xml> the name of a file specifying a BEAST run
 and the following options are allowed:
 -resume : read state that was stored at the end of the last run from file and append log file
 -overwrite : overwrite existing log files (if any). By default, existing files will not be overwritten.
@@ -1578,9 +1578,9 @@ and the following options are allowed:
 
 \if \part 3
 
-\begin{frame}[containsverbatim]{What is Beauti 2}
+\begin{frame}[containsverbatim]{What is BEAUti 2}
 
-A GUI for manipulating Beast 2 specifications\vskip0.5cm
+A GUI for manipulating BEAST 2 specifications\vskip0.5cm
 
 Features:
 \begin{itemize}
@@ -1593,36 +1593,36 @@ Features:
 \end{frame}
 
 
-\section{Beauti 2: A walk through}
+\section{BEAUti 2: A walk through}
 
 \begin{frame}[containsverbatim]{Start up}
-\includegraphics[width=0.6\textwidth]{beauti0.png}
+\includegraphics[width=0.6\textwidth]{BEAUti0.png}
 
-Before editing anything, Beauti needs to know either alignments and template OR existing file.
+Before editing anything, BEAUti needs to know either alignments and template OR existing file.
 \end{frame}
 \begin{frame}[containsverbatim]{Start up: select alignments}
-\includegraphics[width=0.6\textwidth]{beauti1.png}
+\includegraphics[width=0.6\textwidth]{BEAUti1.png}
 
 Select one or more alignments\\
 Select an analysis template
 \end{frame}
 \begin{frame}[containsverbatim]{Start up: select existing file}
-\includegraphics[width=0.6\textwidth]{beauti2.png}
+\includegraphics[width=0.6\textwidth]{BEAUti2.png}
 \end{frame}
 \begin{frame}[containsverbatim]{Edit parameters}
-\includegraphics[width=0.8\textwidth]{beauti5.png}
+\includegraphics[width=0.8\textwidth]{BEAUti5.png}
 
 Familiar panel based user interface for configuring specification
 \end{frame}
 \begin{frame}[containsverbatim]{Flow}
-\includegraphics[width=1\textwidth]{beauti3.png}
+\includegraphics[width=1\textwidth]{BEAUti3.png}
 
 No new alignment selection once editing is started
 \end{frame}
 
 \begin{frame}[containsverbatim]{Start up}
 \begin{lstlisting}[language=java]
-java beast.app.beauti.Beauti [options]
+java beast.app.BEAUti.BEAUti [options]
 where options can be one of the following:
 -template [template file]
 -nex [nexus data file]
@@ -1639,26 +1639,26 @@ Batch merging of alignment with template
 \end{frame}
 
 \begin{frame}[containsverbatim]{Start up: another template}
-\includegraphics[width=0.8\textwidth]{beauti4.png}
+\includegraphics[width=0.8\textwidth]{BEAUti4.png}
 
 Template for SNP and AFLP analysis\\
 Customised labels, template button invisible
 \end{frame}
 \begin{frame}[containsverbatim]{Edit: another template}
-\includegraphics[width=0.8\textwidth]{beauti7.png}
+\includegraphics[width=0.8\textwidth]{BEAUti7.png}
 
 Custom menu\\
 Only subset of panels used
 \end{frame}
 
 \begin{frame}[containsverbatim]{Spot the differences}
-\includegraphics[width=\textwidth]{beauti6.png}
+\includegraphics[width=\textwidth]{BEAUti6.png}
 
 Customized labels\\
 Button visibility
 \end{frame}
 \begin{frame}[containsverbatim]{Spot the differences}
-\includegraphics[width=\textwidth]{beauti8.png}
+\includegraphics[width=\textwidth]{BEAUti8.png}
 
 Customized menus: visibility and label names\\
 Customized panels\\
@@ -1666,7 +1666,7 @@ Customized panels\\
 \end{frame}
 
 \begin{frame}[containsverbatim]{Configurable}
-\includegraphics[width=0.6\textwidth]{beauti9.png}
+\includegraphics[width=0.6\textwidth]{BEAUti9.png}
 
 A: Partitionable or not\\
 B: Custom behaviour: gamma shape only shown when categories at least 2\\
@@ -1675,12 +1675,12 @@ D: Hide irrelevant inputs
 \end{frame}
 
 
-\begin{frame}[containsverbatim]{What Beauti does}
+\begin{frame}[containsverbatim]{What BEAUti does}
 
 \begin{itemize}
 \item Contain a large number of Plugin objects, to ensure a somewhat sensible set of choices\\
 \item User changes link in the model graph
-\includegraphics[width=0.8\textwidth]{beauti10.png}\\
+\includegraphics[width=0.8\textwidth]{BEAUti10.png}\\
 \item User changes values of primitive (String, Integer, Boolean, Double) inputs\\
 \item Automatically update links, e.g. Operator to MCMC\vskip0.5cm
 \end{itemize}
@@ -1689,9 +1689,9 @@ Expert mode allows creation of new Plugin object, but the user is on its own as 
 
 \end{frame}
 
-\section{Beauti 2 Templates}
+\section{BEAUti 2 Templates}
 
-\begin{frame}[containsverbatim]{How to configure Beauti}
+\begin{frame}[containsverbatim]{How to configure BEAUti}
 
 1: XML template\vskip1cm
 
@@ -1699,14 +1699,14 @@ Expert mode allows creation of new Plugin object, but the user is on its own as 
 \end{frame}
 
 
-\begin{frame}[containsverbatim]{Beauti templates}
+\begin{frame}[containsverbatim]{BEAUti templates}
 
-A Beauti template is an XML specification with extra features
+A BEAUti template is an XML specification with extra features
 \begin{itemize}
 \item {\tt <plate var='n' range='#alignments'>} 'macros'
 \item {\tt <data id="#alignments"/>} for merging alignments
 \item {\tt <mergepoint>}/{\tt <mergewith>} for merging sub-templates
-\item {\tt <beauticonfig spec='beast.app.beauti.BeautiConfig'>} for customizing GUI components
+\item {\tt <BEAUticonfig spec='beast.app.BEAUti.BEAUtiConfig'>} for customizing GUI components
 \end{itemize}\vskip0.5cm
 
 
@@ -1755,7 +1755,7 @@ Single alignment merging:\vskip0.5cm
 
 becomes\vskip0.5cm
 
-\includegraphics[width=\textwidth]{beautiseq.png}\vskip0.5cm
+\includegraphics[width=\textwidth]{BEAUtiseq.png}\vskip0.5cm
 
 and everywhere in the template {\tt \#alignments} becomes {\tt dna}
 
@@ -1769,7 +1769,7 @@ Multi alignment merging:\vskip0.5cm
 
 becomes\vskip0.5cm
 
-\includegraphics[width=\textwidth]{beautiseq2.png}\vskip0.5cm
+\includegraphics[width=\textwidth]{BEAUtiseq2.png}\vskip0.5cm
 
 and everywhere in the template {\tt \#alignments} becomes {\tt 26,29}
 
@@ -1817,10 +1817,10 @@ Interpretation of main template
 
 \end{frame}
 
-\begin{frame}[containsverbatim]{Configuring Beauti GUI}
+\begin{frame}[containsverbatim]{Configuring BEAUti GUI}
 In template:
 
-{\tt <beauticonfig spec='beast.app.beauti.BeautiConfig'>} 
+{\tt <BEAUticonfig spec='beast.app.BEAUti.BEAUtiConfig'>} 
 
 for customizing 
 \begin{itemize}
@@ -1835,19 +1835,19 @@ for customizing
 See files in {\tt beast2/templates} directory for details
 \end{frame}
 
-\section{Beauti 2 Custom GUI}
+\section{BEAUti 2 Custom GUI}
 
 \begin{frame}[containsverbatim]{Developing custom GUI components}
 
 From a developers view: everything is a Plugin\vskip0.5cm
 
-Beauti is a tool for \\
+BEAUti is a tool for \\
 \begin{itemize}
 \item connecting inputs with Plugins\\
 \item configuring inputs\vskip0.5cm
 \end{itemize}
 
-In Beauti, a panel for a Plugins shows a list of InputEditors.\vskip0.5cm
+In BEAUti, a panel for a Plugins shows a list of InputEditors.\vskip0.5cm
 
 To create customized behaviour for inputs of specific types, 
 override InputEditor
@@ -1856,7 +1856,7 @@ override InputEditor
 \begin{frame}[containsverbatim]{InputEditor}
 
 
-Beauti uses the input editor associated with the in type of the InputEditor\vskip0.5cm
+BEAUti uses the input editor associated with the in type of the InputEditor\vskip0.5cm
 
 
 \begin{lstlisting}[language=java]
@@ -1876,7 +1876,7 @@ public class MyInputEditor extends InputEditor {
 
 See code for gory details of custom implementation possibilities\vskip0.5cm
 
-{\tt beast.app.beauti} packages for examples
+{\tt beast.app.BEAUti} packages for examples
 
 \end{frame}
 
@@ -1910,7 +1910,7 @@ public class MyInputEditor extends ListInputEditor {
 
 \begin{frame}[containsverbatim]{All done!}
 
-Go forth and develop new Plugins \\and Beauti templates now!\vskip1cm
+Go forth and develop new Plugins \\and BEAUti templates now!\vskip1cm
 
 \begin{center}
 \includegraphics{../../src/beast/app/draw/icons/beast.png}

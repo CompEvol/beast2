@@ -94,6 +94,8 @@
             hasPartitions="none" icon='2220.pngx' forceExpansion='FALSE'
             type='beast.evolution.alignment.Alignment'
         />
+		<mergepoint id='aux-partitions-panels'/>
+
 		<panel spec='BeautiPanelConfig' panelname="Taxon sets" tiptext="Specify taxon sets that make up species"
             path='distribution/distribution[id="speciescoalescent"]/distribution[id="SpeciesTreePopSize.Species"]/taxonset'
             hasPartitions="none" icon='1.pngx' forceExpansion='TRUE'
@@ -102,29 +104,40 @@
             path='siteModel'
             hasPartitions="SiteModel" icon='3.pngx' forceExpansion='TRUE'
         />
+		<mergepoint id='aux-sitemodel-panels'/>
+
 		<panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
             path='branchRateModel'
             hasPartitions="ClockModel" icon='4.pngx' forceExpansion='TRUE'
         />
+		<mergepoint id='aux-clockmodel-panels'/>
+
 		<panel spec='BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
             path='state/stateNode'
             hasPartitions="none" icon='6.pngx' forceExpansion='TRUE_START_COLLAPSED'
             isVisible='false'
         />
+		<mergepoint id='aux-initilisation-panels'/>
+
 		<panel spec='BeautiPanelConfig' panelname="Multi Species Coalescent" tiptext="Multi Species Coalescent specific settings"
             path='distribution/distribution[id="speciescoalescent"]/distribution'
             hasPartitions="none" icon='2.pngx' forceExpansion='TRUE'
         />
+
 		<panel spec='BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
             hasPartitions="none" icon='7.pngx' forceExpansion='TRUE_START_COLLAPSED'
             type='beast.core.Distribution'
         />
+		<mergepoint id='aux-priors-panels'/>
+
 		<panel spec='BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
             hasPartitions="none" icon='8.pngx' forceExpansion='TRUE_START_COLLAPSED'
             isVisible='false'
         />
+		<mergepoint id='aux-operators-panels'/>
+
 		<panel spec='BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
             path=''
             hasPartitions="none" icon='9.pngx' forceExpansion='TRUE'
@@ -250,6 +263,8 @@
 			-->
             <connect srcID='Tree.Species'     targetID='Reheight' inputName='genetree' if='Tree.$(n)/estimate=XXX'/>
             <connect srcID='Tree.Species'     targetID='treeTopFinder' inputName='tree' if='Tree.$(n)/estimate=XXX'/>
+
+			<mergepoint id='aux-partitiontemplate'/>
         </partitiontemplate>
 
 		<mergepoint id='substModelTemplates'/>
