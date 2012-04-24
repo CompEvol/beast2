@@ -109,7 +109,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
             String sID = prior.m_distInput.get().getID();
             System.err.println("id=" + sID);
-            sID = sID.substring(0, sID.indexOf('.'));
+            sID = BeautiDoc.parsePartition(sID);
             for (BeautiSubTemplate template : sAvailablePlugins) {
                 if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
                     comboBox.setSelectedItem(template);
@@ -127,7 +127,7 @@ public class PriorListInputEditor extends ListInputEditor {
                     }
                     BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
                     String sID = ((Plugin) list.get(iItem)).getID();
-                    String sPartition = sID.substring(sID.indexOf('.') + 1);
+                    String sPartition = BeautiDoc.parsePartition(sID);
                     Prior prior = (Prior) list.get(iItem);
                     try {
                         template.createSubNet(sPartition, prior, prior.m_distInput);
@@ -195,7 +195,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
             String sID = distr.getID();
             try {
-                sID = sID.substring(0, sID.indexOf('.'));
+                sID = BeautiDoc.parsePartition(sID);
             } catch (Exception e) {
                 throw new RuntimeException("Improperly formatted ID: " + distr.getID());
             }
@@ -225,7 +225,7 @@ public class PriorListInputEditor extends ListInputEditor {
                                     }
                                     BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
                                     String sID = ((Plugin) list.get(iItem)).getID();
-                                    String sPartition = sID.substring(sID.indexOf('.') + 1);
+                                    String sPartition = BeautiDoc.parsePartition(sID);
 
                                     try {
                                         template.createSubNet(sPartition, list, iItem);
@@ -241,6 +241,7 @@ public class PriorListInputEditor extends ListInputEditor {
                                     sync();
                                     refreshPanel();
                                 }
+
                             });
                         }
                     });
@@ -298,7 +299,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
             if (prior.m_distInput.get() != null) {
                 String sID = prior.m_distInput.get().getID();
-                sID = sID.substring(0, sID.indexOf('.'));
+                sID = BeautiDoc.parsePartition(sID);
                 for (BeautiSubTemplate template : sAvailablePlugins) {
                     if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
                         comboBox.setSelectedItem(template);
@@ -484,5 +485,4 @@ public class PriorListInputEditor extends ListInputEditor {
         g_collapsedIDs.add(prior.getID());
         return selectedPlugins;
     }
-
 }

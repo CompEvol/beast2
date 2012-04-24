@@ -269,7 +269,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
                 this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
                 
                 sPartition = treeLikelihood.m_pSiteModel.get().getID();
-                sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+                sPartition = BeautiDoc.parsePartition(sPartition);
                 getDoc().setCurrentPartition(0, iRow, sPartition);
             }
             break;
@@ -287,7 +287,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
                     this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
                 }
                 sPartition = treeLikelihood.m_pBranchRateModel.get().getID();
-                sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+                sPartition = BeautiDoc.parsePartition(sPartition);
                 getDoc().setCurrentPartition(1, iRow, sPartition);
             }
             break;
@@ -325,7 +325,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
                     prior.pDistributions.setValue(d, prior);
                 }
                 sPartition = treeLikelihood.m_tree.get().getID();
-                sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+                sPartition = BeautiDoc.parsePartition(sPartition);
                 getDoc().setCurrentPartition(2, iRow, sPartition);
             }
         }
@@ -375,8 +375,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
     private String getPartition(Input<?> input) {
         Plugin plugin = (Plugin) input.get();
         String sID = plugin.getID();
-        sID = sID.substring(sID.indexOf('.') + 1);
-        return sID;
+        String sPartition = BeautiDoc.parsePartition(sID);
+        return sPartition;
     }
 
     protected Component createListBox() {

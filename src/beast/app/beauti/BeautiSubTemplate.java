@@ -110,7 +110,7 @@ public class BeautiSubTemplate extends Plugin {
 
         // find template that created this plugin
         String sID = plugin.getID();
-        String sPartition = sID.substring(sID.indexOf(".") + 1);
+        String sPartition = BeautiDoc.parsePartition(sID);
         sID = sID.substring(0, sID.indexOf("."));
         BeautiSubTemplate template = null;
         for (BeautiSubTemplate template2 : doc.beautiConfig.subTemplatesInput.get()) {
@@ -255,6 +255,9 @@ public class BeautiSubTemplate extends Plugin {
 
     public boolean matchesName(String sID) {
         if (getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
+            return true;
+        }
+        if (getMainID().replaceAll("..:\\$\\(n\\)", "").equals(sID)) {
             return true;
         }
         if (sShortClassName != null && sShortClassName.equals(sID)) {

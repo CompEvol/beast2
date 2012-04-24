@@ -106,7 +106,6 @@
             hasPartitions="ClockModel" icon='4.png.x' forceExpansion='TRUE'
         />
 		<mergepoint id='aux-clockmodel-panels'/>
-
 		<panel spec='BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
             path='state/stateNode'
             hasPartitions="none" icon='6.png.x' forceExpansion='TRUE_START_COLLAPSED'
@@ -138,116 +137,115 @@
         <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
             <!-- site model                                                              -->
-            <plugin spec='SiteModel' id="SiteModel.$(n)" gammaCategoryCount='0'>
-                <!--substModel spec='JukesCantor' id='JC69.$(n)'/-->
-                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.$(n)' value='0.0' estimate='false'/>
-                <mutationRate        spec='parameter.RealParameter' id='mutationRate.$(n)' value='1.0'        estimate='false'/>
-                <shape               spec='parameter.RealParameter' id='gammaShape.$(n)' value='1.0'         estimate='false'/>
+            <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
+                <!--substModel spec='JukesCantor' id='JC69.s:$(n)'/-->
+                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' estimate='false'/>
+                <mutationRate        spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0'        estimate='false'/>
+                <shape               spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0'         estimate='false'/>
             </plugin>
 
             <plugin spec='TreeLikelihood' id="treeLikelihood.$(n)">
                 <data idref="data"/>
-                <tree idref="Tree.$(n)"/>
-                <siteModel idref="SiteModel.$(n)"/>
-                <branchRateModel spec='StrictClockModel' id='StrictClock.$(n)'>
-                    <clock.rate id='clockRate.$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
+                <tree idref="Tree.t:$(n)"/>
+                <siteModel idref="SiteModel.s:$(n)"/>
+                <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
+                    <clock.rate id='clockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
                 </branchRateModel>
             </plugin>
 
-	        <plugin id='ClockPrior.$(n)' spec='Prior' x='@clockRate.$(n)'><distr spec="OneOnX"/></plugin>
-	        <plugin id='MutationRatePrior.$(n)' spec='Prior' x='@mutationRate.$(n)'><distr spec="OneOnX"/></plugin>
+	        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
+	        <plugin id='MutationRatePrior.s:$(n)' spec='Prior' x='@mutationRate.s:$(n)'><distr spec="OneOnX"/></plugin>
 
             <!-- tree and its properties -->
             <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
-            <plugin spec='beast.evolution.tree.Tree' id='Tree.$(n)' taxonset='@TaxonSet.$(n)'>
+            <plugin spec='beast.evolution.tree.Tree' id='Tree.t:$(n)' taxonset='@TaxonSet.$(n)'>
 	            <!--trait id='datetrait.$(n)' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
 		            value=''>
 		            <taxa idref='data'/>
 	            </trait-->
             </plugin>
 
-            <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.$(n)'-->
-            <plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' initial='@Tree.$(n)'>
+            <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.t:$(n)'-->
+            <plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' initial='@Tree.t:$(n)'>
                 <taxa spec='Alignment' idref='data'/>
-                <populationModel id='ConstantPopulation0.$(n)' spec='ConstantPopulation'>
-            		<popSize id='randomPopSize.$(n)' spec='parameter.RealParameter' value='1'/>
+                <populationModel id='ConstantPopulation0.t:$(n)' spec='ConstantPopulation'>
+            		<popSize id='randomPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
 	            </populationModel>
             </plugin>
 
             <!-- default tree prior -->
-            <plugin spec='YuleModel' id="YuleModel.$(n)" tree='@Tree.$(n)'>
-                <parameter name='birthDiffRate' id="birthRate.$(n)" value='1.0' estimate='true'/>
+            <plugin spec='YuleModel' id="YuleModel.t:$(n)" tree='@Tree.t:$(n)'>
+                <parameter name='birthDiffRate' id="birthRate.t:$(n)" value='1.0' estimate='true'/>
             </plugin>
 
-            <plugin id='TreeHeight.$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
+            <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
 
-            <logger id='treelog.$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(n).$(seed).trees" mode='tree'>
-                <log idref="Tree.$(n)"/>
+            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(n).$(seed).trees" mode='tree'>
+                <log idref="Tree.t:$(n)"/>
             </logger>
 
-            <operator id='proportionInvariantScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@proportionInvariant.$(n)"/>
-            <operator id='mutationRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@mutationRate.$(n)"/>
-            <operator id='gammaShapeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@gammaShape.$(n)"/>
-<!--            <operator id='allTipDatesScaler.$(n)' spec='TipDatesScaler' scaleFactor="0.01" weight="0" tree="@Tree.$(n)"/>-->
-            <operator id='allTipDatesRandomWalker.$(n)' spec='TipDatesRandomWalker' windowSize="1" weight="0" tree="@Tree.$(n)"/>
+            <operator id='proportionInvariantScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@proportionInvariant.s:$(n)"/>
+            <operator id='mutationRateScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@mutationRate.s:$(n)"/>
+            <operator id='gammaShapeScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@gammaShape.s:$(n)"/>
+            <operator id='allTipDatesRandomWalker.t:$(n)' spec='TipDatesRandomWalker' windowSize="1" weight="0" tree="@Tree.t:$(n)"/>
 
-            <operator id='treeScaler.$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@Tree.$(n)"/>
-            <operator id='UniformOperator.$(n)' spec='Uniform' weight="10" tree="@Tree.$(n)"/>
-            <operator id='SubtreeSlide.$(n)' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@Tree.$(n)"/>
-            <operator id='narrow.$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@Tree.$(n)"/>
-            <operator id='wide.$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.$(n)"/>
-            <operator id='WilsonBalding.$(n)' spec='WilsonBalding' weight="1" tree="@Tree.$(n)"/>
+            <operator id='treeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@Tree.t:$(n)"/>
+            <operator id='UniformOperator.t:$(n)' spec='Uniform' weight="10" tree="@Tree.t:$(n)"/>
+            <operator id='SubtreeSlide.t:$(n)' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@Tree.t:$(n)"/>
+            <operator id='narrow.t:$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@Tree.t:$(n)"/>
+            <operator id='wide.t:$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.t:$(n)"/>
+            <operator id='WilsonBalding.t:$(n)' spec='WilsonBalding' weight="1" tree="@Tree.t:$(n)"/>
 
 
-            <prior id='YuleBirthRatePrior.$(n)' spec='Prior' x='@birthRate.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' /></prior>
-            <prior id='GammaShapePrior.$(n)' spec='Prior' x='@gammaShape.$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
-  		    <operator id='YuleBirthRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.$(n)"/>
-			<operator id='StrictClockRateScaler.$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.$(n)'/>
+            <prior id='YuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' /></prior>
+            <prior id='GammaShapePrior.s:$(n)' spec='Prior' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+  		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
+			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
 
 ]]>
             <connect srcID='treeLikelihood.$(n)'            targetID='likelihood' inputName='distribution' if="isInitializing"/>
-            <connect srcID='YuleModel.$(n)'                 targetID='prior' inputName='distribution' if="isInitializing"/>
+            <connect srcID='YuleModel.t:$(n)'               targetID='prior' inputName='distribution' if="isInitializing"/>
 
-            <connect srcID='treelog.$(n)'                   targetID='mcmc' inputName='logger' if='inposterior(Tree.$(n))'/>
-            <connect srcID='RandomTree.$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.$(n))'/>
+            <connect srcID='treelog.t:$(n)'                 targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.t:$(n))'/>
 
-            <connect srcID='ClockPrior.$(n)'                targetID='prior' inputName='distribution' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
-            <connect srcID='MutationRatePrior.$(n)'         targetID='prior' inputName='distribution' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
+            <connect srcID='ClockPrior.c:$(n)'                targetID='prior' inputName='distribution' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='MutationRatePrior.s:$(n)'         targetID='prior' inputName='distribution' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
 
-            <connect srcID='Tree.$(n)'                      targetID='state' inputName='stateNode' if='inposterior(Tree.$(n))'/>
-            <connect srcID='proportionInvariant.$(n)'       targetID='state' inputName='stateNode' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
-            <connect srcID='mutationRate.$(n)'              targetID='state' inputName='stateNode' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
-            <connect srcID='gammaShape.$(n)'                targetID='state' inputName='stateNode' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
-            <connect srcID='clockRate.$(n)'                 targetID='state' inputName='stateNode' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
-            <connect srcID='birthRate.$(n)'                 targetID='state' inputName='stateNode' if='inposterior(birthRate.$(n)) and birthRate.$(n)/estimate=true'/>
+            <connect srcID='Tree.t:$(n)'                      targetID='state' inputName='stateNode' if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='proportionInvariant.s:$(n)'       targetID='state' inputName='stateNode' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
+            <connect srcID='mutationRate.s:$(n)'              targetID='state' inputName='stateNode' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
+            <connect srcID='gammaShape.s:$(n)'                targetID='state' inputName='stateNode' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
+            <connect srcID='clockRate.c:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='birthRate.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
-            <connect srcID='proportionInvariantScaler.$(n)' targetID='mcmc' inputName='operator' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'>Scales proportion of invariant sites parameter of partition $(n)</connect>
-            <connect srcID='mutationRateScaler.$(n)'        targetID='mcmc' inputName='operator' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'>Scales mutation rate of partition $(n)</connect>
-            <connect srcID='gammaShapeScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'>Scales gamma shape parameter of partition $(n)</connect>
-            <connect srcID='StrictClockRateScaler.$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'>Scale clock rate of partition $(n)</connect>
-            <connect srcID='YuleBirthRateScaler.$(n)'       targetID='mcmc' inputName='operator' if='inposterior(birthRate.$(n)) and birthRate.$(n)/estimate=true'>Scales birth rate of Yule prior for partition $(n)</connect>
+            <connect srcID='proportionInvariantScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'>Scales proportion of invariant sites parameter of partition $(n)</connect>
+            <connect srcID='mutationRateScaler.s:$(n)'        targetID='mcmc' inputName='operator' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'>Scales mutation rate of partition s:$(n)</connect>
+            <connect srcID='gammaShapeScaler.s:$(n)'          targetID='mcmc' inputName='operator' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'>Scales gamma shape parameter of partition s:$(n)</connect>
+            <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
+            <connect srcID='YuleBirthRateScaler.t:$(n)'       targetID='mcmc' inputName='operator' if='inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'>Scales birth rate of Yule prior for partition t:$(n)</connect>
 
-            <connect srcID='allTipDatesRandomWalker.$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'>Estimates tip dates for tree $(n)</connect>
+            <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Estimates tip dates for tree t:$(n)</connect>
 
-            <connect srcID='treeScaler.$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'>Scales all internal nodes for tree $(n)</connect>
-            <connect srcID='UniformOperator.$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'>Draws new internal node heights uniformally for tree $(n)</connect>
-            <connect srcID='SubtreeSlide.$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'>Performs subtree slide rearrangement of tree $(n)</connect>
-            <connect srcID='narrow.$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'>Narrow exchange performs local rearrangement of tree $(n)</connect>
-            <connect srcID='wide.$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'>Wide exchange performs global rearrangement of tree$(n)</connect>
-            <connect srcID='WilsonBalding.$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.$(n))'>Performs Wilson-Balding global rearrangement of tree $(n)</connect>
+            <connect srcID='treeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Scales all internal nodes for tree t:$(n)</connect>
+            <connect srcID='UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Draws new internal node heights uniformally for tree t:$(n)</connect>
+            <connect srcID='SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Performs subtree slide rearrangement of tree t:$(n)</connect>
+            <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
+            <connect srcID='wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
+            <connect srcID='WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
 
-            <connect srcID='treeLikelihood.$(n)'            targetID='tracelog' inputName='log' if='inposterior(Tree.$(n))'/>
-            <connect srcID='TreeHeight.$(n)'                targetID='tracelog' inputName='log' if='inposterior(Tree.$(n))'/>
-            <connect srcID='proportionInvariant.$(n)'       targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.$(n)) and proportionInvariant.$(n)/estimate=true'/>
-            <connect srcID='mutationRate.$(n)'              targetID='tracelog' inputName='log' if='inposterior(mutationRate.$(n)) and mutationRate.$(n)/estimate=true'/>
-            <connect srcID='gammaShape.$(n)'                targetID='tracelog' inputName='log' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
-            <connect srcID='clockRate.$(n)'                 targetID='tracelog' inputName='log' if='inposterior(clockRate.$(n)) and clockRate.$(n)/estimate=true'/>
-            <connect srcID='YuleModel.$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.$(n)) and Tree.$(n)/estimate=true'/>
-            <connect srcID='birthRate.$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
+            <connect srcID='treeLikelihood.$(n)'            targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='TreeHeight.t:$(n)'                targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='proportionInvariant.s:$(n)'       targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
+            <connect srcID='mutationRate.s:$(n)'              targetID='tracelog' inputName='log' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
+            <connect srcID='gammaShape.s:$(n)'                targetID='tracelog' inputName='log' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
+            <connect srcID='clockRate.c:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='YuleModel.t:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='birthRate.t:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
-            <connect srcID='GammaShapePrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(gammaShape.$(n)) and gammaShape.$(n)/estimate=true'/>
-            <connect srcID='YuleBirthRatePrior.$(n)'        targetID='prior' inputName='distribution' if='inposterior(YuleModel.$(n)) and birthRate.$(n)/estimate=true'/>
+            <connect srcID='GammaShapePrior.s:$(n)'           targetID='prior' inputName='distribution' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
+            <connect srcID='YuleBirthRatePrior.t:$(n)'        targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
 			<mergepoint id='aux-partitiontemplate'/>
         </partitiontemplate>
@@ -260,12 +258,12 @@
 <!-- Tree initialisation -->
 <!-- Random tree -->
 
-        <subtemplate id='RandomTree' class='beast.evolution.tree.RandomTree' mainid='RandomTree.$(n)'>
+        <subtemplate id='RandomTree' class='beast.evolution.tree.RandomTree' mainid='RandomTree.t:$(n)'>
 <![CDATA[
-            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
+            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)'>
                 <taxa spec='Alignment' idref='data'/>
-                <populationModel id='ConstantPopulation0.$(n)' spec='ConstantPopulation'>
-            		<popSize id='randomPopSize.$(n)' spec='parameter.RealParameter' value='1'/>
+                <populationModel id='ConstantPopulation0.t:$(n)' spec='ConstantPopulation'>
+            		<popSize id='randomPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
 	            </populationModel>
             </tree>
 ]]>
@@ -273,16 +271,16 @@
 
 <!-- Cluster tree (for UPGMA) -->
 
-        <subtemplate id='UPGMATree' class='beast.util.ClusterTree' mainid='UPGMATree.$(n)'>
+        <subtemplate id='UPGMATree' class='beast.util.ClusterTree' mainid='UPGMATree.t:$(n)'>
 <![CDATA[
-        <tree spec='beast.util.ClusterTree' id='UPGMATree.$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
+        <tree spec='beast.util.ClusterTree' id='UPGMATree.t:$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
 ]]>
         </subtemplate>
 
 <!-- Newick tree -->
-        <subtemplate id='NewickTree' class='beast.util.ClusterTree' mainid='NewickTree.$(n)'>
+        <subtemplate id='NewickTree' class='beast.util.ClusterTree' mainid='NewickTree.t:$(n)'>
 <![CDATA[
-        <tree spec='beast.util.TreeParser' id='NewickTree.$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
+        <tree spec='beast.util.TreeParser' id='NewickTree.t:$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
 ]]>
         </subtemplate>
 

@@ -208,6 +208,9 @@ public class PluginInputEditor extends InputEditor.Base {
                     Plugin plugin = (Plugin) m_input.get();
                     String sID = plugin.getID();
                     String sPartition = sID.substring(sID.indexOf('.') + 1);
+                    if (sPartition.indexOf(':') >= 0) {
+                    	sPartition = sID.substring(sID.indexOf(':') + 1);
+                    }
                     //String sNewID = sSelected.getMainID().replaceAll("\\$\\(n\\)", sPartition);
 
                     if (sSelected.equals(NO_VALUE)) {

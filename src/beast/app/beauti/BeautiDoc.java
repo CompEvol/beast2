@@ -572,7 +572,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
     Alignment getPartition(Plugin plugin) {
         String sPartition = plugin.getID();
-        sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+        sPartition = parsePartition(sPartition);
         for (Alignment data : alignments) {
             if (data.getID().equals(sPartition)) {
                 return data;
@@ -753,7 +753,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             BranchRateModel.Base clockModel = ((TreeLikelihood) d).m_pBranchRateModel.get();
             if (clockModel != null) {
                 String sID = clockModel.getID();
-                sID = sID.substring(sID.indexOf('.') + 1);
+                sID = parsePartition(sID);
                 String sPartition = alignments.get(k).getID();
                 if (sID.equals(sPartition)) {
                     clockModels.set(k, clockModel);
@@ -836,7 +836,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
             // set estimate flag on tree, only if tree occurs in a partition
             for (String sPartition : sPartitionNames) {
-                Tree tree = (Tree) pluginmap.get("Tree." + sPartition);
+                Tree tree = (Tree) pluginmap.get("Tree.t:" + sPartition);
                 tree.m_bIsEstimated.setValue(false, tree);
             }
             for (Plugin plugin : pPartition[2]) {
@@ -1124,7 +1124,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                 TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
                 alignments.add(treeLikelihoods.m_data.get());
                 String sID = treeLikelihoods.m_data.get().getID();
-                sID = sID.substring(sID.lastIndexOf(".") + 1);
+                sID = parsePartition(sID);
                 sPartitionNames.add(sID);
             }
         }
@@ -1198,16 +1198,15 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         System.err.println(Arrays.toString(nCurrentPartitions));
     }
 
-    int getPartitionNr(String sPartition) {
-        int nPartition = sPartitionNames.indexOf(sPartition);
-        return nPartition;
+    int getPartitionNr(String partition) {
+        int partitionNr = sPartitionNames.indexOf(partition);
+        return partitionNr;
     }
 
     int getPartitionNr(Plugin plugin) {
-        String sPartition = plugin.getID();
-        sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
-        int nPartition = sPartitionNames.indexOf(sPartition);
-        return nPartition;
+        String partition = plugin.getID();
+        partition = parsePartition(partition);
+        return getPartitionNr(partition);
     }
 
     public List<Plugin> getPartitions(String sType) {
@@ -1234,7 +1233,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
             try {
                 if (input.canSetValue(template.instance, plugin)) {
                     String sPartition = plugin.getID();
-                    sPartition = sPartition.substring(sPartition.indexOf('.') + 1);
+                    sPartition = parsePartition(sPartition);
                     Object o = template.createSubNet(sPartition, plugin, input);
                     return o;
                 }
@@ -1260,6 +1259,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		isExpertMode = expertMode;
 	}
 	
+	static public String parsePartition(String sID) {
+	    String sPartition = sID.substring(sID.indexOf('.') + 1);
+	    if (sPartition.indexOf(':') >= 0) {
+	        sPartition = sPartition.substring(sPartition.indexOf(':') + 1);
+	    }
+	    return sPartition;
+	}
+
 	/** Create a deep copy of a plugin, but in a different partition context
 	 *  First, find all plugins that are predecesors of the plugin to be copied
 	 *  that are ancestors of statenodes
@@ -1268,7 +1275,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * @return
 	 * @throws Exception 
 	 */
-	static Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partition) throws Exception {
+	static Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partition, BeautiDoc doc) throws Exception {
 		/** tabu = list of plugins that should not be copied **/
 		Set<Plugin> tabu = new HashSet<Plugin>();
 		tabu.add(parent);
@@ -1375,6 +1382,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         // initialise copied plugins
         for (Plugin copy : sorted) {
         	copy.initAndValidate();
+        	if (doc != null) {
+        		doc.addPlugin(copy);
+        	}
         }
         
         return deepCopy;
