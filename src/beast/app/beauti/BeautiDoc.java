@@ -1275,7 +1275,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * @return
 	 * @throws Exception 
 	 */
-	static Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partition, BeautiDoc doc) throws Exception {
+	static public Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partition, BeautiDoc doc) throws Exception {
 		/** tabu = list of plugins that should not be copied **/
 		Set<Plugin> tabu = new HashSet<Plugin>();
 		tabu.add(parent);
@@ -1320,10 +1320,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         	copySet.put(id, copy);
         }
         
-        // set all inputs of copied plugins
+        // set all inputs of copied plugins + outputs to tabu
         for (Plugin plugin2 : ancestors) {
         	String id = plugin2.getID();
         	Plugin copy = copySet.get(id);
+        	// set inputs
         	for (Input<?> input : plugin2.listInputs()) {
         		if (input.get() != null) {
         			if (input.get() instanceof List) {
@@ -1353,8 +1354,23 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         			}
         		}
         	}
-        	copySet.put(id, copy);
         	copy.setID(renameId(id, partition));
+        	// set outputs
+        	for (Plugin output : plugin2.outputs) {
+        		if (tabu.contains(output) && output != parent) {
+        			for (Input<?> input: output.listInputs()) {
+        				if (input.get() instanceof List) {
+        					List<?> list = (List<?>) input.get();
+        					if (list.contains(plugin2)) {
+        						output.setInputValue(input.getName(), copy);
+        					}
+        				}
+        			}
+        				
+        		}
+        	}
+        	
+        	copySet.put(id, copy);
         }
         
         // deep copy must be obtained from copyset, before sorting
@@ -1390,12 +1406,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         return deepCopy;
 	} // deepCopyPlugin
 
-	public static String renameId(String id, PartitionContext partition) {
-    	id = id.substring(0, id.indexOf('.')) + partition.partition;
-		return id;
+	public static String renameId(String sID, PartitionContext partition) {
+		String sOldPartition = parsePartition(sID);
+		sID = sID.substring(0, sID.length() - sOldPartition.length()) + partition.partition;
+		return sID;
 	}
 
-    static void collectPredecessors(Plugin plugin, List<Plugin> predecessors) {
+    static public void collectPredecessors(Plugin plugin, List<Plugin> predecessors) {
         predecessors.add(plugin);
         try {
             for (Plugin plugin2 : plugin.listActivePlugins()) {
@@ -1410,7 +1427,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         }
     }
 
-    static void collectAncestors(Plugin plugin, Set<Plugin> ancestors, Set<Plugin> tabu) {
+    static public void collectAncestors(Plugin plugin, Set<Plugin> ancestors, Set<Plugin> tabu) {
     	ancestors.add(plugin);
         try {
             for (Plugin plugin2 : plugin.outputs) {

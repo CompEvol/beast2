@@ -167,6 +167,9 @@ public class Alignment extends CalculationNode {
         }
 
         // grab data from child sequences
+        m_sTaxaNames.clear();
+        m_nStateCounts.clear();
+        m_counts.clear();
         for (Sequence seq : m_pSequences.get()) {
             //m_counts.add(seq.getSequence(getMap()));
             m_counts.add(seq.getSequence(m_dataType));
