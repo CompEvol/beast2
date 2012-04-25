@@ -85,6 +85,24 @@ public class InputEditorFactory {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
         List<InputEditor> editors = new ArrayList<InputEditor>();
+
+        
+/////////////////////////////////////////////////////        
+//        Class<?> inputClass = plugin.getClass();
+//    	if (inputEditorMap.containsKey(inputClass)) {
+//            // handle Plugin-input with custom input editors
+//            String sInputEditor = inputEditorMap.get(inputClass);
+//            try {
+//            	Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+//            	editor = (InputEditor) con.newInstance(doc);
+//            } catch (Exception e) {
+//				// TODO: handle exception
+//			}
+//    	}
+/////////////////////////////////////////////////////        
+    	
+    	
+    	
         try {
             inputs = plugin.listInputs();
         } catch (Exception e) {
@@ -123,10 +141,19 @@ public class InputEditorFactory {
     public InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons,
                                                 ExpandOption bForceExpansion, ButtonStatus buttonStatus,
                                                 InputEditor editor, BeautiDoc doc) throws Exception {
+    	return createInputEditor(input, -1, plugin, bAddButtons, bForceExpansion, buttonStatus, editor, doc);
+    }
+    
+    public InputEditor createInputEditor(Input<?> input, int listItemNr, Plugin plugin, boolean bAddButtons,
+                ExpandOption bForceExpansion, ButtonStatus buttonStatus,
+                InputEditor editor, BeautiDoc doc) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
         }
         Class<?> inputClass = input.getType();
+        if (listItemNr >= 0) {
+        	inputClass = ((List<?>)input.get()).get(listItemNr).getClass();
+        }
 
         InputEditor inputEditor;
 

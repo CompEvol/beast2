@@ -161,6 +161,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             requirementFlags = requiredOrder.get(instanceCount % requiredOrder.size());
         }
 
+        if (scaling.get().equals(Scaling.always)) {
+        	this.rescalingScheme = PartialsRescalingScheme.ALWAYS;
+        }
+        if (scaling.get().equals(Scaling.none)) {
+        	this.rescalingScheme = PartialsRescalingScheme.NONE;
+        }
+        
         // Define default behaviour here
         if (this.rescalingScheme == PartialsRescalingScheme.DEFAULT) {
             //if GPU: the default is^H^Hwas dynamic scaling in BEAST, now NONE

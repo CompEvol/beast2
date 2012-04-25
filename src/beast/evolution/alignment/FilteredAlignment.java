@@ -133,17 +133,21 @@ public class FilteredAlignment extends Alignment {
         Arrays.sort(nData, comparator);
 
         // count patterns in sorted data
-        int nPatterns = 1;
         int[] weights = new int[nSites];
-        weights[0] = 1;
-        for (int i = 1; i < nSites; i++) {
-            if (comparator.compare(nData[i - 1], nData[i]) != 0) {
-                nPatterns++;
-                nData[nPatterns - 1] = nData[i];
-            }
-            weights[nPatterns - 1]++;
+        int nPatterns = 1;
+        if (nSites > 0) {
+	        weights[0] = 1;
+	        for (int i = 1; i < nSites; i++) {
+	            if (comparator.compare(nData[i - 1], nData[i]) != 0) {
+	                nPatterns++;
+	                nData[nPatterns - 1] = nData[i];
+	            }
+	            weights[nPatterns - 1]++;
+	        }
+        } else {
+            nPatterns = 0;
         }
-
+        
         // reserve memory for patterns
         m_nWeight = new int[nPatterns];
         m_nPatterns = new int[nPatterns][nTaxa];

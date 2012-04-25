@@ -57,6 +57,11 @@ public class TreeLikelihood extends Distribution {
     public Input<BranchRateModel.Base> m_pBranchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
     public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
+    
+    
+    enum Scaling {none, always, _default};
+    public Input<Scaling> scaling = new Input<TreeLikelihood.Scaling>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
+    
 
     /**
      * calculation engine *
@@ -126,7 +131,7 @@ public class TreeLikelihood extends Distribution {
         }
         m_beagle = null;
         m_beagle = new BeagleTreeLikelihood();
-        m_beagle.initByName("data", m_data.get(), "tree", m_tree.get(), "siteModel", m_pSiteModel.get(), "branchRateModel", m_pBranchRateModel.get(), "useAmbiguities", m_useAmbiguities.get());
+        m_beagle.initByName("data", m_data.get(), "tree", m_tree.get(), "siteModel", m_pSiteModel.get(), "branchRateModel", m_pBranchRateModel.get(), "useAmbiguities", m_useAmbiguities.get(), "scaling", scaling.get().toString());
         if (m_beagle.beagle != null) {
             //a Beagle instance was found, so we use it
             return;
