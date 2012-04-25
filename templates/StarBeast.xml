@@ -341,7 +341,7 @@
 
 	<operator id='popMeanScale' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popMean"/>
 
-        <logger id='tracelog' logEvery="5000" fileName="beast_$(seed).log">
+        <logger id='tracelog' logEvery="5000" fileName="beast_$(seed).log" sort="smart">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>

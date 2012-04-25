@@ -305,7 +305,7 @@
             </distribution>
         </distribution>
 
-        <logger id='tracelog' logEvery="1000" fileName="beast.$(seed).log">
+        <logger id='tracelog' logEvery="1000" fileName="beast.$(seed).log" sort="smart">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
