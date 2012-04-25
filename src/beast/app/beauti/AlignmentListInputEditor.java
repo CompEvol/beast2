@@ -40,6 +40,7 @@ import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallButton;
 import beast.core.Input;
+import beast.core.MCMC;
 import beast.core.Plugin;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
@@ -234,6 +235,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
                 updateModel(nColumn, iRow);
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
     }
@@ -250,6 +252,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
         return nSelected;
     }
 
+    /** set partition of type nColumn to partition model nr iRow **/
     void updateModel(int nColumn, int iRow) throws Exception {
         getDoc();
         String sPartition = (String) tableData[iRow][nColumn];
@@ -260,7 +263,12 @@ public class AlignmentListInputEditor extends ListInputEditor {
                 if (getDoc().getPartitionNr(sPartition) != iRow) {
                 	siteModel = treeLikelihood.m_pSiteModel.get();
                 } else {
-                    siteModel = (SiteModel) doc.pluginmap.get("SiteModel." + sPartition);
+                    siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sPartition);
+                    if (siteModel != treeLikelihood.m_pSiteModel.get()) {
+                    	String sPartitionContext = sPartition + ":" +sPartition + ":" +sPartition + ":" +sPartition;
+                    	siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin(treeLikelihood.m_pSiteModel.get(), 
+                    			treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
+                    }
                 }
                 SiteModel.Base target = this.likelihoods[iRow].m_pSiteModel.get(); 
                 if (!target.m_pSubstModel.canSetValue(siteModel.m_pSubstModel.get(), target)) {
@@ -279,13 +287,18 @@ public class AlignmentListInputEditor extends ListInputEditor {
                 // BranchRateModel clockModel = m_doc.getClockModel(sPartition);
                 // (BranchRateModel) PluginPanel.g_plugins.get("ClockModel." +
                 // sPartition);
+                BranchRateModel clockModel = null;
                 if (getDoc().getPartitionNr(sPartition) != iRow) {
-                    this.likelihoods[iRow].m_pBranchRateModel.setValue(treeLikelihood.m_pBranchRateModel.get(),
-                            this.likelihoods[iRow]);
+                    clockModel = treeLikelihood.m_pBranchRateModel.get();
                 } else {
-                    BranchRateModel clockModel = getDoc().getClockModel(sPartition);
-                    this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
+                    clockModel = getDoc().getClockModel(sPartition);
+                    if (clockModel != treeLikelihood.m_pBranchRateModel.get()) {
+                    	String sPartitionContext = sPartition + ":" +sPartition + ":" +sPartition + ":" +sPartition;
+                    	clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(treeLikelihood.m_pBranchRateModel.get(), 
+                    			treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
+                    }
                 }
+                this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
                 sPartition = treeLikelihood.m_pBranchRateModel.get().getID();
                 sPartition = BeautiDoc.parsePartition(sPartition);
                 getDoc().setCurrentPartition(1, iRow, sPartition);
@@ -297,6 +310,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
                 	tree = treeLikelihood.m_tree.get();
                 } else {
                     tree = (Tree) doc.pluginmap.get("Tree." + sPartition);
+                    if (tree != treeLikelihood.m_tree.get()) {
+                    	String sPartitionContext = sPartition + ":" +sPartition + ":" +sPartition + ":" +sPartition;
+                    	tree = (Tree) BeautiDoc.deepCopyPlugin(treeLikelihood.m_tree.get(), 
+                    			treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
+                    }
                 }
                 // sanity check: make sure taxon sets are compatible
                 String [] taxa = tree.getTaxaNames();

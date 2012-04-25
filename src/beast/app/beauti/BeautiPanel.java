@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -26,7 +27,6 @@ import javax.swing.event.ListSelectionListener;
 import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.ExpandOption;
-import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -130,6 +130,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         partitionBox.add(new JLabel("partition"));
         listModel = new DefaultListModel();
         listOfPartitions = new JList(listModel);
+        listOfPartitions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         Dimension size = new Dimension(100, 300);
         listOfPartitions.setFixedCellWidth(100);

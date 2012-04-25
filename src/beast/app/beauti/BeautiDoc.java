@@ -1275,7 +1275,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * @return
 	 * @throws Exception 
 	 */
-	static public Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partition, BeautiDoc doc) throws Exception {
+	static public Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, String partitionContext, BeautiDoc doc) throws Exception {
 		/** tabu = list of plugins that should not be copied **/
 		Set<Plugin> tabu = new HashSet<Plugin>();
 		tabu.add(parent);
@@ -1286,6 +1286,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			for (Distribution distr : ((CompoundDistribution) mcmc.posteriorInput.get()).pDistributions.get()) {
 				if (distr instanceof CompoundDistribution) {
 					tabu.add(distr);
+//					for (Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
+//						if (distr2 instanceof TreeLikelihood) {
+//							tabu.add(distr2);
+//						}
+//					}
 				}
 			}
 		}
@@ -1303,13 +1308,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		// find ancestors of StateNodes that are predecessors + the plugin itself
         Set<Plugin> ancestors = new HashSet<Plugin>();
 		collectAncestors(plugin, ancestors, tabu);
-        for (Plugin plugin2 : predecessors) {
-        	if (plugin2 instanceof StateNode) {
-                Set<Plugin> ancestors2 = new HashSet<Plugin>();
-        		collectAncestors(plugin2, ancestors2, tabu);
-        		ancestors.addAll(ancestors2);
-        	}
-        }
+		for (Plugin plugin2 : predecessors) {
+            if (plugin2 instanceof StateNode) {
+            	Set<Plugin> ancestors2 = new HashSet<Plugin>();
+                collectAncestors(plugin2, ancestors2, tabu);
+                ancestors.addAll(ancestors2);
+            }
+		}
 		
         // now the ancestors contain all plugins to be copied
         // make a copy of all individual Pluings, before connecting them up
@@ -1354,7 +1359,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         			}
         		}
         	}
-        	copy.setID(renameId(id, partition));
+        	copy.setID(renameId(id, partitionContext));
         	// set outputs
         	for (Plugin output : plugin2.outputs) {
         		if (tabu.contains(output) && output != parent) {
@@ -1406,9 +1411,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
         return deepCopy;
 	} // deepCopyPlugin
 
-	public static String renameId(String sID, PartitionContext partition) {
+	public static String renameId(String sID, String partitionContext) {
 		String sOldPartition = parsePartition(sID);
-		sID = sID.substring(0, sID.length() - sOldPartition.length()) + partition.partition;
+		String sNewPartition = partitionContext.substring(0, partitionContext.indexOf(':'));
+		sID = sID.substring(0, sID.length() - sOldPartition.length()) + sNewPartition;
 		return sID;
 	}
 
@@ -1428,11 +1434,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
     }
 
     static public void collectAncestors(Plugin plugin, Set<Plugin> ancestors, Set<Plugin> tabu) {
+    	if ((plugin instanceof TreeLikelihood) || (plugin instanceof BeautiPanelConfig)) {
+    		return;
+    	}
     	ancestors.add(plugin);
         try {
             for (Plugin plugin2 : plugin.outputs) {
                 if (!ancestors.contains(plugin2) && !tabu.contains(plugin2)) {
-                    collectAncestors(plugin2, ancestors, tabu);
+               		collectAncestors(plugin2, ancestors, tabu);
                 }
             }
         } catch (IllegalArgumentException e) {
