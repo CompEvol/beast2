@@ -42,5 +42,10 @@ public class Exponential extends ParametricDistribution {
         refresh();
         return m_dist;
     }
+    
+    @Override
+    public double getMean() {
+    	return m_offset.get() + m_dist.getMean();
+    }
 
 } // class Exponential

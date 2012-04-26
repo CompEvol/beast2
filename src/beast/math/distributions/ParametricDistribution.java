@@ -30,6 +30,8 @@ import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.IntegerDistribution;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
@@ -163,5 +165,10 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     @Override
     public double cumulativeProbability(final double x0, final double x1) throws MathException {
         return getDistribution().cumulativeProbability(x0, x1);
+    }
+    
+    /** returns mean of distribution, if implemented **/
+    public double getMean() {
+    	throw new NotImplementedException();
     }
 }

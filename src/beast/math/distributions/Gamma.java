@@ -48,4 +48,8 @@ public class Gamma extends ParametricDistribution {
         return m_dist;
     }
 
+    @Override
+    public double getMean() {
+    	return m_offset.get() + m_dist.getAlpha() / m_dist.getBeta();
+    }
 } // class Gamma

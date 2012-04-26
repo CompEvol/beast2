@@ -47,4 +47,13 @@ public class Normal extends ParametricDistribution {
         refresh();
         return m_dist;
     }
+
+    @Override
+    public double getMean() {
+        if (m_mean.get() == null) {
+        	return m_offset.get();
+        } else {
+        	return m_offset.get() + m_mean.get().getValue();
+        }
+    }
 } // class Normal

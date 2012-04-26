@@ -5,6 +5,8 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -113,4 +115,16 @@ public class LogNormalDistributionModel extends ParametricDistribution {
         }
     } // class LogNormalImpl
 
+    @Override
+    public double getMean() {
+    	if (m_bMeanInRealSpace) {
+    		if (MParameter.get() != null) {
+    			return m_offset.get() + MParameter.get().getValue();
+    		} else {
+    			return m_offset.get();
+    		}
+    	} else {
+    		throw new NotImplementedException();
+    	}
+    }
 }
