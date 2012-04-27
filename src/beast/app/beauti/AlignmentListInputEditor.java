@@ -32,7 +32,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import dr.evolution.datatype.CodonTable;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
