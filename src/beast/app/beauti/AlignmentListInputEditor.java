@@ -32,6 +32,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import dr.evolution.datatype.CodonTable;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -578,12 +579,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
         public MyComboBoxRenderer(String[] items) {
             super(items);
+            setOpaque(true);
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                        boolean hasFocus, int row, int column) {
             if (isSelected) {
-                setForeground(table.getSelectionForeground());
+                //setForeground(table.getSelectionForeground());
                 super.setBackground(table.getSelectionBackground());
             } else {
                 setForeground(table.getForeground());
