@@ -128,8 +128,8 @@
 suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel">
 <![CDATA[
 		<plugin id='MutationDeathModel.s:$(n)' spec='MutationDeathModel'>
-			<parameter name='deathprob' value='0.1' estimate='false'/>
-			<parameter name='mu' value='1' estimate='false'/>
+			<parameter name='deathprob.s:$(n)' value='0.1' estimate='false'/>
+			<parameter name='mu.s:$(n)' value='1' estimate='false'/>
 		</plugin>
 ]]>
         </subtemplate>
@@ -169,9 +169,9 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 <mergewith point='clockModelTemplates'>
 
 <!-- Strickt clock -->
-        <subtemplate id='StrictClock' class='beast.evolution.branchratemodel.StrictClockModel' mainid='StrictClock.c:$(n)'>
+        <subtemplate id='StrictClock' class='beast.evolution.branchratemodel.StrictClockModel' mainid='StrictClock.$(n)'>
 <![CDATA[
-                <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
+                <branchRateModel spec='StrictClockModel' id='StrictClock.$(n)'>
                     <clock.rate id='clockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
                 </branchRateModel>
 
@@ -180,17 +180,17 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
 		        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect srcID='clockRate.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(StrictClock.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='clockRate.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
-            <connect srcID='clockRate.c:$(n)'  targetID='state' inputName='stateNode'          if='inposterior(StrictClock.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
-            <connect srcID='ClockPrior.c:$(n)' targetID='prior' inputName='distribution'       if='inposterior(StrictClock.c:$(n)) and clockRate.c:$(n)/estimate=true'>substitution rate of partition c:$(n)</connect>
-            <connect srcID='StrictClockRateScaler.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(StrictClock.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of partition c:$(n)</connect>
+            <connect srcID='clockRate.c:$(n)'  targetID='state' inputName='stateNode'          if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='ClockPrior.c:$(n)' targetID='prior' inputName='distribution'       if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>substitution rate of partition c:$(n)</connect>
+            <connect srcID='StrictClockRateScaler.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of partition c:$(n)</connect>
         </subtemplate>
 
 <!-- Relaxed clock exponential -->
-        <subtemplate id='RelaxedClockExponential' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='ExponentialRelaxedClock.c:$(n)'>
+        <subtemplate id='RelaxedClockExponential' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='ExponentialRelaxedClock.$(n)'>
 <![CDATA[
-        <plugin spec='UCRelaxedClockModel' id="ExponentialRelaxedClock.c:$(n)" tree='@Tree.t:$(n)'>
+        <plugin spec='UCRelaxedClockModel' id="ExponentialRelaxedClock.$(n)" tree='@Tree.t:$(n)'>
 			<parameter name='clock.rate' id='ucedMean.c:$(n)' value='1.0' estimate='false'/>
             <distr id='Exponential.c:$(n)' name='distr' spec="beast.math.distributions.Exponential">
 				<parameter id='UCExpLambda' name='lambda' value='1.0'/>
@@ -208,30 +208,30 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
 
-		<log id='rateStat.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@ExponentialRelaxedClock.c:$(n)'/>
+		<log id='rateStat.$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@ExponentialRelaxedClock.$(n)'/>
         <plugin id='UCMeanRatePrior.c:$(n)' spec='Prior' x='@ucedMean.c:$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect srcID='ucedMean.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(ExponentialRelaxedClock.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
-            <connect srcID='expRateCategories.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>
+            <connect srcID='ucedMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
+            <connect srcID='expRateCategories.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(expRateCategories.c:$(n))'/>
 
-            <connect srcID='UCMeanRatePrior.c:$(n)' targetID='prior' inputName='distribution' if='inposterior(ExponentialRelaxedClock.c:$(n)) and ucedMean.c:$(n)/estimate=true'>uncorrelated exponential relaxed clock mean of partition c:$(n)</connect>
+            <connect srcID='UCMeanRatePrior.c:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'>uncorrelated exponential relaxed clock mean of partition c:$(n)</connect>
 
-            <connect srcID='ucedMeanScaler.c:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.c:$(n)) and ucedMean.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
-            <connect srcID='ExpCategoriesRandomWalk.c:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.c:$(n))'>Randomly change categories of partition c:$(n)</connect>
-            <connect srcID='ExpCategoriesSwapOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.c:$(n))'>Swap categories of partition c:$(n)</connect>
-            <connect srcID='ExpCategoriesUniform.c:$(n)'      targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.c:$(n))'>Uniformly draw categories of partition c:$(n)</connect>
-            <connect srcID='relaxedUpDownOperatorExp.c:$(n)'  targetID='mcmc' inputName='operator' if='inposterior(ExponentialRelaxedClock.c:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
+            <connect srcID='ucedMeanScaler.c:$(n)'            targetID='mcmc' inputName='operator' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
+            <connect srcID='ExpCategoriesRandomWalk.c:$(n)'   targetID='mcmc' inputName='operator' if='inlikelihood(expRateCategories.c:$(n))'>Randomly change categories of partition c:$(n)</connect>
+            <connect srcID='ExpCategoriesSwapOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(expRateCategories.c:$(n))'>Swap categories of partition c:$(n)</connect>
+            <connect srcID='ExpCategoriesUniform.c:$(n)'      targetID='mcmc' inputName='operator' if='inlikelihood(expRateCategories.c:$(n))'>Uniformly draw categories of partition c:$(n)</connect>
+            <connect srcID='relaxedUpDownOperatorExp.c:$(n)'  targetID='mcmc' inputName='operator' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
 
-            <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
-            <connect srcID='rateStat.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>
+            <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(ucedMean.$(n)) and ucedMean.c:$(n)/estimate=true'/>
+            <connect srcID='rateStat.$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.$(n))'/>
 
         </subtemplate>
 
 
 <!-- Relaxed clock log normal -->
-        <subtemplate id='RelaxedClockLogNormal' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='RelaxedClock.c:$(n)'>
+        <subtemplate id='RelaxedClockLogNormal' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='RelaxedClock.$(n)'>
 <![CDATA[
-        <plugin spec='UCRelaxedClockModel' id="RelaxedClock.c:$(n)" tree='@Tree.t:$(n)'>
+        <plugin spec='UCRelaxedClockModel' id="RelaxedClock.$(n)" tree='@Tree.t:$(n)'>
 			<parameter name='clock.rate' id='ucldMean.c:$(n)' value='1.0'/>
             <distr id='LogNormalDistributionModel.c:$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel" meanInRealSpace='true'>
                 <parameter name='M' value="1.0" estimate='false' lower='0' upper='1'/>
@@ -258,33 +258,33 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         </prior>
 
 
-		<log id='rate.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@RelaxedClock.c:$(n)'/>
+		<log id='rate:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@RelaxedClock.$(n)'/>
         <plugin id='MeanRatePrior.c:$(n)' spec='Prior' x='@ucldMean.c:$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect srcID='ucldMean.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(RelaxedClock.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
-            <connect srcID='ucldStdev.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(RelaxedClock.c:$(n)) and ucldStdev.c:$(n)/estimate=true'/>
-            <connect srcID='rateCategories.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(RelaxedClock.c:$(n))'/>
+            <connect srcID='ucldMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
+            <connect srcID='ucldStdev.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldStdev.c:$(n)) and ucldStdev.c:$(n)/estimate=true'/>
+            <connect srcID='rateCategories.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(rateCategories.c:$(n))'/>
 
-            <connect srcID='ucldMeanScaler.c:$(n)'         targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.c:$(n)) and ucldMean.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
-            <connect srcID='ucldStdevScaler.c:$(n)'        targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.c:$(n))'>Scale stdev of rate of partition c:$(n)</connect>
-            <connect srcID='CategoriesRandomWalk.c:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.c:$(n))'>Randomly change categories of partition c:$(n)</connect>
-            <connect srcID='CategoriesSwapOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.c:$(n))'>Swap categories of partition c:$(n)</connect>
-            <connect srcID='CategoriesUniform.c:$(n)'      targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.c:$(n))'>Uniformly draw categories of partition c:$(n)</connect>
-            <connect srcID='relaxedUpDownOperator.c:$(n)'  targetID='mcmc' inputName='operator' if='inposterior(RelaxedClock.c:$(n)) and ucldMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
+            <connect srcID='ucldMeanScaler.c:$(n)'         targetID='mcmc' inputName='operator' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
+            <connect srcID='ucldStdevScaler.c:$(n)'        targetID='mcmc' inputName='operator' if='inlikelihood(ucldStdev.c:$(n))'>Scale stdev of rate of partition c:$(n)</connect>
+            <connect srcID='CategoriesRandomWalk.c:$(n)'   targetID='mcmc' inputName='operator' if='inlikelihood(rateCategories.c:$(n))'>Randomly change categories of partition c:$(n)</connect>
+            <connect srcID='CategoriesSwapOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(rateCategories.c:$(n))'>Swap categories of partition c:$(n)</connect>
+            <connect srcID='CategoriesUniform.c:$(n)'      targetID='mcmc' inputName='operator' if='inlikelihood(rateCategories.c:$(n))'>Uniformly draw categories of partition c:$(n)</connect>
+            <connect srcID='relaxedUpDownOperator.c:$(n)'  targetID='mcmc' inputName='operator' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
 
-            <connect srcID='ucldMean.c:$(n)'  targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
-            <connect srcID='ucldStdev.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.c:$(n))'/>
-            <connect srcID='rate.c:$(n)'      targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.c:$(n))'/>
+            <connect srcID='ucldMean.c:$(n)'  targetID='tracelog' inputName='log' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
+            <connect srcID='ucldStdev.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(ucldStdev.c:$(n))'/>
+            <connect srcID='rate:$(n)'      targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.$(n))'/>
 
-            <connect srcID='ucldStdevPrior.c:$(n)' targetID='prior' inputName='distribution' if='inposterior(RelaxedClock.c:$(n))'>uncorrelated lognormal relaxed clock stdev of partition c:$(n)</connect>
-            <connect srcID='MeanRatePrior.c:$(n)'  targetID='prior' inputName='distribution' if='inposterior(RelaxedClock.c:$(n)) and ucldMean.c:$(n)/estimate=true'>uncorrelated lognormal relaxed clock mean of partition c:$(n)</connect>
+            <connect srcID='ucldStdevPrior.c:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(ucldStdev.c:$(n))'>uncorrelated lognormal relaxed clock stdev of partition c:$(n)</connect>
+            <connect srcID='MeanRatePrior.c:$(n)'  targetID='prior' inputName='distribution' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'>uncorrelated lognormal relaxed clock mean of partition c:$(n)</connect>
         </subtemplate>
 
 
 <!-- Random local clock -->
-        <subtemplate id='RandomLocalClock' class='beast.evolution.branchratemodel.RandomLocalClockModel' mainid='RandomLocalClock.c:$(n)'>
+        <subtemplate id='RandomLocalClock' class='beast.evolution.branchratemodel.RandomLocalClockModel' mainid='RandomLocalClock.$(n)'>
 <![CDATA[
-        <input spec='RandomLocalClockModel' id="RandomLocalClock.c:$(n)" ratesAreMultipliers="false" tree='@Tree.t:$(n)'>
+        <input spec='RandomLocalClockModel' id="RandomLocalClock.$(n)" ratesAreMultipliers="false" tree='@Tree.t:$(n)'>
             <clock.rate id='meanClockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
             <parameter spec='parameter.BooleanParameter' name='indicators' id='Indicators.c:$(n)' value="1"/>
             <parameter name='rates' id='clockrates.c:$(n)' value="1"/>
@@ -300,23 +300,23 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
 
-        <plugin id='MeanRRatePrior.c:$(n)' spec='Prior' x='@meanClockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
+        <plugin id='MeanRRatePrior.c:s$(n)' spec='Prior' x='@meanClockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
-            <connect srcID='Indicators.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(Indicators.c:$(n))'/>
-            <connect srcID='meanClockRate.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'/>
-            <connect srcID='clockrates.c:$(n)' targetID='state' inputName='stateNode' if='inposterior(clockrates.c:$(n))'/>
+            <connect srcID='Indicators.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(Indicators.c:$(n))'/>
+            <connect srcID='meanClockRate.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'/>
+            <connect srcID='clockrates.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(clockrates.c:$(n))'/>
 
 
-            <connect srcID='randomClockScaler.c:$(n)'         targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.c:$(n))'>Scale clock rate of partition c:$(n)</connect>
-            <connect srcID='randomClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.c:$(n)) and meanClockRate.c:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
-            <connect srcID='IndicatorsBitFlip.c:$(n)'         targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.c:$(n))'>Flip indicator bits for random clock of partition c:$(n)</connect>
-            <connect srcID='ClockRateScaler.c:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(RandomLocalClock.c:$(n))'>Scale random clock rates of partition c:$(n)</connect>
+            <connect srcID='randomClockScaler.c:$(n)'         targetID='mcmc' inputName='operator' if='inlikelihood(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
+            <connect srcID='randomClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
+            <connect srcID='IndicatorsBitFlip.c:$(n)'         targetID='mcmc' inputName='operator' if='inlikelihood(Indicators.c:$(n))'>Flip indicator bits for random clock of partition c:$(n)</connect>
+            <connect srcID='ClockRateScaler.c:$(n)'           targetID='mcmc' inputName='operator' if='inlikelihood(clockrates.c:$(n))'>Scale random clock rates of partition c:$(n)</connect>
 
-            <connect srcID='Indicators.c:$(n)'                targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.c:$(n))'/>
-            <connect srcID='clockrates.c:$(n)'                targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.c:$(n))'/>
-            <connect srcID='meanClockRate.c:$(n)'             targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.c:$(n)) and meanClockRate.c:$(n)/estimate=true'/>
+            <connect srcID='Indicators.c:$(n)'                targetID='tracelog' inputName='log' if='inlikelihood(Indicators.c:$(n))'/>
+            <connect srcID='clockrates.c:$(n)'                targetID='tracelog' inputName='log' if='inlikelihood(clockrates.c:$(n))'/>
+            <connect srcID='meanClockRate.c:$(n)'             targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.$(n)) and meanClockRate.c:$(n)/estimate=true'/>
 
-            <connect srcID='MeanRRatePrior.c:$(n)'            targetID='prior' inputName='distribution' if='inposterior(RandomLocalClock.c:$(n)) and meanClockRate.c:$(n)/estimate=true'>substitution rate of partition c:$(n)</connect>
+            <connect srcID='MeanRRatePrior.c:$(n)'            targetID='prior' inputName='distribution' if='inlikelihood(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'>substitution rate of partition c:$(n)</connect>
         </subtemplate>
 
 </mergewith>
@@ -603,8 +603,6 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         </subtemplate>
 
 <!-- Laplace -->
-<!-- TODO: IMPLEMENT beast.math.distributions.LaplaceDistribution.getDistribution() before uncommenting this
--->
         <subtemplate id='LaplaceDistribution' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
@@ -634,7 +632,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         <subtemplate id='RandomTree' class='beast.evolution.tree.RandomTree' mainid='RandomTree.t:$(n)'>
 <![CDATA[
             <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)'>
-                <taxa spec='Alignment' idref='data'/>
+                <taxa spec='Alignment' idref='$(n)'/>
                 <populationModel id='ConstantPopulation.t:$(n)' spec='ConstantPopulation'>
             		<popSize id='popSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
 	            </populationModel>

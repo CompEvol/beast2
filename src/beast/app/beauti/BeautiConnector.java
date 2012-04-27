@@ -27,7 +27,7 @@ public class BeautiConnector extends Plugin {
 //			ConnectCondition.always, ConnectCondition.values());
 
 
-    enum Operation {EQUALS, NOT_EQUALS, IS_IN_POSTERIOR, AT_INITIALISATION_ONLY}
+    enum Operation {EQUALS, NOT_EQUALS, IS_IN_POSTERIOR, IS_IN_LIKELIHOOD, AT_INITIALISATION_ONLY}
 //	final static String IS_IN_POSTERIOR = "x";
 //	final static String AT_INITIALISATION_ONLY = "y";
 
@@ -58,6 +58,11 @@ public class BeautiConnector extends Plugin {
                     sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
                     sConditionInputs[i] = null;
                     conditionOperations[i] = Operation.IS_IN_POSTERIOR;
+                    sConditionValues[i] = null;
+                } else if (s.startsWith("inlikelihood(")) {
+                    sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
+                    sConditionInputs[i] = null;
+                    conditionOperations[i] = Operation.IS_IN_LIKELIHOOD;
                     sConditionValues[i] = null;
                 } else if (s.startsWith("isInitializing")) {
                     sConditionIDs[i] = null;
@@ -95,7 +100,8 @@ public class BeautiConnector extends Plugin {
     /**
      * check that conditions in the 'if' input are met *
      */
-    public boolean isActivated(String sPartition, List<Plugin> posteriorPredecessors, BeautiDoc doc) {
+    public boolean isActivated(String sPartition, List<Plugin> posteriorPredecessors,
+    		List<Plugin> likelihoodPredecessors, BeautiDoc doc) {
         if (atInitialisationOnly()) {
             return false;
         }
@@ -114,6 +120,13 @@ public class BeautiConnector extends Plugin {
                 switch (conditionOperations[i]) {
                     case IS_IN_POSTERIOR:
                         if (!posteriorPredecessors.contains(plugin)) {
+                            //System.err.println(posteriorPredecessors);
+                            //System.err.println("isActivated::is not in posterior, return false");
+                            return false;
+                        }
+                        break;
+                    case IS_IN_LIKELIHOOD:
+                        if (!likelihoodPredecessors.contains(plugin)) {
                             //System.err.println(posteriorPredecessors);
                             //System.err.println("isActivated::is not in posterior, return false");
                             return false;

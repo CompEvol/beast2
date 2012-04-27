@@ -106,6 +106,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
      * list of all plugins in the model that have an impact on the posterior
      */
     List<Plugin> posteriorPredecessors = null;
+    List<Plugin> likelihoodPredecessors = null;
+    
     /**
      * set of all taxa in the model *
      */
@@ -851,6 +853,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                 bProgress = false;
                 posteriorPredecessors = new ArrayList<Plugin>();
                 collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
+                likelihoodPredecessors = new ArrayList<Plugin>();
+                if (pluginmap.containsKey("likelihood")) {
+                	collectPredecessors(pluginmap.get("likelihood"), likelihoodPredecessors);
+                }
 
                 // process MRCA priors
                 for (String sID : pluginmap.keySet()) {
@@ -897,7 +903,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                                     	warning("connect: " + connector + "\n");
                                         connect(connector, sPartition);
                                     }
-                                } else if (connector.isActivated(sPartition, posteriorPredecessors, this)) {
+                                } else if (connector.isActivated(sPartition, posteriorPredecessors, likelihoodPredecessors, this)) {
                                 	warning("connect: " + connector  + "\n");
                                     try {
                                         connect(connector, sPartition);
