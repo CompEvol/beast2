@@ -27,6 +27,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.CellEditorListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -55,798 +57,848 @@ import beast.util.NexusParser;
 import beast.util.XMLParser;
 
 public class AlignmentListInputEditor extends ListInputEditor {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    final static int NAME_COLUMN = 0;
-    final static int FILE_COLUMN = 1;
-    final static int TAXA_COLUMN = 2;
-    final static int SITES_COLUMN = 3;
-    final static int TYPE_COLUMN = 4;
-    final static int SITEMODEL_COLUMN = 5;
-    final static int CLOCKMODEL_COLUMN = 6;
-    final static int TREE_COLUMN = 7;
+	final static int NAME_COLUMN = 0;
+	final static int FILE_COLUMN = 1;
+	final static int TAXA_COLUMN = 2;
+	final static int SITES_COLUMN = 3;
+	final static int TYPE_COLUMN = 4;
+	final static int SITEMODEL_COLUMN = 5;
+	final static int CLOCKMODEL_COLUMN = 6;
+	final static int TREE_COLUMN = 7;
 
-    /**
-     * alignments that form a partition. These can be FilteredAlignments *
-     */
-    List<Alignment> alignments;
-    int nPartitions;
-    TreeLikelihood[] likelihoods;
-    Object[][] tableData;
-    JTable table;
+	/**
+	 * alignments that form a partition. These can be FilteredAlignments *
+	 */
+	List<Alignment> alignments;
+	int nPartitions;
+	TreeLikelihood[] likelihoods;
+	Object[][] tableData;
+	JTable table;
+	JTextField nameEditor;
 
-	//public AlignmentListInputEditor() {}
+	// public AlignmentListInputEditor() {}
 	public AlignmentListInputEditor(BeautiDoc doc) {
 		super(doc);
 	}
 
-    @Override
-    public Class<?> type() {
-        return List.class;
-    }
+	@Override
+	public Class<?> type() {
+		return List.class;
+	}
 
-    @Override
-    public Class<?> baseType() {
-        return Alignment.class;
-    }
+	@Override
+	public Class<?> baseType() {
+		return Alignment.class;
+	}
 
-    @Override
-    public Class<?>[] types() {
-        Class<?>[] types = new Class[2];
-        types[0] = List.class;
-        types[1] = Alignment.class;
-        return types;
-    }
+	@Override
+	public Class<?>[] types() {
+		Class<?>[] types = new Class[2];
+		types[0] = List.class;
+		types[1] = Alignment.class;
+		return types;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
-        if (input.get() instanceof List) {
-            alignments = (List<Alignment>) input.get();
-        } else {
-            // we just have a single Alignment
-            alignments = new ArrayList<Alignment>();
-            alignments.add((Alignment) input.get());
-        }
-        nPartitions = alignments.size();
-        // super.init(input, plugin, bExpandOption, false);
-        Box box = Box.createVerticalBox();
-        box.add(Box.createVerticalStrut(5));
-        box.add(createButtonBox());
-        box.add(Box.createVerticalStrut(5));
-        box.add(createListBox());
-        box.add(Box.createVerticalGlue());
+	@SuppressWarnings("unchecked")
+	@Override
+	public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+		if (input.get() instanceof List) {
+			alignments = (List<Alignment>) input.get();
+		} else {
+			// we just have a single Alignment
+			alignments = new ArrayList<Alignment>();
+			alignments.add((Alignment) input.get());
+		}
+		nPartitions = alignments.size();
+		// super.init(input, plugin, bExpandOption, false);
+		Box box = Box.createVerticalBox();
+		box.add(Box.createVerticalStrut(5));
+		box.add(createButtonBox());
+		box.add(Box.createVerticalStrut(5));
+		box.add(createListBox());
+		box.add(Box.createVerticalGlue());
 
-        Box buttonBox = Box.createHorizontalBox();
+		Box buttonBox = Box.createHorizontalBox();
 
-        m_addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
-        m_addButton.setToolTipText("Add item to the list");
-        m_addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                addItem();
-            }
-        });
-        buttonBox.add(Box.createHorizontalStrut(5));
-        buttonBox.add(m_addButton);
-        buttonBox.add(Box.createHorizontalStrut(5));
+		m_addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
+		m_addButton.setToolTipText("Add item to the list");
+		m_addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addItem();
+			}
+		});
+		buttonBox.add(Box.createHorizontalStrut(5));
+		buttonBox.add(m_addButton);
+		buttonBox.add(Box.createHorizontalStrut(5));
 
-        JButton delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
-        delButton.setToolTipText("Delete selected items from the list");
-        delButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                delItem();
-            }
-        });
-        buttonBox.add(delButton);
-        buttonBox.add(Box.createHorizontalStrut(5));
+		JButton delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
+		delButton.setToolTipText("Delete selected items from the list");
+		delButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				delItem();
+			}
+		});
+		buttonBox.add(delButton);
+		buttonBox.add(Box.createHorizontalStrut(5));
 
-        JButton splitButton = new JButton("Split");
-        splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
-        splitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	splitItem();
-            }
-        });
-        buttonBox.add(splitButton);
-        
-        
-        buttonBox.add(Box.createHorizontalGlue());
-        box.add(buttonBox);
-        add(box);
+		JButton splitButton = new JButton("Split");
+		splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
+		splitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				splitItem();
+			}
+		});
+		buttonBox.add(splitButton);
 
-    }
+		buttonBox.add(Box.createHorizontalGlue());
+		box.add(buttonBox);
+		add(box);
 
-    protected Component createButtonBox() {
-        Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalGlue());
-        addLinkUnlinkPair(box, "Site Models");
-        addLinkUnlinkPair(box, "Clock Models");
-        addLinkUnlinkPair(box, "Trees");
-        box.add(Box.createHorizontalGlue());
-        return box;
-    }
+	}
 
-    private void addLinkUnlinkPair(Box box, String sLabel) {
-        JButton linkSModelButton = new JButton("Link " + sLabel);
-        linkSModelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton button = (JButton) e.getSource();
-                link(columnLabelToNr(button.getText()));
-                table.repaint();
-            }
+	protected Component createButtonBox() {
+		Box box = Box.createHorizontalBox();
+		box.add(Box.createHorizontalGlue());
+		addLinkUnlinkPair(box, "Site Models");
+		addLinkUnlinkPair(box, "Clock Models");
+		addLinkUnlinkPair(box, "Trees");
+		box.add(Box.createHorizontalGlue());
+		return box;
+	}
 
-        });
-        box.add(linkSModelButton);
-        JButton unlinkSModelButton = new JButton("Unlink " + sLabel);
-        unlinkSModelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton button = (JButton) e.getSource();
-                unlink(columnLabelToNr(button.getText()));
-                table.repaint();
-            }
+	private void addLinkUnlinkPair(Box box, String sLabel) {
+		JButton linkSModelButton = new JButton("Link " + sLabel);
+		linkSModelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JButton button = (JButton) e.getSource();
+				link(columnLabelToNr(button.getText()));
+				table.repaint();
+			}
 
-        });
-        box.add(unlinkSModelButton);
-        box.add(Box.createHorizontalGlue());
-    }
+		});
+		box.add(linkSModelButton);
+		JButton unlinkSModelButton = new JButton("Unlink " + sLabel);
+		unlinkSModelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JButton button = (JButton) e.getSource();
+				unlink(columnLabelToNr(button.getText()));
+				table.repaint();
+			}
 
-    private int columnLabelToNr(String sColumn) {
-        int nColumn;
-        if (sColumn.contains("Tree")) {
-            nColumn = TREE_COLUMN;
-        } else if (sColumn.contains("Clock")) {
-            nColumn = CLOCKMODEL_COLUMN;
-        } else {
-            nColumn = SITEMODEL_COLUMN;
-        }
-        return nColumn;
-    }
+		});
+		box.add(unlinkSModelButton);
+		box.add(Box.createHorizontalGlue());
+	}
 
-    private void link(int nColumn) {
-        int[] nSelected = getTableRowSelection();
-        // do the actual linking
-        for (int i = 1; i < nSelected.length; i++) {
-            int iRow = nSelected[i];
-            Object old = tableData[iRow][nColumn]; 
-            tableData[iRow][nColumn] = tableData[nSelected[0]][nColumn];
-            try {
-                updateModel(nColumn, iRow);
-            } catch (Exception ex) {
-                System.err.println(ex.getMessage());
-                // unlink if we could not link
-                tableData[iRow][nColumn] = old;
-                try {
-                	updateModel(nColumn, iRow);
-                } catch (Exception ex2) {
-                	// ignore
-                }
-            }
-        }
-    }
+	private int columnLabelToNr(String sColumn) {
+		int nColumn;
+		if (sColumn.contains("Tree")) {
+			nColumn = TREE_COLUMN;
+		} else if (sColumn.contains("Clock")) {
+			nColumn = CLOCKMODEL_COLUMN;
+		} else {
+			nColumn = SITEMODEL_COLUMN;
+		}
+		return nColumn;
+	}
 
-    private void unlink(int nColumn) {
-        int[] nSelected = getTableRowSelection();
-        for (int i = 1; i < nSelected.length; i++) {
-            int iRow = nSelected[i];
-            tableData[iRow][nColumn] = getDoc().sPartitionNames.get(iRow);
-            try {
-                updateModel(nColumn, iRow);
-            } catch (Exception ex) {
-                System.err.println(ex.getMessage());
-                ex.printStackTrace();
-            }
-        }
-    }
+	private void link(int nColumn) {
+		int[] nSelected = getTableRowSelection();
+		// do the actual linking
+		for (int i = 1; i < nSelected.length; i++) {
+			int iRow = nSelected[i];
+			Object old = tableData[iRow][nColumn];
+			tableData[iRow][nColumn] = tableData[nSelected[0]][nColumn];
+			try {
+				updateModel(nColumn, iRow);
+			} catch (Exception ex) {
+				System.err.println(ex.getMessage());
+				// unlink if we could not link
+				tableData[iRow][nColumn] = old;
+				try {
+					updateModel(nColumn, iRow);
+				} catch (Exception ex2) {
+					// ignore
+				}
+			}
+		}
+	}
 
-    int[] getTableRowSelection() {
-        int[] nSelected = table.getSelectedRows();
-        if (nSelected.length == 0) {
-            // select all
-            nSelected = new int[nPartitions];
-            for (int i = 0; i < nPartitions; i++) {
-                nSelected[i] = i;
-            }
-        }
-        return nSelected;
-    }
+	private void unlink(int nColumn) {
+		int[] nSelected = getTableRowSelection();
+		for (int i = 1; i < nSelected.length; i++) {
+			int iRow = nSelected[i];
+			tableData[iRow][nColumn] = getDoc().sPartitionNames.get(iRow);
+			try {
+				updateModel(nColumn, iRow);
+			} catch (Exception ex) {
+				System.err.println(ex.getMessage());
+				ex.printStackTrace();
+			}
+		}
+	}
 
-    /** set partition of type nColumn to partition model nr iRow **/
-    void updateModel(int nColumn, int iRow) throws Exception {
-        getDoc();
-        String sPartition = (String) tableData[iRow][nColumn];
-        TreeLikelihood treeLikelihood = (TreeLikelihood) doc.pluginmap.get("treeLikelihood." + sPartition);        
-        switch (nColumn) {
-            case SITEMODEL_COLUMN: {
-            	SiteModel.Base siteModel = null;            	
-                if (getDoc().getPartitionNr(sPartition) != iRow) {
-                	siteModel = treeLikelihood.m_pSiteModel.get();
-                } else {
-                    siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sPartition);
-                    if (siteModel != treeLikelihood.m_pSiteModel.get()) {
-                    	String sPartitionContext = sPartition + ":" +sPartition + ":" +sPartition + ":" +sPartition;
-                    	siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin(treeLikelihood.m_pSiteModel.get(), 
-                    			treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
-                    }
-                }
-                SiteModel.Base target = this.likelihoods[iRow].m_pSiteModel.get(); 
-                if (!target.m_pSubstModel.canSetValue(siteModel.m_pSubstModel.get(), target)) {
-                	throw new Exception("Cannot link site model: substitution models are incompatible");
-                }
-                this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
-                
-                sPartition = treeLikelihood.m_pSiteModel.get().getID();
-                sPartition = BeautiDoc.parsePartition(sPartition);
-                getDoc().setCurrentPartition(0, iRow, sPartition);
-            }
-            break;
-            case CLOCKMODEL_COLUMN: {
-                // String sPartition = (String)
-                // m_tableData[iRow][CLOCKMODEL_COLUMN];
-                // BranchRateModel clockModel = m_doc.getClockModel(sPartition);
-                // (BranchRateModel) PluginPanel.g_plugins.get("ClockModel." +
-                // sPartition);
-                BranchRateModel clockModel = null;
-                if (getDoc().getPartitionNr(sPartition) != iRow) {
-                    clockModel = treeLikelihood.m_pBranchRateModel.get();
-                } else {
-                    clockModel = getDoc().getClockModel(sPartition);
-                    if (clockModel != treeLikelihood.m_pBranchRateModel.get()) {
-                    	String sPartitionContext = sPartition + ":" +sPartition + ":" +sPartition + ":" +sPartition;
-                    	clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(treeLikelihood.m_pBranchRateModel.get(), 
-                    			treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
-                    }
-                }
-                this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
-                sPartition = treeLikelihood.m_pBranchRateModel.get().getID();
-                sPartition = BeautiDoc.parsePartition(sPartition);
-                getDoc().setCurrentPartition(1, iRow, sPartition);
-            }
-            break;
-            case TREE_COLUMN: {
-            	Tree tree = null;
-                if (getDoc().getPartitionNr(sPartition) != iRow) {
-                	tree = treeLikelihood.m_tree.get();
-                } else {
-                    tree = (Tree) doc.pluginmap.get("Tree." + sPartition);
-                    if (tree != treeLikelihood.m_tree.get()) {
-                    	String sPartitionContext = sPartition + ":" +sPartition + ":" +sPartition + ":" +sPartition;
-                    	tree = (Tree) BeautiDoc.deepCopyPlugin(treeLikelihood.m_tree.get(), 
-                    			treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
-                    }
-                }
-                // sanity check: make sure taxon sets are compatible
-                String [] taxa = tree.getTaxaNames();
-                List<String> taxa2 = this.likelihoods[iRow].m_data.get().getTaxaNames();
-                if (taxa.length != taxa2.size()) {
-                	throw new Exception("Cannot link trees: incompatible taxon sets");
-                }
-                for (String taxon : taxa) {
-                	boolean found = false;
-                	for (String taxon2: taxa2) {
-                		if (taxon.equals(taxon2)) {
-                			found = true;
-                			break;
-                		}
-                	}
-                	if (!found) {
-                		throw new Exception("Cannot link trees: taxon" + taxon + "is not in alignment");
-                	}
-                }
-                
-                
-                this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
-                TreeDistribution d = getDoc().getTreePrior(sPartition);
-                CompoundDistribution prior = (CompoundDistribution) doc.pluginmap.get("prior");
-                if (!getDoc().posteriorPredecessors.contains(d)) {
-                    prior.pDistributions.setValue(d, prior);
-                }
-                sPartition = treeLikelihood.m_tree.get().getID();
-                sPartition = BeautiDoc.parsePartition(sPartition);
-                getDoc().setCurrentPartition(2, iRow, sPartition);
-            }
-        }
-        tableData[iRow][nColumn] = sPartition;
-    }
+	int[] getTableRowSelection() {
+		int[] nSelected = table.getSelectedRows();
+		if (nSelected.length == 0) {
+			// select all
+			nSelected = new int[nPartitions];
+			for (int i = 0; i < nPartitions; i++) {
+				nSelected[i] = i;
+			}
+		}
+		return nSelected;
+	}
 
-    @Override
-    protected void addInputLabel() {
-    }
+	/** set partition of type nColumn to partition model nr iRow **/
+	void updateModel(int nColumn, int iRow) throws Exception {
+		getDoc();
+		String sPartition = (String) tableData[iRow][nColumn];
+		TreeLikelihood treeLikelihood = (TreeLikelihood) doc.pluginmap.get("treeLikelihood." + sPartition);
+		if (treeLikelihood == null) {
+			System.err.println("Could not find " + sPartition);
+			// TODO: rename partition here
+			return;
+		}
+		switch (nColumn) {
+		case SITEMODEL_COLUMN: {
+			SiteModel.Base siteModel = null;
+			if (getDoc().getPartitionNr(sPartition) != iRow) {
+				siteModel = treeLikelihood.m_pSiteModel.get();
+			} else {
+				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sPartition);
+				if (siteModel != treeLikelihood.m_pSiteModel.get()) {
+					String sPartitionContext = sPartition + ":" + sPartition + ":" + sPartition + ":" + sPartition;
+					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin(treeLikelihood.m_pSiteModel.get(),
+							treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
+				}
+			}
+			SiteModel.Base target = this.likelihoods[iRow].m_pSiteModel.get();
+			if (!target.m_pSubstModel.canSetValue(siteModel.m_pSubstModel.get(), target)) {
+				throw new Exception("Cannot link site model: substitution models are incompatible");
+			}
+			this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
 
-    void initTableData() {
-        this.likelihoods = new TreeLikelihood[nPartitions];
-        if (tableData == null) {
-            tableData = new Object[nPartitions][8];
-        }
-        CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
+			sPartition = treeLikelihood.m_pSiteModel.get().getID();
+			sPartition = BeautiDoc.parsePartition(sPartition);
+			getDoc().setCurrentPartition(0, iRow, sPartition);
+		}
+			break;
+		case CLOCKMODEL_COLUMN: {
+			BranchRateModel clockModel = null;
+			if (getDoc().getPartitionNr(sPartition) != iRow) {
+				clockModel = treeLikelihood.m_pBranchRateModel.get();
+			} else {
+				clockModel = getDoc().getClockModel(sPartition);
+				if (clockModel != treeLikelihood.m_pBranchRateModel.get()) {
+					String sPartitionContext = sPartition + ":" + sPartition + ":" + sPartition + ":" + sPartition;
+					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(treeLikelihood.m_pBranchRateModel.get(),
+							treeLikelihood, (MCMC) doc.mcmc.get(), sPartitionContext, doc);
+				}
+			}
+			// make sure that *if* the clock model has a tree as input, it is
+			// the same as
+			// for the likelihood
+			Tree tree = null;
+			for (Input<?> input : ((Plugin) clockModel).listInputs()) {
+				if (input.getName().equals("tree")) {
+					tree = (Tree) input.get();
+				}
 
-        for (int i = 0; i < nPartitions; i++) {
-            Alignment data = alignments.get(i);
-            // partition name
-            tableData[i][NAME_COLUMN] = data;
+			}
+			if (tree != null && tree != this.likelihoods[iRow].m_tree.get()) {
+				throw new Exception("Cannot link clock model with different trees");
+			}
 
-            // alignment name
-            if (data instanceof FilteredAlignment) {
-                tableData[i][FILE_COLUMN] = ((FilteredAlignment) data).m_alignmentInput.get();
-            } else {
-                tableData[i][FILE_COLUMN] = data;
-            }
-            // # taxa
-            tableData[i][TAXA_COLUMN] = data.getNrTaxa();
-            // # sites
-            tableData[i][SITES_COLUMN] = data.getSiteCount();
-            // Data type
-            tableData[i][TYPE_COLUMN] = data.getDataType();
-            // site model
-            TreeLikelihood likelihood = (TreeLikelihood) likelihoods.pDistributions.get().get(i);
-            assert (likelihood != null);
-            this.likelihoods[i] = likelihood;
-            tableData[i][SITEMODEL_COLUMN] = getPartition(likelihood.m_pSiteModel);
-            // clock model
-            tableData[i][CLOCKMODEL_COLUMN] = getPartition(likelihood.m_pBranchRateModel);
-            // tree
-            tableData[i][TREE_COLUMN] = getPartition(likelihood.m_tree);
-        }
-    }
+			this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
+			sPartition = treeLikelihood.m_pBranchRateModel.get().getID();
+			sPartition = BeautiDoc.parsePartition(sPartition);
+			getDoc().setCurrentPartition(1, iRow, sPartition);
+		}
+			break;
+		case TREE_COLUMN: {
+			Tree tree = null;
+			if (getDoc().getPartitionNr(sPartition) != iRow) {
+				tree = treeLikelihood.m_tree.get();
+			} else {
+				tree = (Tree) doc.pluginmap.get("Tree." + sPartition);
+				if (tree != treeLikelihood.m_tree.get()) {
+					String sPartitionContext = sPartition + ":" + sPartition + ":" + sPartition + ":" + sPartition;
+					tree = (Tree) BeautiDoc.deepCopyPlugin(treeLikelihood.m_tree.get(), treeLikelihood,
+							(MCMC) doc.mcmc.get(), sPartitionContext, doc);
+				}
+			}
+			// sanity check: make sure taxon sets are compatible
+			String[] taxa = tree.getTaxaNames();
+			List<String> taxa2 = this.likelihoods[iRow].m_data.get().getTaxaNames();
+			if (taxa.length != taxa2.size()) {
+				throw new Exception("Cannot link trees: incompatible taxon sets");
+			}
+			for (String taxon : taxa) {
+				boolean found = false;
+				for (String taxon2 : taxa2) {
+					if (taxon.equals(taxon2)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					throw new Exception("Cannot link trees: taxon" + taxon + "is not in alignment");
+				}
+			}
 
-    private String getPartition(Input<?> input) {
-        Plugin plugin = (Plugin) input.get();
-        String sID = plugin.getID();
-        String sPartition = BeautiDoc.parsePartition(sID);
-        return sPartition;
-    }
+			this.likelihoods[iRow].m_tree.setValue(tree, this.likelihoods[iRow]);
+			// TreeDistribution d = getDoc().getTreePrior(sPartition);
+			// CompoundDistribution prior = (CompoundDistribution)
+			// doc.pluginmap.get("prior");
+			// if (!getDoc().posteriorPredecessors.contains(d)) {
+			// prior.pDistributions.setValue(d, prior);
+			// }
+			sPartition = treeLikelihood.m_tree.get().getID();
+			sPartition = BeautiDoc.parsePartition(sPartition);
+			getDoc().setCurrentPartition(2, iRow, sPartition);
+		}
+		}
+		tableData[iRow][nColumn] = sPartition;
+	}
 
-    protected Component createListBox() {
-        String[] columnData = new String[]{"Name", "File", "Taxa", "Sites", "Data Type", "Site Model", "Clock Model",
-                "Tree"};
-        initTableData();
-        // set up table.
-        // special features: background shading of rows
-        // custom editor allowing only Date column to be edited.
-        table = new JTable(tableData, columnData) {
-            private static final long serialVersionUID = 1L;
+	@Override
+	protected void addInputLabel() {
+	}
 
-            // method that induces table row shading
-            @Override
-            public Component prepareRenderer(TableCellRenderer renderer, int Index_row, int Index_col) {
-                Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
-                // even index, selected or not selected
-                if (isCellSelected(Index_row, Index_col)) {
-                    comp.setBackground(Color.gray);
-                } else if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
-                    comp.setBackground(new Color(237, 243, 255));
-                } else {
-                    comp.setBackground(Color.white);
-                }
-                return comp;
-            }
-        };
-        table.setRowHeight(25);
-        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        table.setColumnSelectionAllowed(false);
-        table.setRowSelectionAllowed(true);
+	void initTableData() {
+		this.likelihoods = new TreeLikelihood[nPartitions];
+		if (tableData == null) {
+			tableData = new Object[nPartitions][8];
+		}
+		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
 
-        // set up comboboxes
-        String[] sPartitionNames = new String[nPartitions];
-        for (int i = 0; i < nPartitions; i++) {
-            sPartitionNames[i] = alignments.get(i).getID();
-        }
-        TableColumn col = table.getColumnModel().getColumn(SITEMODEL_COLUMN);
-        JComboBox siteModelComboBox = new JComboBox(sPartitionNames);
-        siteModelComboBox.addActionListener(new ComboActionListener(SITEMODEL_COLUMN));
+		for (int i = 0; i < nPartitions; i++) {
+			Alignment data = alignments.get(i);
+			// partition name
+			tableData[i][NAME_COLUMN] = data;
 
-        col.setCellEditor(new DefaultCellEditor(siteModelComboBox));
-        // If the cell should appear like a combobox in its
-        // non-editing state, also set the combobox renderer
-        col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
-        col = table.getColumnModel().getColumn(CLOCKMODEL_COLUMN);
+			// alignment name
+			if (data instanceof FilteredAlignment) {
+				tableData[i][FILE_COLUMN] = ((FilteredAlignment) data).m_alignmentInput.get();
+			} else {
+				tableData[i][FILE_COLUMN] = data;
+			}
+			// # taxa
+			tableData[i][TAXA_COLUMN] = data.getNrTaxa();
+			// # sites
+			tableData[i][SITES_COLUMN] = data.getSiteCount();
+			// Data type
+			tableData[i][TYPE_COLUMN] = data.getDataType();
+			// site model
+			TreeLikelihood likelihood = (TreeLikelihood) likelihoods.pDistributions.get().get(i);
+			assert (likelihood != null);
+			this.likelihoods[i] = likelihood;
+			tableData[i][SITEMODEL_COLUMN] = getPartition(likelihood.m_pSiteModel);
+			// clock model
+			tableData[i][CLOCKMODEL_COLUMN] = getPartition(likelihood.m_pBranchRateModel);
+			// tree
+			tableData[i][TREE_COLUMN] = getPartition(likelihood.m_tree);
+		}
+	}
 
-        JComboBox clockModelComboBox = new JComboBox(sPartitionNames);
-        clockModelComboBox.addActionListener(new ComboActionListener(CLOCKMODEL_COLUMN));
+	private String getPartition(Input<?> input) {
+		Plugin plugin = (Plugin) input.get();
+		String sID = plugin.getID();
+		String sPartition = BeautiDoc.parsePartition(sID);
+		return sPartition;
+	}
 
-        col.setCellEditor(new DefaultCellEditor(clockModelComboBox));
-        col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
-        col = table.getColumnModel().getColumn(TREE_COLUMN);
+	protected Component createListBox() {
+		String[] columnData = new String[] { "Name", "File", "Taxa", "Sites", "Data Type", "Site Model", "Clock Model",
+				"Tree" };
+		initTableData();
+		// set up table.
+		// special features: background shading of rows
+		// custom editor allowing only Date column to be edited.
+		table = new JTable(tableData, columnData) {
+			private static final long serialVersionUID = 1L;
 
-        JComboBox treeComboBox = new JComboBox(sPartitionNames);
-        treeComboBox.addActionListener(new ComboActionListener(TREE_COLUMN));
-        col.setCellEditor(new DefaultCellEditor(treeComboBox));
-        col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
-        col = table.getColumnModel().getColumn(TAXA_COLUMN);
-        col.setPreferredWidth(30);
-        col = table.getColumnModel().getColumn(SITES_COLUMN);
-        col.setPreferredWidth(30);
+			// method that induces table row shading
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int Index_row, int Index_col) {
+				Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+				// even index, selected or not selected
+				if (isCellSelected(Index_row, Index_col)) {
+					comp.setBackground(Color.gray);
+				} else if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
+					comp.setBackground(new Color(237, 243, 255));
+				} else {
+					comp.setBackground(Color.white);
+				}
+				return comp;
+			}
+		};
+		table.setRowHeight(25);
+		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		table.setColumnSelectionAllowed(false);
+		table.setRowSelectionAllowed(true);
 
-        // // set up editor that makes sure only doubles are accepted as entry
-        // // and only the Date column is editable.
-        table.setDefaultEditor(Object.class, new TableCellEditor() {
-            JTextField m_textField = new JTextField();
-            int m_iRow
-                    ,
-                    m_iCol;
+		// set up comboboxes
+		String[] sPartitionNames = new String[nPartitions];
+		for (int i = 0; i < nPartitions; i++) {
+			sPartitionNames[i] = alignments.get(i).getID();
+		}
+		TableColumn col = table.getColumnModel().getColumn(SITEMODEL_COLUMN);
+		JComboBox siteModelComboBox = new JComboBox(sPartitionNames);
+		siteModelComboBox.setEditable(true);
+		siteModelComboBox.addActionListener(new ComboActionListener(SITEMODEL_COLUMN));
 
-            @Override
-            public boolean stopCellEditing() {
-                table.removeEditor();
-                String sText = m_textField.getText();
-                try {
-                    Double.parseDouble(sText);
-                } catch (Exception e) {
-                    return false;
-                }
-                tableData[m_iRow][m_iCol] = sText;
-                return true;
-            }
+		col.setCellEditor(new DefaultCellEditor(siteModelComboBox));
+		// If the cell should appear like a combobox in its
+		// non-editing state, also set the combobox renderer
+		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
+		col = table.getColumnModel().getColumn(CLOCKMODEL_COLUMN);
 
-            @Override
-            public boolean isCellEditable(EventObject anEvent) {
-                return table.getSelectedColumn() == 1;
-            }
+		JComboBox clockModelComboBox = new JComboBox(sPartitionNames);
+		clockModelComboBox.setEditable(true);
+		clockModelComboBox.addActionListener(new ComboActionListener(CLOCKMODEL_COLUMN));
 
-            @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int iRow,
-                                                         int iCol) {
-                return null;
-            }
+		col.setCellEditor(new DefaultCellEditor(clockModelComboBox));
+		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
+		col = table.getColumnModel().getColumn(TREE_COLUMN);
 
-            @Override
-            public boolean shouldSelectCell(EventObject anEvent) {
-                return false;
-            }
+		JComboBox treeComboBox = new JComboBox(sPartitionNames);
+		treeComboBox.setEditable(true);
+		treeComboBox.addActionListener(new ComboActionListener(TREE_COLUMN));
+		col.setCellEditor(new DefaultCellEditor(treeComboBox));
+		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames));
+		col = table.getColumnModel().getColumn(TAXA_COLUMN);
+		col.setPreferredWidth(30);
+		col = table.getColumnModel().getColumn(SITES_COLUMN);
+		col.setPreferredWidth(30);
 
-            @Override
-            public void removeCellEditorListener(CellEditorListener l) {
-            }
+		col = table.getColumnModel().getColumn(NAME_COLUMN);
+		nameEditor = new JTextField();
+		nameEditor.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				processPartitionName();
+			}
 
-            @Override
-            public Object getCellEditorValue() {
-                return null;
-            }
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				processPartitionName();
+			}
 
-            @Override
-            public void cancelCellEditing() {
-            }
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				processPartitionName();
+			}
+		});
 
-            @Override
-            public void addCellEditorListener(CellEditorListener l) {
-            }
+		col.setCellEditor(new DefaultCellEditor(nameEditor));
 
-        });
+		// // set up editor that makes sure only doubles are accepted as entry
+		// // and only the Date column is editable.
+		table.setDefaultEditor(Object.class, new TableCellEditor() {
+			JTextField m_textField = new JTextField();
+			int m_iRow, m_iCol;
 
-        // show alignment viewer when double clicking a row
-        table.addMouseListener(new MouseListener() {
+			@Override
+			public boolean stopCellEditing() {
+				System.err.println("stopCellEditing()");
+				table.removeEditor();
+				String sText = m_textField.getText();
+				try {
+					Double.parseDouble(sText);
+				} catch (Exception e) {
+					return false;
+				}
+				tableData[m_iRow][m_iCol] = sText;
+				return true;
+			}
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
+			@Override
+			public boolean isCellEditable(EventObject anEvent) {
+				System.err.println("isCellEditable()");
+				return table.getSelectedColumn() == 0;
+			}
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
+			@Override
+			public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int iRow,
+					int iCol) {
+				return null;
+			}
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
+			@Override
+			public boolean shouldSelectCell(EventObject anEvent) {
+				return false;
+			}
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
+			@Override
+			public void removeCellEditorListener(CellEditorListener l) {
+			}
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() > 1) {
-                    try {
-                        int iAlignmemt = table.rowAtPoint(e.getPoint());
-                        AlignmentViewer viewer = new AlignmentViewer(alignments.get(iAlignmemt));
-                        viewer.showInDialog();
-                    } catch (Exception e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        });
+			@Override
+			public Object getCellEditorValue() {
+				return null;
+			}
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        return scrollPane;
-    } // createListBox
+			@Override
+			public void cancelCellEditing() {
+			}
 
-    class ComboActionListener implements ActionListener {
-        int m_nColumn;
+			@Override
+			public void addCellEditorListener(CellEditorListener l) {
+			}
 
-        public ComboActionListener(int nColumn) {
-            m_nColumn = nColumn;
-        }
+		});
 
-        ;
+		// show alignment viewer when double clicking a row
+		table.addMouseListener(new MouseListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            for (int i = 0; i < nPartitions; i++) {
-                try {
-                    updateModel(m_nColumn, i);
-                } catch (Exception ex) {
-                    System.err.println(ex.getMessage());
-                }
-            }
-        }
-    }
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
 
-    public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
-        private static final long serialVersionUID = 1L;
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
 
-        public MyComboBoxRenderer(String[] items) {
-            super(items);
-            setOpaque(true);
-        }
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                //setForeground(table.getSelectionForeground());
-                super.setBackground(table.getSelectionBackground());
-            } else {
-                setForeground(table.getForeground());
-                setBackground(table.getBackground());
-            }
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
 
-            // Select the current value
-            setSelectedItem(value);
-            return this;
-        }
-    }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() > 1) {
+					try {
+						int iAlignmemt = table.rowAtPoint(e.getPoint());
+						AlignmentViewer viewer = new AlignmentViewer(alignments.get(iAlignmemt));
+						viewer.showInDialog();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 
-    @Override
-    protected void addSingleItem(Plugin plugin) {
-        initTableData();
-        repaint();
-    }
+		JScrollPane scrollPane = new JScrollPane(table);
+		return scrollPane;
+	} // createListBox
 
-    @Override
-    protected void addItem() {
-        List<Plugin> plugins = pluginSelector(m_input, m_plugin, null);
+	void processPartitionName() {
+		System.err.println(table.getSelectedColumn() + " " + table.getSelectedRow());
+		String oldName = tableData[table.getSelectedRow()][table.getSelectedColumn()].toString();
+		String newName = nameEditor.getText();
+		if (oldName.equals(newName)) {
+			// TODO: rename partition here
+			table.setValueAt(newName, table.getSelectedRow(), table.getSelectedColumn());
+		}
+		// debugging code:
+		for (int i = 0; i < nPartitions; i++) {
+			System.err.println(i + " " + tableData[i][0]);
+		}
+	}
 
-        //Component c = this;
-        if (plugins != null) {
-            for (Plugin plugin : plugins) {
-                getDoc().addAlignmentWithSubnet((Alignment) plugin);
-            }
-            refreshPanel();
-        }
-    } // addItem
+	class ComboActionListener implements ActionListener {
+		int m_nColumn;
 
-    void delItem() {
-        int[] nSelected = getTableRowSelection();
-        if (nSelected.length == 0) {
-        	JOptionPane.showMessageDialog(this, "Select partitions to delete, before hitting the delete button");
-        }
-        // do the actual deleting
-        for (int i = nSelected.length - 1; i >= 0; i--) {
-            int iRow = nSelected[i];
-            getDoc().delAlignmentWithSubnet(alignments.get(iRow));
-            alignments.remove(iRow);
-        }
-        refreshPanel();
-    } // delItem
+		public ComboActionListener(int nColumn) {
+			m_nColumn = nColumn;
+		}
 
-    void splitItem() {
-        int[] nSelected = getTableRowSelection();
-        if (nSelected.length == 0) {
-        	JOptionPane.showMessageDialog(this, "Select partitions to split, before hitting the split button");
-        	return;
-        }
-    	String [] options = { "{1,2} + 3", "1 + 2 + 3", "Cancel"};
+		;
 
-        int choice = JOptionPane.showOptionDialog(
-                null,
-                "Split selected alignments into partitions",
-                "Option",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.WARNING_MESSAGE,
-                null,
-                options,
-                options[2]);
-        
-        String [] filters = null;
-        String [] ids = null;
-        switch (choice) {
-        case 0:
-        	filters = new String[]{"1::3,2::3", "3::3"};
-        	ids = new String[]{"1,2", "3"};
-        	break;
-        case 1:
-        	filters = new String[]{"1::3", "2::3", "3::3"};
-        	ids = new String[]{"1", "2", "3"};
-        	break;
-        default:
-        	return;
-        }
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (int i = 0; i < nPartitions; i++) {
+				try {
+					updateModel(m_nColumn, i);
+				} catch (Exception ex) {
+					System.err.println(ex.getMessage());
+				}
+			}
+		}
+	}
 
-        for (int i = nSelected.length - 1; i >= 0; i--) {
-            int iRow = nSelected[i];
-            Alignment alignment = alignments.remove(iRow);
-            getDoc().delAlignmentWithSubnet(alignment);
-            try {
-	            for (int j = 0; j < filters.length; j++) {
-		            FilteredAlignment f = new FilteredAlignment();
-		            f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.m_sDataType.get());
-		            f.setID( alignment.getID() + ids[j]);
-		            getDoc().addAlignmentWithSubnet(f);
-	            }
-            } catch (Exception e) {
+	public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
+		private static final long serialVersionUID = 1L;
+
+		public MyComboBoxRenderer(String[] items) {
+			super(items);
+			setOpaque(true);
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+			if (isSelected) {
+				// setForeground(table.getSelectionForeground());
+				super.setBackground(table.getSelectionBackground());
+			} else {
+				setForeground(table.getForeground());
+				setBackground(table.getBackground());
+			}
+
+			// Select the current value
+			setSelectedItem(value);
+			return this;
+		}
+	}
+
+	@Override
+	protected void addSingleItem(Plugin plugin) {
+		initTableData();
+		repaint();
+	}
+
+	@Override
+	protected void addItem() {
+		List<Plugin> plugins = pluginSelector(m_input, m_plugin, null);
+
+		// Component c = this;
+		if (plugins != null) {
+			for (Plugin plugin : plugins) {
+				getDoc().addAlignmentWithSubnet((Alignment) plugin);
+			}
+			refreshPanel();
+		}
+	} // addItem
+
+	void delItem() {
+		int[] nSelected = getTableRowSelection();
+		if (nSelected.length == 0) {
+			JOptionPane.showMessageDialog(this, "Select partitions to delete, before hitting the delete button");
+		}
+		// do the actual deleting
+		for (int i = nSelected.length - 1; i >= 0; i--) {
+			int iRow = nSelected[i];
+			getDoc().delAlignmentWithSubnet(alignments.get(iRow));
+			alignments.remove(iRow);
+		}
+		refreshPanel();
+	} // delItem
+
+	void splitItem() {
+		int[] nSelected = getTableRowSelection();
+		if (nSelected.length == 0) {
+			JOptionPane.showMessageDialog(this, "Select partitions to split, before hitting the split button");
+			return;
+		}
+		String[] options = { "{1,2} + 3", "1 + 2 + 3", "Cancel" };
+
+		int choice = JOptionPane.showOptionDialog(null, "Split selected alignments into partitions", "Option",
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[2]);
+
+		String[] filters = null;
+		String[] ids = null;
+		switch (choice) {
+		case 0:
+			filters = new String[] { "1::3,2::3", "3::3" };
+			ids = new String[] { "1,2", "3" };
+			break;
+		case 1:
+			filters = new String[] { "1::3", "2::3", "3::3" };
+			ids = new String[] { "1", "2", "3" };
+			break;
+		default:
+			return;
+		}
+
+		for (int i = nSelected.length - 1; i >= 0; i--) {
+			int iRow = nSelected[i];
+			Alignment alignment = alignments.remove(iRow);
+			getDoc().delAlignmentWithSubnet(alignment);
+			try {
+				for (int j = 0; j < filters.length; j++) {
+					FilteredAlignment f = new FilteredAlignment();
+					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.m_sDataType.get());
+					f.setID(alignment.getID() + ids[j]);
+					getDoc().addAlignmentWithSubnet(f);
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-        }
-        
-        refreshPanel();
-    } // splitItem
+		}
 
-    @Override
-    public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
-        List<Plugin> selectedPlugins = new ArrayList<Plugin>();
-        JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
+		refreshPanel();
+	} // splitItem
 
-        fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-        String[] exts = {".nex", ".nxs", ".nexus"};
-        fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
+	@Override
+	public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
+		List<Plugin> selectedPlugins = new ArrayList<Plugin>();
+		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
-        fileChooser.setDialogTitle("Load Sequence");
-        fileChooser.setMultiSelectionEnabled(true);
-        int rval = fileChooser.showOpenDialog(null);
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
+		String[] exts = { ".nex", ".nxs", ".nexus" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
 
-        if (rval == JFileChooser.APPROVE_OPTION) {
+		fileChooser.setDialogTitle("Load Sequence");
+		fileChooser.setMultiSelectionEnabled(true);
+		int rval = fileChooser.showOpenDialog(null);
 
-            File[] files = fileChooser.getSelectedFiles();
-            for (File file : files) {
-                String fileName = file.getName();
-//				if (sFileName.lastIndexOf('/') > 0) {
-//					Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
-//				}
-                if (fileName.toLowerCase().endsWith(".nex") || fileName.toLowerCase().endsWith(".nxs") || fileName.toLowerCase().endsWith(".nexus")) {
-                    NexusParser parser = new NexusParser();
-                    try {
-                        parser.parseFile(file);
-                        if (parser.m_filteredAlignments.size() > 0) {
-                        	/** sanity check: make sure the filters do not overlap **/
-                        	int [] used = new int[parser.m_alignment.getSiteCount()];
-                        	Set<Integer> overlap = new HashSet<Integer>();
-                        	int partitionNr = 1;
-                            for (Alignment data : parser.m_filteredAlignments) {
-                            	int [] indices = ((FilteredAlignment) data).indices();
-                            	for (int i : indices) {
-                            		if (used[i] > 0) {
-                            			overlap.add(used[i]*10000 + partitionNr);
-                            		} else {
-                            			used[i] = partitionNr;
-                            		}
-                            	}
-                            	partitionNr++;
-                            }
-                            if (overlap.size() > 0) {
-                            	String overlaps = "<html>Warning: The following partitions overlap:<br/>";
-	                            for (int i : overlap) {
-	                            	overlaps += parser.m_filteredAlignments.get(i/10000 - 1).getID() + 
-	                            		" overlaps with " +
-	                            		parser.m_filteredAlignments.get(i%10000 - 1).getID() + "<br/>";
-	                            }
-	                            overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
-	                            JOptionPane.showMessageDialog(this, overlaps);
-                            }
-                        	/** add alignments **/
-                            for (Alignment data : parser.m_filteredAlignments) {
-                                selectedPlugins.add(data);
-                            }
-                        } else {
-                            selectedPlugins.add(parser.m_alignment);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
-                        return null;
-                    }
-                }
-                if (file.getName().toLowerCase().endsWith(".xml")) {
-                    Plugin alignment = getXMLData(file);
-                    selectedPlugins.add(alignment);
-                }
-            }
-            return selectedPlugins;
-        }
-        return null;
-    } // pluginSelector
+		if (rval == JFileChooser.APPROVE_OPTION) {
 
-    static public Plugin getXMLData(File file) {
-        String sXML = "";
-        try {
-        	// parse as BEAST 2 xml fragment
-            XMLParser parser = new XMLParser();
-            BufferedReader fin = new BufferedReader(new FileReader(file));
-            while (fin.ready()) {
-                sXML += fin.readLine();
-            }
-            fin.close();
-            Plugin runnable = parser.parseFragment(sXML, false);
-            return getAlignment(runnable);
-        } catch (Exception ex) {
-        	// attempt to parse as BEAST 1 xml
-        	try {
-        		Plugin alignment = parseBeast1XML(sXML);
-        		if (alignment != null) {
-        			alignment.setID(file.getName().substring(0, file.getName().length() - 4));
-        		}
-        		return alignment;
-            } catch (Exception ex2) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + ex.getMessage() + "\n" + ex2.getMessage());
-            }
-            return null;
-        }
-    }
+			File[] files = fileChooser.getSelectedFiles();
+			for (File file : files) {
+				String fileName = file.getName();
+				// if (sFileName.lastIndexOf('/') > 0) {
+				// Beauti.g_sDir = sFileName.substring(0,
+				// sFileName.lastIndexOf('/'));
+				// }
+				if (fileName.toLowerCase().endsWith(".nex") || fileName.toLowerCase().endsWith(".nxs")
+						|| fileName.toLowerCase().endsWith(".nexus")) {
+					NexusParser parser = new NexusParser();
+					try {
+						parser.parseFile(file);
+						if (parser.m_filteredAlignments.size() > 0) {
+							/**
+							 * sanity check: make sure the filters do not
+							 * overlap
+							 **/
+							int[] used = new int[parser.m_alignment.getSiteCount()];
+							Set<Integer> overlap = new HashSet<Integer>();
+							int partitionNr = 1;
+							for (Alignment data : parser.m_filteredAlignments) {
+								int[] indices = ((FilteredAlignment) data).indices();
+								for (int i : indices) {
+									if (used[i] > 0) {
+										overlap.add(used[i] * 10000 + partitionNr);
+									} else {
+										used[i] = partitionNr;
+									}
+								}
+								partitionNr++;
+							}
+							if (overlap.size() > 0) {
+								String overlaps = "<html>Warning: The following partitions overlap:<br/>";
+								for (int i : overlap) {
+									overlaps += parser.m_filteredAlignments.get(i / 10000 - 1).getID()
+											+ " overlaps with "
+											+ parser.m_filteredAlignments.get(i % 10000 - 1).getID() + "<br/>";
+								}
+								overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
+								JOptionPane.showMessageDialog(this, overlaps);
+							}
+							/** add alignments **/
+							for (Alignment data : parser.m_filteredAlignments) {
+								selectedPlugins.add(data);
+							}
+						} else {
+							selectedPlugins.add(parser.m_alignment);
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
+						return null;
+					}
+				}
+				if (file.getName().toLowerCase().endsWith(".xml")) {
+					Plugin alignment = getXMLData(file);
+					selectedPlugins.add(alignment);
+				}
+			}
+			return selectedPlugins;
+		}
+		return null;
+	} // pluginSelector
 
-    private static Plugin parseBeast1XML(String sXML) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
-        doc.normalize();
+	static public Plugin getXMLData(File file) {
+		String sXML = "";
+		try {
+			// parse as BEAST 2 xml fragment
+			XMLParser parser = new XMLParser();
+			BufferedReader fin = new BufferedReader(new FileReader(file));
+			while (fin.ready()) {
+				sXML += fin.readLine();
+			}
+			fin.close();
+			Plugin runnable = parser.parseFragment(sXML, false);
+			return getAlignment(runnable);
+		} catch (Exception ex) {
+			// attempt to parse as BEAST 1 xml
+			try {
+				Plugin alignment = parseBeast1XML(sXML);
+				if (alignment != null) {
+					alignment.setID(file.getName().substring(0, file.getName().length() - 4));
+				}
+				return alignment;
+			} catch (Exception ex2) {
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + ex.getMessage()
+						+ "\n" + ex2.getMessage());
+			}
+			return null;
+		}
+	}
 
-        NodeList alignments = doc.getElementsByTagName("alignment");
-        Alignment alignment = new Alignment();
-        alignment.m_sDataType.setValue("nucleotide", alignment);
+	private static Plugin parseBeast1XML(String sXML) throws Exception {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+		doc.normalize();
 
-        // parse first alignment
-        org.w3c.dom.Node node = alignments.item(0);
-        
-        String sDataType = node.getAttributes().getNamedItem("dataType").getNodeValue();
-        int nTotalCount = 4;
-        if (sDataType == null) {
-            alignment.m_sDataType.setValue("integer", alignment);
-        } else if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
-            alignment.m_sDataType.setValue("nucleotide", alignment);
-            nTotalCount = 4;
-        } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
-            alignment.m_sDataType.setValue("aminoacid", alignment);
-            nTotalCount = 20;
-        } else {
-            alignment.m_sDataType.setValue("integer", alignment);
-        }
-        
-        NodeList children = node.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-        	org.w3c.dom.Node child = children.item(i);
-        	if (child.getNodeName().equals("sequence")) {
-                Sequence sequence = new Sequence();
-                // find the taxon
-                String taxon = "";
-                NodeList sequenceChildren = child.getChildNodes();
-                for (int j = 0; j < sequenceChildren.getLength(); j++) {
-                	org.w3c.dom.Node child2 = sequenceChildren.item(j);
-                	if (child2.getNodeName().equals("taxon")) {
-                		taxon = child2.getAttributes().getNamedItem("idref").getNodeValue();
-                	}
-                }
-                String data = child.getTextContent();
-                sequence.initByName("totalcount", nTotalCount, "taxon", taxon, "value", data);
-                sequence.setID("seq_" + taxon);
-                alignment.m_pSequences.setValue(sequence, alignment);
-        		
-        	}
-        }
-    	//alignment.initAndValidate();
-        alignment.setID("beast1");
-    	return alignment;
+		NodeList alignments = doc.getElementsByTagName("alignment");
+		Alignment alignment = new Alignment();
+		alignment.m_sDataType.setValue("nucleotide", alignment);
+
+		// parse first alignment
+		org.w3c.dom.Node node = alignments.item(0);
+
+		String sDataType = node.getAttributes().getNamedItem("dataType").getNodeValue();
+		int nTotalCount = 4;
+		if (sDataType == null) {
+			alignment.m_sDataType.setValue("integer", alignment);
+		} else if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
+			alignment.m_sDataType.setValue("nucleotide", alignment);
+			nTotalCount = 4;
+		} else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
+			alignment.m_sDataType.setValue("aminoacid", alignment);
+			nTotalCount = 20;
+		} else {
+			alignment.m_sDataType.setValue("integer", alignment);
+		}
+
+		NodeList children = node.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			org.w3c.dom.Node child = children.item(i);
+			if (child.getNodeName().equals("sequence")) {
+				Sequence sequence = new Sequence();
+				// find the taxon
+				String taxon = "";
+				NodeList sequenceChildren = child.getChildNodes();
+				for (int j = 0; j < sequenceChildren.getLength(); j++) {
+					org.w3c.dom.Node child2 = sequenceChildren.item(j);
+					if (child2.getNodeName().equals("taxon")) {
+						taxon = child2.getAttributes().getNamedItem("idref").getNodeValue();
+					}
+				}
+				String data = child.getTextContent();
+				sequence.initByName("totalcount", nTotalCount, "taxon", taxon, "value", data);
+				sequence.setID("seq_" + taxon);
+				alignment.m_pSequences.setValue(sequence, alignment);
+
+			}
+		}
+		// alignment.initAndValidate();
+		alignment.setID("beast1");
+		return alignment;
 	} // parseBeast1XML
 
 	static Plugin getAlignment(Plugin plugin) throws IllegalArgumentException, IllegalAccessException {
-        if (plugin instanceof Alignment) {
-            return plugin;
-        }
-        for (Plugin plugin2 : plugin.listActivePlugins()) {
-            plugin2 = getAlignment(plugin2);
-            if (plugin2 != null) {
-                return plugin2;
-            }
-        }
-        return null;
-    }
+		if (plugin instanceof Alignment) {
+			return plugin;
+		}
+		for (Plugin plugin2 : plugin.listActivePlugins()) {
+			plugin2 = getAlignment(plugin2);
+			if (plugin2 != null) {
+				return plugin2;
+			}
+		}
+		return null;
+	}
 
 } // class AlignmentListInputEditor
