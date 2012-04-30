@@ -102,7 +102,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void init(Input<?> input, Plugin plugin, int itemNr,
+	public void init(Input<?> input, Plugin plugin, //int itemNr,
 			ExpandOption bExpandOption, boolean bAddButtons) {
 		if (input.get() instanceof List) {
 			alignments = (List<Alignment>) input.get();
