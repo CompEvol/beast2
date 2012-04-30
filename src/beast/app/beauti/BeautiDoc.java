@@ -866,9 +866,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			}
 
 			// set estimate flag on tree, only if tree occurs in a partition
-			for (PartitionContext partition : sPartitionNames) {
-				Tree tree = (Tree) pluginmap.get("Tree.t:" + partition.tree);
-				tree.m_bIsEstimated.setValue(false, tree);
+			for (Plugin plugin : pluginmap.values()) {
+				if (plugin instanceof Tree) {
+					Tree tree = (Tree) plugin;
+					tree.m_bIsEstimated.setValue(false, tree);
+				}
 			}
 			for (Plugin plugin : pPartition[2]) {
 				Tree tree = ((TreeLikelihood) plugin).m_tree.get();

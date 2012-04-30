@@ -102,8 +102,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption,
-			boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, int itemNr,
+			ExpandOption bExpandOption, boolean bAddButtons) {
 		if (input.get() instanceof List) {
 			alignments = (List<Alignment>) input.get();
 		} else {
@@ -269,8 +269,15 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 		getDoc();
 		String sPartition = (String) tableData[iRow][nColumn];
-		TreeLikelihood treeLikelihood = (TreeLikelihood) doc.pluginmap
-				.get("treeLikelihood." + tableData[iRow][NAME_COLUMN]);
+		int partitionID = BeautiDoc.ALIGNMENT_PARTITION;
+		switch (nColumn) {
+		case SITEMODEL_COLUMN: partitionID = BeautiDoc.SITEMODEL_PARTITION;break;
+		case CLOCKMODEL_COLUMN: partitionID = BeautiDoc.CLOCKMODEL_PARTITION;break;
+		case TREE_COLUMN: partitionID = BeautiDoc.TREEMODEL_PARTITION;break;
+		}
+		int nPartition = doc.getPartitionNr(sPartition, partitionID);
+		TreeLikelihood treeLikelihood = likelihoods[nPartition]; 
+			//(TreeLikelihood) doc.pluginmap.get("treeLikelihood." + tableData[iRow][NAME_COLUMN]);
 
 		// check if partition needs renaming
 		String oldName = null;
@@ -278,13 +285,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			boolean found = false;
 			switch (nColumn) {
 			case SITEMODEL_COLUMN:
-				for (int i = 0; i < nPartitions; i++) {
-					String sID = likelihoods[i].m_pSiteModel.get().getID();
-					if (BeautiDoc.parsePartition(sID).equals(sPartition)) {
-						found = true;
-					}
-				}
-				if (!found) {
+				if (!doc.pluginmap.containsKey("SiteModel.s:" + sPartition)) {
 					String sID = likelihoods[iRow].m_pSiteModel.get().getID();
 					oldName = BeautiDoc.parsePartition(sID);
 					doc.renamePartition(BeautiDoc.SITEMODEL_PARTITION, oldName, sPartition);
@@ -293,8 +294,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				break;
 			case CLOCKMODEL_COLUMN:
 				for (int i = 0; i < nPartitions; i++) {
-					String sID = likelihoods[i].m_pBranchRateModel.get()
-							.getID();
+					String sID = likelihoods[i].m_pBranchRateModel.get().getID();
 					if (BeautiDoc.parsePartition(sID).equals(sPartition)) {
 						found = true;
 					}
@@ -308,13 +308,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				}
 				break;
 			case TREE_COLUMN:
-				for (int i = 0; i < nPartitions; i++) {
-					String sID = likelihoods[i].m_tree.get().getID();
-					if (BeautiDoc.parsePartition(sID).equals(sPartition)) {
-						found = true;
-					}
-				}
-				if (!found) {
+				if (!doc.pluginmap.containsKey("Tree.t:" + sPartition)) {
 					String sID = likelihoods[iRow].m_tree.get().getID();
 					oldName = BeautiDoc.parsePartition(sID);
 					doc.renamePartition(BeautiDoc.TREEMODEL_PARTITION, oldName, sPartition);
