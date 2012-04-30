@@ -109,7 +109,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
             String sID = prior.m_distInput.get().getID();
             System.err.println("id=" + sID);
-            sID = BeautiDoc.parsePartition(sID);
+            sID = sID.substring(0, sID.indexOf('.'));
             for (BeautiSubTemplate template : sAvailablePlugins) {
                 if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
                     comboBox.setSelectedItem(template);
@@ -126,11 +126,12 @@ public class PriorListInputEditor extends ListInputEditor {
                         iItem++;
                     }
                     BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
-                    String sID = ((Plugin) list.get(iItem)).getID();
-                    String sPartition = BeautiDoc.parsePartition(sID);
+                    //String sID = ((Plugin) list.get(iItem)).getID();
+                    //String sPartition = BeautiDoc.parsePartition(sID);
+                    PartitionContext context = doc.getContextFor((Plugin) list.get(iItem));
                     Prior prior = (Prior) list.get(iItem);
                     try {
-                        template.createSubNet(sPartition, prior, prior.m_distInput);
+                        template.createSubNet(context, prior, prior.m_distInput);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -195,7 +196,8 @@ public class PriorListInputEditor extends ListInputEditor {
 
             String sID = distr.getID();
             try {
-                sID = BeautiDoc.parsePartition(sID);
+                //sID = BeautiDoc.parsePartition(sID);
+                sID = sID.substring(0, sID.indexOf('.'));
             } catch (Exception e) {
                 throw new RuntimeException("Improperly formatted ID: " + distr.getID());
             }
@@ -224,11 +226,11 @@ public class PriorListInputEditor extends ListInputEditor {
                                         iItem++;
                                     }
                                     BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
-                                    String sID = ((Plugin) list.get(iItem)).getID();
-                                    String sPartition = BeautiDoc.parsePartition(sID);
-
+                                    PartitionContext partitionContext = doc.getContextFor((Plugin) list.get(iItem));
+                                    //String sID = ((Plugin) list.get(iItem)).getID();
+                                    //String sPartition = BeautiDoc.parsePartition(sID);
                                     try {
-                                        template.createSubNet(sPartition, list, iItem);
+                                        template.createSubNet(partitionContext, list, iItem);
                                     } catch (Exception e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
@@ -299,7 +301,8 @@ public class PriorListInputEditor extends ListInputEditor {
 
             if (prior.m_distInput.get() != null) {
                 String sID = prior.m_distInput.get().getID();
-                sID = BeautiDoc.parsePartition(sID);
+                //sID = BeautiDoc.parsePartition(sID);
+                sID = sID.substring(0, sID.indexOf('.'));
                 for (BeautiSubTemplate template : sAvailablePlugins) {
                     if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
                         comboBox.setSelectedItem(template);
@@ -329,7 +332,7 @@ public class PriorListInputEditor extends ListInputEditor {
 //					}
                     try {
                         //Plugin plugin2 =
-                        template.createSubNet("", prior, prior.m_distInput);
+                        template.createSubNet(new PartitionContext(""), prior, prior.m_distInput);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }

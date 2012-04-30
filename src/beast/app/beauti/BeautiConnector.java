@@ -100,7 +100,7 @@ public class BeautiConnector extends Plugin {
     /**
      * check that conditions in the 'if' input are met *
      */
-    public boolean isActivated(String sPartition, List<Plugin> posteriorPredecessors,
+    public boolean isActivated(PartitionContext partitionContext, List<Plugin> posteriorPredecessors,
     		List<Plugin> likelihoodPredecessors, BeautiDoc doc) {
         if (atInitialisationOnly()) {
             return false;
@@ -109,7 +109,8 @@ public class BeautiConnector extends Plugin {
 
         boolean bIsActive = true;
         for (int i = 0; i < sConditionIDs.length; i++) {
-            String sID = sConditionIDs[i].replaceAll("\\$\\(n\\)", sPartition);
+        	//String sID = sConditionIDs[i].replaceAll("\\$\\(n\\)", sPartition);
+        	String sID = BeautiDoc.translatePartitionNames(sConditionIDs[i], partitionContext);
             Plugin plugin = doc.pluginmap.get(sID);
             if (plugin == null) {
                 //System.err.println("isActivated::no plugin found");
@@ -169,5 +170,10 @@ public class BeautiConnector extends Plugin {
 
     public String toString() {
         return "@" + sSourceID + " -> @" + sTargetID + "/" + sTargetInput;
+    }
+
+
+    public String toString(PartitionContext context) {
+        return "@" + BeautiDoc.translatePartitionNames(sSourceID, context) + " -> @" + sTargetID + "/" + BeautiDoc.translatePartitionNames(sTargetInput, context);
     }
 }

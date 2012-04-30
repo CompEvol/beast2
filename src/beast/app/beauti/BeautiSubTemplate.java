@@ -89,12 +89,10 @@ public class BeautiSubTemplate extends Plugin {
         this.doc = doc;
     }
 
-    void removeSubNet(BeautiSubTemplate template, String sPartition) throws Exception {
+    void removeSubNet(BeautiSubTemplate template, PartitionContext context) throws Exception {
         // disconnect all connection points in the template
         for (BeautiConnector connector : template.connectors) {
-//			Plugin src = PluginPanel.g_plugins.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
-//			String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
-            doc.disconnect(connector, sPartition);
+            doc.disconnect(connector, context);
         }
     }
     
@@ -110,7 +108,7 @@ public class BeautiSubTemplate extends Plugin {
 
         // find template that created this plugin
         String sID = plugin.getID();
-        String sPartition = BeautiDoc.parsePartition(sID);
+        //String sPartition = BeautiDoc.parsePartition(sID);
         sID = sID.substring(0, sID.indexOf("."));
         BeautiSubTemplate template = null;
         for (BeautiSubTemplate template2 : doc.beautiConfig.subTemplatesInput.get()) {
@@ -122,39 +120,40 @@ public class BeautiSubTemplate extends Plugin {
         if (template == null) {
             throw new Exception("Cannot find template for removing " + plugin.getID());
         }
-        removeSubNet(template, sPartition);
+        PartitionContext context = doc.getContextFor(plugin);
+        removeSubNet(template, context);
     }
 
-    public Plugin createSubNet(String sPartition, Plugin plugin, Input<?> input) throws Exception {
+    public Plugin createSubNet(PartitionContext partition, Plugin plugin, Input<?> input) throws Exception {
         removeSubNet(input.get());
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             input.setValue(null, plugin);
             return null;
         }
-        Plugin o = createSubNet(sPartition, doc.pluginmap);
+        Plugin o = createSubNet(partition, doc.pluginmap);
         input.setValue(o, plugin);
         return o;
     }
 
-    public Plugin createSubNet(String sPartition, List<Plugin> list, int iItem) throws Exception {
+    public Plugin createSubNet(PartitionContext partition, List<Plugin> list, int iItem) throws Exception {
         removeSubNet(list.get(iItem));
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             list.set(iItem, null);
             return null;
         }
-        Plugin o = createSubNet(sPartition, doc.pluginmap);
+        Plugin o = createSubNet(partition, doc.pluginmap);
         list.set(iItem, o);
         return o;
     }
 
-    public Plugin createSubNet(String sPartition) throws Exception {
+    public Plugin createSubNet(PartitionContext partition) throws Exception {
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             return null;
         }
-        Plugin o = createSubNet(sPartition, doc.pluginmap);
+        Plugin o = createSubNet(partition, doc.pluginmap);
         return o;
     }
 
@@ -163,10 +162,10 @@ public class BeautiSubTemplate extends Plugin {
         String sPartition = data.getID();
         HashMap<String, Plugin> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
         sIDMap.put(sPartition, data);
-        return createSubNet(sPartition, sIDMap);
+        return createSubNet(new PartitionContext(sPartition), sIDMap);
     }
 
-    private Plugin createSubNet(String sPartition, /*BeautiDoc doc,*/ HashMap<String, Plugin> sIDMap) {
+    private Plugin createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, Plugin> sIDMap) {
         // wrap in a beast element with appropriate name spaces
         String _sXML = "<beast version='2.0' \n" +
                 "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
@@ -174,12 +173,12 @@ public class BeautiSubTemplate extends Plugin {
                 "</beast>\n";
 
         // resolve alignment references
-        _sXML = _sXML.replaceAll("idref=[\"']data['\"]", "idref='" + sPartition + "'");
+        _sXML = _sXML.replaceAll("idref=[\"']data['\"]", "idref='" + context.partition + "'");
         // ensure uniqueness of IDs
-        _sXML = _sXML.replaceAll("\\$\\(n\\)", sPartition);
+        _sXML = BeautiDoc.translatePartitionNames(_sXML, context);//_sXML.replaceAll("\\$\\(n\\)", sPartition);
 
         XMLParser parser = new XMLParser();
-        parser.setRequiredInputProvider(doc);
+        parser.setRequiredInputProvider(doc, context);
         List<Plugin> plugins = null;
         try {
             plugins = parser.parseTemplate(_sXML, sIDMap, true);
@@ -190,11 +189,11 @@ public class BeautiSubTemplate extends Plugin {
 
             for (BeautiConnector connector : connectors) {
                 if (connector.atInitialisationOnly()) {// ||
-                    doc.connect(connector, sPartition);
+                    doc.connect(connector, context);
                 }
                 if (connector.getTipText() != null) {
-                    doc.tipTextMap.put(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition),
-                            connector.getTipText().replaceAll("\\$\\(n\\)", sPartition));
+                    doc.tipTextMap.put(BeautiDoc.translatePartitionNames(connector.sSourceID, context), //.replaceAll("\\$\\(n\\)", sPartition),
+                    		BeautiDoc.translatePartitionNames(connector.getTipText(), context)); //.replaceAll("\\$\\(n\\)", sPartition));
                 }
             }
             if (suppressedInputs.get() != null) {
@@ -214,19 +213,19 @@ public class BeautiSubTemplate extends Plugin {
         }
 
         String sID = sMainID;
-        sID = sID.replaceAll("\\$\\(n\\)", sPartition);
+        sID = BeautiDoc.translatePartitionNames(sID, context); //sID.replaceAll("\\$\\(n\\)", sPartition);
         Plugin plugin = doc.pluginmap.get(sID);
 
         if (this == doc.beautiConfig.partitionTemplate.get()) {
             // HACK: need to make sure the subst model is of the correct type
-            Plugin treeLikelihood = doc.pluginmap.get("treeLikelihood." + sPartition);
+            Plugin treeLikelihood = doc.pluginmap.get("treeLikelihood." + context.partition);
             //DataType dataType = ((TreeLikelihood) treeLikelihood).m_data.get().getDataType();
             SiteModel.Base siteModel = ((TreeLikelihood) treeLikelihood).m_pSiteModel.get();
             SubstitutionModel substModel = siteModel.m_pSubstModel.get();
             try {
                 siteModel.canSetSubstModel(substModel);
             } catch (Exception e) {
-                Object o = doc.createInput(siteModel, siteModel.m_pSubstModel);
+                Object o = doc.createInput(siteModel, siteModel.m_pSubstModel, context);
                 try {
                     siteModel.m_pSubstModel.setValue(o, siteModel);
                 } catch (Exception ex) {

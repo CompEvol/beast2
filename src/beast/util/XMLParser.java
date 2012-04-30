@@ -25,6 +25,7 @@
 package beast.util;
 
 
+import beast.app.beauti.PartitionContext;
 import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.Runnable;
@@ -198,6 +199,7 @@ public class XMLParser {
      * a RequiredInputProvider
      */
     RequiredInputProvider requiredInputProvider = null;
+    PartitionContext partitionContext = null;
 
     public XMLParser() {
         m_sElement2ClassMap = new HashMap<String, String>();
@@ -851,7 +853,7 @@ public class XMLParser {
         if (requiredInputProvider != null) {
             for (Input<?> input : parent.listInputs()) {
                 if (input.get() == null && input.getRule() == Validate.REQUIRED) {
-                    Object o = requiredInputProvider.createInput(parent, input);
+                    Object o = requiredInputProvider.createInput(parent, input, partitionContext);
                     if (o != null) {
                         input.setValue(o, parent);
                     }
@@ -985,11 +987,12 @@ public class XMLParser {
     }
 
     public interface RequiredInputProvider {
-        Object createInput(Plugin plugin, Input<?> input);
+		Object createInput(Plugin plugin, Input<?> input, PartitionContext context);
     }
 
-    public void setRequiredInputProvider(RequiredInputProvider provider) {
+    public void setRequiredInputProvider(RequiredInputProvider provider, PartitionContext context) {
         requiredInputProvider = provider;
+        partitionContext = context;
     }
 
     /**

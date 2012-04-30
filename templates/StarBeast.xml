@@ -162,7 +162,7 @@
                 <data idref="data"/>
                 <tree idref="Tree.t:$(n)"/>
                 <siteModel idref="SiteModel.s:$(n)"/>
-                <branchRateModel spec='StrictClockModel' id='StrictClock.$(n)'>
+                <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
                     <clock.rate id='clockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
                 </branchRateModel>
             </plugin>

@@ -60,6 +60,11 @@ import beast.util.XMLParser.RequiredInputProvider;
 public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	final static String STANDARD_TEMPLATE = "templates/Standard.xml";
 
+	final static int ALIGNMENT_PARTITION = 3;
+	final static int SITEMODEL_PARTITION = 0;
+	final static int CLOCKMODEL_PARTITION = 1;
+	final static int TREEMODEL_PARTITION = 2;
+
 	public enum ActionOnExit {
 		UNKNOWN, SHOW_DETAILS_USE_TEMPLATE, SHOW_DETAILS_USE_XML_SPEC, WRITE_XML
 	}
@@ -84,7 +89,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	List<Plugin>[] pPartition;
 	private List<Integer>[] nCurrentPartitions;
 	// partition names
-	List<String> sPartitionNames = new ArrayList<String>();
+	List<PartitionContext> sPartitionNames = new ArrayList<PartitionContext>();
+	Set<PartitionContext> possibleContexts = new HashSet<PartitionContext>(); 
 
 	public BeautiConfig beautiConfig;
 
@@ -256,7 +262,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		pPartitionByAlignments = new List[3];
 		pPartition = new List[3];
 		nCurrentPartitions = new List[3];
-		sPartitionNames = new ArrayList<String>();
+		sPartitionNames = new ArrayList<PartitionContext>();
 		for (int i = 0; i < 3; i++) {
 			pPartitionByAlignments[i] = new ArrayList<Plugin>();
 			pPartition[i] = new ArrayList<Plugin>();
@@ -767,8 +773,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			} catch (Exception e) {
 				// ignore
 			}
-
-			
 			
 			if (clockModel != null) {
 				String sID = ((Plugin) clockModel).getID();
@@ -862,8 +866,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			}
 
 			// set estimate flag on tree, only if tree occurs in a partition
-			for (String sPartition : sPartitionNames) {
-				Tree tree = (Tree) pluginmap.get("Tree.t:" + sPartition);
+			for (PartitionContext partition : sPartitionNames) {
+				Tree tree = (Tree) pluginmap.get("Tree.t:" + partition.tree);
 				tree.m_bIsEstimated.setValue(false, tree);
 			}
 			for (Plugin plugin : pPartition[2]) {
@@ -903,50 +907,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				templates.add(beautiConfig.partitionTemplate.get());
 				templates.addAll(beautiConfig.subTemplates);
 
-				List<String> sPartitionNames2 = new ArrayList<String>();
-				// add 'Species' as special partition name
-				sPartitionNames2.addAll(sPartitionNames);
-				sPartitionNames2.add("Species");
 
-				for (String sPartition : sPartitionNames2) {
-					for (BeautiSubTemplate template : templates) {
-						String sTemplateID = template.getMainID().replaceAll("\\$\\(n\\)", sPartition);
-						Plugin plugin = pluginmap.get(sTemplateID);
-
-						// check if template is in use
-						if (plugin != null) {
-							// if so, run through all connectors
-							for (BeautiConnector connector : template.connectors) {
-								if (connector.toString().contains("YuleModel")) {
-									int h = 3;
-									h++;
-								}
-								if (connector.atInitialisationOnly()) {
-									if (bInitial) {
-										warning("connect: " + connector + "\n");
-										connect(connector, sPartition);
-									}
-								} else if (connector.isActivated(sPartition, posteriorPredecessors,
-										likelihoodPredecessors, this)) {
-									warning("connect: " + connector + "\n");
-									try {
-										connect(connector, sPartition);
-									} catch (Exception e) {
-										warning(e.getMessage());
-									}
-
-								} else {
-									warning("DISconnect: " + connector + "\n");
-									try {
-										disconnect(connector, sPartition);
-									} catch (Exception e) {
-										warning(e.getMessage() + "\n");
-									}
-								}
-							}
-						}
-					}
+				for (PartitionContext context : possibleContexts) {
+					applyBeautiRules(templates, bInitial, context);
 				}
+				// add 'Species' as special partition name
+				applyBeautiRules(templates, bInitial, new PartitionContext("Species"));
 
 				// if the model changed, some rules that use inposterior() may
 				// not have been triggered properly
@@ -977,6 +943,50 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 	} // scrubAll
 
+	public static String translatePartitionNames(String sStr, PartitionContext partition) {
+		sStr = sStr.replaceAll(".s:\\$\\(n\\)", ".s:" + partition.siteModel);
+		sStr = sStr.replaceAll(".c:\\$\\(n\\)", ".c:" + partition.clockModel);
+		sStr = sStr.replaceAll(".t:\\$\\(n\\)", ".t:" + partition.tree);
+		sStr = sStr.replaceAll("\\$\\(n\\)", partition.partition);
+		return sStr;
+	}
+	
+	private void applyBeautiRules(List<BeautiSubTemplate> templates, boolean bInitial, PartitionContext context) throws Exception {
+		for (BeautiSubTemplate template : templates) {
+			String sTemplateID = translatePartitionNames(template.getMainID(), context); 
+			Plugin plugin = pluginmap.get(sTemplateID);
+
+			// check if template is in use
+			if (plugin != null) {
+				// if so, run through all connectors
+				for (BeautiConnector connector : template.connectors) {
+					if (connector.atInitialisationOnly()) {
+						if (bInitial) {
+							warning("connect: " + connector.toString(context) + "\n");
+							connect(connector, context);
+						}
+					} else if (connector.isActivated(context, posteriorPredecessors,
+							likelihoodPredecessors, this)) {
+						warning("connect: " + connector.toString(context) + "\n");
+						try {
+							connect(connector, context);
+						} catch (Exception e) {
+							warning(e.getMessage());
+						}
+
+					} else {
+						warning("DISconnect: " + connector.toString(context) + "\n");
+						try {
+							disconnect(connector, context);
+						} catch (Exception e) {
+							warning(e.getMessage() + "\n");
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	void setClockRate() throws Exception {
 		Plugin likelihood = pluginmap.get("likelihood");
 		if (likelihood instanceof CompoundDistribution) {
@@ -1060,13 +1070,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * @throws Exception
 	 *             *
 	 */
-	public void connect(BeautiConnector connector, String sPartition) throws Exception {
-		String sSrcID = connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition);
+	public void connect(BeautiConnector connector, PartitionContext context) throws Exception {
+		String sSrcID = translatePartitionNames(connector.sSourceID, context);
 		Plugin srcPlugin = pluginmap.get(sSrcID);
 		if (srcPlugin == null) {
-			throw new Exception("Could not find plugin with id " + sSrcID + ". Typo in template perhaps?");
+			throw new Exception("Could not find plugin with id " + sSrcID + ". Typo in template perhaps?\n");
 		}
-		String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
+		String sTargetID = translatePartitionNames(connector.sTargetID, context);
 		connect(srcPlugin, sTargetID, connector.sTargetInput);
 	}
 
@@ -1092,9 +1102,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	/**
 	 * disconnect source plugin with target plugin *
 	 */
-	public void disconnect(BeautiConnector connector, String sPartition) {
-		Plugin srcPlugin = pluginmap.get(connector.sSourceID.replaceAll("\\$\\(n\\)", sPartition));
-		String sTargetID = connector.sTargetID.replaceAll("\\$\\(n\\)", sPartition);
+	public void disconnect(BeautiConnector connector, PartitionContext context) {
+		Plugin srcPlugin = pluginmap.get(translatePartitionNames(connector.sSourceID, context));
+		String sTargetID = translatePartitionNames(connector.sTargetID, context);
 		disconnect(srcPlugin, sTargetID, connector.sTargetInput);
 	}
 
@@ -1138,7 +1148,21 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		alignments.remove(data);
 		try {
 			BeautiSubTemplate template = beautiConfig.partitionTemplate.get();
-			template.removeSubNet(template, data.getID());
+			PartitionContext context = null;
+			for (PartitionContext context2 : sPartitionNames) {
+				if (context2.partition.equals(data.getID())) {
+					context = context2;
+					break;
+				}
+			}
+			template.removeSubNet(template, context);
+			// remove from possible contexts
+			PartitionContext [] contexts = possibleContexts.toArray(new PartitionContext[0]);
+			for (PartitionContext context2 : contexts) {
+				if (context2.equals(context)) {
+					possibleContexts.remove(context2);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1149,14 +1173,34 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	public void determinePartitions() {
 		CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
-		sPartitionNames = new ArrayList<String>();
+		sPartitionNames.clear();
 		for (Distribution distr : likelihood.pDistributions.get()) {
 			if (distr instanceof TreeLikelihood) {
 				TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
 				alignments.add(treeLikelihoods.m_data.get());
+				PartitionContext context = new PartitionContext();
 				String sID = treeLikelihoods.m_data.get().getID();
 				sID = parsePartition(sID);
-				sPartitionNames.add(sID);
+				context.partition = sID;
+				sID = treeLikelihoods.m_pSiteModel.get().getID();
+				sID = parsePartition(sID);
+				context.siteModel = sID;
+				sID = treeLikelihoods.m_pBranchRateModel.get().getID();
+				sID = parsePartition(sID);
+				context.clockModel = sID;
+				sID = treeLikelihoods.m_tree.get().getID();
+				sID = parsePartition(sID);
+				context.tree = sID;
+				sPartitionNames.add(context);
+				boolean found = false;
+				for (PartitionContext context2 : possibleContexts) {
+					if (context.equals(context2)) {
+						found = true;
+					}
+				}
+				if (!found) {
+					possibleContexts.add(context);
+				}
 			}
 		}
 
@@ -1229,15 +1273,52 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		System.err.println(Arrays.toString(nCurrentPartitions));
 	}
 
-	int getPartitionNr(String partition) {
-		int partitionNr = sPartitionNames.indexOf(partition);
-		return partitionNr;
+	int getPartitionNr(String partition, int partitionID) {
+		for (int i = 0; i < sPartitionNames.size(); i++) {
+			PartitionContext context = sPartitionNames.get(i);
+			switch (partitionID) {
+			case ALIGNMENT_PARTITION:
+				if (context.partition.equals(partition)) {
+					return i;
+				}
+				break;
+			case SITEMODEL_PARTITION:
+				if (context.siteModel.equals(partition)) {
+					return i;
+				}
+				break;
+			case CLOCKMODEL_PARTITION:
+				if (context.clockModel.equals(partition)) {
+					return i;
+				}
+				break;
+			case TREEMODEL_PARTITION:
+				if (context.tree.equals(partition)) {
+					return i;
+				}
+				break;
+			}
+		}
+		return -1;
 	}
 
 	int getPartitionNr(Plugin plugin) {
-		String partition = plugin.getID();
-		partition = parsePartition(partition);
-		return getPartitionNr(partition);
+		String ID = plugin.getID();
+		String partition = ID;
+		if (ID.indexOf('.') >= 0) {
+			partition = ID.substring(ID.indexOf('.') + 1);
+		}
+		int partitionID = ALIGNMENT_PARTITION;
+		if (ID.indexOf(':') >= 0) {
+			char c = ID.charAt(ID.length() - partition.length()); 
+			switch (c) {
+			case 's': partitionID = SITEMODEL_PARTITION;break;
+			case 'c': partitionID = CLOCKMODEL_PARTITION;break;
+			case 't': partitionID = TREEMODEL_PARTITION;break;
+			}
+			partition = partition.substring(partition.indexOf(':') + 1);
+		}
+		return getPartitionNr(partition, partitionID);
 	}
 
 	public List<Plugin> getPartitions(String sType) {
@@ -1254,18 +1335,18 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	public void setCurrentPartition(int iCol, int iRow, String sPartition) {
-		int nCurrentPartion = sPartitionNames.indexOf(sPartition);
+		int nCurrentPartion = getPartitionNr(sPartition, iCol);
 		nCurrentPartitions[iCol].set(iRow, nCurrentPartion);
 	}
 
 	@Override
-	public Object createInput(Plugin plugin, Input<?> input) {
+	public Object createInput(Plugin plugin, Input<?> input, PartitionContext context) {
 		for (BeautiSubTemplate template : beautiConfig.subTemplates) {
 			try {
 				if (input.canSetValue(template.instance, plugin)) {
 					String sPartition = plugin.getID();
 					sPartition = parsePartition(sPartition);
-					Object o = template.createSubNet(sPartition, plugin, input);
+					Object o = template.createSubNet(context, plugin, input);
 					return o;
 				}
 			} catch (Exception e) {
@@ -1485,4 +1566,105 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 	}
 
+	public void renamePartition(int partitionID, String oldName, String newName) throws Exception {
+		System.err.println("renamePartition: " + partitionID + " " +oldName + " " +newName);
+		// sanity check: make sure newName is not already in use by another partition
+		String newsuffix = null;
+		switch (partitionID) {
+			case ALIGNMENT_PARTITION: newsuffix = "." + newName; break;
+			case SITEMODEL_PARTITION: newsuffix = ".s:" + newName; break;
+			case CLOCKMODEL_PARTITION: newsuffix = ".c:" + newName; break;
+			case TREEMODEL_PARTITION: newsuffix = ".t:" + newName; break;
+			default: throw new IllegalArgumentException();
+		}
+		for (Plugin plugin: pluginmap.values()) {
+			if (plugin.getID().endsWith(newsuffix)) {
+				throw new Exception("Name " + newName + " is already in use");
+			}
+		}
+		
+		// do the renaming
+		String oldsuffix = null;
+		switch (partitionID) {
+			case ALIGNMENT_PARTITION: oldsuffix = "." + oldName; break;
+			case SITEMODEL_PARTITION: oldsuffix = ".s:" + oldName; break;
+			case CLOCKMODEL_PARTITION: oldsuffix = ".c:" + oldName; break;
+			case TREEMODEL_PARTITION: oldsuffix = ".t:" + oldName; break;
+			default: throw new IllegalArgumentException();
+		}
+		for (Plugin plugin: pluginmap.values()) {
+			if (plugin.getID().endsWith(oldsuffix)) {
+				String sID = plugin.getID();
+				sID = sID.substring(0, sID.indexOf(oldsuffix)) + newsuffix;
+				plugin.setID(sID);
+			}
+		}
+		if (partitionID == ALIGNMENT_PARTITION) {
+			// make exception for renaming alignment: its ID does not contain a dot
+			for (Plugin plugin: pluginmap.values()) {
+				if (plugin.getID().equals(oldName)) {
+					plugin.setID(newName);
+				}
+			}			
+		}
+		
+		// update plugin map
+		String [] keyset = pluginmap.keySet().toArray(new String[0]); 
+		for (String key: keyset) { 
+			if (key.endsWith(oldsuffix)) {
+				Plugin plugin = pluginmap.remove(key);
+				key = key.substring(0, key.indexOf(oldsuffix)) + newsuffix;
+				pluginmap.put(key, plugin);
+			}
+		}
+		// update partition name table
+		determinePartitions();
+	} // renamePartition
+
+	public PartitionContext getContextFor(Plugin plugin) {
+		String sID = plugin.getID();
+		String sPartition = sID.substring(sID.indexOf('.') + 1);
+
+		int partitionID = ALIGNMENT_PARTITION;
+		if (sPartition.indexOf(':') >= 0) {
+			char c = sPartition.charAt(0);
+			switch (c) {
+			case 's': partitionID = SITEMODEL_PARTITION;break;
+			case 'c': partitionID = CLOCKMODEL_PARTITION;break;
+			case 't': partitionID = TREEMODEL_PARTITION;break;
+			}
+			sPartition = parsePartition(sID);
+		}
+
+		for (PartitionContext context : sPartitionNames) {
+			switch (partitionID) {
+				case ALIGNMENT_PARTITION: 
+					if (context.partition.equals(sPartition)) {
+						return context;
+					}
+					break;
+				case SITEMODEL_PARTITION: 
+					if (context.siteModel.equals(sPartition)) {
+						return context;
+					}
+					break;
+				case CLOCKMODEL_PARTITION:
+					if (context.clockModel.equals(sPartition)) {
+						return context;
+					}
+					break;
+				case TREEMODEL_PARTITION: 
+					if (context.tree.equals(sPartition)) {
+						return context;
+					}
+					break;
+				default:
+					// should never get here, unless template contains .X$(n) where X is not 'c', 't', or 's'
+					return null;
+				}
+			}
+		return null;
+	}
+
+	
 } // class BeautiDoc

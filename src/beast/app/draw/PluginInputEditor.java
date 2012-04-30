@@ -219,7 +219,7 @@ public class PluginInputEditor extends InputEditor.Base {
 //                    	plugin = PluginPanel.g_plugins.get(sNewID);
                     } else {
                         try {
-                            plugin = sSelected.createSubNet(sPartition, m_plugin, m_input);
+                            plugin = sSelected.createSubNet(doc.getContextFor(plugin), m_plugin, m_input);
                             //PluginPanel.addPluginToMap(plugin);
                             // tricky: try to connect up new inputs with old inputs of existing name
 //                            Plugin oldPlugin = (Plugin) m_input.get();
@@ -276,9 +276,12 @@ public class PluginInputEditor extends InputEditor.Base {
 //                            m_selectPluginBox.setSelectedItem(sID);
                             sID = plugin.getID();
                             sID = sID.substring(0, sID.indexOf('.'));
-                            for (int i = 0; i < m_selectPluginBox.getItemCount(); i++) {
+                             for (int i = 0; i < m_selectPluginBox.getItemCount(); i++) {
                                 BeautiSubTemplate template = (BeautiSubTemplate) m_selectPluginBox.getItemAt(i);
-                                if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
+                                if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID) ||
+                                		template.getMainID().replaceAll(".s:\\$\\(n\\)", "").equals(sID) || 
+                                		template.getMainID().replaceAll(".c:\\$\\(n\\)", "").equals(sID) || 
+                                		template.getMainID().replaceAll(".t:\\$\\(n\\)", "").equals(sID)) {
                                     m_selectPluginBox.setSelectedItem(template);
                                 }
                             }
