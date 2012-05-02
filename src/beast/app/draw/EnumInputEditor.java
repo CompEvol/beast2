@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.JComboBox;
 
 import beast.app.beauti.BeautiDoc;
@@ -34,10 +35,11 @@ public class EnumInputEditor extends InputEditor.Base {
      * o a combo box for selecting another value in the enumeration
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
+		this.itemNr = itemNr;
 
         addInputLabel();
         List<String> sAvailableValues = new ArrayList<String>();
@@ -54,7 +56,8 @@ public class EnumInputEditor extends InputEditor.Base {
                 public void actionPerformed(ActionEvent e) {
                     String sSelected = (String) m_selectPluginBox.getSelectedItem();
                     try {
-                        m_input.setValue(sSelected, m_plugin);
+                    	setValue(sSelected);
+                        //lm_input.setValue(sSelected, m_plugin);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -62,6 +65,7 @@ public class EnumInputEditor extends InputEditor.Base {
             });
             m_selectPluginBox.setToolTipText(input.getTipText());
             add(m_selectPluginBox);
+            add(Box.createGlue());
         }
     } // init
 

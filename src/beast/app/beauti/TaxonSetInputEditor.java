@@ -53,9 +53,10 @@ public class TaxonSetInputEditor extends InputEditor.Base {
     }
 
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_input = input;
         m_plugin = plugin;
+		this.itemNr = itemNr;
         TaxonSet taxonset = (TaxonSet) m_input.get();
         if (taxonset == null) {
             return;

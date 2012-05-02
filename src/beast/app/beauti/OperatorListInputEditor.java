@@ -9,7 +9,9 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
+import beast.core.Input;
 import beast.core.Operator;
 import beast.core.Plugin;
 import beast.core.StateNode;
@@ -34,7 +36,13 @@ public class OperatorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    protected void addPluginItem(Box itemBox, Plugin plugin) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    	m_buttonStatus = ButtonStatus.NONE;
+    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+    }
+    
+    @Override
+    protected InputEditor addPluginItem(Box itemBox, Plugin plugin) {
         Operator operator = (Operator) plugin;
 
         JTextField entry = new JTextField(getLabel(operator));
@@ -61,6 +69,7 @@ public class OperatorListInputEditor extends ListInputEditor {
         weightEntry.setMaximumSize(new Dimension(50, 50));
         itemBox.add(weightEntry);
 
+        return this;
     }
 
 

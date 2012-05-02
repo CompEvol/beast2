@@ -1,10 +1,13 @@
 package beast.app.beauti;
 
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,12 +16,10 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
+import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
-import beast.app.draw.PluginDialog;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.SmallButton;
 import beast.core.Distribution;
@@ -30,8 +31,6 @@ import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
-import beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution;
-import beast.evolution.speciation.SpeciesTreePrior;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
@@ -40,7 +39,7 @@ import beast.math.distributions.Prior;
 
 public class PriorListInputEditor extends ListInputEditor {
     private static final long serialVersionUID = 1L;
-    static Dimension PREFERRED_SIZE = new Dimension(200, 20);
+    public static Dimension PREFERRED_SIZE = new Dimension(200, 20);
 
     List<JComboBox> comboBoxes;
     List<JButton> rangeButtons;
@@ -63,14 +62,62 @@ public class PriorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
-//		if (!InputEditor.g_bExpertMode && ((List<?>) input.get()).size() > 0 && !(((List<?>) input.get()).get(0) instanceof MRCAPrior)) {
-//			m_buttonStatus = ButtonStatus.NONE;
-//		}
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    	List<?> list = (List) input.get();
+    	Collections.sort(list, new Comparator<Object>() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				if (o1 instanceof Plugin && o2 instanceof Plugin) {
+					String sID1 = ((Plugin)o1).getID();
+					String sID2 = ((Plugin)o2).getID();
+					// first the tree priors
+					if (o1 instanceof TreeDistribution) {
+						if (o2 instanceof TreeDistribution) {
+							Tree tree1 = ((TreeDistribution)o1).m_tree.get();
+							if (tree1 == null) {
+								tree1 = ((TreeDistribution)o1).treeIntervals.get().m_tree.get();
+							}
+							Tree tree2 = ((TreeDistribution)o2).m_tree.get();
+							if (tree2 == null) {
+								tree2 = ((TreeDistribution)o2).treeIntervals.get().m_tree.get();
+							}
+							return sID1.compareTo(sID2);
+						} else {
+							return -1;
+						}
+					} else if (o1 instanceof MRCAPrior) {
+						// last MRCA priors
+						if (o2 instanceof MRCAPrior) {
+							return sID1.compareTo(sID2);
+						} else {
+							return 1;
+						}
+					} else {
+						if (o2 instanceof TreeDistribution) {
+							return 1;
+						}
+						if (o2 instanceof MRCAPrior) {
+							return -1;
+						}
+						if (o1 instanceof Prior) {
+							sID1 = ((Plugin)((Prior) o1).m_x.get()).getID(); 
+						}
+						if (o2 instanceof Prior) {
+							sID2 = ((Plugin)((Prior) o2).m_x.get()).getID(); 
+						}
+						return sID1.compareTo(sID2);
+					}
+				}
+				return 0;
+			}
+		});
+    	
+    	
         comboBoxes = new ArrayList<JComboBox>();
         rangeButtons = new ArrayList<JButton>();
         taxonButtons = new ArrayList<JButton>();
-        super.init(input, plugin, bExpandOption, bAddButtons);
+        m_buttonStatus = ButtonStatus.NONE;
+        super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 
         m_addButton = new SmallButton("+", true);
         m_addButton.setToolTipText("Add item to the list");
@@ -91,291 +138,18 @@ public class PriorListInputEditor extends ListInputEditor {
      * @param plugin  plugin to add
      */
     @Override
-    protected void addPluginItem(Box itemBox, Plugin plugin) {
-        JComboBox comboBox = null;
-        JButton taxonButton = null;
-        JButton rangeButton = null;
-        if (plugin instanceof Prior) {
-            Prior prior = (Prior) plugin;
-            String sText = /*plugin.getID() + ": " +*/ ((Plugin) prior.m_x.get()).getID();
-            JLabel label = new JLabel(sText);
-            label.setMinimumSize(PREFERRED_SIZE);
-            label.setPreferredSize(PREFERRED_SIZE);
-            itemBox.add(label);
-
-
-            List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
-            comboBox = new JComboBox(sAvailablePlugins.toArray());
-
-            String sID = prior.m_distInput.get().getID();
-            System.err.println("id=" + sID);
-            sID = sID.substring(0, sID.indexOf('.'));
-            for (BeautiSubTemplate template : sAvailablePlugins) {
-                if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
-                    comboBox.setSelectedItem(template);
-                }
-            }
-            comboBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JComboBox comboBox = (JComboBox) e.getSource();
-
-                    List<?> list = (List<?>) m_input.get();
-                    int iItem = 0;
-                    while (comboBoxes.get(iItem) != comboBox) {
-                        iItem++;
-                    }
-                    BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
-                    //String sID = ((Plugin) list.get(iItem)).getID();
-                    //String sPartition = BeautiDoc.parsePartition(sID);
-                    PartitionContext context = doc.getContextFor((Plugin) list.get(iItem));
-                    Prior prior = (Prior) list.get(iItem);
-                    try {
-                        template.createSubNet(context, prior, prior.m_distInput);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-
-                    sync();
-                    refreshPanel();
-                }
-            });
-            itemBox.add(comboBox);
-
-            if (prior.m_x.get() instanceof RealParameter) {
-                // add range button for real parameters
-                RealParameter p = (RealParameter) prior.m_x.get();
-                rangeButton = new JButton(paramToString(p));
-                rangeButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        JButton rangeButton = (JButton) e.getSource();
-                        int iItem = 0;
-                        while (rangeButtons.get(iItem) != rangeButton) {
-                            iItem++;
-                        }
-                        List<?> list = (List<?>) m_input.get();
-                        Prior prior = (Prior) list.get(iItem);
-                        RealParameter p = (RealParameter) prior.m_x.get();
-                        PluginDialog dlg = new PluginDialog(p, RealParameter.class, doc);
-                        dlg.setVisible(true);
-                        if (dlg.getOK(doc)) {
-                            dlg.accept(p);
-                            rangeButton.setText(paramToString(p));
-                            refreshPanel();
-                        }
-                    }
-                });
-                itemBox.add(Box.createHorizontalStrut(10));
-                itemBox.add(rangeButton);
-            }
-
-        } else if (plugin instanceof TreeDistribution) {
-            TreeDistribution distr = (TreeDistribution) plugin;
-            String sText = ""/*plugin.getID() + ": "*/;
-            if (distr.m_tree.get() != null) {
-                sText += distr.m_tree.get().getID();
-            } else {
-                sText += distr.treeIntervals.get().m_tree.get().getID();
-            }
-            JLabel label = new JLabel(sText);
-            label.setMinimumSize(PREFERRED_SIZE);
-            label.setPreferredSize(PREFERRED_SIZE);
-            itemBox.add(label);
-//            List<String> sAvailablePlugins = PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
-
-            List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin, null, doc);
-            comboBox = new JComboBox(sAvailablePlugins.toArray());
-
-            for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
-                if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i)._class)) {
-                    sAvailablePlugins.remove(i);
-                }
-
-            }
-
-            String sID = distr.getID();
-            try {
-                //sID = BeautiDoc.parsePartition(sID);
-                sID = sID.substring(0, sID.indexOf('.'));
-            } catch (Exception e) {
-                throw new RuntimeException("Improperly formatted ID: " + distr.getID());
-            }
-            for (BeautiSubTemplate template : sAvailablePlugins) {
-                if (template.matchesName(sID)) { //getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
-                    comboBox.setSelectedItem(template);
-                }
-            }
-
-            comboBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    currentComboBox = (JComboBox) e.getSource();
-
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            SwingUtilities.invokeLater(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    @SuppressWarnings("unchecked")
-                                    List<Plugin> list = (List<Plugin>) m_input.get();
-                                    int iItem = 0;
-                                    while (comboBoxes.get(iItem) != currentComboBox) {
-                                        iItem++;
-                                    }
-                                    BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
-                                    PartitionContext partitionContext = doc.getContextFor((Plugin) list.get(iItem));
-                                    //String sID = ((Plugin) list.get(iItem)).getID();
-                                    //String sPartition = BeautiDoc.parsePartition(sID);
-                                    try {
-                                        template.createSubNet(partitionContext, list, iItem);
-                                    } catch (Exception e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
-
-//                    Plugin plugin2 = template.createSubNet(sPartition);
-//System.err.println("NEW SUBNET " + plugin2);
-//	            	list.set(iItem, plugin2);
-//System.err.println(iItem + " " +list.get(iItem)+ " " + plugin2 + " " + list);
-                                    sync();
-                                    refreshPanel();
-                                }
-
-                            });
-                        }
-                    });
-                }
-            });
-            itemBox.add(comboBox);
-        } else if (plugin instanceof MRCAPrior) {
-            MRCAPrior prior = (MRCAPrior) plugin;
-            String sText = prior.getID();
-
-            taxonButton = new JButton(sText);
-            taxonButton.setMinimumSize(PREFERRED_SIZE);
-            taxonButton.setPreferredSize(PREFERRED_SIZE);
-            itemBox.add(taxonButton);
-            taxonButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JButton taxonButton = (JButton) e.getSource();
-                    List<?> list = (List<?>) m_input.get();
-                    int iItem = 0;
-                    while (taxonButtons.get(iItem) != taxonButton) {
-                        iItem++;
-                    }
-                    MRCAPrior prior = (MRCAPrior) list.get(iItem);
-                    try {
-                        TaxonSet taxonset = prior.m_taxonset.get();
-                        Set<Taxon> candidates = getTaxonCandidates(prior);
-                        TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates);
-                        dlg.setVisible(true);
-                        if (dlg.isOK) {
-                            prior.setID(dlg.taxonSet.getID());
-                            prior.m_taxonset.setValue(dlg.taxonSet, prior);
-                        }
-                    } catch (Exception e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                    refreshPanel();
-                }
-            });
-
-
-            if (prior.m_distInput.getType() == null) {
-                try {
-                    prior.m_distInput.setValue(new OneOnX(), prior);
-                    prior.m_distInput.setValue(null, prior);
-                } catch (Exception e) {
-                    // TODO: handle exception
-                }
-
-            }
-
-            List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
-            comboBox = new JComboBox(sAvailablePlugins.toArray());
-
-            if (prior.m_distInput.get() != null) {
-                String sID = prior.m_distInput.get().getID();
-                //sID = BeautiDoc.parsePartition(sID);
-                sID = sID.substring(0, sID.indexOf('.'));
-                for (BeautiSubTemplate template : sAvailablePlugins) {
-                    if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
-                        comboBox.setSelectedItem(template);
-                    }
-                }
-            } else {
-                comboBox.setSelectedItem(BeautiConfig.NULL_TEMPLATE);
-            }
-            comboBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JComboBox comboBox = (JComboBox) e.getSource();
-                    BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
-                    List<?> list = (List<?>) m_input.get();
-                    int iItem = 0;
-                    while (comboBoxes.get(iItem) != comboBox) {
-                        iItem++;
-                    }
-                    MRCAPrior prior = (MRCAPrior) list.get(iItem);
-
-//System.err.println("PRIOR" + plugin2);
-//	            	try {
-//						prior.m_distInput.setValue(plugin2, prior);
-//					} catch (Exception e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-                    try {
-                        //Plugin plugin2 =
-                        template.createSubNet(new PartitionContext(""), prior, prior.m_distInput);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                    refreshPanel();
-                }
-            });
-            itemBox.add(comboBox);
-
-            JCheckBox isEstimatedBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.m_bIsMonophyleticInput.getName()));
-            isEstimatedBox.setSelected(prior.m_bIsMonophyleticInput.get());
-            isEstimatedBox.setToolTipText(prior.m_bIsMonophyleticInput.getTipText());
-            isEstimatedBox.addActionListener(new MRCAPriorActionListener(prior));
-            itemBox.add(isEstimatedBox);
-        } else {
-            String sText = plugin.getID();
-            JLabel label = new JLabel(sText);
-            label.setMinimumSize(PREFERRED_SIZE);
-            label.setPreferredSize(PREFERRED_SIZE);
-            itemBox.add(label);
-
-            comboBox = new JComboBox();
-            comboBox.setVisible(false);
-        }
-        if (!(plugin instanceof MRCAPrior) && m_buttonStatus != ButtonStatus.NONE && m_buttonStatus != ButtonStatus.ADD_ONLY) {
-            m_delButton.get(m_delButton.size() - 1).setVisible(false);
-        }
-        if (plugin instanceof SpeciesTreePrior || plugin instanceof GeneTreeForSpeciesTreeDistribution) {
-            comboBox.setVisible(false);
-        }
-        comboBox.setMaximumSize(new Dimension(1024, 24));
-        comboBoxes.add(comboBox);
-        rangeButtons.add(rangeButton);
-        taxonButtons.add(taxonButton);
-
-        String sTipText = getDoc().tipTextMap.get(plugin.getID());
-        System.out.println(plugin.getID());
-        if (sTipText != null) {
-            JLabel tipTextLabel = new JLabel(" " + sTipText);
-            itemBox.add(tipTextLabel);
-        }
-
-        itemBox.add(Box.createGlue());
-    } // addPluginItem
+    protected InputEditor addPluginItem(Box itemBox, Plugin plugin) {
+		try {
+	    	int listItemNr = ((List) m_input.get()).indexOf(plugin);
+	    	InputEditor editor = doc.getInpuEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
+	    	itemBox.add((Component) editor);
+	    	return editor;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return this;
+    }	
 
 
     String paramToString(RealParameter p) {
@@ -426,7 +200,6 @@ public class PriorListInputEditor extends ListInputEditor {
             }
         }
     }
-
 
     @Override
     protected void addItem() {

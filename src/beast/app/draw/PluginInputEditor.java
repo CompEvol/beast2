@@ -43,12 +43,13 @@ public class PluginInputEditor extends InputEditor.Base {
      * o validation label -- optional, if input is not valid
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	//box.setAlignmentY(LEFT_ALIGNMENT);
     	
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
+		this.itemNr = itemNr;
         if (bExpandOption == ExpandOption.FALSE) {
             simpleInit(input, plugin);
         } else {
@@ -165,6 +166,12 @@ public class PluginInputEditor extends InputEditor.Base {
      * Furthermore, if expanded, update expanded inputs
      */
     protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
+    	if (itemNr >= 0) {
+    		box.add(new JLabel(plugin.getID()));
+    		box.add(Box.createGlue());
+    		return;
+    	}
+    	
         List<BeautiSubTemplate> availableTemplates = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin, null, doc);
         if (availableTemplates.size() > 0) {
 //        	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {
@@ -181,13 +188,18 @@ public class PluginInputEditor extends InputEditor.Base {
             m_selectPluginBox = new JComboBox(availableTemplates.toArray());
 
             Object o = input.get();
+            if (itemNr >= 0) {
+            	o = ((List)o).get(itemNr);
+            }
             String sID;
             if (o == null) {
                 sID = plugin.getID();
             } else {
                 sID = ((Plugin) o).getID();
             }
-            sID = sID.substring(0, sID.indexOf('.'));
+            if (sID.indexOf('.')>=0) {
+            	sID = sID.substring(0, sID.indexOf('.'));
+            }
             for (BeautiSubTemplate template : availableTemplates) {
                 if (template.matchesName(sID)) {
                     m_selectPluginBox.setSelectedItem(template);
@@ -287,7 +299,8 @@ public class PluginInputEditor extends InputEditor.Base {
                             }
                         }
 
-                        m_input.setValue(plugin, m_plugin);
+                        setValue(plugin);
+                        //m_input.setValue(plugin, m_plugin);
 
                         if (m_expansionBox != null) {
                             // remove items from Expansion Box

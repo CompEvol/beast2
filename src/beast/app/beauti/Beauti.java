@@ -590,14 +590,25 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		});
 		modeMenu.add(autoSetClockRate);
 
-		final JCheckBoxMenuItem muteSound = new JCheckBoxMenuItem("Mute sound", false);
-		muteSound.addActionListener(new ActionListener() {
+		final JCheckBoxMenuItem allowLinking = new JCheckBoxMenuItem("Allow parameter linking",
+				this.doc.bAllowLinking);
+		allowLinking.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				BeautiPanel.soundIsPlaying = muteSound.getState();
+				doc.bAllowLinking = allowLinking.getState();
+				doc.determineLinks();
 				refreshPanel();
 			}
 		});
-		modeMenu.add(muteSound);
+		modeMenu.add(allowLinking);
+
+//		final JCheckBoxMenuItem muteSound = new JCheckBoxMenuItem("Mute sound", false);
+//		muteSound.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent ae) {
+//				BeautiPanel.soundIsPlaying = !muteSound.getState();
+//				refreshPanel();
+//			}
+//		});
+//		modeMenu.add(muteSound);
 
 		viewMenu = new JMenu("View");
 		menuBar.add(viewMenu);

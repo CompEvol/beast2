@@ -10,6 +10,7 @@ import beast.app.draw.IntegerInputEditor;
 import beast.app.draw.ParameterInputEditor;
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
+import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
 import beast.evolution.sitemodel.SiteModel;
 
@@ -73,7 +74,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 
     public InputEditor createShapeEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
-        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, m_plugin, doc);
+        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, (Plugin) m_input.get(), doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
@@ -94,7 +95,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
             	super.validateInput();
             }
         };
-        inVarEditor.init(input, m_plugin, ExpandOption.FALSE, true);
+        inVarEditor.init(input, (Plugin) m_input.get(), -1, ExpandOption.FALSE, true);
         inVarEditor.addValidationListener(this);
         return inVarEditor;
     }

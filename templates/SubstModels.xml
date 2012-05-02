@@ -208,7 +208,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
 
-		<log id='rateStat.$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@ExponentialRelaxedClock.c:$(n)'/>
+		<log id='rateStat.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@ExponentialRelaxedClock.c:$(n)'/>
         <plugin id='UCMeanRatePrior.c:$(n)' spec='Prior' x='@ucedMean.c:$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
             <connect srcID='ucedMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
@@ -223,7 +223,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
             <connect srcID='relaxedUpDownOperatorExp.c:$(n)'  targetID='mcmc' inputName='operator' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
 
             <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(ucedMean.$(n)) and ucedMean.c:$(n)/estimate=true'/>
-            <connect srcID='rateStat.$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>
+            <connect srcID='rateStat.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>
 
         </subtemplate>
 
@@ -258,7 +258,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         </prior>
 
 
-		<log id='rate:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@RelaxedClock.c:$(n)'/>
+		<log id='rate.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@RelaxedClock.c:$(n)'/>
         <plugin id='MeanRatePrior.c:$(n)' spec='Prior' x='@ucldMean.c:$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
             <connect srcID='ucldMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
@@ -274,7 +274,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
             <connect srcID='ucldMean.c:$(n)'  targetID='tracelog' inputName='log' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
             <connect srcID='ucldStdev.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(ucldStdev.c:$(n))'/>
-            <connect srcID='rate:$(n)'      targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.c:$(n))'/>
+            <connect srcID='rate.c:$(n)'      targetID='tracelog' inputName='log' if='inposterior(RelaxedClock.c:$(n))'/>
 
             <connect srcID='ucldStdevPrior.c:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(ucldStdev.c:$(n))'>uncorrelated lognormal relaxed clock stdev of partition c:$(n)</connect>
             <connect srcID='MeanRatePrior.c:$(n)'  targetID='prior' inputName='distribution' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'>uncorrelated lognormal relaxed clock mean of partition c:$(n)</connect>

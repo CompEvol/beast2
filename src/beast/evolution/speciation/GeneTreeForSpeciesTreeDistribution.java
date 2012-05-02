@@ -27,7 +27,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 //    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
     
     public Input<Double> m_ploidy =
-            new Input<Double>("ploidy", "ploidy for this gene, typically a whole number of half (default 1)", 1.0);
+            new Input<Double>("ploidy", "ploidy for this gene, typically a whole number of half (default 2 for autosomal_nuclear)", 2.0);
 //    public Input<PLOIDY> m_ploidy =
 //        new Input<PLOIDY>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
 

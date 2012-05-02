@@ -59,9 +59,14 @@ public class TipDatesInputEditor extends PluginInputEditor {
 
 
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
-        tree = (Tree) input.get();
+		this.itemNr = itemNr;
+		if (itemNr >= 0) {
+	        tree = (Tree) ((List)input.get()).get(itemNr);
+		} else {
+	        tree = (Tree) input.get();			
+		}
         if (tree != null) {
             m_input = tree.m_trait;
             m_plugin = tree;

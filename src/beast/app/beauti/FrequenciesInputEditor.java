@@ -34,8 +34,8 @@ public class FrequenciesInputEditor extends PluginInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
-        super.init(input, plugin, bExpandOption, bAddButtons);
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+        super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     } // init
 
 

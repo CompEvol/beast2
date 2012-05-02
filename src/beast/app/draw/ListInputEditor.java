@@ -102,11 +102,12 @@ public class ListInputEditor extends InputEditor.Base {
      * o a set of buttons for adding, deleting, editing items in the list
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_bExpandOption = bExpandOption;
         m_input = input;
         m_plugin = plugin;
+        this.itemNr = -1;
         addInputLabel();
         if (m_inputLabel != null) {
             m_inputLabel.setMaximumSize(new Dimension(m_inputLabel.getSize().width, 1000));
@@ -180,7 +181,7 @@ public class ListInputEditor extends InputEditor.Base {
             m_delButton.add(delButton);
             itemBox.add(delButton);
         }
-        addPluginItem(itemBox, plugin);
+        InputEditor editor = addPluginItem(itemBox, plugin);
 
 
         SmallButton editButton = new SmallButton("e", true, SmallButton.ButtonType.square);
@@ -210,7 +211,7 @@ public class ListInputEditor extends InputEditor.Base {
                 (m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
             Box expandBox = Box.createVerticalBox();
             //box.add(itemBox);
-            doc.getInpuEditorFactory().addInputs(expandBox, plugin, this, null, doc);
+            doc.getInpuEditorFactory().addInputs(expandBox, plugin, editor, null, doc);
             //System.err.print(expandBox.getComponentCount());
             if (expandBox.getComponentCount() > 1) {
                 // only go here if it is worth showing expanded box
@@ -273,7 +274,7 @@ public class ListInputEditor extends InputEditor.Base {
      * @param itemBox box to add components to
      * @param plugin  plugin to add
      */
-    protected void addPluginItem(Box itemBox, Plugin plugin) {
+    protected InputEditor addPluginItem(Box itemBox, Plugin plugin) {
         String sName = plugin.getID();
         if (sName == null || sName.length() == 0) {
             sName = plugin.getClass().getName();
@@ -295,6 +296,7 @@ public class ListInputEditor extends InputEditor.Base {
         itemBox.add(entry);
         m_entries.add(entry);
         itemBox.add(Box.createHorizontalGlue());
+        return this;
     }
 
 
@@ -341,7 +343,8 @@ public class ListInputEditor extends InputEditor.Base {
         if (plugins != null) {
             for (Plugin plugin : plugins) {
                 try {
-                    m_input.setValue(plugin, m_plugin);
+                	setValue(plugin);
+                    //m_input.setValue(plugin, m_plugin);
                 } catch (Exception ex) {
                     System.err.println(ex.getClass().getName() + " " + ex.getMessage());
                 }

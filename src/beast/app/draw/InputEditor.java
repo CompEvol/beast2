@@ -4,8 +4,6 @@ package beast.app.draw;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,10 +60,11 @@ public interface InputEditor {
     /** initialise InputEditor
      * @param input to be edited
      * @param plugin parent plugin containing the input
+     * @param itemNr if the input is a list, itemNr indicates which item to edit in the list
      * @param bExpandOption start state of input editor
      * @param bAddButtons button status of input editor
      */
-    void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons);
+    void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons);
 
     /** set document with the model containing the input **/
     void setDoc(BeautiDoc doc);
@@ -102,7 +101,9 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
     /**
      * text field used for primitive input editors *
      */
-    JTextField m_entry;
+    protected JTextField m_entry;
+    
+    protected int itemNr;
 
     public JTextField getEntry() {
         return m_entry;
@@ -205,11 +206,12 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
     /**
      * construct an editor consisting of a label and input entry *
      */
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
-
+        this.itemNr= itemNr;
+        
         addInputLabel();
 
         setUpEntry();
@@ -248,15 +250,35 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
         });
     }
 
-    void initEntry() {
+    protected void initEntry() {
         if (m_input.get() != null) {
             m_entry.setText(m_input.get().toString());
         }
     }
 
-    void processEntry() {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void setValue(Object o) throws Exception {
+    	if (itemNr < 0) {
+    		m_input.setValue(o, m_plugin);
+    	} else {
+    		// set value of an item in a list
+    		List list = (List) m_input.get();
+    		Object other = list.get(itemNr);
+    		if (other != o) {
+    			if (other instanceof Plugin) {
+    				((Plugin)other).outputs.remove(m_plugin);
+    			}
+    			list.set(itemNr, o);
+    			if (o instanceof Plugin) {
+    				((Plugin) o).outputs.add(m_plugin);
+    			}
+    		}
+    	}
+    }
+    
+    protected void processEntry() {
         try {
-            m_input.setValue(m_entry.getText(), m_plugin);
+        	setValue(m_entry.getText());
             validateInput();
             m_entry.requestFocusInWindow();
         } catch (Exception ex) {

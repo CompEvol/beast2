@@ -29,10 +29,11 @@ public class BooleanInputEditor extends InputEditor.Base {
      * create input editor containing a check box *
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_plugin = plugin;
         m_input = input;
+		this.itemNr = itemNr;
         m_entry = new JCheckBox(doc.beautiConfig.getInputLabel(m_plugin, input.getName()));
         if (input.get() != null) {
             m_entry.setSelected((Boolean) input.get());
@@ -42,7 +43,8 @@ public class BooleanInputEditor extends InputEditor.Base {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    m_input.setValue(m_entry.isSelected(), m_plugin);
+                	setValue(m_entry.isSelected());
+                    //m_input.setValue(m_entry.isSelected(), m_plugin);
                 } catch (Exception ex) {
                     System.err.println("BooleanInputEditor " + ex.getMessage());
                 }

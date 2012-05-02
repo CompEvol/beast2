@@ -124,10 +124,19 @@ public class InputEditorFactory {
     public InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons,
                                                 ExpandOption bForceExpansion, ButtonStatus buttonStatus,
                                                 InputEditor editor, BeautiDoc doc) throws Exception {
+    	return createInputEditor(input, -1, plugin, bAddButtons, bForceExpansion, buttonStatus, editor, doc);
+    }
+    
+    public InputEditor createInputEditor(Input<?> input, int listItemNr, Plugin plugin, boolean bAddButtons,
+                ExpandOption bForceExpansion, ButtonStatus buttonStatus,
+                InputEditor editor, BeautiDoc doc) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
         }
         Class<?> inputClass = input.getType();
+        if (listItemNr >= 0) {
+        	inputClass = ((List<?>)input.get()).get(listItemNr).getClass();
+        }
 
         InputEditor inputEditor;
 
@@ -145,8 +154,8 @@ public class InputEditorFactory {
                 // ignore
             }
         }
-        if (List.class.isAssignableFrom(inputClass) ||
-                (input.get() != null && input.get() instanceof List<?>)) {
+        if (listItemNr < 0 && (List.class.isAssignableFrom(inputClass) ||
+                (input.get() != null && input.get() instanceof List<?>))) {
             // handle list inputs
             if (listInputEditorMap.containsKey(inputClass)) {
                 // use custom list input editor
@@ -163,19 +172,34 @@ public class InputEditorFactory {
         } else if (input.possibleValues != null) {
             // handle enumeration inputs
             inputEditor = new EnumInputEditor(doc);
-        } else if (inputEditorMap.containsKey(inputClass)) {
-            // handle Plugin-input with custom input editors
-            String sInputEditor = inputEditorMap.get(inputClass);
-            
-            Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
-            inputEditor = (InputEditor) con.newInstance(doc);
-            //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance(doc);
-            //} else if (inputClass.isEnum()) {
-            //    inputEditor = new EnumInputEditor();
         } else {
-            // assume it is a general Plugin, so create a default Plugin input editor
-            inputEditor = new PluginInputEditor(doc);
-        }
+        	Class<?> inputClass2 = inputClass;
+        	while (inputClass2 != null && !inputEditorMap.containsKey(inputClass2)) {
+        		inputClass2 = inputClass2.getSuperclass(); 
+        	}
+        	if (inputClass2 == null) {
+        		inputEditor = new PluginInputEditor(doc);
+        	} else {
+	            // handle Plugin-input with custom input editors
+	            String sInputEditor = inputEditorMap.get(inputClass2);
+	            
+	            Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+	            inputEditor = (InputEditor) con.newInstance(doc);
+        	}
+        }        	
+//    	} else if (inputEditorMap.containsKey(inputClass)) {
+//            // handle Plugin-input with custom input editors
+//            String sInputEditor = inputEditorMap.get(inputClass);
+//            
+//            Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+//            inputEditor = (InputEditor) con.newInstance(doc);
+//            //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance(doc);
+//            //} else if (inputClass.isEnum()) {
+//            //    inputEditor = new EnumInputEditor();
+//        } else {
+//            // assume it is a general Plugin, so create a default Plugin input editor
+//            inputEditor = new PluginInputEditor(doc);
+//        }
         String sFullInputName = plugin.getClass().getName() + "." + input.getName();
         //System.err.println(sFullInputName);
         ExpandOption expandOption = bForceExpansion;
@@ -207,7 +231,7 @@ public class InputEditorFactory {
             }
         }
         inputEditor.setDoc(doc);
-        inputEditor.init(input, plugin, expandOption, bAddButtons);
+        inputEditor.init(input, plugin, listItemNr, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
         inputEditor.getComponent().setVisible(true);
         return inputEditor;

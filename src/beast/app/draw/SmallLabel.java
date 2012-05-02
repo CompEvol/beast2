@@ -18,7 +18,7 @@ import javax.swing.JLabel;
  */
 public class SmallLabel extends JLabel {
     private static final long serialVersionUID = 1L;
-    Color m_circleColor = Color.blue;
+    public Color m_circleColor = Color.blue;
 
     public SmallLabel(String label, Color circleColor) {
         super(label);

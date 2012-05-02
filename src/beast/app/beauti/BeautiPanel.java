@@ -166,6 +166,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         if (config != null) {
             sIconLocation = ICONPATH + config.getIcon();
         }
+        return getIcon(sIconLocation);
+    }
+    
+    public static ImageIcon getIcon(String sIconLocation) {
         try {
             URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
             if (url == null) {
@@ -240,33 +244,33 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     }
 
 
-    public static boolean soundIsPlaying = false;
-
-    public static synchronized void playSound(final String url) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    synchronized (this) {
-                        if (soundIsPlaying) {
-                            return;
-                        }
-                        soundIsPlaying = true;
-                    }
-                    Clip clip = AudioSystem.getClip();
-                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/beast/app/beauti/" + url));
-                    clip.open(inputStream);
-                    clip.start();
-                    Thread.sleep(500);
-                    synchronized (this) {
-                        soundIsPlaying = false;
-                    }
-                } catch (Exception e) {
-                    soundIsPlaying = false;
-                    System.err.println(e.getMessage());
-                }
-            }
-        }).start();
-    }
+//    public static boolean soundIsPlaying = false;
+//
+//    public static synchronized void playSound(final String url) {
+//        new Thread(new Runnable() {
+//            public void run() {
+//                try {
+//                    synchronized (this) {
+//                        if (soundIsPlaying) {
+//                            return;
+//                        }
+//                        soundIsPlaying = true;
+//                    }
+//                    Clip clip = AudioSystem.getClip();
+//                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/beast/app/beauti/" + url));
+//                    clip.open(inputStream);
+//                    clip.start();
+//                    Thread.sleep(500);
+//                    synchronized (this) {
+//                        soundIsPlaying = false;
+//                    }
+//                } catch (Exception e) {
+//                    soundIsPlaying = false;
+//                    System.err.println(e.getMessage());
+//                }
+//            }
+//        }).start();
+//    }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
@@ -277,7 +281,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
                 iPartition = Math.max(0, listOfPartitions.getSelectedIndex());
             }
         }
-        BeautiPanel.playSound("woosh.wav");
+//        BeautiPanel.playSound("woosh.wav");
         //System.err.println(m_iPartition);
         try {
             refreshPanel();

@@ -81,6 +81,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 */
 
 	public boolean bAutoSetClockRate = true;
+	public boolean bAllowLinking = false;
 
 	/**
 	 * [0] = sitemodel [1] = clock model [2] = tree *
@@ -123,6 +124,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 */
 	private String fileName = "";
 
+	
+	public Set<Input<?>> linked;
+	
 	InputEditorFactory inputEditorFactory;
 
 	public InputEditorFactory getInpuEditorFactory() {
@@ -273,6 +277,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		pluginmap = new HashMap<String, Plugin>();
 		taxaset = new HashSet<Taxon>();
 		fileName = "";
+		linked = new HashSet<Input<?>>();
 	}
 
 	public void registerPlugin(Plugin plugin) {
@@ -940,6 +945,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			System.err.println("PARTITIONS:\n");
 			System.err.println(Arrays.toString(nCurrentPartitions));
 
+			determineLinks();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -1000,7 +1006,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					boolean bNeedsEstimation = false;
 					if (i > 0) {
 						BranchRateModel.Base model = (BranchRateModel.Base) treeLikelihood.m_pBranchRateModel.get();
-						bNeedsEstimation = (model != firstModel);
+						bNeedsEstimation = (model != firstModel) || firstModel.meanRateInput.get().m_bIsEstimated.get();
 					} else {
 						Tree tree = treeLikelihood.m_tree.get();
 						// check whether there are tip dates
@@ -1390,7 +1396,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * @return
 	 * @throws Exception
 	 */
-	static public Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, String partitionContext, BeautiDoc doc)
+	static public Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partitionContext, BeautiDoc doc)
 			throws Exception {
 		/** tabu = list of plugins that should not be copied **/
 		Set<Plugin> tabu = new HashSet<Plugin>();
@@ -1530,9 +1536,20 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		return deepCopy;
 	} // deepCopyPlugin
 
-	public static String renameId(String sID, String partitionContext) {
-		String sOldPartition = parsePartition(sID);
-		String sNewPartition = partitionContext.substring(0, partitionContext.indexOf(':'));
+	public static String renameId(String sID, PartitionContext context) {
+		String sOldPartition = sID.substring(sID.indexOf('.') + 1);
+		String sNewPartition = null;
+		if (sOldPartition.indexOf(':') >= 0) {
+			char c = sOldPartition.charAt(0);
+			switch (c) {
+			case 's':sNewPartition = context.siteModel;break;
+			case 'c':sNewPartition = context.clockModel;break;
+			case 't':sNewPartition = context.tree;break;
+			}
+			sOldPartition = sOldPartition.substring(sOldPartition.indexOf(':') + 1);
+		} else {
+			sNewPartition = context.partition;
+		}
 		sID = sID.substring(0, sID.length() - sOldPartition.length()) + sNewPartition;
 		return sID;
 	}
@@ -1619,6 +1636,18 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				pluginmap.put(key, plugin);
 			}
 		}
+		
+		// update tip text map
+		keyset = tipTextMap.keySet().toArray(new String[0]); 
+		for (String key: keyset) { 
+			if (key.endsWith(oldsuffix)) {
+				String tip = tipTextMap.remove(key);
+				key = key.substring(0, key.indexOf(oldsuffix)) + newsuffix;
+				tip = tip.replaceAll(oldsuffix, newsuffix);
+				tipTextMap.put(key, tip);
+			}
+		}		
+		
 		// update partition name table
 		determinePartitions();
 	} // renamePartition
@@ -1668,5 +1697,105 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		return null;
 	}
 
+
+	// methods for dealing with linking
+	void determineLinks() {
+		if (!bAllowLinking) {
+			return;
+		}
+		linked.clear();
+		for (Plugin plugin : posteriorPredecessors) {
+			Map<String,Integer> outputIDs = new HashMap<String,Integer>();
+			for (Plugin output : plugin.outputs) {
+				if (posteriorPredecessors.contains(output)) {
+					String sID = output.getID();
+					if (sID.indexOf('.') >= 0) {
+						sID = sID.substring(0, sID.indexOf('.'));
+						if (outputIDs.containsKey(sID)) {
+							outputIDs.put(sID, outputIDs.get(sID) + 1);
+						} else {
+							outputIDs.put(sID, 1);
+						}
+					}
+				}
+			}
+			for (Plugin output : plugin.outputs) {
+				if (posteriorPredecessors.contains(output)) {
+					String sID = output.getID();
+					if (sID.indexOf('.') >= 0) {
+						sID = sID.substring(0, sID.indexOf('.'));
+						if (outputIDs.get(sID) > 1) {
+							addLink(plugin, output);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	void addLink(Plugin from, Plugin to) {
+		try {
+			for (Input<?> input : to.listInputs()) {
+				if (input.get() instanceof Plugin) {
+					if (input.get() == from) {
+						addLink(input);
+						return;
+					}
+				}
+				// does it make sense to link list inputs?
+//				if (input.get() instanceof List<?>) {
+//					for (Object o : (List<?>) input.get()) {
+//						if (o instanceof Plugin) {
+//							if (o == from) {
+//								addLink(input);
+//								return;
+//							}
+//						}
+//					}
+//				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addLink(Input<?> input) {
+		linked.add(input);
+	}
+	
+	public void deLink(Input<?> input) {
+		linked.remove(input);
+	}
+	
+	public boolean isLinked(Input<?> input) {
+		return linked.contains(input);
+	}
+	
+	public List<Plugin> suggestedLinks(Plugin plugin) {
+		String sID = plugin.getID();
+		List<Plugin> list = new ArrayList<Plugin>();
+		if (sID.indexOf('.') >= 0) {
+			sID = sID.substring(0, sID.indexOf('.'));	
+		} else {
+			return list;
+		}
+		for (Plugin candidate : posteriorPredecessors) {
+			String sID2 = candidate.getID();
+			if (sID2.indexOf('.') >= 0) {
+				sID2 = sID2.substring(0, sID2.indexOf('.'));
+				if (sID2.equals(sID)) {
+					list.add(candidate);
+				}
+			}
+		}
+		list.remove(plugin);
+		return list;
+	}
+	
+	public Plugin getUnlinkCandidate(Input<?> input, Plugin parent) throws Exception {
+		PartitionContext context = getContextFor(parent);
+		Plugin plugin = deepCopyPlugin((Plugin) input.get(), parent, (MCMC) mcmc.get(), context, this);
+		return plugin;
+	}
 	
 } // class BeautiDoc
