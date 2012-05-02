@@ -188,7 +188,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         </subtemplate>
 
 <!-- Relaxed clock exponential -->
-        <subtemplate id='RelaxedClockExponential' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='ExponentialRelaxedClock.c:$(n)'>
+        <subtemplate id='RelaxedClockExponential' class='beast.evolution.branchratemodel.UCRelaxedClockModel' mainid='ExponentialRelaxedClock.c:$(n)' suppressInputs='beast.evolution.branchratemodel.UCRelaxedClockModel.distr'>
 <![CDATA[
         <plugin spec='UCRelaxedClockModel' id="ExponentialRelaxedClock.c:$(n)" tree='@Tree.t:$(n)'>
 			<parameter name='clock.rate' id='ucedMean.c:$(n)' value='1.0' estimate='false'/>
@@ -282,7 +282,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
 
 <!-- Random local clock -->
-        <subtemplate id='RandomLocalClock' class='beast.evolution.branchratemodel.RandomLocalClockModel' mainid='RandomLocalClock.c:$(n)'>
+        <subtemplate id='RandomLocalClock' class='beast.evolution.branchratemodel.RandomLocalClockModel' mainid='RandomLocalClock.c:$(n)' suppressInputs='beast.evolution.branchratemodel.RandomLocalClockModel.rates'>
 <![CDATA[
         <input spec='RandomLocalClockModel' id="RandomLocalClock.c:$(n)" ratesAreMultipliers="false" tree='@Tree.t:$(n)'>
             <clock.rate id='meanClockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
@@ -437,7 +437,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
 
 <!-- Coalescent for Bayesian skyline -->
-        <subtemplate id='CoalescentBayesianSkyline' class='beast.evolution.tree.coalescent.Coalescent' mainid='BayesianSkyline.t:$(n)'>
+        <subtemplate id='CoalescentBayesianSkyline' class='beast.evolution.tree.coalescent.Coalescent' mainid='BayesianSkyline.t:$(n)' suppressInputs='beast.math.distributions.MarkovChainDistribution.parameter'>
 <![CDATA[
             <distribution spec="BayesianSkyline" id='BayesianSkyline.t:$(n)'>
                 <parameter name='popSizes' id='bPopSizes.t:$(n)' dimension="5" value="380.0" lower="0.0" upper="380000.0" estimate='true'/>

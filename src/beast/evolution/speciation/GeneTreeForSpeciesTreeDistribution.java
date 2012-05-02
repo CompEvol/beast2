@@ -24,12 +24,12 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     public Input<Tree> m_speciesTree =
             new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
-    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
+//    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
     
-//    public Input<Double> m_ploidy =
-//            new Input<Double>("ploidy", "ploidy for this gene, typically a whole number of half (default 1)", 1.0);
-    public Input<PLOIDY> m_ploidy =
-        new Input<PLOIDY>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
+    public Input<Double> m_ploidy =
+            new Input<Double>("ploidy", "ploidy for this gene, typically a whole number of half (default 1)", 1.0);
+//    public Input<PLOIDY> m_ploidy =
+//        new Input<PLOIDY>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
 
     
     public Input<SpeciesTreePrior> m_speciesTreePrior =
@@ -59,13 +59,14 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
     @Override
     public void initAndValidate() throws Exception {
-    	switch (m_ploidy.get()) {
-			case autosomal_nuclear: m_fPloidy = 2.0; break;
-			case X: m_fPloidy = 1.5; break;
-			case Y: m_fPloidy = 0.5; break;
-			case mitrochondrial: m_fPloidy = 0.5; break;
-			default: throw new Exception("Unknown value for ploidy");
-		}
+    	m_fPloidy = m_ploidy.get();
+//    	switch (m_ploidy.get()) {
+//			case autosomal_nuclear: m_fPloidy = 2.0; break;
+//			case X: m_fPloidy = 1.5; break;
+//			case Y: m_fPloidy = 0.5; break;
+//			case mitrochondrial: m_fPloidy = 0.5; break;
+//			default: throw new Exception("Unknown value for ploidy");
+//		}
         final Node[] gtNodes = m_tree.get().getNodesAsArray();
         final int nGtLineages = m_tree.get().getLeafNodeCount();
         final Node[] sptNodes = m_speciesTree.get().getNodesAsArray();
