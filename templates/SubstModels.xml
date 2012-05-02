@@ -36,16 +36,16 @@
 
 ]]>
 
-            <connect srcID='kappa.s:$(n)'                targetID='state' inputName='stateNode' if='inposterior(hky.s:$(n)) and kappa.s:$(n)/estimate=true'/>
-            <connect srcID='freqParameter.s:$(n)'        targetID='state' inputName='stateNode' if='inposterior(hky.s:$(n)) and inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+            <connect srcID='kappa.s:$(n)'                targetID='state' inputName='stateNode' if='inlikelihood(kappa.s:$(n)) and kappa.s:$(n)/estimate=true'/>
+            <connect srcID='freqParameter.s:$(n)'        targetID='state' inputName='stateNode' if='inlikelihood(hky.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
-            <connect srcID='KappaScaler.s:$(n)'          targetID='mcmc' inputName='operator' if='inposterior(hky.s:$(n)) and kappa.s:$(n)/estimate=true'>Scale HKY transition-transversion parameter of partition s:$(n)</connect>
-            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(hky.s:$(n)) and inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>Exchange values of frequencies of partition s:$(n)</connect>
+            <connect srcID='KappaScaler.s:$(n)'          targetID='mcmc' inputName='operator' if='inlikelihood(kappa.s:$(n)) and kappa.s:$(n)/estimate=true'>Scale HKY transition-transversion parameter of partition s:$(n)</connect>
+            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(hky.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>Exchange values of frequencies of partition s:$(n)</connect>
 
-            <connect srcID='kappa.s:$(n)'                targetID='tracelog' inputName='log'  if='inposterior(hky.s:$(n)) and kappa.s:$(n)/estimate=true'/>
-            <connect srcID='freqParameter.s:$(n)'        targetID='tracelog' inputName='log'  if='inposterior(hky.s:$(n)) and inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+            <connect srcID='kappa.s:$(n)'                targetID='tracelog' inputName='log'  if='inlikelihood(kappa.s:$(n)) and kappa.s:$(n)/estimate=true'/>
+            <connect srcID='freqParameter.s:$(n)'        targetID='tracelog' inputName='log'  if='inlikelihood(hky.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
-            <connect srcID='KappaPrior.s:$(n)'           targetID='prior' inputName='distribution' if='inposterior(hky.s:$(n)) and kappa.s:$(n)/estimate=true'>HKY transition-transversion parameter of partition s:$(n)</connect>
+            <connect srcID='KappaPrior.s:$(n)'           targetID='prior' inputName='distribution' if='inlikelihood(kappa.s:$(n)) and kappa.s:$(n)/estimate=true'>HKY transition-transversion parameter of partition s:$(n)</connect>
 <!--
             <connect srcID='FrequenciesPrior.s:$(n)'     targetID='prior' inputName='distribution' if='inposterior(hky.s:$(n)) and inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 -->
@@ -82,36 +82,36 @@
         <prior id='RateGTPrior.s:$(n)' spec='Prior' x='@rateGT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
 ]]>
 
-            <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
-            <connect srcID='rateAC.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.s:$(n)) and rateAC.s:$(n)/estimate=true'/>
-            <connect srcID='rateAG.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.s:$(n)) and rateAG.s:$(n)/estimate=true'/>
-            <connect srcID='rateAT.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.s:$(n)) and rateAT.s:$(n)/estimate=true'/>
-            <connect srcID='rateCG.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.s:$(n)) and rateCG.s:$(n)/estimate=true'/>
-            <connect srcID='rateCT.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.s:$(n)) and rateCT.s:$(n)/estimate=true'/>
-            <connect srcID='rateGT.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(gtr.s:$(n)) and rateGT.s:$(n)/estimate=true'/>
+            <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+            <connect srcID='rateAC.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(rateAC.s:$(n)) and rateAC.s:$(n)/estimate=true'/>
+            <connect srcID='rateAG.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(rateAG.s:$(n)) and rateAG.s:$(n)/estimate=true'/>
+            <connect srcID='rateAT.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(rateAT.s:$(n)) and rateAT.s:$(n)/estimate=true'/>
+            <connect srcID='rateCG.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(rateCG.s:$(n)) and rateCG.s:$(n)/estimate=true'/>
+            <connect srcID='rateCT.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(rateCT.s:$(n)) and rateCT.s:$(n)/estimate=true'/>
+            <connect srcID='rateGT.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(rateGT.s:$(n)) and rateGT.s:$(n)/estimate=true'/>
 
-            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>Exchange values of frequencies of partition s:$(n)</connect>
-            <connect srcID='RateACScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.s:$(n)) and rateAC.s:$(n)/estimate=true'>Scale GTR A-C substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateAGScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.s:$(n)) and rateAG.s:$(n)/estimate=true'>Scale GTR A-G substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateATScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.s:$(n)) and rateAT.s:$(n)/estimate=true'>Scale GTR A-T substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateCGScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.s:$(n)) and rateCG.s:$(n)/estimate=true'>Scale GTR C-G substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateCTScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.s:$(n)) and rateCT.s:$(n)/estimate=true'>Scale GTR C-T substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateGTScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(gtr.s:$(n)) and rateGT.s:$(n)/estimate=true'>Scale GTR G-T substitution parameter of partition s:$(n)</connect>
+            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>Exchange values of frequencies of partition s:$(n)</connect>
+            <connect srcID='RateACScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(rateAC.s:$(n)) and rateAC.s:$(n)/estimate=true'>Scale GTR A-C substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateAGScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(rateAG.s:$(n)) and rateAG.s:$(n)/estimate=true'>Scale GTR A-G substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateATScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(rateAT.s:$(n)) and rateAT.s:$(n)/estimate=true'>Scale GTR A-T substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateCGScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(rateCG.s:$(n)) and rateCG.s:$(n)/estimate=true'>Scale GTR C-G substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateCTScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(rateCT.s:$(n)) and rateCT.s:$(n)/estimate=true'>Scale GTR C-T substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateGTScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(rateGT.s:$(n)) and rateGT.s:$(n)/estimate=true'>Scale GTR G-T substitution parameter of partition s:$(n)</connect>
 
-            <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
-            <connect srcID='rateAC.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.s:$(n)) and rateAC.s:$(n)/estimate=true'/>
-            <connect srcID='rateAG.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.s:$(n)) and rateAG.s:$(n)/estimate=true'/>
-            <connect srcID='rateAT.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.s:$(n)) and rateAT.s:$(n)/estimate=true'/>
-            <connect srcID='rateCG.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.s:$(n)) and rateCG.s:$(n)/estimate=true'/>
-            <connect srcID='rateCT.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.s:$(n)) and rateCT.s:$(n)/estimate=true'/>
-            <connect srcID='rateGT.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(gtr.s:$(n)) and rateGT.s:$(n)/estimate=true'/>
+            <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+            <connect srcID='rateAC.s:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(rateAC.s:$(n)) and rateAC.s:$(n)/estimate=true'/>
+            <connect srcID='rateAG.s:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(rateAG.s:$(n)) and rateAG.s:$(n)/estimate=true'/>
+            <connect srcID='rateAT.s:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(rateAT.s:$(n)) and rateAT.s:$(n)/estimate=true'/>
+            <connect srcID='rateCG.s:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(rateCG.s:$(n)) and rateCG.s:$(n)/estimate=true'/>
+            <connect srcID='rateCT.s:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(rateCT.s:$(n)) and rateCT.s:$(n)/estimate=true'/>
+            <connect srcID='rateGT.s:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(rateGT.s:$(n)) and rateGT.s:$(n)/estimate=true'/>
 
-            <connect srcID='RateACPrior.s:$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.s:$(n)) and rateAC.s:$(n)/estimate=true'>GTR A-C substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateAGPrior.s:$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.s:$(n)) and rateAG.s:$(n)/estimate=true'>GTR A-G substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateATPrior.s:$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.s:$(n)) and rateAT.s:$(n)/estimate=true'>GTR A-T substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateCGPrior.s:$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.s:$(n)) and rateCG.s:$(n)/estimate=true'>GTR C-G substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateCTPrior.s:$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.s:$(n)) and rateCT.s:$(n)/estimate=true'>GTR C-T substitution parameter of partition s:$(n)</connect>
-            <connect srcID='RateGTPrior.s:$(n)' targetID='prior' inputName='distribution' if='inposterior(gtr.s:$(n)) and rateGT.s:$(n)/estimate=true'>GTR G-T substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateACPrior.s:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(rateAC.s:$(n)) and rateAC.s:$(n)/estimate=true'>GTR A-C substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateAGPrior.s:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(rateAG.s:$(n)) and rateAG.s:$(n)/estimate=true'>GTR A-G substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateATPrior.s:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(rateAT.s:$(n)) and rateAT.s:$(n)/estimate=true'>GTR A-T substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateCGPrior.s:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(rateCG.s:$(n)) and rateCG.s:$(n)/estimate=true'>GTR C-G substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateCTPrior.s:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(rateCT.s:$(n)) and rateCT.s:$(n)/estimate=true'>GTR C-T substitution parameter of partition s:$(n)</connect>
+            <connect srcID='RateGTPrior.s:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(rateGT.s:$(n)) and rateGT.s:$(n)/estimate=true'>GTR G-T substitution parameter of partition s:$(n)</connect>
         </subtemplate>
 
 
@@ -146,9 +146,9 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
 	        <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 ]]>
-            <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(estimatedFreqs.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
-            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(estimatedFreqs.s:$(n)) and freqParameter.s:$(n)/estimate=true'>Exchange values of frequencies of partition s:$(n)</connect>
-            <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(estimatedFreqs.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+            <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode' if='inposterior(estimatedFreqs.s:$(n)) and inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(estimatedFreqs.s:$(n)) and inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>Exchange values of frequencies of partition s:$(n)</connect>
+            <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log' if='inposterior(estimatedFreqs.s:$(n)) and inposterior(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
         </subtemplate>
 
         <subtemplate id='Empirical' class='beast.evolution.substitutionmodel.Frequencies' mainid='empiricalFreqs.s:$(n)'>
@@ -336,7 +336,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
   		    <scale id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 ]]>
             <connect srcID='YuleModel.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and Tree.t:$(n)/estimate=true'>Yule speciation prior on tree t:$(n)</connect>
-            <connect srcID='birthRate.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
+            <connect srcID='birthRate.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(YuleModel.t:$(n)) and inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
             <connect srcID='YuleBirthRatePrior.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'>Yule speciation process birth rate of partition t:$(n)</connect>
             <connect srcID='YuleBirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'     if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'>Scale birth rate of Yule prior of tree t:$(n)</connect>
@@ -360,19 +360,19 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
   		    <scale id='BirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.t:$(n)"/>
   		    <scale id='DeathRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.t:$(n)"/>
 ]]>
-            <connect srcID='BirthDeath.t:$(n)'         targetID='prior' inputName='distribution' if='inposterior(BirthDeath.t:$(n)) and Tree.t:$(n)/estimate=true'>Birth-Death speciation prior on tree t:$(n)</connect>
-            <connect srcID='birthRate2.t:$(n)'         targetID='state' inputName='stateNode' if='inposterior(BirthDeath.t:$(n)) and birthRate2.t:$(n)/estimate=true'/>
-            <connect srcID='relativeDeathRate2.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(BirthDeath.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'/>
+            <connect srcID='BirthDeath.t:$(n)'         targetID='prior' inputName='distribution' if='inposterior(BirthDeath.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Birth-Death speciation prior on tree t:$(n)</connect>
+            <connect srcID='birthRate2.t:$(n)'         targetID='state' inputName='stateNode' if='inposterior(birthRate2.t:$(n)) and birthRate2.t:$(n)/estimate=true'/>
+            <connect srcID='relativeDeathRate2.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(relativeDeathRate.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'/>
 
-            <connect srcID='BirthRatePrior.t:$(n)'     targetID='prior' inputName='distribution' if='inposterior(BirthDeath.t:$(n)) and birthRate2.t:$(n)/estimate=true'>Birth-Death speciation process rate of partition t:$(n)</connect>
-            <connect srcID='DeathRatePrior.t:$(n)'     targetID='prior' inputName='distribution' if='inposterior(BirthDeath.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'>Death/Birth speciation process relative death rate of partition t:$(n)</connect>
+            <connect srcID='BirthRatePrior.t:$(n)'     targetID='prior' inputName='distribution' if='inposterior(birthRate.t:$(n)) and birthRate2.t:$(n)/estimate=true'>Birth-Death speciation process rate of partition t:$(n)</connect>
+            <connect srcID='DeathRatePrior.t:$(n)'     targetID='prior' inputName='distribution' if='inposterior(relativeDeathRate.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'>Death/Birth speciation process relative death rate of partition t:$(n)</connect>
 
-            <connect srcID='BirthRateScaler.t:$(n)'    targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.t:$(n)) and birthRate2.t:$(n)/estimate=true'>Scale Death-Birth rate of Yule prior of tree t:$(n)</connect>
-            <connect srcID='DeathRateScaler.t:$(n)'    targetID='mcmc' inputName='operator' if='inposterior(BirthDeath.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'>Scale Death/Birth rate of Yule prior of tree t:$(n)</connect>
+            <connect srcID='BirthRateScaler.t:$(n)'    targetID='mcmc' inputName='operator' if='inposterior(birthRate.t:$(n)) and birthRate2.t:$(n)/estimate=true'>Scale Death-Birth rate of Yule prior of tree t:$(n)</connect>
+            <connect srcID='DeathRateScaler.t:$(n)'    targetID='mcmc' inputName='operator' if='inposterior(relativeDeathRate.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'>Scale Death/Birth rate of Yule prior of tree t:$(n)</connect>
 
-            <connect srcID='BirthDeath.t:$(n)'         targetID='tracelog' inputName='log' if='inposterior(BirthDeath.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='birthRate2.t:$(n)'         targetID='tracelog' inputName='log' if='inposterior(BirthDeath.t:$(n)) and birthRate2relativeDeathRaten)/estimate=true'/>
-            <connect srcID='relativeDeathRate2.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(BirthDeath.t:$(n)) and birthRate2.t:$(n)/estimate=true'/>
+            <connect srcID='BirthDeath.t:$(n)'         targetID='tracelog' inputName='log' if='inposterior(BirthDeath.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='birthRate2.t:$(n)'         targetID='tracelog' inputName='log' if='inposterior(birthRate.t:$(n)) and birthRate2relativeDeathRaten)/estimate=true'/>
+            <connect srcID='relativeDeathRate2.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(relativeDeathRate.t:$(n)) and birthRate2.t:$(n)/estimate=true'/>
         </subtemplate>
 
 
@@ -391,13 +391,13 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 	        <prior id='PopSizePrior.t:$(n)' spec='Prior' x='@popSize.t:$(n)'><distr spec="OneOnX"/></prior>
 ]]>
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with constant rate on tree t:$(n)</connect>
-            <connect srcID='PopSizePrior.t:$(n)'      targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'>Coalescent population size parameter of partition t:$(n)</connect>
+            <connect srcID='PopSizePrior.t:$(n)'       targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'>Coalescent population size parameter of partition t:$(n)</connect>
 
-            <connect srcID='popSize.t:$(n)'           targetID='state' inputName='stateNode' if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+            <connect srcID='popSize.t:$(n)'            targetID='state' inputName='stateNode' if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
 
-            <connect srcID='PopSizeScaler.t:$(n)'     targetID='mcmc' inputName='operator' if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'>Scale population size of Coalescent prior of tree t:$(n)</connect>
+            <connect srcID='PopSizeScaler.t:$(n)'      targetID='mcmc' inputName='operator' if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'>Scale population size of Coalescent prior of tree t:$(n)</connect>
 
-            <connect srcID='popSize.t:$(n)'           targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+            <connect srcID='popSize.t:$(n)'            targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
             <connect srcID='CoalescentConstant.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
         </subtemplate>
 
@@ -421,18 +421,18 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
 ]]>
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalesenct prior with exponential rate on tree t:$(n)</connect>
-            <connect srcID='ePopSizePrior.t:$(n)'         targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.t:$(n)) and ePopSize.t:$(n)/estimate=true'>Coalescent population size parameter of partition t:$(n)</connect>
-            <connect srcID='GrowthRatePrior.t:$(n)'       targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.t:$(n)) and growthRate.t:$(n)/estimate=true'>Coalescent growth rate of partition t:$(n)</connect>
+            <connect srcID='ePopSizePrior.t:$(n)'         targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(ePopSize.t:$(n)) and ePopSize.t:$(n)/estimate=true'>Coalescent population size parameter of partition t:$(n)</connect>
+            <connect srcID='GrowthRatePrior.t:$(n)'       targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(growthRate.t:$(n)) and growthRate.t:$(n)/estimate=true'>Coalescent growth rate of partition t:$(n)</connect>
 
-            <connect srcID='ePopSize.t:$(n)'              targetID='state' inputName='stateNode' if='inposterior(CoalescentExponential.t:$(n)) and ePopSize.t:$(n)/estimate=true'/>
-            <connect srcID='growthRate.t:$(n)'            targetID='state' inputName='stateNode' if='inposterior(CoalescentExponential.t:$(n)) and growthRate.t:$(n)/estimate=true'/>
+            <connect srcID='ePopSize.t:$(n)'              targetID='state' inputName='stateNode' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(ePopSize.t:$(n))  and ePopSize.t:$(n)/estimate=true'/>
+            <connect srcID='growthRate.t:$(n)'            targetID='state' inputName='stateNode' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(growthRate.t:$(n)) and growthRate.t:$(n)/estimate=true'/>
 
-            <connect srcID='ePopSizeScaler.t:$(n)'        targetID='mcmc' inputName='operator' if='inposterior(CoalescentExponential.t:$(n)) and ePopSize.t:$(n)/estimate=true'>Scale population size of Coalescent prior of tree t:$(n)</connect>
-            <connect srcID='GrowthRateRandomWalk.t:$(n)'  targetID='mcmc' inputName='operator' if='inposterior(CoalescentExponential.t:$(n)) and growthRate.t:$(n)/estimate=true'>Scale growth rate of Coalescent prior of tree t:$(n)</connect>
+            <connect srcID='ePopSizeScaler.t:$(n)'        targetID='mcmc' inputName='operator' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(ePopSize.t:$(n))  and ePopSize.t:$(n)/estimate=true'>Scale population size of Coalescent prior of tree t:$(n)</connect>
+            <connect srcID='GrowthRateRandomWalk.t:$(n)'  targetID='mcmc' inputName='operator' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(growthRate.t:$(n)) and growthRate.t:$(n)/estimate=true'>Scale growth rate of Coalescent prior of tree t:$(n)</connect>
 
             <connect srcID='CoalescentExponential.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='ePopSize.t:$(n)'              targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.t:$(n)) and ePopSize.t:$(n)/estimate=true'/>
-            <connect srcID='growthRate.t:$(n)'            targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.t:$(n)) and growthRate.t:$(n)/estimate=true'/>
+            <connect srcID='ePopSize.t:$(n)'              targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(ePopSize.t:$(n)) and ePopSize.t:$(n)/estimate=true'/>
+            <connect srcID='growthRate.t:$(n)'            targetID='tracelog' inputName='log' if='inposterior(CoalescentExponential.t:$(n)) and inposterior(growthRate.t:$(n)) and growthRate.t:$(n)/estimate=true'/>
         </subtemplate>
 
 

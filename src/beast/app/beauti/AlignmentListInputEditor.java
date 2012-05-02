@@ -55,6 +55,9 @@ import beast.evolution.tree.Tree;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 
+// TODO: add useAmbiguities flag
+// TODO: add warning if useAmbiguities=false and nr of patterns=1 (happens when all data is ambiguous)
+
 public class AlignmentListInputEditor extends ListInputEditor {
 	private static final long serialVersionUID = 1L;
 
@@ -180,6 +183,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 		});
 		box.add(linkSModelButton);
+		linkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
 		JButton unlinkSModelButton = new JButton("Unlink " + sLabel);
 		unlinkSModelButton.addActionListener(new ActionListener() {
 			@Override
@@ -191,6 +195,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 		});
 		box.add(unlinkSModelButton);
+		unlinkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
 		box.add(Box.createHorizontalGlue());
 	}
 

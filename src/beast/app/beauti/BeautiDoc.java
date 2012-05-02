@@ -41,6 +41,7 @@ import beast.core.Input.Validate;
 import beast.core.MCMC;
 import beast.core.Plugin;
 import beast.core.StateNode;
+import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
@@ -81,7 +82,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 */
 
 	public boolean bAutoSetClockRate = true;
+	/** flags for whether parameters can be linked.
+	 * Once a parameter is linked, (un)linking in the alignment editor should be disabled
+	 */
 	public boolean bAllowLinking = false;
+	public boolean bHasLinkedAtLeastOnce = false;
 
 	/**
 	 * [0] = sitemodel [1] = clock model [2] = tree *
@@ -1731,6 +1736,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				}
 			}
 		}
+		
+		bHasLinkedAtLeastOnce = false;
+		for(Input input : linked) {
+			if (input.getType().isAssignableFrom(RealParameter.class)) {
+				bHasLinkedAtLeastOnce = true;
+				break;
+			}
+		}
 	}
 	
 	void addLink(Plugin from, Plugin to) {
@@ -1738,7 +1751,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			for (Input<?> input : to.listInputs()) {
 				if (input.get() instanceof Plugin) {
 					if (input.get() == from) {
-						addLink(input);
+						linked.add(input);
 						return;
 					}
 				}
@@ -1761,6 +1774,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	
 	public void addLink(Input<?> input) {
 		linked.add(input);
+		bHasLinkedAtLeastOnce = true;
 	}
 	
 	public void deLink(Input<?> input) {
