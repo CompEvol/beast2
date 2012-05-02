@@ -90,42 +90,44 @@ public class ParameterInputEditor extends PluginInputEditor {
             paramBox.add(m_entry);
             if (doc.bAllowLinking) {
 	            boolean isLinked = doc.isLinked(m_input);
-	            JButton linkbutton = new JButton(BeautiPanel.getIcon(BeautiPanel.ICONPATH + 
-	            		(isLinked ? "link.png" : "unlink.png")));
-	            linkbutton.setBorder(BorderFactory.createEmptyBorder());
-	            linkbutton.setToolTipText("link/unlink this parameter with another compatible parameter");
-	            linkbutton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if (doc.isLinked(m_input)) {
-							// unlink
-							try {
-								Plugin candidate = doc.getUnlinkCandidate(m_input, m_plugin);
-								m_input.setValue(candidate, m_plugin);
-								doc.deLink(m_input);
-							} catch (Exception e2) {
-								e2.printStackTrace();
-							}
-							
-						} else {
-							// create a link
-							List<Plugin> candidates = doc.suggestedLinks((Plugin) m_input.get());
-							JComboBox jcb = new JComboBox(candidates.toArray());
-							JOptionPane.showMessageDialog( null, jcb, "select parameter to link with", JOptionPane.QUESTION_MESSAGE);
-							Plugin candidate = (Plugin) jcb.getSelectedItem();
-							if (candidate != null) {
+				if (isLinked || doc.suggestedLinks((Plugin) m_input.get()).size() > 0) {
+		            JButton linkbutton = new JButton(BeautiPanel.getIcon(BeautiPanel.ICONPATH + 
+		            		(isLinked ? "link.png" : "unlink.png")));
+		            linkbutton.setBorder(BorderFactory.createEmptyBorder());
+		            linkbutton.setToolTipText("link/unlink this parameter with another compatible parameter");
+		            linkbutton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							if (doc.isLinked(m_input)) {
+								// unlink
 								try {
+									Plugin candidate = doc.getUnlinkCandidate(m_input, m_plugin);
 									m_input.setValue(candidate, m_plugin);
-									doc.addLink(m_input);
+									doc.deLink(m_input);
 								} catch (Exception e2) {
 									e2.printStackTrace();
 								}
+								
+							} else {
+								// create a link
+								List<Plugin> candidates = doc.suggestedLinks((Plugin) m_input.get());
+								JComboBox jcb = new JComboBox(candidates.toArray());
+								JOptionPane.showMessageDialog( null, jcb, "select parameter to link with", JOptionPane.QUESTION_MESSAGE);
+								Plugin candidate = (Plugin) jcb.getSelectedItem();
+								if (candidate != null) {
+									try {
+										m_input.setValue(candidate, m_plugin);
+										doc.addLink(m_input);
+									} catch (Exception e2) {
+										e2.printStackTrace();
+									}
+								}
 							}
+							refreshPanel();
 						}
-						refreshPanel();
-					}
-				});
-	            paramBox.add(linkbutton);
+					});
+		            paramBox.add(linkbutton);
+				}
             }            
             
             paramBox.add(Box.createHorizontalGlue());
