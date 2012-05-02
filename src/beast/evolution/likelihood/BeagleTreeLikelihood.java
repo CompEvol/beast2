@@ -249,11 +249,14 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         System.err.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
         System.err.println("  With " + m_nPatternCount + " unique site patterns.");
 
+        
+        Node [] nodes = m_tree.get().getNodesAsArray();
         for (int i = 0; i < tipCount; i++) {
+        	int taxon = m_data.get().getTaxonIndex(nodes[i].getID()); 
             if (m_bUseAmbiguities) {
-                setPartials(beagle, i);
+                setPartials(beagle, i, taxon);
             } else {
-                setStates(beagle, i);
+                setStates(beagle, i, taxon);
             }
         }
 
@@ -352,7 +355,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      * @param nodeIndex     nodeIndex
      */
     protected final void setPartials(Beagle beagle,
-                                     int nodeIndex) {
+                                     int nodeIndex, int taxon) {
         Alignment data = m_data.get();
 
         double[] partials = new double[m_nPatternCount * m_nStateCount * categoryCount];
@@ -362,7 +365,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         int v = 0;
         for (int i = 0; i < m_nPatternCount; i++) {
 
-            int state = data.getPattern(nodeIndex, i);
+            int state = data.getPattern(taxon, i);
             stateSet = data.getStateSet(state);
 
             for (int j = 0; j < m_nStateCount; j++) {
@@ -416,14 +419,14 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      * @param nodeIndex     nodeIndex
      */
     protected final void setStates(Beagle beagle,
-                                   int nodeIndex) {
+                                   int nodeIndex, int taxon) {
         Alignment data = m_data.get();
         int i;
 
         int[] states = new int[m_nPatternCount];
 
         for (i = 0; i < m_nPatternCount; i++) {
-            int state = data.getPattern(nodeIndex, i);
+            int state = data.getPattern(taxon, i);
             states[i] = state;
         }
 
