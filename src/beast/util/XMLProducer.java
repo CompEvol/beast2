@@ -119,16 +119,18 @@ public class XMLProducer extends XMLParser {
 
             buf = new StringBuffer();
             if (others.size() > 0) {
-                buf.append("\n\n<!-- " + DO_NOT_EDIT_WARNING + " \n\n");
                 for (Plugin plugin2 : others) {
                     if (!m_sIDs.contains(plugin2.getID())) {
                         pluginToXML(plugin2, buf, null, false);
                     }
                 }
-                buf.append("\n\n-->\n\n");
             }
             int iEnd = sXML.indexOf(sEndBeast);
-            sXML = sXML.substring(0, iEnd) + buf.toString() + sEndBeast;
+            String extras = buf.toString();
+            // prevent double -- inside XML comment, this can happen in sequences
+            extras = extras.replaceAll("--","- - ");
+            sXML = sXML.substring(0, iEnd) + "\n\n<!-- " + DO_NOT_EDIT_WARNING + " \n\n" + 
+            	extras +  "\n\n-->\n\n" + sEndBeast;
 
             return sXML;
         } catch (Exception e) {

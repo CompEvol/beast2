@@ -6,9 +6,11 @@ import java.util.List;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Plugin;
 import beast.core.StateNode;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
+import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.substitutionmodel.HKY;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
@@ -100,6 +102,16 @@ public interface SiteModelInterface {
 
         public boolean canSetSubstModel(Object o) throws Exception {
             SubstitutionModel substModel = (SubstitutionModel) o;
+            if (m_dataType == null) {
+            	// try to find out the data type from the data in a treelikelihood in an output
+            	for (Plugin plugin : outputs) {
+            		if (plugin instanceof TreeLikelihood) {
+            			TreeLikelihood likelihood = (TreeLikelihood) plugin;
+            			m_dataType = likelihood.m_data.get().getDataType();
+            			break;
+            		}
+            	}
+            }
             if (m_dataType != null) {
                 if (!substModel.canHandleDataType(m_dataType)) {
                     throw new Exception("substitution model cannot handle data type");
