@@ -182,21 +182,22 @@
             <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
 
             <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="5000" fileName="$(n).$(seed).trees" mode='tree'>
-                <log idref="Tree.t:$(n)"/>
+	            <log id='TreeWithMetaDataLogger.t:$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.t:$(n)'>
+	            </log>
             </logger>
 
-            <operator id='proportionInvariantScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@proportionInvariant.s:$(n)"/>
-            <operator id='mutationRateScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@mutationRate.s:$(n)"/>
-            <operator id='gammaShapeScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@gammaShape.s:$(n)"/>
+            <operator id='proportionInvariantScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.5" parameter="@proportionInvariant.s:$(n)"/>
+            <operator id='mutationRateScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.5" parameter="@mutationRate.s:$(n)"/>
+            <operator id='gammaShapeScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.5" parameter="@gammaShape.s:$(n)"/>
 
-            <operator id='treeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@Tree.t:$(n)"/>
-            <operator id='UniformOperator.t:$(n)' spec='Uniform' weight="10" tree="@Tree.t:$(n)"/>
-            <operator id='SubtreeSlide.t:$(n)' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@Tree.t:$(n)"/>
-            <operator id='narrow.t:$(n)' spec='Exchange' isNarrow='true' weight="1" tree="@Tree.t:$(n)"/>
-            <operator id='wide.t:$(n)' spec='Exchange' isNarrow='false' weight="1" tree="@Tree.t:$(n)"/>
-            <operator id='WilsonBalding.t:$(n)' spec='WilsonBalding' weight="1" tree="@Tree.t:$(n)"/>
+            <operator id='treeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)"/>
+            <operator id='UniformOperator.t:$(n)' spec='Uniform' weight="30" tree="@Tree.t:$(n)"/>
+            <operator id='SubtreeSlide.t:$(n)' spec='SubtreeSlide' weight="15" gaussian="true" size="1.0" tree="@Tree.t:$(n)"/>
+            <operator id='narrow.t:$(n)' spec='Exchange' isNarrow='true' weight="15" tree="@Tree.t:$(n)"/>
+            <operator id='wide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
+            <operator id='WilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
 
-            <operator id='updown.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="5">
+            <operator id='updown.$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
                 <up idref="clockRate.c:$(n)"/>
                 <down idref="Tree.t:$(n)"/>
             </operator>

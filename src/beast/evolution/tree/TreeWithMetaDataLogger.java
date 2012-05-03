@@ -20,12 +20,17 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
 
 
     String m_sMetaDataLabel;
+    
+    boolean someMetaDataNeedsLogging;
 
     @Override
     public void initAndValidate() throws Exception {
         if (m_parameter.get() == null && clockModel.get() == null) {
-            throw new Exception("At least one of the metadata and branchratemodel inputs must be defined");
+        	someMetaDataNeedsLogging = false;
+        	return;
+            //throw new Exception("At least one of the metadata and branchratemodel inputs must be defined");
         }
+    	someMetaDataNeedsLogging = true;
         if (m_parameter.get() != null) {
             m_sMetaDataLabel = ((Plugin) m_parameter.get()).getID() + "=";
         }
@@ -67,19 +72,21 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
         } else {
             buf.append(node.m_iLabel + 1);
         }
-        buf.append("[");
-        if (metadata != null) {
-            buf.append(m_sMetaDataLabel);
-            buf.append(metadata.getArrayValue(node.m_iLabel));
-            if (branchRateModel != null) {
-                buf.append(",");
-            }
+        if (someMetaDataNeedsLogging) {
+	        buf.append("[");
+	        if (metadata != null) {
+	            buf.append(m_sMetaDataLabel);
+	            buf.append(metadata.getArrayValue(node.m_iLabel));
+	            if (branchRateModel != null) {
+	                buf.append(",");
+	            }
+	        }
+	        if (branchRateModel != null) {
+	            buf.append("rate=");
+	            buf.append(branchRateModel.getRateForBranch(node));
+	        }
+	        buf.append(']');
         }
-        if (branchRateModel != null) {
-            buf.append("rate=");
-            buf.append(branchRateModel.getRateForBranch(node));
-        }
-        buf.append(']');
         buf.append(":").append(node.getLength());
         return buf.toString();
     }

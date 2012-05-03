@@ -21,7 +21,7 @@
             </frequencies>
         </plugin>
 
-        <plugin id='KappaScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@kappa.s:$(n)"/>
+        <plugin id='KappaScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@kappa.s:$(n)"/>
         <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
         <plugin id='KappaPrior.s:$(n)' spec='Prior' x='@kappa.s:$(n)'>
@@ -66,12 +66,12 @@
             </frequencies>
         </plugin>
 
-        <operator id='RateACScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateAC.s:$(n)"/>
-        <operator id='RateAGScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateAG.s:$(n)"/>
-        <operator id='RateATScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateAT.s:$(n)"/>
-        <operator id='RateCGScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCG.s:$(n)"/>
-        <operator id='RateCTScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateCT.s:$(n)"/>
-        <operator id='RateGTScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@rateGT.s:$(n)"/>
+        <operator id='RateACScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateAC.s:$(n)"/>
+        <operator id='RateAGScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateAG.s:$(n)"/>
+        <operator id='RateATScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateAT.s:$(n)"/>
+        <operator id='RateCGScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateCG.s:$(n)"/>
+        <operator id='RateCTScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateCT.s:$(n)"/>
+        <operator id='RateGTScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateGT.s:$(n)"/>
         <operator id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
         <prior id='RateACPrior.s:$(n)' spec='Prior' x='@rateAC.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
@@ -225,6 +225,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
             <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(ucedMean.$(n)) and ucedMean.c:$(n)/estimate=true'/>
             <connect srcID='rateStat.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>
 
+			<connect srcID='ExponentialRelaxedClock.c:$(n))' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>
         </subtemplate>
 
 
@@ -241,7 +242,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
         </plugin>
 
         <operator id='ucldMeanScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldMean.c:$(n)"/>
-        <operator id='ucldStdevScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@ucldStdev.c:$(n)"/>
+        <operator id='ucldStdevScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="3" parameter="@ucldStdev.c:$(n)"/>
         <operator id="CategoriesRandomWalk.c:$(n)" spec="IntRandomWalkOperator" windowSize='1' weight="10" parameter="@rateCategories.c:$(n)"/>
 		<operator id='CategoriesSwapOperator.c:$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@rateCategories.c:$(n)'/>
 		<operator id='CategoriesUniform.c:$(n)' spec='UniformOperator' weight="10" parameter='@rateCategories.c:$(n)'/>
@@ -278,6 +279,8 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
             <connect srcID='ucldStdevPrior.c:$(n)' targetID='prior' inputName='distribution' if='inlikelihood(ucldStdev.c:$(n))'>uncorrelated lognormal relaxed clock stdev of partition c:$(n)</connect>
             <connect srcID='MeanRatePrior.c:$(n)'  targetID='prior' inputName='distribution' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'>uncorrelated lognormal relaxed clock mean of partition c:$(n)</connect>
+
+			<connect srcID='RelaxedClock.c:$(n))' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel' if='inposterior(RelaxedClock.c:$(n))'/>
         </subtemplate>
 
 
@@ -290,9 +293,9 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
             <parameter name='rates' id='clockrates.c:$(n)' value="1"/>
         </input>
 
-        <operator id="IndicatorsBitFlip.c:$(n)" spec="BitFlipOperator" weight="1" parameter="@Indicators.c:$(n)"/>
+        <operator id="IndicatorsBitFlip.c:$(n)" spec="BitFlipOperator" weight="15" parameter="@Indicators.c:$(n)"/>
 <!-- this should probably be a DeltaExchange instead of scale operator to keep mean rate to 1 -->
-        <operator id='ClockRateScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@clockrates.c:$(n)"/>
+        <operator id='ClockRateScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="15" parameter="@clockrates.c:$(n)"/>
 
         <operator id='randomClockScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@meanClockRate.c:$(n)"/>
 		<upDownOperator id='randomClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
@@ -317,6 +320,8 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
             <connect srcID='meanClockRate.c:$(n)'             targetID='tracelog' inputName='log' if='inposterior(RandomLocalClock.c:$(n)) and meanClockRate.c:$(n)/estimate=true'/>
 
             <connect srcID='MeanRRatePrior.c:$(n)'            targetID='prior' inputName='distribution' if='inlikelihood(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'>substitution rate of partition c:$(n)</connect>
+
+			<connect srcID='RandomLocalClock.c:$(n))' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel' if='inposterior(RandomLocalClock.c:$(n))'/>
         </subtemplate>
 
 </mergewith>
@@ -502,7 +507,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 				<log idref='demographic.alltrees'/>
 			</logger>
 
-			<operator id="bitflip.alltrees" parameter="@indicators.alltrees" spec="BitFlipOperator" uniform="true" weight="1.0"/>
+			<operator id="bitflip.alltrees" parameter="@indicators.alltrees" spec="BitFlipOperator" uniform="true" weight="30.0"/>
 			<operator id="indicatorSampler.alltrees" dist="@popPriorDist.EBSP" indicators="@indicators.alltrees" spec="beast.evolution.tree.coalescent.SampleOffValues" values="@popSizes.alltrees" weight="15.0"/>
 			<operator id="indicatorScaler.alltrees" degreesOfFreedom="1" indicator="@indicators.alltrees" parameter="@popSizes.alltrees" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" weight="15.0"/>
 			<operator id="EBSPupDownOperator.alltrees" scaleFactor="0.7" spec="UpDownOperator" weight="5.0">
