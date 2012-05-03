@@ -140,6 +140,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		delButton.setToolTipText("Delete selected items from the list");
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (doc.bHasLinkedAtLeastOnce) {
+					JOptionPane.showMessageDialog(null, "Cannot delete partition while parameters are linked");
+					return;
+				}
 				delItem();
 			}
 		});

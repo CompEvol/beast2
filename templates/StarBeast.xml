@@ -191,6 +191,7 @@
             <operator id='gammaShapeScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.5" parameter="@gammaShape.s:$(n)"/>
 
             <operator id='treeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)"/>
+            <operator id='treeRootScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
             <operator id='UniformOperator.t:$(n)' spec='Uniform' weight="30" tree="@Tree.t:$(n)"/>
             <operator id='SubtreeSlide.t:$(n)' spec='SubtreeSlide' weight="15" gaussian="true" size="1.0" tree="@Tree.t:$(n)"/>
             <operator id='narrow.t:$(n)' spec='Exchange' isNarrow='true' weight="15" tree="@Tree.t:$(n)"/>
@@ -237,6 +238,7 @@
             <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
             <connect srcID='treeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='treeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Scales root node for tree t:$(n)</connect>
             <connect srcID='UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>

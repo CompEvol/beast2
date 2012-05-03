@@ -191,6 +191,7 @@
             <operator id='allTipDatesRandomWalker.t:$(n)' spec='TipDatesRandomWalker' windowSize="1" weight="0" tree="@Tree.t:$(n)"/>
 
             <operator id='treeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)"/>
+            <operator id='treeRootScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
             <operator id='UniformOperator.t:$(n)' spec='Uniform' weight="30" tree="@Tree.t:$(n)"/>
             <operator id='SubtreeSlide.t:$(n)' spec='SubtreeSlide' weight="15" gaussian="true" size="1.0" tree="@Tree.t:$(n)"/>
             <operator id='narrow.t:$(n)' spec='Exchange' isNarrow='true' weight="15" tree="@Tree.t:$(n)"/>
@@ -230,6 +231,7 @@
             <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Estimates tip dates for tree t:$(n)</connect>
 
             <connect srcID='treeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Scales all internal nodes for tree t:$(n)</connect>
+            <connect srcID='treeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Scales root node for tree t:$(n)</connect>
             <connect srcID='UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Draws new internal node heights uniformally for tree t:$(n)</connect>
             <connect srcID='SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Performs subtree slide rearrangement of tree t:$(n)</connect>
             <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>

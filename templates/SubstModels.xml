@@ -176,7 +176,11 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
                 </branchRateModel>
 
 				<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
-   			    <!-- need updown operator for clockRate?!? Also in Standard.xml -->
+
+				<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+					<up idref="clockRate.c:$(n)"/>
+					<down idref="Tree.t:$(n)"/>
+				</upDownOperator>
 
 		        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
 ]]>
@@ -184,7 +188,8 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
             <connect srcID='clockRate.c:$(n)'  targetID='state' inputName='stateNode'          if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
             <connect srcID='ClockPrior.c:$(n)' targetID='prior' inputName='distribution'       if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>substitution rate of partition c:$(n)</connect>
-            <connect srcID='StrictClockRateScaler.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of partition c:$(n)</connect>
+            <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of partition c:$(n)</connect>
+            <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of partition c:$(n)</connect>
         </subtemplate>
 
 <!-- Relaxed clock exponential -->

@@ -1171,6 +1171,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			template.removeSubNet(template, context);
 			// remove from possible contexts
 			PartitionContext [] contexts = possibleContexts.toArray(new PartitionContext[0]);
+			determinePartitions();
+			scrubAll(true, false);
 			for (PartitionContext context2 : contexts) {
 				if (context2.equals(context)) {
 					possibleContexts.remove(context2);
