@@ -300,25 +300,33 @@ public class Logger extends Plugin {
                             m_out = new PrintStream(out2);
                         } else {
                             // it is a tree logger, we may need to get rid of the last line!
-                            BufferedReader fin = new BufferedReader(new FileReader(sFileName));
-                            StringBuilder buf = new StringBuilder();
+                            final BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+                            final StringBuilder buf = new StringBuilder();
                             String sStrLast = null;
-                            boolean treesStarted = false;
+                            //String sStr = fin.readLine();
+                            boolean endSeen = false;
                             while (fin.ready()) {
-                            	String sStr = fin.readLine();
-                                if (!sStr.equals("End;") || !treesStarted) {
-                                	buf.append(sStr);
+                                if( endSeen ) {
+                                    buf.append("End;\n");
+                                    endSeen = false;
+                                }
+                                final String sStr = fin.readLine();
+                                if (!sStr.equals("End;")) {
+                                    buf.append(sStr);
                                     buf.append('\n');
                                     sStrLast = sStr;
-                                }
-                                if (sStr.equals("Begin trees;")) {
-                                	treesStarted = true;
+                                } else {
+                                    endSeen = true;
                                 }
                             }
                             fin.close();
                             // determine number of the last sample
-                            String sStr = sStrLast.split("\\s+")[1];
-                            int nSampleOffset = Integer.parseInt(sStr.substring(6));
+                            if( sStrLast == null ) {
+                                // empty log file?
+                                 throw new Exception("Error 402: empty tree log file " + sFileName + "?");
+                            }
+                            final String sStr = sStrLast.split("\\s+")[1];
+                            final int nSampleOffset = Integer.parseInt(sStr.substring(6));
                             if (m_nSampleOffset > 0 && nSampleOffset != m_nSampleOffset) {
                                 throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
                             }
