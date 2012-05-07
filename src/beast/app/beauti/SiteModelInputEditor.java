@@ -1,6 +1,8 @@
 package beast.app.beauti;
 
 
+import java.awt.Color;
+
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -38,8 +40,23 @@ public class SiteModelInputEditor extends PluginInputEditor {
 
 
     public InputEditor createGammaCategoryCountEditor() throws Exception {
-        Input<?> input = ((SiteModel) m_input.get()).gammaCategoryCount;
-        categoryCountEditor = (IntegerInputEditor) doc.getInpuEditorFactory().createInputEditor(input, m_plugin, doc);
+    	SiteModel sitemodel = ((SiteModel) m_input.get()); 
+        Input<?> input = sitemodel.gammaCategoryCount;
+        categoryCountEditor = new IntegerInputEditor(doc) {
+			private static final long serialVersionUID = 1L;
+
+			public void validateInput() {
+        		super.validateInput();
+            	SiteModel sitemodel = (SiteModel) m_plugin; 
+                if (sitemodel.gammaCategoryCount.get() < 2 && ((RealParameter)sitemodel.shapeParameterInput.get()).m_bIsEstimated.get()) {
+                	m_validateLabel.m_circleColor = Color.orange;
+                	m_validateLabel.setToolTipText("shape parameter is estimated, but not used");
+                	m_validateLabel.setVisible(true);
+                }
+        	};
+        };
+        
+        categoryCountEditor.init(input, sitemodel, -1, ExpandOption.FALSE, true);
         categoryCountEntry = categoryCountEditor.getEntry();
         categoryCountEntry.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -57,7 +74,8 @@ public class SiteModelInputEditor extends PluginInputEditor {
                 processEntry2();
             }
         });
-
+        
+       	categoryCountEditor.validateInput();
         return categoryCountEditor;
     }
 

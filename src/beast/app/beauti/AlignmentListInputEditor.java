@@ -44,6 +44,7 @@ import beast.app.draw.SmallButton;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
+import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -438,6 +439,22 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 
 			needsRePartition = (this.likelihoods[iRow].m_tree.get() != tree);
+			if (needsRePartition) {
+				// remove old tree from model
+				Tree oldTree = this.likelihoods[iRow].m_tree.get();
+				for (Plugin plugin : oldTree.outputs.toArray(new Plugin[0])) {
+					for (Input<?> input : plugin.listInputs()) {
+						if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
+							input.setValue(null, plugin);
+						} else if (input.get() instanceof List) {
+							List<?> list = (List) input.get();
+							if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
+								list.remove(plugin);
+							}
+						}
+					}
+				}
+			}
 			likelihoods[iRow].m_tree.setValue(tree, likelihoods[iRow]);
 			// TreeDistribution d = getDoc().getTreePrior(sPartition);
 			// CompoundDistribution prior = (CompoundDistribution)
