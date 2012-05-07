@@ -303,18 +303,21 @@ public class Logger extends Plugin {
                             BufferedReader fin = new BufferedReader(new FileReader(sFileName));
                             StringBuilder buf = new StringBuilder();
                             String sStrLast = null;
-                            String sStr = fin.readLine();
+                            boolean treesStarted = false;
                             while (fin.ready()) {
-                                sStr = fin.readLine();
-                                if (!sStr.equals("End;")) {
+                            	String sStr = fin.readLine();
+                                if (!sStr.equals("End;") || !treesStarted) {
                                 	buf.append(sStr);
                                     buf.append('\n');
                                     sStrLast = sStr;
                                 }
+                                if (sStr.equals("Begin trees;")) {
+                                	treesStarted = true;
+                                }
                             }
                             fin.close();
                             // determine number of the last sample
-                            sStr = sStrLast.split("\\s+")[1];
+                            String sStr = sStrLast.split("\\s+")[1];
                             int nSampleOffset = Integer.parseInt(sStr.substring(6));
                             if (m_nSampleOffset > 0 && nSampleOffset != m_nSampleOffset) {
                                 throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
