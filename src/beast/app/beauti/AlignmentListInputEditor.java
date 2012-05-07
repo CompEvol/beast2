@@ -104,7 +104,6 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		this.itemNr = itemNr;
 		if (input.get() instanceof List) {

@@ -21,21 +21,26 @@ public class MyAction extends AbstractAction {
      * for serialisation
      */
     private static final long serialVersionUID = -2038911111935517L;
-    
+
     /**
      * path for icons
      */
 
     public MyAction(String sName, String sToolTipText, String sIcon, int acceleratorKey) {
+        this(sName, sToolTipText, sIcon, KeyStroke.getKeyStroke(acceleratorKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    } // c'tor
+
+    public MyAction(String sName, String sToolTipText, String sIcon, String sAcceleratorKey) {
+        this(sName, sToolTipText, sIcon, KeyStroke.getKeyStroke(sAcceleratorKey));
+    } // c'tor
+
+    public MyAction(String sName, String sToolTipText, String sIcon, KeyStroke acceleratorKeystroke) {
         super(sName);
         // setToolTipText(sToolTipText);
         putValue(Action.SHORT_DESCRIPTION, sToolTipText);
         putValue(Action.LONG_DESCRIPTION, sToolTipText);
-        if (acceleratorKey > 0) {
-            //KeyStroke keyStroke = KeyStroke.getKeyStroke(sAcceleratorKey);
-        	//int keyEvent = keyEventMap.get(sAcceleratorKey);
-            KeyStroke keyStroke = KeyStroke.getKeyStroke(acceleratorKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
-            putValue(Action.ACCELERATOR_KEY, keyStroke);
+        if (acceleratorKeystroke != null) {
+            putValue(Action.ACCELERATOR_KEY, acceleratorKeystroke);
         }
         putValue(Action.MNEMONIC_KEY, new Integer(sName.charAt(0)));
         java.net.URL tempURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + sIcon + ".png");
@@ -47,6 +52,8 @@ public class MyAction extends AbstractAction {
             // ".png not found for weka.gui.graphvisualizer.Graph");
         }
     } // c'tor
+
+
 
     /*
       * Place holder. Should be implemented by derived classes. (non-Javadoc)

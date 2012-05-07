@@ -1,24 +1,13 @@
 package beast.app.beauti;
 
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Frame;
+import java.awt.*;
 //import java.awt.Panel;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.swing.Box;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -36,6 +25,10 @@ import beast.core.Plugin;
 public class BeautiPanel extends JPanel implements ListSelectionListener {
     private static final long serialVersionUID = 1L;
     public final static String ICONPATH = "beast/app/beauti/";
+
+    static int partitionListPreferredWidth = 120;
+
+    private JSplitPane splitPane;
 
     /**
      * document that this panel applies to *
@@ -64,7 +57,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     /**
      * box containing the list of partitions, to make (in)visible on update *
      */
-    Box partitionBox;
+    JComponent partitionComponent;
     /**
      * list of partitions in m_listBox *
      */
@@ -104,36 +97,64 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
 
         setLayout(new BorderLayout());
+
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        add(splitPane,BorderLayout.CENTER);
+
+//        PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+//            public void propertyChange(PropertyChangeEvent changeEvent) {
+//                JSplitPane sourceSplitPane = (JSplitPane) changeEvent.getSource();
+//                String propertyName = changeEvent.getPropertyName();
+//                if (propertyName.equals(JSplitPane.LAST_DIVIDER_LOCATION_PROPERTY)) {
+//                    partitionListPreferredWidth = sourceSplitPane.getDividerLocation();
+//
+//                    Integer priorLast = (Integer) changeEvent.getOldValue();
+//                    System.out.println("Prior last: " + priorLast);
+//                    System.out.println("new: " + partitionListPreferredWidth);
+//
+//                }
+//            }
+//        };
+//        splitPane.addPropertyChangeListener(propertyChangeListener);
+
         this.config = config;
         refreshPanel();
-        addParitionPanel(this.config.hasPartition(), iPanel);
+        addPartitionPanel(this.config.hasPartition(), iPanel);
+
 
         setOpaque(false);
     } // c'tor
 
-    void addParitionPanel(Partition bHasPartion, int iPanel) {
+    void addPartitionPanel(Partition bHasPartition, int iPanel) {
         Box box = Box.createVerticalBox();
-        if (bHasPartion != Partition.none) {
+        if (bHasPartition != Partition.none) {
             box.add(createList());
         }
         box.add(Box.createVerticalGlue());
         box.add(new JLabel(getIcon(iPanel, config)));
-        add(box, BorderLayout.WEST);
+
+        //if (splitPane.getLeftComponent() != null) {
+        //    Dimension d = splitPane.getLeftComponent().getSize();
+        //}
+
+        splitPane.add(box, JSplitPane.LEFT);
         if (listOfPartitions != null) {
             listOfPartitions.setSelectedIndex(iPartition);
         }
     }
 
-    Box createList() {
-        partitionBox = Box.createVerticalBox();
-        partitionBox.setAlignmentX(LEFT_ALIGNMENT);
-        partitionBox.add(new JLabel("partition"));
+    JComponent createList() {
+        partitionComponent = new JPanel();
+        partitionComponent.setLayout(new BorderLayout());
+        JLabel partitionLabel = new JLabel("Partition");
+        partitionLabel.setHorizontalAlignment(JLabel.CENTER);
+        partitionComponent.add(partitionLabel, BorderLayout.NORTH);
         listModel = new DefaultListModel();
         listOfPartitions = new JList(listModel);
         listOfPartitions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        Dimension size = new Dimension(100, 300);
-        listOfPartitions.setFixedCellWidth(100);
+        Dimension size = new Dimension(partitionListPreferredWidth, 300);
+        //listOfPartitions.setFixedCellWidth(120);
 //    	m_listOfPartitions.setSize(size);
         listOfPartitions.setPreferredSize(size);
 //    	m_listOfPartitions.setMinimumSize(size);
@@ -142,9 +163,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         listOfPartitions.addListSelectionListener(this);
         updateList();
         listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
-        partitionBox.add(listOfPartitions);
-        partitionBox.setBorder(new EtchedBorder());
-        return partitionBox;
+        partitionComponent.add(listOfPartitions, BorderLayout.CENTER);
+        partitionComponent.setBorder(new EtchedBorder());
+        return partitionComponent;
     }
 
     public void updateList() {
@@ -195,8 +216,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         doc.scrubAll(true, false);
 
         refreshInputPanel();
-        if (partitionBox != null && config.getType() != null) {
-            partitionBox.setVisible(doc.getPartitions(config.getType()).size() > 1);
+        if (partitionComponent != null && config.getType() != null) {
+            partitionComponent.setVisible(doc.getPartitions(config.getType()).size() > 1);
         }
 //		g_currentPanel = this;
     }
@@ -229,7 +250,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         } else {
             centralComponent = new JLabel("Nothing to be specified");
         }
-        add(centralComponent, BorderLayout.CENTER);
+        splitPane.add(centralComponent, JSplitPane.RIGHT);
     }
 
     void refreshInputPanel() throws Exception {
