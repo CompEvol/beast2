@@ -48,9 +48,9 @@ public abstract class Parameter<T> extends StateNode {
      * the parameter.
      */
     public Input<String> m_pValues = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", Validate.REQUIRED);
-    public Input<java.lang.Integer> m_nDimension =
-            new Input<java.lang.Integer>("dimension", "dimension of the parameter (default 1)", 1);
-    public Input<Integer> minorDimensionInput = new Input<Integer>("minordimension", "minor-dimension when the parameter is interpreted as a matrix (default 1)", 1);
+    public final Input<java.lang.Integer> m_nDimension =
+            new Input<java.lang.Integer>("dimension", "dimension of the parameter (default 1, i.e scalar)", 1);
+    public final Input<Integer> minorDimensionInput = new Input<Integer>("minordimension", "minor-dimension when the parameter is interpreted as a matrix (default 1)", 1);
 
 
     /**
@@ -59,7 +59,7 @@ public abstract class Parameter<T> extends StateNode {
     public Parameter() {
     }
 
-    public Parameter(T[] values) {
+    public Parameter(final T[] values) {
         this.values = values.clone();
         this.storedValues = values.clone();
         m_fUpper = getMax();
@@ -112,7 +112,7 @@ public abstract class Parameter<T> extends StateNode {
      * @param iParam dimention to check
      * @return true if the iParam-th element has changed
      */
-    public boolean isDirty(int iParam) {
+    public boolean isDirty(final int iParam) {
         return m_bIsDirty[iParam];
     }
 
@@ -145,11 +145,12 @@ public abstract class Parameter<T> extends StateNode {
      * is awkward to do this by hand.
      * <p/>
      * Values are sourced from the original parameter values.
+     * @param nDimension
      */
     @SuppressWarnings("unchecked")
-    public void setDimension(int nDimension) {
+    public void setDimension(final int nDimension) {
         if (getDimension() != nDimension) {
-            T[] values2 = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
+            final T[] values2 = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
             for (int i = 0; i < nDimension; i++) {
                 values2[i] = values[i % getDimension()];
             }
@@ -167,7 +168,7 @@ public abstract class Parameter<T> extends StateNode {
         return m_fLower;
     }
 
-    public void setLower(T fLower) {
+    public void setLower(final T fLower) {
         m_fLower = fLower;
     }
 
@@ -175,11 +176,11 @@ public abstract class Parameter<T> extends StateNode {
         return m_fUpper;
     }
 
-    public void setUpper(T fUpper) {
+    public void setUpper(final T fUpper) {
         m_fUpper = fUpper;
     }
 
-    public T getValue(int iParam) {
+    public T getValue(final int iParam) {
         return values[iParam];
     }
 
@@ -187,12 +188,12 @@ public abstract class Parameter<T> extends StateNode {
         return Arrays.copyOf(values, values.length);
     }
 
-    public void setBounds(T fLower, T fUpper) {
+    public void setBounds(final T fLower, final T fUpper) {
         m_fLower = fLower;
         m_fUpper = fUpper;
     }
 
-    public void setValue(T fValue) {
+    public void setValue(final T fValue) {
         startEditing(null);
 //        if (isStochastic()) {
         values[0] = fValue;
@@ -205,7 +206,7 @@ public abstract class Parameter<T> extends StateNode {
 //        }
     }
 
-    public void setValue(int iParam, T fValue) {
+    public void setValue(final int iParam, final T fValue) {
         startEditing(null);
 //        if (isStochastic()) {
         values[iParam] = fValue;
@@ -217,9 +218,9 @@ public abstract class Parameter<T> extends StateNode {
 //	    }
     }
 
-    public void swap(int iLeft, int iRight) {
+    public void swap(final int iLeft, final int iRight) {
         startEditing(null);
-        T tmp = values[iLeft];
+        final T tmp = values[iLeft];
         values[iLeft] = values[iRight];
         values[iRight] = tmp;
     }
@@ -235,14 +236,14 @@ public abstract class Parameter<T> extends StateNode {
      * since it parses the output of toString back into a parameter.
      */
     public String toString() {
-        final StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         buf.append(m_sID).append("[").append(values.length);
         if (minorDimension > 0) {
             buf.append(" ").append(minorDimension);
         }
         buf.append("] ");
         buf.append("(").append(m_fLower).append(",").append(m_fUpper).append("): ");
-        for (T value : values) {
+        for (final T value : values) {
             buf.append(value).append(" ");
         }
         return buf.toString();
@@ -252,7 +253,7 @@ public abstract class Parameter<T> extends StateNode {
     @Override
     public Parameter<T> copy() {
         try {
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked") final
             Parameter<T> copy = (Parameter<T>) this.clone();
             copy.values = values.clone();//new Boolean[values.length];
             copy.m_bIsDirty = new boolean[values.length];
@@ -264,8 +265,8 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     @Override
-    public void assignTo(StateNode other) {
-        @SuppressWarnings("unchecked")
+    public void assignTo(final StateNode other) {
+        @SuppressWarnings("unchecked") final
         Parameter<T> copy = (Parameter<T>) other;
         copy.setID(getID());
         copy.index = index;
@@ -277,8 +278,8 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     @Override
-    public void assignFrom(StateNode other) {
-        @SuppressWarnings("unchecked")
+    public void assignFrom(final StateNode other) {
+        @SuppressWarnings("unchecked") final
         Parameter<T> source = (Parameter<T>) other;
         setID(source.getID());
         values = source.values.clone();
@@ -290,8 +291,8 @@ public abstract class Parameter<T> extends StateNode {
     }
 
     @Override
-    public void assignFromFragile(StateNode other) {
-        @SuppressWarnings("unchecked")
+    public void assignFromFragile(final StateNode other) {
+        @SuppressWarnings("unchecked") final
         Parameter<T> source = (Parameter<T>) other;
         System.arraycopy(source.values, 0, values, 0, values.length);
         Arrays.fill(m_bIsDirty, false);
@@ -302,8 +303,8 @@ public abstract class Parameter<T> extends StateNode {
      * Loggable interface implementation follows (partly, the actual
      * logging of values happens in derived classes) *
      */
-    @Override
-    public void init(PrintStream out) throws Exception {
+    //@Override
+    public void init(final PrintStream out) throws Exception {
         final int nValues = getDimension();
         if (nValues == 1) {
             out.print(getID() + "\t");
@@ -314,8 +315,8 @@ public abstract class Parameter<T> extends StateNode {
         }
     }
 
-    @Override
-    public void close(PrintStream out) {
+    //@Override
+    public void close(final PrintStream out) {
         // nothing to do
     }
 
@@ -323,30 +324,30 @@ public abstract class Parameter<T> extends StateNode {
      * StateNode implementation *
      */
     @Override
-    public void fromXML(Node node) {
-        NamedNodeMap atts = node.getAttributes();
+    public void fromXML(final Node node) {
+        final NamedNodeMap atts = node.getAttributes();
         setID(atts.getNamedItem("id").getNodeValue());
-        String sStr = node.getTextContent();
+        final String sStr = node.getTextContent();
         Pattern pattern = Pattern.compile(".*\\[(.*) (.*)\\].*\\((.*),(.*)\\): (.*) ");
         Matcher matcher = pattern.matcher(sStr);
         if (matcher.matches()) {
-            String sDimension = matcher.group(1);
-            String sStride = matcher.group(2);
-            String sLower = matcher.group(3);
-            String sUpper = matcher.group(4);
-            String sValuesAsString = matcher.group(5);
-            String[] sValues = sValuesAsString.split(" ");
+            final String sDimension = matcher.group(1);
+            final String sStride = matcher.group(2);
+            final String sLower = matcher.group(3);
+            final String sUpper = matcher.group(4);
+            final String sValuesAsString = matcher.group(5);
+            final String[] sValues = sValuesAsString.split(" ");
             minorDimension = Integer.parseInt(sStride);
             fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
         } else {
             pattern = Pattern.compile(".*\\[(.*)\\].*\\((.*),(.*)\\): (.*) ");
             matcher = pattern.matcher(sStr);
             if (matcher.matches()) {
-                String sDimension = matcher.group(1);
-                String sLower = matcher.group(2);
-                String sUpper = matcher.group(3);
-                String sValuesAsString = matcher.group(4);
-                String[] sValues = sValuesAsString.split(" ");
+                final String sDimension = matcher.group(1);
+                final String sLower = matcher.group(2);
+                final String sUpper = matcher.group(3);
+                final String sValuesAsString = matcher.group(4);
+                final String[] sValues = sValuesAsString.split(" ");
                 minorDimension = 0;
                 fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
             } else {
@@ -378,34 +379,34 @@ public abstract class Parameter<T> extends StateNode {
         return getDimension() / minorDimension;
     }
 
-    public T getMatrixValue(int i, int j) {
+    public T getMatrixValue(final int i, final int j) {
         return values[i * minorDimension + j];
     }
 
-    public void setMatrixValue(int i, int j, T value) {
+    public void setMatrixValue(final int i, final int j, final T value) {
         setValue(i * minorDimension + j, value);
     }
 
-    public void getMatrixValues1(int i, T[] row) {
+    public void getMatrixValues1(final int i, final T[] row) {
         assert (row.length == minorDimension);
         System.arraycopy(values, i * minorDimension, row, 0, minorDimension);
     }
 
-    public void getMatrixValues1(int i, double[] row) {
+    public void getMatrixValues1(final int i, final double[] row) {
         assert (row.length == minorDimension);
         for (int j = 0; j < minorDimension; j++) {
             row[j] = getArrayValue(i * minorDimension + j);
         }
     }
 
-    public void getMatrixValues2(int j, T[] col) {
+    public void getMatrixValues2(final int j, final T[] col) {
         assert (col.length == getMinorDimension2());
         for (int i = 0; i < getMinorDimension2(); i++) {
             col[i] = values[i * minorDimension + j];
         }
     }
 
-    public void getMatrixValues2(int j, double[] col) {
+    public void getMatrixValues2(final int j, final double[] col) {
         assert (col.length == getMinorDimension2());
         for (int i = 0; i < getMinorDimension2(); i++) {
             col[i] = getArrayValue(i * minorDimension + j);
@@ -419,7 +420,7 @@ public abstract class Parameter<T> extends StateNode {
 
     @Override
     public void restore() {
-        T[] tmp = storedValues;
+        final T[] tmp = storedValues;
         storedValues = values;
         values = tmp;
         m_bHasStartedEditing = false;

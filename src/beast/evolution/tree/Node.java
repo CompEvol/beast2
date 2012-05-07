@@ -33,8 +33,8 @@ import java.util.*;
 public class Node extends Plugin {
 
     /**
-     * label nr of node, only used when this is a leaf *
-     */
+     * label nr of node, used mostly when this is a leaf.
+     * */
     protected int m_iLabel;
 
     /**
@@ -97,12 +97,13 @@ public class Node extends Plugin {
     }
 
     /**
-     * number uniquely identifying the node in the tree.
+     * @return number uniquely identifying the node in the tree.
      * This is a number between 0 and the total number of nodes in the tree
      * Leaf nodes are number 0 to #leaf nodes -1
      * Internal nodes are numbered  #leaf nodes  up to #nodes-1
-     * The root node is not guaranteed a number. *
-     */
+     * The root node is not guaranteed a number.
+     *  Node number is guaranteed not to change during an MCMC run.
+     **/
     public int getNr() {
         return m_iLabel;
     }
@@ -285,10 +286,10 @@ public class Node extends Plugin {
      *         so that it can be restored.
      */
     public String toShortNewick(boolean bPrintInternalNodeLabels) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             if (bPrintInternalNodeLabels) {
-                buf.append(m_iLabel + ":");
+                buf.append(m_iLabel).append(":");
             }
             buf.append("(");
             buf.append(getLeft().toShortNewick(bPrintInternalNodeLabels));
@@ -310,7 +311,7 @@ public class Node extends Plugin {
      * in a clade
      */
     String toSortedNewick(int[] iMaxNodeInClade) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
             String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade);
@@ -345,7 +346,7 @@ public class Node extends Plugin {
      * @return beast.tree in Newick format with taxon labels for leafs.
      */
     public String toNewick(List<String> sLabels) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
             buf.append(getLeft().toNewick(sLabels));
@@ -379,7 +380,7 @@ public class Node extends Plugin {
      *         information, but with leafs labelled with their names
      */
     public String toString(List<String> sLabels) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
             buf.append(getLeft().toString(sLabels));
@@ -570,7 +571,7 @@ public class Node extends Plugin {
     }
 
     /**
-     * some methods that are usefull for porting from BEAST 1 *
+     * some methods that are useful for porting from BEAST 1 *
      */
     public int getChildCount() {
     	return children.size();

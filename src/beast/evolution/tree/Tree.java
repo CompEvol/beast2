@@ -330,7 +330,7 @@ public class Tree extends StateNode {
     }
 
     /**
-     * returns list of nodes in array format.
+     * @return list of nodes in array format.
      * *
      */
     public Node[] getNodesAsArray() {

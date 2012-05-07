@@ -97,7 +97,7 @@ public class CalibrationLineagesIterator {
             itr = new LinsIterator(nl, rank, s);
         }
 
-        assert itr != null;
+        //assert itr != null;
         //if( itr != null ) {
             // sorted according to rank
             iters[itr.rank-1] = itr;
@@ -155,6 +155,7 @@ public class CalibrationLineagesIterator {
         private final int nStart;
         private final int[] joiners;
         private final int[] aStart;
+        // Current count of lineages at all relevant time points, from 0 (start) to clade top.
         private final int[] lins;
         private int lastJoinger;
         private boolean stopIter;
@@ -188,7 +189,7 @@ public class CalibrationLineagesIterator {
                 for(int i = 1; i < rank+1; ++i) {
                     aStart[i] = 2;
                 }
-                if( rank > 1) {
+                if( rank > 1 ) {
                     // first iteration increments this
                     aStart[rank-1] -= 1;
                 }
@@ -204,9 +205,10 @@ public class CalibrationLineagesIterator {
                         aStart[i] = 2;
                     }
                 } else {
+                    assert jnr != null;
                     int mj = jnr[0];
-                    for(int k = 0; k < jnr.length; ++k) {
-                        mj = Math.min(mj, jnr[k]);
+                    for (int aJnr : jnr) {
+                        mj = Math.min(mj, aJnr);
                     }
                     int i = 1;
                     for(; i < mj+1; ++i) {

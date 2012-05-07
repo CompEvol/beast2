@@ -26,7 +26,7 @@ public class StrictClockModel extends BranchRateModel.Base {
     }
 
     @Override
-    public double getRateForBranch(Node node) {
+    public double getRateForBranch(final Node node) {
         return mu;
     }
 

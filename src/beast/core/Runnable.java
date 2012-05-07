@@ -6,14 +6,14 @@ public abstract class Runnable extends Plugin {
     public void run() throws Exception {
     }
 
-    ;
-
     /**
      * Set up information related to the file for (re)storing the State.
      * The Runnable implementation is responsible for making its
      * State synchronising with the file *
+     * @param sFileName
+     * @param bRestoreFromFile
      */
-    public void setStateFile(String sFileName, boolean bRestoreFromFile) {
+    public void setStateFile(final String sFileName, final boolean bRestoreFromFile) {
     	if (System.getProperty("state.file.name") != null) {
     		m_sStateFile = System.getProperty("state.file.name");
     	} else {

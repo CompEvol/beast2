@@ -216,7 +216,8 @@ public class Logger extends Plugin {
                 m_logger.init(m_out);
             }
 
-            if (tmp == System.out) {
+            if ( baos != null ) {
+                assert tmp == System.out;
                 m_out = tmp;
                 try {
                     String logContent = baos.toString("ASCII");
@@ -300,9 +301,9 @@ public class Logger extends Plugin {
                         } else {
                             // it is a tree logger, we may need to get rid of the last line!
                             BufferedReader fin = new BufferedReader(new FileReader(sFileName));
-                            StringBuffer buf = new StringBuffer();
+                            StringBuilder buf = new StringBuilder();
                             String sStrLast = null;
-                            String sStr = null;
+                            String sStr = fin.readLine();
                             while (fin.ready()) {
                                 sStr = fin.readLine();
                                 if (!sStr.equals("End;")) {
@@ -367,7 +368,9 @@ public class Logger extends Plugin {
         for (Loggable m_logger : m_loggers) {
             m_logger.log(nSample, m_out);
         }
-        if (tmp == System.out) {
+        if ( baos != null ) {
+            assert tmp == System.out ;
+
             m_out = tmp;
             try {
                 String logContent = baos.toString("ASCII");
@@ -410,6 +413,7 @@ public class Logger extends Plugin {
     }
 
     private String prettifyLogEntry(String sStr) {
+        // Q2R intelliJ says \\ can't be used in a range ...
         if (sStr.matches("[\\d-E]+\\.[\\d-E]+")) {
             // format as double
             if (sStr.contains("E")) {

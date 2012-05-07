@@ -68,8 +68,11 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
     public double[] calcValues() {
         int length = 0;
         int offset = 0;
+
+        final int nrOfLeafs = tree.getLeafNodeCount();
+
         if (external) {
-            length += tree.getLeafNodeCount();
+            length += nrOfLeafs;
         }
         if (internal) {
             length += tree.getInternalNodeCount() - 1;
@@ -79,13 +82,13 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
         // need those only for mean
         final double[] branchLengths = new double[length];
 
-        Node[] nodes = tree.getNodesAsArray();
-        int nrOfLeafs = tree.getLeafNodeCount();
+        final Node[] nodes = tree.getNodesAsArray();
+
         /** handle leaf nodes **/
         if (external) {
             for (int i = 0; i < nrOfLeafs; i++) {
-                Node child = nodes[i];
-                Node parent = child.getParent();
+                final Node child = nodes[i];
+                final Node parent = child.getParent();
                 branchLengths[i] = parent.getHeight() - child.getHeight();
                 rates[i] = branchRateModel.getRateForBranch(child);
             }
@@ -97,9 +100,9 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
             final int n = tree.getNodeCount();
             int k = offset;
             for (int i = nrOfLeafs; i < n; i++) {
-                Node child = nodes[i];
+                final Node child = nodes[i];
                 if (!child.isRoot()) {
-                    Node parent = child.getParent();
+                    final Node parent = child.getParent();
                     branchLengths[k] = parent.getHeight() - child.getHeight();
                     rates[k] = branchRateModel.getRateForBranch(child);
                     k++;
@@ -107,7 +110,7 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
             }
         }
 
-        double[] values = new double[3];
+        final double[] values = new double[3];
         double totalWeightedRate = 0.0;
         double totalTreeLength = 0.0;
         for (int i = 0; i < rates.length; i++) {
@@ -115,6 +118,10 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
             totalTreeLength += branchLengths[i];
         }
         values[MEAN] = totalWeightedRate / totalTreeLength;
+        // Q2R why not?
+//  final double mean = DiscreteStatistics.mean(rates);
+//        values[VARIANCE] = DiscreteStatistics.variance(rates, mean);
+//        values[COEFFICIENT_OF_VARIATION] = Math.sqrt(D values[VARIANCE]) / mean;
         values[VARIANCE] = DiscreteStatistics.variance(rates);
         final double mean = DiscreteStatistics.mean(rates);
         values[COEFFICIENT_OF_VARIATION] = Math.sqrt(DiscreteStatistics.variance(rates, mean)) / mean;
@@ -137,7 +144,7 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
     }
 
     @Override
-    public double getArrayValue(int iDim) {
+    public double getArrayValue(final int iDim) {
         if (iDim > 3) {
             throw new IllegalArgumentException();
         }
@@ -150,7 +157,7 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
      */
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(final PrintStream out) throws Exception {
         String sID = getID();
         if (sID == null) {
             sID = "";
@@ -160,14 +167,14 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
 
 
     @Override
-    public void log(int nSample, PrintStream out) {
-        double[] values = calcValues();
+    public void log(final int nSample, final PrintStream out) {
+        final double[] values = calcValues();
         out.print(values[0] + "\t" + values[1] + "\t" + values[2] + "\t");
     }
 
 
     @Override
-    public void close(PrintStream out) {
+    public void close(final PrintStream out) {
         // nothing to do
     }
 

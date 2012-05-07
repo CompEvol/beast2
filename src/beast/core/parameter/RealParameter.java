@@ -105,8 +105,6 @@ public class RealParameter extends Parameter<Double> {
         return values[iValue];
     }
 
-    ;
-
     /**
      * Loggable implementation *
      */

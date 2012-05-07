@@ -59,7 +59,7 @@ public class ScaleOperator extends Operator {
             "of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
             "it is assumed all dimensions are allowed to be scaled.");
     public Input<Boolean> m_pRootOnly = new Input<Boolean>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
-    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
+    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
 
     /**

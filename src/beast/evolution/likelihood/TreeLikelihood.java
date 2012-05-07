@@ -189,15 +189,14 @@ public class TreeLikelihood extends Distribution {
      * // taking ambiguities in account, there is a contribution of 1 from
      * // the 'site invariant' category.
      */
-    void calcConstantPatternIndices(int nPatterns, int nStateCount) {
+    void calcConstantPatternIndices(final int nPatterns, final int nStateCount) {
         m_iConstantPattern = new ArrayList<Integer>();
         for (int i = 0; i < nPatterns; i++) {
-            int[] pattern = m_data.get().getPattern(i);
-            boolean[] bIsInvariant = new boolean[nStateCount];
+            final int[] pattern = m_data.get().getPattern(i);
+            final boolean[] bIsInvariant = new boolean[nStateCount];
             Arrays.fill(bIsInvariant, true);
-            for (int j = 0; j < pattern.length; j++) {
-                int state = pattern[j];
-                boolean[] bStateSet = m_data.get().getStateSet(state);
+            for (final int state : pattern) {
+                final boolean[] bStateSet = m_data.get().getStateSet(state);
                 if (m_useAmbiguities.get() || !m_data.get().getDataType().isAmbiguousState(state)) {
                     for (int k = 0; k < nStateCount; k++) {
                         bIsInvariant[k] &= bStateSet[k];
@@ -213,7 +212,7 @@ public class TreeLikelihood extends Distribution {
     }
 
     void initCore() {
-        int nodeCount = m_tree.get().getNodeCount();
+        final int nodeCount = m_tree.get().getNodeCount();
         m_likelihoodCore.initialize(
                 nodeCount,
                 m_data.get().getPatternCount(),
@@ -221,8 +220,8 @@ public class TreeLikelihood extends Distribution {
                 true, m_useAmbiguities.get()
         );
 
-        int extNodeCount = nodeCount / 2 + 1;
-        int intNodeCount = nodeCount / 2;
+        final int extNodeCount = nodeCount / 2 + 1;
+        final int intNodeCount = nodeCount / 2;
 
         if (m_useAmbiguities.get()) {
             setPartials(m_tree.get().getRoot(), m_data.get().getPatternCount());
@@ -302,7 +301,7 @@ public class TreeLikelihood extends Distribution {
             logP = m_beagle.calculateLogP();
             return logP;
         }
-        Tree tree = m_tree.get();
+        final Tree tree = m_tree.get();
 
         traverse(tree.getRoot());
         calcLogP();
@@ -334,7 +333,7 @@ public class TreeLikelihood extends Distribution {
     void calcLogP() throws Exception {
         logP = 0.0;
         if (m_bAscertainedSitePatterns) {
-            double ascertainmentCorrection = ((AscertainedAlignment) m_data.get()).getAscertainmentCorrection(m_fPatternLogLikelihoods);
+            final double ascertainmentCorrection = ((AscertainedAlignment) m_data.get()).getAscertainmentCorrection(m_fPatternLogLikelihoods);
             for (int i = 0; i < m_data.get().getPatternCount(); i++) {
                 logP += (m_fPatternLogLikelihoods[i] - ascertainmentCorrection) * m_data.get().getPatternWeight(i);
             }
@@ -346,22 +345,22 @@ public class TreeLikelihood extends Distribution {
     }
 
     /* Assumes there IS a branch rate model as opposed to traverse() */
-    int traverse(Node node) throws Exception {
+    int traverse(final Node node) throws Exception {
 
         int update = (node.isDirty() | m_nHasDirt);
 
-        int iNode = node.getNr();
+        final int iNode = node.getNr();
 
-        double branchRate = m_branchRateModel.getRateForBranch(node);
-        double branchTime = node.getLength() * branchRate;
+        final double branchRate = m_branchRateModel.getRateForBranch(node);
+        final double branchTime = node.getLength() * branchRate;
         m_branchLengths[iNode] = branchTime;
 
         // First update the transition probability matrix(ices) for this branch
         if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[iNode])) {
-            Node parent = node.getParent();
+            final Node parent = node.getParent();
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
-                double jointBranchRate = m_siteModel.getRateForCategory(i, node) * branchRate;
+                final double jointBranchRate = m_siteModel.getRateForCategory(i, node) * branchRate;
                 m_substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), jointBranchRate, m_fProbabilities);
                 m_likelihoodCore.setNodeMatrix(iNode, i, m_fProbabilities);
             }
@@ -372,17 +371,17 @@ public class TreeLikelihood extends Distribution {
         if (!node.isLeaf()) {
 
             // Traverse down the two child nodes
-            Node child1 = node.getLeft(); //Two children
-            int update1 = traverse(child1);
+            final Node child1 = node.getLeft(); //Two children
+            final int update1 = traverse(child1);
 
-            Node child2 = node.getRight();
-            int update2 = traverse(child2);
+            final Node child2 = node.getRight();
+            final int update2 = traverse(child2);
 
             // If either child node was updated then update this node too
             if (update1 != Tree.IS_CLEAN || update2 != Tree.IS_CLEAN) {
 
-                int childNum1 = child1.getNr();
-                int childNum2 = child2.getNr();
+                final int childNum1 = child1.getNr();
+                final int childNum2 = child2.getNr();
 
                 m_likelihoodCore.setNodePartialsForUpdate(iNode);
                 update |= (update1 | update2);
@@ -400,16 +399,16 @@ public class TreeLikelihood extends Distribution {
                 if (node.isRoot()) {
                     // No parent this is the root of the beast.tree -
                     // calculate the pattern likelihoods
-                    double[] frequencies = //m_pFreqs.get().
+                    final double[] frequencies = //m_pFreqs.get().
                             m_substitutionModel.getFrequencies();
 
-                    double[] proportions = m_siteModel.getCategoryProportions(node);
+                    final double[] proportions = m_siteModel.getCategoryProportions(node);
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     if (m_iConstantPattern != null) { // && !SiteModel.g_bUseOriginal) {
                         m_fProportionInvariant = m_siteModel.getProportianInvariant();
                         // some portion of sites is invariant, so adjust root partials for this
-                        for (int i : m_iConstantPattern) {
+                        for (final int i : m_iConstantPattern) {
                             m_fRootPartials[i] += m_fProportionInvariant;
                         }
                     }

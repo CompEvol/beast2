@@ -42,7 +42,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     private PriorityQueue<Double>[] m_intervals;
     // count nr of lineages at the bottom of species tree branches
     private int[] m_nLineages;
-    // maps gene tree leaf nodes to species tree leaf nodes
+    // maps gene tree leaf nodes to species tree leaf nodes. Indexed by node number.
     protected int[] m_nLineageToSpeciesMap;
 
     beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction m_bIsConstantPopFunction;
@@ -126,6 +126,8 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         m_bIsConstantPopFunction = popInfo.m_popFunctionInput.get();
         m_fPopSizesBottom = popInfo.m_popSizesBottom.get();
         m_fPopSizesTop = popInfo.m_popSizesTop.get();
+
+        assert( ! (m_bIsConstantPopFunction == PopSizeFunction.linear && treeTopFinder.get() == null ) );
     }
 
     /**
@@ -285,9 +287,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      */
     private int traverseLineageTree(final Node[] speciesNodes, final Node node) {
         if (node.isLeaf()) {
-            final int nSpecies = m_nLineageToSpeciesMap[node.getNr()];
-            m_nLineages[nSpecies]++;
-            return nSpecies;
+            final int iSpecies = m_nLineageToSpeciesMap[node.getNr()];
+            m_nLineages[iSpecies]++;
+            return iSpecies;
         } else {
             int nSpeciesLeft = traverseLineageTree(speciesNodes, node.getLeft());
             int nSpeciesRight = traverseLineageTree(speciesNodes, node.getRight());

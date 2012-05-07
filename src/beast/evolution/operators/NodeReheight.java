@@ -18,8 +18,8 @@ import beast.util.Randomizer;
 @Description("Tree operator which randomly changes the height of a node, " +
         "then reconstructs the tree from node heights.")
 public class NodeReheight extends TreeOperator {
-    public Input<TaxonSet> m_taxonSet = new Input<TaxonSet>("taxonset", "taxon set describing species tree taxa and their gene trees", Validate.REQUIRED);
-    public Input<List<Tree>> m_geneTrees = new Input<List<Tree>>("genetree", "list of gene trees that constrain species tree movement", new ArrayList<Tree>());
+    public final Input<TaxonSet> m_taxonSet = new Input<TaxonSet>("taxonset", "taxon set describing species tree taxa and their gene trees", Validate.REQUIRED);
+    public final Input<List<Tree>> m_geneTrees = new Input<List<Tree>>("genetree", "list of gene trees that constrain species tree movement", new ArrayList<Tree>());
     Node[] m_nodes;
 
 
@@ -33,21 +33,21 @@ public class NodeReheight extends TreeOperator {
     @Override
     public void initAndValidate() throws Exception {
         /** maps gene taxa names to species number **/
-        Map<String, Integer> taxonMap = new HashMap<String, Integer>();
-        List<Taxon> list = m_taxonSet.get().m_taxonset.get();
+        final Map<String, Integer> taxonMap = new HashMap<String, Integer>();
+        final List<Taxon> list = m_taxonSet.get().m_taxonset.get();
         for (int i = 0; i < list.size(); i++) {
-            Taxon taxa = list.get(i);
+            final Taxon taxa = list.get(i);
             // cast should be ok if taxon-set is the set for the species tree
-            TaxonSet set = (TaxonSet) taxa;
-            for (Taxon taxon : set.m_taxonset.get()) {
+            final TaxonSet set = (TaxonSet) taxa;
+            for (final Taxon taxon : set.m_taxonset.get()) {
                 taxonMap.put(taxon.getID(), i);
             }
         }
 
         /** build the taxon map for each gene tree **/
         m_taxonMap = new ArrayList<Map<Integer, Integer>>();
-        for (Tree tree : m_geneTrees.get()) {
-            Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        for (final Tree tree : m_geneTrees.get()) {
+            final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
             setupTaxaMap(tree.getRoot(), map, taxonMap);
             m_taxonMap.add(map);
         }
@@ -57,7 +57,7 @@ public class NodeReheight extends TreeOperator {
     }
 
     // initialisation code: create node number in gene tree to node number in species tree map
-    private void setupTaxaMap(Node node, Map<Integer, Integer> map, Map<String, Integer> taxonMap) {
+    private void setupTaxaMap(final Node node, final Map<Integer, Integer> map, final Map<String, Integer> taxonMap) {
         if (node.isLeaf()) {
             map.put(node.getNr(), taxonMap.get(node.getID()));
         } else {
@@ -68,25 +68,25 @@ public class NodeReheight extends TreeOperator {
 
     @Override
     public double proposal() {
-        Tree tree = m_tree.get();
+        final Tree tree = m_tree.get();
         m_nodes = tree.getNodesAsArray();
-        int nNodes = tree.getNodeCount();
+        final int nNodes = tree.getNodeCount();
         // randomly change left/right order
         reorder(tree.getRoot());
         // collect heights
-        double[] fHeights = new double[nNodes];
-        int[] iReverseOrder = new int[nNodes];
+        final double[] fHeights = new double[nNodes];
+        final int[] iReverseOrder = new int[nNodes];
         collectHeights(tree.getRoot(), fHeights, iReverseOrder, 0);
         // change height of an internal node
         int iNode = Randomizer.nextInt(fHeights.length);
         while (m_nodes[iReverseOrder[iNode]].isLeaf()) {
             iNode = Randomizer.nextInt(fHeights.length);
         }
-        double fMaxHeight = calcMaxHeight(iReverseOrder, iNode);
+        final double fMaxHeight = calcMaxHeight(iReverseOrder, iNode);
         fHeights[iNode] = Randomizer.nextDouble() * fMaxHeight;
         m_nodes[iReverseOrder[iNode]].setHeight(fHeights[iNode]);
         // reconstruct tree from heights
-        Node root = reconstructTree(fHeights, iReverseOrder, 0, fHeights.length, new boolean[fHeights.length]);
+        final Node root = reconstructTree(fHeights, iReverseOrder, 0, fHeights.length, new boolean[fHeights.length]);
 
         if (!checkConsistency(root, new boolean[fHeights.length])) {
             System.err.println("Inconsisten tree");
@@ -96,7 +96,7 @@ public class NodeReheight extends TreeOperator {
         return 0;
     }
 
-    private boolean checkConsistency(Node node, boolean[] bUsed) {
+    private boolean checkConsistency(final Node node, final boolean[] bUsed) {
         if (bUsed[node.getNr()]) {
             return false;
         }
@@ -111,32 +111,32 @@ public class NodeReheight extends TreeOperator {
      * calculate maximum height that node iNode can become restricted
      * by nodes on the left and right
      */
-    private double calcMaxHeight(int[] iReverseOrder, int iNode) {
+    private double calcMaxHeight(final int[] iReverseOrder, final int iNode) {
         // find maximum height between two species. Only upper right part is populated
-        double[][] fMaxHeight = new double[m_nSpecies][m_nSpecies];
+        final double[][] fMaxHeight = new double[m_nSpecies][m_nSpecies];
         for (int i = 0; i < m_nSpecies; i++) {
             Arrays.fill(fMaxHeight[i], Double.POSITIVE_INFINITY);
         }
 
         // calculate for every species tree the maximum allowable merge point
         for (int i = 0; i < m_nGeneTrees; i++) {
-            Tree tree = m_geneTrees.get().get(i);
+            final Tree tree = m_geneTrees.get().get(i);
             findMaximaInGeneTree(tree.getRoot(), new boolean[m_nSpecies], m_taxonMap.get(i), fMaxHeight);
         }
 
         // find species on the left of selected node
-        boolean[] bLowerSpecies = new boolean[m_nSpecies];
-        Node[] nodes = m_tree.get().getNodesAsArray();
+        final boolean[] bLowerSpecies = new boolean[m_nSpecies];
+        final Node[] nodes = m_tree.get().getNodesAsArray();
         for (int i = 0; i < iNode; i++) {
-            Node node = nodes[iReverseOrder[i]];
+            final Node node = nodes[iReverseOrder[i]];
             if (node.isLeaf()) {
                 bLowerSpecies[node.getNr()] = true;
             }
         }
         // find species on the right of selected node
-        boolean[] bUpperSpecies = new boolean[m_nSpecies];
+        final boolean[] bUpperSpecies = new boolean[m_nSpecies];
         for (int i = iNode + 1; i < nodes.length; i++) {
-            Node node = nodes[iReverseOrder[i]];
+            final Node node = nodes[iReverseOrder[i]];
             if (node.isLeaf()) {
                 bUpperSpecies[node.getNr()] = true;
             }
@@ -148,8 +148,8 @@ public class NodeReheight extends TreeOperator {
             if (bLowerSpecies[i]) {
                 for (int j = 0; j < m_nSpecies; j++) {
                     if (j != i && bUpperSpecies[j]) {
-                        int x = Math.min(i, j);
-                        int y = Math.max(i, j);
+                        final int x = Math.min(i, j);
+                        final int y = Math.max(i, j);
                         fMax = Math.min(fMax, fMaxHeight[x][y]);
                     }
                 }
@@ -163,21 +163,21 @@ public class NodeReheight extends TreeOperator {
      * for every species in the left on the gene tree and for every species in the right
      * cap the maximum join height by the lowest place the two join in the gene tree
      */
-    private void findMaximaInGeneTree(Node node, boolean[] taxonSet, Map<Integer, Integer> taxonMap, double[][] fMaxHeight) {
+    private void findMaximaInGeneTree(final Node node, final boolean[] taxonSet, final Map<Integer, Integer> taxonMap, final double[][] fMaxHeight) {
         if (node.isLeaf()) {
-            int iSpecies = taxonMap.get(node.getNr());
+            final int iSpecies = taxonMap.get(node.getNr());
             taxonSet[iSpecies] = true;
         } else {
-            boolean[] bLeftTaxonSet = new boolean[m_nSpecies];
+            final boolean[] bLeftTaxonSet = new boolean[m_nSpecies];
             findMaximaInGeneTree(node.getLeft(), bLeftTaxonSet, taxonMap, fMaxHeight);
-            boolean[] bRightTaxonSet = new boolean[m_nSpecies];
+            final boolean[] bRightTaxonSet = new boolean[m_nSpecies];
             findMaximaInGeneTree(node.getRight(), bRightTaxonSet, taxonMap, fMaxHeight);
             for (int i = 0; i < m_nSpecies; i++) {
                 if (bLeftTaxonSet[i]) {
                     for (int j = 0; j < m_nSpecies; j++) {
                         if (j != i && bRightTaxonSet[j]) {
-                            int x = Math.min(i, j);
-                            int y = Math.max(i, j);
+                            final int x = Math.min(i, j);
+                            final int y = Math.max(i, j);
                             fMaxHeight[x][y] = Math.min(fMaxHeight[x][y], node.getHeight());
                         }
                     }
@@ -194,7 +194,7 @@ public class NodeReheight extends TreeOperator {
      */
 
 
-    private Node reconstructTree(double[] fHeights, int[] iReverseOrder, int iFrom, int iTo, boolean[] bHasParent) {
+    private Node reconstructTree(final double[] fHeights, final int[] iReverseOrder, final int iFrom, final int iTo, final boolean[] bHasParent) {
         //iNode = maxIndex(fHeights, 0, fHeights.length);
         int iNode = -1;
         double fMax = Double.NEGATIVE_INFINITY;
@@ -207,7 +207,7 @@ public class NodeReheight extends TreeOperator {
         if (iNode < 0) {
             return null;
         }
-        Node node = m_nodes[iReverseOrder[iNode]];
+        final Node node = m_nodes[iReverseOrder[iNode]];
 
         //int iLeft = maxIndex(fHeights, 0, iNode);
         int iLeft = -1;
@@ -250,22 +250,22 @@ public class NodeReheight extends TreeOperator {
     }
 
     // helper for reconstructTree, to find maximum in range
-    private int maxIndex(double[] fHeights, int iFrom, int iTo) {
-        int iMax = -1;
-        double fMax = Double.NEGATIVE_INFINITY;
-        for (int i = iFrom; i < iTo; i++) {
-            if (fMax < fHeights[i]) {
-                fMax = fHeights[i];
-                iMax = i;
-            }
-        }
-        return iMax;
-    }
+//    private int maxIndex(final double[] fHeights, final int iFrom, final int iTo) {
+//        int iMax = -1;
+//        double fMax = Double.NEGATIVE_INFINITY;
+//        for (int i = iFrom; i < iTo; i++) {
+//            if (fMax < fHeights[i]) {
+//                fMax = fHeights[i];
+//                iMax = i;
+//            }
+//        }
+//        return iMax;
+//    }
 
     /**
      * gather height of each node, and order of the nodes *
      */
-    private int collectHeights(Node node, double[] fHeights, int[] iReverseOrder, int iCurrent) {
+    private int collectHeights(final Node node, final double[] fHeights, final int[] iReverseOrder, int iCurrent) {
         if (node.isLeaf()) {
             fHeights[iCurrent] = node.getHeight();
             iReverseOrder[iCurrent] = node.getNr();
@@ -283,10 +283,10 @@ public class NodeReheight extends TreeOperator {
     /**
      * randomly changes left and right children in every internal node *
      */
-    private void reorder(Node node) {
+    private void reorder(final Node node) {
         if (!node.isLeaf()) {
             if (Randomizer.nextBoolean()) {
-                Node tmp = node.getLeft();
+                final Node tmp = node.getLeft();
                 node.setLeft(node.getRight());
                 node.setRight(tmp);
             }

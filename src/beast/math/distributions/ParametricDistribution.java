@@ -91,7 +91,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @throws MathException if the inverse cumulative probability can not be
      *                       computed due to convergence or other numerical errors.
      */
-    @Override
+    //@Override
     public double inverseCumulativeProbability(final double p) throws MathException {
         final org.apache.commons.math.distribution.Distribution dist = getDistribution();
         if (dist instanceof ContinuousDistribution) {
@@ -109,7 +109,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @param x The point at which the density should be computed.
      * @return The pdf at point x.
      */
-    @Override
+    //@Override
     public double density(final double x) {
         final org.apache.commons.math.distribution.Distribution dist = getDistribution();
         if (dist instanceof ContinuousDistribution) {
@@ -120,7 +120,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
         return 0.0;
     }
 
-    @Override
+    //@Override
     /** NB logDensity does not take offset in account **/
     public double logDensity(final double x) {
         final org.apache.commons.math.distribution.Distribution dist = getDistribution();
@@ -144,7 +144,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @throws MathException if the cumulative probability can not be
      *                       computed due to convergence or other numerical errors.
      */
-    @Override
+    //@Override
     public double cumulativeProbability(final double x) throws MathException {
         return getDistribution().cumulativeProbability(x);
     }
@@ -162,7 +162,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>x0 > x1</code>
      */
-    @Override
+    //@Override
     public double cumulativeProbability(final double x0, final double x1) throws MathException {
         return getDistribution().cumulativeProbability(x0, x1);
     }

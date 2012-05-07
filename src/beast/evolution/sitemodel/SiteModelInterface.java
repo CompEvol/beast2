@@ -53,6 +53,7 @@ public interface SiteModelInterface {
      * then throws an IllegalArgumentException.
      *
      * @param site the index of the site
+     * @param node
      * @return the index of the category
      */
     int getCategoryOfSite(int site, Node node);
@@ -62,6 +63,7 @@ public interface SiteModelInterface {
      * scaling of the siteModel.
      *
      * @param category the category number
+     * @param node
      * @return the rate.
      */
     double getRateForCategory(int category, Node node);
@@ -69,6 +71,7 @@ public interface SiteModelInterface {
     /**
      * Get an array of the rates for all categories.
      *
+     * @param node
      * @return an array of rates.
      */
     double[] getCategoryRates(Node node);
@@ -77,6 +80,7 @@ public interface SiteModelInterface {
      * Get the expected proportion of sites in this category.
      *
      * @param category the category number
+     * @param node
      * @return the proportion.
      */
     double getProportionForCategory(int category, Node node);
@@ -84,6 +88,7 @@ public interface SiteModelInterface {
     /**
      * Get an array of the expected proportion of sites for all categories.
      *
+     * @param node
      * @return an array of proportions.
      */
     double[] getCategoryProportions(Node node);
@@ -91,6 +96,7 @@ public interface SiteModelInterface {
 
     /**
      * set DataType so it can validate the Substitution model can handle it *
+     * @param dataType
      */
     void setDataType(DataType dataType);
 
@@ -101,7 +107,7 @@ public interface SiteModelInterface {
                 new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", null, Validate.REQUIRED);
 
         public boolean canSetSubstModel(Object o) throws Exception {
-            SubstitutionModel substModel = (SubstitutionModel) o;
+            final SubstitutionModel substModel = (SubstitutionModel) o;
             if (m_dataType == null) {
             	// try to find out the data type from the data in a treelikelihood in an output
             	for (Plugin plugin : outputs) {
@@ -129,7 +135,7 @@ public interface SiteModelInterface {
          */
         public boolean m_bPropInvariantIsCategory = true;
 
-        public void setPropInvariantIsCategory(boolean bPropInvariantIsCategory) {
+        public void setPropInvariantIsCategory(final boolean bPropInvariantIsCategory) {
             m_bPropInvariantIsCategory = bPropInvariantIsCategory;
             refresh();
         }
@@ -153,6 +159,7 @@ public interface SiteModelInterface {
 
         /**
          * return the list, useful for ... *
+         * @return
          */
         public List<String> getConditions() {
             return conditions;
@@ -160,8 +167,9 @@ public interface SiteModelInterface {
 
         /**
          * add item to the list *
+         * @param stateNode
          */
-        public void addCondition(Input<? extends StateNode> stateNode) {
+        public void addCondition(final Input<? extends StateNode> stateNode) {
             if (stateNode.get() == null) return;
 
             if (conditions == null) conditions = new ArrayList<String>();
@@ -169,7 +177,7 @@ public interface SiteModelInterface {
             conditions.add(stateNode.get().getID());
         }
 
-        public void setDataType(DataType dataType) {
+        public void setDataType(final DataType dataType) {
             m_dataType = dataType;
         }
 

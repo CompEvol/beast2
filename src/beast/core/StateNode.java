@@ -21,9 +21,9 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
     public Input<Boolean> m_bIsEstimated = new Input<Boolean>("estimate", "whether to estimate this item or keep constant to its initial value", true);
 
     /**
-     * Returns this StateNode if it is not in the State.
-     * If it is in the State, return the version that is currently valid
-     * (i.e. not the stored one).
+     * @return this StateNode if it is not in the State.
+     *         If it is in the State, return the version that is currently valid
+     *         (i.e. not the stored one).
      */
     public StateNode getCurrent() {
         if (m_state == null) {
@@ -33,13 +33,12 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
     }
 
     /**
-     * Return StateNode for an operation to do its magic on.
-     * The State will make a copy first, if there is not already
-     * one available.
-     *
      * @param operator explain here why operator is useful
+     * @return StateNode for an operation to do its magic on.
+     *         The State will make a copy first, if there is not already
+     *         one available.
      */
-    public StateNode getCurrentEditable(Operator operator) {
+    public StateNode getCurrentEditable(final Operator operator) {
         startEditing(operator);
         return this;
     }
@@ -94,7 +93,7 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      * NB: Should only be used for initialisation!
      */
     public void assignFromWithoutID(StateNode other) {
-        String sID = m_sID;
+        final String sID = m_sID;
         assignFrom(other);
         m_sID = sID;
     }
@@ -190,8 +189,10 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
 
     /**
      * should be called before an Operator proposes a new State *
+     *
+     * @param operator
      */
-    public void startEditing(Operator operator) {
+    public void startEditing(final Operator operator) {
         if (m_bHasStartedEditing) {
             // we are already editing
             return;

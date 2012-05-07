@@ -88,7 +88,7 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public double proposal() {
-        Tree tree = m_tree.get(this);
+        final Tree tree = m_tree.get(this);
 
         double logq;
 
@@ -164,7 +164,7 @@ public class SubtreeSlide extends TreeOperator {
             // 4.1 will the move change the topology
             if (CiP.getHeight() > newHeight) {
 
-                List<Node> newChildren = new ArrayList<Node>();
+                final List<Node> newChildren = new ArrayList<Node>();
                 final int possibleDestinations = intersectingEdges(CiP, newHeight, newChildren);
 
                 // if no valid destinations then return a failure
@@ -174,8 +174,8 @@ public class SubtreeSlide extends TreeOperator {
 
                 // pick a random parent/child destination edge uniformly from options
                 final int childIndex = Randomizer.nextInt(newChildren.size());
-                Node newChild = newChildren.get(childIndex);
-                Node newParent = newChild.getParent();
+                final Node newChild = newChildren.get(childIndex);
+                final Node newParent = newChild.getParent();
 
 
                 // 4.1.1 if iP was root
@@ -226,7 +226,7 @@ public class SubtreeSlide extends TreeOperator {
             // TODO: verify that this makes sense
             return 0;
         } else {
-            int count = intersectingEdges(node.getLeft(), height, directChildren) +
+            final int count = intersectingEdges(node.getLeft(), height, directChildren) +
                     intersectingEdges(node.getRight(), height, directChildren);
             return count;
         }
@@ -236,7 +236,7 @@ public class SubtreeSlide extends TreeOperator {
      * automatic parameter tuning *
      */
     @Override
-    public void optimize(double logAlpha) {
+    public void optimize(final double logAlpha) {
         if (m_bOptimise.get()) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(m_fSize);
@@ -250,23 +250,23 @@ public class SubtreeSlide extends TreeOperator {
     }
 
     @Override
-    public void setCoercableParameterValue(double fValue) {
+    public void setCoercableParameterValue(final double fValue) {
         m_fSize = fValue;
     }
 
     @Override
     public String getPerformanceSuggestion() {
-        double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
-        double targetProb = getTargetAcceptanceProbability();
+        final double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
+        final double targetProb = getTargetAcceptanceProbability();
 
         double ratio = prob / targetProb;
 
         if (ratio > 2.0) ratio = 2.0;
         if (ratio < 0.5) ratio = 0.5;
 
-        double newDelta = m_fSize * ratio;
+        final double newDelta = m_fSize * ratio;
 
-        DecimalFormat formatter = new DecimalFormat("#.###");
+        final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {
             return "Try decreasing size to about " + formatter.format(newDelta);
         } else if (prob > 0.40) {

@@ -135,12 +135,12 @@ public class SiteModel extends SiteModelInterface.Base {
     }
 
     @Override
-    public int getCategoryOfSite(int site, Node node) {
+    public int getCategoryOfSite(final int site, final Node node) {
         throw new IllegalArgumentException("Integrating across categories");
     }
 
     @Override
-    public double getRateForCategory(int category, Node node) {
+    public double getRateForCategory(final int category, final Node node) {
         synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -160,7 +160,7 @@ public class SiteModel extends SiteModelInterface.Base {
      *             throughout the tree and the node argument is ignored.
      */
     @Override
-    public double[] getCategoryRates(Node node) {
+    public double[] getCategoryRates(final Node node) {
         synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -194,7 +194,7 @@ public class SiteModel extends SiteModelInterface.Base {
      * @return the proportion.
      */
     @Override
-    public double getProportionForCategory(int category, Node node) {
+    public double getProportionForCategory(final int category, final Node node) {
         synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -210,7 +210,7 @@ public class SiteModel extends SiteModelInterface.Base {
      * @return an array of the proportion.
      */
     @Override
-    public double[] getCategoryProportions(Node node) {
+    public double[] getCategoryProportions(final Node node) {
         synchronized (this) {
             if (!ratesKnown) {
                 calculateCategoryRates(node);
@@ -223,8 +223,9 @@ public class SiteModel extends SiteModelInterface.Base {
     /**
      * discretisation of gamma distribution with equal proportions in each
      * category
+     * @param node
      */
-    protected void calculateCategoryRates(Node node) {
+    protected void calculateCategoryRates(final Node node) {
         double propVariable = 1.0;
         int cat = 0;
 
@@ -245,7 +246,7 @@ public class SiteModel extends SiteModelInterface.Base {
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
-            GammaDistribution g = new GammaDistributionImpl(a, 1.0 / a);
+            final GammaDistribution g = new GammaDistributionImpl(a, 1.0 / a);
             for (int i = 0; i < gammaCatCount; i++) {
                 try {
                     // RRB: alternative implementation that seems equally good in
@@ -414,7 +415,7 @@ public class SiteModel extends SiteModelInterface.Base {
      * @param alpha argument
      * @return the log of the gamma function of the given alpha
      */
-    double GammaFunctionlnGamma(double alpha) {
+    double GammaFunctionlnGamma(final double alpha) {
         // Pike MC & Hill ID (1966) Algorithm 291: Logarithm of the gamma function.
         // Communications of the Association for Computing Machinery, 9:684
 

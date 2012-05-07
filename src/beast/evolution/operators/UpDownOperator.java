@@ -74,12 +74,12 @@ public class UpDownOperator extends Operator {
         return (goingUp - goingDown - 2) * Math.log(scale);
     }
 
-    private boolean outsideBounds(StateNode node) {
+    private boolean outsideBounds(final StateNode node) {
     	if (node instanceof Parameter<?>) {
-    		Parameter<?> p = (Parameter) node;
-    		Double lower = (Double) p.getLower();
-    		Double upper = (Double) p.getUpper();
-    		Double value = (Double) p.getValue();
+    		final Parameter<?> p = (Parameter) node;
+    		final Double lower = (Double) p.getLower();
+    		final Double upper = (Double) p.getUpper();
+    		final Double value = (Double) p.getValue();
     		if (value < lower || value > upper) {
     			return true;
     		}
@@ -91,7 +91,7 @@ public class UpDownOperator extends Operator {
      * automatic parameter tuning *
      */
     @Override
-    public void optimize(double logAlpha) {
+    public void optimize(final double logAlpha) {
         if (m_bOptimise.get()) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
@@ -105,23 +105,23 @@ public class UpDownOperator extends Operator {
     }
 
     @Override
-    public void setCoercableParameterValue(double fValue) {
+    public void setCoercableParameterValue(final double fValue) {
         m_fScaleFactor = fValue;
     }
 
     @Override
     public String getPerformanceSuggestion() {
-        double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
-        double targetProb = getTargetAcceptanceProbability();
+        final double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
+        final double targetProb = getTargetAcceptanceProbability();
 
         double ratio = prob / targetProb;
         if (ratio > 2.0) ratio = 2.0;
         if (ratio < 0.5) ratio = 0.5;
 
         // new scale factor
-        double sf = Math.pow(m_fScaleFactor, ratio);
+        final double sf = Math.pow(m_fScaleFactor, ratio);
 
-        DecimalFormat formatter = new DecimalFormat("#.###");
+        final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {
             return "Try setting scaleFactor to about " + formatter.format(sf);
         } else if (prob > 0.40) {
