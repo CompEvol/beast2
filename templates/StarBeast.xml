@@ -336,6 +336,7 @@
 	<operator id="updown.all" spec='UpDownOperator' scaleFactor="0.75" weight="20">
 	  <up idref="birthRate.Species"/>
 	  <down idref="popMean"/>
+	  <down idref="popSize"/>
 
 	  <down idref="Tree.Species"/>
 	</operator>
