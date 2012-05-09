@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -342,6 +343,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		// tableData[iRow][NAME_COLUMN]);
 
 		boolean needsRePartition = false;
+		
+		PartitionContext oldContext = new PartitionContext(this.likelihoods[iRow]);
 
 		switch (nColumn) {
 		case SITEMODEL_COLUMN: {
@@ -439,18 +442,25 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 
 			needsRePartition = (this.likelihoods[iRow].m_tree.get() != tree);
+System.err.println("needsRePartition = " + needsRePartition);			
 			if (needsRePartition) {
+				this.likelihoods[iRow].m_tree.get().m_bIsEstimated.setValue(false, this.likelihoods[iRow].m_tree.get());
+				
 				// remove old tree from model
 				Tree oldTree = this.likelihoods[iRow].m_tree.get();
 				for (Plugin plugin : oldTree.outputs.toArray(new Plugin[0])) {
 					for (Input<?> input : plugin.listInputs()) {
+						try {
 						if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
 							input.setValue(null, plugin);
 						} else if (input.get() instanceof List) {
 							List<?> list = (List) input.get();
 							if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
-								list.remove(plugin);
+								list.remove(oldTree);
 							}
+						}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
 				}
@@ -469,6 +479,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 		tableData[iRow][nColumn] = sPartition;
 		if (needsRePartition) {
+			doc.setUpActivePlugins();
+			List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
+			templates.add(doc.beautiConfig.partitionTemplate.get());
+			templates.addAll(doc.beautiConfig.subTemplates);
+			doc.applyBeautiRules(templates, false, oldContext);
 			doc.determinePartitions();
 		}
 		if (treeLikelihood == null) {
@@ -775,6 +790,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+//			 SwingUtilities.invokeLater(new Runnable() {
+//			 @Override
+//			 public void run() {
 			System.err.println("actionPerformed ");
 			System.err.println(table.getSelectedRow() + " " + table.getSelectedColumn());
 			if (table.getSelectedRow() >= 0 && table.getSelectedColumn() >= 0) {
@@ -787,6 +805,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					System.err.println(ex.getMessage());
 				}
 			}
+//		    }});
 		}
 	}
 

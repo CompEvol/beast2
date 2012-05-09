@@ -303,7 +303,7 @@ public abstract class Parameter<T> extends StateNode {
      * Loggable interface implementation follows (partly, the actual
      * logging of values happens in derived classes) *
      */
-    //@Override
+    @Override
     public void init(final PrintStream out) throws Exception {
         final int nValues = getDimension();
         if (nValues == 1) {
@@ -315,7 +315,7 @@ public abstract class Parameter<T> extends StateNode {
         }
     }
 
-    //@Override
+    @Override
     public void close(final PrintStream out) {
         // nothing to do
     }

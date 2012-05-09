@@ -1,5 +1,7 @@
 package beast.app.beauti;
 
+import beast.evolution.likelihood.TreeLikelihood;
+
 public class PartitionContext {
 	public String partition;
 	public String siteModel;
@@ -24,6 +26,21 @@ public class PartitionContext {
 		this.siteModel = siteModel;
 		this.clockModel = clockModel;
 		this.tree = tree;
+	}
+	
+	public PartitionContext(TreeLikelihood treeLikelihoods) {
+		String sID = treeLikelihoods.m_data.get().getID();
+		sID = BeautiDoc.parsePartition(sID);
+		this.partition = sID;
+		sID = treeLikelihoods.m_pSiteModel.get().getID();
+		sID = BeautiDoc.parsePartition(sID);
+		this.siteModel = sID;
+		sID = treeLikelihoods.m_pBranchRateModel.get().getID();
+		sID = BeautiDoc.parsePartition(sID);
+		this.clockModel = sID;
+		sID = treeLikelihoods.m_tree.get().getID();
+		sID = BeautiDoc.parsePartition(sID);
+		this.tree = sID;
 	}
 	
 	@Override

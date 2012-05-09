@@ -12,6 +12,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -870,6 +872,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	// }
 
 	void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {
+		
+		Throwable t = new Throwable();
+		t.printStackTrace();
+		
 		try {
 			if (bAutoSetClockRate) {
 				setClockRate();
@@ -891,12 +897,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			boolean bProgress = true;
 			while (bProgress) {
 				bProgress = false;
-				posteriorPredecessors = new ArrayList<Plugin>();
-				collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
-				likelihoodPredecessors = new ArrayList<Plugin>();
-				if (pluginmap.containsKey("likelihood")) {
-					collectPredecessors(pluginmap.get("likelihood"), likelihoodPredecessors);
-				}
+				setUpActivePlugins();
 
 				// process MRCA priors
 				for (String sID : pluginmap.keySet()) {
@@ -918,7 +919,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
 				templates.add(beautiConfig.partitionTemplate.get());
 				templates.addAll(beautiConfig.subTemplates);
-
 
 				for (PartitionContext context : possibleContexts) {
 					applyBeautiRules(templates, bInitial, context);
@@ -956,6 +956,15 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 	} // scrubAll
 
+	void setUpActivePlugins() {
+		posteriorPredecessors = new ArrayList<Plugin>();
+		collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
+		likelihoodPredecessors = new ArrayList<Plugin>();
+		if (pluginmap.containsKey("likelihood")) {
+			collectPredecessors(pluginmap.get("likelihood"), likelihoodPredecessors);
+		}
+	}
+
 	public static String translatePartitionNames(String sStr, PartitionContext partition) {
 		sStr = sStr.replaceAll(".s:\\$\\(n\\)", ".s:" + partition.siteModel);
 		sStr = sStr.replaceAll(".c:\\$\\(n\\)", ".c:" + partition.clockModel);
@@ -964,7 +973,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		return sStr;
 	}
 	
-	private void applyBeautiRules(List<BeautiSubTemplate> templates, boolean bInitial, PartitionContext context) throws Exception {
+	void applyBeautiRules(List<BeautiSubTemplate> templates, boolean bInitial, PartitionContext context) throws Exception {
 		for (BeautiSubTemplate template : templates) {
 			String sTemplateID = translatePartitionNames(template.getMainID(), context); 
 			Plugin plugin = pluginmap.get(sTemplateID);
@@ -973,6 +982,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (plugin != null) {
 				// if so, run through all connectors
 				for (BeautiConnector connector : template.connectors) {
+					
+//					if (connector.sSourceID.startsWith("strictClockUpDownOperator")) {
+//						int h = 3;
+//						h++;
+//					}
+					
 					if (connector.atInitialisationOnly()) {
 						if (bInitial) {
 							warning("connect: " + connector.toString(context) + "\n");
@@ -1189,23 +1204,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public void determinePartitions() {
 		CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
 		sPartitionNames.clear();
+		possibleContexts.clear();
 		for (Distribution distr : likelihood.pDistributions.get()) {
 			if (distr instanceof TreeLikelihood) {
-				TreeLikelihood treeLikelihoods = (TreeLikelihood) distr;
-				alignments.add(treeLikelihoods.m_data.get());
-				PartitionContext context = new PartitionContext();
-				String sID = treeLikelihoods.m_data.get().getID();
-				sID = parsePartition(sID);
-				context.partition = sID;
-				sID = treeLikelihoods.m_pSiteModel.get().getID();
-				sID = parsePartition(sID);
-				context.siteModel = sID;
-				sID = treeLikelihoods.m_pBranchRateModel.get().getID();
-				sID = parsePartition(sID);
-				context.clockModel = sID;
-				sID = treeLikelihoods.m_tree.get().getID();
-				sID = parsePartition(sID);
-				context.tree = sID;
+				TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
+				alignments.add(treeLikelihood.m_data.get());
+				PartitionContext context = new PartitionContext(treeLikelihood);
 				sPartitionNames.add(context);
 				boolean found = false;
 				for (PartitionContext context2 : possibleContexts) {
