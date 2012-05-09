@@ -871,11 +871,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	// return null;
 	// }
 
-	void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {
-		
-		Throwable t = new Throwable();
-		t.printStackTrace();
-		
+	void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {		
 		try {
 			if (bAutoSetClockRate) {
 				setClockRate();
