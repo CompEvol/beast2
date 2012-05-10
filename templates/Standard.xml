@@ -199,7 +199,7 @@
             <operator id='WilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
 
 
-            <prior id='YuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' /></prior>
+            <prior id='YuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
             <prior id='GammaShapePrior.s:$(n)' spec='Prior' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
   		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
