@@ -27,7 +27,10 @@ package beast.evolution.tree;
 import beast.core.Description;
 import beast.core.Plugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Description("Nodes in building beast.tree data structure.")
 public class Node extends Plugin {
@@ -214,6 +217,27 @@ public class Node extends Plugin {
         if (!this.isLeaf()) {
             getRight().getAllChildNodes(childNodes);
             getLeft().getAllChildNodes(childNodes);
+        }
+    }
+
+    /**
+     * get all leaf node under this node, if this node is leaf then list.size() = 0.
+     *
+     * @return
+     */
+    public List<Node> getAllLeafNodes() {
+        List<Node> leafNodes = new ArrayList<Node>();
+        if (!this.isLeaf()) getAllLeafNodes(leafNodes);
+        return leafNodes;
+    }
+
+    // recursive
+    public void getAllLeafNodes(List<Node> leafNodes) {
+        if (this.isLeaf()) {
+            leafNodes.add(this);
+        } else {
+            getRight().getAllLeafNodes(leafNodes);
+            getLeft().getAllLeafNodes(leafNodes);
         }
     }
 
