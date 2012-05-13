@@ -130,7 +130,8 @@ public class Tree extends StateNode {
      */
     public Tree(String sNewick) throws Exception {
         //this(new TreeParser(sNewick).getRoot());   // (JH) I think this is correct, as (below) works only for taxa specified as ordinals.
-        this(new TreeParser().parseNewick(sNewick));
+//        this(new TreeParser().parseNewick(sNewick));
+        this(new TreeParser(sNewick).getRoot());
     }
 
     /**
