@@ -220,7 +220,7 @@
             <connect srcID='mutationRate.s:$(n)'              targetID='state' inputName='stateNode' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
             <connect srcID='gammaShape.s:$(n)'                targetID='state' inputName='stateNode' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
             <connect srcID='clockRate.c:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
-            <connect srcID='birthRate.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
+            <connect srcID='birthRate.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
             <connect srcID='proportionInvariantScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'>Scales proportion of invariant sites parameter of partition $(n)</connect>
             <connect srcID='mutationRateScaler.s:$(n)'        targetID='mcmc' inputName='operator' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'>Scales mutation rate of partition s:$(n)</connect>
@@ -244,11 +244,11 @@
             <connect srcID='mutationRate.s:$(n)'              targetID='tracelog' inputName='log' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
             <connect srcID='gammaShape.s:$(n)'                targetID='tracelog' inputName='log' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
             <connect srcID='clockRate.c:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
-            <connect srcID='YuleModel.t:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='YuleModel.t:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='birthRate.t:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
             <connect srcID='GammaShapePrior.s:$(n)'           targetID='prior' inputName='distribution' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
-            <connect srcID='YuleBirthRatePrior.t:$(n)'        targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
+            <connect srcID='YuleBirthRatePrior.t:$(n)'        targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
 			<mergepoint id='aux-partitiontemplate'/>
         </partitiontemplate>

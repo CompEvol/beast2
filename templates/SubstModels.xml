@@ -168,7 +168,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 <!-- Clock models -->
 <mergewith point='clockModelTemplates'>
 
-<!-- Strickt clock -->
+<!-- Strict clock -->
         <subtemplate id='StrictClock' class='beast.evolution.branchratemodel.StrictClockModel' mainid='StrictClock.c:$(n)'>
 <![CDATA[
                 <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
@@ -345,14 +345,14 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
   		    <scale id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 ]]>
-            <connect srcID='YuleModel.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and Tree.t:$(n)/estimate=true'>Yule speciation prior on tree t:$(n)</connect>
-            <connect srcID='birthRate.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(YuleModel.t:$(n)) and inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
+            <connect srcID='YuleModel.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Yule speciation prior on tree t:$(n)</connect>
+            <connect srcID='birthRate.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
-            <connect srcID='YuleBirthRatePrior.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'>Yule speciation process birth rate of partition t:$(n)</connect>
-            <connect srcID='YuleBirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'     if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'>Scale birth rate of Yule prior of tree t:$(n)</connect>
+            <connect srcID='YuleBirthRatePrior.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'>Yule speciation process birth rate of partition t:$(n)</connect>
+            <connect srcID='YuleBirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'     if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'>Scale birth rate of Yule prior of tree t:$(n)</connect>
 
-            <connect srcID='YuleModel.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='birthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
+            <connect srcID='YuleModel.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='birthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
         </subtemplate>
 
 
