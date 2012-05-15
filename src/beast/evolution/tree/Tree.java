@@ -126,11 +126,9 @@ public class Tree extends StateNode {
     }
 
     /**
-     * Constructor used by Input.setValue(String) *
+     * Construct a tree from newick string -- will not automatically adjust tips to zero.
      */
     public Tree(String sNewick) throws Exception {
-        //this(new TreeParser(sNewick).getRoot());   // (JH) I think this is correct, as (below) works only for taxa specified as ordinals.
-//        this(new TreeParser().parseNewick(sNewick));
         this(new TreeParser(sNewick).getRoot());
     }
 

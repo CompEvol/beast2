@@ -59,15 +59,18 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
 
     public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
-    //public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset", "Specifies list of taxa represented as a set");
-    public Input<String> m_oNewick = new Input<String>("newick", "initial beast.tree represented in newick format");// not required, Beuati may need this for example
+    public Input<String> m_oNewick = new Input<String>("newick", "initial beast.tree represented in newick format");// not required, Beauti may need this for example
     public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
     public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", 1);
-    public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under wich node heights (derived from lengths) are set to zero. Default=0.", 0.0);
+    public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under which node heights (derived from lengths) are set to zero. Default=0.", 0.0);
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
 
 
     boolean createUnrecognizedTaxa = false;
+
+    // if true and no date traits available then tips heights will be adjusted to zero.
+    private boolean adjustTipHeightsWhenMissingDateTraits = true;
+
     /**
      * op
      * assure the class behaves properly, even when inputs are not specified *
@@ -109,7 +112,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         super.initAndValidate();
         if (m_initial.get() != null && m_initial.get().m_trait.get() != null) {
             adjustTreeToNodeHeights(root, m_initial.get().m_trait.get());
-        } else if (m_trait.get() == null) {
+        } else if (m_trait.get() == null && adjustTipHeightsWhenMissingDateTraits) {
         	// all nodes should be at zero height if no date-trait is available
         	for (int i = 0; i < getLeafNodeCount(); i++) {
         		getNode(i).setHeight(0);
@@ -132,9 +135,22 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         initAndValidate();
     }
 
-    public TreeParser(String newick) throws Exception { // agree JH, and tree.toString() not giving leaf node names as taxa name, has to call tree.getTaxaNames()
+    /**
+     * @param newick a string representing a tree in newick format
+     */
+    public TreeParser(String newick) throws Exception {
+        this(newick, true);
+    }
+
+    /**
+     * @param newick a string representing a tree in newick format
+     * @param adjustTipHeights true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @throws Exception
+     */
+    public TreeParser(String newick, boolean adjustTipHeights) throws Exception {
         m_oNewick.setValue(newick, this);
-        m_bIsLabelledNewick.setValue(true, this);      // Q2R (JH) I think this is needed as well
+        m_bIsLabelledNewick.setValue(true, this);
+        this.adjustTipHeightsWhenMissingDateTraits = adjustTipHeights;
         initAndValidate();
     }
 
@@ -251,20 +267,23 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 return nIndex;
             }
         }
-        // perhaps it is an integer number indiicating the taxon id
+
+        // if createUnrecognizedTaxa==true, then do it now, otherwise labels will not be populated and
+        // out of bounds error will occur in m_sLabels later.
+        if (createUnrecognizedTaxa) {
+            m_sLabels.add(sStr);
+            int nIndex = m_sLabels.size() - 1;
+            checkTaxaIsAvailable(sStr, nIndex);
+            return nIndex;
+        }
+
+        // finally, check if its an integer number indicating the taxon id
         try {
             int nIndex = Integer.parseInt(sStr) - m_nOffset.get();
             checkTaxaIsAvailable(sStr, nIndex);
             return nIndex;
         } catch (NumberFormatException e) {
-        	// apparetnly not a number
-        }
-        // we have to create a new taxon, if this is allowed
-        if (createUnrecognizedTaxa) {
-        	m_sLabels.add(sStr);
-        	int nIndex = m_sLabels.size() - 1;
-            checkTaxaIsAvailable(sStr, nIndex);
-        	return nIndex;
+        	// apparently not a number
         }
         throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified. Perhaps taxa or taxonset is not specified?");
     }
@@ -488,5 +507,4 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
         return stateNodes;
     }
-
 } // class TreeParser
