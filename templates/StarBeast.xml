@@ -211,7 +211,7 @@
 ]]>
             <connect srcID='treeLikelihood.$(n)'         targetID='likelihood' inputName='distribution' if="isInitializing"/>
 
-            <connect srcID='treelog.t:$(n)'              targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='treelog.t:$(n)'              targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='RandomGeneTree.t:$(n)'       targetID='mcmc' inputName='init' if='inposterior(Tree.t:$(n))'/>
 
             <connect srcID='treePrior.t:$(n)'            targetID='speciescoalescent' inputName='distribution' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
@@ -260,7 +260,11 @@
 	        <connect srcID='Tree.t:$(n)'        targetID='updown.all' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all' inputName='up' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
-            <connect srcID='popSizeTopScaler' targetID='mcmc' inputName='operator' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+            <connect srcID='popSizeTopScaler' targetID='mcmc'  inputName='operator' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+            <connect srcID='popSizeTop'       targetID='state' inputName='stateNode' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+            <connect srcID='popSizeTop'       targetID='SpeciesTreePopSize.Species' inputName='topPopSize' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+            <connect srcID='popSizeTop'       targetID='SpeciesTreeLoggerX' inputName='popSizeTop' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+
             <connect srcID='Tree.t:$(n)'      targetID='treeTopFinder' inputName='tree' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='treeTopFinder'    targetID='treePrior.t:$(n)' inputName='treetop' if='SpeciesTreePopSize.Species/popFunction=linear'/>
 			<!-- 
@@ -287,7 +291,7 @@
 		</taxon>
 	</taxonset>
 
-	<tree spec='beast.evolution.tree.Tree' id='Tree.Species' taxonset='@taxonsuperset'/>
+	<tree spec='beast.evolution.tree.Tree' id='Tree.Species' taxonset='@taxonsuperset' estimate='true'/>
 
 	<treetop spec='TreeTopFinder' id='treeTopFinder'/>
 
@@ -357,7 +361,7 @@
         </logger>
 
 		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="5000" mode="tree">
-		    <log spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@Tree.Species" speciesTreePrior='@SpeciesTreePopSize.Species' treetop='@treeTopFinder'/>
+		    <log id='SpeciesTreeLoggerX' spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@Tree.Species" speciesTreePrior='@SpeciesTreePopSize.Species' treetop='@treeTopFinder'/>
 		</logger>
 
         <logger id='screenlog' logEvery="5000">
@@ -367,6 +371,14 @@
             <log idref="likelihood"/>
             <log idref="prior"/>
         </logger>
+
+
+        <init spec='beast.evolution.tree.RandomTree' id='RandomTree.Species' estimate='false' initial='@Tree.Species' taxonset='@taxonsuperset'>
+            <populationModel id='ConstantPopulation0.Species' spec='ConstantPopulation'>
+        		<popSize id='randomPopSize.Species' spec='parameter.RealParameter' value='1'/>
+            </populationModel>
+        </init>
+
     </run>
 
 </beast>
