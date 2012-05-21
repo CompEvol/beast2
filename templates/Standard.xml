@@ -228,17 +228,17 @@
             <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
             <connect srcID='YuleBirthRateScaler.t:$(n)'       targetID='mcmc' inputName='operator' if='inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'>Scales birth rate of Yule prior for partition t:$(n)</connect>
 
-            <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Estimates tip dates for tree t:$(n)</connect>
+            <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Estimates tip dates for tree t:$(n)</connect>
 
-            <connect srcID='treeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Scales all internal nodes for tree t:$(n)</connect>
-            <connect srcID='treeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Scales root node for tree t:$(n)</connect>
-            <connect srcID='UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Draws new internal node heights uniformally for tree t:$(n)</connect>
-            <connect srcID='SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Performs subtree slide rearrangement of tree t:$(n)</connect>
-            <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
-            <connect srcID='wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
-            <connect srcID='WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
+            <connect srcID='treeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+            <connect srcID='treeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>
+            <connect srcID='UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Draws new internal node heights uniformally for tree t:$(n)</connect>
+            <connect srcID='SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs subtree slide rearrangement of tree t:$(n)</connect>
+            <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
+            <connect srcID='wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
+            <connect srcID='WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
 
-            <connect srcID='treeLikelihood.$(n)'            targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='treeLikelihood.$(n)'              targetID='tracelog' inputName='log'/>
             <connect srcID='TreeHeight.t:$(n)'                targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n))'/>
             <connect srcID='proportionInvariant.s:$(n)'       targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
             <connect srcID='mutationRate.s:$(n)'              targetID='tracelog' inputName='log' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>

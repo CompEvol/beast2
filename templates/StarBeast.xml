@@ -238,7 +238,7 @@
             <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
             <connect srcID='treeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='treeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n))'>Scales root node for tree t:$(n)</connect>
+            <connect srcID='treeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>
             <connect srcID='UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
