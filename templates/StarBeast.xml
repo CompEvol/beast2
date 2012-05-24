@@ -260,6 +260,8 @@
 	        <connect srcID='Tree.t:$(n)'        targetID='updown.all' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all' inputName='up' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
+	        <connect srcID='popSizeTop' targetID='updown.all' inputName='down' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+
             <connect srcID='popSizeTopScaler' targetID='mcmc'  inputName='operator' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='popSizeTop'       targetID='state' inputName='stateNode' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='popSizeTop'       targetID='SpeciesTreePopSize.Species' inputName='topPopSize' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
