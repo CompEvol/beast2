@@ -120,6 +120,7 @@ public class PriorListInputEditor extends ListInputEditor {
         super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 
         m_addButton = new SmallButton("+", true);
+        m_addButton.setName("addItem");
         m_addButton.setToolTipText("Add item to the list");
         m_addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

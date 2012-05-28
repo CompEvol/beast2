@@ -133,6 +133,7 @@ public class TaxonSetDialog extends JDialog {
         Box box = Box.createHorizontalBox();
         box.add(new JLabel("Taxon set label:"));
         idEntry = new JTextField();
+        idEntry.setName("idEntry");
         idEntry.setText(sID);
         box.add(idEntry);
         idEntry.getDocument().addDocumentListener(new DocumentListener() {
@@ -162,6 +163,7 @@ public class TaxonSetDialog extends JDialog {
         // list of taxa to select from
         listModel1 = new DefaultListModel();
         listOfTaxonCandidates = new JList(listModel1);
+        listOfTaxonCandidates.setName("listOfTaxonCandidates");
         listOfTaxonCandidates.setBorder(BorderFactory.createEtchedBorder());
         JScrollPane scroller = new JScrollPane(listOfTaxonCandidates);
         box.add(scroller);
@@ -170,6 +172,7 @@ public class TaxonSetDialog extends JDialog {
         Box buttonBox = Box.createVerticalBox();
         buttonBox.add(Box.createGlue());
         JButton selectButton = new JButton(">>");
+        selectButton.setName(">>");
         selectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int[] nSelected = listOfTaxonCandidates.getSelectedIndices();
@@ -183,6 +186,7 @@ public class TaxonSetDialog extends JDialog {
         });
         buttonBox.add(selectButton);
         JButton deselectButton = new JButton("<<");
+        deselectButton.setName("<<");
         deselectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int[] nSelected = listOfTaxonSet.getSelectedIndices();
@@ -211,6 +215,7 @@ public class TaxonSetDialog extends JDialog {
         Box cancelOkBox = Box.createHorizontalBox();
         cancelOkBox.setBorder(new EtchedBorder());
         JButton okButton = new JButton("Ok");
+        okButton.setName("OK");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 taxonSet.setID(sID);
@@ -226,6 +231,7 @@ public class TaxonSetDialog extends JDialog {
             }
         });
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setName("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();

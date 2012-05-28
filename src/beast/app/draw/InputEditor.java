@@ -224,6 +224,7 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
 
     void setUpEntry() {
         m_entry = new JTextField();
+        m_entry.setName(m_input.getName());
         Dimension size = new Dimension(100, 20);
         m_entry.setMinimumSize(size);
         m_entry.setPreferredSize(size);

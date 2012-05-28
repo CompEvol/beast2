@@ -16,12 +16,16 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -770,7 +774,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		isInitialising = false;
 	}
 
-	public static void main(String[] args) {
+	public static Beauti main2(String[] args) {
 		try {
 			AddOnManager.loadExternalJars();
 			Utils.loadUIManager();
@@ -778,7 +782,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
 			BeautiDoc doc = new BeautiDoc();
 			if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
-				return;
+				return null;
 			}
 
 			// boolean lafLoaded = false;
@@ -897,7 +901,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			beauti.refreshPanel();
 			JFrame frame = new JFrame("BEAUti 2: " + doc.getTemplateName() + " " + doc.getFileName());
 			beauti.frame = frame;
-			frame.setIconImage(BeautiPanel.getIcon(0, null).getImage());
+			ImageIcon icon = BeautiPanel.getIcon(0, null);
+			if (icon != null) {
+				frame.setIconImage(icon.getImage());
+			}
 
 			JMenuBar menuBar = beauti.makeMenuBar();
 			frame.setJMenuBar(menuBar);
@@ -921,10 +928,60 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 					System.exit(0);
 				}
 			});
+			
+			
+//			Toolkit toolkit = Toolkit.getDefaultToolkit();
+////			PropertyChangeListener plistener = new PropertyChangeListener() {
+////				@Override
+////				public void propertyChange(PropertyChangeEvent event) {
+////					Object o = event.getSource();
+////					Object o2 = event.getNewValue();
+////					event.getPropertyName();
+////					System.err.println(">>> " + event.getPropertyName() + " " + o.getClass().getName() + "\n" + o2.getClass().getName());
+////				}
+////			};
+//			AWTEventListener listener = new AWTEventListener() {
+//				@Override
+//				public void eventDispatched(AWTEvent event) {
+//					Object o = event.getSource();
+//					String label = "";
+//			        try {
+//			            Method method = o.getClass().getMethod("getText", Object.class);
+//			            label = (String) method.invoke(o);
+//			        } catch (Exception e) {
+//						// TODO: handle exception
+//					}
+//			        if (event.paramString().matches(".*\\([0-9]*,[0-9]*\\).*")) {
+//			        	String s = event.paramString();
+//			        	String sx = s.substring(s.indexOf('(') + 1);
+//			        	String sy = sx;
+//			        	sx = sx.substring(0, sx.indexOf(','));
+//			        	sy = sy.substring(sy.indexOf(',') + 1, sy.indexOf(')'));
+//			        	int x = Integer.parseInt(sx);
+//			        	int y = Integer.parseInt(sy);
+//			        	Component c = beauti.findComponentAt(x, y);
+//			        	if (c != null) {
+//			        		System.err.println(c.getClass().getName());
+//			        	}
+//			        }
+//			        
+//					System.err.println(label + " " + event.paramString() + " " + o.getClass().getName());
+//					
+//				}
+//			};
+//			toolkit.addAWTEventListener(listener, AWTEvent.ACTION_EVENT_MASK|AWTEvent.ITEM_EVENT_MASK|AWTEvent.MOUSE_EVENT_MASK);
+////			beauti.addPropertyChangeListener(plistener);
+
+			return beauti;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	} // main
+		return null;
+	} // main2
+	
+	public static void main(String[] args) {
+		main2(args);
+	}
 
 } // class Beauti
 

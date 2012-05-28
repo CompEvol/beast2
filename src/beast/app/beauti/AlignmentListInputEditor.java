@@ -127,6 +127,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		Box buttonBox = Box.createHorizontalBox();
 
 		m_addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
+		m_addButton.setName("+");
 		m_addButton.setToolTipText("Add item to the list");
 		m_addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -138,6 +139,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		buttonBox.add(Box.createHorizontalStrut(5));
 
 		JButton delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
+		delButton.setName("-");
 		delButton.setToolTipText("Delete selected items from the list");
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -152,6 +154,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		buttonBox.add(Box.createHorizontalStrut(5));
 
 		JButton splitButton = new JButton("Split");
+		splitButton.setName("Split");
 		splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
 		splitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -178,6 +181,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	private void addLinkUnlinkPair(Box box, String sLabel) {
 		JButton linkSModelButton = new JButton("Link " + sLabel);
+		linkSModelButton.setName("Link " + sLabel);
 		linkSModelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -190,6 +194,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(linkSModelButton);
 		linkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
 		JButton unlinkSModelButton = new JButton("Unlink " + sLabel);
+		unlinkSModelButton.setName("Unlink " + sLabel);
 		unlinkSModelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -577,6 +582,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
+		table.setName("alignmenttable");
 
 		setUpComboBoxes();
 

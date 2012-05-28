@@ -2,6 +2,7 @@ package beast.app.draw;
 
 
 import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.BeautiPanel;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -13,6 +14,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +28,7 @@ public class ListInputEditor extends InputEditor.Base {
     {
         try {
             java.net.URL downURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "down.png");
-            DOWN_ICON = ImageIO.read(downURL);
+            DOWN_ICON = ImageIO.read(downURL); 
             java.net.URL leftURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "left.png");
             LEFT_ICON = ImageIO.read(leftURL);
         } catch (Exception e) {
@@ -130,6 +132,7 @@ public class ListInputEditor extends InputEditor.Base {
         Box box = Box.createHorizontalBox();
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
             m_addButton = new SmallButton("+", true);
+            m_addButton.setName("+");
             m_addButton.setToolTipText("Add item to the list");
             m_addButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -185,6 +188,7 @@ public class ListInputEditor extends InputEditor.Base {
 
 
         SmallButton editButton = new SmallButton("e", true, SmallButton.ButtonType.square);
+        editButton.setName(plugin.getID() + ".editButton");
         if (m_bExpandOption == ExpandOption.FALSE || m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() > 1) {
             editButton.setToolTipText("Edit item in the list");
             editButton.addActionListener(new ActionListenerObject(plugin) {
@@ -233,21 +237,33 @@ public class ListInputEditor extends InputEditor.Base {
                     SmallButton editButton = (SmallButton) e.getSource();
                     m_box.setVisible(!m_box.isVisible());
                     if (m_box.isVisible()) {
+                        try {
                         editButton.setImg(DOWN_ICON);
+                        }catch (Exception e2) {
+							// TODO: handle exception
+						}
                         g_collapsedIDs.remove(m_plugin.getID());
                     } else {
+                    	try {
                         editButton.setImg(LEFT_ICON);
+	                    }catch (Exception e2) {
+							// TODO: handle exception
+						}
                         g_collapsedIDs.add(m_plugin.getID());
                     }
                 }
             });
             String sID = plugin.getID();
             expandBox.setVisible(!g_collapsedIDs.contains(sID));
+            try {
             if (expandBox.isVisible()) {
                 editButton.setImg(DOWN_ICON);
             } else {
                 editButton.setImg(LEFT_ICON);
             }
+            } catch (Exception e) {
+				// TODO: handle exception
+			}
 
 
         } else {

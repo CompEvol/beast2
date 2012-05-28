@@ -84,6 +84,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 
         List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
+        comboBox.setName(sText+".distr");
 
         if (prior.m_distInput.get() != null) {
             String sID = prior.m_distInput.get().getID();
@@ -123,11 +124,12 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         });
         itemBox.add(comboBox);
 
-        JCheckBox isEstimatedBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.m_bIsMonophyleticInput.getName()));
-        isEstimatedBox.setSelected(prior.m_bIsMonophyleticInput.get());
-        isEstimatedBox.setToolTipText(prior.m_bIsMonophyleticInput.getTipText());
-        isEstimatedBox.addActionListener(new MRCAPriorActionListener(prior));
-        itemBox.add(isEstimatedBox);
+        JCheckBox isMonophyleticdBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.m_bIsMonophyleticInput.getName()));
+        isMonophyleticdBox.setName(sText+".isMonophyletic");
+        isMonophyleticdBox.setSelected(prior.m_bIsMonophyleticInput.get());
+        isMonophyleticdBox.setToolTipText(prior.m_bIsMonophyleticInput.getTipText());
+        isMonophyleticdBox.addActionListener(new MRCAPriorActionListener(prior));
+        itemBox.add(isMonophyleticdBox);
         itemBox.add(Box.createGlue());
 
         add(itemBox);

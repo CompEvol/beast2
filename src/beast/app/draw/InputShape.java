@@ -84,7 +84,7 @@ public class InputShape extends Shape {
             }
             g.setStroke(new BasicStroke(m_nPenWidth));
             g.setColor(m_pencolor);
-            g.drawOval(m_x, m_y, m_w, m_h);
+            //g.drawOval(m_x, m_y, m_w, m_h);
             g.setFont(g_InputFont);
             if (getLabel() != null) {
                 FontMetrics fm = g.getFontMetrics(g.getFont());
