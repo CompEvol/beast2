@@ -18,6 +18,10 @@
 	<property name="report" value="${build}/junitreport" />
 
 	<path id="classpath">
+		<fileset dir="${lib}" includes="jam.jar" />
+	</path>
+
+	<path id="testclasspath">
 		<fileset dir="${lib}" includes="**/*.jar" />
 	</path>
 
@@ -57,7 +61,7 @@
 		       target="1.6"
 		       srcdir="${src}"
 		       destdir="${build}"
-		       classpathref="classpath"
+		       classpathref="testclasspath"
 		       fork="true"
 		       memoryinitialsize="256m"
 		       memorymaximumsize="1024m">
@@ -115,7 +119,7 @@
 		<junit printsummary="yes">
 			<!--showoutput='yes'-->
 			<classpath>
-				<path refid="classpath" />
+				<path refid="testclasspath" />
 				<path location="${build}" />
 			</classpath>
 
@@ -125,6 +129,7 @@
 				<fileset dir="${src}">
 					<include name="test/**/*Test.java" />
                     <exclude name="test/beast/beast2vs1/**/*Test.java"/>
+                    <exclude name="test/beast/app/beauti/**/*Test.java"/>
 				</fileset>
 			</batchtest>
 		</junit>
@@ -137,6 +142,28 @@
 			<report format="frames" todir="${report}" />
 		</junitreport>
 		<echo message="JUnit test report finished." />
+	</target>
+
+
+	<!-- testing beauti gui-->
+	<target name="junitb">
+		<mkdir dir="${report}" />
+		<junit printsummary="yes">
+			<!--showoutput='yes'-->
+			<classpath>
+				<path refid="testclasspath" />
+				<path location="${build}" />
+			</classpath>
+
+			<formatter type="xml" />
+
+			<batchtest fork="yes" todir="${report}">
+				<fileset dir="${src}">
+                    <include name="test/beast/app/beauti/**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo message="JUnit test finished." />
 	</target>
 
 
