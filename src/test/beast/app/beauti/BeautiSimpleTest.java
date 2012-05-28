@@ -27,7 +27,7 @@ public class BeautiSimpleTest extends BeautiBase {
 	public void simpleTest() throws Exception {
 		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
 		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("../beast2/examples/nexus"));
+		fileChooser.setCurrentDirectory(new File("examples/nexus"));
 		fileChooser.selectFile(new File("anolis.nex")).approve();
 
 		// load anolis.nex

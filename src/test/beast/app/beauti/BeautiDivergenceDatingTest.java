@@ -37,7 +37,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		// 0. Load primate-mtDNA.nex
 		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
 		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("../beast2/examples/nexus"));
+		fileChooser.setCurrentDirectory(new File("examples/nexus"));
 		fileChooser.selectFile(new File("primate-mtDNA.nex")).approve();
 
 		// load anolis.nex
