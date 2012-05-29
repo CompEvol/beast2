@@ -297,6 +297,24 @@ public class Tree extends StateNode {
         }
     }
 
+     /**
+     * copy meta data matching sPattern to double array
+     *
+     * @param node     the node
+     * @param fT       the integer array to be filled with meta data
+     * @param sPattern the name of the meta data
+     */
+    public void getMetaData(Node node, Integer[] fT, String sPattern) {
+        fT[Math.abs(node.getNr())] = (Integer) node.getMetaData(sPattern);
+        if (!node.isLeaf()) {
+            getMetaData(node.getLeft(), fT, sPattern);
+            if (node.getRight() != null) {
+                getMetaData(node.getRight(), fT, sPattern);
+            }
+        }
+    }
+
+
     /**
      * traverse tree and assign meta-data values in fT to nodes in the
      * tree to the meta-data field represented by the given pattern.
