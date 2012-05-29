@@ -15,7 +15,7 @@
 	<property name="dist" location="../beast2/${build}/dist" />
 
 	<property name="main_class_BEAST" value="beast.app.beastapp.BeastMain" />
-	<property name="report" value="${build}/junitreport" />
+	<property name="report" value="build/junitreport" />
 
 	<path id="classpath">
 		<fileset dir="${lib}" includes="**/*.jar" />
