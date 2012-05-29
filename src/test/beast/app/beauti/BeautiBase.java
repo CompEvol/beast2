@@ -20,6 +20,7 @@ import org.fest.swing.junit.testcase.FestSwingJUnitTestCase;
 import beast.app.beauti.Beauti;
 import beast.app.beauti.BeautiDoc;
 import beast.core.Distribution;
+import beast.core.Logger;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.Plugin;
@@ -73,6 +74,13 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		List<Operator> operators = mcmc.operatorsInput.get();
 		return "assertOperatorsEqual" + pluginListAsString(operators);
 	}
+	
+	String traceLogAsString() {
+		Logger logger = (Logger) doc.pluginmap.get("tracelog");
+		List<Plugin> logs = logger.m_pLoggers.get();
+		return "assertTraceLogEqual" + pluginListAsString(logs);
+	}
+
 	
 	private String pluginListAsString(List<?> list) {
 		if (list.size() == 0) {
@@ -129,9 +137,24 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 					found = true;
 				}
 			}
-			assertThat(found);
+			assertThat(found).as("Could not find plugin with ID " + id).isEqualTo(true);
 		}
-		assertThat(ids.length == operators.size());
+		assertThat(ids.length).as("list of plugins do not match").isEqualTo(operators.size());
+	}
+
+	void assertTraceLogEqual(String... ids) {
+		Logger logger = (Logger) doc.pluginmap.get("tracelog");
+		List<Plugin> logs = logger.m_pLoggers.get();
+		for (String id : ids) {
+			boolean found = false;
+			for (Plugin node : logs) {
+				if (node.getID().equals(id)) {
+					found = true;
+				}
+			}
+			assertThat(found).as("Could not find plugin with ID " + id).isEqualTo(true);
+		}
+		assertThat(ids.length).as("list of plugins do not match").isEqualTo(logs.size());
 	}
 
 	void assertArrayEquals(Object [] o, String array) {
@@ -149,7 +172,9 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		System.err.println(stateAsString());
 		System.err.println(operatorsAsString());
 		System.err.println(priorsAsString());
+		System.err.println(traceLogAsString());
 	}
+
 
 	void printTableContents(JTableFixture t) {
 		String [][] contents = t.contents();

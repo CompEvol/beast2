@@ -46,6 +46,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		assertStateEquals("Tree.t:anolis", "birthRate.t:anolis");
 		assertOperatorsEqual("YuleBirthRateScaler.t:anolis", "allTipDatesRandomWalker.t:anolis", "treeScaler.t:anolis", "treeRootScaler.t:anolis", "UniformOperator.t:anolis", "SubtreeSlide.t:anolis", "narrow.t:anolis", "wide.t:anolis", "WilsonBalding.t:anolis");
 		assertPriorsEqual("YuleModel.t:anolis", "YuleBirthRatePrior.t:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "YuleModel.t:anolis", "birthRate.t:anolis");
 		
 		
 		
@@ -59,6 +60,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		assertStateEquals("Tree.t:anolis", "birthRate.t:anolis", "kappa.s:anolis", "freqParameter.s:anolis");
 		assertOperatorsEqual("YuleBirthRateScaler.t:anolis", "allTipDatesRandomWalker.t:anolis", "treeScaler.t:anolis", "treeRootScaler.t:anolis", "UniformOperator.t:anolis", "SubtreeSlide.t:anolis", "narrow.t:anolis", "wide.t:anolis", "WilsonBalding.t:anolis", "KappaScaler.s:anolis", "FrequenciesExchanger.s:anolis");
 		assertPriorsEqual("YuleModel.t:anolis", "YuleBirthRatePrior.t:anolis", "KappaPrior.s:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "YuleModel.t:anolis", "birthRate.t:anolis", "kappa.s:anolis", "freqParameter.s:anolis");
 
 		// Set the site model to HKY (G4) (estimated)
 		f.selectTab("Site Model");
@@ -68,6 +70,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		assertStateEquals("Tree.t:anolis", "birthRate.t:anolis", "kappa.s:anolis", "freqParameter.s:anolis");
 		assertOperatorsEqual("YuleBirthRateScaler.t:anolis", "allTipDatesRandomWalker.t:anolis", "treeScaler.t:anolis", "treeRootScaler.t:anolis", "UniformOperator.t:anolis", "SubtreeSlide.t:anolis", "narrow.t:anolis", "wide.t:anolis", "WilsonBalding.t:anolis", "KappaScaler.s:anolis", "FrequenciesExchanger.s:anolis");
 		assertPriorsEqual("YuleModel.t:anolis", "YuleBirthRatePrior.t:anolis", "KappaPrior.s:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "YuleModel.t:anolis", "birthRate.t:anolis", "kappa.s:anolis", "freqParameter.s:anolis");
 
 		f.selectTab("Site Model");
 		JCheckBoxFixture shapeIsEstimated = beautiFrame.checkBox("shape.isEstimated");
@@ -76,6 +79,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		assertStateEquals("Tree.t:anolis", "birthRate.t:anolis", "kappa.s:anolis", "gammaShape.s:anolis", "freqParameter.s:anolis");
 		assertOperatorsEqual("YuleBirthRateScaler.t:anolis", "allTipDatesRandomWalker.t:anolis", "treeScaler.t:anolis", "treeRootScaler.t:anolis", "UniformOperator.t:anolis", "SubtreeSlide.t:anolis", "narrow.t:anolis", "wide.t:anolis", "WilsonBalding.t:anolis", "KappaScaler.s:anolis", "gammaShapeScaler.s:anolis", "FrequenciesExchanger.s:anolis");
 		assertPriorsEqual("YuleModel.t:anolis", "YuleBirthRatePrior.t:anolis", "KappaPrior.s:anolis", "GammaShapePrior.s:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "YuleModel.t:anolis", "birthRate.t:anolis", "kappa.s:anolis", "gammaShape.s:anolis", "freqParameter.s:anolis");
 
 		// rename tree from 'anolis' to 'tree'
 		f.selectTab("Partitions");
@@ -90,6 +94,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:anolis", "gammaShape.s:anolis", "freqParameter.s:anolis");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "allTipDatesRandomWalker.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:anolis", "gammaShapeScaler.s:anolis", "FrequenciesExchanger.s:anolis");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "GammaShapePrior.s:anolis", "KappaPrior.s:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "kappa.s:anolis", "gammaShape.s:anolis", "freqParameter.s:anolis");
 		
 		// Create a Normal calibration prior and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.
 		f.selectTab("Priors");
