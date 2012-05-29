@@ -8,22 +8,24 @@
 	</description>
 
 	<!-- set global properties for this build -->
-	<property name="src" location="src" />
-	<property name="build" location="build" />
-	<property name="lib" location="lib" />
-	<property name="doc" location="doc" />
-	<property name="dist" location="${build}/dist" />
+	<property name="src" location="../beast2/src" />
+	<property name="build" location="../beast2/build" />
+	<property name="lib" location="../beast2/lib" />
+	<property name="doc" location="../beast2/doc" />
+	<property name="dist" location="../beast2/${build}/dist" />
 
 	<property name="main_class_BEAST" value="beast.app.beastapp.BeastMain" />
 	<property name="report" value="${build}/junitreport" />
 
 	<path id="classpath">
-		<fileset dir="${lib}" includes="jam.jar" />
+		<fileset dir="${lib}" includes="**/*.jar" />
 	</path>
 
+<!--
 	<path id="testclasspath">
 		<fileset dir="${lib}" includes="**/*.jar" />
 	</path>
+-->
 
 	<!-- start -->
 	<target name="init">
@@ -61,10 +63,11 @@
 		       target="1.6"
 		       srcdir="${src}"
 		       destdir="${build}"
-		       classpathref="testclasspath"
+		       classpathref="classpath"
 		       fork="true"
 		       memoryinitialsize="256m"
-		       memorymaximumsize="1024m">
+		       memorymaximumsize="1024m"
+			   includeAntRuntime='false'>
 			<include name="beast/**/**" />
 			<!-- apache commons math -->
 			<include name="org/**/**" />
@@ -119,7 +122,7 @@
 		<junit printsummary="yes">
 			<!--showoutput='yes'-->
 			<classpath>
-				<path refid="testclasspath" />
+				<path refid="classpath" />
 				<path location="${build}" />
 			</classpath>
 
@@ -151,7 +154,7 @@
 		<junit printsummary="yes">
 			<!--showoutput='yes'-->
 			<classpath>
-				<path refid="testclasspath" />
+				<path refid="classpath" />
 				<path location="${build}" />
 			</classpath>
 
