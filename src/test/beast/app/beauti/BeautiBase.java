@@ -98,6 +98,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	}
 
 	void assertPriorsEqual(String... ids) {
+		System.err.println("assertPriorsEqual");
 		CompoundDistribution prior = (CompoundDistribution) doc.pluginmap.get("prior");
 		List<Distribution> priors = prior.pDistributions.get();
 		for (String id : ids) {
@@ -113,6 +114,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	}
 
 	void assertStateEquals(String... ids) {
+		System.err.println("assertStateEquals");
 		State state = (State) doc.pluginmap.get("state");
 		List<StateNode> stateNodes = state.stateNodeInput.get();
 		for (String id : ids) {
@@ -128,6 +130,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	}
 
 	void assertOperatorsEqual(String... ids) {
+		System.err.println("assertOperatorsEqual");
 		MCMC mcmc = (MCMC) doc.mcmc.get();
 		List<Operator> operators = mcmc.operatorsInput.get();
 		for (String id : ids) {
@@ -143,6 +146,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	}
 
 	void assertTraceLogEqual(String... ids) {
+		System.err.println("assertTraceLogEqual");
 		Logger logger = (Logger) doc.pluginmap.get("tracelog");
 		List<Plugin> logs = logger.m_pLoggers.get();
 		for (String id : ids) {
@@ -198,4 +202,9 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		}
 	}
 
+	void warning(String str) {
+		System.err.println("\n\n=====================================================\n");
+		System.err.println(str);
+		System.err.println("\n=====================================================\n\n");
+	}
 }

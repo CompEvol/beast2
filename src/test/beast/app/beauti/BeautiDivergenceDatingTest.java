@@ -35,6 +35,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		long t0 = System.currentTimeMillis();
 		
 		// 0. Load primate-mtDNA.nex
+		warning("// 0. Load primate-mtDNA.nex");
 		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
 		JFileChooserFixture fileChooser = findFileChooser().using(robot());
 		fileChooser.setCurrentDirectory(new File("examples/nexus"));
@@ -66,6 +67,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		
 		
 		//1. Delete "coding" partition as it covers the same sites as the 1stpos, 2ndpos and 3rdpos partitions.
+		warning("1. Delete \"coding\" partition as it covers the same sites as the 1stpos, 2ndpos and 3rdpos partitions.");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
 		t.selectCell(TableCell.row(0).column(0));
@@ -81,6 +83,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:1stpos", "YuleModel.t:2ndpos", "YuleModel.t:3rdpos", "YuleModel.t:noncoding", "YuleBirthRatePrior.t:1stpos", "YuleBirthRatePrior.t:2ndpos", "YuleBirthRatePrior.t:3rdpos", "YuleBirthRatePrior.t:noncoding", "ClockPrior.c:1stpos", "ClockPrior.c:2ndpos", "ClockPrior.c:3rdpos");
 
 		//2a. Link trees... 
+		warning("2a. Link trees...");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
 		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0), TableCell.row(3).column(0));
@@ -92,6 +95,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:noncoding", "YuleBirthRatePrior.t:noncoding", "ClockPrior.c:1stpos", "ClockPrior.c:2ndpos", "ClockPrior.c:3rdpos");
 
 		//2b. ...and call the tree "tree"
+		warning("2b. ...and call the tree \"tree\"");
 		f.selectTab("Partitions");
 		JTableCellFixture cell = beautiFrame.table().cell(TableCell.row(0).column(7));
 		Component editor = cell.editor();
@@ -111,6 +115,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 
 		
 		//3a. Link clocks 
+		warning("3a. Link clocks");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
 		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0), TableCell.row(3).column(0));
@@ -118,6 +123,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		linkClocksButton.click();
 
 		//3b. and call the uncorrelated relaxed molecular clock "clock"
+		warning("3b. and call the uncorrelated relaxed molecular clock \"clock\"");
 		cell = beautiFrame.table().cell(TableCell.row(0).column(6));
 		editor = cell.editor();
 		comboBox = new JComboBoxFixture(robot(), (JComboBox) editor);
@@ -135,6 +141,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
 
 		//4. Link site models temporarily in order to set the same model for all of them.
+		warning("4. Link site models temporarily in order to set the same model for all of them.");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
 		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0), TableCell.row(3).column(0));
@@ -150,6 +157,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
 
 		//5. Set the site model to HKY+G4 (estimated)
+		warning("5. Set the site model to HKY+G4 (estimated)");
 		f.selectTab("Site Model");
 		JComboBoxFixture substModel = beautiFrame.comboBox();
 		substModel.selectItem("HKY");
@@ -169,6 +177,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "KappaPrior.s:noncoding", "GammaShapePrior.s:noncoding");
 		
 		//6a. Unlink the site models,
+		warning("6a. Unlink the site models,");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
 		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0), TableCell.row(3).column(0));
@@ -180,6 +189,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree]");
 
 		//6b. and make sure that site model mutation rates are relative to 3rdpos (i.e. 3rdpos.mutationRate = 1, other 3 estimated).
+		warning("6b. and make sure that site model mutation rates are relative to 3rdpos (i.e. 3rdpos.mutationRate = 1, other 3 estimated).");
 		f.selectTab("Site Model");
 		JListFixture partitionList = beautiFrame.list();
 		partitionList.selectItem("noncoding");
@@ -210,6 +220,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "treeLikelihood.1stpos", "treeLikelihood.2ndpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "freqParameter.s:2ndpos", "freqParameter.s:noncoding", "freqParameter.s:3rdpos", "freqParameter.s:1stpos");
 
 		//7a. Create a Normal calibration prior 
+		warning("7a. Create a Normal calibration prior");
 		f.selectTab("Priors");
 		Component c = beautiFrame.robot.finder().findByName("addItem");
 		JButtonFixture addButton = new JButtonFixture(robot(), (JButton) c);
@@ -226,6 +237,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "treeLikelihood.1stpos", "treeLikelihood.2ndpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "Human-Chimp.prior", "freqParameter.s:3rdpos", "freqParameter.s:2ndpos", "freqParameter.s:noncoding", "freqParameter.s:1stpos");
 		
 		//7b. and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.
+		warning("7b. and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.");
 		f.selectTab("Priors");
 		beautiFrame.checkBox("Human-Chimp.prior.isMonophyletic").click();
 		beautiFrame.comboBox("Human-Chimp.prior.distr").selectItem("Normal");
@@ -239,6 +251,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "treeLikelihood.1stpos", "treeLikelihood.2ndpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "Human-Chimp.prior", "clockRate.c:clock", "freqParameter.s:3rdpos", "freqParameter.s:2ndpos", "freqParameter.s:noncoding", "freqParameter.s:1stpos");
 
 		//8. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree
+		warning("8. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree");
 		File fout = new File(org.fest.util.Files.temporaryFolder() + "/primates.xml");
 		if (fout.exists()) {
 			fout.delete();

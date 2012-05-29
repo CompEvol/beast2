@@ -212,6 +212,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         Box buttonBox = Box.createHorizontalBox();
 
         JButton fillDownButton = new JButton("Fill down");
+        fillDownButton.setName("Fill down");
         fillDownButton.setToolTipText("replaces all taxons in selection with the one that is selected at the top");
         fillDownButton.addActionListener(new ActionListener() {
 
@@ -230,6 +231,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         });
 
         JButton guessButton = new JButton("Guess");
+        guessButton.setName("Guess");
         guessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -344,7 +346,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
 
     String m_sPattern = "^(.+)[-_\\. ](.*)$";
 
-    class GuessDlg extends JDialog {
+    public class GuessDlg extends JDialog {
         private static final long serialVersionUID = 1L;
 
         Component m_parent;
@@ -368,6 +370,9 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             group.add(b2);
             group.add(b3);
             group.setSelected(b1.getModel(), true);
+            b1.setName(b1.getText());
+            b2.setName(b2.getText());
+            b3.setName(b3.getText());
 
             guessPanel.add(createDelimiterBox(b1));
             guessPanel.add(Box.createVerticalStrut(20));
@@ -382,6 +387,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             box.add(b);
 
             JComboBox combo = new JComboBox(new String[]{"after first", "after last", "before first", "before last"});
+            combo.setName("delimiterCombo");
             box.add(Box.createHorizontalGlue());
             box.add(combo);
             combo.addActionListener(new ActionListener() {
@@ -394,6 +400,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             });
 
             JComboBox combo2 = new JComboBox(new String[]{".", ",", "_", "-", " ", "/", ":", ";"});
+            combo2.setName("delimiterCombo2");
             box.add(Box.createHorizontalGlue());
             box.add(combo2);
             combo2.addActionListener(new ActionListener() {
@@ -413,6 +420,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             box.add(b);
 
             JComboBox combo = new JComboBox(new String[]{"1","2","3","4","1-2","2-3","3-4","1-3","2-4"});
+            combo.setName("splitCombo");
             box.add(Box.createHorizontalGlue());
             box.add(combo);
             combo.addActionListener(new ActionListener() {
@@ -425,6 +433,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             });
 
             JComboBox combo2 = new JComboBox(new String[]{".", ",", "_", "-", " ", "/", ":", ";"});
+            combo2.setName("splitCombo2");
             box.add(Box.createHorizontalGlue());
             box.add(combo2);
             combo2.addActionListener(new ActionListener() {
@@ -476,6 +485,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
             final JDialog dialog = optionPane.createDialog(m_parent, title);
+        	dialog.setName("GuessTaxonSets");
             // dialog.setResizable(true);
             dialog.pack();
 

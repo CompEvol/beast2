@@ -249,16 +249,16 @@
             <connect srcID='treeLikelihood.$(n)'         targetID='tracelog' inputName='log'/>
             <connect srcID='treePrior.t:$(n)'            targetID='tracelog' inputName='log'/>
             <connect srcID='TreeHeight.t:$(n)'           targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='proportionInvariant.s:$(n)'  targetID='tracelog' inputName='log' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
-            <connect srcID='mutationRate.s:$(n)'         targetID='tracelog' inputName='log' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
-            <connect srcID='gammaShape.s:$(n)'           targetID='tracelog' inputName='log' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
-            <connect srcID='clockRate.c:$(n)'            targetID='tracelog' inputName='log' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='proportionInvariant.s:$(n)'  targetID='tracelog' inputName='log' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
+            <connect srcID='mutationRate.s:$(n)'         targetID='tracelog' inputName='log' if='inlikelihood(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
+            <connect srcID='gammaShape.s:$(n)'           targetID='tracelog' inputName='log' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
+            <connect srcID='clockRate.c:$(n)'            targetID='tracelog' inputName='log' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
-            <connect srcID='GammaShapePrior.s:$(n)'      targetID='prior' inputName='distribution' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
+            <connect srcID='GammaShapePrior.s:$(n)'      targetID='prior' inputName='distribution' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
             <connect srcID='Tree.t:$(n)'        targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
 
 	        <connect srcID='Tree.t:$(n)'        targetID='updown.all' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all' inputName='up' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all' inputName='up' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
 	        <connect srcID='popSizeTop' targetID='updown.all' inputName='down' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
 

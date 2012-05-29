@@ -341,7 +341,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		int nPartition = doc.getPartitionNr(sPartition, partitionID);
 		TreeLikelihood treeLikelihood = null;
 		if (nPartition >= 0) {
-			// we ar unlinking
+			// we ar linking
 			treeLikelihood = likelihoods[nPartition];
 		}
 		// (TreeLikelihood) doc.pluginmap.get("treeLikelihood." +
