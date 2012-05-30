@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import beast.app.draw.InputEditor;
 import beast.core.Input;
@@ -41,6 +42,8 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 //		return types.toArray(new Class[0]);
 //	}
 
+	ActionEvent m_e;
+	
 	@Override
 	public void init(Input<?> input, Plugin plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
@@ -67,6 +70,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 		List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin,
 				null, doc);
 		JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
+		comboBox.setName("TreeDistribution");
 
 		for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
 			if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i)._class)) {
@@ -92,11 +96,11 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 		comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-//				SwingUtilities.invokeLater(new Runnable() {
-//					@Override
-//					public void run() {
-						JComboBox currentComboBox = (JComboBox) e.getSource();
+				m_e = e;
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						JComboBox currentComboBox = (JComboBox) m_e.getSource();
 						@SuppressWarnings("unchecked")
 						List<Plugin> list = (List<Plugin>) m_input.get();
 						BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
@@ -108,9 +112,9 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 						}
 						sync();
 						refreshPanel();
-//					}
-//
-//				});
+					}
+
+				});
 			}
 		});
 		itemBox.add(comboBox);

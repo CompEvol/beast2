@@ -1112,7 +1112,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (o instanceof List) {
 				// System.err.println("   " + ((List)o).size());
 				if (((List<?>) o).contains(srcPlugin)) {
-					warning("   " + sTargetID + "/" + sInputName + " already contains " + srcPlugin.getID() + "\n");
+					warning("   " + sTargetID + "/" + sInputName + " already contains " + (srcPlugin == null ? "nulls" :srcPlugin.getID()) + "\n");
 					return;
 				}
 			}
@@ -1145,7 +1145,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				// System.err.println("   " + ((List)o).size());
 				for (int i = 0; i < list.size(); i++) {
 					if (list.get(i) == srcPlugin) {
-						warning("  DEL " + sTargetID + "/" + sInputName + " contains " + srcPlugin.getID() + "\n");
+						warning("  DEL " + sTargetID + "/" + sInputName + " contains " + (srcPlugin == null ? "null" : srcPlugin.getID()) + "\n");
 						list.remove(i);
 					}
 				}
