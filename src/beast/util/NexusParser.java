@@ -4,18 +4,23 @@ package beast.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.TraitSet;
+import beast.evolution.tree.Tree;
 
 
 //TODO: handle taxon sets
@@ -40,6 +45,10 @@ public class NexusParser {
     public Alignment m_alignment;
     public List<Alignment> m_filteredAlignments = new ArrayList<Alignment>();
     public TraitSet m_traitSet;
+    
+    public List<String> m_taxa;
+    public List<Tree> m_trees;
+    
     static Set<String> g_sequenceIDs;
 
     static {
@@ -69,6 +78,10 @@ public class NexusParser {
                     m_traitSet = parseCalibrationsBlock(fin);
                 } else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$")) {
                     parseAssumptionsBlock(fin);
+                } else if (sStr.toLowerCase().matches("^\\s*begin\\s+taxa;\\s*$")) {
+                    parseTaxaBlock(fin);
+                } else if (sStr.toLowerCase().matches("^\\s*begin\\s+trees;\\s*$")) {
+                    parseTreesBlock(fin);
                 }
             }
         } catch (Exception e) {
@@ -77,7 +90,69 @@ public class NexusParser {
         }
     } // parseFile
 
-    /**
+    private void parseTreesBlock(BufferedReader fin) throws Exception {
+    	m_trees = new ArrayList<Tree>();
+		// parse Newick tree file
+		String sStr = fin.readLine();
+		// skip translate block
+		while (fin.ready() && sStr.toLowerCase().indexOf("translate") < 0) {
+			sStr = fin.readLine();
+		}
+		while (fin.ready() && !sStr.toLowerCase().trim().equals(";")) {
+			sStr = fin.readLine();
+		}
+		
+		// read trees
+		while (fin.ready()) {
+			sStr = fin.readLine();
+			sStr = sStr.trim();
+			if (sStr.toLowerCase().startsWith("tree ")) {
+				int i = sStr.indexOf('(');
+				if (i > 0) {
+					sStr = sStr.substring(i);
+				}
+				try {
+					TreeParser treeParser = new TreeParser(m_taxa, sStr, 0);
+					m_trees.add(treeParser);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					TreeParser treeParser = new TreeParser(m_taxa, sStr, 1);
+					m_trees.add(treeParser);
+				}
+
+//				Node tree = treeParser.getRoot();
+//				tree.sort();
+//				tree.labelInternalNodes(nNrOfLabels);
+			}
+		}
+	}
+
+	private void parseTaxaBlock(BufferedReader fin) throws Exception {
+		m_taxa = new ArrayList<String>();
+		int nTaxaExpected = -1;
+        String sStr;
+        do {
+            sStr = nextLine(fin);
+            if (sStr.toLowerCase().matches("\\s*dimensions\\s.*")) {
+                sStr = sStr.substring(sStr.toLowerCase().indexOf("ntax=") + 5);
+                sStr = sStr.replaceAll(";", "");
+                nTaxaExpected = Integer.parseInt(sStr.trim());
+            } else if (sStr.toLowerCase().trim().equals("taxlabels")) {
+                do {
+                    sStr = nextLine(fin);
+                    sStr = sStr.replaceAll(";", "");
+                    sStr = sStr.trim();
+                    if (sStr.length() > 0 && !sStr.toLowerCase().equals("end")) {
+                    	m_taxa.add(sStr);
+                    }
+                } while (!sStr.toLowerCase().equals("end"));
+            }
+        } while (!sStr.toLowerCase().equals("end"));
+        if (nTaxaExpected >= 0 && m_taxa.size() != nTaxaExpected) {
+        	throw new Exception("Taxa block: # taxa is not equal to dimension");
+        }
+	}
+
+	/**
      * parse calibrations block and create TraitSet *
      */
     TraitSet parseCalibrationsBlock(BufferedReader fin) throws Exception {
@@ -416,10 +491,19 @@ public class NexusParser {
         try {
             NexusParser parser = new NexusParser();
             parser.parseFile(new File(args[0]));
-            String sXML = new XMLProducer().toXML(parser.m_alignment);
-            System.out.println(sXML);
+            if (parser.m_taxa != null) {
+            	System.out.println(parser.m_taxa.size() + " taxa");
+            	System.out.println(Arrays.toString(parser.m_taxa.toArray(new String[0])));
+            }
+            if (parser.m_trees != null) {
+            	System.out.println(parser.m_trees.size() + " trees");
+            }
+            if (parser.m_alignment!= null) {
+            	String sXML = new XMLProducer().toXML(parser.m_alignment);
+            	System.out.println(sXML);
+            }
             if (parser.m_traitSet != null) {
-                sXML = new XMLProducer().toXML(parser.m_traitSet);
+            	String sXML = new XMLProducer().toXML(parser.m_traitSet);
                 System.out.println(sXML);
             }
         } catch (Exception e) {

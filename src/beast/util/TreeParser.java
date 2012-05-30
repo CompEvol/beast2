@@ -47,7 +47,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     /**
      * labels of leafs *
      */
-    List<String> m_sLabels;
+    List<String> m_sLabels = null;
     /**
      * for memory saving, set to true *
      */
@@ -96,10 +96,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         	        if (tree.m_taxonset.get() != null) {
         	            m_sLabels = tree.m_taxonset.get().asStringList();
         	        } else {
-            			m_sLabels = null;
+            			// m_sLabels = null;
         	        }        			
         		} else {
-        			m_sLabels = null;
+        			// m_sLabels = null;
         		}
         	}
 //            m_bIsLabelledNewick = false;
@@ -136,6 +136,13 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public TreeParser(Alignment alignment, String newick) throws Exception {
         m_oData.setValue(alignment, this);
         m_oNewick.setValue(newick, this);
+        initAndValidate();
+    }
+
+    public TreeParser(List<String> taxaNames, String newick, int offset) throws Exception {
+    	m_sLabels = taxaNames;
+        m_oNewick.setValue(newick, this);
+    	m_nOffset.setValue(offset, this);
         initAndValidate();
     }
 
