@@ -142,7 +142,9 @@ public class NexusParser {
                     sStr = sStr.replaceAll(";", "");
                     sStr = sStr.trim();
                     if (sStr.length() > 0 && !sStr.toLowerCase().equals("end")) {
-                    	m_taxa.add(sStr);
+                    	for (String taxon : sStr.split("\\s+")) {
+                    		m_taxa.add(taxon);
+                    	}
                     }
                 } while (!sStr.toLowerCase().equals("end"));
             }
