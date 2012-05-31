@@ -892,6 +892,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			// go through all templates, and process connectors in relevant ones
 			boolean bProgress = true;
 			while (bProgress) {
+				warning("============================ start scrubbing ===========================");
 				bProgress = false;
 				setUpActivePlugins();
 

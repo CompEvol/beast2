@@ -51,12 +51,15 @@ public class PluginDialog extends JDialog {
     }
 
     /* to be called when Cancel is pressed **/
-    public void accept(Plugin plugin) {
+    public void accept(Plugin plugin, BeautiDoc doc) {
         try {
             for (Input<?> input : m_panel.m_plugin.listInputs()) {
                 plugin.setInputValue(input.getName(), input.get());
             }
             plugin.setID(m_panel.m_plugin.getID());
+            if (doc != null) {
+            	doc.addPlugin(plugin);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

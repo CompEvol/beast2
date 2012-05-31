@@ -84,7 +84,7 @@ public class PluginInputEditor extends InputEditor.Base {
                         dlg.setVisible(true);
                         if (dlg.getOK(doc)) {
                             try {
-                                dlg.accept((Plugin) m_input.get());
+                                dlg.accept((Plugin) m_input.get(), doc);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }

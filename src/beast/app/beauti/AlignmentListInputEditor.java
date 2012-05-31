@@ -866,6 +866,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		// do the actual deleting
 		for (int i = nSelected.length - 1; i >= 0; i--) {
 			int iRow = nSelected[i];
+			// TODO: before deleting, unlink site model, clock model and tree
 			getDoc().delAlignmentWithSubnet(alignments.get(iRow));
 			alignments.remove(iRow);
 		}

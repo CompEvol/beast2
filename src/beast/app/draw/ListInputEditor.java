@@ -383,7 +383,7 @@ public class ListInputEditor extends InputEditor.Base {
             //m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
             m_entries.get(i).setText(dlg.m_panel.m_plugin.getID());
             //o = dlg.m_panel.m_plugin;
-            dlg.accept((Plugin) o);
+            dlg.accept((Plugin) o, doc);
             refreshPanel();
         }
         PluginPanel.m_position.x -= 20;
