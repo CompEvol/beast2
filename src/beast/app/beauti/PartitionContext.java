@@ -32,12 +32,14 @@ public class PartitionContext {
 		String sID = treeLikelihoods.m_data.get().getID();
 		sID = BeautiDoc.parsePartition(sID);
 		this.partition = sID;
+		if (treeLikelihoods.m_pBranchRateModel.get() != null) {
+			sID = treeLikelihoods.m_pBranchRateModel.get().getID();
+			sID = BeautiDoc.parsePartition(sID);
+		}
+		this.clockModel = sID;
 		sID = treeLikelihoods.m_pSiteModel.get().getID();
 		sID = BeautiDoc.parsePartition(sID);
 		this.siteModel = sID;
-		sID = treeLikelihoods.m_pBranchRateModel.get().getID();
-		sID = BeautiDoc.parsePartition(sID);
-		this.clockModel = sID;
 		sID = treeLikelihoods.m_tree.get().getID();
 		sID = BeautiDoc.parsePartition(sID);
 		this.tree = sID;

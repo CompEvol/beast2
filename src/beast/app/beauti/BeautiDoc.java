@@ -1205,8 +1205,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		for (Distribution distr : likelihood.pDistributions.get()) {
 			if (distr instanceof TreeLikelihood) {
 				TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
-				alignments.add(treeLikelihood.m_data.get());
-				PartitionContext context = new PartitionContext(treeLikelihood);
+				alignments.add(treeLikelihood.m_data.get());				PartitionContext context = new PartitionContext(treeLikelihood);
 				sPartitionNames.add(context);
 				boolean found = false;
 				for (PartitionContext context2 : possibleContexts) {

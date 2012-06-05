@@ -15,8 +15,10 @@ import beast.app.draw.PluginPanel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.Logger;
 import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
 //import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
@@ -219,20 +221,38 @@ public class BeautiSubTemplate extends Plugin {
         if (this == doc.beautiConfig.partitionTemplate.get()) {
             // HACK: need to make sure the subst model is of the correct type
             Plugin treeLikelihood = doc.pluginmap.get("treeLikelihood." + context.partition);
-            //DataType dataType = ((TreeLikelihood) treeLikelihood).m_data.get().getDataType();
-            SiteModel.Base siteModel = ((TreeLikelihood) treeLikelihood).m_pSiteModel.get();
-            SubstitutionModel substModel = siteModel.m_pSubstModel.get();
-            try {
-                siteModel.canSetSubstModel(substModel);
-            } catch (Exception e) {
-                Object o = doc.createInput(siteModel, siteModel.m_pSubstModel, context);
-                try {
-                    siteModel.m_pSubstModel.setValue(o, siteModel);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+            if (treeLikelihood != null) {
+	            SiteModel.Base siteModel = ((TreeLikelihood) treeLikelihood).m_pSiteModel.get();
+	            SubstitutionModel substModel = siteModel.m_pSubstModel.get();
+	            try {
+	                siteModel.canSetSubstModel(substModel);
+	            } catch (Exception e) {
+	                Object o = doc.createInput(siteModel, siteModel.m_pSubstModel, context);
+	                try {
+	                    siteModel.m_pSubstModel.setValue(o, siteModel);
+	                } catch (Exception ex) {
+	                    ex.printStackTrace();
+	                }
+	            }
             }
 
+            // HACK2: rename file name for trace log if it has the default value
+            Logger logger = (Logger) doc.pluginmap.get("tracelog");
+            if (logger != null) {
+	            String fileName = logger.m_pFileName.get();
+	            if (fileName.startsWith("beast.") && treeLikelihood != null) {
+	            	Alignment data = ((TreeLikelihood)treeLikelihood).m_data.get();
+	            	while (data instanceof FilteredAlignment) {
+	            		data = ((FilteredAlignment) data).m_alignmentInput.get();
+	            	}
+	            	fileName = data.getID() + fileName.substring(5);
+	            	try {
+						logger.m_pFileName.setValue(fileName, logger);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+	            }
+            }
         }
 
         //System.err.println(new XMLProducer().toXML(plugin));
