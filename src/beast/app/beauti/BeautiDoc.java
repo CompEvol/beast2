@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,8 +13,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +42,6 @@ import beast.core.Input.Validate;
 import beast.core.MCMC;
 import beast.core.Plugin;
 import beast.core.StateNode;
-import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
@@ -646,12 +644,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	public String toXML() {
 		Set<Plugin> plugins = new HashSet<Plugin>();
-		for (Plugin plugin : pluginmap.values()) {
-			String sName = plugin.getClass().getName();
-			if (!sName.startsWith("beast.app.beauti")) {
-				plugins.add(plugin);
-			}
-		}
+//		for (Plugin plugin : pluginmap.values()) {
+//			String sName = plugin.getClass().getName();
+//			if (!sName.startsWith("beast.app.beauti")) {
+//				plugins.add(plugin);
+//			}
+//		}
 		String sXML = new XMLProducer().toXML(mcmc.get(), plugins);
 		return sXML + "\n";
 	}
@@ -1172,7 +1170,6 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public void delAlignmentWithSubnet(Alignment data) {
 		alignments.remove(data);
 		try {
-			BeautiSubTemplate template = beautiConfig.partitionTemplate.get();
 			PartitionContext context = null;
 			for (PartitionContext context2 : sPartitionNames) {
 				if (context2.partition.equals(data.getID())) {
@@ -1180,7 +1177,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					break;
 				}
 			}
+			BeautiSubTemplate template = beautiConfig.partitionTemplate.get();
 			template.removeSubNet(template, context);
+			for (BeautiSubTemplate template2 : beautiConfig.subTemplates) {
+				template2.removeSubNet(template2, context);
+			}
+			
 			// remove from possible contexts
 			PartitionContext [] contexts = possibleContexts.toArray(new PartitionContext[0]);
 			determinePartitions();
