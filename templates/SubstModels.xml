@@ -189,7 +189,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
             <connect srcID='clockRate.c:$(n)'  targetID='state' inputName='stateNode'          if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
             <connect srcID='ClockPrior.c:$(n)' targetID='prior' inputName='distribution'       if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>substitution rate of partition c:$(n)</connect>
             <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of partition c:$(n)</connect>
-            <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of partition c:$(n)</connect>
+            <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>Scale up substitution rate c:$(n) and scale down tree t:($n) </connect>
         </subtemplate>
 
 <!-- Relaxed clock exponential -->

@@ -449,23 +449,30 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			needsRePartition = (this.likelihoods[iRow].m_tree.get() != tree);
 System.err.println("needsRePartition = " + needsRePartition);			
 			if (needsRePartition) {
-				this.likelihoods[iRow].m_tree.get().m_bIsEstimated.setValue(false, this.likelihoods[iRow].m_tree.get());
-				
-				// remove old tree from model
 				Tree oldTree = this.likelihoods[iRow].m_tree.get();
-				for (Plugin plugin : oldTree.outputs.toArray(new Plugin[0])) {
-					for (Input<?> input : plugin.listInputs()) {
-						try {
-						if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
-							input.setValue(null, plugin);
-						} else if (input.get() instanceof List) {
-							List<?> list = (List) input.get();
-							if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
-								list.remove(oldTree);
+				List<Tree> tModels = new ArrayList<Tree>();
+				for (TreeLikelihood likelihood : likelihoods) {
+					if (likelihood.m_tree.get() == oldTree) {
+						tModels.add(likelihood.m_tree.get());
+					}
+				}
+				if (tModels.size() == 1) {
+					// remove old tree from model
+					oldTree.m_bIsEstimated.setValue(false, this.likelihoods[iRow].m_tree.get());
+					for (Plugin plugin : oldTree.outputs.toArray(new Plugin[0])) {
+						for (Input<?> input : plugin.listInputs()) {
+							try {
+							if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
+								input.setValue(null, plugin);
+							} else if (input.get() instanceof List) {
+								List<?> list = (List) input.get();
+								if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
+									list.remove(oldTree);
+								}
 							}
-						}
-						} catch (Exception e) {
-							e.printStackTrace();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -866,9 +873,69 @@ System.err.println("needsRePartition = " + needsRePartition);
 		// do the actual deleting
 		for (int i = nSelected.length - 1; i >= 0; i--) {
 			int iRow = nSelected[i];
-			// TODO: before deleting, unlink site model, clock model and tree
-			getDoc().delAlignmentWithSubnet(alignments.get(iRow));
-			alignments.remove(iRow);
+			
+			// before deleting, unlink site model, clock model and tree
+			
+			// check whether any of the models are linked
+			BranchRateModel.Base clockModel = likelihoods[iRow].m_pBranchRateModel.get();
+			SiteModel.Base siteModel = likelihoods[iRow].m_pSiteModel.get();
+			Tree tree = likelihoods[iRow].m_tree.get();
+			List<TreeLikelihood> cModels = new ArrayList<TreeLikelihood>();
+			List<TreeLikelihood> sModels = new ArrayList<TreeLikelihood>();
+			List<TreeLikelihood> tModels = new ArrayList<TreeLikelihood>();
+			for (TreeLikelihood likelihood : likelihoods) {
+				if (likelihood != likelihoods[iRow]) {
+				if (likelihood.m_pBranchRateModel.get() == clockModel) {
+					cModels.add(likelihood);
+				}
+				if (likelihood.m_pSiteModel.get() == siteModel) {
+					sModels.add(likelihood);
+				}
+				if (likelihood.m_tree.get() == tree) {
+					tModels.add(likelihood);
+				}
+				}
+			}
+			
+			try {
+				if (cModels.size() > 0) {
+					// clock model is linked, so we need to unlink
+					if (doc.getPartitionNr(clockModel) != iRow) {
+						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
+					} else {
+						int iFreePartition = doc.getPartitionNr(cModels.get(0));
+						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().sPartitionNames.get(iFreePartition).partition;
+					}
+					updateModel(CLOCKMODEL_COLUMN, iRow);
+				}
+				
+				if (sModels.size() > 0) {
+					// site model is linked, so we need to unlink
+					if (doc.getPartitionNr(siteModel) != iRow) {
+						tableData[iRow][SITEMODEL_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
+					} else {
+						int iFreePartition = doc.getPartitionNr(sModels.get(0));
+						tableData[iRow][SITEMODEL_COLUMN] = getDoc().sPartitionNames.get(iFreePartition).partition;
+					}
+					updateModel(SITEMODEL_COLUMN, iRow);
+				}
+				
+				if (tModels.size() > 0) {
+					// tree is linked, so we need to unlink
+					if (doc.getPartitionNr(tree) != iRow) {
+						tableData[iRow][TREE_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
+					} else {
+						int iFreePartition = doc.getPartitionNr(tModels.get(0));
+						tableData[iRow][TREE_COLUMN] = getDoc().sPartitionNames.get(iFreePartition).partition;
+					}
+					updateModel(TREE_COLUMN, iRow);
+				}
+				getDoc().delAlignmentWithSubnet(alignments.get(iRow));
+				alignments.remove(iRow);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Deletion failed: " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 		refreshPanel();
 	} // delItem

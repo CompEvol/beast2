@@ -54,6 +54,7 @@ public class SimpleClockModelTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:anolis", "YuleBirthRatePrior.t:anolis");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "YuleModel.t:anolis", "birthRate.t:anolis");
 
+		makeSureXMLParses();
 	}
 
 }

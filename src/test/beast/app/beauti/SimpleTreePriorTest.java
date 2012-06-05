@@ -63,6 +63,7 @@ public class SimpleTreePriorTest extends BeautiBase {
 		assertPriorsEqual("BirthDeath.t:anolis", "BirthRatePrior.t:anolis", "DeathRatePrior.t:anolis");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "BirthDeath.t:anolis");
 
+		makeSureXMLParses();
 	}
 
 }

@@ -1416,18 +1416,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			for (Distribution distr : ((CompoundDistribution) mcmc.posteriorInput.get()).pDistributions.get()) {
 				if (distr instanceof CompoundDistribution) {
 					tabu.add(distr);
-					// for (Distribution distr2 : ((CompoundDistribution)
-					// distr).pDistributions.get()) {
-					// if (distr2 instanceof TreeLikelihood) {
-					// tabu.add(distr2);
-					// }
-					// }
 				}
 			}
 		}
 		// add posterior
 		tabu.add(mcmc.posteriorInput.get());
-		// paraent of operators
+		// parent of operators
 		tabu.add(mcmc);
 		// add loggers
 		tabu.addAll(mcmc.m_loggers.get());
@@ -1452,8 +1446,21 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		// make a copy of all individual Pluings, before connecting them up
 		Map<String, Plugin> copySet = new HashMap<String, Plugin>();
 		for (Plugin plugin2 : ancestors) {
-			Plugin copy = (Plugin) plugin2.getClass().newInstance();
 			String id = plugin2.getID();
+			String copyID = renameId(id, partitionContext);
+			if (doc.pluginmap.containsKey(copyID)) {
+				Plugin org = doc.pluginmap.get(copyID);
+				for (Plugin output : org.outputs) {
+					for (Input<?> input : output.listInputs()) {
+						if (input.get() instanceof List) {
+							((List)input.get()).remove(org);
+						} else {
+							// ignore?
+						}
+					}
+				}
+			}
+			Plugin copy = (Plugin) plugin2.getClass().newInstance();
 			copySet.put(id, copy);
 		}
 
@@ -1468,10 +1475,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						// handle lists
 						for (Object o : (List<?>) input.get()) {
 							if (o instanceof Plugin) {
-								Plugin value = (Plugin) o;
-								if (copySet.containsKey(value.getID())) {
-									value = copySet.get(value.getID());
-								}
+								Plugin value = getCopyValue((Plugin) o, copySet, partitionContext, doc);
 								copy.setInputValue(input.getName(), value);
 							} else {
 								// it is a primitive value
@@ -1480,10 +1484,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						}
 					} else if (input.get() instanceof Plugin) {
 						// handle Plugin
-						Plugin value = (Plugin) input.get();
-						if (copySet.containsKey(value.getID())) {
-							value = copySet.get(value.getID());
-						}
+						Plugin value = getCopyValue((Plugin) input.get(), copySet, partitionContext, doc);
 						copy.setInputValue(input.getName(), value);
 					} else {
 						// it is a primitive value
@@ -1495,11 +1496,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			// set outputs
 			for (Plugin output : plugin2.outputs) {
 				if (tabu.contains(output) && output != parent) {
+					Plugin output2 = getCopyValue(output, copySet, partitionContext, doc);;
 					for (Input<?> input : output.listInputs()) {
 						if (input.get() instanceof List) {
 							List<?> list = (List<?>) input.get();
 							if (list.contains(plugin2)) {
-								output.setInputValue(input.getName(), copy);
+								output2.setInputValue(input.getName(), copy);
 							}
 						}
 					}
@@ -1543,6 +1545,21 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 		return deepCopy;
 	} // deepCopyPlugin
+
+	private static Plugin getCopyValue(Plugin value, Map<String, Plugin> copySet, PartitionContext partitionContext, BeautiDoc doc) {
+		if (copySet.containsKey(value.getID())) {
+			value = copySet.get(value.getID());
+			return value;
+		}
+		String valueID = value.getID();
+		if (valueID.indexOf('.') >= 0) {
+			String valueCopyID = renameId(valueID, partitionContext);
+			if (doc.pluginmap.containsKey(valueCopyID)) {
+				value = doc.pluginmap.get(valueCopyID);
+			}
+		}
+		return value;
+	}
 
 	public static String renameId(String sID, PartitionContext context) {
 		String sOldPartition = sID.substring(sID.indexOf('.') + 1);

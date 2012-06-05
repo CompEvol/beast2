@@ -98,6 +98,8 @@ public class BeautiSimpleTest extends BeautiBase {
 		
 		// Create a Normal calibration prior and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.
 		f.selectTab("Priors");
+
+		makeSureXMLParses();
 	}
 
 }

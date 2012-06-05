@@ -153,7 +153,7 @@
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
                 <!--substModel will be automatically detected /-->
-                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' estimate='false'/>
+                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' lower='0' upper='1' estimate='false'/>
                 <mutationRate        spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0'        estimate='false'/>
                 <shape               spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0'         estimate='false'/>
             </plugin>
@@ -204,6 +204,7 @@
             </operator>
 
             <prior id='GammaShapePrior.s:$(n)' spec='Prior' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+            <prior id='PropInvariantPrior.t:$(n)' spec='Prior' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
 
@@ -255,6 +256,7 @@
             <connect srcID='clockRate.c:$(n)'            targetID='tracelog' inputName='log' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
             <connect srcID='GammaShapePrior.s:$(n)'      targetID='prior' inputName='distribution' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
+            <connect srcID='PropInvariantPrior.s:$(n)'   targetID='prior' inputName='distribution' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
             <connect srcID='Tree.t:$(n)'        targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
 
 	        <connect srcID='Tree.t:$(n)'        targetID='updown.all' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>

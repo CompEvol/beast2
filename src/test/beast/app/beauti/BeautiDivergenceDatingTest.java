@@ -256,10 +256,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		if (fout.exists()) {
 			fout.delete();
 		}
-		beautiFrame.menuItemWithPath("File", "Save As").click();
-		fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(org.fest.util.Files.temporaryFolder());
-		fileChooser.selectFile(new File("primates")).approve();
+		makeSureXMLParses();
 		
 		long t1 = System.currentTimeMillis();
 		System.err.println("total time: " + (t1 - t0)/1000 + " seconds");

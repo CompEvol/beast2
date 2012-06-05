@@ -2,7 +2,6 @@ package beast.app.draw;
 
 
 import beast.app.beauti.BeautiDoc;
-import beast.app.beauti.BeautiPanel;
 import beast.core.Input;
 import beast.core.Plugin;
 
@@ -14,7 +13,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

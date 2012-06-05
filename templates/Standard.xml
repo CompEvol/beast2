@@ -139,7 +139,7 @@
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
                 <!--substModel will be automatically detected /-->
-                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' estimate='false'/>
+                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' lower='0' upper='1' estimate='false'/>
                 <mutationRate        spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0'        estimate='false'/>
                 <shape               spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0'         estimate='false'/>
             </plugin>
@@ -201,9 +201,14 @@
 
             <prior id='YuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
             <prior id='GammaShapePrior.s:$(n)' spec='Prior' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+            <prior id='PropInvariantPrior.t:$(n)' spec='Prior' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
   		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
+			<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+				<up idref="clockRate.c:$(n)"/>
+				<down idref="Tree.t:$(n)"/>
+			</upDownOperator>
 
 ]]>
             <connect srcID='treeLikelihood.$(n)'            targetID='likelihood' inputName='distribution' if="isInitializing"/>
@@ -222,6 +227,7 @@
             <connect srcID='clockRate.c:$(n)'                 targetID='state' inputName='stateNode' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
             <connect srcID='birthRate.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
+
             <connect srcID='proportionInvariantScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'>Scales proportion of invariant sites parameter of partition $(n)</connect>
             <connect srcID='mutationRateScaler.s:$(n)'        targetID='mcmc' inputName='operator' if='inlikelihood(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'>Scales mutation rate of partition s:$(n)</connect>
             <connect srcID='gammaShapeScaler.s:$(n)'          targetID='mcmc' inputName='operator' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'>Scales gamma shape parameter of partition s:$(n)</connect>
@@ -237,6 +243,7 @@
             <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
             <connect srcID='wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
             <connect srcID='WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
+            <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>Scale up substitution rate c:$(n) and scale down tree t:($n) </connect>
 
             <connect srcID='treeLikelihood.$(n)'              targetID='tracelog' inputName='log'/>
             <connect srcID='TreeHeight.t:$(n)'                targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n))'/>
@@ -248,6 +255,7 @@
             <connect srcID='birthRate.t:$(n)'                 targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
             <connect srcID='GammaShapePrior.s:$(n)'           targetID='prior' inputName='distribution' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
+            <connect srcID='PropInvariantPrior.s:$(n)'        targetID='prior' inputName='distribution' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
             <connect srcID='YuleBirthRatePrior.t:$(n)'        targetID='prior' inputName='distribution' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
 			<mergepoint id='aux-partitiontemplate'/>

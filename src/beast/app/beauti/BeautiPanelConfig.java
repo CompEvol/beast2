@@ -146,8 +146,8 @@ public class BeautiPanelConfig extends Plugin {
     @SuppressWarnings("unchecked")
     public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
         try {
-            if (parentPlugins != null && parentPlugins.size() > 0 && _input != null)
-                System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
+//            if (parentPlugins != null && parentPlugins.size() > 0 && _input != null)
+//                System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
 
             List<Plugin> plugins;
             if (bHasPartitionsInput.get() == Partition.none) {
@@ -244,8 +244,8 @@ public class BeautiPanelConfig extends Plugin {
             }
             _input.setRule(Validate.REQUIRED);
             syncTo(iPartition);
-            if (parentPlugins != null && parentPlugins.size() > 0)
-                System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
+//            if (parentPlugins != null && parentPlugins.size() > 0)
+//                System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
 
 
             if (bIsList) {
@@ -293,7 +293,7 @@ public class BeautiPanelConfig extends Plugin {
                 targetList.addAll(list);
             } else {
                 try {
-                    System.err.println("sync " + parentPlugins.get(iPartition) + "[" + input.getName() + "] = " + _input.get());
+                    //System.err.println("sync " + parentPlugins.get(iPartition) + "[" + input.getName() + "] = " + _input.get());
                     input.setValue(_input.get(), parentPlugins.get(iPartition));
                 } catch (Exception e) {
                     e.printStackTrace();

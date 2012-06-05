@@ -1,8 +1,8 @@
 package test.beast.app.beauti;
 
+
 import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
 
-import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -14,10 +14,6 @@ import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.junit.Test;
-
-import beast.app.beauti.TaxonSetDialog;
-import beast.app.beauti.TaxonSetInputEditor;
-import beast.app.beauti.TaxonSetInputEditor.GuessDlg;
 
 public class BeautiStarBeastTest extends BeautiBase {
 
@@ -55,6 +51,7 @@ public class BeautiStarBeastTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.Species", "YuleBirthRatePrior.Species", "popMean.prior", "ClockPrior.c:47", "ClockPrior.c:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "speciescoalescent", "birthRate.Species", "YuleModel.Species", "TreeHeight.Species", "treeLikelihood.26", "treePrior.t:26", "TreeHeight.t:26", "treeLikelihood.47", "treePrior.t:47", "TreeHeight.t:47", "clockRate.c:47", "treeLikelihood.59", "treePrior.t:59", "TreeHeight.t:59", "clockRate.c:59");
 
+		makeSureXMLParses();
 	}
 
 }
