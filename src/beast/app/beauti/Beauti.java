@@ -346,7 +346,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			try {
 				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				File[] files = Utils.getLoadFiles("Import alignment File", new File(g_sDir), "alignment files", "nex",
-						"nexus", "xml");
+						"nxs", "nexus", "xml");
 				if (files == null) {
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					return;

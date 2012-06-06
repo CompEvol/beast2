@@ -11,7 +11,8 @@ import beast.evolution.tree.Node;
 public class MutationDeathModel extends SubstitutionModel.Base {
 
     public Input<RealParameter> delParameter = new Input<RealParameter>("deathprob", "rate of death, used to calculate death probability", Validate.REQUIRED);
-    public Input<RealParameter> mutationRate = new Input<RealParameter>("mu", "mutation rate, default 1");
+    // mutation rate is already provided in SiteModel, so no need to duplicate it here
+    //public Input<RealParameter> mutationRate = new Input<RealParameter>("mu", "mutation rate, default 1");
     public Input<SubstitutionModel.Base> m_CTMCModel = new Input<SubstitutionModel.Base>("substmodel", "CTMC Model for the life states, so should have " +
             "a state-space one less than this model. If not specified, ...");
     // TODO: figure out the end of the last sentence
@@ -51,9 +52,9 @@ public class MutationDeathModel extends SubstitutionModel.Base {
         // we are contributing s*deathRate number of changes per unit of time
         double deathProb = Math.exp(-distance * delParameter.get().getValue());
         double mutationR = 2;
-        if (mutationRate.get() != null) {
-            mutationR *= mutationRate.get().getValue();
-        }
+//        if (mutationRate.get() != null) {
+//            mutationR *= mutationRate.get().getValue();
+//        }
         double freqs[] = getFrequencies();
 
         for (i = 0; i < freqs.length - 1; ++i) {

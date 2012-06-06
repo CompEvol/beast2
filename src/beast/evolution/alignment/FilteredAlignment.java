@@ -6,6 +6,8 @@ import java.util.List;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.evolution.datatype.DataType;
+import beast.util.AddOnManager;
 
 @Description("Alignemnt based on a filter operation on another alignment")
 public class FilteredAlignment extends Alignment {
@@ -26,6 +28,8 @@ public class FilteredAlignment extends Alignment {
      * list of indices filtered from input alignment *
      */
     int[] m_iFilter;
+    
+    boolean convertDataType = false;
 
     public FilteredAlignment() {
         m_pSequences.setRule(Validate.OPTIONAL);
@@ -37,6 +41,11 @@ public class FilteredAlignment extends Alignment {
         calcFilter();
         Alignment data = m_alignmentInput.get();
         m_dataType = data.m_dataType;
+        // see if this filter changes data type
+        if (m_userDataType.get() != null) {
+            m_dataType = m_userDataType.get();
+            convertDataType = true;
+        }
         m_counts = data.m_counts;
         m_sTaxaNames = data.m_sTaxaNames;
         m_nStateCounts = data.m_nStateCounts;
@@ -118,6 +127,8 @@ public class FilteredAlignment extends Alignment {
     protected void calcPatterns() {
         int nTaxa = m_counts.size();
         int nSites = m_iFilter.length;
+        
+        DataType baseType = m_alignmentInput.get().m_dataType;
 
         // convert data to transposed int array
         int[][] nData = new int[nSites][nTaxa];
@@ -125,6 +136,14 @@ public class FilteredAlignment extends Alignment {
             List<Integer> sites = m_counts.get(i);
             for (int j = 0; j < nSites; j++) {
                 nData[j][i] = sites.get(m_iFilter[j]);
+                if (convertDataType) {
+                	try {
+                		String code = baseType.getCode(nData[j][i]);
+						nData[j][i] = m_dataType.string2state(code).get(0);
+                	} catch (Exception e) {
+                		e.printStackTrace();
+                	}
+                }
             }
         }
 
@@ -162,6 +181,13 @@ public class FilteredAlignment extends Alignment {
             int[] sites = new int[nTaxa];
             for (int j = 0; j < nTaxa; j++) {
                 sites[j] = m_counts.get(j).get(m_iFilter[i]);
+                if (convertDataType) {
+                	try {
+                		sites[j] = m_dataType.string2state(baseType.getCode(sites[j])).get(0);
+                	} catch (Exception e) {
+                		e.printStackTrace();
+                	}
+                }
             }
             m_nPatternIndex[i] = Arrays.binarySearch(m_nPatterns, sites, comparator);
         }

@@ -153,7 +153,7 @@
                 </branchRateModel>
             </plugin>
 
-	        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
+	        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
 	        <plugin id='MutationRatePrior.s:$(n)' spec='Prior' x='@mutationRate.s:$(n)'><distr spec="OneOnX"/></plugin>
 
             <!-- tree and its properties -->

@@ -24,4 +24,9 @@ public class Binary extends Base {
         return "binary";
     }
 
+    @Override
+    public char getChar(int state) {
+        return (char) (state + '0');
+    }
+
 }

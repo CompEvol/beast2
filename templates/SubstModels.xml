@@ -125,11 +125,13 @@
 
 <!-- binary model -->
         <subtemplate id='MutationDeathModel' class='beast.evolution.substitutionmodel.MutationDeathModel' mainid='MutationDeathModel.s:$(n)'
-suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel">
+suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,beast.evolution.substitutionmodel.MutationDeathModel.frequencies">
 <![CDATA[
-		<plugin id='MutationDeathModel.s:$(n)' spec='MutationDeathModel'>
-			<parameter name='deathprob.s:$(n)' value='0.1' estimate='false'/>
-			<parameter name='mu.s:$(n)' value='1' estimate='false'/>
+		<plugin id='MutationDeathModel.s:$(n)' spec='beast.evolution.substitutionmodel.MutationDeathModel'>
+			<parameter name='deathprob' id='deathprob.s:$(n)' value='0.1' estimate='false'/>
+			<frequencies id='freqs.s:$(n)' spec='Frequencies'>
+				<frequencies spec='parameter.RealParameter' value='1 0'/>
+			</frequencies>
 		</plugin>
 ]]>
         </subtemplate>
@@ -182,7 +184,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 					<down idref="Tree.t:$(n)"/>
 				</upDownOperator>
 
-		        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
+		        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
 ]]>
             <connect srcID='clockRate.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
@@ -214,7 +216,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 		</upDownOperator>
 
 		<log id='rateStat.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@ExponentialRelaxedClock.c:$(n)'/>
-        <plugin id='UCMeanRatePrior.c:$(n)' spec='Prior' x='@ucedMean.c:$(n)'><distr spec="OneOnX"/></plugin>
+        <plugin id='UCMeanRatePrior.c:$(n)' spec='Prior' x='@ucedMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
 ]]>
             <connect srcID='ucedMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
             <connect srcID='expRateCategories.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(expRateCategories.c:$(n))'/>
@@ -265,7 +267,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 
 
 		<log id='rate.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@RelaxedClock.c:$(n)'/>
-        <plugin id='MeanRatePrior.c:$(n)' spec='Prior' x='@ucldMean.c:$(n)'><distr spec="OneOnX"/></plugin>
+        <plugin id='MeanRatePrior.c:$(n)' spec='Prior' x='@ucldMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
 ]]>
             <connect srcID='ucldMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
             <connect srcID='ucldStdev.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldStdev.c:$(n)) and ucldStdev.c:$(n)/estimate=true'/>
@@ -308,7 +310,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel"
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
 
-        <plugin id='MeanRRatePrior.c:s$(n)' spec='Prior' x='@meanClockRate.c:$(n)'><distr spec="OneOnX"/></plugin>
+        <plugin id='MeanRRatePrior.c:s$(n)' spec='Prior' x='@meanClockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
 ]]>
             <connect srcID='Indicators.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(Indicators.c:$(n))'/>
             <connect srcID='meanClockRate.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'/>
