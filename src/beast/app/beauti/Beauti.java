@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
@@ -16,16 +17,12 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -351,6 +348,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 				File[] files = Utils.getLoadFiles("Import alignment File", new File(g_sDir), "alignment files", "nex",
 						"nexus", "xml");
 				if (files == null) {
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					return;
 				}
 				for (File file : files) {
@@ -549,6 +547,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 				panel.updateList();
 				panel.refreshPanel();
 			}
+			requestFocus();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

@@ -110,6 +110,11 @@ public class SiteModelInputEditor extends PluginInputEditor {
                     m_validateLabel.setToolTipText("<html><p>Proportion invariant should be non-zero when estimating</p></html>");
                     return;
 				}
+				if (Double.parseDouble(p.m_pValues.get()) < 0.0 || Double.parseDouble(p.m_pValues.get()) >= 1.0) {
+                    m_validateLabel.setVisible(true);
+                    m_validateLabel.setToolTipText("<html><p>Proportion invariant should be from 0 to 1 (exclusive 1)</p></html>");
+                    return;
+				}
             	super.validateInput();
             }
         };

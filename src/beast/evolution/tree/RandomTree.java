@@ -156,6 +156,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //		
 //	}
         // pick up constraints in m_initial tree
+        for (final Plugin plugin : outputs) {
+            if (plugin instanceof MRCAPrior && !calibrations.contains(plugin) ) {
+                calibrations.add((MRCAPrior) plugin);
+            }
+        }
         if (m_initial.get() != null) {
             for (final Plugin plugin : m_initial.get().outputs) {
                 if (plugin instanceof MRCAPrior && !calibrations.contains(plugin) ) {
@@ -179,8 +184,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	            final ParametricDistribution distr = prior.m_distInput.get();
 	            final Bound bounds = new Bound();
 	            if (distr != null) {
-	                bounds.m_fLower = distr.inverseCumulativeProbability(0.0);
-	                bounds.m_fUpper = distr.inverseCumulativeProbability(1.0);
+	                bounds.m_fLower = distr.inverseCumulativeProbability(0.0) + distr.m_offset.get();
+	                bounds.m_fUpper = distr.inverseCumulativeProbability(1.0) + distr.m_offset.get();
 	            }
 	
 	            if (prior.m_bIsMonophyleticInput.get()) {
@@ -589,7 +594,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 throw new ConstraintViolatedException();
             }
             if (height < fMin || height > fMax) {
-                height = fMin + Randomizer.nextDouble() * (fMax - fMin);
+            	if (fMax == Double.POSITIVE_INFINITY) {
+            		height = fMin + 0.1;
+            	} else {
+            		height = fMin + Randomizer.nextDouble() * (fMax - fMin);
+            	}
                 newNode.setHeight(height);
             }
         }
