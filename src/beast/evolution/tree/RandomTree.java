@@ -48,6 +48,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     //public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset","set of taxa to initialise tree with specified by a taxonset", Validate.XOR, m_taxa);
     public Input<PopulationFunction> m_populationFunction = new Input<PopulationFunction>("populationModel", "population function for generating coalescent???", Validate.REQUIRED);
     public Input<List<MRCAPrior>> m_calibrations = new Input<List<MRCAPrior>>("constraint", "specifies (monophyletic or height distribution) constraints on internal nodes", new ArrayList<MRCAPrior>());
+    public Input<Double> m_rootHeight = new Input<Double>("rootHeight", "If specified the tree will be scaled to match the root height, if constraints allow this");
 
     // total nr of taxa
     int m_nTaxa;
@@ -266,6 +267,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         final PopulationFunction popFunction = m_populationFunction.get();
 
         simulateTree(sTaxa, popFunction);
+        if (m_rootHeight.get() != null) {
+        	scaleToFit(m_rootHeight.get() / root.getHeight(), root);
+        }
 
         nodeCount = 2 * sTaxa.size() - 1;
         internalNodeCount = sTaxa.size() - 1;
@@ -277,7 +281,28 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
     }
 
-    //@Override
+    private void scaleToFit(double scale, Node node) {
+        if (!node.isLeaf()) {
+	    	double oldHeight = node.getHeight();
+	    	node.m_fHeight *= scale;
+	        final Integer iConstraint = getDistrConstraint(node);
+	        if (iConstraint != null) {
+	            if (node.m_fHeight < m_bounds.get(iConstraint).m_fLower || node.m_fHeight > m_bounds.get(iConstraint).m_fUpper) {
+	            	//revert scaling
+	            	node.m_fHeight = oldHeight;
+	            	return;
+	            }
+	        }
+	        scaleToFit(scale, node.getLeft());
+	        scaleToFit(scale, node.getRight());
+	        if (node.m_fHeight < Math.max(node.getLeft().getHeight(), node.getRight().getHeight())) {
+	        	// this can happen if a child node is constrained and the default tree is higher than desired
+	        	node.m_fHeight = 1.0000001 * Math.max(node.getLeft().getHeight(), node.getRight().getHeight());
+	        }
+        }
+	}
+
+	//@Override
     public List<StateNode> getInitialisedStateNodes() {
         final List<StateNode> stateNodes = new ArrayList<StateNode>();
         stateNodes.add(m_initial.get());

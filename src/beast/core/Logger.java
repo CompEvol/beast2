@@ -57,12 +57,12 @@ public class Logger extends Plugin {
         none, alphabetic, smart
     }
 
+    public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
     public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",
             "Element in a log. This can be any plug in that is Loggable.",
             new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
 
     public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "Number of the samples logged", 1);
-    public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
     public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
             "If specified, XML will be produced for the model, commented out by # at the start of a line. " +
             "Alignments are suppressed. This way, the log file documents itself. ");
