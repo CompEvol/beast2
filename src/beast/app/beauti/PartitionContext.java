@@ -28,19 +28,19 @@ public class PartitionContext {
 		this.tree = tree;
 	}
 	
-	public PartitionContext(TreeLikelihood treeLikelihoods) {
-		String sID = treeLikelihoods.m_data.get().getID();
+	public PartitionContext(TreeLikelihood treeLikelihood) {
+		String sID = treeLikelihood.m_data.get().getID();
 		sID = BeautiDoc.parsePartition(sID);
 		this.partition = sID;
-		if (treeLikelihoods.m_pBranchRateModel.get() != null) {
-			sID = treeLikelihoods.m_pBranchRateModel.get().getID();
+		if (treeLikelihood.m_pBranchRateModel.get() != null) {
+			sID = treeLikelihood.m_pBranchRateModel.get().getID();
 			sID = BeautiDoc.parsePartition(sID);
 		}
 		this.clockModel = sID;
-		sID = treeLikelihoods.m_pSiteModel.get().getID();
+		sID = treeLikelihood.m_pSiteModel.get().getID();
 		sID = BeautiDoc.parsePartition(sID);
 		this.siteModel = sID;
-		sID = treeLikelihoods.m_tree.get().getID();
+		sID = treeLikelihood.m_tree.get().getID();
 		sID = BeautiDoc.parsePartition(sID);
 		this.tree = sID;
 	}

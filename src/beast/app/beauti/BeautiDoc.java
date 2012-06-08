@@ -666,6 +666,37 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		mcmc.setValue(MCMC, this);
 		PluginPanel.addPluginToMap(MCMC, this);
 
+		// reconstruct all objects from templates
+		try {
+			CompoundDistribution posterior = (CompoundDistribution) ((beast.core.MCMC)mcmc.get()).posteriorInput.get();
+			for (Distribution distr : posterior.pDistributions.get()) {
+				if (distr.getID().equals("likelihood")) {
+					for (Distribution likelihood : ((CompoundDistribution) distr).pDistributions.get()) {
+						if (likelihood instanceof TreeLikelihood) {
+							TreeLikelihood treeLikelihood = (TreeLikelihood) likelihood;
+							PartitionContext context = new PartitionContext(treeLikelihood);
+							try {
+								beautiConfig.partitionTemplate.get().createSubNet(context);
+							} catch (Exception e) {
+								//e.printStackTrace();
+							}
+							for (BeautiSubTemplate subTemplate : beautiConfig.subTemplates) {
+								try {
+									subTemplate.createSubNet(context);
+								} catch (Exception e) {
+									//e.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+		
+		
+
 		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
 			int iStart = sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
 			int iEnd = sXML.lastIndexOf("-->");
