@@ -253,6 +253,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			// JFileChooser.APPROVE_OPTION) {
 			// sFileName = fileChooser.getSelectedFile().toString();
 			if (file != null) {
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
+				doc.newAnalysis();
 				doc.setFileName(file.getAbsolutePath());
 				if (doc.getFileName().lastIndexOf('/') > 0) {
 					g_sDir = doc.getFileName().substring(0, doc.getFileName().lastIndexOf('/'));
@@ -267,6 +269,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 					JOptionPane.showMessageDialog(null, "Something went wrong loading the file: " + e.getMessage());
 				}
 			}
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		} // actionPerformed
 	}
 

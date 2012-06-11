@@ -103,6 +103,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         			for (Distribution distr : prior.pDistributions.get()) {
         				if (distr instanceof MRCAPrior) {
         					MRCAPrior _MRCAPrior = (MRCAPrior) distr;
+        					// make sure MRCAPrior is monophyletic
+        					if (!_MRCAPrior.m_bIsMonophyleticInput.get()) {
+        						throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
+        					}
+        					// create CalibrationPoint from MRCAPrior
         					CalibrationPoint cal = new CalibrationPoint();
         					cal.m_distInput.setValue(_MRCAPrior.m_distInput.get(), cal);
         					cal.m_taxonset.setValue(_MRCAPrior.m_taxonset.get(), cal);

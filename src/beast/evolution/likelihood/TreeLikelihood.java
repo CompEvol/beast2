@@ -308,14 +308,14 @@ public class TreeLikelihood extends Distribution {
 
         m_nScale++;
         if (logP > 0 || (m_likelihoodCore.getUseScaling() && m_nScale > X)) {
-            System.err.println("Switch off scaling");
-            m_likelihoodCore.setUseScaling(1.0);
-            m_likelihoodCore.unstore();
-            m_nHasDirt = Tree.IS_FILTHY;
-            X *= 2;
-            traverse(tree.getRoot());
-            calcLogP();
-            return logP;
+//            System.err.println("Switch off scaling");
+//            m_likelihoodCore.setUseScaling(1.0);
+//            m_likelihoodCore.unstore();
+//            m_nHasDirt = Tree.IS_FILTHY;
+//            X *= 2;
+//            traverse(tree.getRoot());
+//            calcLogP();
+//            return logP;
         } else if (logP == Double.NEGATIVE_INFINITY && m_fScale < 10) { // && !m_likelihoodCore.getUseScaling()) {
             m_nScale = 0;
             m_fScale *= 1.01;

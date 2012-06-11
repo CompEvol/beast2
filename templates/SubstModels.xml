@@ -61,7 +61,7 @@
             <parameter id="rateCG.s:$(n)" name='rateCG' value="1.0" lower="0.0" estimate='true'/>
             <parameter id="rateCT.s:$(n)" name='rateCT' value="1.0" lower="0.0" estimate='false'/>
             <parameter id="rateGT.s:$(n)" name='rateGT' value="1.0" lower="0.0" estimate='true'/>
-            <frequencies id='freqs.s:$(n)' spec='Frequencies'>
+            <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
                 <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
             </frequencies>
         </plugin>
