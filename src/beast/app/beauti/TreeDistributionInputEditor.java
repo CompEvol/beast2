@@ -106,7 +106,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 						BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
 						PartitionContext partitionContext = doc.getContextFor((Plugin) list.get(itemNr));
 						try {
-							template.createSubNet(partitionContext, list, itemNr);
+							template.createSubNet(partitionContext, list, itemNr, true);
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}

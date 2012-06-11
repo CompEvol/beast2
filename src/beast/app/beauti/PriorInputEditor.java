@@ -72,7 +72,7 @@ public class PriorInputEditor extends InputEditor.Base {
                 PartitionContext context = doc.getContextFor((Plugin) list.get(itemNr));
                 Prior prior = (Prior) list.get(itemNr);
                 try {
-                    template.createSubNet(context, prior, prior.m_distInput);
+                    template.createSubNet(context, prior, prior.m_distInput, true);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }

@@ -126,48 +126,48 @@ public class BeautiSubTemplate extends Plugin {
         removeSubNet(template, context);
     }
 
-    public Plugin createSubNet(PartitionContext partition, Plugin plugin, Input<?> input) throws Exception {
+    public Plugin createSubNet(PartitionContext partition, Plugin plugin, Input<?> input, boolean init) throws Exception {
         removeSubNet(input.get());
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             input.setValue(null, plugin);
             return null;
         }
-        Plugin o = createSubNet(partition, doc.pluginmap);
+        Plugin o = createSubNet(partition, doc.pluginmap, init);
         input.setValue(o, plugin);
         return o;
     }
 
-    public Plugin createSubNet(PartitionContext partition, List<Plugin> list, int iItem) throws Exception {
+    public Plugin createSubNet(PartitionContext partition, List<Plugin> list, int iItem, boolean init) throws Exception {
         removeSubNet(list.get(iItem));
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             list.set(iItem, null);
             return null;
         }
-        Plugin o = createSubNet(partition, doc.pluginmap);
+        Plugin o = createSubNet(partition, doc.pluginmap, init);
         list.set(iItem, o);
         return o;
     }
 
-    public Plugin createSubNet(PartitionContext partition) throws Exception {
+    public Plugin createSubNet(PartitionContext partition, boolean init) throws Exception {
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             return null;
         }
-        Plugin o = createSubNet(partition, doc.pluginmap);
+        Plugin o = createSubNet(partition, doc.pluginmap, init);
         return o;
     }
 
 
-    Plugin createSubNet(Alignment data, BeautiDoc doc) {
+    Plugin createSubNet(Alignment data, BeautiDoc doc, boolean init) {
         String sPartition = data.getID();
         HashMap<String, Plugin> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
         sIDMap.put(sPartition, data);
-        return createSubNet(new PartitionContext(sPartition), sIDMap);
+        return createSubNet(new PartitionContext(sPartition), sIDMap, init);
     }
 
-    private Plugin createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, Plugin> sIDMap) {
+    private Plugin createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, Plugin> sIDMap, boolean init) {
         // wrap in a beast element with appropriate name spaces
         String _sXML = "<beast version='2.0' \n" +
                 "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
@@ -190,7 +190,7 @@ public class BeautiSubTemplate extends Plugin {
             }
 
             for (BeautiConnector connector : connectors) {
-                if (connector.atInitialisationOnly()) {// ||
+                if (init && connector.atInitialisationOnly()) {// ||
                     doc.connect(connector, context);
                 }
                 if (connector.getTipText() != null) {

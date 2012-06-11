@@ -231,7 +231,7 @@ public class PluginInputEditor extends InputEditor.Base {
 //                    	plugin = PluginPanel.g_plugins.get(sNewID);
                     } else {
                         try {
-                            plugin = sSelected.createSubNet(doc.getContextFor(plugin), m_plugin, m_input);
+                            plugin = sSelected.createSubNet(doc.getContextFor(plugin), m_plugin, m_input, true);
                             //PluginPanel.addPluginToMap(plugin);
                             // tricky: try to connect up new inputs with old inputs of existing name
 //                            Plugin oldPlugin = (Plugin) m_input.get();

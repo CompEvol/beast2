@@ -1,12 +1,12 @@
 package beast.evolution.speciation;
 
 
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
-import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;

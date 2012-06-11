@@ -676,13 +676,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 							TreeLikelihood treeLikelihood = (TreeLikelihood) likelihood;
 							PartitionContext context = new PartitionContext(treeLikelihood);
 							try {
-								beautiConfig.partitionTemplate.get().createSubNet(context);
+								beautiConfig.partitionTemplate.get().createSubNet(context, false);
 							} catch (Exception e) {
 								//e.printStackTrace();
 							}
 							for (BeautiSubTemplate subTemplate : beautiConfig.subTemplates) {
 								try {
-									subTemplate.createSubNet(context);
+									subTemplate.createSubNet(context, false);
 								} catch (Exception e) {
 									//e.printStackTrace();
 								}
@@ -695,7 +695,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			//e.printStackTrace();
 		}
 		
-		
+//		MCMC = parser.parseFragment(sXML, true);
+//		mcmc.setValue(MCMC, this);
+//		PluginPanel.addPluginToMap(MCMC, this);
 
 		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
 			int iStart = sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
@@ -723,7 +725,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		loadTemplate(sXML);
 		// create XML for alignments
 		for (Alignment alignment : alignments) {
-			beautiConfig.partitionTemplate.get().createSubNet(alignment, this);
+			beautiConfig.partitionTemplate.get().createSubNet(alignment, this, true);
 		}
 		determinePartitions();
 
@@ -787,7 +789,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				treelikelihood.m_pBranchRateModel.setValue(new StrictClockModel(), treelikelihood);
 				List<BeautiSubTemplate> sAvailablePlugins = inputEditorFactory.getAvailableTemplates(
 						treelikelihood.m_pBranchRateModel, treelikelihood, null, this);
-				Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(clockModels.size()));
+				Plugin plugin = sAvailablePlugins.get(0).createSubNet(sPartitionNames.get(clockModels.size()), true);
 				clockModels.add((BranchRateModel.Base) plugin);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -1193,7 +1195,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	public void addAlignmentWithSubnet(Alignment data) {
 		alignments.add(data);
-		beautiConfig.partitionTemplate.get().createSubNet(data, this);
+		beautiConfig.partitionTemplate.get().createSubNet(data, this, true);
 		// re-determine partitions
 		determinePartitions();
 	}
@@ -1394,7 +1396,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				if (input.canSetValue(template.instance, plugin)) {
 					String sPartition = plugin.getID();
 					sPartition = parsePartition(sPartition);
-					Object o = template.createSubNet(context, plugin, input);
+					Object o = template.createSubNet(context, plugin, input, true);
 					return o;
 				}
 			} catch (Exception e) {

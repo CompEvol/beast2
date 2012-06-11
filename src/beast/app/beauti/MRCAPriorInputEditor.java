@@ -115,7 +115,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 //				}
                 try {
                     //Plugin plugin2 =
-                    template.createSubNet(new PartitionContext(""), prior, prior.m_distInput);
+                    template.createSubNet(new PartitionContext(""), prior, prior.m_distInput, true);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
