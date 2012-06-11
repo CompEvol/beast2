@@ -3,12 +3,16 @@ package beast.evolution.speciation;
 
 import beast.core.Citation;
 import beast.core.Description;
+import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.Valuable;
+import beast.core.Plugin;
+import beast.core.parameter.RealParameter;
+import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
 
 import java.io.PrintStream;
@@ -40,12 +44,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     }
 
     // Q2R does this makes sense, or it has to be a realParameter??
-    public Input<Valuable> birthRate =
-            new Input<Valuable>("birthRate", "birth rate of splitting a linage into two", Validate.REQUIRED);
+    public Input<RealParameter> birthRate =
+            new Input<RealParameter>("birthRate", "birth rate of splitting a linage into two", Validate.REQUIRED);
 
     public Input<List<CalibrationPoint>> calibrations =
-            new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>(),
-                    Input.Validate.REQUIRED);
+            new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>());//,Input.Validate.REQUIRED);
 
      public Input<Type> correctionType =  new Input<Type>("type", "Type of correction (default all). However, 'all'" +
              " is possible only in a few special cases (a single clade or two nested clades).",
@@ -82,15 +85,41 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         // shallow copy. we will be changing cals later
         final List<CalibrationPoint> cals = new ArrayList<CalibrationPoint>(calibrations.get());
-
-        final int nCals = cals.size();
-        xclades = new int[nCals][];
-
-        // convenience
+        int nCals = cals.size();
         final List<TaxonSet> taxaSets = new ArrayList<TaxonSet>(nCals);
-        for (final CalibrationPoint cal : cals) {
-            taxaSets.add(cal.taxa());
+        if (cals.size() > 0) {
+            xclades = new int[nCals][];
+
+            // convenience
+            for (final CalibrationPoint cal : cals) {
+                taxaSets.add(cal.taxa());
+            }
+
+        } else {
+        	// find calibration points from prior
+        	for (Plugin plugin : outputs) {
+        		if (plugin instanceof CompoundDistribution) {
+        			CompoundDistribution prior = (CompoundDistribution) plugin;
+        			for (Distribution distr : prior.pDistributions.get()) {
+        				if (distr instanceof MRCAPrior) {
+        					MRCAPrior _MRCAPrior = (MRCAPrior) distr;
+        					CalibrationPoint cal = new CalibrationPoint();
+        					cal.m_distInput.setValue(_MRCAPrior.m_distInput.get(), cal);
+        					cal.m_taxonset.setValue(_MRCAPrior.m_taxonset.get(), cal);
+        					cal.initAndValidate();
+        					cals.add(cal);
+        					taxaSets.add(cal.taxa());
+        					nCals++;
+        				}
+        			}
+        		}
+        	}
         }
+        if (nCals == 0) { 
+        	// assume we are in beauti, back off for now
+        	return;
+        }
+        
 
         for (int k = 0; k < nCals; ++k) {
             final TaxonSet tk = taxaSets.get(k);
@@ -103,7 +132,6 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 }
             }
         }
-
         orderedCalibrations = new CalibrationPoint[nCals];
 
         {

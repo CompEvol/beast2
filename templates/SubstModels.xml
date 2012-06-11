@@ -357,6 +357,27 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
             <connect srcID='birthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
         </subtemplate>
 
+<!-- Calibrated Yule -->
+        <subtemplate id='CalibratedYuleModel' class='beast.evolution.speciation.CalibratedYuleModel' mainid='CalibratedYuleModel.t:$(n)' 
+			suppressInputs='beast.evolution.speciation.CalibratedYuleModel.logMarginal,beast.evolution.speciation.CalibratedYuleModel.tree,beast.evolution.speciation.CalibratedYuleModel.treeIntervals,beast.evolution.speciation.CalibratedYuleModel.calibrations'>
+<![CDATA[
+            <plugin spec='CalibratedYuleModel' id="CalibratedYuleModel.t:$(n)" tree='@Tree.t:$(n)'>
+                <parameter name='birthRate' id="birthRateY.t:$(n)" value='1.0'/>
+            </plugin>
+
+            <prior id='CalibratedYuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRateY.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+
+  		    <scale id='CalibratedYuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRateY.t:$(n)"/>
+]]>
+            <connect srcID='CalibratedYuleModel.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Calibrated Yule speciation prior on tree t:$(n)</connect>
+            <connect srcID='birthRateY.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and inposterior(birthRateY.t:$(n)) and birthRateY.t:$(n)/estimate=true'/>
+
+            <connect srcID='CalibratedYuleBirthRatePrior.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRateY.t:$(n)/estimate=true'>Calibrated Yule speciation process birth rate for t:$(n)</connect>
+            <connect srcID='CalibratedYuleBirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'     if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRateY.t:$(n)/estimate=true'>Scale birth rate of Calibrated Yule prior of tree t:$(n)</connect>
+
+            <connect srcID='CalibratedYuleModel.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='birthRateY.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRateY.t:$(n)/estimate=true'/>
+        </subtemplate>
 
 <!-- Birth Death model according to Gernhard'08 -->
         <subtemplate id='BirthDeathModel' class='beast.evolution.speciation.BirthDeathGernhard08Model' mainid='BirthDeath.t:$(n)'>
