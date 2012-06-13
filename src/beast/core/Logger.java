@@ -68,7 +68,7 @@ public class Logger extends Plugin {
             "Alignments are suppressed. This way, the log file documents itself. ");
     public Input<LOGMODE> m_sMode = new Input<LOGMODE>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
     public Input<SORTMODE> sortMode = new Input<SORTMODE>("sort", "sort items to be logged, one of " + SORTMODE.values(), SORTMODE.none, SORTMODE.values());
-
+    public Input<Boolean> sanitiseHeaders = new Input<Boolean>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
 
     /**
      * list of loggers, if any
@@ -209,13 +209,20 @@ public class Logger extends Plugin {
                 baos = new ByteArrayOutputStream();
                 m_out = new PrintStream(baos);
             }
+            ByteArrayOutputStream rawbaos = new ByteArrayOutputStream();
+            PrintStream out = new PrintStream(rawbaos);
             if (m_mode == COMPOUND_LOGGER) {
-                m_out.print("Sample\t");
+                out.print("Sample\t");
             }
             for (Loggable m_logger : m_loggers) {
-                m_logger.init(m_out);
+                m_logger.init(out);
             }
-
+            if (sanitiseHeaders.get()) {
+            	m_out.print(sanitiseHeader(rawbaos.toString()));
+            } else {
+            	m_out.print(rawbaos.toString());
+            }
+            
             if ( baos != null ) {
                 assert tmp == System.out;
                 m_out = tmp;
@@ -231,7 +238,77 @@ public class Logger extends Plugin {
         }
     } // init
 
-    boolean openLogFile() throws Exception {
+    /** remove indicators of partion context from header of a log file **/
+    private String sanitiseHeader(String header) {
+    	// collect partitions
+    	String partitionPrefix = null, clockPrefix = null, sitePrefix = null, treePrefix = null;
+    	for (int i = 0; i < header.length(); i++) {
+    		char c = header.charAt(i);
+    		if (c == '.') {
+    			if (header.charAt(i+2) == ':') {
+    				char c2 = header.charAt(++i);
+    				i++;
+    				String prefix = "";
+    				while (i < header.length() - 1 && c != '\t') {
+        				c = header.charAt(++i);
+        				if (c != '\t') {
+        					prefix += c;
+        				}
+    				}
+    				switch (c2) {
+    				case 'c':
+    					clockPrefix = getprefix(clockPrefix, prefix);
+    					break;
+    				case 's':
+    					sitePrefix = getprefix(sitePrefix, prefix);
+    					break;
+    				case 't':
+    					treePrefix = getprefix(treePrefix, prefix);
+    					break;
+    				}
+    			} else {
+    				String prefix = "";
+    				while (i < header.length() - 1 && c != '\t') {
+        				c = header.charAt(++i);
+        				if (c != '\t') {
+        					prefix += c;
+        				}
+    				}
+					partitionPrefix = getprefix(partitionPrefix, prefix);
+    			}
+    		}
+    	}
+
+    	// remove clock/site/tree info
+    	header = header.replaceAll("\\." + partitionPrefix, ".");
+    	header = header.replaceAll("\\.c:" + clockPrefix, ".");
+    	header = header.replaceAll("\\.t:" + treePrefix, ".");
+    	header = header.replaceAll("\\.s:" + sitePrefix, ".");
+    	// remove trailing dots on labels
+    	header = header.replaceAll("\\.\\.", ".");
+    	header = header.replaceAll("\\.\t", "\t");
+		return header;
+	}
+
+    /** return longest common prefex of two strings, except when the first
+     * on is null, then it returns the second string.
+     */
+	private String getprefix(String str1, String str2) {
+		if (str1 == null) {
+			return str2;
+		} else {
+			String prefix = "";
+			int i = 0;
+			while (i < str1.length() && i < str2.length() && 
+					str1.charAt(i) == str2.charAt(i)) {
+				prefix += str1.charAt(i++);
+			}
+			return prefix;
+		}
+	}
+
+
+	boolean openLogFile() throws Exception {
         String sFileName = m_pFileName.get();
         if (sFileName == null || sFileName.length() == 0) {
             m_out = System.out;

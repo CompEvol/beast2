@@ -61,23 +61,27 @@ public class Arrow extends Shape {
     /* c'tor for creating arrow with all fields set properly
       * Used when arrows are created by Document.recalcArrows */
     public Arrow(PluginShape tailShape, PluginShape headShape, String sInputName) {
-        m_sTailID = tailShape.getID();
-        m_tailShape = tailShape;
-        InputShape input = headShape.getInputShape(sInputName);
-        m_sHeadID = input.getID();
-        m_headShape = input;
-        //m_sHeadID = headShape.m_id;
-        m_x = 0;
-        m_y = 0;
-        m_w = 1;
-        m_h = 1;
-        m_pencolor = Color.gray;
+	        m_sTailID = tailShape.getID();
+	        m_tailShape = tailShape;
+	        InputShape input = headShape.getInputShape(sInputName);
+	        if (input == null) {
+	        	System.err.println("Arrow from " + tailShape.m_plugin.getID() + " to " + headShape.m_plugin.getID() + "." + sInputName + " skipped");	        	
+	        }
+	        m_sHeadID = input.getID();
+	        m_headShape = input;
+	        //m_sHeadID = headShape.m_id;
+	        m_x = 0;
+	        m_y = 0;
+	        m_w = 1;
+	        m_h = 1;
+	        m_pencolor = Color.gray;
     }
 
     @Override
     public void draw(Graphics2D g, JPanel panel) {
         g.setStroke(new BasicStroke(m_nPenWidth));
         g.setColor(m_pencolor);
+        g.setColor(Color.gray);
         GeneralPath path = new GeneralPath();
         path.moveTo(m_x, m_y);
         path.curveTo(m_x + 20, m_y, m_x + m_w - 40, m_y + m_h, m_x + m_w, m_y + m_h);

@@ -24,6 +24,7 @@
  */
 package beast.app.draw;
 
+
 import beast.app.util.Utils;
 import beast.core.Plugin;
 import beast.evolution.alignment.Sequence;
@@ -34,6 +35,11 @@ import beast.util.XMLProducer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+
+//import com.itextpdf.awt.PdfGraphics2D;
+//import com.itextpdf.text.pdf.PdfContentByte;
+//import com.itextpdf.text.pdf.PdfWriter;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -42,6 +48,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -95,6 +102,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     // flag to indicate the model can be edited.
     // set to false for read only view of the model, e.g. from beauti
     boolean m_bIsEditable = true;
+    
 
     public void setEditable(boolean bIsEditable) {
         m_bIsEditable = bIsEditable;
@@ -405,7 +413,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 //	            String sFileName = fc.getSelectedFile().toString();
             try {
 
-                File file = Utils.getSaveFile("Export image (type determined by extention)", new File(m_sDir), "Image files", "png", "bmp", "jpg", "svg");
+                File file = Utils.getSaveFile("Export image (type determined by extention)", new File(m_sDir), "Image files", "png", "bmp", "jpg", "svg", "pdf");
 
                 if (file != null) {
                     String sFileName = file.getAbsolutePath();
@@ -421,7 +429,23 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 //                                .getExtention();
 //                    }
 
-                        if (sFileName.toLowerCase().endsWith(".png")
+                        if (sFileName.toLowerCase().endsWith(".pdf")) {
+                        	JOptionPane.showMessageDialog(null, "Not implemented yet");
+//                        	com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
+//                        	PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(sFileName));
+//                        	doc.setPageSize(new com.itextpdf.text.Rectangle(g_panel.getWidth(), g_panel.getHeight()));
+//                        	doc.open();
+//                        	PdfContentByte cb = writer.getDirectContent();
+//                        	Graphics2D g2d = new PdfGraphics2D(cb, g_panel.getWidth(), g_panel.getHeight());
+//                        	 
+//                        	g_panel.paint(g2d);
+//
+//                        	g2d.dispose();
+//                        	doc.close();
+                            m_bIsExporting = false;
+                            repaint();
+                        	return;
+                        } else if (sFileName.toLowerCase().endsWith(".png")
                                 || sFileName.toLowerCase().endsWith(".jpg")
                                 || sFileName.toLowerCase().endsWith(".bmp")) {
                             BufferedImage bi;
@@ -448,9 +472,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                         + e.getMessage());
                                 e.printStackTrace();
                             }
+                            m_bIsExporting = false;
+                            repaint();
                             return;
                         } else if (sFileName.toLowerCase().endsWith(".svg")) {
                             writeSVG(sFileName);
+                            m_bIsExporting = false;
+                            repaint();
                             return;
                         }
                         JOptionPane.showMessageDialog(null, "Extention of file "
@@ -1130,8 +1158,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             g_panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             m_doc.layout();
             m_doc.adjustArrows();
-            repaint();
             g_panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            repaint();
+            g_panel.repaint();
         }
     } // class ActionViewSequences
 
@@ -2032,7 +2061,32 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             }
         });
         viewMenu.add(layoutMenu);
+        viewMenu.addSeparator();
 
+        final JCheckBoxMenuItem viewAllInputs = new JCheckBoxMenuItem("Show All Inputs",
+                m_doc.m_bShowALlInputs);
+        viewAllInputs.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+            	m_doc.m_bShowALlInputs = viewAllInputs.getState();
+            	m_doc.reinit();
+                setDrawingFlag();
+                g_panel.repaint();
+            }
+        });
+        viewMenu.add(viewAllInputs);
+
+        final JCheckBoxMenuItem sanitseIDs = new JCheckBoxMenuItem("Sanitise IDs",
+                m_doc.m_bSanitiseIDs);
+        sanitseIDs.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+            	m_doc.m_bSanitiseIDs = sanitseIDs.getState();
+                setDrawingFlag();
+                g_panel.repaint();
+            }
+        });
+        viewMenu.add(sanitseIDs);
+        
+        
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);

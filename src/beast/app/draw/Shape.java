@@ -56,6 +56,8 @@ abstract public class Shape {
     final static Color DEFUALT_PEN_COLOR = new Color(0, 0, 0);
     String m_sID;
 
+    Document m_doc;
+    
     String getID() {
         return m_sID;
     }
@@ -64,6 +66,7 @@ abstract public class Shape {
     }
 
     public Shape(Node node, Document doc) {
+    	m_doc = doc;
     }
 
     public void draw(Graphics2D g, JPanel panel) {
@@ -73,6 +76,11 @@ abstract public class Shape {
         if (getLabel() != null) {
             FontMetrics fm = g.getFontMetrics(g.getFont());
             String sLabel = getLabel();
+            if (m_doc != null && m_doc.sanitiseIDs()) {
+            	if (sLabel.contains(".")) {
+            		sLabel = sLabel.substring(0, sLabel.indexOf('.'));
+            	}
+            }
             int i = 0;
             while (sLabel.indexOf('\n') >= 0) {
                 String sStr = sLabel.substring(0, sLabel.indexOf('\n'));

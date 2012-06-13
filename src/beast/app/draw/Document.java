@@ -25,6 +25,7 @@
 package beast.app.draw;
 
 
+
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.core.Runnable;
@@ -37,6 +38,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.StringReader;
 import java.util.*;
 import java.util.List;
@@ -62,6 +64,8 @@ public class Document {
 
     //int m_nSavedPointer = -1;
     public boolean m_bIsSaved = true;
+    
+    Set<String> tabulist;
 
     public void isSaved() {
         m_bIsSaved = true;
@@ -76,11 +80,35 @@ public class Document {
      */
     String[] m_sPlugInNames;
 
+    // if false, only non-null and non-default valued inputs are shown
+    // Also inputs from the tabu list will be eliminated
+    boolean m_bShowALlInputs = false;
+    boolean showAllInputs() {
+    	return m_bShowALlInputs;
+    }
+    boolean m_bSanitiseIDs = true;
+    boolean sanitiseIDs() {
+    	return m_bSanitiseIDs;
+    }
 
     public Document() {
         // load all parsers
         List<String> sPlugInNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
         m_sPlugInNames = sPlugInNames.toArray(new String[0]);
+        tabulist = new HashSet<String>();
+        Properties properties = new Properties();
+        try {
+        	
+        	properties.load(getClass().getResourceAsStream("/beast/app/draw/tabulist.properties")); 
+            String list = properties.getProperty("tabulist");
+            for (String str  : list.split("\\s+")) {
+            	tabulist.add(str.trim());
+            }
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+
+
     } // c'tor
 
 //    /** change order of shapes to ensure arrows are drawn before the rest **/
@@ -1391,6 +1419,19 @@ public class Document {
             // TODO: handle exception
         }
     }
+    
+    void reinit() {
+    	String sXML = toXML();
+        m_objects.clear();
+        try {
+            XMLParser parser = new XMLParser();
+            Plugin plugin0 = parser.parseBareFragment(sXML, false);
+            init(plugin0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO: handle exception
+        }
+    }
 
     public void init(Plugin plugin0) {
         try {
@@ -1434,7 +1475,7 @@ public class Document {
         recalcArrows();
         layout();
         adjustArrows();
-    } // loadFile
+    } // init
 
     List<Shape> XML2Shapes(String sXML, boolean bReconstructPlugins) {
         List<Shape> shapes = new ArrayList<Shape>();
@@ -1858,17 +1899,25 @@ public class Document {
                         if (input.get() != null) {
                             if (input.get() instanceof Plugin) {
                                 PluginShape tailShape = map.get((Plugin) input.get());
-                                Arrow arrow = new Arrow(tailShape, headShape, input.getName());
-                                arrow.setID(getNewID(null));
-                                m_objects.add(arrow);
+                                try {
+	                                Arrow arrow = new Arrow(tailShape, headShape, input.getName());
+	                                arrow.setID(getNewID(null));
+	                                m_objects.add(arrow);
+                                } catch (Exception e) {
+									// ignore, can happen when not all inputs are to be shown
+								}
                             }
                             if (input.get() instanceof List<?>) {
                                 for (Object o : (List<?>) input.get()) {
                                     if (o != null && o instanceof Plugin) {
                                         PluginShape tailShape = map.get((Plugin) o);
-                                        Arrow arrow = new Arrow(tailShape, headShape, input.getName());
-                                        arrow.setID(getNewID(null));
-                                        m_objects.add(arrow);
+                                        try {
+	                                        Arrow arrow = new Arrow(tailShape, headShape, input.getName());
+	                                        arrow.setID(getNewID(null));
+	                                        m_objects.add(arrow);
+                                        } catch (Exception e) {
+        									// ignore, can happen when not all inputs are to be shown
+        								}
                                     }
                                 }
                             }

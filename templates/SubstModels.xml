@@ -200,7 +200,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
         <plugin spec='UCRelaxedClockModel' id="ExponentialRelaxedClock.c:$(n)" tree='@Tree.t:$(n)'>
 			<parameter name='clock.rate' id='ucedMean.c:$(n)' value='1.0' estimate='false'/>
             <distr id='Exponential.c:$(n)' name='distr' spec="beast.math.distributions.Exponential">
-				<parameter id='UCExpLambda' name='lambda' value='1.0'/>
+				<parameter id='UCExpLambda.c:$(n)' name='lambda' value='1.0'/>
 			</distr>
             <rateCategories spec='parameter.IntegerParameter' id='expRateCategories.c:$(n)' value="1" dimension='10' estimate='true'/>
         </plugin>
@@ -229,7 +229,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
             <connect srcID='ExpCategoriesUniform.c:$(n)'      targetID='mcmc' inputName='operator' if='inlikelihood(expRateCategories.c:$(n))'>Uniformly draw categories of partition c:$(n)</connect>
             <connect srcID='relaxedUpDownOperatorExp.c:$(n)'  targetID='mcmc' inputName='operator' if='inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>Up/down scaler for mean rate and tree of partition c:$(n)</connect>
 
-            <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(ucedMean.$(n)) and ucedMean.c:$(n)/estimate=true'/>
+            <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
             <connect srcID='rateStat.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>
 
 			<connect srcID='ExponentialRelaxedClock.c:$(n))' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel' if='inposterior(ExponentialRelaxedClock.c:$(n))'/>

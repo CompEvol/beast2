@@ -187,6 +187,10 @@ public class PluginPanel extends JPanel {
             Box pluginBox = createPluginBox();
             mainBox.add(pluginBox);
             mainBox.add(Box.createVerticalStrut(5));
+            if (doc != null) {
+            	// we are in Beauti, do not edit IDs
+            	m_identry.setEnabled(false);
+            }
         }
 
         doc.getInpuEditorFactory().addInputs(mainBox, m_plugin, null, null, doc);

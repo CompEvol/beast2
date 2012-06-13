@@ -68,20 +68,41 @@ public class PluginShape extends Shape {
     }
 
     public void init(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    	m_doc = doc;
         if (m_plugin == null) {
             m_plugin = (beast.core.Plugin) Class.forName(sClassName).newInstance();
         }
         m_inputs = new ArrayList<InputShape>();
+        if (m_plugin.getID() == null) {
+        	String sID = m_plugin.getClass().getName();
+        	sID = sID.substring(sID.lastIndexOf('.') + 1);
+        	m_plugin.setID(sID);
+        }
+        //System.err.println("\n>>>>" + m_plugin.getID());        
+        if (m_plugin.getID().equals("mcmc")) {
+        	int h = 3;
+        }
         List<Input<?>> sInputs = m_plugin.listInputs();
         for (Input<?> input_ : sInputs) {
-            InputShape input = new InputShape(input_);
-            input.setPluginShape(this);
-            input.m_fillcolor = m_fillcolor;
-            input.m_w = 10;
-            doc.addNewShape(input);
-            m_inputs.add(input);
+			String longInputName = m_plugin.getClass().getName() + "." + input_.getName(); 
+			//System.err.print(longInputName);
+        	if (doc.showAllInputs() ||
+        			!doc.tabulist.contains(longInputName) && 
+        			input_.get() != null && (
+        			(input_.get() instanceof List && ((List<?>)input_.get()).size()>0) ||  
+        			!input_.get().equals(input_.defaultValue))) {
+	            InputShape input = new InputShape(input_);
+	            input.setPluginShape(this);
+	            input.m_fillcolor = m_fillcolor;
+	            input.m_w = 10;
+	            doc.addNewShape(input);
+	            m_inputs.add(input);
+        		//System.err.println(" shown");
+        	} else {
+        		//System.err.println(" skipped");
+        	}
         }
-        m_h = Math.max(40, sInputs.size() * 12);
+        m_h = Math.max(40, m_inputs.size() * 12);
         adjustInputs();
     } // setClassName
 
@@ -110,7 +131,7 @@ public class PluginShape extends Shape {
                 List<Input<?>> inputs = m_plugin.listInputs();
                 for (int i = 0; i < m_inputs.size(); i++) {
                     InputShape input = m_inputs.get(i);
-                    input.m_input = inputs.get(i);
+                    //input.m_input = inputs.get(i);
                     int nOffset = i * m_h / (m_inputs.size()) + m_h / (2 * (m_inputs.size()));
                     input.m_x = m_x - input.m_w;
                     input.m_y = m_y + nOffset;
@@ -171,7 +192,7 @@ public class PluginShape extends Shape {
                         InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
                         m_inputs.add(ellipse);
                         ellipse.setPluginShape(this);
-                        ellipse.m_input = inputs.get(i);
+                        //ellipse.m_input = inputs.get(i);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
