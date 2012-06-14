@@ -1,6 +1,11 @@
 package beast.evolution.speciation;
 
 
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Distribution;
@@ -14,11 +19,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
-
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Description("Yule with calibrated monophyletic clades. With this prior, the marginal distribution of the" +
 " calibrated nodes (the MRCA of clades) is identical to the specified calibration, but the Yule is not preserved over" +
@@ -72,6 +72,10 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     private int[][] taxaPartialOrder;
 
     RPNcalculator userPDF = null; //Q2R  but would that work propagation-wise
+    
+    // whether to calculated the contribution of each of the calibrations
+    // should be false, when the calibrations come from MRCA priors of a parent CompoundDistribution 
+    boolean calcCalibrations = true;
 
     public CalibratedYuleModel() {}
 
@@ -104,21 +108,31 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         				if (distr instanceof MRCAPrior) {
         					MRCAPrior _MRCAPrior = (MRCAPrior) distr;
         					// make sure MRCAPrior is monophyletic
-        					if (!_MRCAPrior.m_bIsMonophyleticInput.get()) {
-        						throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
+        					if (_MRCAPrior.m_distInput.get() != null) {
+            					// make sure MRCAPrior is monophyletic
+            					if (!_MRCAPrior.m_bIsMonophyleticInput.get()) {
+            						throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
+            					}
+            					// create CalibrationPoint from MRCAPrior
+            					CalibrationPoint cal = new CalibrationPoint();
+            					cal.m_distInput.setValue(_MRCAPrior.m_distInput.get(), cal);
+            					cal.m_taxonset.setValue(_MRCAPrior.m_taxonset.get(), cal);
+            					cal.initAndValidate();
+            					cals.add(cal);
+            					taxaSets.add(cal.taxa());
+            					cal.taxa().initAndValidate();
+            					nCals++;
+            					calcCalibrations = false;
+        					} else {
+        						if (_MRCAPrior.m_bIsMonophyleticInput.get()) {
+        							System.err.println("WARNING: MRCAPriors must have a distribution when monophyletic for Calibrated Yule prior");
+        						}
         					}
-        					// create CalibrationPoint from MRCAPrior
-        					CalibrationPoint cal = new CalibrationPoint();
-        					cal.m_distInput.setValue(_MRCAPrior.m_distInput.get(), cal);
-        					cal.m_taxonset.setValue(_MRCAPrior.m_taxonset.get(), cal);
-        					cal.initAndValidate();
-        					cals.add(cal);
-        					taxaSets.add(cal.taxa());
-        					nCals++;
         				}
         			}
         		}
         	}
+            xclades = new int[nCals][];
         }
         if (nCals == 0) { 
         	// assume we are in beauti, back off for now
@@ -385,7 +399,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
             final double h = c.getHeight();
             // add calibration density for point
-            logL += cal.logPdf(h);
+            if (calcCalibrations) {
+            	logL += cal.logPdf(h);
+            }
 
             hs[k] = h;
         }
@@ -810,4 +826,10 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             out.print(h+ "\t");
         }
     }
+
+    @Override
+    protected boolean requiresRecalculation() {
+        return super.requiresRecalculation() || birthRate.get().somethingIsDirty();
+    }
+
 }

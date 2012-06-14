@@ -180,6 +180,9 @@ public class XMLParser {
     HashMap<String, Node> m_sIDNodeMap;
 
     HashMap<String, String> m_sElement2ClassMap;
+    
+    List<Plugin> pluginsWaitingToInit;
+    List<Node> nodesWaitingToInit;
 
     public HashMap<String, String> getElement2ClassMap() {
         return m_sElement2ClassMap;
@@ -212,6 +215,8 @@ public class XMLParser {
         m_sElement2ClassMap.put(SEQUENCE_ELEMENT, SEQUENCE_CLASS);
         m_sElement2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
         m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
+        pluginsWaitingToInit = new ArrayList<Plugin>();
+        nodesWaitingToInit = new ArrayList<Node>();
     }
 
     public Runnable parseFile(File file) throws Exception {
@@ -287,10 +292,28 @@ public class XMLParser {
                 }
             }
         }
+        initPlugins();
         return plugins;
     } // parseTemplate
 
-    /**
+    private void initPlugins() throws Exception {
+    	Node node = null;
+        try {
+        	for (int i = 0; i < pluginsWaitingToInit.size(); i++) {
+        		Plugin plugin = pluginsWaitingToInit.get(i);
+        		node = nodesWaitingToInit.get(i);
+        		plugin.initAndValidate();
+        	}
+        } catch (Exception e) {
+            // next lines for debugging only
+            //plugin.validateInputs();
+            //plugin.initAndValidate();
+            e.printStackTrace();
+            throw new XMLParserException(node, "validate and intialize error: " + e.getMessage(), 110);
+        }
+	}
+
+	/**
      * Expand plates in XML by duplicating the containing XML and replacing
      * the plate variable with the appropriate value.
      */
@@ -388,6 +411,7 @@ public class XMLParser {
         }
 
         Plugin plugin = createObject(children.item(i), PLUGIN_CLASS, null);
+        initPlugins();
         return plugin;
     } // parseFragment
 
@@ -433,6 +457,7 @@ public class XMLParser {
                 plugins.add(plugin);
             }
         }
+        initPlugins();
         return plugins;
     }
 
@@ -458,6 +483,7 @@ public class XMLParser {
 
         //parseState();
         parseRunElement(topNode);
+        initPlugins();
     } // parse
 
 
@@ -694,7 +720,9 @@ public class XMLParser {
         if (m_bInitialize) {
             try {
                 plugin.validateInputs();
-                plugin.initAndValidate();
+                pluginsWaitingToInit.add(plugin);
+                nodesWaitingToInit.add(node);
+                //plugin.initAndValidate();
             } catch (Exception e) {
                 // next lines for debugging only
                 //plugin.validateInputs();
