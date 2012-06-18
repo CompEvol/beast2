@@ -16,7 +16,7 @@ import beast.core.Plugin;
 @Description("Defines properties for custom panels in Beauti")
 public class BeautiPanelConfig extends Plugin {
     public enum Partition {
-        none, SiteModel, ClockModel, Tree
+        none, Partition, SiteModel, ClockModel, Tree
     }
 
     public Input<String> sNameInput = new Input<String>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);

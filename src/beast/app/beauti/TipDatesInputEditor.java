@@ -17,7 +17,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -56,6 +55,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
     List<String> sTaxa;
     Object[][] tableData;
     JTable table;
+    String m_sPattern = ".*(\\d\\d\\d\\d).*";
 
 
     @Override
@@ -496,8 +496,8 @@ public class TipDatesInputEditor extends PluginInputEditor {
         guessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String sPattern = ".*(\\d\\d\\d\\d).*";
-                sPattern = JOptionPane.showInputDialog(null, "Pattern to match", sPattern);
+                GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
+                String sPattern = dlg.showDialog("Guess dates");
                 if (sPattern == null) {
                     return;
                 }
@@ -520,6 +520,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                     // TODO: handle exception
                 }
                 refreshPanel();
+                m_sPattern = sPattern;
             }
         });
         buttonBox.add(guessButton);

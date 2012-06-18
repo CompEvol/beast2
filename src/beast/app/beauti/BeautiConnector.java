@@ -137,7 +137,11 @@ public class BeautiConnector extends Plugin {
                     case EQUALS:
                         Input<?> input = plugin.getInput(sConditionInputs[i]);
                         //System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
-                        if (!input.get().toString().equals(sConditionValues[i])) {
+                        if (input.get() == null) {
+                        	if (!sConditionValues[i].equals("null")) {
+                        		return false;
+                        	}
+                        } else if (!input.get().toString().equals(sConditionValues[i])) {
                             //System.err.println("isActivated::return false");
                             return false;
                         }
@@ -145,7 +149,11 @@ public class BeautiConnector extends Plugin {
                     case NOT_EQUALS:
                         Input<?> input2 = plugin.getInput(sConditionInputs[i]);
                         //System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
-                        if (input2.get().toString().equals(sConditionValues[i])) {
+                        if (input2.get() == null) {
+                        	if (sConditionValues[i].equals("null")) {
+                        		return false;
+                        	}
+                        } else if (input2.get().toString().equals(sConditionValues[i])) {
                             //System.err.println("isActivated::return false");
                             return false;
                         }
