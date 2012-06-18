@@ -59,7 +59,9 @@ public class AlignmentViewer extends JPanel {
         for (int i = 10; i < nSites; i += 10) {
             String s = i + "";
             for (int j = 0; j < s.length(); j++) {
-                columnData[i + j] = "<html>" + s.charAt(j) + "<br>" + headerChar[i - 1] + "</html>";
+            	if (i+j < columnData.length) {
+            		columnData[i + j] = "<html>" + s.charAt(j) + "<br>" + headerChar[i - 1] + "</html>";
+            	}
             }
             columnData[i - 5] = "<html>+<br>" + headerChar[i - 1] + "</html>";
         }

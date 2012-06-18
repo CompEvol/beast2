@@ -68,7 +68,7 @@ public class PluginPanel extends JPanel {
 
 
     static {
-        //init();
+        init();
     } // finished registering input editors
 
     public static void init() {

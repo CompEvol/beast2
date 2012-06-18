@@ -1375,6 +1375,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		if (sType == null) {
 			return pPartition[2];
 		}
+		if (sType.contains("Partitions")) {
+			List<Plugin> plugins = new ArrayList<Plugin>();
+			plugins.addAll(alignments);
+			return plugins;
+		}
 		if (sType.contains("SiteModel")) {
 			return pPartition[0];
 		}
@@ -1586,6 +1591,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			return value;
 		}
 		String valueID = value.getID();
+		if (valueID == null) {
+			return value;
+		}
 		if (valueID.indexOf('.') >= 0) {
 			String valueCopyID = renameId(valueID, partitionContext);
 			if (doc.pluginmap.containsKey(valueCopyID)) {
