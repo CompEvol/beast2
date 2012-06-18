@@ -675,33 +675,37 @@ public class XMLProducer extends XMLParser {
                             }
                             return;
                         } else if (input.get() instanceof Plugin) {
-                            if (bShort && m_bDone.contains((Plugin) input.get())) {
-                                buf.append(" " + sInput + "='@" + ((Plugin) input.get()).getID() + "'");
-                                m_bInputsDone.add(input);
-                            }
-                            if (!bShort && !m_bInputsDone.contains(input)) {
-                                pluginToXML((Plugin) input.get(), buf, sInput, false);
-                            }
+                        	if (!input.get().equals(input.defaultValue)) {
+	                            if (bShort && m_bDone.contains((Plugin) input.get())) {
+	                                buf.append(" " + sInput + "='@" + ((Plugin) input.get()).getID() + "'");
+	                                m_bInputsDone.add(input);
+	                            }
+	                            if (!bShort && !m_bInputsDone.contains(input)) {
+	                                pluginToXML((Plugin) input.get(), buf, sInput, false);
+	                            }
+                        	}
                             return;
                         } else {
-                            // primitive type, see if
-                            String sValue = input.get().toString();
-                            if (bShort) {
-                                if (sValue.indexOf('\n') < 0) {
-                                    buf.append(" " + sInput + "='" + input.get().toString() + "'");
-                                }
-                            } else {
-                                if (sValue.indexOf('\n') >= 0) {
-                                    for (int j = 0; j < m_nIndent; j++) {
-                                        buf.append("    ");
-                                    }
-                                    if (sInput.equals("value")) {
-                                        buf.append(input.get().toString());
-                                    } else {
-                                        buf.append("<input name='" + sInput + "'>" + input.get().toString() + "</input>\n");
-                                    }
-                                }
-                            }
+                        	if (!input.get().equals(input.defaultValue)) {
+	                            // primitive type, see if
+	                            String sValue = input.get().toString();
+	                            if (bShort) {
+	                                if (sValue.indexOf('\n') < 0) {
+	                                    buf.append(" " + sInput + "='" + input.get().toString() + "'");
+	                                }
+	                            } else {
+	                                if (sValue.indexOf('\n') >= 0) {
+	                                    for (int j = 0; j < m_nIndent; j++) {
+	                                        buf.append("    ");
+	                                    }
+	                                    if (sInput.equals("value")) {
+	                                        buf.append(input.get().toString());
+	                                    } else {
+	                                        buf.append("<input name='" + sInput + "'>" + input.get().toString() + "</input>\n");
+	                                    }
+	                                }
+	                            }
+                        	}
                             return;
                         }
                     } else {
