@@ -297,17 +297,22 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
 
     protected void addInputLabel() {
         if (m_bAddButtons) {
-            String sName = m_input.getName();
-            if (doc.beautiConfig.inputLabelMap.containsKey(m_plugin.getClass().getName() + "." + sName)) {
-                sName = doc.beautiConfig.inputLabelMap.get(m_plugin.getClass().getName() + "." + sName);
-            } else {
-                sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
-                sName = sName.substring(0, 1).toUpperCase() + sName.substring(1);
-            }
+            String sName = formatName(m_input.getName());
             addInputLabel(sName, m_input.getTipText());
         }
     }
 
+    protected String formatName(String sName) {
+	    if (doc.beautiConfig.inputLabelMap.containsKey(m_plugin.getClass().getName() + "." + sName)) {
+	        sName = doc.beautiConfig.inputLabelMap.get(m_plugin.getClass().getName() + "." + sName);
+	    } else {
+	        sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
+	        sName = sName.substring(0, 1).toUpperCase() + sName.substring(1);
+	    }
+	    return sName;
+    }
+
+    
     protected void addInputLabel(String sLabel, String sTipText) {
         if (m_bAddButtons) {
             m_inputLabel = new JLabel(sLabel);

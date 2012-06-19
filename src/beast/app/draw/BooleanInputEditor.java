@@ -34,7 +34,7 @@ public class BooleanInputEditor extends InputEditor.Base {
         m_plugin = plugin;
         m_input = input;
 		this.itemNr = itemNr;
-        m_entry = new JCheckBox(doc.beautiConfig.getInputLabel(m_plugin, input.getName()));
+        m_entry = new JCheckBox(formatName(m_input.getName()));
         if (input.get() != null) {
             m_entry.setSelected((Boolean) input.get());
         }
