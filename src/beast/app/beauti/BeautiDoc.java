@@ -203,7 +203,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				} else if (args[i].equals("-xmldata")) {
 					// NB: multiple -xmldata/-nex commands can be processed!
 					String fileName = args[i + 1];
-					Alignment alignment = (Alignment) AlignmentListInputEditor.getXMLData(new File(fileName));
+					Alignment alignment = (Alignment) BeautiAlignmentProvider.getXMLData(new File(fileName));
 					alignments.add(alignment);
 					i += 2;
 				} else if (args[i].equals("-exitaction")) {
@@ -356,7 +356,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	public void importXMLAlignment(File file) throws Exception {
-		Alignment data = (Alignment) AlignmentListInputEditor.getXMLData(file);
+		Alignment data = (Alignment) BeautiAlignmentProvider.getXMLData(file);
 		data.initAndValidate();
 		addAlignmentWithSubnet(data);
 		connectModel();
@@ -1011,7 +1011,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				// if so, run through all connectors
 				for (BeautiConnector connector : template.connectors) {
 					
-//					if (connector.sSourceID.startsWith("strictClockUpDownOperator")) {
+//					if (connector.sSourceID.startsWith("traitClockRate.c:newTrait2")) {
 //						int h = 3;
 //						h++;
 //					}
@@ -1198,6 +1198,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		beautiConfig.partitionTemplate.get().createSubNet(data, this, true);
 		// re-determine partitions
 		determinePartitions();
+	}
+
+	public Plugin addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template) throws Exception {
+		Plugin data = template.createSubNet(context, true);
+		alignments.add((Alignment) data);
+		// re-determine partitions
+		determinePartitions();
+		return data;
 	}
 
 	public void delAlignmentWithSubnet(Alignment data) {

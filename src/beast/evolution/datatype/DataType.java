@@ -134,7 +134,11 @@ public interface DataType {
                     // assume it is a comma separated string of integers
                     String[] sStrs = sData.split(",");
                     for (String sStr : sStrs) {
-                        sequence.add(Integer.parseInt(sStr));
+                    	try {
+                    		sequence.add(Integer.parseInt(sStr));
+                    	} catch (NumberFormatException e) {
+                    		sequence.add(-1);
+                    	}
                     }
                 } else {
                     // assume it is a string where each character is a state

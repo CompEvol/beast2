@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import beast.app.draw.InputEditor;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -43,6 +42,8 @@ public class BeautiConfig extends Plugin {
     public Input<List<BeautiSubTemplate>> subTemplatesInput = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes",
             new ArrayList<BeautiSubTemplate>());
 
+    public Input<List<BeautiAlignmentProvider>> alignmentProviderInput = new Input<List<BeautiAlignmentProvider>>("alignmentProvider", "defines providers for adding new alignments",
+            new ArrayList<BeautiAlignmentProvider>());
 
     /**
      * list of inputs for which the input editor should be expanded inline in a dialog
@@ -72,6 +73,7 @@ public class BeautiConfig extends Plugin {
     public List<BeautiPanelConfig> panels = new ArrayList<BeautiPanelConfig>();
 
     public List<BeautiSubTemplate> subTemplates;
+    public List<BeautiAlignmentProvider> alignmentProvider;
 
     @Override
     public void initAndValidate() {
@@ -98,6 +100,7 @@ public class BeautiConfig extends Plugin {
         }
         //InputEditor.setExpertMode(bIsExpertInput.get());
         subTemplates = subTemplatesInput.get();
+        alignmentProvider = alignmentProviderInput.get();
     }
 
     public void setDoc(BeautiDoc doc) {

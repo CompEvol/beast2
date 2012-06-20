@@ -133,8 +133,10 @@
         />
 		<mergepoint id='aux-panels'/>
 
+		<alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@StandardPartitionTemplate'/>
 
-        <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+
+        <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>

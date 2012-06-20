@@ -144,8 +144,10 @@
         />
 		<mergepoint id='aux-panels'/>
 
+		<alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@StarBEASTPartitionTemplate'/>
 
-        <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+
+        <partitiontemplate id='StarBEASTPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
 		    <distribution id='treePrior.t:$(n)' spec='GeneTreeForSpeciesTreeDistribution' tree='@Tree.t:$(n)' speciesTree='@Tree.Species' speciesTreePrior='@SpeciesTreePopSize.Species'/>
