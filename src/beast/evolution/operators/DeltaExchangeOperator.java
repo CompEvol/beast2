@@ -82,6 +82,13 @@ public class DeltaExchangeOperator extends Operator {
             }
         }
 
+        if (isIntegerOperator) {
+        	// make sure all weights are equal
+        	for (int i = 1; i < parameterWeights.length; i++) {
+        		if (parameterWeights[i] != parameterWeights[0]) throw new RuntimeException();
+        	}
+        }
+        
         if (isIntegerOperator && delta != Math.round(delta)) {
             throw new IllegalArgumentException("Can't be an integer operator if delta is not integer");
         }
@@ -114,6 +121,8 @@ public class DeltaExchangeOperator extends Operator {
                 // operate on real parameter
                 double scalar1 = realparameter.getValue(dim1);
                 double scalar2 = realparameter.getValue(dim2);
+
+        		//if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
 
                 if (isIntegerOperator) {
                     final int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
@@ -148,7 +157,6 @@ public class DeltaExchangeOperator extends Operator {
 
                 final int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
-                if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
                 scalar1 = Math.round(scalar1 - d);
                 scalar2 = Math.round(scalar2 + d);
 
@@ -214,7 +222,6 @@ public class DeltaExchangeOperator extends Operator {
 
                 final int d = Randomizer.nextInt((int) Math.round(delta)) + 1;
 
-                if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
                 scalar1 = Math.round(scalar1 - d);
                 scalar2 = Math.round(scalar2 + d);
 

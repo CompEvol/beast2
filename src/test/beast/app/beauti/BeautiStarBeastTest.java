@@ -31,7 +31,7 @@ public class BeautiStarBeastTest extends BeautiBase {
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
-		assertStateEquals("popSize", "Tree.Species", "birthRate.Species", "popMean", "Tree.t:26", "Tree.t:47", "clockRate.c:47", "Tree.t:59", "clockRate.c:59");
+		assertStateEquals("popSize", "Tree.t:Species", "birthRate.Species", "popMean", "Tree.t:26", "Tree.t:47", "clockRate.c:47", "Tree.t:59", "clockRate.c:59");
 		assertOperatorsEqual("Reheight", "popSizeScaler", "updown.all", "YuleBirthRateScaler.Species", "popMeanScale", "treeScaler.t:26", "treeRootScaler.t:26", "UniformOperator.t:26", "SubtreeSlide.t:26", "narrow.t:26", "wide.t:26", "WilsonBalding.t:26", "StrictClockRateScaler.c:47", "treeScaler.t:47", "treeRootScaler.t:47", "UniformOperator.t:47", "SubtreeSlide.t:47", "narrow.t:47", "wide.t:47", "WilsonBalding.t:47", "updown.47", "strictClockUpDownOperator.c:47", "StrictClockRateScaler.c:59", "treeScaler.t:59", "treeRootScaler.t:59", "UniformOperator.t:59", "SubtreeSlide.t:59", "narrow.t:59", "wide.t:59", "WilsonBalding.t:59", "updown.59", "strictClockUpDownOperator.c:59");
 		assertPriorsEqual("YuleModel.Species", "YuleBirthRatePrior.Species", "popMean.prior", "ClockPrior.c:47", "ClockPrior.c:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "speciescoalescent", "birthRate.Species", "YuleModel.Species", "TreeHeight.Species", "treeLikelihood.26", "treePrior.t:26", "TreeHeight.t:26", "treeLikelihood.47", "treePrior.t:47", "TreeHeight.t:47", "clockRate.c:47", "treeLikelihood.59", "treePrior.t:59", "TreeHeight.t:59", "clockRate.c:59");
@@ -46,7 +46,7 @@ public class BeautiStarBeastTest extends BeautiBase {
 		JButton okButton = dialog.robot.finder().find(JButtonMatcher.withText("OK"));
 		new JButtonFixture(dialog.robot, okButton).click();
 		printBeautiState(f);
-		assertStateEquals("popSize", "Tree.Species", "birthRate.Species", "popMean", "Tree.t:26", "Tree.t:47", "clockRate.c:47", "Tree.t:59", "clockRate.c:59");
+		assertStateEquals("popSize", "Tree.t:Species", "birthRate.Species", "popMean", "Tree.t:26", "Tree.t:47", "clockRate.c:47", "Tree.t:59", "clockRate.c:59");
 		assertOperatorsEqual("Reheight", "popSizeScaler", "updown.all", "YuleBirthRateScaler.Species", "popMeanScale", "treeScaler.t:26", "treeRootScaler.t:26", "UniformOperator.t:26", "SubtreeSlide.t:26", "narrow.t:26", "wide.t:26", "WilsonBalding.t:26", "StrictClockRateScaler.c:47", "treeScaler.t:47", "treeRootScaler.t:47", "UniformOperator.t:47", "SubtreeSlide.t:47", "narrow.t:47", "wide.t:47", "WilsonBalding.t:47", "updown.47", "strictClockUpDownOperator.c:47", "StrictClockRateScaler.c:59", "treeScaler.t:59", "treeRootScaler.t:59", "UniformOperator.t:59", "SubtreeSlide.t:59", "narrow.t:59", "wide.t:59", "WilsonBalding.t:59", "updown.59", "strictClockUpDownOperator.c:59");
 		assertPriorsEqual("YuleModel.Species", "YuleBirthRatePrior.Species", "popMean.prior", "ClockPrior.c:47", "ClockPrior.c:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "speciescoalescent", "birthRate.Species", "YuleModel.Species", "TreeHeight.Species", "treeLikelihood.26", "treePrior.t:26", "TreeHeight.t:26", "treeLikelihood.47", "treePrior.t:47", "TreeHeight.t:47", "clockRate.c:47", "treeLikelihood.59", "treePrior.t:59", "TreeHeight.t:59", "clockRate.c:59");
