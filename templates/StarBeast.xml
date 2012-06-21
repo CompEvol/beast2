@@ -150,7 +150,7 @@
         <partitiontemplate id='StarBEASTPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
-		    <distribution id='treePrior.t:$(n)' spec='GeneTreeForSpeciesTreeDistribution' tree='@Tree.t:$(n)' speciesTree='@Tree.Species' speciesTreePrior='@SpeciesTreePopSize.Species'/>
+		    <distribution id='treePrior.t:$(n)' spec='GeneTreeForSpeciesTreeDistribution' tree='@Tree.t:$(n)' speciesTree='@Tree.t:Species' speciesTreePrior='@SpeciesTreePopSize.Species'/>
 
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
@@ -177,8 +177,10 @@
             <plugin spec='beast.evolution.tree.Tree' id='Tree.t:$(n)' taxonset='@TaxonSet.$(n)'/>
 
             <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.t:$(n)'-->
-			<tree spec='RandomGeneTree' id='RandomGeneTree.t:$(n)' initial='@Tree.t:$(n)' speciesTree='@Tree.Species' taxa='@$(n)'>
-				<populationModel id='RGTPopulationModel.t:$(n)' spec='ConstantPopulation'><popSize id='RGTPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/></populationModel>
+			<tree spec='RandomGeneTree' id='RandomGeneTree.t:$(n)' initial='@Tree.t:$(n)' speciesTree='@Tree.t:Species' taxa='@$(n)'>
+				<populationModel id='RGTPopulationModel.t:$(n)' spec='ConstantPopulation'>
+					<popSize id='RGTPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
+				</populationModel>
 			</tree>
 
             <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
@@ -275,10 +277,10 @@
             <connect srcID='treeTopFinder'    targetID='treePrior.t:$(n)' inputName='treetop' if='SpeciesTreePopSize.Species/popFunction=linear'/>
 			<!-- 
 			Since 'Species' is treated as a separate partition, we need the following
-			hack to get rid of undesirable Tree.Species connections 
+			hack to get rid of undesirable Tree.t:Species connections 
 			-->
-            <connect srcID='Tree.Species'     targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
-            <connect srcID='Tree.Species'     targetID='treeTopFinder' inputName='tree' if='Tree.t:$(n)/estimate=XXX'/>
+            <connect srcID='Tree.t:Species'     targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
+            <connect srcID='Tree.t:Species'     targetID='treeTopFinder' inputName='tree' if='Tree.t:$(n)/estimate=XXX'/>
 
 			<mergepoint id='aux-partitiontemplate'/>
         </partitiontemplate>
@@ -297,7 +299,7 @@
 		</taxon>
 	</taxonset>
 
-	<tree spec='beast.evolution.tree.Tree' id='Tree.Species' taxonset='@taxonsuperset' estimate='true'/>
+	<tree spec='beast.evolution.tree.Tree' id='Tree.t:Species' taxonset='@taxonsuperset' estimate='true'/>
 
 	<treetop spec='TreeTopFinder' id='treeTopFinder'/>
 
@@ -307,14 +309,14 @@
         <state storeEvery='5000' id='state'>
 	        <stateNode idref='popSize'/> 
 	        <stateNode idref='popSizeTop'/> 
-	        <stateNode idref='Tree.Species'/> 
+	        <stateNode idref='Tree.t:Species'/> 
 	        <stateNode idref='birthRate.Species'/> 
 	        <stateNode idref='popMean'/> 
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
             <distribution spec="CompoundDistribution" id="speciescoalescent">
-				<distribution id='SpeciesTreePopSize.Species' spec='SpeciesTreePrior' tree='@Tree.Species' 
+				<distribution id='SpeciesTreePopSize.Species' spec='SpeciesTreePrior' tree='@Tree.t:Species' 
 						popFunction='constant' taxonset='@taxonsuperset'>
 				    <bottomPopSize spec='parameter.RealParameter' id='popSize' value='1'/> 
 			        <topPopSize spec='parameter.RealParameter' id='popSizeTop' value='1'/> 
@@ -324,7 +326,7 @@
 			</distribution>
             <distribution spec="CompoundDistribution" id="prior">
 			    <!-- species tree priors -->
-		        <distribution id="YuleModel.Species" spec="speciation.YuleModel" tree='@Tree.Species'>
+		        <distribution id="YuleModel.Species" spec="speciation.YuleModel" tree='@Tree.t:Species'>
 		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.Species" value='213.2021' lower='0' upper='10000' />
 		        </distribution>
 	            <distribution id='YuleBirthRatePrior.Species' spec='Prior' x='@birthRate.Species'>
@@ -339,7 +341,7 @@
             </distribution>
         </distribution>
 
-	<operator id="Reheight" spec="NodeReheight" tree="@Tree.Species" weight="94" taxonset='@taxonsuperset'/>
+	<operator id="Reheight" spec="NodeReheight" tree="@Tree.t:Species" weight="94" taxonset='@taxonsuperset'/>
 	<operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
 	<operator degreesOfFreedom="1" id="popSizeTopScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSizeTop" weight="5.0"/>
 
@@ -348,7 +350,7 @@
 	  <down idref="popMean"/>
 	  <down idref="popSize"/>
 
-	  <down idref="Tree.Species"/>
+	  <down idref="Tree.t:Species"/>
 	</operator>
 	
 	<operator id='YuleBirthRateScaler.Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.Species"/>
@@ -363,11 +365,11 @@
 			<log idref="speciescoalescent"/>
 			<log idref="birthRate.Species"/>
 			<log idref="YuleModel.Species"/>
-            <log id='TreeHeight.Species' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.Species'/>
+            <log id='TreeHeight.Species' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:Species'/>
         </logger>
 
 		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="5000" mode="tree">
-		    <log id='SpeciesTreeLoggerX' spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@Tree.Species" speciesTreePrior='@SpeciesTreePopSize.Species' treetop='@treeTopFinder'/>
+		    <log id='SpeciesTreeLoggerX' spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@Tree.t:Species" speciesTreePrior='@SpeciesTreePopSize.Species' treetop='@treeTopFinder'/>
 		</logger>
 
         <logger id='screenlog' logEvery="5000">
@@ -379,7 +381,7 @@
         </logger>
 
 
-        <init spec='beast.evolution.tree.RandomTree' id='RandomTree.Species' estimate='false' initial='@Tree.Species' taxonset='@taxonsuperset'>
+        <init spec='beast.evolution.tree.RandomTree' id='RandomTree.t:Species' estimate='false' initial='@Tree.t:Species' taxonset='@taxonsuperset'>
             <populationModel id='ConstantPopulation0.Species' spec='ConstantPopulation'>
         		<popSize id='randomPopSize.Species' spec='parameter.RealParameter' value='1'/>
             </populationModel>

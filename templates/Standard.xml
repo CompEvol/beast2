@@ -160,12 +160,7 @@
 
             <!-- tree and its properties -->
             <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
-            <plugin spec='beast.evolution.tree.Tree' id='Tree.t:$(n)' taxonset='@TaxonSet.$(n)'>
-	            <!--trait id='datetrait.$(n)' spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
-		            value=''>
-		            <taxa idref='data'/>
-	            </trait-->
-            </plugin>
+            <plugin spec='beast.evolution.tree.Tree' id='Tree.t:$(n)' taxonset='@TaxonSet.$(n)'/>
 
             <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.t:$(n)'-->
             <plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' initial='@Tree.t:$(n)'>

@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

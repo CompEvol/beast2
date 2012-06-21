@@ -919,6 +919,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				Tree tree = ((TreeLikelihood) plugin).m_tree.get();
 				tree.m_bIsEstimated.setValue(true, tree);
 			}
+			if (pluginmap.containsKey("Tree.t:Species")) {
+				Tree tree = (Tree) pluginmap.get("Tree.t:Species");
+				tree.m_bIsEstimated.setValue(true, tree);
+			}
 
 			// go through all templates, and process connectors in relevant ones
 			boolean bProgress = true;
@@ -1010,12 +1014,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (plugin != null) {
 				// if so, run through all connectors
 				for (BeautiConnector connector : template.connectors) {
-					
-//					if (connector.sSourceID.startsWith("traitClockRate.c:newTrait2")) {
-//						int h = 3;
-//						h++;
-//					}
-					
+										
 					if (connector.atInitialisationOnly()) {
 						if (bInitial) {
 							warning("connect: " + connector.toString(context) + "\n");

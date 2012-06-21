@@ -6,10 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashSet;
@@ -20,26 +16,18 @@ import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import beast.app.draw.ExtensionFileFilter;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallButton;
 import beast.core.Input;
@@ -49,13 +37,10 @@ import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
-import beast.util.NexusParser;
-import beast.util.XMLParser;
 
 // TODO: add useAmbiguities flag
 // TODO: add warning if useAmbiguities=false and nr of patterns=1 (happens when all data is ambiguous)
@@ -465,7 +450,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 							if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
 								input.setValue(null, plugin);
 							} else if (input.get() instanceof List) {
-								List<?> list = (List) input.get();
+								List<?> list = (List<?>) input.get();
 								if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
 									list.remove(oldTree);
 								}

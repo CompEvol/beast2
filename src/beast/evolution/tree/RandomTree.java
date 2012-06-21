@@ -175,6 +175,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             final TaxonSet taxonSet = prior.m_taxonset.get();
             if (taxonSet != null && !prior.m_bOnlyUseTipsInput.get()) {
 	            final BitSet bTaxa = new BitSet(m_nTaxa);
+	        	if (taxonSet.asStringList() == null) {
+	        			taxonSet.initAndValidate();
+	        	}
 	            for (final String sTaxonID : taxonSet.asStringList()) {
 	                final int iID = sTaxa.indexOf(sTaxonID);
 	                if (iID < 0) {
