@@ -9,7 +9,7 @@ public class Aminoacid extends Base {
     public Aminoacid() {
         m_nStateCount = 20;
         m_nCodeLength = 1;
-        m_sCodeMap = "ACDEFGHIKLMNPQRSTVWY" + GAP_CHAR + 'X';
+        m_sCodeMap = "ACDEFGHIKLMNPQRSTVWY" + GAP_CHAR + MISSING_CHAR;
 
         m_mapCodeToStateSet = new int[22][];
         for (int i = 0; i < 20; i++) {

@@ -151,8 +151,6 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
         return calcValues()[iDim];
     }
 
-    //@Override
-    //public boolean somethingIsDirty() {return false;}
 
     /**
      * Loggable implementation *

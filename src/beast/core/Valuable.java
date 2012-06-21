@@ -28,6 +28,4 @@ public interface Valuable {
      * @return iDim'th value (if any)
      */
     public double getArrayValue(int iDim);
-    
-    //public boolean somethingIsDirty();
 }

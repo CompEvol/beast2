@@ -114,10 +114,6 @@ public class CalculationNode extends Plugin {
         return isDirty;
     }
 
-    public boolean somethingIsDirty() {
-		return isDirtyCalculation();
-	}
-
     /**
      * flag to indicate whether this node will be updating its calculations
      */
