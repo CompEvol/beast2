@@ -261,6 +261,10 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         for (int k = 0; k < nCals; ++k) {
             final CalibrationPoint cal = orderedCalibrations[k];
             lowBound[k] = cal.dist().inverseCumulativeProbability(0);
+            // those are node heights
+            if( lowBound[k] < 0 ) {
+                lowBound[k] = 0;
+            }
             for( final int i : taxaPartialOrder[k] ) {
                 lowBound[k] = Math.max(lowBound[k], lowBound[i]);
             }
