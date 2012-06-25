@@ -21,8 +21,8 @@ import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
 
 @Description("Yule with calibrated monophyletic clades. With this prior, the marginal distribution of the" +
-" calibrated nodes (the MRCA of clades) is identical to the specified calibration, but the Yule is not preserved over" +
-" the whole tree space, only among sub-spaces.")
+        " calibrated nodes (the MRCA of clades) is identical to the specified calibration, but the Yule is not preserved over" +
+        " the whole tree space, only among sub-spaces.")
 @Citation(value = "Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time Estimation. " +
         "Syst Biol (2012) 61 (1): 138-149.", DOI = "10.1093/sysbio/syr087")
 public class CalibratedYuleModel extends SpeciesTreeDistribution {
@@ -50,12 +50,12 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public Input<List<CalibrationPoint>> calibrations =
             new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>());//,Input.Validate.REQUIRED);
 
-     public Input<Type> correctionType =  new Input<Type>("type", "Type of correction (default all). However, 'all'" +
-             " is possible only in a few special cases (a single clade or two nested clades).",
-             Type.OVER_ALL_TOPOS, Type.values());
+    public Input<Type> correctionType = new Input<Type>("type", "Type of correction (default all). However, 'all'" +
+            " is possible only in a few special cases (a single clade or two nested clades).",
+            Type.OVER_ALL_TOPOS, Type.values());
 
     public Input<RPNcalculator> userMar = new Input<RPNcalculator>("logMarginal",
-            "Used provided correction (log of marginal) for special cases.", (RPNcalculator)null);
+            "Used provided correction (log of marginal) for special cases.", (RPNcalculator) null);
 
     // Which correction to apply
     private Type type;
@@ -72,12 +72,13 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     private int[][] taxaPartialOrder;
 
     RPNcalculator userPDF = null; //Q2R  but would that work propagation-wise
-    
+
     // whether to calculated the contribution of each of the calibrations
     // should be false, when the calibrations come from MRCA priors of a parent CompoundDistribution 
     boolean calcCalibrations = true;
 
-    public CalibratedYuleModel() {}
+    public CalibratedYuleModel() {
+    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -100,45 +101,45 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             }
 
         } else {
-        	// find calibration points from prior
-        	for (Plugin plugin : outputs) {
-        		if (plugin instanceof CompoundDistribution) {
-        			CompoundDistribution prior = (CompoundDistribution) plugin;
-        			for (Distribution distr : prior.pDistributions.get()) {
-        				if (distr instanceof MRCAPrior) {
-        					MRCAPrior _MRCAPrior = (MRCAPrior) distr;
-        					// make sure MRCAPrior is monophyletic
-        					if (_MRCAPrior.m_distInput.get() != null) {
-            					// make sure MRCAPrior is monophyletic
-            					if (!_MRCAPrior.m_bIsMonophyleticInput.get()) {
-            						throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
-            					}
-            					// create CalibrationPoint from MRCAPrior
-            					CalibrationPoint cal = new CalibrationPoint();
-            					cal.m_distInput.setValue(_MRCAPrior.m_distInput.get(), cal);
-            					cal.m_taxonset.setValue(_MRCAPrior.m_taxonset.get(), cal);
-            					cal.initAndValidate();
-            					cals.add(cal);
-            					taxaSets.add(cal.taxa());
-            					cal.taxa().initAndValidate();
-            					nCals++;
-            					calcCalibrations = false;
-        					} else {
-        						if (_MRCAPrior.m_bIsMonophyleticInput.get()) {
-        							System.err.println("WARNING: MRCAPriors must have a distribution when monophyletic for Calibrated Yule prior");
-        						}
-        					}
-        				}
-        			}
-        		}
-        	}
+            // find calibration points from prior
+            for (Plugin plugin : outputs) {
+                if (plugin instanceof CompoundDistribution) {
+                    CompoundDistribution prior = (CompoundDistribution) plugin;
+                    for (Distribution distr : prior.pDistributions.get()) {
+                        if (distr instanceof MRCAPrior) {
+                            MRCAPrior _MRCAPrior = (MRCAPrior) distr;
+                            // make sure MRCAPrior is monophyletic
+                            if (_MRCAPrior.m_distInput.get() != null) {
+                                // make sure MRCAPrior is monophyletic
+                                if (!_MRCAPrior.m_bIsMonophyleticInput.get()) {
+                                    throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
+                                }
+                                // create CalibrationPoint from MRCAPrior
+                                CalibrationPoint cal = new CalibrationPoint();
+                                cal.m_distInput.setValue(_MRCAPrior.m_distInput.get(), cal);
+                                cal.m_taxonset.setValue(_MRCAPrior.m_taxonset.get(), cal);
+                                cal.initAndValidate();
+                                cals.add(cal);
+                                taxaSets.add(cal.taxa());
+                                cal.taxa().initAndValidate();
+                                nCals++;
+                                calcCalibrations = false;
+                            } else {
+                                if (_MRCAPrior.m_bIsMonophyleticInput.get()) {
+                                    System.err.println("WARNING: MRCAPriors must have a distribution when monophyletic for Calibrated Yule prior");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             xclades = new int[nCals][];
         }
-        if (nCals == 0) { 
-        	// assume we are in beauti, back off for now
-        	return;
+        if (nCals == 0) {
+            // assume we are in beauti, back off for now
+            return;
         }
-        
+
 
         for (int k = 0; k < nCals; ++k) {
             final TaxonSet tk = taxaSets.get(k);
@@ -230,7 +231,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 } else {
                     boolean anyParent = false;
                     for (final CalibrationPoint c : orderedCalibrations) {
-                        if ( c.m_forParent.get() ) {
+                        if (c.m_forParent.get()) {
                             anyParent = true;
                         }
                     }
@@ -242,7 +243,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                     } else {
                         setUpTables(tree.getLeafNodeCount() + 1);
                         linsIter = new CalibrationLineagesIterator(this.xclades, this.taxaPartialOrder, maximal,
-                                                                   tree.getLeafNodeCount());
+                                tree.getLeafNodeCount());
                         lastHeights = new double[nCals];
                     }
                 }
@@ -262,24 +263,24 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             final CalibrationPoint cal = orderedCalibrations[k];
             lowBound[k] = cal.dist().inverseCumulativeProbability(0);
             // those are node heights
-            if( lowBound[k] < 0 ) {
+            if (lowBound[k] < 0) {
                 lowBound[k] = 0;
             }
-            for( final int i : taxaPartialOrder[k] ) {
+            for (final int i : taxaPartialOrder[k]) {
                 lowBound[k] = Math.max(lowBound[k], lowBound[i]);
             }
             cladeHeight[k] = cal.dist().inverseCumulativeProbability(1);
         }
 
-        for (int k = nCals-1; k >= 0; --k) {
+        for (int k = nCals - 1; k >= 0; --k) {
             //  cladeHeight[k] should be the upper bound of k
-            double upper =  cladeHeight[k];
-            if( Double.isInfinite(upper) ) {
-               upper = lowBound[k] + 1;
+            double upper = cladeHeight[k];
+            if (Double.isInfinite(upper)) {
+                upper = lowBound[k] + 1;
             }
             cladeHeight[k] = (upper + lowBound[k]) / 2.0;
 
-            for( final int i : taxaPartialOrder[k] ) {
+            for (final int i : taxaPartialOrder[k]) {
                 cladeHeight[i] = Math.min(cladeHeight[i], cladeHeight[k]);
             }
         }
@@ -289,22 +290,22 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         final boolean[] used = new boolean[nNodes];
 
         int curLeaf = -1;
-        int curInternal = nNodes-1;
+        int curInternal = nNodes - 1;
 
         final Node[] subTree = new Node[nCals];
         for (int k = 0; k < nCals; ++k) {
             final List<Integer> freeTaxa = new ArrayList<Integer>();
-            for( final int ti : xclades[k] ) {
+            for (final int ti : xclades[k]) {
                 freeTaxa.add(ti);
             }
-            for( final int i : taxaPartialOrder[k] ) {
-                for( final int u : xclades[i] ) {
+            for (final int i : taxaPartialOrder[k]) {
+                for (final int u : xclades[i]) {
                     freeTaxa.remove(new Integer(u));
                 }
             }
 
             final List<Node> sbs = new ArrayList<Node>();
-            for( final int i : freeTaxa ) {
+            for (final int i : freeTaxa) {
                 final Node n = new Node(tree.getNode(i).getID());
                 n.setNr(++curLeaf);
                 n.setHeight(0.0);
@@ -312,30 +313,30 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
                 used[i] = true;
             }
-            for( final int i : taxaPartialOrder[k] ) {
+            for (final int i : taxaPartialOrder[k]) {
                 sbs.add(subTree[i]);
             }
-            final double base = sbs.get(sbs.size()-1).getHeight();
-            final double step = (cladeHeight[k] - base)/ (sbs.size()-1);
+            final double base = sbs.get(sbs.size() - 1).getHeight();
+            final double step = (cladeHeight[k] - base) / (sbs.size() - 1);
 
             Node tr = sbs.get(0);
-            for(int i = 1; i < sbs.size(); ++i) {
-                tr = Node.connect(tr, sbs.get(i), base + i*step);
+            for (int i = 1; i < sbs.size(); ++i) {
+                tr = Node.connect(tr, sbs.get(i), base + i * step);
                 tr.setNr(++curInternal);
             }
             subTree[k] = tr;
         }
 
-        Node finalTree = subTree[nCals-1];
-        double h = cladeHeight[nCals-1];
+        Node finalTree = subTree[nCals - 1];
+        double h = cladeHeight[nCals - 1];
 
-        for(int k = 0; k < used.length; ++k) {
-            if( ! used[k] ) {
+        for (int k = 0; k < used.length; ++k) {
+            if (!used[k]) {
                 final String tx = tree.getNode(k).getID();
                 final Node n = new Node(tx);
                 n.setHeight(0.0);
                 n.setNr(++curLeaf);
-                finalTree = Node.connect(finalTree, n, h+1);
+                finalTree = Node.connect(finalTree, n, h + 1);
                 finalTree.setNr(++curInternal);
                 h += 1;
             }
@@ -366,7 +367,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         final Node[] nodes = tree.getNodesAsArray();
         for (int i = taxonCount; i < nodes.length; i++) {
-            final Node node = nodes[i];                                      assert (!node.isLeaf());
+            final Node node = nodes[i];
+            assert (!node.isLeaf());
             final double height = node.getHeight();
             final double mrh = -lam * height;
             logL += mrh + (node.isRoot() ? mrh : 0);
@@ -389,7 +391,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 c = getCommonAncestor(tree, taxk);
 
                 // only monophyletics clades can be calibrated
-                if ( getLeafCount(c) != taxk.length ) {
+                if (getLeafCount(c) != taxk.length) {
                     return Double.NEGATIVE_INFINITY;
                 }
             } else {
@@ -397,14 +399,14 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 assert cal.forParent();
             }
 
-            if( cal.forParent() ) {
+            if (cal.forParent()) {
                 c = c.getParent();
             }
 
             final double h = c.getHeight();
             // add calibration density for point
             if (calcCalibrations) {
-            	logL += cal.logPdf(h);
+                logL += cal.logPdf(h);
             }
 
             hs[k] = h;
@@ -424,11 +426,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 case OVER_ALL_TOPOS: {
                     if (nCals == 1) {
                         logL -= logMarginalDensity(lam, tree.getLeafNodeCount(), hs[0], xclades[0].length,
-                                                orderedCalibrations[0].forParent());
+                                orderedCalibrations[0].forParent());
                     } else if (nCals == 2 && taxaPartialOrder[1].length == 1) {
                         //assert !forParent[0] && !forParent[1];
                         logL -= logMarginalDensity(lam, tree.getLeafNodeCount(), hs[0], xclades[0].length,
-                                                 hs[1], xclades[1].length);
+                                hs[1], xclades[1].length);
                     } else {
 
                         if (lastLam == lam) {
@@ -466,8 +468,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 case OVER_RANKED_COUNTS: {
                     Arrays.sort(hs);
                     final int[] cs = new int[nCals + 1];
-                    for( final Node n : tree.getInternalNodes() ) {
-                       final double nhk = n.getHeight();
+                    for (final Node n : tree.getInternalNodes()) {
+                        final double nhk = n.getHeight();
                         int i = 0;
                         for (/**/; i < hs.length; ++i) {
                             if (hs[i] >= nhk) {
@@ -499,12 +501,12 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 }
             }
         } else {
-           final double value = userPDF.getArrayValue();
+            final double value = userPDF.getArrayValue();
             if (Double.isNaN(value) || Double.isInfinite(value)) {
                 logL = Double.NEGATIVE_INFINITY;
-          } else {
-              logL -= value;
-          }
+            } else {
+                logL -= value;
+            }
         }
         return logL;
     }
@@ -702,8 +704,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     private double[] lNR;
     private double[] lfactorials;
 
-    private void setUpTables(final int MAX_N)
-    {
+    private void setUpTables(final int MAX_N) {
         final double[] lints = new double[MAX_N];
         lc2 = new double[MAX_N];
         lfactorials = new double[MAX_N];
@@ -752,7 +753,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public static int getTaxonIndex(final Tree tree, final String taxon) {
         for (int i = 0; i < tree.getNodeCount(); i++) {
             final Node node = tree.getNode(i);
-            if (node.isLeaf() && node.getID().equals(taxon) ) {
+            if (node.isLeaf() && node.getID().equals(taxon)) {
                 return i;
             }
         }
@@ -761,8 +762,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     public static Node getCommonAncestor(Node n1, Node n2) {
         // assert n1.getTree() == n2.getTree();
-        while( n1 != n2 ) {
-            if( n1.getHeight() < n2.getHeight() ) {
+        while (n1 != n2) {
+            if (n1.getHeight() < n2.getHeight()) {
                 n1 = n1.getParent();
             } else {
                 n2 = n2.getParent();
@@ -778,7 +779,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public static Node getCommonAncestor(final Tree tree, final int[] nodes) {
         Node cur = tree.getNode(nodes[0]);
 
-        for(int k = 1; k < nodes.length; ++k) {
+        for (int k = 1; k < nodes.length; ++k) {
             cur = getCommonAncestor(cur, tree.getNode(nodes[k]));
         }
         return cur;
@@ -791,7 +792,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
      * @return the number of leaves under this node.
      */
     public static int getLeafCount(final Node node) {
-        if( node.isLeaf() ) {
+        if (node.isLeaf()) {
             return 1;
         }
         return getLeafCount(node.getLeft()) + getLeafCount(node.getRight());
@@ -802,32 +803,36 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     @Override
     public void init(final PrintStream out) throws Exception {
         out.print(getID() + "\t");
-        for(final CalibrationPoint cp : orderedCalibrations) {
-            out.print(cp.getID() + "\t");
+        if (calcCalibrations) {
+            for (final CalibrationPoint cp : orderedCalibrations) {
+                out.print(cp.getID() + "\t");
+            }
         }
     }
 
     @Override
     public void log(final int nSample, final PrintStream out) {
         out.print(getCurrentLogP() + "\t");
-        final Tree tree = m_tree.get();
-        for(int k = 0; k < orderedCalibrations.length; ++k) {
-         final CalibrationPoint cal = orderedCalibrations[k];
-            Node c;
-            final int[] taxk = xclades[k];
-            if (taxk.length > 1) {
-                //  find MRCA of taxa
-                c = getCommonAncestor(tree, taxk);
-            } else {
-                c = tree.getNode(taxk[0]);
-            }
+        if (calcCalibrations) {
+            final Tree tree = m_tree.get();
+            for (int k = 0; k < orderedCalibrations.length; ++k) {
+                final CalibrationPoint cal = orderedCalibrations[k];
+                Node c;
+                final int[] taxk = xclades[k];
+                if (taxk.length > 1) {
+                    //  find MRCA of taxa
+                    c = getCommonAncestor(tree, taxk);
+                } else {
+                    c = tree.getNode(taxk[0]);
+                }
 
-            if( cal.forParent() ) {
-                c = c.getParent();
-            }
+                if (cal.forParent()) {
+                    c = c.getParent();
+                }
 
-            final double h = c.getHeight();
-            out.print(h+ "\t");
+                final double h = c.getHeight();
+                out.print(h + "\t");
+            }
         }
     }
 
