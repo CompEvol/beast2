@@ -193,6 +193,7 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      * @param operator
      */
     public void startEditing(final Operator operator) {
+    	assert (isCalledFromOperator(5));
         if (m_bHasStartedEditing) {
             // we are already editing
             return;
@@ -203,7 +204,18 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
         store();
     }
 
-    abstract protected void store();
+    private boolean isCalledFromOperator(int level) {
+    	Class caller = sun.reflect.Reflection.getCallerClass(level);
+    	while (caller != null) {
+    		if (Operator.class.isAssignableFrom(caller)) {
+    			return true;
+    		}
+    		caller = sun.reflect.Reflection.getCallerClass(++level);
+    	}
+    	return false;
+	}
+
+	abstract protected void store();
 
     abstract public void restore();
 
