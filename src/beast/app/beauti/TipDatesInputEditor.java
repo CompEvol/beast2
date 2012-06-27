@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EventObject;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -305,11 +306,15 @@ public class TipDatesInputEditor extends PluginInputEditor {
             public boolean stopCellEditing() {
                 table.removeEditor();
                 String sText = m_textField.getText();
-                try {
-                    Double.parseDouble(sText);
-                } catch (Exception e) {
-                    return false;
-                }
+//                try {
+//                    Double.parseDouble(sText);
+//                } catch (Exception e) {
+//                	try {
+//                		Date.parse(sText);
+//                	} catch (Exception e2) {
+//                        return false;
+//					}
+//                }
                 tableData[m_iRow][m_iCol] = sText;
                 convertTableDataToTrait();
                 convertTraitToTableData();
@@ -391,10 +396,10 @@ public class TipDatesInputEditor extends PluginInputEditor {
         } else {
             Double fMaxDate = 0.0;
             for (int i = 0; i < tableData.length; i++) {
-                fMaxDate = Math.max(fMaxDate, parseDouble((String) tableData[i][1]));
+                fMaxDate = Math.max(fMaxDate, parseDate((String) tableData[i][1]));
             }
             for (int i = 0; i < tableData.length; i++) {
-                tableData[i][2] = fMaxDate - parseDouble((String) tableData[i][1]);
+                tableData[i][2] = fMaxDate - parseDate((String) tableData[i][1]);
             }
         }
 
@@ -406,12 +411,22 @@ public class TipDatesInputEditor extends PluginInputEditor {
         }
     } // convertTraitToTableData
 
-    private double parseDouble(String sStr) {
+    private double parseDate(String sStr) {
         // default, try to interpret the string as a number
         try {
             return Double.parseDouble(sStr);
         } catch (NumberFormatException e) {
-            // does not look like a number
+            // does not look like a number, try parsing it as a date
+        	try {
+        		if (sStr.matches(".*[a-zA-Z].*")) {
+        			sStr = sStr.replace('/', '-');
+        		}
+        		long date = Date.parse(sStr);
+        		return 1970.0 + date / (60.0*60*24*365*1000);
+        	} catch (Exception e2) {
+        		// does not look like a date, give up
+			}
+
         }
         return 0;
     } // parseStrings
@@ -497,22 +512,31 @@ public class TipDatesInputEditor extends PluginInputEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
-                String sPattern = dlg.showDialog("Guess dates");
-                if (sPattern == null) {
-                    return;
-                }
-                Pattern pattern = Pattern.compile(sPattern);
-                String sTrait = "";
-                for (String sTaxon : sTaxa) {
-                    Matcher matcher = pattern.matcher(sTaxon);
-                    if (matcher.find()) {
-                        String sMatch = matcher.group(1);
-                        double nDate = Double.parseDouble(sMatch);
-                        if (sTrait.length() > 0) {
-                            sTrait += ",";
-                        }
-                        sTrait += sTaxon + "=" + nDate;
+            	String sTrait = "";
+                switch (dlg.showDialog("Guess dates")) {
+                case canceled: return;
+                case trait:
+                	sTrait = dlg.getTrait();
+                	break;
+                case pattern: 
+                    String sPattern = dlg.getPattern(); 
+                    if (sPattern == null) {
+                        return;
                     }
+                    Pattern pattern = Pattern.compile(sPattern);
+                    for (String sTaxon : sTaxa) {
+                        Matcher matcher = pattern.matcher(sTaxon);
+                        if (matcher.find()) {
+                            String sMatch = matcher.group(1);
+                            double nDate = parseDate(sMatch);
+                            if (sTrait.length() > 0) {
+                                sTrait += ",";
+                            }
+                            sTrait += sTaxon + "=" + nDate;
+                        }
+                    }
+                    m_sPattern = sPattern;
+                	break;
                 }
                 try {
                     traitSet.m_traits.setValue(sTrait, traitSet);
@@ -520,7 +544,6 @@ public class TipDatesInputEditor extends PluginInputEditor {
                     // TODO: handle exception
                 }
                 refreshPanel();
-                m_sPattern = sPattern;
             }
         });
         buttonBox.add(guessButton);

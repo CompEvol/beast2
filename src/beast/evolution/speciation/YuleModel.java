@@ -1,5 +1,7 @@
 package beast.evolution.speciation;
 
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -27,6 +29,21 @@ public class YuleModel extends SpeciesTreeDistribution {
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         conditionalOnRoot = m_pConditionlOnRoot.get();
+
+        // make sure that all tips are at the same height,
+        // otherwise this Yule Model is not appropriate
+        Tree tree = m_tree.get();
+        if (tree == null) {
+        	tree = treeIntervals.get().m_tree.get();
+        }
+        List<Node> leafs = tree.getExternalNodes();
+        double height = leafs.get(0).getHeight();
+        for (Node leaf : leafs) {
+        	if (Math.abs(leaf.getHeight() - height) > 1e-8) {
+        		System.err.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
+        		break;
+        	}
+        }
     }
 
     @Override

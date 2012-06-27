@@ -251,6 +251,15 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 setUpTables(tree.getLeafNodeCount() + 1);
             }
         }
+
+        List<Node> leafs = tree.getExternalNodes();
+        double height = leafs.get(0).getHeight();
+        for (Node leaf : leafs) {
+        	if (Math.abs(leaf.getHeight() - height) > 1e-8) {
+        		System.err.println("WARNING: Calibrated Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
+        		break;
+        	}
+        }
     }
 
     Tree compatibleInitialTree() throws Exception {

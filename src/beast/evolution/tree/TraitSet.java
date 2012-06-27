@@ -10,7 +10,10 @@ import beast.core.Plugin;
 import beast.evolution.alignment.TaxonSet;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
+import com.sun.org.apache.regexp.internal.recompile;
 
 @Description("A trait set represent a collection of properties of taxons, for the use of initializing a tree. " +
         "The traits are represented as text content in taxon=value form, for example, for a date trait, we" +
@@ -134,6 +137,25 @@ public class TraitSet extends Plugin {
             return Double.parseDouble(sStr);
         } catch (NumberFormatException e) {
             // does not look like a number
+            if (m_sTraitName.get().equals(DATE_TRAIT) || 
+            	m_sTraitName.get().equals(DATE_FORWARD_TRAIT) ||
+            	m_sTraitName.get().equals(DATE_BACKWARD_TRAIT))	{
+            	try {
+            		if (sStr.matches(".*[a-zA-Z].*")) {
+            			sStr = sStr.replace('/', '-');
+            		}
+            		long date = Date.parse(sStr);
+            		double year = 1970.0 + date / (60.0*60*24*365*1000);
+            		switch (m_sUnits.get()) {
+            		case month : return year * 12.0;
+            		case day: return year * 365;
+            		default :
+            			return year;
+            		}
+            	} catch (Exception e2) {
+            		// does not look like a date, give up
+    			}
+            }
         }
         return 0;
     } // parseStrings
