@@ -96,6 +96,12 @@ public class XMLProducer extends XMLParser {
         try {
             StringBuffer buf = new StringBuffer();
             buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0' namespace='" + DEFAULT_NAMESPACE + "'>\n");
+            for (String element : m_sElement2ClassMap.keySet()) {
+            	if (!m_sReservedElements.contains(element)) {
+            		buf.append("<map name='" + element + "'>" + m_sElement2ClassMap.get(element) +"</map>\n");
+            	}
+            }
+            buf.append("\n\n");
             m_bDone = new HashSet<Plugin>();
             m_bInputsDone = new HashSet<Input>();
             m_sIDs = new HashSet<String>();
@@ -540,30 +546,38 @@ public class XMLProducer extends XMLParser {
     void pluginToXML(Plugin plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
-        if (plugin instanceof Alignment) {
-            sElementName = XMLParser.DATA_ELEMENT;
+        for (String key : m_sElement2ClassMap.keySet()) {
+        	String className = m_sElement2ClassMap.get(key);
+        	Class _class = Class.forName(className);
+        	if (_class.equals(plugin.getClass())) {
+        		sElementName = key;
+        	}
         }
-        if (plugin instanceof Sequence) {
-            sElementName = XMLParser.SEQUENCE_ELEMENT;
-        }
-        if (plugin instanceof State) {
-            sElementName = XMLParser.STATE_ELEMENT;
-        }
-        if (plugin instanceof Distribution) {
-            sElementName = XMLParser.DISTRIBUTION_ELEMENT;
-        }
-        if (plugin instanceof Logger) {
-            sElementName = XMLParser.LOG_ELEMENT;
-        }
-        if (plugin instanceof Operator) {
-            sElementName = XMLParser.OPERATOR_ELEMENT;
-        }
-        if (plugin instanceof RealParameter) {
-            sElementName = XMLParser.REAL_PARAMETER_ELEMENT;
-        }
-        if (plugin instanceof Tree) {
-            sElementName = XMLParser.TREE_ELEMENT;
-        }
+        
+//        if (plugin instanceof Alignment) {
+//            sElementName = XMLParser.DATA_ELEMENT;
+//        }
+//        if (plugin instanceof Sequence) {
+//            sElementName = XMLParser.SEQUENCE_ELEMENT;
+//        }
+//        if (plugin instanceof State) {
+//            sElementName = XMLParser.STATE_ELEMENT;
+//        }
+//        if (plugin instanceof Distribution) {
+//            sElementName = XMLParser.DISTRIBUTION_ELEMENT;
+//        }
+//        if (plugin instanceof Logger) {
+//            sElementName = XMLParser.LOG_ELEMENT;
+//        }
+//        if (plugin instanceof Operator) {
+//            sElementName = XMLParser.OPERATOR_ELEMENT;
+//        }
+//        if (plugin instanceof RealParameter) {
+//            sElementName = XMLParser.REAL_PARAMETER_ELEMENT;
+//        }
+//        if (plugin instanceof Tree) {
+//            sElementName = XMLParser.TREE_ELEMENT;
+//        }
 
         if (bIsTopLevel) {
             sElementName = XMLParser.RUN_ELEMENT;

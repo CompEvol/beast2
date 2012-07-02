@@ -31,6 +31,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import beast.app.beauti.BeautiPanelConfig;
+import beast.evolution.likelihood.TreeLikelihood;
+
 @Description(
         value = "Base class for all plug-ins, which is pretty much every class " +
                 "you want to incorporate in a model.",
@@ -332,8 +335,31 @@ abstract public class Plugin {
         }
     }
 
+    /**
+     * Collect all predecessors in the graph where inputs
+     * represent incoming edges and plug-ins nodes.
+     *  
+     * @param predecessors in partial order such that if
+     * x is after y in the list then x is not an ancestor of y
+     * (but x need not necessarily be a predecesor of y)
+     */
 
-    public String toString() {
+    public void getPredecessors(List<Plugin> predecessors) {
+		predecessors.add(this);
+		try {
+			for (Plugin plugin2 : listActivePlugins()) {
+				if (!predecessors.contains(plugin2)) {
+					plugin2.getPredecessors(predecessors);
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String toString() {
         return getID();
     } // toString
 

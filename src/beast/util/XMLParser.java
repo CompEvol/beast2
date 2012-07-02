@@ -51,7 +51,9 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -179,7 +181,24 @@ public class XMLParser {
     HashMap<String, Integer[]> m_LikelihoodMap;
     HashMap<String, Node> m_sIDNodeMap;
 
-    HashMap<String, String> m_sElement2ClassMap;
+    static HashMap<String, String> m_sElement2ClassMap;
+    static Set<String> m_sReservedElements;
+    static {
+        m_sElement2ClassMap = new HashMap<String, String>();
+        m_sElement2ClassMap.put(DISTRIBUTION_ELEMENT, LIKELIHOOD_CLASS);
+        m_sElement2ClassMap.put(OPERATOR_ELEMENT, OPERATOR_CLASS);
+        m_sElement2ClassMap.put(INPUT_ELEMENT, INPUT_CLASS);
+        m_sElement2ClassMap.put(LOG_ELEMENT, LOG_CLASS);
+        m_sElement2ClassMap.put(DATA_ELEMENT, DATA_CLASS);
+        m_sElement2ClassMap.put(STATE_ELEMENT, STATE_CLASS);
+        m_sElement2ClassMap.put(SEQUENCE_ELEMENT, SEQUENCE_CLASS);
+        m_sElement2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
+        m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
+        m_sReservedElements = new HashSet<String>();
+        for (String element : m_sElement2ClassMap.keySet()) {
+        	m_sReservedElements.add(element);
+        }
+    }
     
     List<Plugin> pluginsWaitingToInit;
     List<Node> nodesWaitingToInit;
@@ -205,16 +224,6 @@ public class XMLParser {
     PartitionContext partitionContext = null;
 
     public XMLParser() {
-        m_sElement2ClassMap = new HashMap<String, String>();
-        m_sElement2ClassMap.put(DISTRIBUTION_ELEMENT, LIKELIHOOD_CLASS);
-        m_sElement2ClassMap.put(OPERATOR_ELEMENT, OPERATOR_CLASS);
-        m_sElement2ClassMap.put(INPUT_ELEMENT, INPUT_CLASS);
-        m_sElement2ClassMap.put(LOG_ELEMENT, LOG_CLASS);
-        m_sElement2ClassMap.put(DATA_ELEMENT, DATA_CLASS);
-        m_sElement2ClassMap.put(STATE_ELEMENT, STATE_CLASS);
-        m_sElement2ClassMap.put(SEQUENCE_ELEMENT, SEQUENCE_CLASS);
-        m_sElement2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
-        m_sElement2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
         pluginsWaitingToInit = new ArrayList<Plugin>();
         nodesWaitingToInit = new ArrayList<Node>();
     }
@@ -539,28 +548,34 @@ public class XMLParser {
             if (sName == null) {
                 throw new XMLParserException(child, "name attribute expected in map element", 300);
             }
-            if (m_sElement2ClassMap.containsKey(sName)) {
-                throw new XMLParserException(child, "name '" + sName + "' is already defined as " + m_sElement2ClassMap.get(sName), 301);
-            }
+            if (!m_sElement2ClassMap.containsKey(sName)) {
+//                throw new XMLParserException(child, "name '" + sName + "' is already defined as " + m_sElement2ClassMap.get(sName), 301);
+//            }
 
-            // get class
-            String sClass = child.getTextContent();
-            // remove spaces
-            sClass = sClass.replaceAll("\\s", "");
-            // go through namespaces in order they are declared to find the correct class
-            boolean bDone = false;
-            for (String sNameSpace : m_sNameSpaces) {
-                try {
-                    // sanity check: class should exist
-                    if (!bDone && Class.forName(sNameSpace + sClass) != null) {
-                        m_sElement2ClassMap.put(sName, sClass);
-                        System.err.println(sName + " => " + sNameSpace + sClass);
-                        bDone = true;
-                    }
-                } catch (ClassNotFoundException e) {
-                    //System.err.println("Not found " + e.getMessage());
-                    // TODO: handle exception
-                }
+	            // get class
+	            String sClass = child.getTextContent();
+	            // remove spaces
+	            sClass = sClass.replaceAll("\\s", "");
+	            // go through namespaces in order they are declared to find the correct class
+	            boolean bDone = false;
+	            for (String sNameSpace : m_sNameSpaces) {
+	                try {
+	                    // sanity check: class should exist
+	                    if (!bDone && Class.forName(sNameSpace + sClass) != null) {
+	                        m_sElement2ClassMap.put(sName, sClass);
+	                        System.err.println(sName + " => " + sNameSpace + sClass);
+	                        String reserved = getAttribute(child, "reserved"); 
+	                        if (reserved != null && reserved.toLowerCase().equals("true")) {
+	                        	m_sReservedElements.add(sName);
+	                        }
+	
+	                        bDone = true;
+	                    }
+	                } catch (ClassNotFoundException e) {
+	                    //System.err.println("Not found " + e.getMessage());
+	                    // TODO: handle exception
+	                }
+	            }
             }
         }
     } // parseNameSpaceAndMap

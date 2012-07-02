@@ -44,6 +44,7 @@ public class BooleanInputEditor extends InputEditor.Base {
             public void actionPerformed(ActionEvent e) {
                 try {
                 	setValue(m_entry.isSelected());
+                    validateInput();
                     //m_input.setValue(m_entry.isSelected(), m_plugin);
                 } catch (Exception ex) {
                     System.err.println("BooleanInputEditor " + ex.getMessage());

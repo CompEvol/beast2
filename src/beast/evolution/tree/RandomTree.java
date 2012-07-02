@@ -176,7 +176,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             if (taxonSet != null && !prior.m_bOnlyUseTipsInput.get()) {
 	            final BitSet bTaxa = new BitSet(m_nTaxa);
 	        	if (taxonSet.asStringList() == null) {
-	        			taxonSet.initAndValidate();
+	        		taxonSet.initAndValidate();
 	        	}
 	            for (final String sTaxonID : taxonSet.asStringList()) {
 	                final int iID = sTaxa.indexOf(sTaxonID);
@@ -188,6 +188,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	            final ParametricDistribution distr = prior.m_distInput.get();
 	            final Bound bounds = new Bound();
 	            if (distr != null) {
+	        		List<Plugin> plugins = new ArrayList<Plugin>();
+	        		distr.getPredecessors(plugins);
+	        		for (int i = plugins.size() - 1; i >= 0 ; i--) {
+	        			plugins.get(i).initAndValidate();
+	        		}
 	                bounds.m_fLower = distr.inverseCumulativeProbability(0.0) + distr.m_offset.get();
 	                bounds.m_fUpper = distr.inverseCumulativeProbability(1.0) + distr.m_offset.get();
 	            }

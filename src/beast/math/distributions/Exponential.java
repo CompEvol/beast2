@@ -11,7 +11,7 @@ import org.apache.commons.math.distribution.ExponentialDistributionImpl;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Exponential extends ParametricDistribution {
-    public Input<RealParameter> m_lambda = new Input<RealParameter>("lambda", "mean parameter, defaults to 1");
+    public Input<RealParameter> m_lambda = new Input<RealParameter>("mean", "mean parameter, defaults to 1");
 
     static org.apache.commons.math.distribution.ExponentialDistribution m_dist = new ExponentialDistributionImpl(1);
 

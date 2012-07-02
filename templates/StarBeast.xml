@@ -1,8 +1,18 @@
 <beast version='2.0'
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
-<map name='connect'>beast.app.beauti.BeautiConnector</map>
-<map name='subtemplate'>beast.app.beauti.BeautiSubTemplate</map>
+<map name='connect' reserved='true'>beast.app.beauti.BeautiConnector</map>
+<map name='subtemplate' reserved='true'>beast.app.beauti.BeautiSubTemplate</map>
+<map name='Uniform'>beast.math.distributions.Uniform</map>
+<map name='Normal'>beast.math.distributions.Normal</map>
+<map name='OneOnX'>beast.math.distributions.OneOnX</map>
+<map name='LogNormal'>beast.math.distributions.LogNormalDistributionModel</map>
+<map name='Exponential'>beast.math.distributions.Exponential</map>
+<map name='Gamma'>beast.math.distributions.Gamma</map>
+<map name='Beta'>beast.math.distributions.Beta</map>
+<map name='LaplaceDistribution'>beast.math.distributions.LaplaceDistribution</map>
+<map name='InverseGamma'>beast.math.distributions.InverseGamma</map>
+<map name='Prior'>beast.math.distributions.Prior</map>
 
     <beauticonfig spec='BeautiConfig'
         inputLabelMap='beast.core.MCMC.operator=Operators,
@@ -207,7 +217,7 @@
                 <down idref="Tree.t:$(n)"/>
             </operator>
 
-            <prior id='GammaShapePrior.s:$(n)' spec='Prior' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" lambda='1'/></prior>
+            <prior id='GammaShapePrior.s:$(n)' spec='Prior' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" mean='1'/></prior>
             <prior id='PropInvariantPrior.t:$(n)' spec='Prior' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->

@@ -378,7 +378,7 @@
                 </distr>
             </distribution>
             <distribution id="populationMeanPrior" spec="beast.math.distributions.Prior" x="@popSizes">
-                <distr id="popPriorDist" lambda="@populationMean" offset="0.0" spec="beast.math.distributions.Exponential"/>
+                <distr id="popPriorDist" mean="@populationMean" offset="0.0" spec="beast.math.distributions.Exponential"/>
             </distribution>
             <distribution id="coalescent" spec="util.CompoundDistribution">
                 <distribution id="treeModel000Coal" spec="Coalescent" treeIntervals="@treeModel000Intervals">

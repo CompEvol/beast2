@@ -1485,7 +1485,17 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				Set<Plugin> ancestors2 = new HashSet<Plugin>();
 				collectAncestors(plugin2, ancestors2, tabu);
 				ancestors.addAll(ancestors2);
+			} else if (plugin2 instanceof Alignment) {
+				for (Plugin output : plugin2.outputs) {
+					Set<Plugin> ancestors2 = new HashSet<Plugin>();
+					collectAncestors(output, ancestors2, tabu);
+					ancestors.addAll(ancestors2);
+				}
 			}
+		}
+		
+		for (Plugin p : ancestors) {
+			System.out.println(p.getID());
 		}
 
 		// now the ancestors contain all plugins to be copied
@@ -1583,7 +1593,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 		// initialise copied plugins
 		for (Plugin copy : sorted) {
-			copy.initAndValidate();
+			try {
+				copy.initAndValidate();
+			} catch (Exception e) {
+				// ignore
+			}
 			if (doc != null) {
 				doc.addPlugin(copy);
 			}
@@ -1606,6 +1620,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (doc.pluginmap.containsKey(valueCopyID)) {
 				value = doc.pluginmap.get(valueCopyID);
 			}
+		} else if (doc.pluginmap.get(valueID) instanceof Alignment) {
+			return doc.pluginmap.get(partitionContext.partition);
 		}
 		return value;
 	}

@@ -214,7 +214,7 @@
                     </distr>
                 </distribution>
                 <distribution id="populationMeanPrior" spec="Prior" x="@popSizes">
-                    <distr id="popPriorDist" lambda="@populationMean" offset="0.0" spec="Exponential"/>
+                    <distr id="popPriorDist" mean="@populationMean" offset="0.0" spec="Exponential"/>
                 </distribution>
 
                 <distribution id="coalescent" spec="CompoundDistribution">

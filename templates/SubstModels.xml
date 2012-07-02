@@ -200,7 +200,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
         <plugin spec='UCRelaxedClockModel' id="ExponentialRelaxedClock.c:$(n)" tree='@Tree.t:$(n)'>
 			<parameter name='clock.rate' id='ucedMean.c:$(n)' value='1.0' estimate='false'/>
             <distr id='Exponential.c:$(n)' name='distr' spec="beast.math.distributions.Exponential">
-				<parameter id='UCExpLambda.c:$(n)' name='lambda' value='1.0'/>
+				<parameter id='UCExpLambda.c:$(n)' name='mean' value='1.0'/>
 			</distr>
             <rateCategories spec='parameter.IntegerParameter' id='expRateCategories.c:$(n)' value="1" dimension='10' estimate='true'/>
         </plugin>
@@ -261,7 +261,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 
         <prior id='ucldStdevPrior.c:$(n)' spec='Prior' x='@ucldStdev.c:$(n)'>
             <distr spec="beast.math.distributions.Exponential">
-                <parameter name='lambda' value="0.3333" estimate='false'/>
+                <parameter name='mean' value="0.3333" estimate='false'/>
             </distr>
         </prior>
 
@@ -528,7 +528,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
                 </distr>
             </distribution>
             <distribution id="popSizePrior.alltrees" spec="Prior" x="@popSizes.alltrees">
-                <distr id="popPriorDist.EBSP" lambda="@populationMean.alltrees" spec="Exponential"/>
+                <distr id="popPriorDist.EBSP" mean="@populationMean.alltrees" spec="Exponential"/>
             </distribution>
 
 			<logger id="EBSPLogger" fileName='EBSP.$(seed).log' logEvery='5000'>
@@ -610,7 +610,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
         <subtemplate id='Exponential' class='beast.math.distributions.Exponential' mainid='[top]'>
 <![CDATA[
         <distr offset="0.0" spec="beast.math.distributions.Exponential">
-            <parameter name='lambda' value="1" estimate='false'/>
+            <parameter name='mean' value="1" estimate='false'/>
         </distr>
 ]]>
         </subtemplate>

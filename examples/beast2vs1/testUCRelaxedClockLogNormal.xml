@@ -81,7 +81,7 @@
                     <distr id="OneOnX" offset="0.0" spec="beast.math.distributions.OneOnX" />
                 </distribution>
                 <distribution id="S.prior" spec="beast.math.distributions.Prior" x="@S">
-                    <distr id="Exponential" lambda="0.3333333333333333" spec="beast.math.distributions.Exponential" />
+                    <distr id="Exponential" mean="0.3333333333333333" spec="beast.math.distributions.Exponential" />
                 </distribution>   
 
                 <distribution id="coalescent" spec="Coalescent">

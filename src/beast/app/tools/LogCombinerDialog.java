@@ -103,7 +103,8 @@ public class LogCombinerDialog {
         JScrollPane scrollPane1 = new JScrollPane(filesTable,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane1.setMaximumSize(new Dimension(10000, 120));
+        //scrollPane1.setMaximumSize(new Dimension(10000, 10));
+        scrollPane1.setPreferredSize(new Dimension(500, 285));
 
         ActionPanel actionPanel1 = new ActionPanel(false);
         actionPanel1.setAddAction(addFileAction);
