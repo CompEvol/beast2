@@ -25,7 +25,7 @@
         <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
         <plugin id='KappaPrior.s:$(n)' spec='Prior' x='@kappa.s:$(n)'>
-            <distr spec="LogNormalDistributionModel" meanInRealSpace='true'>
+            <distr spec="LogNormalDistributionModel" meanInRealSpace='false'>
                 <parameter name='M' value="1.0" estimate='false'/>
                 <parameter name='S' value="1.25" estimate='false'/>
             </distr>
