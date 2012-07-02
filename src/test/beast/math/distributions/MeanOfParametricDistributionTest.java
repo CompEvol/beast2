@@ -53,17 +53,17 @@ public class MeanOfParametricDistributionTest extends TestCase {
 	@Test
     public void testMeanOfExponential() throws Exception {
 		Exponential exp = new Exponential();
-		exp.initByName("lambda", "10");
+		exp.initByName("mean", "10");
 		double mean = exp.getMean();
         assertEquals(mean, 10, 1e-10);
 
         exp = new Exponential();
-		exp.initByName("lambda", "1");
+		exp.initByName("mean", "1");
 		mean = exp.getMean();
         assertEquals(mean, 1, 1e-10);
 
         exp = new Exponential();
-		exp.initByName("lambda", "1", "offset", "3");
+		exp.initByName("mean", "1", "offset", "3");
 		mean = exp.getMean();
         assertEquals(mean, 4, 1e-10);
 	}
