@@ -146,7 +146,7 @@ public class GuessPatternDialog extends JDialog {
 		JButton btnReadFromFile = new JButton("Browse");
 		btnReadFromFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				File file = Utils.getLoadFile("Load trait from file");
+				File file = Utils.getLoadFile("Load trait from file", new File(Beauti.g_sDir), "Select trait file", "dat","txt");
 				if (file != null) {
 					txtFile.setText(file.getPath());
 					b4.setSelected(true);
@@ -420,4 +420,5 @@ public class GuessPatternDialog extends JDialog {
 			return Status.canceled;
 		}
 	}
+	
 }

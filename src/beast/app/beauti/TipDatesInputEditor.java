@@ -386,8 +386,12 @@ public class TipDatesInputEditor extends PluginInputEditor {
 //            if (iTaxon < 0) {
 //                throw new Exception("Trait (" + sTaxonID + ") is not a known taxon. Spelling error perhaps?");
 //            }
-            tableData[iTaxon][0] = sTaxonID;
-            tableData[iTaxon][1] = normalize(sStrs[1]);
+            if (iTaxon >= 0) {
+	            tableData[iTaxon][1] = normalize(sStrs[1]);
+	            tableData[iTaxon][0] = sTaxonID;
+            } else {
+            	System.err.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
+            }
         }
         if (traitSet.m_sTraitName.get().equals("date-forward")) {
             for (int i = 0; i < tableData.length; i++) {
@@ -540,6 +544,8 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 }
                 try {
                     traitSet.m_traits.setValue(sTrait, traitSet);
+                    convertTraitToTableData();
+                    convertTableDataToTrait();
                 } catch (Exception ex) {
                     // TODO: handle exception
                 }
