@@ -5,6 +5,8 @@ import java.util.List;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.MCMC;
+import beast.core.Operator;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
 
@@ -18,6 +20,9 @@ public class BeautiConnector extends Plugin {
     public Input<String> sConditionInput = new Input<String>("if", "condition under which this connector should be executed." +
             "These should be of the form " +
             "inposterior(id) or id/input=value, e.g. inposterior(kappa), kappa/estimate=true. " +
+            "inlikelihood(id) to check there is a plugin with suplied id that is predecessor of likelihood. " +
+            "nooperator(id) to check there is no operator with suplied id. " +
+            "isInitialising to execute only when subtemplate is first instantiated. " +
             "For partition specific ids, use $(n), e.g. e.g. kappa.$(n)/estimate=true. " +
             "For multiple conditions, separate by 'and', e.g. inposterior(kappa.$(n)) and kappa.$(n)/estimate=true");
 //	public enum ConnectCondition {always, ifunlinked};
@@ -27,7 +32,7 @@ public class BeautiConnector extends Plugin {
 //			ConnectCondition.always, ConnectCondition.values());
 
 
-    enum Operation {EQUALS, NOT_EQUALS, IS_IN_POSTERIOR, IS_IN_LIKELIHOOD, AT_INITIALISATION_ONLY}
+    enum Operation {EQUALS, NOT_EQUALS, IS_IN_POSTERIOR, IS_IN_LIKELIHOOD, IS_NOT_AN_OPERTOR, AT_INITIALISATION_ONLY}
 //	final static String IS_IN_POSTERIOR = "x";
 //	final static String AT_INITIALISATION_ONLY = "y";
 
@@ -63,6 +68,11 @@ public class BeautiConnector extends Plugin {
                     sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
                     sConditionInputs[i] = null;
                     conditionOperations[i] = Operation.IS_IN_LIKELIHOOD;
+                    sConditionValues[i] = null;
+                } else if (s.startsWith("nooperator")) {
+                    sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
+                    conditionOperations[i] = Operation.IS_NOT_AN_OPERTOR;
+                    sConditionInputs[i] = null;
                     sConditionValues[i] = null;
                 } else if (s.startsWith("isInitializing")) {
                     sConditionIDs[i] = null;
@@ -134,6 +144,12 @@ public class BeautiConnector extends Plugin {
                         }
                         break;
                     //System.err.println("isActivated::is in posterior");
+                    case IS_NOT_AN_OPERTOR:
+        				List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
+        				if (operators.contains(plugin)) {
+        					return false;
+        				}
+                    	break;
                     case EQUALS:
                         Input<?> input = plugin.getInput(sConditionInputs[i]);
                         //System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);

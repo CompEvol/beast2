@@ -110,10 +110,15 @@
             hasPartitions="SiteModel" icon='3.png.x' forceExpansion='TRUE'
         />
 		<mergepoint id='aux-sitemodel-panels'/>
-
+<!--
 		<panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
             path='branchRateModel'
             hasPartitions="ClockModel" icon='4.png.x' forceExpansion='TRUE'
+        />
+-->
+		<panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
+            path='distribution/distribution[id="likelihood"]/distribution/branchRateModel'
+            hasPartitions="none" icon='4.png.x' forceExpansion='TRUE'
         />
 		<mergepoint id='aux-clockmodel-panels'/>
 		<panel spec='BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"
@@ -250,7 +255,7 @@
             <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
             <connect srcID='wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
             <connect srcID='WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
-            <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>Scale up substitution rate c:$(n) and scale down tree t:($n) </connect>
+            <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>Scale up substitution rate c:$(n) and scale down tree t:($n) </connect>
 
             <connect srcID='treeLikelihood.$(n)'              targetID='tracelog' inputName='log'/>
             <connect srcID='TreeHeight.t:$(n)'                targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n))'/>
@@ -305,7 +310,9 @@
     </beauticonfig>
 
 
-
+<!--
+<operator spec='DeltaExchangeOperator' id='FixMeanRatesOperator' weight='2' delta='0.75'/>
+-->
 
 <!-- framework for main model -->
 

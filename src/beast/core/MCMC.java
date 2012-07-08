@@ -184,7 +184,7 @@ public class MCMC extends Runnable {
         for (Operator op : operatorsInput.get()) {
             for (Plugin o : op.listActivePlugins()) {
                 if (o instanceof StateNode) {
-                    if (!stateNodes.contains((StateNode) o)) {
+                    if (((StateNode) o).m_bIsEstimated.get() && !stateNodes.contains((StateNode) o)) {
                         throw new Exception("Operator " + op.getID() + " has a statenode " + o.getID() + " in its inputs that is missing from the state.");
                     }
                 }
