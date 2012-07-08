@@ -123,8 +123,11 @@ public class BeautiConnector extends Plugin {
         	String sID = BeautiDoc.translatePartitionNames(sConditionIDs[i], partitionContext);
             Plugin plugin = doc.pluginmap.get(sID);
             if (plugin == null) {
+            	if (conditionOperations[i] != Operation.IS_NOT_AN_OPERTOR) {
+                    return false;
+            		
+            	}
                 //System.err.println("isActivated::no plugin found");
-                return false;
             }
             //System.err.println("isActivated::found " + sID);
             try {
