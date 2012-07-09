@@ -234,7 +234,8 @@
             <connect srcID='treePrior.t:$(n)'            targetID='prior' inputName='distribution' if='Tree.t:$(n)/estimate=nonsense'/>
 
             <connect srcID='ClockPrior.c:$(n)'           targetID='prior' inputName='distribution' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
-            <connect srcID='MutationRatePrior.s:$(n)'    targetID='prior' inputName='distribution' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
+<!-- when FixMeanMutationRatesOperator, the prior is uniform due to the operator -->
+            <connect srcID='MutationRatePrior.s:$(n)'    targetID='prior' inputName='distribution' if='nooperator(FixMeanMutationRatesOperator) and inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
 
 <!-- RRB: where is the popMean?
             <connect srcID='popMean.prior'               targetID='prior' inputName='distribution' if='popMean/estimate=true'/>
@@ -248,7 +249,7 @@
             <connect srcID='clockRate.s:$(n)'            targetID='state' inputName='stateNode' if='inposterior(clockRate.s:$(n)) and clockRate.s:$(n)/estimate=true'/>
 
             <connect srcID='proportionInvariantScaler.s:$(n)' targetID='mcmc' inputName='operator' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
-            <connect srcID='mutationRateScaler.s:$(n)'        targetID='mcmc' inputName='operator' if='inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
+            <connect srcID='mutationRateScaler.s:$(n)'        targetID='mcmc' inputName='operator' if='nooperator(FixMeanMutationRatesOperator) and inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
             <connect srcID='gammaShapeScaler.s:$(n)'          targetID='mcmc' inputName='operator' if='inposterior(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
             <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
@@ -274,7 +275,7 @@
             <connect srcID='Tree.t:$(n)'        targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
 
 	        <connect srcID='Tree.t:$(n)'        targetID='updown.all' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all' inputName='up' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all' inputName='up' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
 	        <connect srcID='popSizeTop' targetID='updown.all' inputName='down' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
 

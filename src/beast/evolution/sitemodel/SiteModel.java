@@ -25,6 +25,7 @@
 package beast.evolution.sitemodel;
 
 
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -54,13 +55,16 @@ public class SiteModel extends SiteModelInterface.Base {
             new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
     public Input<RealParameter> invarParameterInput =
             new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
+    public Input<Boolean> useBeast1StyleGammaInput = new Input<Boolean>("useBeast1Gamma", "use BEAST1 style gamma categories -- for backward compatibility testing", false);
 
     RealParameter muParameter;
     RealParameter shapeParameter;
     RealParameter invarParameter;
-
+    boolean useBeast1StyleGamma;
+    
     @Override
     public void initAndValidate() throws Exception {
+    	useBeast1StyleGamma = useBeast1StyleGammaInput.get();
         muParameter = muParameterInput.get();
         if (muParameter == null) {
             muParameter = new RealParameter("1.0");
@@ -251,9 +255,12 @@ public class SiteModel extends SiteModelInterface.Base {
                 try {
                     // RRB: alternative implementation that seems equally good in
                     // the first 5 significant digits, but uses a standard distribution object
-                    categoryRates[i + cat] = g.inverseCumulativeProbability((2.0 * i + 1.0) / (2.0 * gammaCatCount));
+                	if (useBeast1StyleGamma) {
+                        categoryRates[i + cat] = GammaDistributionQuantile((2.0 * i + 1.0) / (2.0 * gammaCatCount), a, 1.0 / a);
+                	} else {
+                		categoryRates[i + cat] = g.inverseCumulativeProbability((2.0 * i + 1.0) / (2.0 * gammaCatCount));
+                	}
 
-                    //categoryRates[i + cat] = GammaDistributionQuantile((2.0 * i + 1.0) / (2.0 * gammaCatCount), a, 1.0 / a);
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.err.println("Something went wrong with the gamma distribution calculation");

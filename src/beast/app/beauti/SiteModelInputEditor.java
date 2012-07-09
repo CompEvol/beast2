@@ -2,7 +2,14 @@ package beast.app.beauti;
 
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -11,9 +18,19 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.IntegerInputEditor;
 import beast.app.draw.ParameterInputEditor;
 import beast.app.draw.PluginInputEditor;
+import beast.app.draw.SmallLabel;
+import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.MCMC;
+import beast.core.Operator;
 import beast.core.Plugin;
+import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.CompoundDistribution;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
 
 public class SiteModelInputEditor extends PluginInputEditor {
@@ -24,6 +41,11 @@ public class SiteModelInputEditor extends PluginInputEditor {
     InputEditor gammaShapeEditor;
     ParameterInputEditor inVarEditor;
 
+    // vars for dealing with mean-rate delta exchange operator
+    JCheckBox fixMeanRatesCheckBox;
+    DeltaExchangeOperator operator;
+    protected SmallLabel fixMeanRatesValidateLabel;
+
 	public SiteModelInputEditor(BeautiDoc doc) {
 		super(doc);
 	}
@@ -32,6 +54,63 @@ public class SiteModelInputEditor extends PluginInputEditor {
     public Class<?> type() {
         return SiteModel.Base.class;
     }
+    
+    @Override
+    public void init(Input<?> input, Plugin plugin, int itemNr,
+    		ExpandOption bExpandOption, boolean bAddButtons) {
+    	fixMeanRatesCheckBox = new JCheckBox("Fix mean mutation rate");
+    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+    	
+		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
+    	fixMeanRatesCheckBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox averageRatesBox = (JCheckBox) e.getSource();
+				boolean averageRates = averageRatesBox.isSelected();
+				List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
+				if (averageRates) {
+					// connect DeltaExchangeOperator
+					if (!operators.contains(operator)) {
+						operators.add(operator);
+					}
+					// set up relative weights
+					setUpOperator();
+				} else {
+					operators.remove(operator);
+					fixMeanRatesValidateLabel.setVisible(false);
+					repaint();
+				}
+			}
+
+		});
+    	operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
+    	if (operator == null) {
+    		operator = new DeltaExchangeOperator();
+    		try {
+    			operator.setID("FixMeanMutationRatesOperator");
+				operator.initByName("weight", 2.0, "delta", 0.75);
+			} catch (Exception e1) {
+				// ignore initAndValidate exception
+			}
+    		doc.addPlugin(operator);
+    	}
+		fixMeanRatesCheckBox.setSelected(operators.contains(operator));
+		Box box = Box.createHorizontalBox();
+		box.add(fixMeanRatesCheckBox);
+		box.add(Box.createHorizontalGlue());
+		fixMeanRatesValidateLabel = new SmallLabel("x", Color.GREEN);
+		fixMeanRatesValidateLabel.setVisible(false);
+		box.add(fixMeanRatesValidateLabel);
+		
+    	if (doc.alignments.size() > 1 && operator != null) {
+        	JComponent component = (JComponent) getComponents()[0];
+    		component.add(box);
+    	}
+		setUpOperator();
+
+    }
+    
 //	@Override
 //    public Class<?> [] types() {
 //		Class<?>[] types = {SiteModel.class, SiteModel.Base.class}; 
@@ -122,5 +201,72 @@ public class SiteModelInputEditor extends PluginInputEditor {
         inVarEditor.addValidationListener(this);
         return inVarEditor;
     }
+
+
+    /** set up relative weights and parameter input **/
+    private void setUpOperator() {
+    	String weights = "";
+    	List<RealParameter> parameters = operator.parameterInput.get();
+    	parameters.clear();
+    	double commonClockRate = -1;
+    	boolean bAllClocksAreEqual = true;
+		try {
+			CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
+			for (Distribution d : likelihood.pDistributions.get()) {
+				TreeLikelihood treelikelihood = (TreeLikelihood) d;
+	    		Alignment data = treelikelihood.m_data.get(); 
+	    		int weight = data.getSiteCount();
+	    		SiteModel clockModel = (SiteModel) treelikelihood.m_pSiteModel.get();
+	    		RealParameter mutationRate = clockModel.muParameterInput.get();
+	    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
+	    		if (mutationRate.m_bIsEstimated.get()) {
+	    			if (commonClockRate < 0) {
+	    				commonClockRate = Double.parseDouble(mutationRate.m_pValues.get());
+	    			} else {
+	    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.m_pValues.get())) > 1e-10) {
+	    					bAllClocksAreEqual = false;
+	    				}
+	    			}
+    				weights += weight + " ";
+	    			parameters.add(mutationRate);
+	    		}
+	    	}
+	    	if (!fixMeanRatesCheckBox.isSelected()) {
+	    		fixMeanRatesValidateLabel.setVisible(false);
+				repaint();
+	    		return;
+	    	}
+	    	if (parameters.size() == 0) {
+	    		fixMeanRatesValidateLabel.setVisible(true);
+	    		fixMeanRatesValidateLabel.m_circleColor = Color.red;
+	    		fixMeanRatesValidateLabel.setToolTipText("The model is invalid: At least one clock rate should be estimated.");
+				repaint();
+	    		return;
+	    	}
+
+	    	IntegerParameter weightParameter = new IntegerParameter(weights);
+			weightParameter.setID("weightparameter");
+			weightParameter.m_bIsEstimated.setValue(false, weightParameter);
+	    	operator.input_parameterWeights.setValue(weightParameter, operator);
+	    	if (!bAllClocksAreEqual) {
+	    		fixMeanRatesValidateLabel.setVisible(true);
+	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
+	    		fixMeanRatesValidateLabel.setToolTipText("Not all clocks are equal. Are you sure this is what you want?");
+	    	} else if (parameters.size() == 1) {
+	    		fixMeanRatesValidateLabel.setVisible(true);
+	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
+	    		fixMeanRatesValidateLabel.setToolTipText("At least 2 clock models should have their rate estimated");
+	    	} else if (parameters.size() < doc.alignments.size()) {
+	    		fixMeanRatesValidateLabel.setVisible(true);
+	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
+	    		fixMeanRatesValidateLabel.setToolTipText("Not all partitions have their rate estimated");
+	    	} else {
+	    		fixMeanRatesValidateLabel.setVisible(false);
+	    	}
+			repaint();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }

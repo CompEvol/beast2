@@ -11,7 +11,6 @@ import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
-import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallLabel;
 import beast.core.Input;
@@ -40,7 +39,9 @@ public class ClockModelListInputEditor extends ListInputEditor {
 
     @Override
     public Class<?> baseType() {
-        return BranchRateModel.Base.class;
+    	// disable this editor
+    	return ClockModelListInputEditor.class;
+        //return BranchRateModel.Base.class;
     }
 
     JCheckBox fixMeanRatesCheckBox;
