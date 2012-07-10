@@ -110,15 +110,10 @@
             hasPartitions="SiteModel" icon='3.png.x' forceExpansion='TRUE'
         />
 		<mergepoint id='aux-sitemodel-panels'/>
-<!--
+
 		<panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
             path='branchRateModel'
             hasPartitions="ClockModel" icon='4.png.x' forceExpansion='TRUE'
-        />
--->
-		<panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
-            path='distribution/distribution[id="likelihood"]/distribution/branchRateModel'
-            hasPartitions="none" icon='4.png.x' forceExpansion='TRUE'
         />
 		<mergepoint id='aux-clockmodel-panels'/>
 		<panel spec='BeautiPanelConfig' panelname="Initialization" tiptext="Initial state"

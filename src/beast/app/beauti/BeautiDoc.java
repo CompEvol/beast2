@@ -331,7 +331,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	public void loadXML(File file) throws Exception {
 		String sXML = load(file);
 		extractSequences(sXML);
-		connectModel();
+		scrubAll(true, false);
 		fireDocHasChanged();
 	}
 
@@ -699,17 +699,17 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //		mcmc.setValue(MCMC, this);
 //		PluginPanel.addPluginToMap(MCMC, this);
 
-		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
-			int iStart = sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
-			int iEnd = sXML.lastIndexOf("-->");
-			sXML = sXML.substring(iStart, iEnd);
-			sXML = sXML.replaceAll(XMLProducer.DO_NOT_EDIT_WARNING, "");
-			sXML = "<beast namespace='" + XMLProducer.DEFAULT_NAMESPACE + "'>" + sXML + "</beast>";
-			List<Plugin> plugins = parser.parseBareFragments(sXML, true);
-			for (Plugin plugin : plugins) {
-				PluginPanel.addPluginToMap(plugin, this);
-			}
-		}
+//		if (sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
+//			int iStart = sXML.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
+//			int iEnd = sXML.lastIndexOf("-->");
+//			sXML = sXML.substring(iStart, iEnd);
+//			sXML = sXML.replaceAll(XMLProducer.DO_NOT_EDIT_WARNING, "");
+//			sXML = "<beast namespace='" + XMLProducer.DEFAULT_NAMESPACE + "'>" + sXML + "</beast>";
+//			List<Plugin> plugins = parser.parseBareFragments(sXML, true);
+//			for (Plugin plugin : plugins) {
+//				PluginPanel.addPluginToMap(plugin, this);
+//			}
+//		}
 
 		// extract alignments
 		determinePartitions();
