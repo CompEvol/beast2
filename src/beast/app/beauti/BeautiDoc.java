@@ -99,7 +99,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	Set<PartitionContext> possibleContexts = new HashSet<PartitionContext>(); 
 
 	public BeautiConfig beautiConfig;
-
+	
 	private String templateName = null;
 	private String templateFileName = STANDARD_TEMPLATE;
 
@@ -975,6 +975,18 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					}
 				}
 			}
+			
+			List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
+			templates.add(beautiConfig.hyperPriorTemplate);
+			for (Plugin plugin : pluginmap.values()) {
+				if (plugin instanceof RealParameter) {
+					if (plugin.getID().startsWith("parameter.")) {
+						PartitionContext context = new PartitionContext(plugin.getID().substring("parameter.".length()));					
+						applyBeautiRules(templates, bInitial, context);
+					}
+				}
+			}
+			
 
 			collectClockModels();
 			// collectTreePriors();

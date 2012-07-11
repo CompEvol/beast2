@@ -16,13 +16,19 @@ import javax.swing.JOptionPane;
 
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.PartitionContext;
+import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
+import beast.math.distributions.ParametricDistribution;
+import beast.math.distributions.Prior;
 
 public class ParameterInputEditor extends PluginInputEditor {
+	boolean isParametricDistributionParameter = false;
+	
     //public ParameterInputEditor() {}
     public ParameterInputEditor(BeautiDoc doc) {
 		super(doc);
@@ -154,6 +160,37 @@ public class ParameterInputEditor extends PluginInputEditor {
                     try {
                         RealParameter parameter = (RealParameter) m_input.get();
                         parameter.m_bIsEstimated.setValue(m_isEstimatedBox.isSelected(), parameter);
+                        if (isParametricDistributionParameter) {
+                        	String sID = parameter.getID();
+                        	
+
+                        	if (sID.startsWith("RealParameter")) {
+                            	ParametricDistribution parent = null; 
+                	            for (Plugin plugin2 : parameter.outputs) {
+                	                if (plugin2 instanceof ParametricDistribution) {
+                                		parent = (ParametricDistribution) plugin2; 
+                	                    break;
+                	                }
+                	            }
+                	            Distribution grandparent = null; 
+                	            for (Plugin plugin2 : parent.outputs) {
+                	                if (plugin2 instanceof Distribution) {
+                                		grandparent = (Distribution) plugin2; 
+                	                    break;
+                	                }
+                	            }
+                        		sID = "parameter.hyper" + parent.getClass().getSimpleName() + "-" + 
+                        				m_input.getName() + "-" + grandparent.getID();
+                        		doc.pluginmap.remove(parameter.getID());
+                        		parameter.setID(sID);
+                        		doc.addPlugin(parameter);
+                        	}
+                        	
+                        	
+                        	PartitionContext context = new PartitionContext(sID.substring("parameter.".length()));
+                        	System.err.println(context + " " + sID);
+                        	doc.beautiConfig.hyperPriorTemplate.createSubNet(context, true);
+                        }
                         refreshPanel();
                     } catch (Exception ex) {
                         System.err.println("ParameterInputEditor " + ex.getMessage());
@@ -168,6 +205,13 @@ public class ParameterInputEditor extends PluginInputEditor {
             //m_editPluginButton.setVisible(false);
             //m_bAddButtons = false;
             if (itemNr < 0) {
+	            for (Plugin plugin2 : ((Plugin) m_input.get()).outputs) {
+	                if (plugin2 instanceof ParametricDistribution) {
+	                    m_isEstimatedBox.setVisible(true);
+	                	isParametricDistributionParameter = true;
+	                    break;
+	                }
+	            }
 	            for (Plugin plugin2 : ((Plugin) m_input.get()).outputs) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);

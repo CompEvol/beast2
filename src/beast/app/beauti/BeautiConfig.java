@@ -10,6 +10,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Plugin;
+import beast.util.XMLParser;
 
 @Description("Beauti configuration object, used to find Beauti configuration " +
         "information from Beauti template files.")
@@ -75,6 +76,8 @@ public class BeautiConfig extends Plugin {
     public List<BeautiSubTemplate> subTemplates;
     public List<BeautiAlignmentProvider> alignmentProvider;
 
+    public BeautiSubTemplate hyperPriorTemplate = null;
+    
     @Override
     public void initAndValidate() {
         parseSet(inlineInput.get(), null, inlinePlugins);
@@ -101,14 +104,46 @@ public class BeautiConfig extends Plugin {
         //InputEditor.setExpertMode(bIsExpertInput.get());
         subTemplates = subTemplatesInput.get();
         alignmentProvider = alignmentProviderInput.get();
+
+        try {
+            XMLParser parser = new XMLParser();
+        	hyperPriorTemplate = (BeautiSubTemplate) parser.parseBareFragment(HYPER_PRIOR_XML, true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
+    final static String HYPER_PRIOR_XML = 
+    		"    <beast version='2.0'\n" +
+    		"    	       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
+    		"    	<!-- Parameter Hyper Prior -->\n" +
+    		"    	        <subtemplate id='HyperPrior' class='beast.math.distributions.Prior' mainid='HyperPrior.$(n)'>\n" +
+    		"    	<![CDATA[\n" +
+    		"    	        <plugin id='HyperPrior.$(n)' spec='Prior' x='@parameter.$(n)'>\n" +
+    		"    	            <distr spec='OneOnX'/>\n" +
+    		"    			</plugin>\n" +
+    		"\n" +
+    		"    	        <plugin id='hyperScaler.$(n)' spec='ScaleOperator' scaleFactor='0.5' weight='0.1' parameter='@parameter.$(n)'/>\n" +
+    		"    	]]>\n" +
+    		"    	            <connect srcID='parameter.$(n)'            targetID='state' inputName='stateNode' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
+    		"\n" +
+    		"    	            <connect srcID='hyperScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'>Scale hyper parameter $(n)</connect>\n" +
+    		"\n" +
+    		"    	            <connect srcID='parameter.$(n)'            targetID='tracelog' inputName='log'  if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
+    		"    	            <connect srcID='HyperPrior.$(n)'           targetID='tracelog' inputName='log'  if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
+    		"\n" +
+    		"    	            <connect srcID='HyperPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'>Hyper prior for parameter $(n)</connect>\n" +
+    		"    	        </subtemplate>\n" +
+    		"    	</beast>\n";
+    
     public void setDoc(BeautiDoc doc) {
         partitionTemplate.get().setDoc(doc);
         for (BeautiSubTemplate sub : subTemplates) {
             sub.setDoc(doc);
         }
         doc.setExpertMode(bIsExpertInput.get());
+        hyperPriorTemplate.doc = doc;
     }
 
     public void clear() {

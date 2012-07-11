@@ -655,6 +655,16 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 ]]>
         </subtemplate>
 
+<!-- Poisson -->
+        <subtemplate id='Poisson' class='beast.math.distributions.Poisson' mainid='[top]'>
+<![CDATA[
+		<distr spec='beast.math.distributions.Poisson' offset="0.0">
+			<parameter name="lambda" value="0.693"/>
+		</distr>
+]]>
+        </subtemplate>
+
+
 </mergewith>
 
 
@@ -687,5 +697,6 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
         <tree spec='beast.util.TreeParser' id='NewickTree.t:$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
 ]]>
         </subtemplate>
+
 
 </beast>
