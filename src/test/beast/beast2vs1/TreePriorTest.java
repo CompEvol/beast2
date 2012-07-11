@@ -128,18 +128,18 @@ public class TreePriorTest extends TestFramework {
 //        BEAST 1 testBSP1.xml
                 addExpIntoList(expList, "posterior", -3865.3635, 8.2236E-2);
                 addExpIntoList(expList, "prior", -92.178, 7.5174E-2);
-//                addExpIntoList(expList, "siteModel.alpha", 5.4354E-2, 5.2519E-4);  //TODO different from beast 1
+                addExpIntoList(expList, "siteModel.alpha", 5.4354E-2, 5.2519E-4);
                 addExpIntoList(expList, "clock.rate", 9.4858E-4, 1.9706E-6);
                 addExpIntoList(expList, "skyline.popSize1", 67.8827, 2.2639);
                 addExpIntoList(expList, "skyline.popSize2", 25.4281, 0.3165);
                 addExpIntoList(expList, "skyline.popSize3", 31.9271, 0.3819);
                 addExpIntoList(expList, "skyline.popSize4", 41.6596, 0.3976);
                 addExpIntoList(expList, "skyline.popSize5", 33.5967, 0.3554);
-//                addExpIntoList(expList, "skyline.groupSize1", 2.4686, 4.0465E-2); // TODO diff bigger than 2*delta
-//                addExpIntoList(expList, "skyline.groupSize2", 3.3671, 3.9454E-2);
-//                addExpIntoList(expList, "skyline.groupSize3", 3.181, 3.3807E-2);
-//                addExpIntoList(expList, "skyline.groupSize4", 3.723, 5.0187E-2);
-//                addExpIntoList(expList, "skyline.groupSize5", 3.2603, 5.9824E-2);
+                addExpIntoList(expList, "skyline.groupSize1", 2.4686, 4.0465E-2); 
+                addExpIntoList(expList, "skyline.groupSize2", 3.3671, 3.9454E-2);
+                addExpIntoList(expList, "skyline.groupSize3", 3.181, 3.3807E-2); // TODO diff bigger than 2*delta
+                addExpIntoList(expList, "skyline.groupSize4", 3.723, 5.0187E-2);
+                addExpIntoList(expList, "skyline.groupSize5", 3.2603, 5.9824E-2);
                 addExpIntoList(expList, "hky.kappa", 21.6911, 5.2142E-2);
                 addExpIntoList(expList, "treeModel.rootHeight", 70.3393, 0.1057);
                 addExpIntoList(expList, "likelihood", -3773.1854, 3.9474E-2);

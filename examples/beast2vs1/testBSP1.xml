@@ -127,7 +127,7 @@
 		<distribution spec='TreeLikelihood' id="likelihood">
 		    <data idref="alignment"/>
 		    <tree idref="tree"/>
-			<siteModel spec='SiteModel' id="siteModel" gammaCategoryCount="4">
+			<siteModel spec='SiteModel' id="siteModel" gammaCategoryCount="4" useBeast1Gamma='true'>
 				<parameter id='siteModel.alpha' name='shape' value="5.40372E-2" lower="0.0" upper="100.0"/>
 
 				<substModel spec='HKY' id="hky">
@@ -141,7 +141,7 @@
 		</distribution>
     </distribution>
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <run spec="MCMC" id="mcmc" chainLength="5000000">
         <state>
 			<parameter name='stateNode' id="skyline.popSize" dimension="5" value="380.0" lower="0.0" upper="38000.0"/>
 			<stateNode spec='parameter.IntegerParameter' id='skyline.groupSize' dimension="5" value="0"/>
@@ -170,7 +170,7 @@
         <logger logEvery="1000" fileName="test.$(seed).log">
             <log idref="posterior"/>
             <log idref="prior"/>
-            <!--<log idref="siteModel.alpha"/>-->
+            <log idref="siteModel.alpha"/>
             <log idref="clock.rate"/>
             <log idref="skyline.popSize"/>
             <log idref="skyline.groupSize"/>

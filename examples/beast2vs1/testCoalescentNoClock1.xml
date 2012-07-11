@@ -57,7 +57,7 @@
     <parameter id="popSize" value="0.077" lower="0.0"/>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
+    <run spec="MCMC" id="mcmc" chainLength="20000000"> <!--autoOptimize="true"-->
         <state>
             <stateNode idref='hky.kappa'/>
             <stateNode idref='hky.frequencies'/>
