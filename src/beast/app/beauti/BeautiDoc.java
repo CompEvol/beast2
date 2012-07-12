@@ -45,6 +45,7 @@ import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
@@ -1497,7 +1498,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				Set<Plugin> ancestors2 = new HashSet<Plugin>();
 				collectAncestors(plugin2, ancestors2, tabu);
 				ancestors.addAll(ancestors2);
-			} else if (plugin2 instanceof Alignment) {
+			} else if (plugin2 instanceof Alignment || plugin2 instanceof FilteredAlignment) {
 				for (Plugin output : plugin2.outputs) {
 					Set<Plugin> ancestors2 = new HashSet<Plugin>();
 					collectAncestors(output, ancestors2, tabu);
@@ -1632,7 +1633,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			if (doc.pluginmap.containsKey(valueCopyID)) {
 				value = doc.pluginmap.get(valueCopyID);
 			}
-		} else if (doc.pluginmap.get(valueID) instanceof Alignment) {
+		} else if (doc.pluginmap.get(valueID) instanceof Alignment || doc.pluginmap.get(valueID) instanceof FilteredAlignment) {
 			return doc.pluginmap.get(partitionContext.partition);
 		}
 		return value;
@@ -1658,6 +1659,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	static public void collectPredecessors(Plugin plugin, List<Plugin> predecessors) {
 		predecessors.add(plugin);
+		if (plugin instanceof Alignment || plugin instanceof FilteredAlignment) {
+			return;
+		}
 		try {
 			for (Plugin plugin2 : plugin.listActivePlugins()) {
 				if (!predecessors.contains(plugin2)) {
