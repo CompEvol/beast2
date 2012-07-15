@@ -186,6 +186,7 @@ public class PluginInputEditor extends InputEditor.Base {
 //
 //        	}
             m_selectPluginBox = new JComboBox(availableTemplates.toArray());
+            m_selectPluginBox.setName(input.getName());
 
             Object o = input.get();
             if (itemNr >= 0) {

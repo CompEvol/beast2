@@ -23,11 +23,7 @@ public class BeautiStarBeastTest extends BeautiBase {
 		beautiFrame.menuItemWithPath("File", "Template", "StarBeast").click();
 
 		warning("Load gopher data 26.nex, 47.nex, 59.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		//fileChooser.selectFiles(new File("26.nex")).approve();
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex"), new File("59.nex")).approve();
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);

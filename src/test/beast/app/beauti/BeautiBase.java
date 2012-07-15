@@ -5,7 +5,10 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.swing.edt.GuiActionRunner.execute;
 import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
 
+import java.awt.Button;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +19,11 @@ import java.util.Set;
 import javax.swing.JFrame;
 
 import org.fest.swing.annotation.RunsInEDT;
+import org.fest.swing.core.ComponentMatcher;
 import org.fest.swing.edt.GuiQuery;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
@@ -25,6 +32,7 @@ import org.fest.swing.junit.testcase.FestSwingJUnitTestCase;
 
 import beast.app.beauti.Beauti;
 import beast.app.beauti.BeautiDoc;
+import beast.app.util.Utils;
 import beast.core.Distribution;
 import beast.core.Logger;
 import beast.core.MCMC;
@@ -240,10 +248,12 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		if (XMLFile.exists()) {
 			XMLFile.delete();
 		}
-		beautiFrame.menuItemWithPath("File", "Save As").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(org.fest.util.Files.temporaryFolder());
-		fileChooser.selectFile(new File("x.xml")).approve();
+		
+		saveFile(""+org.fest.util.Files.temporaryFolder(), "x.xml");
+
+//		JFileChooserFixture fileChooser = findFileChooser().using(robot());
+//		fileChooser.setCurrentDirectory(org.fest.util.Files.temporaryFolder());
+//		fileChooser.selectFile(new File("x.xml")).approve();
 		
 		XMLParser parser = new XMLParser();
 		XMLFile = new File(org.fest.util.Files.temporaryFolder() + "/x.xml");
@@ -255,4 +265,93 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		}
 	}
 
+	private void saveFile(String dir, String file) {
+		if (!Utils.isMac()) {
+			beautiFrame.menuItemWithPath("File", "Save As").click();
+			JFileChooserFixture fileChooser = findFileChooser().using(robot());
+			fileChooser.setCurrentDirectory(new File(dir));
+			fileChooser.selectFile(new File(file)).approve();
+		} else {
+			_file = new File(dir + "/" + file);
+			execute(new GuiTask() {
+		        protected void executeInEDT() {
+		        	try {
+		        		beauti.doc.save(_file);
+		        	} catch (Exception e) {
+						e.printStackTrace();
+					}
+		        }
+		    });
+			
+		}
+		
+	}
+
+	// for handling file open events on Mac
+	FileDialog fileDlg = null;
+	String _dir;
+	File _file;
+
+	void importAlignment(String dir, File ... files) {
+		if (!Utils.isMac()) {
+			beautiFrame.menuItemWithPath("File", "Import Alignment").click();
+			JFileChooserFixture fileChooser = findFileChooser().using(robot());
+			fileChooser.setCurrentDirectory(new File(dir));
+			fileChooser.selectFiles(files).approve();
+		} else {
+			this._dir = dir;
+			for (File file : files) {
+				_file = new File(dir + "/" + file.getName());
+				execute(new GuiTask() {
+			        protected void executeInEDT() {
+			        	try {
+			        		beauti.doc.importNexus(_file);
+			        	} catch (Exception e) {
+							e.printStackTrace();
+						}
+			        }
+			    });
+			}
+		}			
+	}
+
+	
+//	void openFile(String dir, String file) {
+//		if (!Utils.isMac() && false) {
+//			JFileChooserFixture fileChooser = findFileChooser().using(robot());
+//			fileChooser.setCurrentDirectory(new File(dir));
+//			fileChooser.selectFile(new File(file)).approve();
+//		} else {
+//			fileDlg = null;
+//			this._dir = dir;
+//			this._file = file;
+//			DialogFixture dialog = WindowFinder.findDialog(FileDialog.class).using(robot());
+//			fileDlg = (FileDialog) dialog.target;
+//					
+//			execute(new GuiTask() {
+//		        protected void executeInEDT() {
+//		          fileDlg.setDirectory(_dir);
+//		          fileDlg.setFile(_file);
+//		        }
+//		    });
+//			robot().click(
+//		    	robot().finder().find(new ComponentMatcher() {
+//		    		@Override
+//		    		public boolean matches(Component c) {
+//		    			if (c.getName() == null) {
+//		    				return false;
+//		    			}
+//		    			System.err.println(c.getName());
+//		    			if (c instanceof Button) {
+//		    				System.err.println(">>>" + ((Button)c).getLabel());
+//		    			}
+//		    			return (c.getName().equals("button0") || c.getName().equals("button3"));
+//		    		}
+//		    	})
+//		    );
+//		}
+//	}
+	
+
+	
 }

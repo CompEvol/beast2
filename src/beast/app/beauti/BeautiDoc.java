@@ -1001,7 +1001,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 	} // scrubAll
 
-	void setUpActivePlugins() {
+	protected void setUpActivePlugins() {
 		posteriorPredecessors = new ArrayList<Plugin>();
 		collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
 		likelihoodPredecessors = new ArrayList<Plugin>();
@@ -1484,6 +1484,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		tabu.add(mcmc);
 		// add loggers
 		tabu.addAll(mcmc.m_loggers.get());
+		// add trees
+		for (StateNode node: mcmc.m_startState.get().stateNodeInput.get()) {
+			if (node instanceof Tree) {
+				tabu.add(node);
+			}
+		}
 
 		// find predecessors of plugin to be copied
 		List<Plugin> predecessors = new ArrayList<Plugin>();
@@ -1507,9 +1513,18 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			}
 		}
 		
-		for (Plugin p : ancestors) {
-			System.out.println(p.getID());
-		}
+		
+//		System.out.print(Arrays.toString(predecessors.toArray()));
+//		for (Plugin p : ancestors) {
+//			System.out.print("(");
+//			for (Plugin p2 : p.listActivePlugins()) {
+//				if (ancestors.contains(p2)) {
+//					System.out.print(p2.getID()+ " ");
+//				}
+//			}
+//			System.out.print(") ");
+//			System.out.println(p.getID());
+//		}
 
 		// now the ancestors contain all plugins to be copied
 		// make a copy of all individual Pluings, before connecting them up
@@ -1531,11 +1546,13 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			}
 			Plugin copy = (Plugin) plugin2.getClass().newInstance();
 			copySet.put(id, copy);
+//			System.err.println("Copy: " + id);
 		}
 
 		// set all inputs of copied plugins + outputs to tabu
 		for (Plugin plugin2 : ancestors) {
 			String id = plugin2.getID();
+			System.err.println("Processing: " + id);
 			Plugin copy = copySet.get(id);
 			// set inputs
 			for (Input<?> input : plugin2.listInputs()) {

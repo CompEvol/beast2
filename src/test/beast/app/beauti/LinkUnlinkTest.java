@@ -17,11 +17,8 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test
 	public void simpleLinkUnlinkTwoAlignmentTest() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex")).approve();
-
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"));
+		
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
 
@@ -73,10 +70,7 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test
 	public void simpleLinkUnlinkThreeAlignmentsTest() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex, 59.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex"), new File("59.nex")).approve();
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
@@ -134,10 +128,7 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test
 	public void linkTreesAndDeleteTest2a() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex")).approve();
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
@@ -160,10 +151,7 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test
 	public void linkTreesAndDeleteTest2b() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex")).approve();
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
@@ -186,11 +174,7 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test
 	public void linkTreesAndDeleteTest3() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex, 59.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		//fileChooser.selectFiles(new File("26.nex")).approve();
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex"), new File("59.nex")).approve();
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
@@ -228,11 +212,7 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test
 	public void linkTreesAndClocksAndDeleteTest() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex, 59.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		//fileChooser.selectFiles(new File("26.nex")).approve();
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex"), new File("59.nex")).approve();
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
@@ -271,11 +251,7 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test
 	public void linkSiteModelsAndDeleteTest() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex, 59.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		//fileChooser.selectFiles(new File("26.nex")).approve();
-		fileChooser.selectFiles(new File("26.nex"), new File("47.nex"), new File("59.nex")).approve();
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);

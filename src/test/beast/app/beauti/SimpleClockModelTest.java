@@ -1,10 +1,8 @@
 package test.beast.app.beauti;
 
-import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
 
 import java.io.File;
 
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.junit.Test;
 
@@ -14,10 +12,7 @@ public class SimpleClockModelTest extends BeautiBase {
 	@Test
 	public void simpleTreePriorTest() throws Exception {
 		warning("Load anolis.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		fileChooser.selectFile(new File("anolis.nex")).approve();
+		importAlignment("examples/nexus", new File("anolis.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		f.selectTab("Clock Model");
@@ -62,10 +57,7 @@ public class SimpleClockModelTest extends BeautiBase {
 	@Test
 	public void simpleTreePriorTest2() throws Exception {
 		warning("Load anolis.nex");
-		beautiFrame.menuItemWithPath("File", "Import Alignment").click();
-		JFileChooserFixture fileChooser = findFileChooser().using(robot());
-		fileChooser.setCurrentDirectory(new File("examples/nexus"));
-		fileChooser.selectFile(new File("anolis.nex")).approve();
+		importAlignment("examples/nexus", new File("anolis.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		f.selectTab("Priors");
