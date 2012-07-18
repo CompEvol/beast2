@@ -58,9 +58,6 @@ public class Logger extends Plugin {
     }
 
     public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
-    public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",
-            "Element in a log. This can be any plug in that is Loggable.",
-            new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
 
     public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "Number of the samples logged", 1);
     public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
@@ -69,6 +66,10 @@ public class Logger extends Plugin {
     public Input<LOGMODE> m_sMode = new Input<LOGMODE>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
     public Input<SORTMODE> sortMode = new Input<SORTMODE>("sort", "sort items to be logged, one of " + SORTMODE.values(), SORTMODE.none, SORTMODE.values());
     public Input<Boolean> sanitiseHeaders = new Input<Boolean>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
+
+    public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",
+            "Element in a log. This can be any plug in that is Loggable.",
+            new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
 
     /**
      * list of loggers, if any
@@ -501,7 +502,7 @@ public class Logger extends Plugin {
     }
 
     private String prettifyLogEntry(String sStr) {
-        // Q2R intelliJ says \\ can't be used in a range ...
+        // TODO Q2R intelliJ says \\ can't be used in a range ...
         if (sStr.matches("[\\d-E]+\\.[\\d-E]+")) {
             // format as double
             if (sStr.contains("E")) {

@@ -31,8 +31,8 @@ public class BeautiPanelConfig extends Plugin {
     public Input<Partition> bHasPartitionsInput = new Input<Partition>("hasPartitions", "flag to indicate the panel has" +
             "a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
 
-    public Input<Boolean> bAddButtonsInput = new Input<Boolean>("addButtons", "flag to indicate buttons should be added, deafult true", true);
-    public Input<Boolean> bIsVisibleInput = new Input<Boolean>("isVisible", "flag to indicate panel is visible on startup, deafult true", true);
+    public Input<Boolean> bAddButtonsInput = new Input<Boolean>("addButtons", "flag to indicate buttons should be added, default true", true);
+    public Input<Boolean> bIsVisibleInput = new Input<Boolean>("isVisible", "flag to indicate panel is visible on startup, default true", true);
 
 
     public Input<String> sIconInput = new Input<String>("icon", "icon shown in the panel relative to /beast/app/beauti, default 0.png", "0.png");

@@ -914,12 +914,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				if (plugin instanceof Tree) {
 					Tree tree = (Tree) plugin;
 					tree.m_bIsEstimated.setValue(false, tree);
-				}
+                }
 			}
 			for (Plugin plugin : pPartition[2]) {
 				Tree tree = ((TreeLikelihood) plugin).m_tree.get();
 				tree.m_bIsEstimated.setValue(true, tree);
-			}
+            }
 			if (pluginmap.containsKey("Tree.t:Species")) {
 				Tree tree = (Tree) pluginmap.get("Tree.t:Species");
 				tree.m_bIsEstimated.setValue(true, tree);
@@ -1254,7 +1254,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	public void determinePartitions() {
-		CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
+        CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
 		sPartitionNames.clear();
 		possibleContexts.clear();
 		for (Distribution distr : likelihood.pDistributions.get()) {
@@ -1270,7 +1270,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				}
 				if (!found) {
 					possibleContexts.add(context);
-				}
+                }
 			}
 		}
 
@@ -1338,10 +1338,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				}
 			}
 		}
-
-		System.err.println("PARTITIONS0:\n");
+        System.err.println("PARTITIONS0:\n");
 		System.err.println(Arrays.toString(nCurrentPartitions));
-	}
+    }
 
 	int getPartitionNr(String partition, int partitionID) {
 		for (int i = 0; i < sPartitionNames.size(); i++) {
@@ -1459,7 +1458,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * that are ancestors of statenodes
 	 * 
 	 * @param plugin
-	 * @param partition
+	 * @param parent
 	 * @return
 	 * @throws Exception
 	 */
