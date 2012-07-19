@@ -187,7 +187,7 @@
 
             <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
 
-            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(n).$(seed).trees" mode='tree'>
+            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(tree).$(seed).trees" mode='tree'>
 	            <log id='TreeWithMetaDataLogger.t:$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.t:$(n)'>
 	            </log>
             </logger>

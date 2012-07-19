@@ -39,7 +39,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -315,6 +314,19 @@ public class Logger extends Plugin {
             m_out = System.out;
             return true;
         } else {
+            if (sFileName.contains("$(tree)")) {
+            	String treeName = "tree";
+            	for (Loggable logger : m_loggers) {
+            		if (logger instanceof Plugin) {
+            			String id = ((Plugin) logger).getID();
+            			if (id.indexOf(".t:") > 0) {
+            				treeName = id.substring(id.indexOf(".t:") + 3); 
+            			}
+            		}
+            	}
+                sFileName = sFileName.replace("$(tree)", treeName);
+                m_pFileName.setValue(sFileName, this);
+            }
             if (sFileName.contains("$(seed)")) {
                 sFileName = sFileName.replace("$(seed)", Randomizer.getSeed() + "");
                 m_pFileName.setValue(sFileName, this);

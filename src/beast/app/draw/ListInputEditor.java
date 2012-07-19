@@ -169,19 +169,19 @@ public class ListInputEditor extends InputEditor.Base {
 
 //    	String sFullInputName = plugin.getClass().getName() + "." + m_input.getName();
 //    	if (BeautiConfig.hasDeleteButton(sFullInputName)) {
-        if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.DELETE_ONLY) {
-
-            SmallButton delButton = new SmallButton("-", true);
-            delButton.setToolTipText("Delete item from the list");
-            delButton.addActionListener(new ActionListenerObject(plugin) {
-                // implements ActionListener
-                public void actionPerformed(ActionEvent e) {
-                    deleteItem(m_o);
-                }
-            });
-            m_delButton.add(delButton);
-            itemBox.add(delButton);
-        }
+//        if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.DELETE_ONLY) {
+//
+//            SmallButton delButton = new SmallButton("-", true);
+//            delButton.setToolTipText("Delete item from the list");
+//            delButton.addActionListener(new ActionListenerObject(plugin) {
+//                // implements ActionListener
+//                public void actionPerformed(ActionEvent e) {
+//                    deleteItem(m_o);
+//                }
+//            });
+//            m_delButton.add(delButton);
+//            itemBox.add(delButton);
+//        }
         InputEditor editor = addPluginItem(itemBox, plugin);
 
 
