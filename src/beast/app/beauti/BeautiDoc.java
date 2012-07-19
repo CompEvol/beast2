@@ -7,7 +7,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -221,7 +223,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				} else if (args[i].equals("-out")) {
 					sOutputFileName = args[i + 1];
 					i += 2;
+				} else if (args[i].equals("-noerr")) {
+				 	System.setErr(new PrintStream(new OutputStream() {
+				 		public void write(int b) {
+				 		}
+				 	}));
+					i += 1;
 				}
+
 				if (i == iOld) {
 					throw new Exception("Wrong argument: " + args[i]);
 				}

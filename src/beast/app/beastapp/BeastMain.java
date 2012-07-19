@@ -17,6 +17,8 @@ import javax.swing.filechooser.FileFilter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.logging.*;
 
@@ -249,6 +251,7 @@ public class BeastMain {
                         new Arguments.IntegerOption("errors", "Specify maximum number of numerical errors before stopping"),
                         new Arguments.IntegerOption("threads", "The number of computational threads to use (default auto)"),
                         new Arguments.Option("java", "Use Java only, no native implementations"),
+                        new Arguments.Option("noerr", "Suppress all output to standard error"),
                         new Arguments.Option("beagle", "Use beagle library if available"),
                         new Arguments.Option("beagle_info", "BEAGLE: show information on available resources"),
                         new Arguments.StringOption("beagle_order", "order", "BEAGLE: set order of resource use"),
@@ -339,6 +342,13 @@ public class BeastMain {
             beagleFlags |= BeagleFlag.PRECISION_SINGLE.getMask();
         }
 
+        if (arguments.hasOption("noerr")) {
+		 	System.setErr(new PrintStream(new OutputStream() {
+		 		public void write(int b) {
+		 		}
+		 	}));
+        }        
+        
         if (arguments.hasOption("beagle_order")) {
             System.setProperty("beagle.resource.order", arguments.getStringOption("beagle_order"));
         }
@@ -553,6 +563,7 @@ public class BeastMain {
             // set all the settings...
             MCMCargs.add(inputFile.getAbsolutePath());
             beastMCMC.parseArgs(MCMCargs.toArray(new String[0]));
+            
 
             new BeastMain(beastMCMC, consoleApp, maxErrorCount);
         } catch (RuntimeException rte) {
