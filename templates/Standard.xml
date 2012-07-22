@@ -242,7 +242,7 @@
             <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
             <connect srcID='YuleBirthRateScaler.t:$(n)'       targetID='mcmc' inputName='operator' if='inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'>Scales birth rate of Yule prior for partition t:$(n)</connect>
 
-            <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Estimates tip dates for tree t:$(n)</connect>
+            <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and allTipDatesRandomWalker.t:$(n)/weight!=0.0'>Estimates tip dates for tree t:$(n)</connect>
 
             <connect srcID='treeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
             <connect srcID='treeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>

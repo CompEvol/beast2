@@ -30,6 +30,7 @@ import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.operators.TipDatesScaler;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
@@ -133,8 +134,8 @@ public class TipDatesInputEditor extends PluginInputEditor {
         for (Plugin plugin : traitSet.outputs) {
             if (plugin instanceof Tree) {
                 for (Plugin plugin2 : plugin.outputs) {
-                    if (plugin2 instanceof TipDatesScaler) {
-                        TipDatesScaler operator = (TipDatesScaler) plugin2;
+                    if (plugin2 instanceof TipDatesRandomWalker) {
+                    	TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
                         if (operator.m_pWeight.get() > 0) {
                             m_iMode = SAMPLE_TIPS_SAME_PRIOR;
                         }
@@ -237,8 +238,8 @@ public class TipDatesInputEditor extends PluginInputEditor {
             for (Plugin plugin : traitSet.outputs) {
                 if (plugin instanceof Tree) {
                     for (Plugin plugin2 : plugin.outputs) {
-                        if (plugin2 instanceof TipDatesScaler) {
-                            TipDatesScaler operator = (TipDatesScaler) plugin2;
+                        if (plugin2 instanceof TipDatesRandomWalker) {
+                        	TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
                             switch (m_iMode) {
                                 case NO_TIP_SAMPLING:
                                     operator.m_pWeight.setValue(0.0, operator);
