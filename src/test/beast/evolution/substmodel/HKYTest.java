@@ -17,7 +17,7 @@ import junit.framework.TestCase;
 @Description("Test HKY matrix exponentiation")
 public class HKYTest extends TestCase {
 
-    interface Instance {
+    public interface Instance {
         Double[] getPi();
 
         Double getKappa();
@@ -40,7 +40,7 @@ public class HKYTest extends TestCase {
      * q0 = (xx + diag(-sum(xx,2))) / sum(piQ * sum(xx,2)) ;
      * expm(q0 * d)
      */
-    Instance test0 = new Instance() {
+    protected Instance test0 = new Instance() {
         public Double[] getPi() {
             return new Double[]{0.25, 0.25, 0.25, 0.25};
         }
@@ -63,7 +63,7 @@ public class HKYTest extends TestCase {
         }
     };
 
-    Instance test1 = new Instance() {
+    protected Instance test1 = new Instance() {
         public Double[] getPi() {
             return new Double[]{0.50, 0.20, 0.2, 0.1};
         }
@@ -86,7 +86,7 @@ public class HKYTest extends TestCase {
         }
     };
 
-    Instance test2 = new Instance() {
+    protected Instance test2 = new Instance() {
         public Double[] getPi() {
             return new Double[]{0.20, 0.30, 0.25, 0.25};
         }

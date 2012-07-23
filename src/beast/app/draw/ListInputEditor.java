@@ -21,14 +21,14 @@ import java.util.Set;
 public class ListInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
     static Image DOWN_ICON;
-    static Image LEFT_ICON;
+    static Image RIGHT_ICON;
 
     {
         try {
             java.net.URL downURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "down.png");
             DOWN_ICON = ImageIO.read(downURL); 
-            java.net.URL leftURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "left.png");
-            LEFT_ICON = ImageIO.read(leftURL);
+            java.net.URL leftURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "right.png");
+            RIGHT_ICON = ImageIO.read(leftURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -183,8 +183,7 @@ public class ListInputEditor extends InputEditor.Base {
 //            itemBox.add(delButton);
 //        }
         InputEditor editor = addPluginItem(itemBox, plugin);
-
-
+        
         SmallButton editButton = new SmallButton("e", true, SmallButton.ButtonType.square);
         editButton.setName(plugin.getID() + ".editButton");
         if (m_bExpandOption == ExpandOption.FALSE || m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() > 1) {
@@ -221,6 +220,7 @@ public class ListInputEditor extends InputEditor.Base {
                 //itemBox = box;
                 Box box2 = Box.createVerticalBox();
                 box2.add(itemBox);
+                itemBox.add(editButton, 0);
                 box2.add(expandBox);
 //        		expandBox.setVisible(false);
 //        		//itemBox.remove(editButton);
@@ -243,7 +243,7 @@ public class ListInputEditor extends InputEditor.Base {
                         g_collapsedIDs.remove(m_plugin.getID());
                     } else {
                     	try {
-                        editButton.setImg(LEFT_ICON);
+                        editButton.setImg(RIGHT_ICON);
 	                    }catch (Exception e2) {
 							// TODO: handle exception
 						}
@@ -257,7 +257,7 @@ public class ListInputEditor extends InputEditor.Base {
             if (expandBox.isVisible()) {
                 editButton.setImg(DOWN_ICON);
             } else {
-                editButton.setImg(LEFT_ICON);
+                editButton.setImg(RIGHT_ICON);
             }
             } catch (Exception e) {
 				// TODO: handle exception
