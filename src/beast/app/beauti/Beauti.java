@@ -377,7 +377,17 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 				a_saveas.setEnabled(true);
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(null, "Something went wrong importing the alignment: " + e.getMessage());
+
+                String text = "Something went wrong importing the alignment: \n";
+                JTextArea textArea = new JTextArea(text);
+                textArea.setColumns(30);
+                textArea.setLineWrap(true);
+                textArea.setWrapStyleWord(true);
+                textArea.append(e.getMessage());
+                textArea.setSize(textArea.getPreferredSize().width, 1);
+                textArea.setOpaque(false);
+                JOptionPane.showMessageDialog(
+                        null, textArea, "Error importing alignment", JOptionPane.WARNING_MESSAGE);
 			}
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			// }
