@@ -133,7 +133,7 @@
 		<panel spec='BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
             hasPartitions="none" icon='8.png.x' forceExpansion='TRUE_START_COLLAPSED'
-            isVisible='false'
+            isVisible='false' buttonStatus='ADD_ONLY'
         />
 		<mergepoint id='aux-operators-panels'/>
 

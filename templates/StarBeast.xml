@@ -137,7 +137,7 @@
 		<panel spec='BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
             hasPartitions="none" icon='7.pngx' forceExpansion='TRUE_START_COLLAPSED'
-            type='beast.core.Distribution'
+            type='beast.core.Distribution'  buttonStatus='ADD_ONLY'
         />
 		<mergepoint id='aux-priors-panels'/>
 

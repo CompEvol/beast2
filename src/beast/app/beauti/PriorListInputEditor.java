@@ -22,6 +22,7 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.SmallButton;
+import beast.app.draw.InputEditor.ButtonStatus;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Logger;
@@ -116,18 +117,22 @@ public class PriorListInputEditor extends ListInputEditor {
         comboBoxes = new ArrayList<JComboBox>();
         rangeButtons = new ArrayList<JButton>();
         taxonButtons = new ArrayList<JButton>();
-        m_buttonStatus = ButtonStatus.NONE;
+        
+        //m_buttonStatus = ButtonStatus.NONE;
         super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 
-        m_addButton = new SmallButton("+", true);
-        m_addButton.setName("addItem");
-        m_addButton.setToolTipText("Add item to the list");
-        m_addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                addItem();
-            }
-        });
-        add(m_addButton);
+        
+        if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
+	        m_addButton = new SmallButton("+", true);
+	        m_addButton.setName("addItem");
+	        m_addButton.setToolTipText("Add item to the list");
+	        m_addButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                addItem();
+	            }
+	        });
+	        add(m_addButton);
+        }
     }
 
 
