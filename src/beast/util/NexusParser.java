@@ -258,6 +258,9 @@ public class NexusParser {
                     nTotalCount = 2;
                 } else {
                     alignment.m_sDataType.setValue("integer", alignment);
+                    if (sSymbols.equals("01") || sSymbols.equals("012")) {
+                        nTotalCount = sSymbols.length();
+                    }
                 }
                 String sMissingChar = getAttValue("missing", sStr);
                 if (sMissingChar != null) {
