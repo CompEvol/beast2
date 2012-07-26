@@ -99,6 +99,12 @@ public class MCMC extends Runnable {
      */
     final protected int NR_OF_DEBUG_SAMPLES = 2000;
 
+    /**
+     * Interval for storing state to disk, if negative the state will not be stored periodically *
+     * Mirrors m_storeEvery input, or if this input is negative, the State.m_storeEvery input
+     */
+    int m_nStoreEvery;
+
     @Override
     public void initAndValidate() throws Exception {
         System.out.println("======================================================");
@@ -176,6 +182,14 @@ public class MCMC extends Runnable {
             }
             this.state.m_storeEvery.setValue(m_storeEvery.get(), this.state);
         }
+
+        // grab the interval for storing the state to file
+        if (m_storeEvery.get() > 0) {
+        	m_nStoreEvery = m_storeEvery.get();
+        } else {
+        	m_nStoreEvery = state.m_storeEvery.get();
+        }
+        
         this.state.initialise();
         this.state.setPosterior(posteriorInput.get());
 
@@ -291,6 +305,10 @@ public class MCMC extends Runnable {
             final int currentState = iSample;
 
             state.store(currentState);
+            if (m_nStoreEvery > 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
+                state.storeToFile(iSample);
+            	operatorSchedule.storeToFile();
+            }
 
             Operator operator = operatorSchedule.selectOperator();
             //System.out.print("\n" + iSample + " " + operator.getName()+ ":");

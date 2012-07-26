@@ -84,10 +84,6 @@ public class State extends Plugin {
      */
     private String m_sStateFileName = "state.backup.xml";
 
-    /**
-     * Interval for storing state to disk, if negative the state will not be stored periodically *
-     */
-    private int m_nStoreEvery;
 
     /** The following members are involved in calculating the set of
      * CalculatioNodes that need to be notified when an operation
@@ -193,9 +189,6 @@ public class State extends Plugin {
             m_stateNodeMem[m_nStateNode + i] = m_stateNodeMem[i].copy();
         }
 
-        // grab the interval for storing the state to file
-        m_nStoreEvery = m_storeEvery.get();
-
         // set up data structure for encoding which StateNodes change by an operation
         changeStateNodes = new int[stateNode.length];
         //Arrays.fill(changeStateNodes, -1);
@@ -248,10 +241,6 @@ public class State extends Plugin {
     public void store(int iSample) {
         //Arrays.fill(changeStateNodes, -1);
         nChangedStateNodes = 0;
-
-        if (m_nStoreEvery > 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
-            storeToFile(iSample);
-        }
     }
 
     /**
