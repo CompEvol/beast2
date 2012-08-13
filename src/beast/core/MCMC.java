@@ -103,7 +103,7 @@ public class MCMC extends Runnable {
      * Interval for storing state to disk, if negative the state will not be stored periodically *
      * Mirrors m_storeEvery input, or if this input is negative, the State.m_storeEvery input
      */
-    int m_nStoreEvery;
+    protected int m_nStoreEvery;
 
     @Override
     public void initAndValidate() throws Exception {
