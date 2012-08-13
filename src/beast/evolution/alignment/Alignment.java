@@ -57,6 +57,10 @@ public class Alignment extends CalculationNode {
      */
     static List<String> m_sTypes = new ArrayList<String>();
 
+    static {
+    	findDataTypes();
+    }
+    
     static public void findDataTypes() {
         // build up list of data types
         List<String> m_sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
@@ -65,7 +69,9 @@ public class Alignment extends CalculationNode {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
                 if (dataType.isStandard()) {
                     String sDescription = dataType.getDescription();
-                    m_sTypes.add(sDescription);
+                    if (!m_sTypes.contains(sDescription)) {
+                    	m_sTypes.add(sDescription);
+                    }
                 }
             } catch (Exception e) {
                 // TODO: handle exception
@@ -154,7 +160,7 @@ public class Alignment extends CalculationNode {
         } else {
             if (m_sTypes.indexOf(m_sDataType.get()) < 0) {
                 throw new Exception("data type + '" + m_sDataType.get() + "' cannot be found. " +
-                        "Choose one of " + m_sTypes.toArray(new String[0]));
+                        "Choose one of " + Arrays.toString(m_sTypes.toArray(new String[0])));
             }
             List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
             for (String sDataType : sDataTypes) {
