@@ -53,6 +53,7 @@ import org.w3c.dom.NodeList;
 
 import beast.app.util.Arguments;
 import beast.app.util.Utils;
+import beast.evolution.alignment.Alignment;
 
 /**
  * This class is used to manage beast 2 add-ons, and can
@@ -396,6 +397,7 @@ public class AddOnManager {
             }
         }
         externalJarsLoaded = true;
+        Alignment.findDataTypes();
     } // loadExternalJars
 
 
@@ -500,7 +502,7 @@ public class AddOnManager {
         }
         String classpath = System.getProperty("java.class.path");
         String sJar = u + "";
-        classpath += ":" + sJar.substring(5);
+        classpath += System.getProperty("path.separator") + sJar.substring(5);
         System.setProperty("java.class.path", classpath);
         all_classes = null;
     }
@@ -520,6 +522,7 @@ public class AddOnManager {
         String classpath = System.getProperty("java.class.path");
 
         for (String path : classpath.split(pathSep)) {
+        	//System.err.println("loadallclasses " + path);
             File filepath = new File(path);
 
             if (filepath.isDirectory()) {
@@ -712,8 +715,9 @@ public class AddOnManager {
         result = new ArrayList<String>();
 
         names = new HashSet<String>();
-        for (i = 0; i < pkgnames.length; i++)
+        for (i = 0; i < pkgnames.length; i++) {
             names.addAll(find(cls, pkgnames[i]));
+        }
 
         // sort result
         result.addAll(names);
@@ -738,9 +742,12 @@ public class AddOnManager {
         List<String> result = new ArrayList<String>();
         for (int i = all_classes.size() - 1; i >= 0; i--) {
             String sClass = all_classes.get(i);
-
+            sClass = sClass.replaceAll("/", ".");
+            //System.err.println(sClass + " " + pkgname);
+            
             // must match package
             if (sClass.startsWith(pkgname)) {
+                //System.err.println(sClass);
                 try {
                     Class<?> clsNew = Class.forName(sClass);
 

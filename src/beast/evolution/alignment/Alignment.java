@@ -57,7 +57,7 @@ public class Alignment extends CalculationNode {
      */
     static List<String> m_sTypes = new ArrayList<String>();
 
-    static {
+    static public void findDataTypes() {
         // build up list of data types
         List<String> m_sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
         for (String sDataType : m_sDataTypes) {

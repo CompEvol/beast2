@@ -58,7 +58,7 @@ public class BeastDialog {
 
         inputFileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                File file = beast.app.util.Utils.getLoadFile("Load xml file", inputFile, "Beast xml files", ".xml");
+                File file = beast.app.util.Utils.getLoadFile("Load xml file", inputFile, "Beast xml files", "xml");
                 if (file != null) {
                     inputFile = file;
                     inputFileNameText.setText(inputFile.getName());

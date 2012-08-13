@@ -1,6 +1,10 @@
 <launch4jConfig>
   <headerType>gui</headerType>
   <icon>../common/icons/beast.ico</icon>
+  <classPath>
+  	<mainClass>beast.app.beastapp.BeastMain</mainClass>
+  	<cp>./lib/beast.jar</cp>
+  </classPath>
   <cmdLine>-window -working -options</cmdLine>
   <jre>
     <minVersion>1.6.0</minVersion>

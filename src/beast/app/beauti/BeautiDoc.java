@@ -422,12 +422,17 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		String pathSep = System.getProperty("path.separator");
 		String classpath = System.getProperty("java.class.path");
 		String fileSep = System.getProperty("file.separator");
+		if (fileSep.equals("\\")) {
+			fileSep = "\\\\";
+		}
+		sDirs.add(".");
 		for (String path : classpath.split(pathSep)) {
+			path = path.replaceAll(fileSep, "/");
 			if (path.endsWith(".jar")) {
-				path = path.substring(0, path.lastIndexOf(fileSep));
+				path = path.substring(0, path.lastIndexOf("/"));
 			}
-			if (path.indexOf(fileSep) >= 0) {
-				path = path.substring(0, path.lastIndexOf(fileSep));
+			if (path.indexOf("/") >= 0) {
+				path = path.substring(0, path.lastIndexOf("/"));
 			}
 			if (!sDirs.contains(path)) {
 				sDirs.add(path);
@@ -469,6 +474,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		// and once from .beast2-addon area
 		Set<String> loadedTemplates = new HashSet<String>();
 		for (String sDir : sDirs) {
+			System.out.println("Investigating " + sDir);
 			File templates = new File(sDir + fileSep + "templates");
 			File[] files = templates.listFiles();
 			if (files != null) {
@@ -544,12 +550,12 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 		templateName = nameFromFile(sFileName);
 
-		Writer out = new OutputStreamWriter(new FileOutputStream("/tmp/beast.xml"));
-		try {
-			out.write(sTemplateXML);
-		} finally {
-			out.close();
-		}
+//		Writer out = new OutputStreamWriter(new FileOutputStream("/tmp/beast.xml"));
+//		try {
+//			out.write(sTemplateXML);
+//		} finally {
+//			out.close();
+//		}
 
 		return sTemplateXML;
 	}
