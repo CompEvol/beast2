@@ -214,7 +214,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
         DecimalFormat myFormatter2 = new DecimalFormat("##.E0#", new DecimalFormatSymbols(Locale.US));
         
         private String format(double value) {
-            if (value > 1e-3) {
+            if (value > 1e-2) {
             	return myFormatter.format(value);
             }
             return myFormatter2.format(value);

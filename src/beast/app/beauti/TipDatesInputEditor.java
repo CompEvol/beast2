@@ -2,7 +2,6 @@ package beast.app.beauti;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -83,8 +82,6 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 public void actionPerformed(ActionEvent e) {
                     JCheckBox checkBox = (JCheckBox) e.getSource();
                     try {
-                        Container comp = checkBox.getParent();
-                        comp.removeAll();
                         if (checkBox.isSelected()) {
                             if (traitSet == null) {
                                 traitSet = new TraitSet();
@@ -93,21 +90,20 @@ public class TipDatesInputEditor extends PluginInputEditor {
                                         "value", "");
                             }
                             m_input.setValue(traitSet, m_plugin);
-                            comp.add(checkBox);
-                            comp.add(createButtonBox());
-                            comp.add(createListBox());
-                            comp.add(createSamplingBox());
                         } else {
                             m_input.setValue(null, m_plugin);
-                            comp.add(checkBox);
                         }
+                        refreshPanel();
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
 
                 }
             });
-            box.add(useTipDates);
+            Box box2 = Box.createHorizontalBox();
+            box2.add(useTipDates);
+            box2.add(Box.createGlue());
+            box.add(box2);
 
             if (traitSet != null) {
                 box.add(createButtonBox());
@@ -471,7 +467,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         Box buttonBox = Box.createHorizontalBox();
 
         JLabel label = new JLabel("Dates specified as: ");
-        label.setMaximumSize(new Dimension(1024, 20));
+        label.setMaximumSize(new Dimension(1024, 22));
         buttonBox.add(label);
         unitsComboBox = new JComboBox(TraitSet.Units.values());
         unitsComboBox.setSelectedItem(traitSet.m_sUnits.get());
@@ -487,7 +483,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 }
             }
         });
-        unitsComboBox.setMaximumSize(new Dimension(1024, 20));
+        unitsComboBox.setMaximumSize(new Dimension(1024, 22));
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox(new String[]{"Since some time in the past", "Before the present"});

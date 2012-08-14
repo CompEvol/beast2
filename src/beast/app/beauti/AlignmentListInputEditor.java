@@ -937,23 +937,29 @@ System.err.println("needsRePartition = " + needsRePartition);
 			JOptionPane.showMessageDialog(this, "Select partitions to split, before hitting the split button");
 			return;
 		}
-		String[] options = { "{1,2} + 3", "1 + 2 + 3", "Cancel" };
+		String[] options = { "{1,2} + 3", "{1,2} + 3 offset 1", "{1,2} + 3 offset 2", "1 + 2 + 3"};
 
-		int choice = JOptionPane.showOptionDialog(null, "Split selected alignments into partitions", "Option",
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[2]);
-
+		String option = (String)JOptionPane.showInputDialog(null, "Split selected alignments into partitions", "Option",
+		                    JOptionPane.WARNING_MESSAGE, null, options, "1 + 2 + 3");
+		if (option == null) {
+			return;
+		}
+		
 		String[] filters = null;
 		String[] ids = null;
-		switch (choice) {
-		case 0:
+		if (option.equals(options[0])) {
 			filters = new String[] { "1::3,2::3", "3::3" };
 			ids = new String[] { "1,2", "3" };
-			break;
-		case 1:
+		} else if (option.equals(options[1])) {
+			filters = new String[] { "1::3,3::3", "2::3" };
+			ids = new String[] { "1,2", "3" };
+		} else if (option.equals(options[2])) {
+			filters = new String[] { "2::3,3::3", "1::3" };
+			ids = new String[] { "1,2", "3" };
+		} else if (option.equals(options[3])) {
 			filters = new String[] { "1::3", "2::3", "3::3" };
 			ids = new String[] { "1", "2", "3" };
-			break;
-		default:
+		} else {
 			return;
 		}
 
