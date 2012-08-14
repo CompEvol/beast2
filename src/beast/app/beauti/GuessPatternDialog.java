@@ -387,6 +387,7 @@ public class GuessPatternDialog extends JDialog {
 	private void createSplitBox(JRadioButton b) {
 		
 		textSplitChar = new JTextField("_");
+		textSplitChar.setName("SplitChar");
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.anchor = GridBagConstraints.WEST;
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
@@ -413,6 +414,7 @@ public class GuessPatternDialog extends JDialog {
 	public void createRegExtpBox(JRadioButton b) {
 				
 				textSplitChar2 = new JTextField("_");
+				textSplitChar2.setName("SplitChar2");
 				GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 				gbc_textField_1.anchor = GridBagConstraints.WEST;
 				gbc_textField_1.insets = new Insets(0, 0, 5, 5);

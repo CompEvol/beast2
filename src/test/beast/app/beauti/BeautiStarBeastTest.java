@@ -38,7 +38,7 @@ public class BeautiStarBeastTest extends BeautiBase {
 		DialogFixture dialog = WindowFinder.findDialog("GuessTaxonSets").using(robot());
 		dialog.radioButton("split on character").click();
 		dialog.comboBox("splitCombo").selectItem("2");
-		dialog.comboBox("splitCombo2").selectItem("_");
+		dialog.textBox("SplitChar").deleteText().enterText("_");
 		JButton okButton = dialog.robot.finder().find(JButtonMatcher.withText("OK"));
 		new JButtonFixture(dialog.robot, okButton).click();
 		printBeautiState(f);
