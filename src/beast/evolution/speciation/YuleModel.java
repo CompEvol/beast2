@@ -145,4 +145,10 @@ public class YuleModel extends SpeciesTreeDistribution {
     protected boolean requiresRecalculation() {
         return super.requiresRecalculation() || birthDiffRateParameter.get().somethingIsDirty();
     }
+    
+    @Override
+	public boolean canHandleTipDates() {
+		return false;
+	}
+
 }

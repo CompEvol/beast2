@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -11,10 +12,13 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import beast.app.draw.InputEditor;
+import beast.app.draw.SmallLabel;
 import beast.core.Input;
 import beast.core.Plugin;
 //import beast.evolution.speciation.BirthDeathGernhard08Model;
 //import beast.evolution.speciation.YuleModel;
+import beast.evolution.tree.TraitSet;
+import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 //import beast.evolution.tree.coalescent.BayesianSkyline;
 //import beast.evolution.tree.coalescent.Coalescent;
@@ -76,7 +80,6 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 			if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i)._class)) {
 				sAvailablePlugins.remove(i);
 			}
-
 		}
 
 		String sID = distr.getID();
@@ -120,8 +123,36 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 		itemBox.add(comboBox);
         itemBox.add(Box.createGlue());
 
+        m_validateLabel = new SmallLabel("x", new Color(200, 0, 0));
+        m_validateLabel.setVisible(false);
+        validateInput();
+        itemBox.add(m_validateLabel);
 		add(itemBox);
 	}
 
+	@Override
+	public void validateInput() {
+		TreeDistribution distr = (TreeDistribution) m_plugin;
+	    Tree tree = distr.m_tree.get();
+	    if (tree == null) {
+	    	tree = distr.treeIntervals.get().m_tree.get();
+	    }
+        if (tree.m_trait.get() != null) {
+        	String traitName = tree.m_trait.get().m_sTraitName.get();
+        	if (traitName.equals(TraitSet.DATE_TRAIT) ||
+        		traitName.equals(TraitSet.DATE_BACKWARD_TRAIT) ||
+        		traitName.equals(TraitSet.DATE_FORWARD_TRAIT)) {
+	        		if (!distr.canHandleTipDates()) {
+	                    m_validateLabel.setToolTipText("This tree prior cannot handle dated tips. Choose another tree prior.");
+	                    m_validateLabel.m_circleColor = Color.red;
+	                    m_validateLabel.setVisible(true);
+	                    return;
+	        		}
+        	}
+        }
+
+
+		super.validateInput();
+	}
 
 }

@@ -40,4 +40,12 @@ public class TreeDistribution extends Distribution {
         }
         return m_tree.get().somethingIsDirty();
     }
+    
+ 	/** Indicate that the tree distribution can deal with dated tips in the tree
+	 * Some tree distributions like the Yule prior cannot handle this.
+	 * @return true by default
+	 */
+	public boolean canHandleTipDates() {
+		return true;
+	}
 }

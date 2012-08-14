@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -210,14 +212,12 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
             }
         }
         
-        DecimalFormat myFormatter = new DecimalFormat("##.##", new DecimalFormatSymbols(Locale.US));
-        DecimalFormat myFormatter2 = new DecimalFormat("##.E0#", new DecimalFormatSymbols(Locale.US));
-        
         private String format(double value) {
-            if (value > 1e-2) {
-            	return myFormatter.format(value);
-            }
-            return myFormatter2.format(value);
+            StringWriter writer = new StringWriter();
+            PrintWriter pw = new PrintWriter(writer);
+            pw.printf("%.3g", value);
+            pw.flush();
+            return writer.toString();
         }
         
         private double adjust(double fYMax) {

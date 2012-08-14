@@ -849,5 +849,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     protected boolean requiresRecalculation() {
         return super.requiresRecalculation() || birthRate.get().somethingIsDirty();
     }
+    
+    @Override
+    public boolean canHandleTipDates() {
+		return false;
+	}
+
 
 }

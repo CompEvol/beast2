@@ -35,9 +35,9 @@ public class TraitSet extends Plugin {
     public Input<String> m_traits = new Input<String>("value", "traits encoded as taxon=value pairs separated by commas", Validate.REQUIRED);
     public Input<TaxonSet> m_taxa = new Input<TaxonSet>("taxa", "contains list of taxa to map traits to", Validate.REQUIRED);
 
-    final static String DATE_TRAIT = "date";
-    final static String DATE_FORWARD_TRAIT = "date-forward";
-    final static String DATE_BACKWARD_TRAIT = "date-backward";
+    final public static String DATE_TRAIT = "date";
+    final public static String DATE_FORWARD_TRAIT = "date-forward";
+    final public static String DATE_BACKWARD_TRAIT = "date-backward";
 
     /**
      * String values of taxa in order of taxons in alignment*
