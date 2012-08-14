@@ -513,6 +513,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
+                dlg.allowAddingValues();
             	String sTrait = "";
                 switch (dlg.showDialog("Guess dates")) {
                 case canceled: return;
@@ -520,23 +521,17 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 	sTrait = dlg.getTrait();
                 	break;
                 case pattern: 
-                    String sPattern = dlg.getPattern(); 
-                    if (sPattern == null) {
-                        return;
-                    }
-                    Pattern pattern = Pattern.compile(sPattern);
                     for (String sTaxon : sTaxa) {
-                        Matcher matcher = pattern.matcher(sTaxon);
-                        if (matcher.find()) {
-                            String sMatch = matcher.group(1);
-                            double nDate = parseDate(sMatch);
-                            if (sTrait.length() > 0) {
-                                sTrait += ",";
-                            }
-                            sTrait += sTaxon + "=" + nDate;
+                    	String sMatch = dlg.match(sTaxon);
+                    	if (sMatch == null) {
+                    		return;
+                    	}
+                        double nDate = parseDate(sMatch);
+                        if (sTrait.length() > 0) {
+                            sTrait += ",";
                         }
+                        sTrait += sTaxon + "=" + nDate;
                     }
-                    m_sPattern = sPattern;
                 	break;
                 }
                 try {
