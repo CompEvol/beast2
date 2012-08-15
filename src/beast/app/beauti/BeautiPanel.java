@@ -2,9 +2,6 @@ package beast.app.beauti;
 
 
 import java.awt.*;
-//import java.awt.Panel;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
 
 import javax.swing.*;

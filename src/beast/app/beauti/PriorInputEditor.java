@@ -50,6 +50,7 @@ public class PriorInputEditor extends InputEditor.Base {
 
         List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
+        comboBox.setName(sText+".distr");
 
         String sID = prior.m_distInput.get().getID();
         System.err.println("id=" + sID);

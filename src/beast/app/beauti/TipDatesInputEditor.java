@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -9,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -509,6 +508,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         buttonBox.add(Box.createGlue());
 
         JButton guessButton = new JButton("Guess");
+        guessButton.setName("Guess");
         guessButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
