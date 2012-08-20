@@ -87,6 +87,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                                 traitSet.initByName("traitname", "date",
                                         "taxa", tree.m_taxonset.get(),
                                         "value", "");
+                                traitSet.setID("dateTrait.t:" + doc.parsePartition(tree.getID()));
                             }
                             m_input.setValue(traitSet, m_plugin);
                         } else {
