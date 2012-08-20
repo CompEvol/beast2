@@ -937,7 +937,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			JOptionPane.showMessageDialog(this, "Select partitions to split, before hitting the split button");
 			return;
 		}
-		String[] options = { "{1,2} + 3", "{1,2} + 3 offset 1", "{1,2} + 3 offset 2", "1 + 2 + 3", "1 + 2 + 3 offset 1", "1 + 2 + 3 offset 2"};
+		String[] options = { "{1,2} + 3", "{1,2} + 3 frame 2", "{1,2} + 3 frame 3", "1 + 2 + 3", "1 + 2 + 3 frame 2", "1 + 2 + 3 frame 3"};
 
 		String option = (String)JOptionPane.showInputDialog(null, "Split selected alignments into partitions", "Option",
 		                    JOptionPane.WARNING_MESSAGE, null, options, "1 + 2 + 3");
