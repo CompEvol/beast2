@@ -49,7 +49,9 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
 
     public void initAndValidate() throws Exception {
         if (popSizeParameter.get() != null) {
-            popSizeParameter.get().setBounds(0.0, Double.POSITIVE_INFINITY);
+            popSizeParameter.get().setBounds(
+            		Math.max(0.0, popSizeParameter.get().getLower()), 
+            		popSizeParameter.get().getUpper());
         }
         if (growthRateParameter.get() != null) {
             growthRateParameter.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

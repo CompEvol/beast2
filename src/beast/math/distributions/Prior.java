@@ -2,6 +2,8 @@ package beast.math.distributions;
 
 import beast.core.*;
 import beast.core.Input.Validate;
+import beast.core.parameter.IntegerParameter;
+import beast.core.parameter.RealParameter;
 
 import java.util.List;
 import java.util.Random;
@@ -25,8 +27,26 @@ public class Prior extends Distribution {
 
     @Override
     public double calculateLogP() throws Exception {
-        Valuable pX = m_x.get();
-        logP = m_dist.calcLogP(pX);
+        Valuable x = m_x.get();
+        if (x instanceof RealParameter || x instanceof IntegerParameter) {
+        	// test that parameter is inside its bounds
+            double l = 0.0;
+            double h = 0.0;
+        	if (x instanceof RealParameter) {
+                l = ((RealParameter) x).getLower();
+                h = ((RealParameter) x).getUpper();
+        	} else {
+                l = ((IntegerParameter) x).getLower();
+                h = ((IntegerParameter) x).getUpper();
+        	}
+            for (int i = 0; i < x.getDimension(); i++) {
+            	double value = x.getArrayValue(i);
+            	if (value < l || value > h) {
+            		return Double.NEGATIVE_INFINITY;
+            	}
+            }
+        }
+        logP = m_dist.calcLogP(x);
         return logP;
     }
 

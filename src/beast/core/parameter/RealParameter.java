@@ -77,12 +77,12 @@ public class RealParameter extends Parameter<Double> {
 
     @Override
     Double getMax() {
-        return Double.NEGATIVE_INFINITY;
+        return Double.POSITIVE_INFINITY;
     }
 
     @Override
     Double getMin() {
-        return Double.POSITIVE_INFINITY;
+        return Double.NEGATIVE_INFINITY;
     }
     /** Valuable implementation follows **/
 
