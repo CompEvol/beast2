@@ -85,22 +85,22 @@
 <!--
         <operator id='shapeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@shape"/>
         <operator id='invarScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@propInvar"/>
--->
+
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
-
+-->
 
 <!--
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
         <operator id="Reheight" spec="NodeReheight2" tree="@tree" weight="5" scaleFactor='0.5'>
         </operator>
--->
 
-        <operator spec='Uniform' weight="10" tree="@tree"/>
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
+
+        <operator spec='Uniform' weight="10" tree="@tree"/>-->
+        <operator spec='SubtreeSlide' optimise="false" weight="5" gaussian="true" size="1.0" tree="@tree"/>
+        <!--operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
-        <operator spec='WilsonBalding' weight="1" tree="@tree"/>
+        <operator spec='WilsonBalding' weight="1" tree="@tree"/-->
 
         <logger logEvery="10000" fileName="test.$(seed).log">
 	        <model idref='likelihood'/>
