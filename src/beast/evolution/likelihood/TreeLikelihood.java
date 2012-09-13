@@ -94,8 +94,8 @@ public class TreeLikelihood extends Distribution {
      * reasons as well...).
      * These lengths take branch rate models in account.
      */
-    double[] m_branchLengths;
-    double[] m_StoredBranchLengths;
+    protected double[] m_branchLengths;
+    protected double[] m_StoredBranchLengths;
 
     /**
      * memory allocation for likelihoods for each of the patterns *
