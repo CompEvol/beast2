@@ -29,9 +29,11 @@ import java.io.PrintStream;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.Plugin;
 import beast.core.Valuable;
+import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.statistic.DiscreteStatistics;
@@ -40,7 +42,9 @@ import beast.math.statistic.DiscreteStatistics;
 @Description("A statistic that tracks the mean, variance and coefficent of variation of rates. " +
         "It has three dimensions, one for each statistic.")
 public class RateStatistic extends Plugin implements Loggable, Valuable {
-    public Input<BranchRateModel> branchRateModelInput = new Input<BranchRateModel>("branchratemodel", "model that provides rates for a tree");
+	
+    public Input<TreeLikelihood> likelihoodInput = new Input<TreeLikelihood>("treeLikelihood", "TreeLikelihood containing branch rate model that provides rates for a tree");
+    public Input<BranchRateModel> branchRateModelInput = new Input<BranchRateModel>("branchratemodel", "model that provides rates for a tree", Validate.XOR, likelihoodInput);
     public Input<Tree> treeInput = new Input<Tree>("tree", "tree for which the rates apply");
     public Input<Boolean> internalInput = new Input<Boolean>("internal", "consider internal nodes, default true", true);
     public Input<Boolean> externalInput = new Input<Boolean>("external", "consider external nodes, default true", true);
@@ -58,6 +62,9 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
     public void initAndValidate() throws Exception {
         tree = treeInput.get();
         branchRateModel = branchRateModelInput.get();
+        if (branchRateModel == null) {
+            branchRateModel = likelihoodInput.get().m_pBranchRateModel.get();
+        }
         this.internal = internalInput.get();
         this.external = externalInput.get();
     }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditorFactory;
@@ -70,7 +72,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	final static int TREEMODEL_PARTITION = 2;
 
 	public enum ActionOnExit {
-		UNKNOWN, SHOW_DETAILS_USE_TEMPLATE, SHOW_DETAILS_USE_XML_SPEC, WRITE_XML
+		UNKNOWN, SHOW_DETAILS_USE_TEMPLATE, SHOW_DETAILS_USE_XML_SPEC, WRITE_XML, MERGE_AND_WRITE_XML
 	}
 
 	public List<Alignment> alignments = new ArrayList<Alignment>();
@@ -216,6 +218,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 						endState = ActionOnExit.SHOW_DETAILS_USE_TEMPLATE;
 					} else if (args[i + 1].equals("usexml")) {
 						endState = ActionOnExit.SHOW_DETAILS_USE_XML_SPEC;
+					} else if (args[i + 1].equals("merge")) {
+						endState = ActionOnExit.MERGE_AND_WRITE_XML;
 					} else {
 						throw new Exception("Expected one of 'writexml','usetemplate' or 'usexml', not " + args[i + 1]);
 					}
@@ -402,6 +406,27 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			mergeSequences(sTemplate);
 			connectModel();
 			save(sFileName);
+			break;
+		}
+		case MERGE_AND_WRITE_XML: {
+			// merge alignment with XML
+//	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//	        Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+//	        doc.normalize();
+//	        NodeList nodes = doc.getElementsByTagName("data");
+//
+//			XMLProducer producer = new XMLProducer();
+//			producer.toRawXML(alignments.get(0));
+//			
+//			Pplugin plugin =  parser.parseFragment(sXML, false);
+//			int i = sXML.indexOf("<data");
+//			for (Plugin plugin : pluginmap.values()) {
+//				if (plugin instanceof Alignment) {
+//					
+//				}
+//			}
+//			save(sFileName);
+			System.exit(1);
 			break;
 		}
 			// // load standard template

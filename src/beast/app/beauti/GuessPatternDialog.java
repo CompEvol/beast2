@@ -231,6 +231,7 @@ public class GuessPatternDialog extends JDialog {
 		guessPanel.add(separator_1, gbc_separator_1);
 		
 		chckbxAddFixedValue = new JCheckBox("Add fixed value");
+		chckbxAddFixedValue.setName("Add fixed value");
 		chckbxAddFixedValue.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				updateFields();
@@ -254,6 +255,7 @@ public class GuessPatternDialog extends JDialog {
 		textAddValue.setColumns(10);
 		
 		chckbxUnlessLessThan = new JCheckBox("Unless less than...");
+		chckbxUnlessLessThan.setName("Unless less than");
 		chckbxUnlessLessThan.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				updateFields();

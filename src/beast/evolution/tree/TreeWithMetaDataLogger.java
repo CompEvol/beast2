@@ -9,6 +9,7 @@ import beast.core.Plugin;
 import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.Valuable;
+import beast.core.parameter.Parameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 
 @Description("Logs tree annotated with metadata and/or rates")
@@ -73,10 +74,27 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
             buf.append(node.m_iLabel + 1);
         }
         if (someMetaDataNeedsLogging) {
-	        buf.append("[");
+	        buf.append("[&");
 	        if (metadata != null) {
 	            buf.append(m_sMetaDataLabel);
-	            buf.append(metadata.getArrayValue(node.m_iLabel));
+	            if (metadata instanceof Parameter<?>) {
+	            	Parameter p = (Parameter) metadata;
+	            	int dim = p.getMinorDimension1();
+	            	if (dim > 1) {
+		            	buf.append('{');
+		            	for (int i = 0; i < dim; i++) {
+			            	buf.append(p.getMatrixValue(node.m_iLabel, i));
+			            	if (i < dim - 1) {
+				            	buf.append(',');
+			            	}
+		            	}
+		            	buf.append('}');
+	            	} else {
+		            	buf.append(metadata.getArrayValue(node.m_iLabel));
+	            	}
+	            } else {
+	            	buf.append(metadata.getArrayValue(node.m_iLabel));
+	            }
 	            if (branchRateModel != null) {
 	                buf.append(",");
 	            }
@@ -98,3 +116,5 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
     }
 
 }
+
+    
