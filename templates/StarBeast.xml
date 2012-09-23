@@ -260,7 +260,7 @@
             <connect srcID='narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='updown.$(n)'                      targetID='mcmc' inputName='operator' if='nooperator(FixMeanRatesOperator) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='updown.$(n)'                      targetID='mcmc' inputName='operator' if='nooperator(FixMeanRatesOperator) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
             <connect srcID='treeLikelihood.$(n)'         targetID='tracelog' inputName='log'/>
             <connect srcID='treePrior.t:$(n)'            targetID='tracelog' inputName='log'/>
