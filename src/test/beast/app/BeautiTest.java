@@ -84,7 +84,7 @@ public class BeautiTest extends TestCase {
     		"        <siteModel idref='siteModel'/>\n" +
     		"    </input>\n" +
     		"    <parameter id='hky.kappa' value='1.0' lower='0.0'/>\n" +
-    		"    <tree spec='beast.evolution.tree.RandomTree' id='tree' initial='@tree' taxa='@data'>\n" +
+    		"    <tree spec='beast.evolution.tree.RandomTree' id='tree' taxa='@data'>\n" +
     		"        <populationModel spec='ConstantPopulation'>\n" +
     		"		<popSize spec='parameter.RealParameter' value='1'/>\n" +
     		"	</populationModel>\n" +

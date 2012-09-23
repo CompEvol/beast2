@@ -765,12 +765,46 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 		loadTemplate(sXML);
 		// create XML for alignments
-		for (Alignment alignment : alignments) {
-			beautiConfig.partitionTemplate.get().createSubNet(alignment, this, true);
+		if (beautiConfig != null) {
+			for (Alignment alignment : alignments) {
+				beautiConfig.partitionTemplate.get().createSubNet(alignment, this, true);
+			}
+		} else {
+			// replace alignment
+			for (Plugin plugin : pluginmap.values()) {
+				if (plugin instanceof Alignment) {
+					for (Object output : plugin.outputs.toArray()) {
+						replaceInputs((Plugin) output, plugin, alignments.get(0));
+					}
+				}
+			}
+			return;			
 		}
 		determinePartitions();
 
 	} // mergeSequences
+
+	private void replaceInputs(Plugin plugin, Plugin original, Plugin replacement) {
+		try {
+			for(Input input : plugin.listInputs()) {
+				if (input.get() != null) {
+					if (input.get() instanceof List) {
+						List list = (List) input.get();
+						if (list.contains(original)) {
+							list.remove(original);
+							list.add(replacement);
+						}
+					} else {
+						if (input.get().equals(original)) {
+							input.setValue(replacement, plugin);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	void loadTemplate(String sXML) throws Exception {
 		// load the template and its beauti configuration parts
@@ -1295,6 +1329,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 
 	public void determinePartitions() {
         CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
+        if (likelihood == null) {
+        	return;
+        }
 		sPartitionNames.clear();
 		possibleContexts.clear();
 		for (Distribution distr : likelihood.pDistributions.get()) {
