@@ -24,14 +24,14 @@
         <plugin id='KappaScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@kappa.s:$(n)"/>
         <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
-        <plugin id='KappaPrior.s:$(n)' spec='Prior' x='@kappa.s:$(n)'>
+        <prior id='KappaPrior.s:$(n)' x='@kappa.s:$(n)'>
             <distr spec="LogNormalDistributionModel" meanInRealSpace='false'>
                 <parameter name='M' value="1.0" estimate='false'/>
                 <parameter name='S' value="1.25" estimate='false'/>
             </distr>
-		</plugin>
+		</prior>
 <!--
-        <plugin id='FrequenciesPrior.s:$(n)' spec='Prior' x='@freqParameter.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></plugin>
+        <prior id='FrequenciesPrior.s:$(n)' x='@freqParameter.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
 -->
 
 ]]>
@@ -74,12 +74,12 @@
         <operator id='RateGTScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateGT.s:$(n)"/>
         <operator id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
-        <prior id='RateACPrior.s:$(n)' spec='Prior' x='@rateAC.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
-        <prior id='RateAGPrior.s:$(n)' spec='Prior' x='@rateAG.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='20.0'/></prior>
-        <prior id='RateATPrior.s:$(n)' spec='Prior' x='@rateAT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
-        <prior id='RateCGPrior.s:$(n)' spec='Prior' x='@rateCG.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
-        <prior id='RateCTPrior.s:$(n)' spec='Prior' x='@rateCT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='20.0'/></prior>
-        <prior id='RateGTPrior.s:$(n)' spec='Prior' x='@rateGT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
+        <prior id='RateACPrior.s:$(n)' x='@rateAC.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
+        <prior id='RateAGPrior.s:$(n)' x='@rateAG.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='20.0'/></prior>
+        <prior id='RateATPrior.s:$(n)' x='@rateAT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
+        <prior id='RateCGPrior.s:$(n)' x='@rateCG.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
+        <prior id='RateCTPrior.s:$(n)' x='@rateCT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='20.0'/></prior>
+        <prior id='RateGTPrior.s:$(n)' x='@rateGT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
 ]]>
 
             <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
@@ -184,7 +184,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 					<down idref="Tree.t:$(n)"/>
 				</upDownOperator>
 
-		        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
+		        <prior id='ClockPrior.c:$(n)' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
 ]]>
             <connect srcID='clockRate.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
@@ -216,7 +216,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 		</upDownOperator>
 
 		<log id='rateStat.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@ExponentialRelaxedClock.c:$(n)'/>
-        <plugin id='UCMeanRatePrior.c:$(n)' spec='Prior' x='@ucedMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
+        <prior id='UCMeanRatePrior.c:$(n)' x='@ucedMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
 ]]>
             <connect srcID='ucedMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
             <connect srcID='expRateCategories.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(expRateCategories.c:$(n))'/>
@@ -259,7 +259,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
 
-        <prior id='ucldStdevPrior.c:$(n)' spec='Prior' x='@ucldStdev.c:$(n)'>
+        <prior id='ucldStdevPrior.c:$(n)' x='@ucldStdev.c:$(n)'>
             <distr spec="beast.math.distributions.Exponential">
                 <parameter name='mean' value="0.3333" estimate='false'/>
             </distr>
@@ -267,7 +267,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 
 
 		<log id='rate.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@RelaxedClock.c:$(n)'/>
-        <plugin id='MeanRatePrior.c:$(n)' spec='Prior' x='@ucldMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
+        <prior id='MeanRatePrior.c:$(n)' priorx='@ucldMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
 ]]>
             <connect srcID='ucldMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
             <connect srcID='ucldStdev.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldStdev.c:$(n)) and ucldStdev.c:$(n)/estimate=true'/>
@@ -310,7 +310,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
 
-        <plugin id='MeanRRatePrior.c:s$(n)' spec='Prior' x='@meanClockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
+        <prior id='MeanRRatePrior.c:s$(n)' x='@meanClockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
 ]]>
             <connect srcID='Indicators.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(Indicators.c:$(n))'/>
             <connect srcID='meanClockRate.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(meanClockRate.c:$(n)) and meanClockRate.c:$(n)/estimate=true'/>
@@ -343,7 +343,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
                 <parameter name='birthDiffRate' id="birthRate.t:$(n)" value='1.0'/>
             </plugin>
 
-            <prior id='YuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+            <prior id='YuleBirthRatePrior.t:$(n)' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
 
   		    <scale id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 ]]>
@@ -365,7 +365,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
                 <parameter name='birthRate' id="birthRateY.t:$(n)" value='1.0'/>
             </plugin>
 
-            <prior id='CalibratedYuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRateY.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+            <prior id='CalibratedYuleBirthRatePrior.t:$(n)' x='@birthRateY.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
 
   		    <scale id='CalibratedYuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRateY.t:$(n)"/>
 ]]>
@@ -387,8 +387,8 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
             	<relativeDeathRate spec='parameter.RealParameter' id="relativeDeathRate2.t:$(n)" value='0.5' lower='0' upper='1' />
             </distribution>
 
-            <prior id='BirthRatePrior.t:$(n)' spec='Prior' x='@birthRate2.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
-            <prior id='DeathRatePrior.t:$(n)' spec='Prior' x='@relativeDeathRate2.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
+            <prior id='BirthRatePrior.t:$(n)' x='@birthRate2.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+            <prior id='DeathRatePrior.t:$(n)' x='@relativeDeathRate2.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
 
   		    <scale id='BirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.t:$(n)"/>
   		    <scale id='DeathRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.t:$(n)"/>
@@ -421,7 +421,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
             </distribution>
 
   		    <operator id='PopSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popSize.t:$(n)"/>
-	        <prior id='PopSizePrior.t:$(n)' spec='Prior' x='@popSize.t:$(n)'><distr spec="OneOnX"/></prior>
+	        <prior id='PopSizePrior.t:$(n)' x='@popSize.t:$(n)'><distr spec="OneOnX"/></prior>
 ]]>
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with constant rate on tree t:$(n)</connect>
             <connect srcID='PopSizePrior.t:$(n)'       targetID='prior' inputName='distribution' if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'>Coalescent population size parameter of partition t:$(n)</connect>
@@ -449,8 +449,8 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
   		    <operator id='ePopSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@ePopSize.t:$(n)"/>
 	        <operator id="GrowthRateRandomWalk.t:$(n)" spec="RealRandomWalkOperator" windowSize='1' weight="3" parameter="@growthRate.t:$(n)"/>
 
-	        <prior id='ePopSizePrior.t:$(n)' spec='Prior' x='@ePopSize.t:$(n)'><distr spec="OneOnX"/></prior>
-	        <prior id='GrowthRatePrior.t:$(n)' spec='Prior' x='@growthRate.t:$(n)'><distr spec="LaplaceDistribution" mu='0.001' scale='30.701135'/></prior>
+	        <prior id='ePopSizePrior.t:$(n)' x='@ePopSize.t:$(n)'><distr spec="OneOnX"/></prior>
+	        <prior id='GrowthRatePrior.t:$(n)' x='@growthRate.t:$(n)'><distr spec="LaplaceDistribution" mu='0.001' scale='30.701135'/></prior>
 
 ]]>
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution' if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalesenct prior with exponential rate on tree t:$(n)</connect>
@@ -518,18 +518,18 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
                 <itree idref="treeIntervals.t:$(n)"/>
 			</population>
 
-            <distribution id="populationMeanPrior.alltrees" spec="Prior" x="@populationMean.alltrees">
+            <prior id="populationMeanPrior.alltrees" x="@populationMean.alltrees">
                 <distr spec="OneOnX" id='OneOnX.EBSP'/>
-            </distribution>
-            <distribution id="indicatorsPrior.alltrees" spec="Prior">
+            </prior>
+            <prior id="indicatorsPrior.alltrees">
                 <x arg="@indicators.alltrees" id="indsSun.alltrees" spec="util.Sum"/>
                 <distr spec="Poisson"  id='Poisson.EBSP'>
                     <parameter name="lambda" upper="0.0" value="0.69314718056" estimate='false'/>
                 </distr>
-            </distribution>
-            <distribution id="popSizePrior.alltrees" spec="Prior" x="@popSizes.alltrees">
+            </prior>
+            <prior id="popSizePrior.alltrees" x="@popSizes.alltrees">
                 <distr id="popPriorDist.EBSP" mean="@populationMean.alltrees" spec="Exponential"/>
-            </distribution>
+            </prior>
 
 			<logger id="EBSPLogger" fileName='EBSP.$(seed).log' logEvery='5000'>
 				<log idref='demographic.alltrees'/>

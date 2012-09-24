@@ -12,7 +12,7 @@
 <map name='Beta'>beast.math.distributions.Beta</map>
 <map name='LaplaceDistribution'>beast.math.distributions.LaplaceDistribution</map>
 <map name='InverseGamma'>beast.math.distributions.InverseGamma</map>
-<map name='Prior'>beast.math.distributions.Prior</map>
+<map name='prior'>beast.math.distributions.Prior</map>
 
     <beauticonfig spec='BeautiConfig'
         inputLabelMap='beast.core.MCMC.operator=Operators,
@@ -165,8 +165,8 @@
                 </branchRateModel>
             </plugin>
 
-	        <plugin id='ClockPrior.c:$(n)' spec='Prior' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></plugin>
-	        <plugin id='MutationRatePrior.s:$(n)' spec='Prior' x='@mutationRate.s:$(n)'><distr spec="OneOnX"/></plugin>
+	        <prior id='ClockPrior.c:$(n)' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
+	        <prior id='MutationRatePrior.s:$(n)' x='@mutationRate.s:$(n)'><distr spec="OneOnX"/></prior>
 
             <!-- tree and its properties -->
             <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
@@ -206,9 +206,9 @@
             <operator id='WilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
 
 
-            <prior id='YuleBirthRatePrior.t:$(n)' spec='Prior' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
-            <prior id='GammaShapePrior.s:$(n)' spec='Prior' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" mean='1'/></prior>
-            <prior id='PropInvariantPrior.t:$(n)' spec='Prior' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
+            <prior id='YuleBirthRatePrior.t:$(n)' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
+            <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" mean='1'/></prior>
+            <prior id='PropInvariantPrior.t:$(n)' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
   		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
