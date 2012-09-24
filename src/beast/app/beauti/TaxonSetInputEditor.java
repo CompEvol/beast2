@@ -304,9 +304,18 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         Set<String> taxonIDs = new HashSet<String>();
         for (Alignment alignment : getDoc().alignments) {
         	for (String sID : alignment.getTaxaNames()) {
-                Taxon taxon = new Taxon();
-                taxon.setID(sID);
-                taxa.add(taxon);
+        		boolean found = false;
+        		for (Taxon t : taxa) {
+        			if (t.getID().equals(sID)) {
+        				found = true;
+        				break;
+        			}
+        		}
+        		if (!found) {
+	                Taxon taxon = new Taxon();
+	                taxon.setID(sID);
+	                taxa.add(taxon);
+        		}
         	}
             for (Sequence sequence : alignment.m_pSequences.get()) {
                 String sID = sequence.m_sTaxon.get();
