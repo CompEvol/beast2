@@ -705,7 +705,7 @@ public class XMLProducer extends XMLParser {
 	                            String sValue = input.get().toString();
 	                            if (bShort) {
 	                                if (sValue.indexOf('\n') < 0) {
-	                                    buf.append(" " + sInput + "='" + input.get().toString() + "'");
+	                                    buf.append(" " + sInput + "='" + normalise(input.get().toString()) + "'");
 	                                }
 	                            } else {
 	                                if (sValue.indexOf('\n') >= 0) {
@@ -715,7 +715,7 @@ public class XMLProducer extends XMLParser {
 	                                    if (sInput.equals("value")) {
 	                                        buf.append(input.get().toString());
 	                                    } else {
-	                                        buf.append("<input name='" + sInput + "'>" + input.get().toString() + "</input>\n");
+	                                        buf.append("<input name='" + sInput + "'>" + normalise(input.get().toString()) + "</input>\n");
 	                                    }
 	                                }
 	                            }
@@ -733,5 +733,16 @@ public class XMLProducer extends XMLParser {
         throw new Exception("Could not find input " + sInput + " in plugin " + plugin.getID() + " " + plugin.getClass().getName());
     } // inputToXML
 
+    
+   /** convert plain text string to XML string, replacing some entities **/
+    String normalise(String str) {
+    	str = str.replaceAll("&", "&amp;");    	
+    	str = str.replaceAll("'", "&apos;");
+    	str = str.replaceAll("\"", "&quot;");
+    	str = str.replaceAll("<", "&lt;");
+    	str = str.replaceAll(">", "&gt;");
+    	return str;
+    }
+    
 } // class XMLProducer
 
