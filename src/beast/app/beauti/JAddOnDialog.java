@@ -139,6 +139,7 @@ public class JAddOnDialog extends JDialog {
                         resetList();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "Install/uninstall failed because: " + ex.getMessage());
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     }
                 }
             }

@@ -45,6 +45,7 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -474,18 +475,26 @@ public class AddOnManager {
         for (AddonDependency dep : dependencies) {
             Double version = addonVersion.get(dep.dependson);
             if (version == null) {
-                throw new RuntimeException("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") which is not installed.\n" +
+                warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") which is not installed.\n" +
                         "Either uninstall " + dep.addon + " or install the " + dep.dependson + " add on.");
-            }
-            if (version > dep.atMost || version < dep.atLeast) {
-                throw new RuntimeException("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
+            } else if (version > dep.atMost || version < dep.atLeast) {
+            	warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
                         dep.atLeast + " to " + dep.atMost + " but " + dep.dependson + " has version " + version + "\n" +
                         "Either uninstall " + dep.addon + " or install the correct version of " + dep.dependson + ".");
             }
         }
     }
 
-    /**
+    private static void warning(String string) {
+		System.out.println(string);
+		System.out.println("Unexpected behavior may follow!");
+        if (!java.awt.GraphicsEnvironment.isHeadless()) {
+        	JOptionPane.showMessageDialog(null, string +
+        			"\nUnexpected behavior may follow!");
+        }
+	}
+
+	/**
      * Add URL to CLASSPATH
      *
      * @param u URL
