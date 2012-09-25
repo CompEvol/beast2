@@ -267,7 +267,7 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
 
 
 		<log id='rate.c:$(n)' spec='RateStatistic' tree='@Tree.t:$(n)' branchratemodel='@RelaxedClock.c:$(n)'/>
-        <prior id='MeanRatePrior.c:$(n)' priorx='@ucldMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
+        <prior id='MeanRatePrior.c:$(n)' x='@ucldMean.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
 ]]>
             <connect srcID='ucldMean.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
             <connect srcID='ucldStdev.c:$(n)' targetID='state' inputName='stateNode' if='inlikelihood(ucldStdev.c:$(n)) and ucldStdev.c:$(n)/estimate=true'/>

@@ -75,7 +75,7 @@ public class TreeLikelihood extends Distribution {
      */
     SubstitutionModel.Base m_substitutionModel;
     protected SiteModel.Base m_siteModel;
-    BranchRateModel.Base m_branchRateModel;
+    protected BranchRateModel.Base m_branchRateModel;
 
     /**
      * flag to indicate the
@@ -84,7 +84,7 @@ public class TreeLikelihood extends Distribution {
      * // when FILTHY=2 indicates the indices for the node need to be recalculated
      * // (often not necessary while node partial recalculation is required)
      */
-    int m_nHasDirt;
+    protected int m_nHasDirt;
 
     /**
      * Lengths of the branches in the tree associated with each of the nodes
@@ -142,7 +142,7 @@ public class TreeLikelihood extends Distribution {
         int nodeCount = m_tree.get().getNodeCount();
         m_siteModel = m_pSiteModel.get();
         m_siteModel.setDataType(m_data.get().getDataType());
-        m_substitutionModel = m_siteModel.m_pSubstModel.get();
+        m_substitutionModel = (SubstitutionModel.Base) m_siteModel.m_pSubstModel.get();
 
         if (m_pBranchRateModel.get() != null) {
             m_branchRateModel = m_pBranchRateModel.get();

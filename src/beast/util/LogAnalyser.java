@@ -242,6 +242,55 @@ public class LogAnalyser {
         setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL}, 2000);
     }
 
+    public double getMean(String sLabel) {
+        return m_fMean[indexof(sLabel)];
+    }
+
+    private int indexof(String sLabel) {
+    	for (int i = 0; i < m_sLabels.length ; i++) {
+    		if (m_sLabels[i].equals(sLabel)) {
+    			return i;
+    		}
+    	}
+		return -1;
+	}
+    
+    public Double [] getTrace(int index) {
+    	return m_fTraces[index].clone();
+    }
+
+    public Double [] getTrace(String sLabel) {
+    	return m_fTraces[indexof(sLabel)].clone();
+    }
+    
+	public double getStdDev(String sLabel) {
+        return m_fStdDev[indexof(sLabel)];
+    }
+
+    public double getMedian(String sLabel) {
+        return m_fMedian[indexof(sLabel)];
+    }
+
+    public double get95HPDup(String sLabel) {
+        return m_f95HPDup[indexof(sLabel)];
+    }
+
+    public double get95HPDlow(String sLabel) {
+        return m_f95HPDlow[indexof(sLabel)];
+    }
+
+    public double getESS(String sLabel) {
+        return m_fESS[indexof(sLabel)];
+    }
+
+    public double getACT(String sLabel) {
+        return m_fACT[indexof(sLabel)];
+    }
+
+    public double getGeometricMean(String sLabel) {
+        return m_fGeometricMean[indexof(sLabel)];
+    }
+
     public double getMean(int iColumn) {
         return m_fMean[iColumn];
     }

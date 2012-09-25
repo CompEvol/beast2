@@ -26,7 +26,13 @@ public class Binary extends Base {
 
     @Override
     public char getChar(int state) {
-        return (char) (state + '0');
+    	switch (state) {
+    	case 0: return '0';
+    	case 1: return '1';
+    	case 2: return GAP_CHAR;
+    	case 3: return MISSING_CHAR;
+    	}
+    	return MISSING_CHAR;
     }
 
 }
