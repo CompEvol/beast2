@@ -304,6 +304,19 @@ public class AddOnManager {
                 sDirs.add(sDir);
             }
         }
+        
+        // pick up directories in class path, usefull when running in an IDE
+        String strClassPath = System.getProperty("java.class.path");
+        String [] paths = strClassPath.split(":");
+        for (String path : paths) {
+        	if (!path.endsWith(".jar")) {
+        		path = path.replaceAll("\\\\","/");
+        		if (path.indexOf("/") >= 0) {
+	        		path = path.substring(0, path.lastIndexOf("/"));
+	        		sDirs.add(path);
+        		}
+        	}
+        }
         // add user directory
         sDirs.add(System.getProperty("user.dir"));
         // add user add-on directory

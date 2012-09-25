@@ -42,14 +42,14 @@ public class JAddOnDialog extends JDialog {
         setModal(true);
 
         panel = new JPanel();
-        add(BorderLayout.CENTER, panel);
+        getContentPane().add(BorderLayout.CENTER, panel);
         setTitle("BEAST 2 Add-On Manager");
 
 
         Component pluginListBox = createList();
         panel.add(pluginListBox);
         Box buttonBox = createButtonBox();
-        add(buttonBox, BorderLayout.SOUTH);
+        getContentPane().add(buttonBox, BorderLayout.SOUTH);
 
         Dimension dim = panel.getPreferredSize();
         Dimension dim2 = buttonBox.getPreferredSize();
@@ -156,6 +156,20 @@ public class JAddOnDialog extends JDialog {
         box.add(Box.createGlue());
         box.add(closeButton);
         box.add(Box.createGlue());
+        
+        JButton button = new JButton("?");
+        button.setToolTipText(AddOnManager.getAddOnUserDir() + " " + AddOnManager.getAddOnAppDir());
+        button.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		JOptionPane.showMessageDialog(panel, "<html>Add-on are installed in <br><br><em>" + AddOnManager.getAddOnUserDir() + 
+        				"</em><br><br> by you, and are available to you,<br>the user, only.<br>" +
+        				"System wide add-ons are installed in <br><br><em>" + AddOnManager.getAddOnAppDir() + 
+        				"</em><br><br>and are available to all users." +
+        				"<br>(just move the add-on there manually" +
+        				"<br>to make it system wide available).</html>");
+        	}
+        });
+        box.add(button);
         return box;
     }
 
