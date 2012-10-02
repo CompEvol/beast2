@@ -191,9 +191,9 @@ public class Node extends Plugin {
      * Note that changing the list does not affect the topology of the tree.
      */
     public List<Node> getChildren() {
-    	List<Node> children = new ArrayList<Node>();
-    	children.addAll(children);
-    	return children;
+    	List<Node> copyOfChildren = new ArrayList<Node>();
+    	copyOfChildren.addAll(children);
+    	return copyOfChildren;
     }
 
     /**
@@ -253,7 +253,7 @@ public class Node extends Plugin {
     }
 
     public void removeChild(Node child) {
-        child.setParent(null);
+        startEditing();
     	children.remove(child);
     }
     
