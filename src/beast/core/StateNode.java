@@ -193,7 +193,7 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      * @param operator
      */
     public void startEditing(final Operator operator) {
-    	assert (isCalledFromOperator(5));
+    	assert (isCalledFromOperator(4));
         if (m_bHasStartedEditing) {
             // we are already editing
             return;

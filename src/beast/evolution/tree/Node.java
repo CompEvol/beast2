@@ -187,17 +187,13 @@ public class Node extends Plugin {
     }
 
     /**
-     * @return a list of immediate child nodes of this node.
+     * @return a copy of a list of immediate child nodes of this node.
+     * Note that changing the list does not affect the topology of the tree.
      */
     public List<Node> getChildren() {
+    	List<Node> children = new ArrayList<Node>();
+    	children.addAll(children);
     	return children;
-//        if (isLeaf()) return Collections.emptyList();
-//
-//        List<Node> children = new ArrayList<Node>();
-//        if (getLeft() != null) children.add(getLeft());
-//        if (getRight() != null) children.add(getRight());
-//
-//        return children;
     }
 
     /**
@@ -256,9 +252,14 @@ public class Node extends Plugin {
         //return getLeft() == null && getRight() == null;
     }
 
+    public void removeChild(Node child) {
+        child.setParent(null);
+    	children.remove(child);
+    }
+    
     public void addChild(Node child) {
-    	children.add(child);
         child.setParent(this);
+    	children.add(child);
 //        if (getLeft() == null) {
 //            setLeft(child);
 //            child.setParent(this);

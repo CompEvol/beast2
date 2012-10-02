@@ -44,6 +44,12 @@
 	<state>
 	    <stateNode idref='tree'/>
 	    <stateNode idref='birthRate'/>
+	    <stateNode id='tree-test-single-child-parsing' spec='beast.util.TreeParser' singlechild='true' newick='((A:1.0):2,C:3);' >
+			<taxonset spec='beast.evolution.alignment.TaxonSet'>
+				<taxon spec='beast.evolution.alignment.Taxon' id='A'/>
+				<taxon spec='beast.evolution.alignment.Taxon' id='C'/>
+			</taxonset>
+		</stateNode>
 	</state>
 
 	<distribution spec='CompoundDistribution'>

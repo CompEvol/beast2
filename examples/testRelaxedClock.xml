@@ -122,7 +122,7 @@
             <tree idref="tree"/>
         </operator>
 
-        <logger logEvery="10000" fileName="test.$(seed).log">
+        <logger logEvery="1000" fileName="test.$(seed).log">
 	    <model idref='posterior'/>
             <log idref="coalescent"/>
             <log idref="likelihood"/>
@@ -135,7 +135,7 @@
             <log idref="rateCategories"/>
             <log idref="posterior"/>
         </logger>
-        <logger logEvery="10000" fileName="test.$(seed).trees" mode='tree'>
+        <logger logEvery="1000" fileName="test.$(seed).trees" mode='tree'>
 			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>
 				<branchratemodel idref='branchRates'/>
 			</log>
@@ -150,7 +150,7 @@
             <log idref="popSize"/>
             <log idref="hky.kappa"/>
             <log idref="ucld.stdev"/>
-            <log idref="rateCategories"/>
+            <!--log idref="rateCategories"/-->
             <log idref="posterior"/>
         </logger>
     </run>
