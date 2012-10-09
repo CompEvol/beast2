@@ -73,7 +73,9 @@ public class NexusParser {
                     m_alignment.setID(fileName);
                 } else if (sStr.toLowerCase().matches("^\\s*begin\\s+calibration;\\s*$")) {
                     m_traitSet = parseCalibrationsBlock(fin);
-                } else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$")) {
+                } else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$") || 
+                		sStr.toLowerCase().matches("^\\s*begin\\s+sets;\\s*$") || 
+                		sStr.toLowerCase().matches("^\\s*begin\\s+mrbayes;\\s*$")) {
                     parseAssumptionsBlock(fin);
                 } else if (sStr.toLowerCase().matches("^\\s*begin\\s+taxa;\\s*$")) {
                     parseTaxaBlock(fin);

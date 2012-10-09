@@ -65,6 +65,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under which node heights (derived from lengths) are set to zero. Default=0.", 0.0);
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
     public Input<Boolean> adjustTipHeightsWhenMissingDateTraitsInput = new Input<Boolean>("adjustTipHeights", "flag to indicate if tipHeights shall be adjusted when date traits missing. Default=true.", true);
+	public Input<Double> scale = new Input<Double>("scale", "scale used to multiply node heights during parsing." +
+			"Useful for importing starting from external programs, for instance, RaxML rooted using Path-o-gen.", 1.0);
 
 
     boolean createUnrecognizedTaxa = false;
@@ -229,7 +231,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
     double convertLengthToHeight(Node node, double fHeight) {
         double fLength = node.getHeight();
-        node.setHeight(fHeight - fLength);
+        node.setHeight((fHeight - fLength) * scale.get());
         if (node.isLeaf()) {
             return node.getHeight();
         } else {
