@@ -308,7 +308,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * Recalculates all the intervals for the given beast.tree.
      */
     @SuppressWarnings("unchecked")
-    private void calculateIntervals() {
+    protected void calculateIntervals() {
         Tree tree = m_tree.get();
 
         final int nodeCount = tree.getNodeCount();
@@ -419,12 +419,12 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         intervalsKnown = true;
     }
 
-    private void addLineage(int interval, Node node) {
+    protected void addLineage(int interval, Node node) {
         if (lineagesAdded[interval] == null) lineagesAdded[interval] = new ArrayList<Node>();
         lineagesAdded[interval].add(node);
     }
 
-    private void removeLineage(int interval, Node node) {
+    protected void removeLineage(int interval, Node node) {
         if (lineagesRemoved[interval] == null) lineagesRemoved[interval] = new ArrayList<Node>();
         lineagesRemoved[interval].add(node);
     }
@@ -444,7 +444,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * @param times       the times of the nodes in the beast.tree
      * @param childCounts the number of children of each node
      */
-    private static void collectTimes(Tree tree, double[] times, int[] childCounts) {
+    protected static void collectTimes(Tree tree, double[] times, int[] childCounts) {
         Node[] nodes = tree.getNodesAsArray();
         for (int i = 0; i < nodes.length; i++) {
             Node node = nodes[i];
@@ -461,29 +461,29 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     /**
      * The widths of the intervals.
      */
-    private double[] intervals;
-    private double[] storedIntervals;
+    protected double[] intervals;
+    protected double[] storedIntervals;
 
     /**
      * The number of uncoalesced lineages within a particular interval.
      */
-    private int[] lineageCounts;
-    private int[] storedLineageCounts;
+    protected int[] lineageCounts;
+    protected int[] storedLineageCounts;
 
     /**
      * The lineages in each interval (stored by node ref).
      */
-    private List<Node>[] lineagesAdded;
-    private List<Node>[] lineagesRemoved;
+    protected List<Node>[] lineagesAdded;
+    protected List<Node>[] lineagesRemoved;
 //    private List<Node>[] lineages;
 
-    private int intervalCount = 0;
-    private int storedIntervalCount = 0;
+    protected int intervalCount = 0;
+    protected int storedIntervalCount = 0;
 
     /**
      * are the intervals known?
      */
-    private boolean intervalsKnown = false;
+    protected boolean intervalsKnown = false;
 
-    private double multifurcationLimit = -1.0;
+    protected double multifurcationLimit = -1.0;
 }
