@@ -1539,7 +1539,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * @return
 	 * @throws Exception
 	 */
-	static public Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, PartitionContext partitionContext, BeautiDoc doc)
+	static public Plugin deepCopyPlugin(Plugin plugin, Plugin parent, MCMC mcmc, 
+			PartitionContext partitionContext, BeautiDoc doc, List<Plugin> tabuList)
 			throws Exception {
 		/** tabu = list of plugins that should not be copied **/
 		Set<Plugin> tabu = new HashSet<Plugin>();
@@ -1566,6 +1567,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				tabu.add(node);
 			}
 		}
+		if (tabuList != null) {
+			tabu.addAll(tabuList);
+		}
 
 		// find predecessors of plugin to be copied
 		List<Plugin> predecessors = new ArrayList<Plugin>();
@@ -1582,13 +1586,14 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				ancestors.addAll(ancestors2);
 			} else if (plugin2 instanceof Alignment || plugin2 instanceof FilteredAlignment) {
 				for (Plugin output : plugin2.outputs) {
-					Set<Plugin> ancestors2 = new HashSet<Plugin>();
-					collectAncestors(output, ancestors2, tabu);
-					ancestors.addAll(ancestors2);
+					if (!tabu.contains(output)) {
+						Set<Plugin> ancestors2 = new HashSet<Plugin>();
+						collectAncestors(output, ancestors2, tabu);
+						ancestors.addAll(ancestors2);
+					}
 				}
 			}
-		}
-		
+		}		
 		
 //		System.out.print(Arrays.toString(predecessors.toArray()));
 //		for (Plugin p : ancestors) {
@@ -1628,7 +1633,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		// set all inputs of copied plugins + outputs to tabu
 		for (Plugin plugin2 : ancestors) {
 			String id = plugin2.getID();
-			System.err.println("Processing: " + id);
+			System.err.println("Processin: " + id);
 			Plugin copy = copySet.get(id);
 			// set inputs
 			for (Input<?> input : plugin2.listInputs()) {
@@ -1660,7 +1665,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 				if (tabu.contains(output) && output != parent) {
 					Plugin output2 = getCopyValue(output, copySet, partitionContext, doc);;
 					for (Input<?> input : output.listInputs()) {
-						if (input.get() instanceof List) {
+						// do not add state node initialisers automatically
+						if (input.get() instanceof List &&
+							// do not update state node initialisers
+							!(tabu.contains(output2) && input.getName().equals("init"))) {
 							List<?> list = (List<?>) input.get();
 							if (list.contains(plugin2)) {
 								output2.setInputValue(input.getName(), copy);
@@ -1698,11 +1706,16 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			values.remove(sorted.get(sorted.size() - 1));
 		}
 		// initialise copied plugins
+		Set<Plugin> done = new HashSet<Plugin>();
 		for (Plugin copy : sorted) {
 			try {
-				copy.initAndValidate();
+				if (!done.contains(copy)) {
+					copy.initAndValidate();
+					done.add(copy);
+				}
 			} catch (Exception e) {
 				// ignore
+				System.err.print(e.getMessage());
 			}
 			if (doc != null) {
 				doc.addPlugin(copy);
@@ -2002,7 +2015,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	
 	public Plugin getUnlinkCandidate(Input<?> input, Plugin parent) throws Exception {
 		PartitionContext context = getContextFor(parent);
-		Plugin plugin = deepCopyPlugin((Plugin) input.get(), parent, (MCMC) mcmc.get(), context, this);
+		Plugin plugin = deepCopyPlugin((Plugin) input.get(), parent, (MCMC) mcmc.get(), context, this, null);
 		return plugin;
 	}
 	

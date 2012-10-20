@@ -348,7 +348,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (siteModel != likelihoods[iRow].m_pSiteModel.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin(likelihoods[iRow].m_pSiteModel.get(),
-							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc);
+							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
 			SiteModel.Base target = this.likelihoods[iRow].m_pSiteModel.get();
@@ -374,7 +374,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (clockModel != likelihoods[iRow].m_pBranchRateModel.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[iRow].m_pBranchRateModel.get(),
-							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc);
+							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
 			// make sure that *if* the clock model has a tree as input, it is
@@ -409,7 +409,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (tree != likelihoods[iRow].m_tree.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					tree = (Tree) BeautiDoc.deepCopyPlugin(likelihoods[iRow].m_tree.get(), likelihoods[iRow],
-							(MCMC) doc.mcmc.get(), context, doc);
+							(MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
 			// sanity check: make sure taxon sets are compatible
