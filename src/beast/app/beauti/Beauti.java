@@ -731,7 +731,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 					if (template.getName().toLowerCase().endsWith(".xml")) {
 						try {
 							String sXML2 = BeautiDoc.load(template.getAbsolutePath());
-							if (sXML2.contains("<mergepoint ")) {
+							if (sXML2.contains("templateinfo=")) {
 								actions.add(new TemplateAction(template));
 							}
 						} catch (Exception e) {

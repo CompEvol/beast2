@@ -1906,7 +1906,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					return null;
 				}
 			}
-		return null;
+		return new PartitionContext(sPartition);
 	}
 
 

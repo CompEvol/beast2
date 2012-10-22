@@ -323,7 +323,7 @@
 	        <stateNode idref='popSize'/> 
 	        <stateNode idref='popSizeTop'/> 
 	        <stateNode idref='Tree.t:Species'/> 
-	        <stateNode idref='birthRate.Species'/> 
+	        <stateNode idref='birthRate.t:Species'/> 
 	        <stateNode idref='popMean'/> 
         </state>
 
@@ -339,10 +339,10 @@
 			</distribution>
             <distribution spec="CompoundDistribution" id="prior">
 			    <!-- species tree priors -->
-		        <distribution id="YuleModel.Species" spec="speciation.YuleModel" tree='@Tree.t:Species'>
-		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.Species" value='213.2021' lower='0' upper='10000' />
+		        <distribution id="YuleModel.t:Species" spec="speciation.YuleModel" tree='@Tree.t:Species'>
+		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.t:Species" value='213.2021' lower='0' upper='10000' />
 		        </distribution>
-	            <distribution id='YuleBirthRatePrior.Species' spec='Prior' x='@birthRate.Species'>
+	            <distribution id='YuleBirthRatePrior.t:Species' spec='Prior' x='@birthRate.t:Species'>
 		             <distr spec="beast.math.distributions.OneOnX"/>
 		        </distribution>
 	            <distribution id='popMean.prior' spec='Prior' x='@popMean'>
@@ -359,14 +359,14 @@
 	<operator degreesOfFreedom="1" id="popSizeTopScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSizeTop" weight="5.0"/>
 
 	<operator id="updown.all" spec='UpDownOperator' scaleFactor="0.75" weight="20">
-	  <up idref="birthRate.Species"/>
+	  <up idref="birthRate.t:Species"/>
 	  <down idref="popMean"/>
 	  <down idref="popSize"/>
 
 	  <down idref="Tree.t:Species"/>
 	</operator>
 	
-	<operator id='YuleBirthRateScaler.Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.Species"/>
+	<operator id='YuleBirthRateScaler.t:Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:Species"/>
 
 	<operator id='popMeanScale' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popMean"/>
 
@@ -376,8 +376,8 @@
             <log idref="likelihood"/>
             <log idref="prior"/>
 			<log idref="speciescoalescent"/>
-			<log idref="birthRate.Species"/>
-			<log idref="YuleModel.Species"/>
+			<log idref="birthRate.t:Species"/>
+			<log idref="YuleModel.t:Species"/>
             <log id='TreeHeight.Species' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:Species'/>
         </logger>
 
