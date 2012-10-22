@@ -130,6 +130,29 @@ public class AddOnManager {
                     if (f.exists()) {
                         addOn.set(3, "installed");
                     }
+                    f = new File(sDir + "/" + sAddOnName + "/version.xml");
+                    if (f.exists()) {
+                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                        Document doc = factory.newDocumentBuilder().parse(f);
+                        doc.normalize();
+                        // get name and version of add-on
+                        Element addon = doc.getDocumentElement();
+                        String sAddonVersion = addon.getAttribute("version");
+                        addOn.add(sAddonVersion);
+                        NodeList nodes = doc.getElementsByTagName("depends");
+                        String dependencies = "";
+                        for (int j = 0; j < nodes.getLength(); j++) {
+                            Element dependson = (Element) nodes.item(j);
+                            String s = dependson.getAttribute("on");
+                            if (!s.equals("beast2")) {
+                            	dependencies +=  s + ", ";
+                            }
+                        }
+                        if (dependencies.length() > 2) {
+                        	dependencies = dependencies.substring(0, dependencies.length() - 2);
+                        }
+                        addOn.add(dependencies);
+                    }
                 }
                 addOns.add(addOn);
             }
@@ -424,8 +447,8 @@ public class AddOnManager {
      *
      * @param sDirs
      */
-    private static void checkDependencies(List<String> sDirs) {
 
+    private static void checkDependencies(List<String> sDirs) {
         class AddonDependency {
             String addon;
             String dependson;
@@ -815,6 +838,19 @@ public class AddOnManager {
         System.exit(0);
     }
 
+    public static String formatAddOnInfo(List<String> addOn) {
+    	StringBuffer buf = new StringBuffer();
+    	buf.append(addOn.get(2) + " (");
+        if (addOn.size() > 4) {
+        	buf.append("v" + addOn.get(4) + " " + addOn.get(3));
+        	buf.append((addOn.get(5).length() > 0 ? " depends on " + addOn.get(5) : ""));
+        } else {
+        	buf.append(addOn.get(3));
+        }
+        buf.append(")" + ": " + addOn.get(0).trim());
+        return buf.toString();
+    }
+    
     public static void main(String[] args) {
         try {
             Arguments arguments = new Arguments(
@@ -847,7 +883,7 @@ public class AddOnManager {
             if (arguments.hasOption("list")) {
                 System.out.println("Name : status : Description ");
                 for (List<String> addOn : addOns) {
-                    System.out.println(addOn.get(2) + " (" + addOn.get(3) + ")" + ": " + addOn.get(0));
+                    System.out.println(formatAddOnInfo(addOn));
                 }
             }
 

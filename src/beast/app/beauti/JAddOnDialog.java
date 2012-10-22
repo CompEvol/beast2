@@ -67,6 +67,7 @@ public class JAddOnDialog extends JDialog {
 
         AddOn(List<String> list) {
             sAddOnDescription = list.get(0);
+            sAddOnDescription = AddOnManager.formatAddOnInfo(list);            
             sAddOnURL = list.get(1);
             bIsInstalled = false;
             List<String> sBeastDirs = AddOnManager.getBeastDirectories();
@@ -80,9 +81,6 @@ public class JAddOnDialog extends JDialog {
         }
 
         public String toString() {
-            if (bIsInstalled) {
-                return sAddOnDescription + "(installed)";
-            }
             return sAddOnDescription;
         }
     }
@@ -103,7 +101,7 @@ public class JAddOnDialog extends JDialog {
         model.clear();
         try {
             List<List<String>> addOns = AddOnManager.getAddOns();
-            for (List<String> addOn : addOns) {
+            for (List<String> addOn : addOns) {            	
                 AddOn addOnObject = new AddOn(addOn);
                 model.addElement(addOnObject);
             }
