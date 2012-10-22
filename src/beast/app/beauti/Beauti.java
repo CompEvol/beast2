@@ -11,6 +11,10 @@ import beast.util.AddOnManager;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -666,12 +670,29 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		private static final long serialVersionUID = 1L;
 
 		String m_sFileName;
+		String templateInfo;
 
 		public TemplateAction(File file) {
 			super("xx");
 			m_sFileName = file.getAbsolutePath();
 			String sName = m_sFileName.substring(m_sFileName.lastIndexOf("/") + 1, m_sFileName.length() - 4);
 			putValue(Action.NAME, sName);
+			try {
+	            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	            Document doc = factory.newDocumentBuilder().parse(file);
+	            doc.normalize();
+	            // get name and version of add-on
+	            Element template = doc.getDocumentElement();
+	            templateInfo = template.getAttribute("templateinfo");
+	            if (templateInfo == null || templateInfo.length() == 0) {
+	            	templateInfo = "switch to " + sName + " template";
+	            }
+	            templateInfo = "<html>" + templateInfo + "</html>";
+	            putValue(Action.SHORT_DESCRIPTION, templateInfo);
+	            putValue(Action.LONG_DESCRIPTION, templateInfo);
+			} catch (Exception e) {
+				// ignore
+			}
 		}
 
 		@Override

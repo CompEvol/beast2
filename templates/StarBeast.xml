@@ -1,5 +1,7 @@
 <beast version='2.0'
-       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'
+	templateinfo='*BEAST species tree reconstruction from multiple-genes&lt;br>(calibrations supported, but tip-dates are not)'>
+
 
 <map name='connect' reserved='true'>beast.app.beauti.BeautiConnector</map>
 <map name='subtemplate' reserved='true'>beast.app.beauti.BeautiSubTemplate</map>
