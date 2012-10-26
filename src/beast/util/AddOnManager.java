@@ -52,6 +52,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import beast.app.beastapp.BeastVersion;
 import beast.app.util.Arguments;
 import beast.app.util.Utils;
 import beast.evolution.alignment.Alignment;
@@ -449,23 +450,79 @@ public class AddOnManager {
     } // loadExternalJars
 
 
-    /**
+    /** Parse version string, assume it is of the form 1.2.3
+     * returns version where each sub-version is divided by 100,
+     * so 2.0 -> return 2
+     * 2.1 return 2.01
+     * 2.2.3 return 2.0103
+     * Letters are ignored, so 
+     * 2.0.e -> 2.0
+     * 2.x.1 -> 2.0001
+     * @return
+     */
+	public static double parseVersion(String sVersion) { 
+		// is of the form 1.2.3
+		String [] strs = sVersion.split("\\.");
+		double version = 0;
+		double divider = 1.0;
+		for (int i = 0; i < strs.length; i++) {
+			try {
+				version += Double.parseDouble(strs[i]) / divider;
+				divider = divider * 100.0;
+			} catch (NumberFormatException e) {
+				// ignore
+			}
+		}
+		return version;
+	}
+
+	/** inverse of parseVersion **/
+	public static String formatVersion(double version) {
+		if (Double.isInfinite(version)) {
+			return " any number";
+		}
+		String str = "" + (int) (version + 0.000001);
+		version = version - (int) (version + 0.000001);
+		while (version > 0.00001) {
+			version *= 100;
+			str += "." + (int) (version + 0.00001);
+			version = version - (int) (version + 0.00001);
+		}
+		return str;
+	}
+	
+	/**
      * go through list of directories collecting version and dependency information for
      * all add-ons. Version and dependency info is stored in a file
      *
      * @param sDirs
      */
-
     private static void checkDependencies(List<String> sDirs) {
         class AddonDependency {
             String addon;
             String dependson;
             Double atLeast;
             Double atMost;
+            
+			public void setAtLest(String sAtLeast) {
+				if (sAtLeast == null || sAtLeast.length() == 0) {
+					atLeast = 0.0;
+				} else {
+					atLeast = parseVersion(sAtLeast);
+				}
+			}
+			public void setAtMost(String sAtMost) {
+				if (sAtMost == null || sAtMost.length() == 0) {
+					atMost = Double.POSITIVE_INFINITY;
+				} else {
+					atMost = parseVersion(sAtMost);
+				}
+			}			
         }
 
         HashMap<String, Double> addonVersion = new HashMap<String, Double>();
-        addonVersion.put("beast2", 2.0);
+        BeastVersion beastVersion = new BeastVersion();
+        addonVersion.put("beast2", parseVersion(beastVersion.getVersion()));
         List<AddonDependency> dependencies = new ArrayList<AddonDependency>();
 
         // gather version and dependency info for all add-ons
@@ -480,7 +537,7 @@ public class AddOnManager {
                     Element addon = doc.getDocumentElement();
                     String sAddon = addon.getAttribute("name");
                     String sAddonVersion = addon.getAttribute("version");
-                    addonVersion.put(sAddon, Double.parseDouble(sAddonVersion));
+                    addonVersion.put(sAddon, parseVersion(sAddonVersion));
 
                     // get dependencies of add-n
                     NodeList nodes = doc.getElementsByTagName("depends");
@@ -490,9 +547,9 @@ public class AddOnManager {
                         dep.addon = sAddon;
                         dep.dependson = dependson.getAttribute("on");
                         String sAtLeast = dependson.getAttribute("atleast");
+                        dep.setAtLest(sAtLeast);
                         String sAtMost = dependson.getAttribute("atmost");
-                        dep.atLeast = (sAtLeast.length() > 0 ? Double.parseDouble(sAtLeast) : 0);
-                        dep.atMost = (sAtMost.length() > 0 ? Double.parseDouble(sAtMost) : Double.MAX_VALUE);
+                        dep.setAtMost(sAtMost);
                         dependencies.add(dep);
                     }
 
@@ -510,7 +567,7 @@ public class AddOnManager {
                         "Either uninstall " + dep.addon + " or install the " + dep.dependson + " add on.");
             } else if (version > dep.atMost || version < dep.atLeast) {
             	warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
-                        dep.atLeast + " to " + dep.atMost + " but " + dep.dependson + " has version " + version + "\n" +
+            			formatVersion(dep.atLeast) + " to " + formatVersion(dep.atMost) + " but " + dep.dependson + " has version " + formatVersion(version) + "\n" +
                         "Either uninstall " + dep.addon + " or install the correct version of " + dep.dependson + ".");
             }
         }
@@ -846,6 +903,7 @@ public class AddOnManager {
         System.exit(0);
     }
 
+    /** pretty format add-on information in list of string form as produced by getAddOns() **/
     public static String formatAddOnInfo(List<String> addOn) {
     	StringBuffer buf = new StringBuffer();
     	buf.append(addOn.get(2));
