@@ -125,7 +125,7 @@ public class BeautiTest extends TestCase {
         	PrintStream out = new PrintStream(sTemplateFile);
         	out.print(template);
         	out.close();
-            doc.processTemplate("/tmp/x.xml");
+            doc.processTemplate(sTemplateFile);
         } catch (Exception e) {
             assertEquals(true, false);
         }
