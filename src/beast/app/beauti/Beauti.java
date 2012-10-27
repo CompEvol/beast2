@@ -229,10 +229,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		} // c'tor
 
 		public void actionPerformed(ActionEvent ae) {
-			doc.newAnalysis();
-			a_save.setEnabled(false);
-			a_saveas.setEnabled(false);
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			main2(new String[0]);
+//			doc.newAnalysis();
+//			a_save.setEnabled(false);
+//			a_saveas.setEnabled(false);
+//			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
 
@@ -807,6 +808,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		isInitialising = false;
 	}
 
+	/** record number of frames. If the last frame is closed, exit the app. **/
+	static int BEAUtiIntances = 0;
+	
 	public static Beauti main2(String[] args) {
 		try {
 			AddOnManager.loadExternalJars();
@@ -949,16 +953,23 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
 			frame.add(beauti);
 			frame.setSize(1024, 768);
+			frame.setLocation(BEAUtiIntances * 10, BEAUtiIntances * 10);
 			frame.setVisible(true);
 
 			// check file needs to be save on closing main frame
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			BEAUtiIntances++;
 			frame.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
 					if (!beauti.quit()) {
 						return;
 					}
-					System.exit(0);
+					JFrame frame = (JFrame) e.getSource();
+					frame.dispose();
+					BEAUtiIntances--;
+					if (BEAUtiIntances == 0) {
+						System.exit(0);
+					}
 				}
 			});
 			
