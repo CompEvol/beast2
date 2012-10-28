@@ -134,6 +134,9 @@ public class InputEditorFactory {
             input.determineClass(plugin);
         }
         Class<?> inputClass = input.getType();
+        if (inputClass == null) {
+        	return null;
+        }
         if (listItemNr >= 0) {
         	inputClass = ((List<?>)input.get()).get(listItemNr).getClass();
         }

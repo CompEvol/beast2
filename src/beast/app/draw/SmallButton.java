@@ -1,7 +1,9 @@
 package beast.app.draw;
 
 import javax.swing.*;
+
 import java.awt.*;
+import java.net.URL;
 
 /**
  * @author Alexei Drummond
@@ -12,6 +14,13 @@ public class SmallButton extends JButton {
     
     public SmallButton(String label, boolean isEnabled) {
         this(label, isEnabled, ButtonType.square);
+        if (label.equals("e")) {
+        	setLabel("");
+            URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "edit.png");
+            Icon icon = new ImageIcon(url);
+        	setIcon(icon);
+            setBorder(BorderFactory.createEmptyBorder());
+        }
     }
 
     public SmallButton(String label, boolean isEnabled, ButtonType buttonType) {

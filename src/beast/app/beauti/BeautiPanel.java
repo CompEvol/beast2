@@ -224,7 +224,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         if (centralComponent != null) {
             remove(centralComponent);
         }
-        if (input != null && input.get() != null) {
+        if (input != null && input.get() != null && input.getType() != null) {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
             InputEditor inputEditor = doc.getInpuEditorFactory().createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
             
