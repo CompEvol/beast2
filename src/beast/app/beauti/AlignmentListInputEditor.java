@@ -66,6 +66,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	Object[][] tableData;
 	JTable table;
 	JTextField nameEditor;
+	List<JButton> linkButtons;
+	List<JButton> unlinkButtons;
+	JButton splitButton; 
+	JButton delButton;
 
 	// public AlignmentListInputEditor() {}
 	public AlignmentListInputEditor(BeautiDoc doc) {
@@ -100,6 +104,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			alignments = new ArrayList<Alignment>();
 			alignments.add((Alignment) input.get());
 		}
+		linkButtons = new ArrayList<JButton>();
+		unlinkButtons = new ArrayList<JButton>();
 		nPartitions = alignments.size();
 		// super.init(input, plugin, bExpandOption, false);
 		Box box = Box.createVerticalBox();
@@ -123,7 +129,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		buttonBox.add(m_addButton);
 		buttonBox.add(Box.createHorizontalStrut(5));
 
-		JButton delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
+		delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
 		delButton.setName("-");
 		delButton.setToolTipText("Delete selected items from the list");
 		delButton.addActionListener(new ActionListener() {
@@ -138,7 +144,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		buttonBox.add(delButton);
 		buttonBox.add(Box.createHorizontalStrut(5));
 
-		JButton splitButton = new JButton("Split");
+		splitButton = new JButton("Split");
 		splitButton.setName("Split");
 		splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
 		splitButton.addActionListener(new ActionListener() {
@@ -151,7 +157,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		buttonBox.add(Box.createHorizontalGlue());
 		box.add(buttonBox);
 		add(box);
-
+		
+		updateStatus();
 	}
 
 	protected Component createButtonBox() {
@@ -163,7 +170,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(Box.createHorizontalGlue());
 		return box;
 	}
-
+	
 	private void addLinkUnlinkPair(Box box, String sLabel) {
 		JButton linkSModelButton = new JButton("Link " + sLabel);
 		linkSModelButton.setName("Link " + sLabel);
@@ -192,6 +199,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(unlinkSModelButton);
 		unlinkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
 		box.add(Box.createHorizontalGlue());
+		
+		linkButtons.add(linkSModelButton);
+		unlinkButtons.add(unlinkSModelButton);
 	}
 
 	private int columnLabelToNr(String sColumn) {
@@ -244,13 +254,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	int[] getTableRowSelection() {
 		int[] nSelected = table.getSelectedRows();
-		if (nSelected.length == 0) {
-			// select all
-			nSelected = new int[nPartitions];
-			for (int i = 0; i < nPartitions; i++) {
-				nSelected[i] = i;
-			}
-		}
+//		if (nSelected.length == 0) {
+//			// select all
+//			nSelected = new int[nPartitions];
+//			for (int i = 0; i < nPartitions; i++) {
+//				nSelected[i] = i;
+//			}
+//		}
 		return nSelected;
 	}
 
@@ -487,6 +497,8 @@ System.err.println("needsRePartition = " + needsRePartition);
 			initTableData();
 			setUpComboBoxes();
 		}
+		
+		updateStatus();
 	}
 
 	private PartitionContext getPartitionContext(int iRow) {
@@ -567,6 +579,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				} else {
 					comp.setBackground(Color.white);
 				}
+				updateStatus();
 				return comp;
 			}
 		};
@@ -693,6 +706,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
+					updateStatus();
 				}
 			}
 		});
@@ -1007,5 +1021,23 @@ System.err.println("needsRePartition = " + needsRePartition);
 		return selectedPlugins;
 		
 	} // pluginSelector
+	
+	
+	/** enable/disable buttons, etc **/
+	void updateStatus() {
+		boolean status = (alignments.size() > 1);
+		if (alignments.size() >= 2 && getTableRowSelection().length == 0) {
+			status = false;
+		}
+		for (JButton button : linkButtons) {
+			button.setEnabled(status);
+		}
+		for (JButton button : unlinkButtons) {
+			button.setEnabled(status);
+		}
+		status = (getTableRowSelection().length > 0);
+		splitButton.setEnabled(status);
+		delButton.setEnabled(status);
+	}
 
 } // class AlignmentListInputEditor

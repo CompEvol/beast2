@@ -1,19 +1,15 @@
 package beast.app.beauti;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -90,15 +86,21 @@ public class GuessPatternDialog extends JDialog {
 	JCheckBox chckbxAddFixedValue;
 	JCheckBox chckbxUnlessLessThan;
 	JLabel lblThenAdd;
+	JLabel lblAndTakeGroups;
+	JButton btnBrowse;
+	private JSeparator separator_2;
+	private JSeparator separator_3;
+	private JSeparator separator_4;
+	private JSeparator separator_5;
 	
 	public GuessPatternDialog(Component parent, String pattern) {
 		m_parent = parent;
 		this.pattern = pattern;
 		guessPanel = new JPanel();
 		GridBagLayout gbl_guessPanel = new GridBagLayout();
-		gbl_guessPanel.rowHeights = new int[]{0, 0, 20, 0, 20, 0, 20, 0, 29, 0, 0, 0};
+		gbl_guessPanel.rowHeights = new int[]{0, 0, 0, 20, 0, 0, 20, 0, 0, 20, 0, 29, 0, 0, 0, 0};
 		gbl_guessPanel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
-		gbl_guessPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+		gbl_guessPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		gbl_guessPanel.columnWeights = new double[] { 1.0, 1.0, 1.0, 0.0, 1.0, 0.0 };
 		guessPanel.setLayout(gbl_guessPanel);
 
@@ -147,7 +149,7 @@ public class GuessPatternDialog extends JDialog {
 				gbc2.anchor = GridBagConstraints.WEST;
 				gbc2.gridwidth = 4;
 				gbc2.gridx = 1;
-				gbc2.gridy = 5;
+				gbc2.gridy = 7;
 				guessPanel.add(textRegExp, gbc2);
 				textRegExp.getDocument().addDocumentListener(new DocumentListener() {
 					@Override
@@ -165,25 +167,26 @@ public class GuessPatternDialog extends JDialog {
 						b3.setSelected(true);
 					}
 				});
-
-		JSeparator separator = new JSeparator();
-		separator.setBorder(BorderFactory.createLineBorder(Color.black, 5));
-		GridBagConstraints gbc_separator = new GridBagConstraints();
-		gbc_separator.gridwidth = 5;
-		gbc_separator.insets = new Insets(0, 0, 5, 5);
-		gbc_separator.gridx = 0;
-		gbc_separator.gridy = 6;
-		guessPanel.add(separator, gbc_separator);
+		
+		separator_4 = new JSeparator();
+		separator_4.setPreferredSize(new Dimension(5,1));
+		GridBagConstraints gbc_separator_4 = new GridBagConstraints();
+		gbc_separator_4.gridwidth = 5;
+		gbc_separator_4.insets = new Insets(5, 0, 15, 5);
+		gbc_separator_4.gridx = 0;
+		gbc_separator_4.gridy = 8;
+		gbc_separator_4.fill = GridBagConstraints.HORIZONTAL;
+		guessPanel.add(separator_4, gbc_separator_4);
 
 		GridBagConstraints gbc_rdbtnReadFromFile = new GridBagConstraints();
 		gbc_rdbtnReadFromFile.anchor = GridBagConstraints.WEST;
 		gbc_rdbtnReadFromFile.insets = new Insets(0, 0, 5, 5);
 		gbc_rdbtnReadFromFile.gridx = 0;
-		gbc_rdbtnReadFromFile.gridy = 7;
+		gbc_rdbtnReadFromFile.gridy = 10;
 		guessPanel.add(b4, gbc_rdbtnReadFromFile);
 
-		JButton btnReadFromFile = new JButton("Browse");
-		btnReadFromFile.addActionListener(new ActionListener() {
+		btnBrowse = new JButton("Browse");
+		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				File file = Utils.getLoadFile("Load trait from file", new File(Beauti.g_sDir), "Select trait file", "dat","txt");
 				if (file != null) {
@@ -201,14 +204,14 @@ public class GuessPatternDialog extends JDialog {
 				gbc_txtFile.insets = new Insets(0, 0, 5, 5);
 				gbc_txtFile.fill = GridBagConstraints.HORIZONTAL;
 				gbc_txtFile.gridx = 1;
-				gbc_txtFile.gridy = 7;
+				gbc_txtFile.gridy = 10;
 				guessPanel.add(txtFile, gbc_txtFile);
 				txtFile.setColumns(10);
 		GridBagConstraints gbc_btnReadFromFile = new GridBagConstraints();
 		gbc_btnReadFromFile.insets = new Insets(0, 0, 5, 5);
 		gbc_btnReadFromFile.gridx = 3;
-		gbc_btnReadFromFile.gridy = 7;
-		guessPanel.add(btnReadFromFile, gbc_btnReadFromFile);
+		gbc_btnReadFromFile.gridy = 10;
+		guessPanel.add(btnBrowse, gbc_btnReadFromFile);
 
 		JButton btnHelp = new JButton("?");
 		btnHelp.setToolTipText("Show format of trait file");
@@ -220,17 +223,9 @@ public class GuessPatternDialog extends JDialog {
 		GridBagConstraints gbc_btnHelp = new GridBagConstraints();
 		gbc_btnHelp.insets = new Insets(0, 0, 5, 5);
 		gbc_btnHelp.gridx = 4;
-		gbc_btnHelp.gridy = 7;
+		gbc_btnHelp.gridy = 10;
 		guessPanel.add(btnHelp, gbc_btnHelp);
 		
-		
-		JSeparator separator_1 = new JSeparator();
-		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
-		gbc_separator_1.gridwidth = 6;
-		gbc_separator_1.insets = new Insets(0, 0, 5, 5);
-		gbc_separator_1.gridx = 0;
-		gbc_separator_1.gridy = 8;
-		guessPanel.add(separator_1, gbc_separator_1);
 		
 		chckbxAddFixedValue = new JCheckBox("Add fixed value");
 		chckbxAddFixedValue.setName("Add fixed value");
@@ -239,11 +234,21 @@ public class GuessPatternDialog extends JDialog {
 				updateFields();
 			}
 		});
+		
+		separator_5 = new JSeparator();
+		separator_5.setPreferredSize(new Dimension(5,1));
+		GridBagConstraints gbc_separator_5 = new GridBagConstraints();
+		gbc_separator_5.gridwidth = 5;
+		gbc_separator_5.insets = new Insets(5, 0, 15, 5);
+		gbc_separator_5.gridx = 0;
+		gbc_separator_5.gridy = 12;
+		gbc_separator_5.fill = GridBagConstraints.HORIZONTAL;
+		guessPanel.add(separator_5, gbc_separator_5);
 		GridBagConstraints gbc_chckbxAddFixedValue = new GridBagConstraints();
 		gbc_chckbxAddFixedValue.anchor = GridBagConstraints.WEST;
 		gbc_chckbxAddFixedValue.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxAddFixedValue.gridx = 0;
-		gbc_chckbxAddFixedValue.gridy = 9;
+		gbc_chckbxAddFixedValue.gridy = 13;
 		guessPanel.add(chckbxAddFixedValue, gbc_chckbxAddFixedValue);
 		
 		textAddValue = new JTextField("1900");
@@ -252,7 +257,7 @@ public class GuessPatternDialog extends JDialog {
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 9;
+		gbc_textField.gridy = 13;
 		guessPanel.add(textAddValue, gbc_textField);
 		textAddValue.setColumns(10);
 		
@@ -267,7 +272,7 @@ public class GuessPatternDialog extends JDialog {
 		gbc_chckbxUnlessLargerThan.anchor = GridBagConstraints.WEST;
 		gbc_chckbxUnlessLargerThan.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxUnlessLargerThan.gridx = 0;
-		gbc_chckbxUnlessLargerThan.gridy = 10;
+		gbc_chckbxUnlessLargerThan.gridy = 14;
 		guessPanel.add(chckbxUnlessLessThan, gbc_chckbxUnlessLargerThan);
 		
 		textUnlessLessThan = new JTextField("13");
@@ -276,7 +281,7 @@ public class GuessPatternDialog extends JDialog {
 		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 10;
+		gbc_textField_1.gridy = 14;
 		guessPanel.add(textUnlessLessThan, gbc_textField_1);
 		textUnlessLessThan.setColumns(10);
 		
@@ -285,7 +290,7 @@ public class GuessPatternDialog extends JDialog {
 		gbc_lblThenAdd.anchor = GridBagConstraints.EAST;
 		gbc_lblThenAdd.insets = new Insets(0, 0, 0, 5);
 		gbc_lblThenAdd.gridx = 0;
-		gbc_lblThenAdd.gridy = 11;
+		gbc_lblThenAdd.gridy = 15;
 		guessPanel.add(lblThenAdd, gbc_lblThenAdd);
 		
 		textThenAdd = new JTextField("2000");
@@ -294,7 +299,7 @@ public class GuessPatternDialog extends JDialog {
 		gbc_textField_2.insets = new Insets(0, 0, 0, 5);
 		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_2.gridx = 1;
-		gbc_textField_2.gridy = 11;
+		gbc_textField_2.gridy = 15;
 		guessPanel.add(textThenAdd, gbc_textField_2);
 		textThenAdd.setColumns(10);
 		
@@ -342,20 +347,24 @@ public class GuessPatternDialog extends JDialog {
 		textSplitChar.setEditable(false);
 		textSplitChar2.setEditable(false);
 		textRegExp.setEditable(false);			
-		combo.setEditable(false);
-		combo_1.setEditable(false);
+		combo.setEnabled(false);
+		combo_1.setEnabled(false);
+		lblAndTakeGroups.setEnabled(false);
+		btnBrowse.setEnabled(false);
 		if (b1.isSelected()) {
 			textSplitChar.setEditable(true);			
-			combo.setEditable(true);
+			combo.setEnabled(true);
 		}
 		if (b2.isSelected()) {
 			textSplitChar2.setEditable(true);			
-			combo_1.setEditable(true);
+			combo_1.setEnabled(true);
+			lblAndTakeGroups.setEnabled(true);
 		}
 		if (b3.isSelected()) {
 			textRegExp.setEditable(true);			
 		}
 		if (b4.isSelected()) {
+			btnBrowse.setEnabled(true);
 			txtFile.setEditable(true);			
 		}
 	}
@@ -399,22 +408,24 @@ public class GuessPatternDialog extends JDialog {
 		gbc_textField.gridy = 1;
 		guessPanel.add(textSplitChar, gbc_textField);
 		textSplitChar.setColumns(2);
+		
+		separator_2 = new JSeparator();
+		separator_2.setPreferredSize(new Dimension(5,1));
+		GridBagConstraints gbc_separator_2 = new GridBagConstraints();
+		gbc_separator_2.gridwidth = 5;
+		gbc_separator_2.insets = new Insets(5, 0, 15, 5);
+		gbc_separator_2.gridx = 0;
+		gbc_separator_2.gridy = 2;
+		gbc_separator_2.fill = GridBagConstraints.HORIZONTAL;
+		guessPanel.add(separator_2, gbc_separator_2);
 
-		JSeparator separator = new JSeparator();
-		GridBagConstraints gbc_separator = new GridBagConstraints();
-		gbc_separator.gridwidth = 6;
-		gbc_separator.insets = new Insets(0, 0, 5, 0);
-		gbc_separator.gridx = 0;
-		gbc_separator.gridy = 2;
-		guessPanel.add(separator, gbc_separator);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(0, 0, 5, 5);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		guessPanel.add(b, gbc);
 	}
-
 	public void createRegExtpBox(JRadioButton b) {
 				
 				textSplitChar2 = new JTextField("_");
@@ -423,16 +434,16 @@ public class GuessPatternDialog extends JDialog {
 				gbc_textField_1.anchor = GridBagConstraints.WEST;
 				gbc_textField_1.insets = new Insets(0, 0, 5, 5);
 				gbc_textField_1.gridx = 1;
-				gbc_textField_1.gridy = 3;
+				gbc_textField_1.gridy = 4;
 				guessPanel.add(textSplitChar2, gbc_textField_1);
 				textSplitChar2.setColumns(2);
 				
-				JLabel lblAndTakeGroups = new JLabel("and take group(s):");
+				lblAndTakeGroups = new JLabel("and take group(s):");
 				GridBagConstraints gbc_lblAndTakeGroups = new GridBagConstraints();
 				gbc_lblAndTakeGroups.gridwidth = 2;
 				gbc_lblAndTakeGroups.insets = new Insets(0, 0, 5, 5);
 				gbc_lblAndTakeGroups.gridx = 2;
-				gbc_lblAndTakeGroups.gridy = 3;
+				gbc_lblAndTakeGroups.gridy = 4;
 				guessPanel.add(lblAndTakeGroups, gbc_lblAndTakeGroups);
 		
 				combo_1 = new JComboBox(new String[] { "1", "2", "3", "4", "1-2", "2-3", "3-4", "1-3", "2-4" });
@@ -441,7 +452,7 @@ public class GuessPatternDialog extends JDialog {
 				gbc_combo_1.anchor = GridBagConstraints.WEST;
 				gbc_combo_1.insets = new Insets(0, 0, 5, 5);
 				gbc_combo_1.gridx = 4;
-				gbc_combo_1.gridy = 3;
+				gbc_combo_1.gridy = 4;
 				guessPanel.add(combo_1, gbc_combo_1);
 				combo_1.addActionListener(new ActionListener() {
 					@Override
@@ -452,19 +463,22 @@ public class GuessPatternDialog extends JDialog {
 						updateFields();
 					}
 				});
+		
+		separator_3 = new JSeparator();
+		separator_3.setPreferredSize(new Dimension(5,1));
+		GridBagConstraints gbc_separator_3 = new GridBagConstraints();
+		gbc_separator_3.gridwidth = 5;
+		gbc_separator_3.insets = new Insets(5, 0, 15, 5);
+		gbc_separator_3.gridx = 0;
+		gbc_separator_3.gridy = 5;
+		gbc_separator_3.fill = GridBagConstraints.HORIZONTAL;
+		guessPanel.add(separator_3, gbc_separator_3);
 
-		JSeparator separator = new JSeparator();
-		GridBagConstraints gbc_separator = new GridBagConstraints();
-		gbc_separator.gridwidth = 6;
-		gbc_separator.insets = new Insets(0, 0, 5, 0);
-		gbc_separator.gridx = 0;
-		gbc_separator.gridy = 4;
-		guessPanel.add(separator, gbc_separator);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(0, 0, 5, 5);
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.gridx = 0;
-		gbc.gridy = 5;
+		gbc.gridy = 7;
 		guessPanel.add(b, gbc);
 	}
 
@@ -480,10 +494,11 @@ public class GuessPatternDialog extends JDialog {
 		dialog.pack();
 		updateFields();
 		dialog.setVisible(true);
+		
+		if (optionPane.getValue() == null || !optionPane.getValue().equals("OK")) {
+			return Status.canceled;
+		}
 
-		// if (optionPane.getValue() == null) {
-		// System.exit(0);
-		// }
 		if (b1.getModel() == group.getSelection()) {
 			String sDelimiter = normalise(textSplitChar.getText());
 			switch (m_location) {
@@ -624,48 +639,5 @@ public class GuessPatternDialog extends JDialog {
             return match;
         }
         return null;
-	}
-	
-	
-	private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
-	    put("^\\d{8}$", "yyyyMMdd");
-	    put("^\\d{1,2}-\\d{1,2}-\\d{4}$", "dd-MM-yyyy");
-	    put("^\\d{4}-\\d{1,2}-\\d{1,2}$", "yyyy-MM-dd");
-	    put("^\\d{1,2}/\\d{1,2}/\\d{4}$", "MM/dd/yyyy");
-	    put("^\\d{4}/\\d{1,2}/\\d{1,2}$", "yyyy/MM/dd");
-	    put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}$", "dd MMM yyyy");
-	    put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}$", "dd MMMM yyyy");
-	    put("^\\d{12}$", "yyyyMMddHHmm");
-	    put("^\\d{8}\\s\\d{4}$", "yyyyMMdd HHmm");
-	    put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}$", "dd-MM-yyyy HH:mm");
-	    put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy-MM-dd HH:mm");
-	    put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}$", "MM/dd/yyyy HH:mm");
-	    put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy/MM/dd HH:mm");
-	    put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMM yyyy HH:mm");
-	    put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMMM yyyy HH:mm");
-	    put("^\\d{14}$", "yyyyMMddHHmmss");
-	    put("^\\d{8}\\s\\d{6}$", "yyyyMMdd HHmmss");
-	    put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd-MM-yyyy HH:mm:ss");
-	    put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss");
-	    put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "MM/dd/yyyy HH:mm:ss");
-	    put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy/MM/dd HH:mm:ss");
-	    put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMM yyyy HH:mm:ss");
-	    put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss");
-	}};
-
-	/**
-	 * Determine SimpleDateFormat pattern matching with the given date string. Returns null if
-	 * format is unknown. You can simply extend DateUtil with more formats if needed.
-	 * @param dateString The date string to determine the SimpleDateFormat pattern for.
-	 * @return The matching SimpleDateFormat pattern, or null if format is unknown.
-	 * @see SimpleDateFormat
-	 */
-	public static String determineDateFormat(String dateString) {
-	    for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {
-	        if (dateString.toLowerCase().matches(regexp)) {
-	            return DATE_FORMAT_REGEXPS.get(regexp);
-	        }
-	    }
-	    return null; // Unknown format.
 	}
 }

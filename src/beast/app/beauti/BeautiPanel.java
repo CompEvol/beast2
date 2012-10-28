@@ -208,6 +208,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
     public void refreshPanel() throws Exception {
         if (doc.alignments.size() == 0) {
+            refreshInputPanel();
             return;
         }
         doc.scrubAll(true, false);

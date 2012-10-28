@@ -120,6 +120,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	public Action a_import = new ActionImport();
 	public Action a_save = new ActionSave();
 	Action a_saveas = new ActionSaveAs();
+	Action a_close = new ActionClose();
 	Action a_quit = new ActionQuit();
 	Action a_viewall = new ActionViewAllPanels();
 
@@ -150,6 +151,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		public void actionPerformed(ActionEvent ae) {
 			if (!doc.getFileName().equals("")) {
 				if (doc.validateModel() != DOC_STATUS.DIRTY) {
+					JOptionPane.showMessageDialog(null, "There is no data to save to file");
 					return;
 				}
 				saveFile(doc.getFileName());
@@ -181,6 +183,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
 	boolean saveAs() {
 		if (doc.validateModel() == DOC_STATUS.NO_DOCUMENT) {
+			JOptionPane.showMessageDialog(null, "There is no data to save to file");
 			return false;
 		}
 		File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(doc.getFileName()), null,
@@ -399,6 +402,33 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		} // actionPerformed
 	}
 
+	class ActionClose extends ActionSave {
+		/**
+		 * for serialisation
+		 */
+		private static final long serialVersionUID = -2038911085935515L;
+
+		public ActionClose() {
+			super("Close", "Close Window", "close", KeyEvent.VK_W);
+		} // c'tor
+
+		public void actionPerformed(ActionEvent ae) {
+			// if (!m_doc.m_bIsSaved) {
+			if (!quit()) {
+				return;
+			}
+
+			JMenuItem menuItem = (JMenuItem) ae.getSource();  
+			JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();  
+			Component invoker = popupMenu.getInvoker();   
+			JComponent invokerAsJComponent = (JComponent) invoker;  
+			Container topLevel = invokerAsJComponent.getTopLevelAncestor();  
+			if (topLevel != null) {
+				((JFrame) topLevel).dispose();
+			}
+		}
+	} // class ActionClose
+
 	class ActionQuit extends ActionSave {
 		/**
 		 * for serialisation
@@ -594,6 +624,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		fileMenu.add(a_saveas);
 		if (!Utils.isMac()) {
 			fileMenu.addSeparator();
+			fileMenu.add(a_close);
 			fileMenu.add(a_quit);
 		}
 
