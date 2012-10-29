@@ -55,7 +55,7 @@ public class SiteModel extends SiteModelInterface.Base {
             new Input<RealParameter>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
     public Input<RealParameter> invarParameterInput =
             new Input<RealParameter>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
-    public Input<Boolean> useBeast1StyleGammaInput = new Input<Boolean>("useBeast1Gamma", "use BEAST1 style gamma categories -- for backward compatibility testing", false);
+    //public Input<Boolean> useBeast1StyleGammaInput = new Input<Boolean>("useBeast1Gamma", "use BEAST1 style gamma categories -- for backward compatibility testing", false);
 
     RealParameter muParameter;
     RealParameter shapeParameter;
@@ -64,7 +64,7 @@ public class SiteModel extends SiteModelInterface.Base {
     
     @Override
     public void initAndValidate() throws Exception {
-    	useBeast1StyleGamma = useBeast1StyleGammaInput.get();
+    	useBeast1StyleGamma = true; //useBeast1StyleGammaInput.get();
         muParameter = muParameterInput.get();
         if (muParameter == null) {
             muParameter = new RealParameter("1.0");

@@ -9,6 +9,7 @@ import java.io.File;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
+import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;
 
 
@@ -22,6 +23,9 @@ public class LinkUnlinkTest extends BeautiBase {
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
 
+		JTableFixture t = beautiFrame.table();
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0));
+		
 		warning("Link site models");
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Site Models").click();
@@ -79,6 +83,9 @@ public class LinkUnlinkTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:47", "ClockPrior.c:47", "YuleBirthRatePrior.t:47", "YuleModel.t:59", "ClockPrior.c:59", "YuleBirthRatePrior.t:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.26", "TreeHeight.t:26", "YuleModel.t:26", "birthRate.t:26", "treeLikelihood.47", "TreeHeight.t:47", "clockRate.c:47", "YuleModel.t:47", "birthRate.t:47", "treeLikelihood.59", "TreeHeight.t:59", "clockRate.c:59", "YuleModel.t:59", "birthRate.t:59");
 
+		JTableFixture t = beautiFrame.table();
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
+
 		warning("Link site models");
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Site Models").click();
@@ -133,6 +140,9 @@ public class LinkUnlinkTest extends BeautiBase {
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
 
+		JTableFixture t = beautiFrame.table();
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0));
+
 		warning("Link trees");
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Trees").click();
@@ -155,6 +165,9 @@ public class LinkUnlinkTest extends BeautiBase {
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		printBeautiState(f);
+
+		JTableFixture t = beautiFrame.table();
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0));
 
 		warning("Link trees");
 		f.selectTab("Partitions");
@@ -182,6 +195,9 @@ public class LinkUnlinkTest extends BeautiBase {
 		assertOperatorsEqual("YuleBirthRateScaler.t:26", "treeScaler.t:26", "treeRootScaler.t:26", "UniformOperator.t:26", "SubtreeSlide.t:26", "narrow.t:26", "wide.t:26", "WilsonBalding.t:26", "StrictClockRateScaler.c:47", "YuleBirthRateScaler.t:47", "treeScaler.t:47", "treeRootScaler.t:47", "UniformOperator.t:47", "SubtreeSlide.t:47", "narrow.t:47", "wide.t:47", "WilsonBalding.t:47", "strictClockUpDownOperator.c:47", "StrictClockRateScaler.c:59", "YuleBirthRateScaler.t:59", "treeScaler.t:59", "treeRootScaler.t:59", "UniformOperator.t:59", "SubtreeSlide.t:59", "narrow.t:59", "wide.t:59", "WilsonBalding.t:59", "strictClockUpDownOperator.c:59");
 		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:47", "ClockPrior.c:47", "YuleBirthRatePrior.t:47", "YuleModel.t:59", "ClockPrior.c:59", "YuleBirthRatePrior.t:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.26", "TreeHeight.t:26", "YuleModel.t:26", "birthRate.t:26", "treeLikelihood.47", "TreeHeight.t:47", "clockRate.c:47", "YuleModel.t:47", "birthRate.t:47", "treeLikelihood.59", "TreeHeight.t:59", "clockRate.c:59", "YuleModel.t:59", "birthRate.t:59");
+
+		JTableFixture t = beautiFrame.table();
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
 
 		warning("Link trees");
 		f.selectTab("Partitions");
@@ -221,12 +237,16 @@ public class LinkUnlinkTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:47", "ClockPrior.c:47", "YuleBirthRatePrior.t:47", "YuleModel.t:59", "ClockPrior.c:59", "YuleBirthRatePrior.t:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.26", "TreeHeight.t:26", "YuleModel.t:26", "birthRate.t:26", "treeLikelihood.47", "TreeHeight.t:47", "clockRate.c:47", "YuleModel.t:47", "birthRate.t:47", "treeLikelihood.59", "TreeHeight.t:59", "clockRate.c:59", "YuleModel.t:59", "birthRate.t:59");
 
+		JTableFixture t = beautiFrame.table();
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
+
 		warning("Link trees");
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Trees").click();
 		printBeautiState(f);
 
 		warning("Link clocks");
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Clock Models").click();
 		printBeautiState(f);
@@ -239,6 +259,7 @@ public class LinkUnlinkTest extends BeautiBase {
 
 		warning("Delete first partition");
 		f.selectTab("Partitions");
+		beautiFrame.table().selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0));
 		beautiFrame.button("Link Clock Models").click();
 		beautiFrame.table().selectCell(TableCell.row(0).column(0));
 		beautiFrame.button("-").click();
@@ -260,12 +281,16 @@ public class LinkUnlinkTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:47", "ClockPrior.c:47", "YuleBirthRatePrior.t:47", "YuleModel.t:59", "ClockPrior.c:59", "YuleBirthRatePrior.t:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.26", "TreeHeight.t:26", "YuleModel.t:26", "birthRate.t:26", "treeLikelihood.47", "TreeHeight.t:47", "clockRate.c:47", "YuleModel.t:47", "birthRate.t:47", "treeLikelihood.59", "TreeHeight.t:59", "clockRate.c:59", "YuleModel.t:59", "birthRate.t:59");
 
+		JTableFixture t = beautiFrame.table();
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
+
 		warning("Link trees");
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Trees").click();
 		printBeautiState(f);
 
 		warning("Link clocks");
+		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Clock Models").click();
 		printBeautiState(f);
@@ -278,6 +303,7 @@ public class LinkUnlinkTest extends BeautiBase {
 
 		warning("Delete first partition");
 		f.selectTab("Partitions");
+		beautiFrame.table().selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0));
 		beautiFrame.button("Link Clock Models").click();
 		beautiFrame.table().selectCell(TableCell.row(0).column(0));
 		beautiFrame.button("-").click();

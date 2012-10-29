@@ -294,7 +294,8 @@ public class ListInputEditor extends InputEditor.Base {
             sName = plugin.getClass().getName();
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
-        JTextField entry = new JTextField(sName);
+        JLabel label = new JLabel(sName);
+        //JTextField entry = new JTextField(sName);
         //Dimension size = new Dimension(200, 20);
         //entry.setMinimumSize(size);
 //        entry.setMaximumSize(size);
@@ -304,11 +305,12 @@ public class ListInputEditor extends InputEditor.Base {
 //        		BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(0xed,0xed,0xed)),
 //        		BorderFactory.createBevelBorder(0)));
 
-        entry.getDocument().addDocumentListener(new IDDocumentListener(plugin, entry));
+        //entry.getDocument().addDocumentListener(new IDDocumentListener(plugin, entry));
 
         itemBox.add(Box.createRigidArea(new Dimension(5, 1)));
-        itemBox.add(entry);
-        m_entries.add(entry);
+//        itemBox.add(entry);
+//        m_entries.add(entry);
+        itemBox.add(label);
         itemBox.add(Box.createHorizontalGlue());
         return this;
     }

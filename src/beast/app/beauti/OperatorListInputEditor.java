@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -37,6 +38,12 @@ public class OperatorListInputEditor extends ListInputEditor {
 
     @Override
     public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    	Box box = Box.createHorizontalBox();
+    	box.add(new JLabel("Operator"));
+    	box.add(Box.createGlue());
+    	box.add(new JLabel("Weight"));
+    	add(box);
+    	
     	m_buttonStatus = ButtonStatus.NONE;
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     }

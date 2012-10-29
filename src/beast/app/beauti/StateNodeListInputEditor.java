@@ -12,7 +12,6 @@ public class StateNodeListInputEditor extends ListInputEditor {
 
 	public StateNodeListInputEditor(BeautiDoc doc) {
 		super(doc);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

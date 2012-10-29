@@ -50,13 +50,15 @@ public class BeautiRateTutorialTest extends BeautiBase {
 
 		
 		f = f.selectTab("Partitions");
-				
+		JTableFixture t = beautiFrame.table();
+		t.selectCell(TableCell.row(0).column(0));
+		
 		beautiFrame.button("Split").click();
 		JOptionPaneFixture dialog = new JOptionPaneFixture(robot());
 		dialog.comboBox().selectItem("{1,2} + 3");
 		dialog.okButton().click();
 		// check table
-		JTableFixture t = beautiFrame.table();
+		t = beautiFrame.table();
 		printTableContents(t);
 		checkTableContents(t, 
 				"[RSV2_1,2, RSV2, 129, 420, nucleotide, RSV2_1,2, RSV2_1,2, RSV2_1,2]*" +
