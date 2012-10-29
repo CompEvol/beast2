@@ -20,7 +20,6 @@ import beast.math.distributions.Prior;
 
 public class PriorInputEditor extends InputEditor.Base {
 	private static final long serialVersionUID = 1L;
-    static Dimension PREFERRED_SIZE = new Dimension(200, 20);
 
 	public PriorInputEditor(BeautiDoc doc) {
 		super(doc);

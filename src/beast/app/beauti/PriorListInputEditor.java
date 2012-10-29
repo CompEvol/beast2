@@ -1,8 +1,8 @@
 package beast.app.beauti;
 
 
+
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.PluginPanel;
 import beast.app.draw.SmallButton;
-import beast.app.draw.InputEditor.ButtonStatus;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Logger;
@@ -40,7 +39,6 @@ import beast.math.distributions.Prior;
 
 public class PriorListInputEditor extends ListInputEditor {
     private static final long serialVersionUID = 1L;
-    public static Dimension PREFERRED_SIZE = new Dimension(200, 20);
 
     List<JComboBox> comboBoxes;
     List<JButton> rangeButtons;

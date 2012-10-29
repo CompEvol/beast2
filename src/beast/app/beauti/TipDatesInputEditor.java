@@ -6,8 +6,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.List;
@@ -16,8 +17,10 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.CellEditorListener;
@@ -57,6 +60,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
     Object[][] tableData;
     JTable table;
     String m_sPattern = ".*(\\d\\d\\d\\d).*";
+    JScrollPane scrollPane;
 
 
     @Override
@@ -64,7 +68,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         m_bAddButtons = bAddButtons;
 		this.itemNr = itemNr;
 		if (itemNr >= 0) {
-	        tree = (Tree) ((List)input.get()).get(itemNr);
+	        tree = (Tree) ((List<?>)input.get()).get(itemNr);
 		} else {
 	        tree = (Tree) input.get();			
 		}
@@ -88,7 +92,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                                 traitSet.initByName("traitname", "date",
                                         "taxa", tree.m_taxonset.get(),
                                         "value", "");
-                                traitSet.setID("dateTrait.t:" + doc.parsePartition(tree.getID()));
+                                traitSet.setID("dateTrait.t:" + BeautiDoc.parsePartition(tree.getID()));
                             }
                             m_input.setValue(traitSet, m_plugin);
                         } else {
@@ -360,7 +364,47 @@ public class TipDatesInputEditor extends PluginInputEditor {
 
         });
         table.setRowHeight(24);
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
+        scrollPane.addComponentListener(new ComponentListener() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				Component c = (Component) e.getSource();
+				while (c.getParent() != null && !(c.getParent() instanceof JSplitPane)) {
+					c = c.getParent();
+				}
+				if (c.getParent() != null) {
+					Dimension preferredSize = c.getSize();
+					preferredSize.height = Math.max(preferredSize.height - 170, 0);
+					preferredSize.width = Math.max(preferredSize.width - 20, 0);
+					scrollPane.setPreferredSize(preferredSize);					
+				} else if (doc.getFrame() != null) {
+					Dimension preferredSize = doc.getFrame().getSize();
+					preferredSize.height = Math.max(preferredSize.height - 170, 0);
+					preferredSize.width = Math.max(preferredSize.width - 20, 0);
+					scrollPane.setPreferredSize(preferredSize);
+				}				
+			}
+			
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
         return scrollPane;
     } // createListBox
 
@@ -468,7 +512,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         Box buttonBox = Box.createHorizontalBox();
 
         JLabel label = new JLabel("Dates specified as: ");
-        label.setMaximumSize(new Dimension(1024, 22));
+        label.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
         buttonBox.add(label);
         unitsComboBox = new JComboBox(TraitSet.Units.values());
         unitsComboBox.setSelectedItem(traitSet.m_sUnits.get());
@@ -484,7 +528,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 }
             }
         });
-        unitsComboBox.setMaximumSize(new Dimension(1024, 22));
+        unitsComboBox.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox(new String[]{"Since some time in the past", "Before the present"});
@@ -505,7 +549,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 convertTraitToTableData();
             }
         });
-        relativeToComboBox.setMaximumSize(new Dimension(1024, 20));
+        relativeToComboBox.setMaximumSize(MAX_SIZE);//new Dimension(1024, 20));
         buttonBox.add(relativeToComboBox);
         buttonBox.add(Box.createGlue());
 

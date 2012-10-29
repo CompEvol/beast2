@@ -110,6 +110,8 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
     }
 
     JLabel m_inputLabel;
+    protected static Dimension PREFERRED_SIZE = new Dimension(200, 25);
+    protected static Dimension MAX_SIZE = new Dimension(1024, 25);
 
     /**
      * flag to indicate label, edit and validate buttons/labels should be added *
@@ -225,13 +227,12 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
     void setUpEntry() {
         m_entry = new JTextField();
         m_entry.setName(m_input.getName());
-        Dimension size = new Dimension(100, 20);
-        m_entry.setMinimumSize(size);
-        m_entry.setPreferredSize(size);
-        m_entry.setSize(size);
+        m_entry.setMinimumSize(PREFERRED_SIZE);
+        m_entry.setPreferredSize(PREFERRED_SIZE);
+        m_entry.setSize(PREFERRED_SIZE);
         initEntry();
         m_entry.setToolTipText(m_input.getTipText());
-        m_entry.setMaximumSize(new Dimension(1024, 20));
+        m_entry.setMaximumSize(MAX_SIZE);
 
         m_entry.getDocument().addDocumentListener(new DocumentListener() {
             @Override

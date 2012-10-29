@@ -1,9 +1,13 @@
 package beast.app.beauti;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -17,6 +21,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -71,6 +76,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	JButton splitButton; 
 	JButton delButton;
 
+	JScrollPane scrollPane;
+
 	// public AlignmentListInputEditor() {}
 	public AlignmentListInputEditor(BeautiDoc doc) {
 		super(doc);
@@ -108,12 +115,15 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		unlinkButtons = new ArrayList<JButton>();
 		nPartitions = alignments.size();
 		// super.init(input, plugin, bExpandOption, false);
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		
 		Box box = Box.createVerticalBox();
 		box.add(Box.createVerticalStrut(5));
 		box.add(createButtonBox());
 		box.add(Box.createVerticalStrut(5));
 		box.add(createListBox());
-		box.add(Box.createVerticalGlue());
+		panel.add(box, BorderLayout.NORTH);
 
 		Box buttonBox = Box.createHorizontalBox();
 
@@ -155,8 +165,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		buttonBox.add(splitButton);
 
 		buttonBox.add(Box.createHorizontalGlue());
-		box.add(buttonBox);
-		add(box);
+		panel.add(buttonBox, BorderLayout.SOUTH);
+		add(panel);
 		
 		updateStatus();
 	}
@@ -711,10 +721,41 @@ System.err.println("needsRePartition = " + needsRePartition);
 			}
 		});
 
-		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane = new JScrollPane(table);
+		
+		scrollPane.addComponentListener(new ComponentListener() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				if (doc.getFrame() != null) {
+					Dimension preferredSize = doc.getFrame().getSize();
+					preferredSize.height = Math.max(preferredSize.height - 150, 0);
+					preferredSize.width = Math.max(preferredSize.width - 20, 0);
+					scrollPane.setPreferredSize(preferredSize);
+				}				
+			}
+			
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		return scrollPane;
 	} // createListBox
-
+	
 	void setUpComboBoxes() {
 		// set up comboboxes
 		Set<String>[] partitionNames = new HashSet[3];
@@ -1039,5 +1080,5 @@ System.err.println("needsRePartition = " + needsRePartition);
 		splitButton.setEnabled(status);
 		delButton.setEnabled(status);
 	}
-
+	
 } // class AlignmentListInputEditor

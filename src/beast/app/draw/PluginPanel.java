@@ -240,10 +240,6 @@ public class PluginPanel extends JPanel {
     Box createPluginBox() {
         Box box = Box.createHorizontalBox();
         JLabel icon = new JLabel();
-        URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beast.png");
-        Icon _icon = new ImageIcon(url);
-        icon.setIcon(_icon);
-        box.add(icon);
         box.add(Box.createHorizontalGlue());
 
         JLabel label = new JLabel(m_pluginClass.getName().replaceAll(".*\\.", "") + ":");

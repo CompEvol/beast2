@@ -4,12 +4,6 @@ package test.beast.app.beauti;
 
 import java.io.File;
 
-import javax.swing.JButton;
-
-import org.fest.swing.core.matcher.JButtonMatcher;
-import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.junit.Test;

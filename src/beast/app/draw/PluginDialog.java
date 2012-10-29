@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
 
@@ -56,10 +57,12 @@ public class PluginDialog extends JDialog {
 
     
     public boolean showDialog() {
+        URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beast.png");
+        Icon icon = new ImageIcon(url);
         JOptionPane optionPane = new JOptionPane(m_panel,
                 JOptionPane.QUESTION_MESSAGE,
                 JOptionPane.OK_CANCEL_OPTION,
-                null,
+                icon,
                 null,
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
