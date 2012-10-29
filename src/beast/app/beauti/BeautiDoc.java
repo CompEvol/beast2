@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -104,7 +105,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	Set<PartitionContext> possibleContexts = new HashSet<PartitionContext>(); 
 
 	public BeautiConfig beautiConfig;
-	
+	Beauti beauti;
+
 	private String templateName = null;
 	private String templateFileName = STANDARD_TEMPLATE;
 
@@ -2019,4 +2021,11 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		return plugin;
 	}
 	
+	public void setBeauti(Beauti beauti) {
+		this.beauti = beauti;
+	}
+	
+	public JFrame getFrame() {
+		return beauti.frame;
+	}
 } // class BeautiDoc

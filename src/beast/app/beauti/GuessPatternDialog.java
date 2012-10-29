@@ -325,47 +325,47 @@ public class GuessPatternDialog extends JDialog {
 
 	protected void updateFields() {
 		if (chckbxAddFixedValue.isSelected()) {
-			textAddValue.setEditable(true);
+			textAddValue.setEnabled(true);
 			chckbxUnlessLessThan.setEnabled(true);
 			lblThenAdd.setEnabled(true);
 			if (chckbxUnlessLessThan.isSelected()) {
-				textUnlessLessThan.setEditable(true);
-				textThenAdd.setEditable(true);
+				textUnlessLessThan.setEnabled(true);
+				textThenAdd.setEnabled(true);
 			} else {
-				textUnlessLessThan.setEditable(false);
-				textThenAdd.setEditable(false);
+				textUnlessLessThan.setEnabled(false);
+				textThenAdd.setEnabled(false);
 			}
 		} else {
-			textAddValue.setEditable(false);
+			textAddValue.setEnabled(false);
 			chckbxUnlessLessThan.setEnabled(false);
 			lblThenAdd.setEnabled(false);
-			textUnlessLessThan.setEditable(false);
-			textThenAdd.setEditable(false);
+			textUnlessLessThan.setEnabled(false);
+			textThenAdd.setEnabled(false);
 		}
 		
-		txtFile.setEditable(false);
-		textSplitChar.setEditable(false);
-		textSplitChar2.setEditable(false);
-		textRegExp.setEditable(false);			
+		txtFile.setEnabled(false);
+		textSplitChar.setEnabled(false);
+		textSplitChar2.setEnabled(false);
+		textRegExp.setEnabled(false);			
 		combo.setEnabled(false);
 		combo_1.setEnabled(false);
 		lblAndTakeGroups.setEnabled(false);
 		btnBrowse.setEnabled(false);
 		if (b1.isSelected()) {
-			textSplitChar.setEditable(true);			
+			textSplitChar.setEnabled(true);			
 			combo.setEnabled(true);
 		}
 		if (b2.isSelected()) {
-			textSplitChar2.setEditable(true);			
+			textSplitChar2.setEnabled(true);			
 			combo_1.setEnabled(true);
 			lblAndTakeGroups.setEnabled(true);
 		}
 		if (b3.isSelected()) {
-			textRegExp.setEditable(true);			
+			textRegExp.setEnabled(true);			
 		}
 		if (b4.isSelected()) {
 			btnBrowse.setEnabled(true);
-			txtFile.setEditable(true);			
+			txtFile.setEnabled(true);			
 		}
 	}
 

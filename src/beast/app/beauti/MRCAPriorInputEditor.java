@@ -57,9 +57,8 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
                 try {
                     TaxonSet taxonset = prior.m_taxonset.get();
                     Set<Taxon> candidates = getTaxonCandidates(prior);
-                    TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates);
-                    dlg.setVisible(true);
-                    if (dlg.isOK) {
+                    TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates, doc);
+                    if (dlg.showDialog()) {
                         prior.setID(dlg.taxonSet.getID());
                         prior.m_taxonset.setValue(dlg.taxonSet, prior);
                     }

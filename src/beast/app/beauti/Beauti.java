@@ -81,6 +81,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		// m_panels = new BeautiPanel[NR_OF_PANELS];
 		this.doc = doc;
 		this.doc.addBeautiDocListener(this);
+		doc.setBeauti(this);
 	}
 
 	void setTitle() {
@@ -852,63 +853,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
 				return null;
 			}
-
-			// boolean lafLoaded = false;
-			// if (Utils.isMac()) {
-			// System.setProperty("apple.awt.graphics.UseQuartz", "true");
-			// System.setProperty("apple.awt.antialiasing","true");
-			// System.setProperty("apple.awt.rendering","VALUE_RENDER_QUALITY");
-			//
-			// System.setProperty("apple.laf.useScreenMenuBar","true");
-			// System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-			// "BEAUti 2");
-			// System.setProperty("apple.awt.draggableWindowBackground","true");
-			// System.setProperty("apple.awt.showGrowBox","true");
-			//
-			// try {
-			//
-			// try {
-			// // We need to do this using dynamic class loading to avoid other
-			// platforms
-			// // having to link to this class. If the Quaqua library is not on
-			// the classpath
-			// // it simply won't be used.
-			// Class<?> qm =
-			// Class.forName("ch.randelshofer.quaqua.QuaquaManager");
-			// Method method = qm.getMethod("setExcludedUIs", Set.class);
-			//
-			// Set<String> excludes = new HashSet<String>();
-			// excludes.add("Button");
-			// excludes.add("ToolBar");
-			// method.invoke(null, excludes);
-			//
-			// }
-			// catch (Throwable e) {
-			// }
-			//
-			// //set the Quaqua Look and Feel in the UIManager
-			// UIManager.setLookAndFeel(
-			// "ch.randelshofer.quaqua.QuaquaLookAndFeel"
-			// );
-			// lafLoaded = true;
-			//
-			// } catch (Exception e) {
-			//
-			// }
-			//
-			// UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN,
-			// 13));
-			// UIManager.put("SmallSystemFont", new Font("Lucida Grande",
-			// Font.PLAIN, 11));
-			//
-			//
-			//
-			// }
-			//
-			//
-			// if (!lafLoaded) {
-			// UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			// }
 
 			final Beauti beauti = new Beauti(doc);
 

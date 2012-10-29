@@ -378,8 +378,7 @@ public class ListInputEditor extends InputEditor.Base {
         int i = ((List<?>) m_input.get()).indexOf(o);
         Plugin plugin = (Plugin) ((List<?>) m_input.get()).get(i);
         PluginDialog dlg = new PluginDialog(plugin, m_input.getType(), doc);
-        dlg.setVisible(true);
-        if (dlg.getOK(doc)) {
+        if (dlg.showDialog()) {
             //m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
             m_entries.get(i).setText(dlg.m_panel.m_plugin.getID());
             //o = dlg.m_panel.m_plugin;

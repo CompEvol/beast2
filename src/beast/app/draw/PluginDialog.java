@@ -7,6 +7,7 @@ import beast.core.Plugin;
 import beast.util.XMLProducer;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -38,19 +39,47 @@ public class PluginDialog extends JDialog {
      */
 
 
-    public PluginDialog(PluginPanel panel) {
+    BeautiDoc doc;
+    
+    public PluginDialog(PluginPanel panel, BeautiDoc doc) {
         init(panel);
+        this.doc = doc;
     }
 
     public PluginDialog(Plugin plugin, Class<? extends Plugin> aClass, List<Plugin> plugins, BeautiDoc doc) {
-        this(new PluginPanel(plugin, aClass, plugins, doc));
+        this(new PluginPanel(plugin, aClass, plugins, doc), doc);
     }
 
     public PluginDialog(Plugin plugin, Class<?> type, BeautiDoc doc) {
-        this(new PluginPanel(plugin, type, doc));
+        this(new PluginPanel(plugin, type, doc), doc);
     }
 
-    /* to be called when Cancel is pressed **/
+    
+    public boolean showDialog() {
+        JOptionPane optionPane = new JOptionPane(m_panel,
+                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.OK_CANCEL_OPTION,
+                null,
+                null,
+                null);
+        optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
+
+        Frame frame = (doc != null ? doc.getFrame(): Frame.getFrames()[0]);
+        final JDialog dialog = optionPane.createDialog(frame, this.getTitle());
+        dialog.pack();
+
+        dialog.setVisible(true);
+
+        int result = JOptionPane.CANCEL_OPTION;
+        Integer value = (Integer) optionPane.getValue();
+        if (value != null && value != -1) {
+            result = value;
+        }
+        m_bOK = (result != JOptionPane.CANCEL_OPTION);
+        return m_bOK;
+    }
+    
+    /* to be called when OK is pressed **/
     public void accept(Plugin plugin, BeautiDoc doc) {
         try {
             for (Input<?> input : m_panel.m_plugin.listInputs()) {
@@ -66,8 +95,6 @@ public class PluginDialog extends JDialog {
     }
 
     void init(PluginPanel panel) {
-
-
         this.m_panel = panel;
 
         setModal(true);
@@ -77,42 +104,38 @@ public class PluginDialog extends JDialog {
         setTitle(panel.m_plugin.getID() + " Editor");
 
 
-        /* add cancel and ok buttons at the bottom */
-        Box cancelOkBox = Box.createHorizontalBox();
-        cancelOkBox.setBorder(new EtchedBorder());
-        JButton okButton = new JButton("Ok");
-        okButton.addActionListener(new ActionListener() {
-
-            // implementation ActionListener
-            public void actionPerformed(ActionEvent e) {
-                m_bOK = true;
-                dispose();
-            }
-        });
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-
-            // implementation ActionListener
-            public void actionPerformed(ActionEvent e) {
-                m_bOK = false;
-                dispose();
-            }
-        });
-        cancelOkBox.add(Box.createHorizontalGlue());
-        cancelOkBox.add(okButton);
-        cancelOkBox.add(Box.createHorizontalGlue());
-        cancelOkBox.add(cancelButton);
-        cancelOkBox.add(Box.createHorizontalGlue());
-
-        add(BorderLayout.SOUTH, cancelOkBox);
-
-        Dimension dim = panel.getPreferredSize();
-        Dimension dim2 = cancelOkBox.getPreferredSize();
-        setSize(dim.width + 10, dim.height + dim2.height + 30);
-
-        //PluginDialog.m_position.x += 30;
-        //PluginDialog.m_position.y += 30;
-        //setLocation(PluginDialog.m_position);
+//        /* add cancel and ok buttons at the bottom */
+//        Box cancelOkBox = Box.createHorizontalBox();
+//        cancelOkBox.setBorder(new EtchedBorder());
+//        JButton okButton = new JButton("Ok");
+//        okButton.addActionListener(new ActionListener() {
+//
+//            // implementation ActionListener
+//            public void actionPerformed(ActionEvent e) {
+//                m_bOK = true;
+//                dispose();
+//            }
+//        });
+//        JButton cancelButton = new JButton("Cancel");
+//        cancelButton.addActionListener(new ActionListener() {
+//
+//            // implementation ActionListener
+//            public void actionPerformed(ActionEvent e) {
+//                m_bOK = false;
+//                dispose();
+//            }
+//        });
+//        cancelOkBox.add(Box.createHorizontalGlue());
+//        cancelOkBox.add(okButton);
+//        cancelOkBox.add(Box.createHorizontalGlue());
+//        cancelOkBox.add(cancelButton);
+//        cancelOkBox.add(Box.createHorizontalGlue());
+//
+//        add(BorderLayout.SOUTH, cancelOkBox);
+//
+//        Dimension dim = panel.getPreferredSize();
+//        Dimension dim2 = cancelOkBox.getPreferredSize();
+//        setSize(dim.width + 10, dim.height + dim2.height + 30);
     } // c'tor
 
     public boolean getOK(BeautiDoc doc) {
@@ -134,7 +157,7 @@ public class PluginDialog extends JDialog {
         PluginDialog dlg = null;
         try {
             if (args.length == 0) {
-                dlg = new PluginDialog(new PluginPanel(new MCMC(), Runnable.class, null));
+                dlg = new PluginDialog(new PluginPanel(new MCMC(), Runnable.class, null), null);
             } else if (args[0].equals("-x")) {
                 StringBuilder text = new StringBuilder();
                 String NL = System.getProperty("line.separator");
@@ -147,11 +170,11 @@ public class PluginDialog extends JDialog {
                     scanner.close();
                 }
                 Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
-                dlg = new PluginDialog(new PluginPanel(plugin, plugin.getClass(), null));
+                dlg = new PluginDialog(new PluginPanel(plugin, plugin.getClass(), null), null);
             } else if (args.length == 1) {
-                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null));
+                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null), null);
             } else if (args.length == 2) {
-                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null));
+                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null), null);
             } else {
                 throw new Exception("Incorrect number of arguments");
             }
@@ -165,8 +188,7 @@ public class PluginDialog extends JDialog {
             System.exit(0);
         }
         dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        dlg.setVisible(true);
-        if (dlg.m_bOK) {
+        if (dlg.showDialog()) {
             Plugin plugin = dlg.m_panel.m_plugin;
             String sXML = new XMLProducer().modelToXML(plugin);
             System.out.println(sXML);

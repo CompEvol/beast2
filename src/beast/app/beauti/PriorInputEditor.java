@@ -97,8 +97,7 @@ public class PriorInputEditor extends InputEditor.Base {
                     Prior prior = (Prior) list.get(itemNr);
                     RealParameter p = (RealParameter) prior.m_x.get();
                     PluginDialog dlg = new PluginDialog(p, RealParameter.class, doc);
-                    dlg.setVisible(true);
-                    if (dlg.getOK(doc)) {
+                    if (dlg.showDialog()) {
                         dlg.accept(p, doc);
                         rangeButton.setText(paramToString(p));
                         refreshPanel();

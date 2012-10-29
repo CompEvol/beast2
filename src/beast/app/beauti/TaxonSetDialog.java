@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -43,17 +46,21 @@ public class TaxonSetDialog extends JDialog {
     DefaultListModel listModel2;
 
 
-    public TaxonSetDialog(TaxonSet taxonSet, Set<Taxon> candidates) {
+    Box box;
+    BeautiDoc doc;
+    
+    public TaxonSetDialog(TaxonSet taxonSet, Set<Taxon> candidates, BeautiDoc doc) {
         // initialize state
         this.taxonSet = taxonSet;
+        this.doc = doc;
         sID = taxonSet.getID();
         // create components
-        Box box = Box.createVerticalBox();
+        box = Box.createVerticalBox();
         box.add(createIDBox());
         box.add(createFilterBox());
         box.add(createTaxonSelector());
         box.add(Box.createVerticalGlue());
-        box.add(createCancelOKButtons());
+        //box.add(createCancelOKButtons());
 
         // initialise lists
         List<Taxon> taxonset = taxonSet.m_taxonset.get();
@@ -81,6 +88,44 @@ public class TaxonSetDialog extends JDialog {
         setSize(new Dimension(400, 600));
         setModal(true);
     } // c'tor
+    
+    public boolean showDialog() {
+        JOptionPane optionPane = new JOptionPane(box,
+                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.OK_CANCEL_OPTION,
+                null,
+                null,
+                null);
+        optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
+
+        Frame frame = (doc != null ? doc.getFrame(): Frame.getFrames()[0]);
+        final JDialog dialog = optionPane.createDialog(frame, "Taxon set editor");
+        dialog.pack();
+
+        dialog.setVisible(true);
+
+        int result = JOptionPane.CANCEL_OPTION;
+        Integer value = (Integer) optionPane.getValue();
+        if (value != null && value != -1) {
+            result = value;
+        }
+        isOK =  (result != JOptionPane.CANCEL_OPTION);
+        if (isOK) {
+            taxonSet.setID(sID);
+            List<Taxon> taxa = taxonSet.m_taxonset.get();
+            while (taxa.size() > 0) {
+                taxa.remove(0);
+            }
+            for (int i = 0; i < listModel2.size(); i++) {
+                taxa.add((Taxon) listModel2.get(i));
+            }
+            isOK = true;
+            dispose();
+        }
+        return isOK;
+    }
+
+    
 
     private Component createFilterBox() {
         Box box = Box.createHorizontalBox();

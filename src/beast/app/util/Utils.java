@@ -2,6 +2,7 @@ package beast.app.util;
 
 
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
@@ -112,7 +113,21 @@ public class Utils {
         try {
 
             if (!lafLoaded) {
-                UIManager.setLookAndFeel("javax.swing.plaf.metal");
+            	if (isMac()) {
+            		UIManager.setLookAndFeel("javax.swing.plaf.metal");
+            	} else {
+                    try {
+                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                            if ("Nimbus".equals(info.getName())) {
+                                UIManager.setLookAndFeel(info.getClassName());
+                                break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        // If Nimbus is not available, you can set the GUI to another look and feel.
+                        UIManager.setLookAndFeel("javax.swing.plaf.metal");
+                    } 
+            	}
                 //UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {

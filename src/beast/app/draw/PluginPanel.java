@@ -187,7 +187,7 @@ public class PluginPanel extends JPanel {
             Box pluginBox = createPluginBox();
             mainBox.add(pluginBox);
             mainBox.add(Box.createVerticalStrut(5));
-            if (doc != null) {
+            if (doc != null && m_identry != null) {
             	// we are in Beauti, do not edit IDs
             	m_identry.setEnabled(false);
             }
@@ -283,31 +283,29 @@ public class PluginPanel extends JPanel {
 //        box.add(m_pluginButton);
 
 
-        m_identry = new JTextField();
-        //Dimension size = new Dimension(100,22);
-        //m_identry.setMinimumSize(size);
-//		m_identry.setPreferredSize(size);
-//		m_identry.setMaximumSize(size);
-        m_identry.setText(m_plugin.getID());
-        m_identry.setToolTipText("Name/ID that uniquely identifies this item");
-
-        m_identry.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                processID();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                processID();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                processID();
-            }
-        });
-        box.add(m_identry);
+        box.add(new JLabel(" " + m_plugin.getID()));
+        
+//        m_identry = new JTextField();
+//        m_identry.setText(m_plugin.getID());
+//        m_identry.setToolTipText("Name/ID that uniquely identifies this item");
+//
+//        m_identry.getDocument().addDocumentListener(new DocumentListener() {
+//            @Override
+//            public void removeUpdate(DocumentEvent e) {
+//                processID();
+//            }
+//
+//            @Override
+//            public void insertUpdate(DocumentEvent e) {
+//                processID();
+//            }
+//
+//            @Override
+//            public void changedUpdate(DocumentEvent e) {
+//                processID();
+//            }
+//        });
+//        box.add(m_identry);
 
 
         Box vbox = Box.createVerticalBox();

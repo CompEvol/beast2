@@ -10,8 +10,6 @@ import beast.util.AddOnManager;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -81,8 +79,7 @@ public class PluginInputEditor extends InputEditor.Base {
                     // implements ActionListener
                     public void actionPerformed(ActionEvent e) {
                         PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType(), doc);
-                        dlg.setVisible(true);
-                        if (dlg.getOK(doc)) {
+                        if (dlg.showDialog()) {
                             try {
                                 dlg.accept((Plugin) m_input.get(), doc);
                             } catch (Exception ex) {

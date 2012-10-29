@@ -243,9 +243,8 @@ public class PriorListInputEditor extends ListInputEditor {
             prior.m_treeInput.setValue(trees.get(iTree), prior);
             TaxonSet taxonSet = new TaxonSet();
 
-            TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior));
-            dlg.setVisible(true);
-            if (!dlg.isOK || dlg.taxonSet.getID() == null) {
+            TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior), doc);
+            if (!dlg.showDialog() || dlg.taxonSet.getID() == null) {
                 return null;
             }
             taxonSet = dlg.taxonSet;

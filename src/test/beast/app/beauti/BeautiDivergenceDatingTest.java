@@ -19,6 +19,7 @@ import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
 import org.fest.swing.fixture.JListFixture;
+import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
 import org.fest.swing.fixture.JTableFixture;
@@ -221,16 +222,11 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		Component c = beautiFrame.robot.finder().findByName("addItem");
 		JButtonFixture addButton = new JButtonFixture(robot(), (JButton) c);
 		addButton.click();
-		DialogFixture dialog = WindowFinder.findDialog(TaxonSetDialog.class).using(robot());
+		JOptionPaneFixture dialog = new JOptionPaneFixture(robot()); 
 		dialog.textBox("idEntry").setText("Human-Chimp");
 		dialog.list("listOfTaxonCandidates").selectItems("Homo_sapiens","Pan");
 		dialog.button(">>").click();
-		dialog.button("OK").click();
-		printBeautiState(f);
-		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "freqParameter.s:2ndpos", "freqParameter.s:1stpos", "freqParameter.s:3rdpos", "freqParameter.s:noncoding");
-		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "KappaScaler.s:1stpos", "gammaShapeScaler.s:1stpos", "KappaScaler.s:2ndpos", "gammaShapeScaler.s:2ndpos", "KappaScaler.s:3rdpos", "gammaShapeScaler.s:3rdpos", "mutationRateScaler.s:noncoding", "mutationRateScaler.s:1stpos", "mutationRateScaler.s:2ndpos", "FrequenciesExchanger.s:2ndpos", "FrequenciesExchanger.s:1stpos", "FrequenciesExchanger.s:3rdpos", "FrequenciesExchanger.s:noncoding");
-		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "GammaShapePrior.s:1stpos", "GammaShapePrior.s:2ndpos", "GammaShapePrior.s:3rdpos", "GammaShapePrior.s:noncoding", "KappaPrior.s:1stpos", "KappaPrior.s:2ndpos", "KappaPrior.s:3rdpos", "KappaPrior.s:noncoding", "MutationRatePrior.s:1stpos", "MutationRatePrior.s:2ndpos", "MutationRatePrior.s:noncoding", "Human-Chimp.prior");
-		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "treeLikelihood.1stpos", "treeLikelihood.2ndpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "Human-Chimp.prior", "freqParameter.s:3rdpos", "freqParameter.s:2ndpos", "freqParameter.s:noncoding", "freqParameter.s:1stpos");
+		dialog.okButton().click();
 		
 		//7b. and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.
 		warning("7b. and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.");
@@ -459,12 +455,12 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		f.selectTab("Priors");
 		Component c = beautiFrame.robot.finder().findByName("addItem");
 		JButtonFixture addButton = new JButtonFixture(robot(), (JButton) c);
-		addButton.click();
-		DialogFixture dialog = WindowFinder.findDialog(TaxonSetDialog.class).using(robot());
+		addButton.click();		
+		JOptionPaneFixture dialog = new JOptionPaneFixture(robot()); 
 		dialog.textBox("idEntry").setText("Human-Chimp");
 		dialog.list("listOfTaxonCandidates").selectItems("Homo_sapiens","Pan");
 		dialog.button(">>").click();
-		dialog.button("OK").click();
+		dialog.okButton().click();
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "KappaScaler.s:1stpos", "gammaShapeScaler.s:1stpos", "KappaScaler.s:2ndpos", "gammaShapeScaler.s:2ndpos", "KappaScaler.s:3rdpos", "gammaShapeScaler.s:3rdpos", "mutationRateScaler.s:noncoding", "mutationRateScaler.s:1stpos", "mutationRateScaler.s:2ndpos");
