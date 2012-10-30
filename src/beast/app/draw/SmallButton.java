@@ -14,6 +14,17 @@ public class SmallButton extends JButton {
     
     public SmallButton(String label, boolean isEnabled) {
         this(label, isEnabled, ButtonType.square);
+        setIcon(label);
+    }
+
+	public SmallButton(String label, boolean isEnabled, ButtonType buttonType) {
+        super(label);
+        setEnabled(isEnabled);
+        setButtonType(buttonType);
+        setIcon(label);
+    }
+
+	private void setIcon(String label) {
         if (label.equals("e")) {
         	setLabel("");
             URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "edit.png");
@@ -21,13 +32,7 @@ public class SmallButton extends JButton {
         	setIcon(icon);
             setBorder(BorderFactory.createEmptyBorder());
         }
-    }
-
-    public SmallButton(String label, boolean isEnabled, ButtonType buttonType) {
-        super(label);
-        setEnabled(isEnabled);
-        setButtonType(buttonType);
-    }
+	}
 
     public void setButtonType(ButtonType buttonType) {
         putClientProperty("JButton.buttonType", buttonType.toString());    

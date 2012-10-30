@@ -382,12 +382,12 @@ public class TipDatesInputEditor extends PluginInputEditor {
 				if (c.getParent() != null) {
 					Dimension preferredSize = c.getSize();
 					preferredSize.height = Math.max(preferredSize.height - 170, 0);
-					preferredSize.width = Math.max(preferredSize.width - 20, 0);
+					preferredSize.width = Math.max(preferredSize.width - 25, 0);
 					scrollPane.setPreferredSize(preferredSize);					
 				} else if (doc.getFrame() != null) {
 					Dimension preferredSize = doc.getFrame().getSize();
 					preferredSize.height = Math.max(preferredSize.height - 170, 0);
-					preferredSize.width = Math.max(preferredSize.width - 20, 0);
+					preferredSize.width = Math.max(preferredSize.width - 25, 0);
 					scrollPane.setPreferredSize(preferredSize);
 				}				
 			}

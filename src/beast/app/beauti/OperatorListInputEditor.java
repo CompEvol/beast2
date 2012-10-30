@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +40,11 @@ public class OperatorListInputEditor extends ListInputEditor {
     @Override
     public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	Box box = Box.createHorizontalBox();
+    	box.add(Box.createHorizontalStrut(25));
     	box.add(new JLabel("Operator"));
     	box.add(Box.createGlue());
     	box.add(new JLabel("Weight"));
+    	box.add(Box.createHorizontalStrut(20));
     	add(box);
     	
     	m_buttonStatus = ButtonStatus.NONE;
@@ -52,16 +55,20 @@ public class OperatorListInputEditor extends ListInputEditor {
     protected InputEditor addPluginItem(Box itemBox, Plugin plugin) {
         Operator operator = (Operator) plugin;
 
-        JTextField entry = new JTextField(getLabel(operator));
+        JTextField entry = new JTextField(" " + getLabel(operator));
         entry.setMinimumSize(new Dimension(200, 16));
         //entry.setMaximumSize(new Dimension(200, 20));
         m_entries.add(entry);
+        entry.setBackground(getBackground());
+        entry.setBorder(null);
         itemBox.add(Box.createRigidArea(new Dimension(5, 1)));
         itemBox.add(entry);
         entry.setEditable(false);
+
 //        JLabel label = new JLabel(getLabel(operator));
 //        label.setBackground(Color.WHITE);
 //        m_labels.add(label);
+//        m_entries.add(null);
 //        itemBox.add(label);
 
 
@@ -70,9 +77,9 @@ public class OperatorListInputEditor extends ListInputEditor {
         weightEntry.setToolTipText(operator.m_pWeight.getTipText());
         weightEntry.setText(operator.m_pWeight.get() + "");
         weightEntry.getDocument().addDocumentListener(new OperatorDocumentListener(operator, weightEntry));
-        Dimension size = new Dimension(50, 16);
+        Dimension size = new Dimension(50, 25);
         weightEntry.setMinimumSize(size);
-        //weightEntry.setPreferredSize(size);
+        weightEntry.setPreferredSize(size);
         weightEntry.setMaximumSize(new Dimension(50, 50));
         itemBox.add(weightEntry);
 

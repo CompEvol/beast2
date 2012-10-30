@@ -103,7 +103,7 @@ public class GuessPatternDialog extends JDialog {
 		gbl_guessPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		gbl_guessPanel.columnWeights = new double[] { 1.0, 1.0, 1.0, 0.0, 1.0, 0.0 };
 		guessPanel.setLayout(gbl_guessPanel);
-
+		
 		group = new ButtonGroup();
 		group.add(b1);
 		group.add(b2);
