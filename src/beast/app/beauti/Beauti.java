@@ -630,7 +630,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			BeautiPanel panel = (BeautiPanel) getSelectedComponent();
 			if (panel != null) {
 				this.doc.determinePartitions();
-				panel.createList();
+				panel.updateList();
 				panel.refreshPanel();
 			}
 			requestFocus();

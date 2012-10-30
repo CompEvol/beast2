@@ -177,6 +177,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             return;
         }
         listModel.clear();
+        if (listModel.size() > 0) {
+        	return;
+        }
         for (Plugin partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
             String sPartition = partition.getID();
             sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
