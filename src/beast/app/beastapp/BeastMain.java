@@ -530,6 +530,7 @@ public class BeastMain {
 
         if (stateFileName!= null && stateFileName.trim().length() > 0) {
             System.setProperty("state.file.name", stateFileName.trim());
+            System.out.println("Writing state to file " + stateFileName);
         }
         
 
