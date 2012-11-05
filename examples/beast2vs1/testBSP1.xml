@@ -127,7 +127,7 @@
 		<distribution spec='TreeLikelihood' id="likelihood">
 		    <data idref="alignment"/>
 		    <tree idref="tree"/>
-			<siteModel spec='SiteModel' id="siteModel" gammaCategoryCount="4" useBeast1Gamma='true'>
+			<siteModel spec='SiteModel' id="siteModel" gammaCategoryCount="4">
 				<parameter id='siteModel.alpha' name='shape' value="5.40372E-2" lower="0.0" upper="100.0"/>
 
 				<substModel spec='HKY' id="hky">
