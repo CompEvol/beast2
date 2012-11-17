@@ -28,7 +28,7 @@
     <data data="@alignment" dataType="nucleotide" filter="3::3" id="CP3" name="taxa"
           spec="beast.evolution.alignment.FilteredAlignment"/>
 
-    <siteModel gammaCategoryCount="4" id="CP12.siteModel" spec="SiteModel" useBeast1Gamma='true'>
+    <siteModel gammaCategoryCount="4" id="CP12.siteModel" spec="SiteModel">
         <parameter dimension="1" id="CP12.mutationRate" name="mutationRate" value="1.0" lower="0.0"/>
         <parameter dimension="1" id="CP12.gammaShape" name="shape" value="0.5" lower="0.0" upper="1000.0"/>
         <substModel id="CP12.hky" kappa="@CP12.hky.kappa" spec="HKY">
@@ -36,7 +36,7 @@
         </substModel>
     </siteModel>
 
-    <siteModel gammaCategoryCount="4" id="CP3.siteModel" spec="SiteModel" useBeast1Gamma='true'>
+    <siteModel gammaCategoryCount="4" id="CP3.siteModel" spec="SiteModel">
         <parameter dimension="1" id="CP3.mutationRate" name="mutationRate" value="1.0" lower="0.0"/>
         <parameter dimension="1" id="CP3.gammaShape" name="shape" value="0.5" lower="0.0" upper="1000.0"/>
         <substModel id="CP3.hky" kappa="@CP3.hky.kappa" spec="HKY">
