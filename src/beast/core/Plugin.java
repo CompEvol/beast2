@@ -31,9 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import beast.app.beauti.BeautiPanelConfig;
-import beast.evolution.likelihood.TreeLikelihood;
-
 @Description(
         value = "Base class for all plug-ins, which is pretty much every class " +
                 "you want to incorporate in a model.",

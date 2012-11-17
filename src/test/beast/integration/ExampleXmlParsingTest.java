@@ -21,12 +21,16 @@ public class ExampleXmlParsingTest extends TestCase {
 
     @Test
     public void test_ThatXmlExamplesParse() {
+        String dir = System.getProperty("user.dir") + "/examples";
+    	test_ThatXmlExamplesParse(dir);
+    }
+    
+    public void test_ThatXmlExamplesParse(String dir) {
         try {
             Randomizer.setSeed(127);
             Logger.FILE_MODE = Logger.FILE_OVERWRITE;
-            String sDir = System.getProperty("user.dir") + "/examples";
-            System.out.println("Test XML Examples in " + sDir);
-            File sExampleDir = new File(sDir);
+            System.out.println("Test XML Examples in " + dir);
+            File sExampleDir = new File(dir);
             String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return name.endsWith(".xml");
@@ -38,7 +42,7 @@ public class ExampleXmlParsingTest extends TestCase {
                 System.out.println("Processing " + fileName);
                 XMLParser parser = new XMLParser();
                 try {
-                    parser.parseFile(new File(sDir + "/" + fileName));
+                    parser.parseFile(new File(dir + "/" + fileName));
                 } catch (Exception e) {
                     System.out.println("ExampleXmlParsing::Failed for " + fileName
                             + ": " + e.getMessage());
@@ -60,9 +64,13 @@ public class ExampleXmlParsingTest extends TestCase {
 
     @Test
     public void test_ThatXmlExamplesRun() {
+        String dir = System.getProperty("user.dir") + "/examples";
+        test_ThatXmlExamplesRun(dir);
+    }
+    
+    public void test_ThatXmlExamplesRun(String dir) {
         try {
             Logger.FILE_MODE = Logger.FILE_OVERWRITE;
-            String dir = System.getProperty("user.dir") + "/examples";
             System.out.println("Test that XML Examples run in " + dir);
             File sExampleDir = new File(dir);
             String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {

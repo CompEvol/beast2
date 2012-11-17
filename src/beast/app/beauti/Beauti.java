@@ -945,7 +945,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     }
                 };
                 jam.mac.Utils.macOSXRegistration(application);
-                //new beast.app.util.MacOSAppAdaptor(beauti.a_about, beauti.a_quit);
+                jam.maconly.OSXAdapter.enablePrefs(false);
             }
             beauti.setUpPanels();
 

@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -29,7 +30,7 @@ import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
 
@@ -213,11 +214,11 @@ public class SiteModelInputEditor extends PluginInputEditor {
 		try {
 			CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
 			for (Distribution d : likelihood.pDistributions.get()) {
-				TreeLikelihood treelikelihood = (TreeLikelihood) d;
+				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
 	    		Alignment data = treelikelihood.m_data.get(); 
 	    		int weight = data.getSiteCount();
-	    		SiteModel clockModel = (SiteModel) treelikelihood.m_pSiteModel.get();
-	    		RealParameter mutationRate = clockModel.muParameterInput.get();
+	    		SiteModel siteModel = (SiteModel) treelikelihood.m_pSiteModel.get();
+	    		RealParameter mutationRate = siteModel.muParameterInput.get();
 	    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
 	    		if (mutationRate.m_bIsEstimated.get()) {
 	    			if (commonClockRate < 0) {

@@ -19,8 +19,7 @@ import beast.core.Logger;
 import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
-//import beast.evolution.datatype.DataType;
-import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.util.XMLParser;
@@ -221,8 +220,8 @@ public class BeautiSubTemplate extends Plugin {
         if (this == doc.beautiConfig.partitionTemplate.get()) {
             // HACK: need to make sure the subst model is of the correct type
             Plugin treeLikelihood = doc.pluginmap.get("treeLikelihood." + context.partition);
-            if (treeLikelihood != null) {
-	            SiteModel.Base siteModel = ((TreeLikelihood) treeLikelihood).m_pSiteModel.get();
+            if (treeLikelihood != null && ((GenericTreeLikelihood) treeLikelihood).m_pSiteModel.get() instanceof SiteModel.Base) {
+	            SiteModel.Base siteModel = (SiteModel.Base) ((GenericTreeLikelihood) treeLikelihood).m_pSiteModel.get();
 	            SubstitutionModel substModel = siteModel.m_pSubstModel.get();
 	            try {
 	                siteModel.canSetSubstModel(substModel);
@@ -241,7 +240,7 @@ public class BeautiSubTemplate extends Plugin {
             if (logger != null) {
 	            String fileName = logger.m_pFileName.get();
 	            if (fileName.startsWith("beast.") && treeLikelihood != null) {
-	            	Alignment data = ((TreeLikelihood)treeLikelihood).m_data.get();
+	            	Alignment data = ((GenericTreeLikelihood)treeLikelihood).m_data.get();
 	            	while (data instanceof FilteredAlignment) {
 	            		data = ((FilteredAlignment) data).m_alignmentInput.get();
 	            	}

@@ -33,9 +33,7 @@ import java.util.List;
 import java.util.Random;
 
 import beast.core.Description;
-import beast.core.Distribution;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
@@ -49,13 +47,8 @@ import beast.evolution.tree.Tree;
 @Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model using " +
         "a variant of the 'peeling algorithm'. For details, see" +
         "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
-public class TreeLikelihood extends Distribution {
+public class TreeLikelihood extends GenericTreeLikelihood {
 
-    public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree", Validate.REQUIRED);
-    public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
-    public Input<SiteModel.Base> m_pSiteModel = new Input<SiteModel.Base>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
-    public Input<BranchRateModel.Base> m_pBranchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
-            "A model describing the rates on the branches of the beast.tree.");
     public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
     
     
@@ -140,7 +133,10 @@ public class TreeLikelihood extends Distribution {
         m_beagle = null;
 
         int nodeCount = m_tree.get().getNodeCount();
-        m_siteModel = m_pSiteModel.get();
+        if (!(m_pSiteModel.get() instanceof SiteModel.Base)) {
+        	throw new Exception ("siteModel input should be of type SiteModel.Base");
+        }
+        m_siteModel = (SiteModel.Base) m_pSiteModel.get();
         m_siteModel.setDataType(m_data.get().getDataType());
         m_substitutionModel = (SubstitutionModel.Base) m_siteModel.m_pSubstModel.get();
 

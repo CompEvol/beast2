@@ -178,6 +178,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
         listModel.clear();
         if (listModel.size() > 0) {
+        	// this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
         	return;
         }
         for (Plugin partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {

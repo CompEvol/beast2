@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -43,8 +44,9 @@ import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.Tree;
 
 // TODO: add useAmbiguities flag
@@ -67,7 +69,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	 */
 	List<Alignment> alignments;
 	int nPartitions;
-	TreeLikelihood[] likelihoods;
+	GenericTreeLikelihood[] likelihoods;
 	Object[][] tableData;
 	JTable table;
 	JTextField nameEditor;
@@ -293,7 +295,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			switch (nColumn) {
 			case SITEMODEL_COLUMN:
 				if (!doc.pluginmap.containsKey("SiteModel.s:" + sPartition)) {
-					String sID = likelihoods[iRow].m_pSiteModel.get().getID();
+					String sID = ((Plugin)likelihoods[iRow].m_pSiteModel.get()).getID();
 					oldName = BeautiDoc.parsePartition(sID);
 					doc.renamePartition(BeautiDoc.SITEMODEL_PARTITION, oldName, sPartition);
 					isRenaming = true;
@@ -344,7 +346,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			break;
 		}
 		int nPartition = doc.getPartitionNr(sPartition, partitionID);
-		TreeLikelihood treeLikelihood = null;
+		GenericTreeLikelihood treeLikelihood = null;
 		if (nPartition >= 0) {
 			// we ar linking
 			treeLikelihood = likelihoods[nPartition];
@@ -358,7 +360,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 		switch (nColumn) {
 		case SITEMODEL_COLUMN: {
-			SiteModel.Base siteModel = null;
+			SiteModelInterface siteModel = null;
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(sPartition,
 											// BeautiDoc.SITEMODEL_PARTITION) !=
 											// iRow) {
@@ -367,18 +369,22 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sPartition);
 				if (siteModel != likelihoods[iRow].m_pSiteModel.get()) {
 					PartitionContext context = getPartitionContext(iRow);
-					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin(likelihoods[iRow].m_pSiteModel.get(),
+					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((Plugin) likelihoods[iRow].m_pSiteModel.get(),
 							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
-			SiteModel.Base target = this.likelihoods[iRow].m_pSiteModel.get();
-			if (!target.m_pSubstModel.canSetValue(siteModel.m_pSubstModel.get(), target)) {
-				throw new Exception("Cannot link site model: substitution models are incompatible");
+			SiteModelInterface target = this.likelihoods[iRow].m_pSiteModel.get();
+			if (target instanceof SiteModel.Base && siteModel instanceof SiteModel.Base) {
+				if (!((SiteModel.Base)target).m_pSubstModel.canSetValue(((SiteModel.Base)siteModel).m_pSubstModel.get(), (SiteModel.Base) target)) {
+					throw new Exception("Cannot link site model: substitution models are incompatible");
+				}
+			} else {
+				throw new Exception("Don't know how to link this site model");
 			}
 			needsRePartition = (this.likelihoods[iRow].m_pSiteModel.get() != siteModel);
 			this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
 
-			sPartition = likelihoods[iRow].m_pSiteModel.get().getID();
+			sPartition = ((Plugin)likelihoods[iRow].m_pSiteModel.get()).getID();
 			sPartition = BeautiDoc.parsePartition(sPartition);
 			getDoc().setCurrentPartition(BeautiDoc.SITEMODEL_PARTITION, iRow, sPartition);
 		}
@@ -456,7 +462,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			if (needsRePartition) {
 				Tree oldTree = this.likelihoods[iRow].m_tree.get();
 				List<Tree> tModels = new ArrayList<Tree>();
-				for (TreeLikelihood likelihood : likelihoods) {
+				for (GenericTreeLikelihood likelihood : likelihoods) {
 					if (likelihood.m_tree.get() == oldTree) {
 						tModels.add(likelihood.m_tree.get());
 					}
@@ -525,7 +531,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 	}
 
 	void initTableData() {
-		this.likelihoods = new TreeLikelihood[nPartitions];
+		this.likelihoods = new GenericTreeLikelihood[nPartitions];
 		if (tableData == null) {
 			tableData = new Object[nPartitions][8];
 		}
@@ -549,7 +555,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			// Data type
 			tableData[i][TYPE_COLUMN] = data.getDataType();
 			// site model
-			TreeLikelihood likelihood = (TreeLikelihood) likelihoods.pDistributions.get().get(i);
+			GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(i);
 			assert (likelihood != null);
 			this.likelihoods[i] = likelihood;
 			tableData[i][SITEMODEL_COLUMN] = getPartition(likelihood.m_pSiteModel);
@@ -763,7 +769,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			partitionNames[i] = new HashSet<String>();
 		}
 		for (int i = 0; i < nPartitions; i++) {
-			partitionNames[0].add(likelihoods[i].m_pSiteModel.get().getID());
+			partitionNames[0].add(((Plugin) likelihoods[i].m_pSiteModel.get()).getID());
 			partitionNames[1].add(likelihoods[i].m_pBranchRateModel.get().getID());
 			partitionNames[2].add(likelihoods[i].m_tree.get().getID());
 		}
@@ -924,12 +930,12 @@ System.err.println("needsRePartition = " + needsRePartition);
 			
 			// check whether any of the models are linked
 			BranchRateModel.Base clockModel = likelihoods[iRow].m_pBranchRateModel.get();
-			SiteModel.Base siteModel = likelihoods[iRow].m_pSiteModel.get();
+			SiteModelInterface siteModel = likelihoods[iRow].m_pSiteModel.get();
 			Tree tree = likelihoods[iRow].m_tree.get();
-			List<TreeLikelihood> cModels = new ArrayList<TreeLikelihood>();
-			List<TreeLikelihood> sModels = new ArrayList<TreeLikelihood>();
-			List<TreeLikelihood> tModels = new ArrayList<TreeLikelihood>();
-			for (TreeLikelihood likelihood : likelihoods) {
+			List<GenericTreeLikelihood> cModels = new ArrayList<GenericTreeLikelihood>();
+			List<GenericTreeLikelihood> sModels = new ArrayList<GenericTreeLikelihood>();
+			List<GenericTreeLikelihood> tModels = new ArrayList<GenericTreeLikelihood>();
+			for (GenericTreeLikelihood likelihood : likelihoods) {
 				if (likelihood != likelihoods[iRow]) {
 				if (likelihood.m_pBranchRateModel.get() == clockModel) {
 					cModels.add(likelihood);
@@ -957,7 +963,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				
 				if (sModels.size() > 0) {
 					// site model is linked, so we need to unlink
-					if (doc.getPartitionNr(siteModel) != iRow) {
+					if (doc.getPartitionNr((Plugin) siteModel) != iRow) {
 						tableData[iRow][SITEMODEL_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
 					} else {
 						int iFreePartition = doc.getPartitionNr(sModels.get(0));

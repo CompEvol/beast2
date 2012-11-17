@@ -29,6 +29,7 @@ import beagle.*;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
+import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -71,14 +72,17 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     int m_nNodeCount;
 
     @Override
-    public void initAndValidate() {
+    public void initAndValidate() throws Exception {
         initialize();
     }
 
-    boolean initialize() {
+    boolean initialize() throws Exception {
         m_nNodeCount = m_tree.get().getNodeCount();
         m_bUseAmbiguities = m_useAmbiguities.get();
-        m_siteModel = m_pSiteModel.get();
+        if (!(m_pSiteModel.get() instanceof SiteModel.Base)) {
+        	throw new Exception ("siteModel input should be of type SiteModel.Base");
+        }
+        m_siteModel = (SiteModel.Base) m_pSiteModel.get();
         m_siteModel.setDataType(m_data.get().getDataType());
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
         m_branchRateModel = m_pBranchRateModel.get();

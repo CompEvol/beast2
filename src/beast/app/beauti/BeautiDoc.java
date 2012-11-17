@@ -54,7 +54,7 @@ import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
-import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
@@ -736,8 +736,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			for (Distribution distr : posterior.pDistributions.get()) {
 				if (distr.getID().equals("likelihood")) {
 					for (Distribution likelihood : ((CompoundDistribution) distr).pDistributions.get()) {
-						if (likelihood instanceof TreeLikelihood) {
-							TreeLikelihood treeLikelihood = (TreeLikelihood) likelihood;
+						if (likelihood instanceof GenericTreeLikelihood) {
+							GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) likelihood;
 							PartitionContext context = new PartitionContext(treeLikelihood);
 							try {
 								beautiConfig.partitionTemplate.get().createSubNet(context, false);
@@ -854,8 +854,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		if (trait != null) {
 			CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
 			for (Distribution d : likelihood.pDistributions.get()) {
-				if (d instanceof TreeLikelihood) {
-					Tree tree = ((TreeLikelihood) d).m_tree.get();
+				if (d instanceof GenericTreeLikelihood) {
+					Tree tree = ((GenericTreeLikelihood) d).m_tree.get();
 					try {
 						tree.m_trait.setValue(trait, tree);
 					} catch (Exception e) {
@@ -883,7 +883,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
 		while (clockModels.size() < sPartitionNames.size()) {
 			try {
-				TreeLikelihood treelikelihood = new TreeLikelihood();
+				GenericTreeLikelihood treelikelihood = new GenericTreeLikelihood();
 				treelikelihood.m_pBranchRateModel.setValue(new StrictClockModel(), treelikelihood);
 				List<BeautiSubTemplate> sAvailablePlugins = inputEditorFactory.getAvailableTemplates(
 						treelikelihood.m_pBranchRateModel, treelikelihood, null, this);
@@ -896,7 +896,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		}
 		int k = 0;
 		for (Distribution d : likelihood.pDistributions.get()) {
-			BranchRateModel clockModel = ((TreeLikelihood) d).m_pBranchRateModel.get();
+			BranchRateModel clockModel = ((GenericTreeLikelihood) d).m_pBranchRateModel.get();
 			// sanity check
 			Tree tree = null;
 			try {
@@ -906,10 +906,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					}
 
 				}
-				if (tree != null && tree != ((TreeLikelihood) d).m_tree.get()) {
+				if (tree != null && tree != ((GenericTreeLikelihood) d).m_tree.get()) {
 					clockModel = clockModels.get(k);
 					System.err.println("WARNING: unlinking clock model for " + d.getID());
-					((TreeLikelihood) d).m_pBranchRateModel.setValue(clockModel, d);
+					((GenericTreeLikelihood) d).m_pBranchRateModel.setValue(clockModel, d);
 				}
 			} catch (Exception e) {
 				// ignore
@@ -1014,7 +1014,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
                 }
 			}
 			for (Plugin plugin : pPartition[2]) {
-				Tree tree = ((TreeLikelihood) plugin).m_tree.get();
+				Tree tree = ((GenericTreeLikelihood) plugin).m_tree.get();
 				tree.m_bIsEstimated.setValue(true, tree);
             }
 			if (pluginmap.containsKey("Tree.t:Species")) {
@@ -1158,8 +1158,8 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			int i = 0;
 			RealParameter firstClock = null;
 			for (Distribution distr : ((CompoundDistribution) likelihood).pDistributions.get()) {
-				if (distr instanceof TreeLikelihood) {
-					TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
+				if (distr instanceof GenericTreeLikelihood) {
+					GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
 					boolean bNeedsEstimation = false;
 					if (i > 0) {
 						BranchRateModel.Base model = (BranchRateModel.Base) treeLikelihood.m_pBranchRateModel.get();
@@ -1358,9 +1358,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 		sPartitionNames.clear();
 		possibleContexts.clear();
 		for (Distribution distr : likelihood.pDistributions.get()) {
-			if (distr instanceof TreeLikelihood) {
-				TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
-				alignments.add(treeLikelihood.m_data.get());				PartitionContext context = new PartitionContext(treeLikelihood);
+			if (distr instanceof GenericTreeLikelihood) {
+				GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
+				alignments.add(treeLikelihood.m_data.get());				
+				PartitionContext context = new PartitionContext(treeLikelihood);
 				sPartitionNames.add(context);
 				boolean found = false;
 				for (PartitionContext context2 : possibleContexts) {
@@ -1380,23 +1381,23 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			pPartition[i].clear();
 			nCurrentPartitions[i].clear();
 		}
-		List<TreeLikelihood> treeLikelihoods = new ArrayList<TreeLikelihood>();
+		List<GenericTreeLikelihood> treeLikelihoods = new ArrayList<GenericTreeLikelihood>();
 		for (Distribution distr : likelihood.pDistributions.get()) {
-			if (distr instanceof TreeLikelihood) {
-				TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
+			if (distr instanceof GenericTreeLikelihood) {
+				GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
 				alignments.add(treeLikelihood.m_data.get());
 				treeLikelihoods.add(treeLikelihood);
 			}
 		}
 		for (Distribution distr : likelihood.pDistributions.get()) {
-			if (distr instanceof TreeLikelihood) {
-				TreeLikelihood treeLikelihood = (TreeLikelihood) distr;
+			if (distr instanceof GenericTreeLikelihood) {
+				GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
 				try {
 					// sync SiteModel, ClockModel and Tree to any changes that
 					// may have occurred
 					// this should only affect the clock model in practice
-					int nPartition = getPartitionNr(treeLikelihood.m_pSiteModel.get());
-					TreeLikelihood treeLikelihood2 = treeLikelihoods.get(nPartition);
+					int nPartition = getPartitionNr((Plugin) treeLikelihood.m_pSiteModel.get());
+					GenericTreeLikelihood treeLikelihood2 = treeLikelihoods.get(nPartition);
 					treeLikelihood.m_pSiteModel.setValue(treeLikelihood2.m_pSiteModel.get(), treeLikelihood);
 					nCurrentPartitions[0].add(nPartition);
 
@@ -1805,7 +1806,7 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	}
 
 	static public void collectAncestors(Plugin plugin, Set<Plugin> ancestors, Set<Plugin> tabu) {
-		if ((plugin instanceof TreeLikelihood) || (plugin instanceof BeautiPanelConfig)) {
+		if ((plugin instanceof GenericTreeLikelihood) || (plugin instanceof BeautiPanelConfig)) {
 			return;
 		}
 		ancestors.add(plugin);
