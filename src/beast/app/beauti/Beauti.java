@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -945,7 +946,14 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     }
                 };
                 jam.mac.Utils.macOSXRegistration(application);
-                jam.maconly.OSXAdapter.enablePrefs(false);
+                
+                try {
+                	Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
+                    Method method = class_.getMethod("enablePrefs", boolean.class);
+                    method.invoke(null, false);
+                } catch (java.lang.NoSuchMethodException e) {
+                	// ignore
+                }
             }
             beauti.setUpPanels();
 
