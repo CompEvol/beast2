@@ -3,6 +3,9 @@ package test.beast.app.beauti;
 
 
 
+import static org.fest.swing.edt.GuiActionRunner.execute;
+import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
+
 import java.awt.Component;
 import java.io.File;
 import java.util.Arrays;
@@ -11,19 +14,25 @@ import javax.swing.JComboBox;
 
 import org.fest.swing.data.Index;
 import org.fest.swing.data.TableCell;
+import org.fest.swing.edt.GuiTask;
 import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;
 
+import beast.app.util.Utils;
+
 public class BeautiRateTutorialTest extends BeautiBase {
+	// file used to store, then reload xml
+	final static String XML_FILE = "rsv.xml";
 
 	@Test
-	public void DivergenceDatingTutorial() throws InterruptedException {
+	public void MEPTutorial() throws InterruptedException {
 		long t0 = System.currentTimeMillis();
 		
 		// 0. Load primate-mtDNA.nex
@@ -197,19 +206,103 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		
 		//7. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree
 		warning("7. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree");
-		File fout = new File(org.fest.util.Files.temporaryFolder() + "/rsv.xml");
+		File fout = new File(org.fest.util.Files.temporaryFolder() + "/" + XML_FILE);
 		if (fout.exists()) {
 			fout.delete();
 		}
+		saveFile(""+org.fest.util.Files.temporaryFolder(), XML_FILE);
 		makeSureXMLParses();
 		
 		long t1 = System.currentTimeMillis();
 		System.err.println("total time: " + (t1 - t0)/1000 + " seconds");
 		
 	}
+	
+	
 
 
+	@Test
+	public void MEPBSPTutorial() throws InterruptedException {
+		try {
+		long t0 = System.currentTimeMillis();
 
+		// 1. reaload XML file
+		warning("1. reload rsv.xml");
+		String dir = "" + org.fest.util.Files.temporaryFolder();
+		String file = XML_FILE;
+		
+		if (!Utils.isMac()) {
+			beautiFrame.menuItemWithPath("File", "Load").click();
+			JFileChooserFixture fileChooser = findFileChooser().using(robot());
+			fileChooser.setCurrentDirectory(new File(dir));
+			fileChooser.selectFile(new File(file)).approve();
+		} else {
+			_file = new File(dir + "/" + file);
+			execute(new GuiTask() {
+		        protected void executeInEDT() {
+	                doc.newAnalysis();
+	                doc.setFileName(_file.getAbsolutePath());
+	                try {
+		                doc.loadXML(new File(doc.getFileName()));
+		        	} catch (Exception e) {
+						e.printStackTrace();
+					}
+		        }
+		    });
+							
+		}
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		printBeautiState(f);
+
+		// 2. change tree prior to BSP
+		warning("2. change tree prior to BSP");
+		f.selectTab("Priors");
+		beautiFrame.comboBox("TreeDistribution").selectItem("Coalescent Bayesian Skyline");
+		printBeautiState(f);
+		
+		// 3. change tree prior to BSP
+		warning("3. change group and population size parameters");
+		beautiFrame.menuItemWithPath("View","Show Initialization panel").click();
+		
+		beautiFrame.button("bPopSizes.t:tree.editButton").click();
+		beautiFrame.textBox("dimension").selectAll().setText("3");
+		beautiFrame.button("bPopSizes.t:tree.editButton").click();
+		
+		beautiFrame.button("bGroupSizes.t:tree.editButton").click();
+		beautiFrame.textBox("dimension").selectAll().setText("3");
+		printBeautiState(f);
+		
+		// 4. set chain-length to 10M, log every 10K
+		warning("4. set chaing-length to 10M, log every 10K");
+		f = f.selectTab("MCMC");
+		beautiFrame.textBox("chainLength").selectAll().setText("10000000");
+		beautiFrame.button("tracelog.editButton").click();
+		beautiFrame.textBox("logEvery").selectAll().setText("10000");
+		beautiFrame.button("tracelog.editButton").click();
+		
+
+		beautiFrame.button("treelog.t:tree.editButton").click();
+		beautiFrame.textBox("logEvery").selectAll().setText("10000");
+		beautiFrame.button("treelog.t:tree.editButton").click();
+		printBeautiState(f);
+		
+		// 5. save XML file
+		warning("5. save XML file");
+		File fout = new File(org.fest.util.Files.temporaryFolder() + "/" + XML_FILE);
+		if (fout.exists()) {
+			fout.delete();
+		}
+		saveFile(""+org.fest.util.Files.temporaryFolder(), XML_FILE);
+
+		//4. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree
+		makeSureXMLParses();
+		long t1 = System.currentTimeMillis();
+		System.err.println("total time: " + (t1 - t0)/1000 + " seconds");
+		} catch (Exception e) {
+			e.printStackTrace();
+		
+		}
+	}
 
 }
 

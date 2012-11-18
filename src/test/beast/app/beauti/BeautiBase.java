@@ -265,7 +265,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		}
 	}
 
-	private void saveFile(String dir, String file) {
+	protected void saveFile(String dir, String file) {
 		if (!Utils.isMac()) {
 			beautiFrame.menuItemWithPath("File", "Save As").click();
 			JFileChooserFixture fileChooser = findFileChooser().using(robot());
@@ -283,8 +283,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		        }
 		    });
 			
-		}
-		
+		}	
 	}
 
 	// for handling file open events on Mac
