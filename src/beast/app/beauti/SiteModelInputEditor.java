@@ -33,6 +33,7 @@ import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModelInterface;
 
 public class SiteModelInputEditor extends PluginInputEditor {
     private static final long serialVersionUID = 1L;
@@ -53,13 +54,14 @@ public class SiteModelInputEditor extends PluginInputEditor {
 
     @Override
     public Class<?> type() {
-        return SiteModel.Base.class;
+        return SiteModelInterface.class;
     }
     
     @Override
     public void init(Input<?> input, Plugin plugin, int itemNr,
     		ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean mutation rate");
+    	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
