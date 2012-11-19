@@ -531,9 +531,11 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
                 <distr id="popPriorDist.EBSP" mean="@populationMean.alltrees" spec="Exponential"/>
             </prior>
 
-			<logger id="EBSPLogger" fileName='EBSP.$(seed).log' logEvery='5000'>
-				<log idref='demographic.alltrees'/>
-			</logger>
+            <logger id="EBSPLogger" fileName='EBSP.$(seed).log' logEvery='5000'>
+                <log idref='demographic.alltrees'/>
+            </logger>
+            <log id='sumIndicators' spec='beast.core.util.Sum' arg='@indicators.alltrees'/>
+
 
 			<operator id="bitflip.alltrees" parameter="@indicators.alltrees" spec="BitFlipOperator" uniform="true" weight="30.0"/>
 			<operator id="indicatorSampler.alltrees" dist="@popPriorDist.EBSP" indicators="@indicators.alltrees" spec="beast.evolution.tree.coalescent.SampleOffValues" values="@popSizes.alltrees" weight="15.0"/>
@@ -554,9 +556,11 @@ suppressInputs="beast.evolution.substitutionmodel.MutationDeathModel.substmodel,
             <connect srcID='indicatorsPrior.alltrees'     targetID='prior' inputName='distribution' if='inposterior(ExtendedBayesianSkyline.t:$(n))'>Average number of population change points of partition t:$(n)</connect>
             <connect srcID='popSizePrior.alltrees'        targetID='prior' inputName='distribution' if='inposterior(ExtendedBayesianSkyline.t:$(n))'>Extended Bayesian Skyline population prior of partition t:$(n)</connect>
 
-            <connect srcID='indicators.alltrees'     targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
-            <connect srcID='populationMean.alltrees' targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
-            <connect srcID='popSizes.alltrees'       targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
+            <connect srcID='ExtendedBayesianSkyline.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
+            <connect srcID='indicators.alltrees'            targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
+            <connect srcID='populationMean.alltrees'        targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
+            <connect srcID='popSizes.alltrees'              targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
+            <connect srcID='sumIndicators'                  targetID='tracelog' inputName='log' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
 
             <connect srcID='EBSPLogger' targetID='mcmc' inputName='logger' if='inposterior(ExtendedBayesianSkyline.t:$(n))'/>
 

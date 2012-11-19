@@ -23,6 +23,7 @@ import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
 import org.fest.swing.fixture.JTableFixture;
+import org.fest.swing.image.ScreenshotTaker;
 import org.junit.Test;
 
 import beast.app.util.Utils;
@@ -30,10 +31,18 @@ import beast.app.util.Utils;
 public class BeautiRateTutorialTest extends BeautiBase {
 	// file used to store, then reload xml
 	final static String XML_FILE = "rsv.xml";
+	final static String PREFIX = "doc/tutorials/MEPs/figures/generated/BEAUti_";
 
 	@Test
 	public void MEPTutorial() throws InterruptedException {
 		long t0 = System.currentTimeMillis();
+		ScreenshotTaker screenshotTaker = new ScreenshotTaker();
+		beauti.frame.setSize(1024, 640);
+		
+		File dir = new File(PREFIX.substring(0, PREFIX.lastIndexOf('/')));
+		for (File file : dir.listFiles()) {
+			file.delete();
+		}
 		
 		// 0. Load primate-mtDNA.nex
 		warning("// 0. Load RSV2.nex");
@@ -139,6 +148,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		beautiFrame.checkBox("mutationRate.isEstimated").check();
 		JCheckBoxFixture fixMeanMutationRate = beautiFrame.checkBox("FixMeanMutationRate");
 		fixMeanMutationRate.check();
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "Site_Model.png");
 		printBeautiState(f);
 		
 		//3c. Unlink site models
@@ -154,6 +164,8 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "KappaPrior.s:RSV2_1", "KappaPrior.s:RSV2_2", "KappaPrior.s:RSV2_3");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "treeLikelihood.RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3");
 		
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "partition.png");
+		
 		//4. set up tip dates
 		f = f.selectTab("Tip Dates");
 		warning("4. Seting up tip dates");
@@ -161,7 +173,9 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		beautiFrame.button("Guess").click();
 		JOptionPaneFixture dialog2 = new JOptionPaneFixture(robot());
 		dialog2.textBox("SplitChar").deleteText().enterText("s");
+		screenshotTaker.saveComponentAsPng(dialog2.component(), PREFIX + "GuessDates.png");
 		dialog2.okButton().click();
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "dates.png");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock");
@@ -178,6 +192,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		beautiFrame.button("ClockPrior.c:clock.editButton").click();
 		beautiFrame.textBox("M").selectAll().setText("-5");
 		beautiFrame.textBox("S").selectAll().setText("1.25");
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "priors.png");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock", "popSize.t:tree");
 		assertOperatorsEqual("treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock", "PopSizeScaler.t:tree");
@@ -196,6 +211,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 
 		beautiFrame.button("treelog.t:tree.editButton").click();
 		beautiFrame.textBox("logEvery").selectAll().setText("400");
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "mcmc.png");
 		beautiFrame.button("treelog.t:tree.editButton").click();
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock", "popSize.t:tree");
@@ -225,6 +241,8 @@ public class BeautiRateTutorialTest extends BeautiBase {
 	public void MEPBSPTutorial() throws InterruptedException {
 		try {
 		long t0 = System.currentTimeMillis();
+		ScreenshotTaker screenshotTaker = new ScreenshotTaker();
+		beauti.frame.setSize(1024, 640);
 
 		// 1. reaload XML file
 		warning("1. reload rsv.xml");
@@ -258,6 +276,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("2. change tree prior to BSP");
 		f.selectTab("Priors");
 		beautiFrame.comboBox("TreeDistribution").selectItem("Coalescent Bayesian Skyline");
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "priors2.png");
 		printBeautiState(f);
 		
 		// 3. change tree prior to BSP
@@ -270,6 +289,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		
 		beautiFrame.button("bGroupSizes.t:tree.editButton").click();
 		beautiFrame.textBox("dimension").selectAll().setText("3");
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "init.png");
 		printBeautiState(f);
 		
 		// 4. set chain-length to 10M, log every 10K
