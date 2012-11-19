@@ -13,8 +13,6 @@ import javax.swing.JComboBox;
 
 import org.fest.swing.data.Index;
 import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
@@ -25,8 +23,6 @@ import org.fest.swing.fixture.JTableCellFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.junit.Test;
-
-import beast.app.beauti.TaxonSetDialog;
 
 public class BeautiDivergenceDatingTest extends BeautiBase {
 

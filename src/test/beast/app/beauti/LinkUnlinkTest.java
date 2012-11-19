@@ -2,12 +2,10 @@ package test.beast.app.beauti;
 
 
 
-import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
 
 import java.io.File;
 
 import org.fest.swing.data.TableCell;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;

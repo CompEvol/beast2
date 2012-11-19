@@ -2,6 +2,10 @@
 \usepackage{graphicx}
 \usepackage[left=3cm,top=3cm,right=3cm,bottom=3cm]{geometry}
 
+\newcommand{\BEASTVersion}{2.0}
+\newcommand{\TracerVersion}{1.5}
+\newcommand{\FigTreeVersion}{1.3.1}
+
 \begin{document}
 
 \author{Alexei J Drummond and Remco Bouckaert}
@@ -21,14 +25,27 @@
 
 \section{Time-stamped data}
 
-This chapter estimates the rate of evolution from a set of virus sequences which have been isolated at different points in time (heterochronous or time-stamped data). The data are 129 sequences from the G (attachment protein) gene of human respiratory
+This tutorial estimates the rate of evolution from a set of virus sequences which have been isolated at different points in time (heterochronous or time-stamped data). The data are 129 sequences from the G (attachment protein) gene of human respiratory
 syncytial virus subgroup A (RSVA) from various parts of the world with isolation dates ranging from 1956-2002 \cite{Zlateva:2004uq,Zlateva:2005qy}.
-The aim is to obtain estimates for :
+RSVA causes infections of the lower respiratory tract causing symptoms that are often indistinguishable from the common cold. By age 3, nearly all children will be infected and a small percentage ($<3\%$) will develop more serious inflammation of the bronchioles requiring hospitalisation.
+
+The aim of this tutorial is to obtain estimates for :
 
 \begin{itemize}
 \item the rate of molecular evolution
 \item the date of the most recent common ancestor
 \item the phylogenetic relationships with measures of statistical support.
+\end{itemize}
+
+The following software will be used in this tutorial:
+
+\begin{itemize}
+\item {\bf BEAST} - this package contains the BEAST program, BEAUti, DensiTree, TreeAnnotator and other utility programs. This tutorial is written for BEAST v{\BEASTVersion}, which has support for multiple partitions. It is available for download from \\* \texttt{http://beast2.cs.auckland.ac.nz/}.
+\item {\bf Tracer} - this program is used to explore the output of BEAST (and other Bayesian MCMC programs). It graphically and
+quantitively summarizes the distributions of continuous parameters and provides diagnostic information. At the time of
+writing, the current version is v{\TracerVersion}. It is available for download from \texttt{http://beast.bio.ed.ac.uk/}.
+\item {\bf FigTree} - this is an application for displaying and printing molecular phylogenies, in particular those obtained using
+BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is available for download from \texttt{http://tree.bio.ed.ac.uk/}.
 \end{itemize}
 
 \subsection*{The NEXUS alignment}
@@ -65,7 +82,7 @@ The dates panel should now look something like this:
 
 
 \subsection*{Setting the substitution model}
-We will use the HKY model with empirical base frequencies for all three partitions. To do this first link the site partitions and then choose HKY and Empirical from the Subst Model and Frequencies drop-boxes. Also check the estimate box for the Mutation Rate and finally check the "Fix mean mutation rate" box. Then go back to Partitions panel and unlink the partitions.
+We will use the HKY model with empirical base frequencies for all three partitions. To do this first link the site partitions and then choose HKY and Empirical from the Subst Model and Frequencies drop-boxes. Also check the estimate box for the Mutation Rate and finally check the ``Fix mean mutation rate'' box. Then go back to Partitions panel and unlink the partitions.
 
 \medskip{}
 
@@ -75,6 +92,7 @@ We will use the HKY model with empirical base frequencies for all three partitio
 
 \subsubsection{Priors }
 
+To set up the priors, select the ``Priors'' tab.
 Choose ``Coalescent Constant Population'' for the tree prior. Set the prior on the clockRate parameter to a log-normal with $M=-5$ and $S=1.25$. 
 
 \medskip{}
@@ -258,7 +276,6 @@ How many groups are indicated by the EBSP analysis?
 This is much lower than for BSP. How does this affect the population history plots?
 
 \bibliographystyle{amsplain} 
-%\bibliographystyle{agsm}
 \bibliography{MEPs}
 
 \end{document}
