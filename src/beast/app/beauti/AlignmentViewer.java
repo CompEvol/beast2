@@ -232,6 +232,7 @@ public class AlignmentViewer extends JPanel {
 
     public void showInDialog() {
         JDialog dlg = new JDialog();
+        dlg.setName("AlignmentViewer");
         dlg.add(this);
 
         Box buttonBox = Box.createHorizontalBox();
@@ -240,8 +241,8 @@ public class AlignmentViewer extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                JCheckBox useColor = (JCheckBox) e.getSource();
-                useDots = useColor.isSelected();
+                JCheckBox _useDots = (JCheckBox) e.getSource();
+                useDots = _useDots.isSelected();
                 updateTableData();
                 repaint();
             }
@@ -249,6 +250,7 @@ public class AlignmentViewer extends JPanel {
         buttonBox.add(useDotsCheckBox);
 
         JCheckBox useColorCheckBox = new JCheckBox("Use Color");
+        useColorCheckBox.setName("UseColor");
         useColorCheckBox.addActionListener(new ActionListener() {
 
             @Override

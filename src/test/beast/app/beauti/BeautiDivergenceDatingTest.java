@@ -13,6 +13,8 @@ import javax.swing.JComboBox;
 
 import org.fest.swing.data.Index;
 import org.fest.swing.data.TableCell;
+import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
@@ -22,9 +24,11 @@ import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.image.ScreenshotTaker;
 import org.junit.Test;
 
 public class BeautiDivergenceDatingTest extends BeautiBase {
+	final static String PREFIX = "doc/tutorials/DivergenceDating/figures/BEAUti_";
 
 	@Test
 	public void DivergenceDatingTutorial() throws InterruptedException {
@@ -34,7 +38,6 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		warning("// 0. Load primate-mtDNA.nex");
 		importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
 
-		// load anolis.nex
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		f.requireVisible();
 		f.requireTitle("Partitions", Index.atIndex(0));
@@ -74,7 +77,8 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertStateEquals("Tree.t:noncoding", "birthRate.t:noncoding", "Tree.t:3rdpos", "clockRate.c:3rdpos", "birthRate.t:3rdpos", "Tree.t:1stpos", "clockRate.c:1stpos", "birthRate.t:1stpos", "Tree.t:2ndpos", "clockRate.c:2ndpos", "birthRate.t:2ndpos");
 		assertOperatorsEqual("YuleBirthRateScaler.t:noncoding", "treeScaler.t:noncoding", "treeRootScaler.t:noncoding", "UniformOperator.t:noncoding", "SubtreeSlide.t:noncoding", "narrow.t:noncoding", "wide.t:noncoding", "WilsonBalding.t:noncoding", "StrictClockRateScaler.c:3rdpos", "YuleBirthRateScaler.t:3rdpos", "treeScaler.t:3rdpos", "treeRootScaler.t:3rdpos", "UniformOperator.t:3rdpos", "SubtreeSlide.t:3rdpos", "narrow.t:3rdpos", "wide.t:3rdpos", "WilsonBalding.t:3rdpos", "StrictClockRateScaler.c:1stpos", "YuleBirthRateScaler.t:1stpos", "treeScaler.t:1stpos", "treeRootScaler.t:1stpos", "UniformOperator.t:1stpos", "SubtreeSlide.t:1stpos", "narrow.t:1stpos", "wide.t:1stpos", "WilsonBalding.t:1stpos", "StrictClockRateScaler.c:2ndpos", "YuleBirthRateScaler.t:2ndpos", "treeScaler.t:2ndpos", "treeRootScaler.t:2ndpos", "UniformOperator.t:2ndpos", "SubtreeSlide.t:2ndpos", "narrow.t:2ndpos", "wide.t:2ndpos", "WilsonBalding.t:2ndpos", "strictClockUpDownOperator.c:3rdpos", "strictClockUpDownOperator.c:2ndpos", "strictClockUpDownOperator.c:1stpos");
 		assertPriorsEqual("YuleModel.t:1stpos", "YuleModel.t:2ndpos", "YuleModel.t:3rdpos", "YuleModel.t:noncoding", "YuleBirthRatePrior.t:1stpos", "YuleBirthRatePrior.t:2ndpos", "YuleBirthRatePrior.t:3rdpos", "YuleBirthRatePrior.t:noncoding", "ClockPrior.c:1stpos", "ClockPrior.c:2ndpos", "ClockPrior.c:3rdpos");
-
+		
+		
 		//2a. Link trees... 
 		warning("2a. Link trees...");
 		f.selectTab("Partitions");
@@ -133,6 +137,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
 
+		
 		//4. Link site models temporarily in order to set the same model for all of them.
 		warning("4. Link site models temporarily in order to set the same model for all of them.");
 		f.selectTab("Partitions");
@@ -258,14 +263,24 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 	}
 
 	@Test
-	public void DivergenceDatingTutorialWithEmpiricalFreqs() throws InterruptedException {
+	public void DivergenceDatingTutorialWithEmpiricalFreqs() throws Exception {
+		try {
 		long t0 = System.currentTimeMillis();
+		ScreenshotTaker screenshotTaker = new ScreenshotTaker();
+		beauti.frame.setSize(1024, 640);
+
+		String BASE_DIR = PREFIX.substring(0, PREFIX.lastIndexOf('/'));
+		for (File file : new File(BASE_DIR).listFiles()) {
+			if (file.getAbsolutePath().contains(PREFIX) && file.getName().endsWith(".png")) {
+				file.delete();
+			}
+		}
 		
 		// 0. Load primate-mtDNA.nex
 		warning("// 0. Load primate-mtDNA.nex");
 		importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "DataPartitions.png");
 
-		// load anolis.nex
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		f.requireVisible();
 		f.requireTitle("Partitions", Index.atIndex(0));
@@ -274,8 +289,16 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		System.err.println(Arrays.toString(titles));
 		f = f.selectTab("Partitions");
 		
-		// check table
+		// inspect alignment
 		JTableFixture t = beautiFrame.table();
+		t.selectCell(TableCell.row(0).column(0)).doubleClick();
+		DialogFixture dlg = WindowFinder.findDialog("AlignmentViewer").using(robot());
+		dlg.target.setSize(768, 300);
+		dlg.checkBox("UseColor").check();
+		screenshotTaker.saveComponentAsPng(dlg.target, PREFIX + "Alignment.png");
+		dlg.close();
+		
+		// check table
 		printTableContents(t);
 		checkTableContents(f, "[coding, primate-mtDNA, 12, 693, nucleotide, coding, coding, coding]*" +
 				"[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding]*" +
@@ -363,6 +386,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "DataPartitions_final.png");
 
 		//4. Link site models temporarily in order to set the same model for all of them.
 		warning("4. Link site models temporarily in order to set the same model for all of them.");
@@ -394,6 +418,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 
 		JCheckBoxFixture shapeIsEstimated = beautiFrame.checkBox("shape.isEstimated");
 		shapeIsEstimated.check();
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "Model.png");
 		printBeautiState(f);
 		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
 				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
@@ -449,6 +474,9 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		//7a. Create a Normal calibration prior 
 		warning("7a. Create a Normal calibration prior");
 		f.selectTab("Priors");
+		beautiFrame.comboBox("TreeDistribution").selectItem("Calibrated Yule Model");		
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "Prior1.png");
+		
 		Component c = beautiFrame.robot.finder().findByName("addItem");
 		JButtonFixture addButton = new JButtonFixture(robot(), (JButton) c);
 		addButton.click();		
@@ -458,10 +486,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		dialog.button(">>").click();
 		dialog.okButton().click();
 		printBeautiState(f);
-		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos");
-		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "KappaScaler.s:1stpos", "gammaShapeScaler.s:1stpos", "KappaScaler.s:2ndpos", "gammaShapeScaler.s:2ndpos", "KappaScaler.s:3rdpos", "gammaShapeScaler.s:3rdpos", "mutationRateScaler.s:noncoding", "mutationRateScaler.s:1stpos", "mutationRateScaler.s:2ndpos");
-		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "GammaShapePrior.s:1stpos", "GammaShapePrior.s:2ndpos", "GammaShapePrior.s:3rdpos", "GammaShapePrior.s:noncoding", "KappaPrior.s:1stpos", "KappaPrior.s:2ndpos", "KappaPrior.s:3rdpos", "KappaPrior.s:noncoding", "MutationRatePrior.s:1stpos", "MutationRatePrior.s:2ndpos", "MutationRatePrior.s:noncoding", "Human-Chimp.prior");
-		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "treeLikelihood.1stpos", "treeLikelihood.2ndpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "Human-Chimp.prior");
+		assertStateEquals("Tree.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "birthRateY.t:tree");
+		assertOperatorsEqual("treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "gammaShapeScaler.s:1stpos", "KappaScaler.s:1stpos", "gammaShapeScaler.s:2ndpos", "KappaScaler.s:2ndpos", "gammaShapeScaler.s:3rdpos", "KappaScaler.s:3rdpos", "mutationRateScaler.s:noncoding", "mutationRateScaler.s:1stpos", "mutationRateScaler.s:2ndpos", "CalibratedYuleBirthRateScaler.t:tree");
+		assertPriorsEqual("CalibratedYuleModel.t:tree", "CalibratedYuleBirthRatePrior.t:tree", "GammaShapePrior.s:1stpos", "GammaShapePrior.s:2ndpos", "GammaShapePrior.s:3rdpos", "GammaShapePrior.s:noncoding", "KappaPrior.s:1stpos", "KappaPrior.s:2ndpos", "KappaPrior.s:3rdpos", "KappaPrior.s:noncoding", "MutationRatePrior.s:1stpos", "MutationRatePrior.s:2ndpos", "MutationRatePrior.s:noncoding", "Human-Chimp.prior");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.2ndpos", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "treeLikelihood.1stpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "CalibratedYuleModel.t:tree", "birthRateY.t:tree", "Human-Chimp.prior");
 		
 		//7b. and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.
 		warning("7b. and monophyletic constraint on Human-Chimp split of 6 +/- 0.5.");
@@ -471,12 +499,30 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		beautiFrame.button("Human-Chimp.prior.editButton").click();
 		beautiFrame.textBox("mean").selectAll().setText("6");
 		beautiFrame.textBox("sigma").selectAll().setText("0.5");
+		beautiFrame.scrollBar().scrollToMaximum();
+		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "TaxonSets.png");
 		printBeautiState(f);
-		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "clockRate.c:clock");
-		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "KappaScaler.s:1stpos", "gammaShapeScaler.s:1stpos", "KappaScaler.s:2ndpos", "gammaShapeScaler.s:2ndpos", "KappaScaler.s:3rdpos", "gammaShapeScaler.s:3rdpos", "mutationRateScaler.s:noncoding", "mutationRateScaler.s:1stpos", "mutationRateScaler.s:2ndpos", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock");
-		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "GammaShapePrior.s:1stpos", "GammaShapePrior.s:2ndpos", "GammaShapePrior.s:3rdpos", "GammaShapePrior.s:noncoding", "KappaPrior.s:1stpos", "KappaPrior.s:2ndpos", "KappaPrior.s:3rdpos", "KappaPrior.s:noncoding", "MutationRatePrior.s:1stpos", "MutationRatePrior.s:2ndpos", "MutationRatePrior.s:noncoding", "Human-Chimp.prior", "ClockPrior.c:clock");
-		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "treeLikelihood.1stpos", "treeLikelihood.2ndpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "Human-Chimp.prior", "clockRate.c:clock");
+		assertStateEquals("Tree.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "birthRateY.t:tree", "clockRate.c:clock");
+		assertOperatorsEqual("treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "gammaShapeScaler.s:1stpos", "KappaScaler.s:1stpos", "gammaShapeScaler.s:2ndpos", "KappaScaler.s:2ndpos", "gammaShapeScaler.s:3rdpos", "KappaScaler.s:3rdpos", "mutationRateScaler.s:noncoding", "mutationRateScaler.s:1stpos", "mutationRateScaler.s:2ndpos", "CalibratedYuleBirthRateScaler.t:tree", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock");
+		assertPriorsEqual("CalibratedYuleModel.t:tree", "CalibratedYuleBirthRatePrior.t:tree", "GammaShapePrior.s:1stpos", "GammaShapePrior.s:2ndpos", "GammaShapePrior.s:3rdpos", "GammaShapePrior.s:noncoding", "KappaPrior.s:1stpos", "KappaPrior.s:2ndpos", "KappaPrior.s:3rdpos", "KappaPrior.s:noncoding", "MutationRatePrior.s:1stpos", "MutationRatePrior.s:2ndpos", "MutationRatePrior.s:noncoding", "Human-Chimp.prior", "ClockPrior.c:clock");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.2ndpos", "treeLikelihood.3rdpos", "treeLikelihood.noncoding", "TreeHeight.t:tree", "treeLikelihood.1stpos", "kappa.s:noncoding", "gammaShape.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:noncoding", "mutationRate.s:1stpos", "mutationRate.s:2ndpos", "CalibratedYuleModel.t:tree", "birthRateY.t:tree", "Human-Chimp.prior", "clockRate.c:clock");
 
+		
+		//7c. set gamma priors on birth rate and clock rate
+		warning("7c. set gamma priors on birth rate and clock rate");
+		beautiFrame.comboBox("birthRateY.t:tree.distr").selectItem("Gamma");
+		beautiFrame.button("CalibratedYuleBirthRatePrior.t:tree.editButton").click();
+		beautiFrame.textBox("alpha").selectAll().setText("0.001");
+		beautiFrame.textBox("beta").selectAll().setText("1000");		
+		beautiFrame.button("CalibratedYuleBirthRatePrior.t:tree.editButton").click();
+		
+		beautiFrame.comboBox("clockRate.c:clock.distr").selectItem("Gamma");
+		beautiFrame.button("ClockPrior.c:clock.editButton").click();
+		beautiFrame.textBox("alpha").selectAll().setText("0.001");
+		beautiFrame.textBox("beta").selectAll().setText("1000");		
+		printBeautiState(f);
+		
+		
 		//8. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree
 		warning("8. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree");
 		File fout = new File(org.fest.util.Files.temporaryFolder() + "/primates.xml");
@@ -487,7 +533,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		
 		long t1 = System.currentTimeMillis();
 		System.err.println("total time: " + (t1 - t0)/1000 + " seconds");
-		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 
