@@ -173,7 +173,8 @@ The \textbf{Estimate} check box is unchecked for the first clock model and check
 
 \subsubsection*{Multi Species Coalescent}
 
-The {\bf Multi Species Coalescent} panel allows settings to the multi species coalescent model to be specified for each tree. *BEAST has a different tree prior panel where users can only configure the species tree prior not gene tree priors (which are automatically specified by the multispecies coalescent). Currently, we have two species tree priors: \textbf{Yule Process} and \textbf{Birth-Death Process}; and three population size models: \textbf{Piecewise linear and constant root}, \textbf{Piecewise linear}, and \textbf{Piecewise constant}. In this analysis, we use {piecewise linear and constant root}.
+The {\bf Multi Species Coalescent} panel allows settings to the multi species coalescent model to be specified for each tree. *BEAST has a different tree prior panel where users can only configure the species tree prior not gene tree priors (which are automatically specified by the multispecies coalescent). Currently, we have two species tree priors: \textbf{Yule Process} and \textbf{Birth-Death Process}; and three population size models: \textbf{Piecewise linear and constant root}, \textbf{Piecewise linear}, and \textbf{Piecewise constant}. 
+In this analysis, we use {piecewise linear and constant root}.
 
 The \textbf{Ploidy} item determines the type of sequence (mitochondrial, nuclear, X, Y). This matters since different modes of inheritance gives rise to different effective population sizes. In this analysis, we simply use a random starting tree. 
 
@@ -189,7 +190,9 @@ The \textbf{Ploidy} item determines the type of sequence (mitochondrial, nuclear
 
 \subsubsection*{Priors and Operators}
 
-The {\bf Priors} panel allows priors to be specified for each parameter in the model. The {\bf Operators} panel is used to configure technical settings that affect the efficiency of the MCMC program (see Notes for details). We leave these two panels unchanged in this analysis.
+The {\bf Priors} panel allows priors to be specified for each parameter in the model. 
+The {\bf Operators} panel (hidden) is used to configure technical settings that affect the efficiency of the MCMC program. 
+We leave these two panels unchanged in this analysis.
 
 \subsubsection*{Setting the MCMC options }
 
@@ -200,8 +203,8 @@ Firstly we have the \textbf{Length of chain}. This is the number of
 steps the MCMC will make in the chain before finishing. The appropriate length of the chain depends on the size of the data set, the complexity of the
 model and the accuracy of the answer required. The default value of 10,000,000
 is entirely arbitrary and should be adjusted according to the size
-of your data set. For this data set let's initially set the chain
-length to 5,000,000 as this will run reasonably quickly on most modern
+of your data set. For this data set let's keep the chain
+length at 10,000,000 as this will run reasonably quickly on most modern
 computers (less than 20 minutes).
 
 The next options specify how often the parameter values in the Markov
@@ -426,7 +429,7 @@ You should end up with something like Figure \ref{fig.figtree}.
 \begin{figure}
 \begin{center}
 
-\frame{\includegraphics[scale=0.4]{figures/figtree.png}}
+\frame{\includegraphics[scale=0.4]{figures/figtree.pdf}}
 
 \end{center}
 \caption{\label{fig.figtree} Figtree representation of the species tree.}

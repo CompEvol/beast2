@@ -174,6 +174,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		JOptionPaneFixture dialog2 = new JOptionPaneFixture(robot());
 		dialog2.textBox("SplitChar").deleteText().enterText("s");
 		screenshotTaker.saveComponentAsPng(dialog2.component(), PREFIX + "GuessDates.png");
+		dialog2.comboBox("delimiterCombo").selectItem("after last");		
 		dialog2.okButton().click();
 		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "dates.png");
 		printBeautiState(f);
