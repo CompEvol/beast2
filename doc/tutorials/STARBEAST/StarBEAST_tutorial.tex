@@ -55,8 +55,15 @@ Run BEAUti by double clicking on its icon.
 \end{figure}
 
 
+\def\mlstname{*BEAST}
 
 \subsubsection*{Loading the NEXUS file }
+
+%% JH
+\mlstname{} is a multi-individual, multi-locus method method. The data for each
+locus is stored as one alignment in its own NEXUS file. Taxa names in each
+alignment have to be unique, but duplicates across alignments are fine.
+%% JH
 
 To load a NEXUS format alignment, simply select the \texttt{Import
 Alignment} option from the File menu: 
@@ -100,6 +107,15 @@ You can double click any alignment (partition) to show its detail.
 For multi-locus analyses, BEAST can link or unlink substitutions models across the loci by clicking buttons on the top of {\bf Partitions} panel. The default of *BEAST is unlinking all models: substitution model, clock model, and tree models. Note that you should only unlink the tree model across data partitions that are actually genetically unlinked. For example, in most organisms all the mitochondrial genes are effectively linked due to a lack of recombination and they should be set up to use the same tree model in a *BEAST analysis. 
 
 \subsubsection*{Import trait(s) from a mapping file to fire *BEAST}
+
+%%JH
+Each taxon in a \mlstname{} analysis is associated with a species. Typically the
+species name is already embedded inside the taxon. The species name should be
+easy to extract; place it either at the beginning or the end, separated by a
+``special'' character which does not appear in names. For example,
+\texttt{aria\_334259, coast\_343436} (using an underscore) or
+\texttt{10x017b.wrussia, 2x305b.eastis} (using a dot).
+%%JH
 
 We need to tell BEAUti somehow which lineages in the alignments go with taxa in the species tree. Select the Taxon Set panel, and a list of taxa from the alignments is shown together with a default guess by BEAUti. In this case, the guess is not very good, so we want to change this. You can manually change each of the entries in the table, or press the guess button and a dialog is shown where you can choose from several ways to try to detect the taxon from the name of the lineages, or have a mapping stored in a file. In this case, splitting the name on the underscore character ('\_') and selecting the second group will give us the mapping that we need.
 
