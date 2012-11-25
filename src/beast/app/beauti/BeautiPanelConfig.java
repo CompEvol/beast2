@@ -313,8 +313,10 @@ public class BeautiPanelConfig extends Plugin {
                     _input.setValue(plugin, this);
                 }
             } else {
-                Plugin plugin = inputs.get(iPartition);
-                _input.setValue(plugin, this);
+            	if (inputs.size() > 0) {
+	                Plugin plugin = inputs.get(iPartition);
+	                _input.setValue(plugin, this);
+            	}
             }
         } catch (Exception e) {
             e.printStackTrace();
