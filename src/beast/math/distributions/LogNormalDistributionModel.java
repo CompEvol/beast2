@@ -5,8 +5,6 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -124,7 +122,7 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     			return m_offset.get();
     		}
     	} else {
-    		throw new NotImplementedException();
+    		throw new RuntimeException("Not implemented yet");
     	}
     }
 }

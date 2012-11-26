@@ -205,7 +205,7 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
     }
 
     private boolean isCalledFromOperator(int level) {
-    	Class caller = sun.reflect.Reflection.getCallerClass(level);
+    	Class<?> caller = sun.reflect.Reflection.getCallerClass(level);
     	while (caller != null) {
     		if (Operator.class.isAssignableFrom(caller)) {
     			return true;

@@ -3,9 +3,10 @@ package beast.app.beauti;
 
 
 import java.awt.Color;
-import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -29,7 +30,6 @@ import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
@@ -65,12 +65,11 @@ public class SiteModelInputEditor extends PluginInputEditor {
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
-    	fixMeanRatesCheckBox.addActionListener(new ActionListener() {
-			
+    	fixMeanRatesCheckBox.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox averageRatesBox = (JCheckBox) e.getSource();
-				boolean averageRates = averageRatesBox.isSelected();
+				boolean averageRates = averageRatesBox.isSelected();				
 				List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
 				if (averageRates) {
 					// connect DeltaExchangeOperator
@@ -111,7 +110,6 @@ public class SiteModelInputEditor extends PluginInputEditor {
     		component.add(box);
     	}
 		setUpOperator();
-
     }
     
 //	@Override
@@ -219,19 +217,21 @@ public class SiteModelInputEditor extends PluginInputEditor {
 				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
 	    		Alignment data = treelikelihood.m_data.get(); 
 	    		int weight = data.getSiteCount();
-	    		SiteModel siteModel = (SiteModel) treelikelihood.m_pSiteModel.get();
-	    		RealParameter mutationRate = siteModel.muParameterInput.get();
-	    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
-	    		if (mutationRate.m_bIsEstimated.get()) {
-	    			if (commonClockRate < 0) {
-	    				commonClockRate = Double.parseDouble(mutationRate.m_pValues.get());
-	    			} else {
-	    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.m_pValues.get())) > 1e-10) {
-	    					bAllClocksAreEqual = false;
-	    				}
-	    			}
-    				weights += weight + " ";
-	    			parameters.add(mutationRate);
+	    		if (treelikelihood.m_pSiteModel.get() instanceof SiteModel) {
+		    		SiteModel siteModel = (SiteModel) treelikelihood.m_pSiteModel.get();
+		    		RealParameter mutationRate = siteModel.muParameterInput.get();
+		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
+		    		if (mutationRate.m_bIsEstimated.get()) {
+		    			if (commonClockRate < 0) {
+		    				commonClockRate = Double.parseDouble(mutationRate.m_pValues.get());
+		    			} else {
+		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.m_pValues.get())) > 1e-10) {
+		    					bAllClocksAreEqual = false;
+		    				}
+		    			}
+	    				weights += weight + " ";
+		    			parameters.add(mutationRate);
+		    		}
 	    		}
 	    	}
 	    	if (!fixMeanRatesCheckBox.isSelected()) {

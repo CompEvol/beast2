@@ -26,11 +26,10 @@
 package beast.math.distributions;
 
 
+
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.IntegerDistribution;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import beast.core.CalculationNode;
 import beast.core.Description;
@@ -169,6 +168,6 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     
     /** returns mean of distribution, if implemented **/
     public double getMean() {
-    	throw new NotImplementedException();
+    	throw new RuntimeException("Not implemented yet");
     }
 }

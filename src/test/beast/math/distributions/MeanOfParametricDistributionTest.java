@@ -2,8 +2,6 @@ package test.beast.math.distributions;
 
 import org.junit.Test;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import beast.math.distributions.Exponential;
 import beast.math.distributions.Gamma;
 import beast.math.distributions.LogNormalDistributionModel;
@@ -90,7 +88,7 @@ public class MeanOfParametricDistributionTest extends TestCase {
     		exp.initByName("M", "1", "S", "1", "meanInRealSpace", false, "offset", "3");
     		mean = exp.getMean();
             assertEquals(mean, 4, 1e-10);
-        } catch (NotImplementedException e) {
+        } catch (RuntimeException e) {
         	// we are fine here
         }
 	}

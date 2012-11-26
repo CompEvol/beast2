@@ -265,7 +265,7 @@
             <connect srcID='WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='updown.$(n)'                      targetID='mcmc' inputName='operator' if='nooperator(FixMeanRatesOperator) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
-            <connect srcID='treeLikelihood.$(n)'         targetID='tracelog' inputName='log'/>
+            <connect srcID='treeLikelihood.$(n)'         targetID='tracelog' inputName='log' if='inlikelihood(treeLikelihood.$(n))'/>
             <connect srcID='treePrior.t:$(n)'            targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='TreeHeight.t:$(n)'           targetID='tracelog' inputName='log' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='proportionInvariant.s:$(n)'  targetID='tracelog' inputName='log' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>

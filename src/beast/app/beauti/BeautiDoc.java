@@ -3,16 +3,13 @@ package beast.app.beauti;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,7 +55,6 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
-import beast.util.AddOnManager;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -1294,7 +1290,10 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 					srcPlugin.outputs.remove(target);
 				}
 			} else {
-				input.setValue(null, target);
+				if (input.get() != null && input.get() instanceof Plugin && 
+						((Plugin) input.get()).getID().equals(sTargetID)) {
+					input.setValue(null, target);
+				}
 			}
 
 		} catch (Exception e) {

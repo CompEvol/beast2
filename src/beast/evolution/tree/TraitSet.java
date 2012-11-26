@@ -3,6 +3,7 @@ package beast.evolution.tree;
 //import java.text.SimpleDateFormat;
 //import java.util.Date;
 
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -12,8 +13,6 @@ import beast.evolution.alignment.TaxonSet;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import com.sun.org.apache.regexp.internal.recompile;
 
 @Description("A trait set represent a collection of properties of taxons, for the use of initializing a tree. " +
         "The traits are represented as text content in taxon=value form, for example, for a date trait, we" +
