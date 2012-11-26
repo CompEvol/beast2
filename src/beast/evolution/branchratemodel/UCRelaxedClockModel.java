@@ -1,7 +1,6 @@
 package beast.evolution.branchratemodel;
 
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -63,7 +62,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         	if (Math.abs(mean-1.0) > 1e-6) {
         		System.out.println("WARNING: mean of distribution for relaxed clock model is not 1.0.");
         	}
-        } catch (NotImplementedException e) {
+        } catch (RuntimeException e) {
 			// ignore
 		}
     }
