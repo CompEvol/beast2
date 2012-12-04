@@ -34,6 +34,10 @@ public class SequenceSimulator extends beast.core.Runnable {
     public Input<BranchRateModel.Base> m_pBranchRateModelInput = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
     public Input<Integer> m_sequenceLengthInput = new Input<Integer>("sequencelength", "nr of samples to generate (default 1000).", 1000);
+    public Input<String> m_outputFileNameInput = new Input<String>(
+            "outputFileName",
+            "If provided, simulated alignment is written to this file rather "
+            + "than to standard out.");
 
 
     /**
@@ -60,6 +64,11 @@ public class SequenceSimulator extends beast.core.Runnable {
      * nr of states in site model *
      */
     int m_stateCount;
+    
+    /**
+     * name of output file *
+     */
+    String m_outputFileName;
 
     /**
      * an array used to transfer transition probabilities
@@ -75,12 +84,20 @@ public class SequenceSimulator extends beast.core.Runnable {
         m_stateCount = m_data.get().getMaxStateCount();
         m_categoryCount = m_siteModel.getCategoryCount();
         m_probabilities = new double[m_categoryCount][m_stateCount * m_stateCount];
+        m_outputFileName = m_outputFileNameInput.get();
     }
 
     @Override
     public void run() throws Exception {
         Alignment alignment = simulate();
-        System.out.println(new XMLProducer().toRawXML(alignment));
+        
+        // Write output to stdout or file
+        PrintStream pstream;
+        if (m_outputFileName == null)
+            pstream = System.out;
+        else
+            pstream = new PrintStream(m_outputFileName);
+        pstream.println(new XMLProducer().toRawXML(alignment));
     }
 
     /**
