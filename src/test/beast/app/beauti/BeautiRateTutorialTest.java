@@ -145,7 +145,6 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		beautiFrame.comboBox().selectItem("HKY");
 		JComboBoxFixture freqs = beautiFrame.comboBox("frequencies");
 		freqs.selectItem("Empirical");
-		freqs.selectItem("Estimated");
 		beautiFrame.checkBox("mutationRate.isEstimated").check();
 		JCheckBoxFixture fixMeanMutationRate = beautiFrame.checkBox("FixMeanMutationRate");
 		fixMeanMutationRate.check();
