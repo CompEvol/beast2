@@ -239,7 +239,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	}
 	
 	void makeSureXMLParses() {
-		warning("Make sure that XML the BEAUti produces parses");
+		warning("Make sure that XML that BEAUti produces parses");
 		File XMLFile = new File(org.fest.util.Files.temporaryFolder() + "/x.xml");
 		if (XMLFile.exists()) {
 			XMLFile.delete();

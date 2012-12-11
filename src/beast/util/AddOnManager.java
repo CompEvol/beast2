@@ -67,6 +67,7 @@ import beast.evolution.alignment.Alignment;
  */
 public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
+    public final static String TO_DELETE_LIST_FILE = "toDeleteList";
 
     /**
      * flag indicating add ons have been loaded at least once *
@@ -211,18 +212,31 @@ public class AddOnManager {
         	sDir = customDir + "/" + sName;
         }
         File dir = new File(sDir);
-        deleteRecursively(dir);
+        List<File> deleteFailed = new ArrayList<File>();
+        deleteRecursively(dir, deleteFailed);
+        
+        // write deleteFailed to file
+        if (deleteFailed.size() > 0) {
+        	File toDeleteList = getToDeleteListFile();
+    		FileWriter outfile= new FileWriter(toDeleteList, true);
+        	for (File file : deleteFailed) {
+        		outfile.write(file.getAbsolutePath() + "\n");
+        	}
+        	outfile.close();
+        }
         return sDir;
     }
 
-    private static void deleteRecursively(File file) {
+	private static void deleteRecursively(File file, List<File> deleteFailed) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File f : files) {
-                deleteRecursively(f);
+                deleteRecursively(f, deleteFailed);
             }
         }
-        file.delete();
+        if (!file.delete()) {
+        	deleteFailed.add(file);
+        }
     }
 
     public static String URL2AddOnName(String sURL) {
@@ -320,6 +334,15 @@ public class AddOnManager {
     }
 
     /**
+     * @return file containing list of files that need to be deleted
+     * but could not be deleted. This can happen when uninstalling add-ons
+     * on windows, which locks jar files loaded by java.
+     */
+    public static File getToDeleteListFile() {
+    	return new File(getAddOnUserDir() + "/" + TO_DELETE_LIST_FILE);
+	}
+
+    /**
      * return list of directories that may contain add-ons *
      */
     public static List<String> getBeastDirectories() {
@@ -400,6 +423,8 @@ public class AddOnManager {
      * load external jars in beast directories *
      */
     public static void loadExternalJars() throws Exception {
+    	processDeleteList();
+    	
         List<String> sDirs = getBeastDirectories();
         checkDependencies(sDirs);
         for (String sJarDir : sDirs) {
@@ -454,7 +479,26 @@ public class AddOnManager {
     } // loadExternalJars
 
 
-    /** Parse version string, assume it is of the form 1.2.3
+    /** try to delete files that could not be deleted earlier **/
+    private static void processDeleteList() {
+    	File toDeleteLisFile = getToDeleteListFile();
+    	if (toDeleteLisFile.exists()) {
+    		try {
+	    		BufferedReader fin = new BufferedReader(new FileReader(toDeleteLisFile));
+	    		while (fin.ready()) {
+	    			String sStr = fin.readLine();
+	    			File file = new File(sStr);
+	    			file.delete();
+	    		}
+	    		fin.close();
+	    		toDeleteLisFile.delete();
+    		} catch (Exception e) {
+				e.printStackTrace();
+			}
+    	}
+	}
+
+	/** Parse version string, assume it is of the form 1.2.3
      * returns version where each sub-version is divided by 100,
      * so 2.0 -> return 2
      * 2.1 return 2.01

@@ -72,6 +72,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      */
     JMenu viewMenu;
 
+    JCheckBoxMenuItem autoSetClockRate;
+    JCheckBoxMenuItem allowLinking;
+
     /**
      * flag indicating beauti is in the process of being set up and panels
      * should not sync with current model *
@@ -652,6 +655,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
     }
 
+    
+    
     public JMenuBar makeMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -683,7 +688,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         menuBar.add(modeMenu);
         modeMenu.setMnemonic('M');
 
-        final JCheckBoxMenuItem autoSetClockRate = new JCheckBoxMenuItem(
+        autoSetClockRate = new JCheckBoxMenuItem(
                 "Automatic set clock rate", this.doc.bAutoSetClockRate);
         autoSetClockRate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -693,7 +698,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         });
         modeMenu.add(autoSetClockRate);
 
-        final JCheckBoxMenuItem allowLinking = new JCheckBoxMenuItem(
+        allowLinking = new JCheckBoxMenuItem(
                 "Allow parameter linking", this.doc.bAllowLinking);
         allowLinking.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {

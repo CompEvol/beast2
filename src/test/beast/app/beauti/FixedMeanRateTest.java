@@ -29,7 +29,7 @@ public class FixedMeanRateTest extends BeautiBase {
 		beautiFrame.button("Link Site Models").click();
 		beautiFrame.button("Unlink Site Models").click();
 
-		saveFile("/Users/remcobouckaert/tmp", "x.xml");
+		//saveFile("/Users/remcobouckaert/tmp", "x.xml");
 		makeSureXMLParses();
 		
 

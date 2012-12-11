@@ -691,7 +691,15 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 //			}
 //		}
 		String sXML = new XMLProducer().toXML(mcmc.get(), plugins);
-		sXML = sXML.replaceFirst("<beast ", "<beast beautitemplate='" + templateName + "' ");
+		
+		String beautiStatus = "";
+		if (!bAutoSetClockRate) {
+			beautiStatus = "noAutoSetClockRate";
+		}
+		if (bAllowLinking) {
+			beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";			
+		}
+		sXML = sXML.replaceFirst("<beast ", "<beast beautitemplate='" + templateName + "' beautistatus='" + beautiStatus + "' ");
 		return sXML + "\n";
 	}
 
@@ -719,6 +727,15 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 			String sTemplateXML = processTemplate(beautiTemplate + ".xml");
 			loadTemplate(sTemplateXML);
 		}
+        
+        String beautiStatus = XMLParser.getAttribute(topNode, "beautistatus");
+        if (beautiStatus == null) {
+        	beautiStatus = "";
+        }
+        bAutoSetClockRate = !beautiStatus.contains("noAutoSetClockRate");
+        beauti.autoSetClockRate.setSelected(bAutoSetClockRate);
+		bAllowLinking = beautiStatus.contains("allowLinking");			
+        beauti.allowLinking.setSelected(bAllowLinking);
         
 		// parse file
 		XMLParser parser = new XMLParser();

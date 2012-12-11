@@ -128,6 +128,12 @@ public class JAddOnDialog extends JDialog {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
                                 AddOnManager.uninstallAddOn(addOn.sAddOnURL, false, null);
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                                
+                                File toDeleteFile = AddOnManager.getToDeleteListFile();
+                                if (toDeleteFile.exists()) {
+                                	JOptionPane.showMessageDialog(null, "<html>To complete uninstalling the addon, BEAUti need to be restarted<br><br>Exiting now.</html>");
+                                	System.exit(0);
+                                }
                             }
                         } else {
                             setCursor(new Cursor(Cursor.WAIT_CURSOR));
