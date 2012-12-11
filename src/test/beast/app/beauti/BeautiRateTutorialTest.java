@@ -223,13 +223,6 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		
 		//7. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree
 		warning("7. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree");
-		File fout = new File(org.fest.util.Files.temporaryFolder() + "/" + XML_FILE);
-		System.out.println("Writing file: " + fout.getAbsolutePath());
-		if (fout.exists()) {
-			fout.delete();
-		}
-		saveFile(".", XML_FILE);
-		saveFile(""+org.fest.util.Files.temporaryFolder(), XML_FILE);
 		makeSureXMLParses();
 		
 		long t1 = System.currentTimeMillis();
