@@ -36,6 +36,7 @@ import javax.swing.table.TableColumn;
 
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallButton;
+import beast.app.util.Utils;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Plugin;
@@ -741,8 +742,14 @@ System.err.println("needsRePartition = " + needsRePartition);
 			public void componentResized(ComponentEvent e) {
 				if (doc.getFrame() != null) {
 					Dimension preferredSize = doc.getFrame().getSize();
-					preferredSize.height = Math.max(preferredSize.height - 150, 0);
-					preferredSize.width = Math.max(preferredSize.width - 25, 0);
+					if (Utils.isWindows()) {
+					preferredSize.height = Math.max(preferredSize.height - 180, 0);
+					preferredSize.width = Math.max(preferredSize.width - 50, 0);
+					} else {
+						preferredSize.height = Math.max(preferredSize.height - 150, 0);
+						preferredSize.width = Math.max(preferredSize.width - 25, 0);
+						
+					}
 					scrollPane.setPreferredSize(preferredSize);
 				}				
 			}

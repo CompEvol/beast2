@@ -294,10 +294,10 @@ public class AddOnManager {
      */
     public static String getAddOnUserDir() {
         if (Utils.isWindows()) {
-            if (System.getenv("APPDATA") != null) {
-                return System.getenv("APPDATA") + "/BEAST";
-            }
-            return System.getProperty("user.home") + "/BEAST";
+//            if (System.getenv("APPDATA") != null) {
+//                return System.getenv("APPDATA") + "\\BEAST";
+//            }
+            return System.getProperty("user.home") + "\\BEAST";
         }
         if (Utils.isMac()) {
             return System.getProperty("user.home") + "/Library/Application Support/BEAST";
@@ -311,7 +311,7 @@ public class AddOnManager {
      */
     public static String getAddOnAppDir() {
         if (Utils.isWindows()) {
-            return "/Program Files/BEAST";
+            return "\\Program Files\\BEAST";
         }
         if (Utils.isMac()) {
             return "/Library/Application Support/BEAST";
@@ -376,7 +376,8 @@ public class AddOnManager {
                             for (File file2 : files2) {
                                 if (file2.isDirectory()) {
                                     String sFile = file2.getAbsolutePath().toLowerCase();
-                                    if (sFile.endsWith("/lib") || sFile.endsWith("/templates")) {
+                                    if (sFile.endsWith("/lib") || sFile.endsWith("/templates") ||
+                                    		sFile.endsWith("\\lib") || sFile.endsWith("\\templates")) {
                                         sSubDirs.add(file.getAbsolutePath());
                                         break;
                                     }
@@ -403,6 +404,9 @@ public class AddOnManager {
         checkDependencies(sDirs);
         for (String sJarDir : sDirs) {
             File jarDir = new File(sJarDir + "/lib");
+            if (!jarDir.exists()) {
+            	jarDir = new File(sJarDir + "\\lib");
+            }
             if (jarDir.exists() && jarDir.isDirectory()) {
                 for (String sFile : jarDir.list()) {
                     if (sFile.endsWith(".jar")) {

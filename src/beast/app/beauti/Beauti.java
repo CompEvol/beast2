@@ -210,9 +210,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // System.out.println("Saving to file \""+
             // f.getAbsoluteFile().toString()+"\"");
             doc.setFileName(file.getAbsolutePath());// fc.getSelectedFile().toString();
-            if (doc.getFileName().lastIndexOf('/') > 0) {
+            String fileSep = System.getProperty("file.separator");
+            if (fileSep.equals("\\")) {
+            	fileSep = "\\\\";
+            }
+            if (doc.getFileName().lastIndexOf(fileSep) > 0) {
                 g_sDir = doc.getFileName().substring(0,
-                        doc.getFileName().lastIndexOf('/'));
+                        doc.getFileName().lastIndexOf(fileSep));
             }
             if (!doc.getFileName().endsWith(FILE_EXT))
                 doc.setFileName(doc.getFileName().concat(FILE_EXT));
@@ -277,9 +281,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 doc.newAnalysis();
                 doc.setFileName(file.getAbsolutePath());
-                if (doc.getFileName().lastIndexOf('/') > 0) {
+                String fileSep = System.getProperty("file.separator");
+                if (fileSep.equals("\\")) {
+                	fileSep = "\\\\";
+                }
+                if (doc.getFileName().lastIndexOf(fileSep) > 0) {
                     g_sDir = doc.getFileName().substring(0,
-                            doc.getFileName().lastIndexOf('/'));
+                            doc.getFileName().lastIndexOf(fileSep));
                 }
                 try {
                     doc.loadXML(new File(doc.getFileName()));
@@ -388,9 +396,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     return;
                 }
                 for (File file : files) {
-                    if (file.getAbsolutePath().lastIndexOf('/') > 0) {
+                    String fileSep = System.getProperty("file.separator");
+                    if (fileSep.equals("\\")) {
+                    	fileSep = "\\\\";
+                    }
+                    if (file.getAbsolutePath().lastIndexOf(fileSep) > 0) {
                         g_sDir = file.getAbsolutePath().substring(0,
-                                file.getAbsolutePath().lastIndexOf('/'));
+                                file.getAbsolutePath().lastIndexOf(fileSep));
                     }
                     String sFileName = file.getAbsolutePath();
                     // AR - this looks very UNIX specific path (i.e., '/' not a
@@ -748,8 +760,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         public TemplateAction(File file) {
             super("xx");
             m_sFileName = file.getAbsolutePath();
+            String fileSep = System.getProperty("file.separator");
+            if (fileSep.equals("\\")) {
+            	fileSep = "\\";
+            }
+            int i = m_sFileName.lastIndexOf(fileSep) + 1;
             String sName = m_sFileName.substring(
-                    m_sFileName.lastIndexOf("/") + 1, m_sFileName.length() - 4);
+                    i, m_sFileName.length() - 4);
             putValue(Action.NAME, sName);
             try {
                 DocumentBuilderFactory factory = DocumentBuilderFactory
