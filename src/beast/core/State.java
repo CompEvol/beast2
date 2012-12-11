@@ -377,31 +377,26 @@ public class State extends Plugin {
     /**
      * restore a state from file for resuming an MCMC chain *
      */
-    public void restoreFromFile() {
-        try {
-            System.out.println("Restoring from file");
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            Document doc = factory.newDocumentBuilder().parse(new File(m_sStateFileName));
-            doc.normalize();
-            NodeList nodes = doc.getElementsByTagName("*");
-            Node topNode = nodes.item(0);
-            NodeList children = topNode.getChildNodes();
-            for (int iChild = 0; iChild < children.getLength(); iChild++) {
-                Node child = children.item(iChild);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    String sID = child.getAttributes().getNamedItem("id").getNodeValue();
-                    int iStateNode = 0;
-                    while (!stateNode[iStateNode].getID().equals(sID)) {
-                        iStateNode++;
-                    }
-                    StateNode stateNode2 = stateNode[iStateNode].copy();
-                    stateNode2.fromXML(child);
-                    stateNode[iStateNode].assignFromFragile(stateNode2);
+    public void restoreFromFile() throws Exception {
+        System.out.println("Restoring from file");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = factory.newDocumentBuilder().parse(new File(m_sStateFileName));
+        doc.normalize();
+        NodeList nodes = doc.getElementsByTagName("*");
+        Node topNode = nodes.item(0);
+        NodeList children = topNode.getChildNodes();
+        for (int iChild = 0; iChild < children.getLength(); iChild++) {
+            Node child = children.item(iChild);
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                String sID = child.getAttributes().getNamedItem("id").getNodeValue();
+                int iStateNode = 0;
+                while (!stateNode[iStateNode].getID().equals(sID)) {
+                    iStateNode++;
                 }
+                StateNode stateNode2 = stateNode[iStateNode].copy();
+                stateNode2.fromXML(child);
+                stateNode[iStateNode].assignFromFragile(stateNode2);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
         }
     }
 

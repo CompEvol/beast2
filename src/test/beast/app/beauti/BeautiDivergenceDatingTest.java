@@ -267,7 +267,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		try {
 		long t0 = System.currentTimeMillis();
 		ScreenshotTaker screenshotTaker = new ScreenshotTaker();
-		beauti.frame.setSize(1024, 640);
+		beauti.frame.setSize(1124, 640);
 
 		String BASE_DIR = PREFIX.substring(0, PREFIX.lastIndexOf('/'));
 		for (File file : new File(BASE_DIR).listFiles()) {

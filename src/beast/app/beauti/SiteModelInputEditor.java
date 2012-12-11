@@ -3,10 +3,8 @@ package beast.app.beauti;
 
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -204,15 +202,16 @@ public class SiteModelInputEditor extends PluginInputEditor {
     }
 
 
-    /** set up relative weights and parameter input **/
-    private void setUpOperator() {
-    	String weights = "";
-    	List<RealParameter> parameters = operator.parameterInput.get();
-    	parameters.clear();
-    	double commonClockRate = -1;
-    	boolean bAllClocksAreEqual = true;
-		try {
-			CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
+    
+    public static void customConnector(BeautiDoc doc) {
+ 		try {
+ 	        DeltaExchangeOperator operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
+
+ 	       	List<RealParameter> parameters = operator.parameterInput.get();
+ 	    	parameters.clear();
+ 	    	double commonClockRate = -1;
+		   	String weights = "";
+		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
 			for (Distribution d : likelihood.pDistributions.get()) {
 				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
 	    		Alignment data = treelikelihood.m_data.get(); 
@@ -226,7 +225,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 		    				commonClockRate = Double.parseDouble(mutationRate.m_pValues.get());
 		    			} else {
 		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.m_pValues.get())) > 1e-10) {
-		    					bAllClocksAreEqual = false;
+//		    					bAllClocksAreEqual = false;
 		    				}
 		    			}
 	    				weights += weight + " ";
@@ -234,6 +233,49 @@ public class SiteModelInputEditor extends PluginInputEditor {
 		    		}
 	    		}
 	    	}
+
+	    	IntegerParameter weightParameter = new IntegerParameter(weights);
+			weightParameter.setID("weightparameter");
+			weightParameter.m_bIsEstimated.setValue(false, weightParameter);
+	    	operator.input_parameterWeights.setValue(weightParameter, operator);
+		} catch (Exception e) {
+			
+		}
+    	
+    }
+    
+    /** set up relative weights and parameter input **/
+    public void setUpOperator() {
+    	boolean bAllClocksAreEqual = true;
+    	try {
+    		customConnector(doc);
+
+     		try {
+     	    	double commonClockRate = -1;
+    		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
+    			for (Distribution d : likelihood.pDistributions.get()) {
+    				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
+    	    		if (treelikelihood.m_pSiteModel.get() instanceof SiteModel) {
+    		    		SiteModel siteModel = (SiteModel) treelikelihood.m_pSiteModel.get();
+    		    		RealParameter mutationRate = siteModel.muParameterInput.get();
+    		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
+    		    		if (mutationRate.m_bIsEstimated.get()) {
+    		    			if (commonClockRate < 0) {
+    		    				commonClockRate = Double.parseDouble(mutationRate.m_pValues.get());
+    		    			} else {
+    		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.m_pValues.get())) > 1e-10) {
+    		    					bAllClocksAreEqual = false;
+    		    				}
+    		    			}
+    		    		}
+    	    		}
+    	    	}
+
+    		} catch (Exception e) {
+    			
+    		}
+   		
+    		List<RealParameter> parameters = operator.parameterInput.get();
 	    	if (!fixMeanRatesCheckBox.isSelected()) {
 	    		fixMeanRatesValidateLabel.setVisible(false);
 				repaint();
@@ -242,15 +284,10 @@ public class SiteModelInputEditor extends PluginInputEditor {
 	    	if (parameters.size() == 0) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.red;
-	    		fixMeanRatesValidateLabel.setToolTipText("The model is invalid: At least one clock rate should be estimated.");
+	    		fixMeanRatesValidateLabel.setToolTipText("The model is invalid: At least one substitution rate should be estimated.");
 				repaint();
 	    		return;
 	    	}
-
-	    	IntegerParameter weightParameter = new IntegerParameter(weights);
-			weightParameter.setID("weightparameter");
-			weightParameter.m_bIsEstimated.setValue(false, weightParameter);
-	    	operator.input_parameterWeights.setValue(weightParameter, operator);
 	    	if (!bAllClocksAreEqual) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;

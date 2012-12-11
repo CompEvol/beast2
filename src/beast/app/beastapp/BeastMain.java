@@ -504,7 +504,11 @@ public class BeastMain {
 
             if (inputFileName == null) {
                 // No input file name was given so throw up a dialog box...
-                inputFile = new File(getFileNameByDialog("BEAST " + version.getVersionString() + " - Select XML input file"));
+            	String fileName = getFileNameByDialog("BEAST " + version.getVersionString() + " - Select XML input file");
+            	if (fileName == null) {
+            		System.exit(0);
+            	}
+                inputFile = new File(fileName);
             }
         }
 

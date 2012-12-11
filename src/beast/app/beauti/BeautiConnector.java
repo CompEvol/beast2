@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import beast.core.Description;
@@ -12,9 +13,12 @@ import beast.core.Plugin;
 
 @Description("Specifies which part of the template get connected to the main network")
 public class BeautiConnector extends Plugin {
-    public Input<String> sSourceIDInput = new Input<String>("srcID", "ID of the plugin to be connected", Validate.REQUIRED);
-    public Input<String> sTargetIDInput = new Input<String>("targetID", "ID of plugin to connect to", Validate.REQUIRED);
-    public Input<String> sInputNameInput = new Input<String>("inputName", "name of the input of the plugin to connect to", Validate.REQUIRED);
+    public Input<String> sMethodnput = new Input<String>("method", "name of static method that should be called with BeautiDoc as " +
+    		"argument. For example beast.app.beauti.SiteModelInputEditor.custmoConnector");
+
+    public Input<String> sSourceIDInput = new Input<String>("srcID", "ID of the plugin to be connected", Validate.XOR, sMethodnput);
+    public Input<String> sTargetIDInput = new Input<String>("targetID", "ID of plugin to connect to", Validate.XOR, sMethodnput);
+    public Input<String> sInputNameInput = new Input<String>("inputName", "name of the input of the plugin to connect to", Validate.XOR, sMethodnput);
     public Input<String> sTipText = new Input<String>("value", "associate some tip text with the srcID plugin, useful for displaying prior and operator specific information");
 
     public Input<String> sConditionInput = new Input<String>("if", "condition under which this connector should be executed." +
@@ -44,6 +48,10 @@ public class BeautiConnector extends Plugin {
     String[] sConditionInputs;
     Operation[] conditionOperations;
     String[] sConditionValues;
+    
+    boolean isRegularConnector = true;
+    
+    Method method = null;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -96,6 +104,15 @@ public class BeautiConnector extends Plugin {
             conditionOperations = new Operation[0];
             sConditionValues = new String[0];
         }
+        if (sMethodnput.get() != null) {
+        	String fullMethod = sMethodnput.get();
+        	String className = fullMethod.substring(0, fullMethod.lastIndexOf('.'));
+        	String methodName = fullMethod.substring(fullMethod.lastIndexOf('.') + 1);
+        	Class<?> class_ = Class.forName(className);
+        	method = class_.getMethod(methodName, BeautiDoc.class);
+            isRegularConnector = false;
+        }
+
     }
 
 
@@ -115,7 +132,19 @@ public class BeautiConnector extends Plugin {
         if (atInitialisationOnly()) {
             return false;
         }
-
+        if (sMethodnput.get() != null) {
+//        if (method != null) {
+	    	try {
+            	String fullMethod = sMethodnput.get();
+            	String className = fullMethod.substring(0, fullMethod.lastIndexOf('.'));
+            	String methodName = fullMethod.substring(fullMethod.lastIndexOf('.') + 1);
+            	Class<?> class_ = Class.forName(className);
+            	method = class_.getMethod(methodName, BeautiDoc.class);
+        		method.invoke(null, doc);
+        	} catch (Exception e) {
+        		// ignore
+        	}
+        }
 
         boolean bIsActive = true;
         for (int i = 0; i < sConditionIDs.length; i++) {
@@ -196,11 +225,17 @@ public class BeautiConnector extends Plugin {
     }
 
     public String toString() {
+    	if (sMethodnput.get() != null) {
+    		return "call " + sMethodnput.get();
+    	}
         return "@" + sSourceID + " -> @" + sTargetID + "/" + sTargetInput;
     }
 
 
     public String toString(PartitionContext context) {
+    	if (sMethodnput.get() != null) {
+    		return toString();
+    	}
         return "@" + BeautiDoc.translatePartitionNames(sSourceID, context) + " -> @" + sTargetID + "/" + BeautiDoc.translatePartitionNames(sTargetInput, context);
     }
 }

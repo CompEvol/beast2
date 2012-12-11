@@ -279,6 +279,7 @@ public class NexusParser {
         // read character data
         Map<String, String> seqMap = new HashMap<String, String>();
         List<String> sTaxa = new ArrayList<String>();
+        String sPrevTaxon = null;
         while (true) {
             sStr = nextLine(fin);
             if (sStr.contains(";")) {
@@ -301,11 +302,20 @@ public class NexusParser {
                 iEnd++;
             } else {
                 iEnd = iStart;
-                while (!Character.isWhitespace(sStr.charAt(iEnd))) {
+                while (iEnd < sStr.length() && !Character.isWhitespace(sStr.charAt(iEnd))) {
                     iEnd++;
                 }
-                sTaxon = sStr.substring(iStart, iEnd);
+                if (iEnd < sStr.length()) {
+                	sTaxon = sStr.substring(iStart, iEnd);
+                } else {
+                	sTaxon = sPrevTaxon;
+                	if  (sTaxon == null) {
+                		throw new Exception("Could not recognise taxon");
+                	}
+                	iEnd = iStart;
+                }
             }
+            sPrevTaxon =  sTaxon;
             String sData = sStr.substring(iEnd);
             sData = sData.replaceAll("\\s", "");
 

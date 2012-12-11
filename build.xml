@@ -171,10 +171,10 @@
 
 
 	<!-- Release -->
-	<property name="version" value="2.0.e" />
-	<property name="version_number" value="2.0.0" />
+	<property name="version" value="2.0.1" />
+	<property name="version_number" value="2.0.1" />
 	<property name="release_dir" value="release" />
-	<property name="copyright" value="Beast 2 development team 2011" />
+	<property name="copyright" value="Beast 2 development team 2012" />
 
 	<property name="BEAST_name" value="BEAST" />
 	<property name="BEAUti_name" value="BEAUti" />
@@ -532,6 +532,11 @@
 
 		<echo message="Building disk image." />
 
+		<exec executable='ln'>
+			<arg value="-s" />
+			<arg value="/Applications" />
+			<arg value="${Mac_package_dir}" />
+		</exec>
 		<!-- create disk image -->
 		<exec executable="/usr/bin/hdiutil">
 			<arg value="create" />

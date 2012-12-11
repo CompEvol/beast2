@@ -199,7 +199,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(
                 doc.getFileName()), null, (String[]) null);
         if (file != null) {
-            if (file.exists()) {
+            if (file.exists() && !Utils.isMac()) {
                 if (JOptionPane.showConfirmDialog(null,
                         "File " + file.getName()
                                 + " already exists. Do you want to overwrite?",
@@ -924,6 +924,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             if (Utils.isMac()) {
                 // set up application about-menu for Mac
                 // Mac-only stuff
+            	try {
                 URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beauti.png");
                 Icon icon = null;
                 if (url != null) {
@@ -931,11 +932,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 } else {
                     System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
                 }
-                jam.framework.Application application = new jam.framework.Application(null, "BEAUti", "about" , icon) {
-
-                    @Override
-                    public void initialize() {
-                    }
+                jam.framework.Application application = new jam.framework.MultiDocApplication(null, "BEAUti", "about" , icon) {
 
                     @Override
                     protected JFrame getDefaultFrame() {
@@ -963,7 +960,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     }
                 };
                 jam.mac.Utils.macOSXRegistration(application);
-                
+            	} catch (Exception e) {
+            		// ignore
+            	}
                 try {
                 	Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
                     Method method = class_.getMethod("enablePrefs", boolean.class);

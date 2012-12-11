@@ -49,7 +49,7 @@ BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is 
 \end{itemize}
 
 \subsection*{The NEXUS alignment}
-The data is in a file called \texttt{RSV2.nex}. This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu. This signifies that the first full codon starts at the third nucleotide in the alignment. This will create three rows in the partitions panel. You will have to re-link the tree and clock models across the three partitions (and name them ``tree'' and ``clock'' respectively) before continuing to the next step.
+The data is in a file called \texttt{RSV2.nex} and you can find it in the {\tt examples/nexus} directory in the directory where BEAST was installed. This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu. This signifies that the first full codon starts at the third nucleotide in the alignment. This will create three rows in the partitions panel. You will have to re-link the tree and clock models across the three partitions (and name them ``tree'' and ``clock'' respectively) before continuing to the next step.
 
 The partition panel should now look something like this:
 
@@ -107,7 +107,7 @@ Choose ``Coalescent Constant Population'' for the tree prior. Set the prior on t
 
 For this dataset let's initially set the chain length to 2,000,000 as this will run 
 reasonably quickly on most modern computers. Set the sampling frequencies for the screen to
-to 1000, the log file to 400 and the trees file to 400.
+to 1000, the trace log file to 400 and the trees file to 400.
 
 \begin{center}
 \includegraphics[width=0.8\textwidth]{figures/generated/BEAUti_mcmc.png}

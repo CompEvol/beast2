@@ -1232,6 +1232,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 *             *
 	 */
 	public void connect(BeautiConnector connector, PartitionContext context) throws Exception {
+		if (!connector.isRegularConnector) {
+			return;
+		}
 		String sSrcID = translatePartitionNames(connector.sSourceID, context);
 		Plugin srcPlugin = pluginmap.get(sSrcID);
 		if (srcPlugin == null) {
@@ -1264,6 +1267,9 @@ public class BeautiDoc extends Plugin implements RequiredInputProvider {
 	 * disconnect source plugin with target plugin *
 	 */
 	public void disconnect(BeautiConnector connector, PartitionContext context) {
+		if (!connector.isRegularConnector) {
+			return;
+		}
 		Plugin srcPlugin = pluginmap.get(translatePartitionNames(connector.sSourceID, context));
 		String sTargetID = translatePartitionNames(connector.sTargetID, context);
 		disconnect(srcPlugin, sTargetID, connector.sTargetInput);

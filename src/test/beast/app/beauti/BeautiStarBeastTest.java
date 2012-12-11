@@ -36,12 +36,14 @@ public class BeautiStarBeastTest extends BeautiBase {
 		templateMenu.click();
 		// remove menu from screen
 		beautiFrame.menuItemWithPath("File").click();
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		f = f.selectTab("Priors");
+
 
 		// 1. Load gopher data 26.nex, 29.nex, 47.nex
 		warning("1. Load gopher data 26.nex, 29.nex, 47.nex");
 		importAlignment("examples/nexus", new File("26.nex"), new File("29.nex"), new File("47.nex"));
 
-		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "DataPartitions.png");
 		printBeautiState(f);
 

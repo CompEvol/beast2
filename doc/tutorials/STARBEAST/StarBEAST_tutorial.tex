@@ -11,7 +11,7 @@
 \title{*BEAST in BEAST 2.0\\
 Estimating Species Trees from Multilocus Data}
 
-\author{Remco Bouckaert, Joseph Heled, Alexei J Drummond and Walter Xie}
+\author{Joseph Heled, Remco Bouckaert, Alexei J Drummond and Walter Xie}
 
 \maketitle
 
@@ -68,7 +68,9 @@ alignment have to be unique, but duplicates across alignments are fine.
 To load a NEXUS format alignment, simply select the \texttt{Import
 Alignment} option from the File menu: 
 
-Select three files called \texttt{26.nex, 29.nex, 47.nex} by holding \texttt{shift} key. Each file contains an alignment of sequences of from an independent locus. The \texttt{26.nex} looks like this (content has been truncated):
+Select three files called \texttt{26.nex, 29.nex, 47.nex} by holding \texttt{shift} key. 
+You can find the files in the {\tt examples/nexus} directory in the directory where BEAST was installed. 
+Each file contains an alignment of sequences of from an independent locus. The \texttt{26.nex} looks like this (content has been truncated):
 
 \begin{verbatim}
 #NEXUS
@@ -236,12 +238,12 @@ contain much information about the distributions of the parameters.
 You probably want to aim to store no more than 10,000 samples so this should be
 set to no less than chain length / 10,000.
 
-For this exercise we will set the screen log to 10000 and the file log to 1000. The final two
+For this exercise we will set the screen log to 10000 and the trace log to 1000. The final two
 options give the file names of the log files for the sampled parameters and
 the trees. These will be set to a default based on the name of the
 imported NEXUS file. 
 
-If you would like to save the operator analysis into a file, you need to check  \textbf{Create operator analysis file} which will generate a file with the suffix \texttt{.ops}. 
+%If you would like to save the operator analysis into a file, you need to check  \textbf{Create operator analysis file} which will generate a file with the suffix \texttt{.ops}. 
 
 \begin{figure}
 \begin{center}

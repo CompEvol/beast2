@@ -189,7 +189,7 @@
 
             <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
 
-            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(tree).$(seed).trees" mode='tree'>
+            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(tree).trees" mode='tree'>
 	            <log id='TreeWithMetaDataLogger.t:$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.t:$(n)'>
 	            </log>
             </logger>
@@ -222,6 +222,7 @@
 ]]>
             <connect srcID='treeLikelihood.$(n)'            targetID='likelihood' inputName='distribution' if="isInitializing"/>
             <connect srcID='YuleModel.t:$(n)'               targetID='prior' inputName='distribution' if="isInitializing"/>
+			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
             <connect srcID='treelog.t:$(n)'                 targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.t:$(n))'/>
@@ -316,7 +317,7 @@
 
     <run spec="MCMC" id="mcmc" chainLength="10000000">
 
-        <state storeEvery='1000' id='state'>
+        <state storeEvery='5000' id='state'>
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
@@ -328,7 +329,7 @@
             </distribution>
         </distribution>
 
-        <logger id='tracelog' logEvery="1000" fileName="beast.$(seed).log" sort="smart" sanitiseHeaders='true'>
+        <logger id='tracelog' logEvery="1000" fileName="beast.log" sort="smart" sanitiseHeaders='true'>
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>

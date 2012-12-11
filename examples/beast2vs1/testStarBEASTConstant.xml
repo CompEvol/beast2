@@ -374,10 +374,12 @@
                        value="0.0"/>
         </state>
 
-        <operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false"
-                  scaleFactor="0.5"
+
+
+        <operator degreesOfFreedom="5" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false"
+                  scaleFactor="0.9"
                   spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
-        <operator degreesOfFreedom="1" id="birthRateScaler" scaleFactor="0.5" spec="ScaleOperator"
+        <operator degreesOfFreedom="3" id="birthRateScaler" scaleFactor="0.75" spec="ScaleOperator"
                   parameter="@birthRate"
                   weight="3"/>
         <!--operator degreesOfFreedom="1" id="relDeathRateScaler" scaleFactor="0.5" spec="ScaleOperator" parameter="@relativeDeathRate"
@@ -385,26 +387,22 @@
         <operator degreesOfFreedom="1" id="psiScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5"
                   spec="ScaleOperator" parameter="@popMean" weight="94"/>
         <operator degreesOfFreedom="1" id="kappa26Scaler" scaleAll="false" scaleAllIndependently="false"
-                  scaleFactor="0.35"
+                  scaleFactor="0.75"
                   spec="ScaleOperator" parameter="@hky.kappa26" weight="0.1"/>
         <operator degreesOfFreedom="1" id="kappa29Scaler" scaleAll="false" scaleAllIndependently="false"
-                  scaleFactor="0.35"
+                  scaleFactor="0.75"
                   spec="ScaleOperator" parameter="@hky.kappa29" weight="0.1"/>
 
+        <operator degreesOfFreedom="3" id="treeScaler26" scaleFactor="0.75" spec="ScaleOperator" tree="@tree26"  weight="3"/>
         <operator gaussian="true" id="SubtreeSlide26" size="0.003" spec="SubtreeSlide" tree="@tree26" weight="15.0"/>
-        <operator degreesOfFreedom="1" id="treeScaler26" scaleAll="false" scaleAllIndependently="false"
-                  scaleFactor="0.85"
-                  spec="ScaleOperator" tree="@tree26" weight="6.0"/>
         <operator id="wide26" isNarrow="false" spec="Exchange" tree="@tree26" weight="1.0"/>
         <operator id="narrow26" isNarrow="true" spec="Exchange" tree="@tree26" weight="15"/>
         <operator id="WilsonBalding26" spec="WilsonBalding" tree="@tree26" weight="3"/>
         <!-- -->
         <operator id="Uniform26" spec="Uniform" tree="@tree26" weight="30.0"/>
 
+        <operator degreesOfFreedom="3" id="treeScaler29" scaleFactor="0.75" spec="ScaleOperator" tree="@tree29"  weight="3"/>
         <operator gaussian="true" id="SubtreeSlide29" size="0.002" spec="SubtreeSlide" tree="@tree29" weight="15.0"/>
-        <operator degreesOfFreedom="1" id="treeScaler29" scaleAll="false" scaleAllIndependently="false"
-                  scaleFactor="0.85"
-                  spec="ScaleOperator" tree="@tree29" weight="6.0"/>
         <operator id="wide29" isNarrow="false" spec="Exchange" tree="@tree29" weight="1.0"/>
         <operator id="narrow29" isNarrow="true" spec="Exchange" tree="@tree29" weight="15"/>
         <operator id="WilsonBalding29" spec="WilsonBalding" tree="@tree29" weight="3"/>
@@ -419,6 +417,7 @@
             <down idref="tree26"/>
             <down idref="tree29"/>
         </operator>
+
 
         <!-- <operator id="wideSP" isNarrow="false" spec="Exchange" tree="@speciesTree" weight="1.0"/> <operator gaussian="true"
               id="SubtreeSlideSP" size="0.003" spec="SubtreeSlide" tree="@speciesTree" weight="15.0"/> <operator degreesOfFreedom="1" id="treeScalerSP"
