@@ -531,7 +531,11 @@ public class TipDatesInputEditor extends PluginInputEditor {
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox(new String[]{"Since some time in the past", "Before the present"});
-        relativeToComboBox.setSelectedItem(traitSet.m_sTraitName.get());
+        if (traitSet.m_sTraitName.get().equals("date-backward")) {
+        	relativeToComboBox.setSelectedIndex(1);
+        } else {
+        	relativeToComboBox.setSelectedIndex(0);
+        }
         relativeToComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

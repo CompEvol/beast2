@@ -332,7 +332,7 @@ public class Logger extends Plugin {
                 m_pFileName.setValue(sFileName, this);
             }
             if (System.getProperty("file.name.prefix") != null) {
-                sFileName = System.getProperty("file.name.prefix") + sFileName;
+                sFileName = System.getProperty("file.name.prefix") + "/" + sFileName;
             }
             switch (FILE_MODE) {
                 case FILE_ONLY_NEW:// only open file if the file does not already exists
