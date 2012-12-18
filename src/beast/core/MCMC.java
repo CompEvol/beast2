@@ -268,8 +268,8 @@ public class MCMC extends Runnable {
         bDebug = Boolean.valueOf(System.getProperty("beast.debug"));
 
 
-        System.err.println("Start state:");
-        System.err.println(state.toString());
+//        System.err.println("Start state:");
+//        System.err.println(state.toString());
 
         System.err.println("Start likelihood: " + fOldLogLikelihood + " " + (nInitiliasiationAttemps > 1 ? "after " + nInitiliasiationAttemps + " initialisation attempts" : ""));
         if (Double.isInfinite(fOldLogLikelihood) || Double.isNaN(fOldLogLikelihood)) {
@@ -290,7 +290,7 @@ public class MCMC extends Runnable {
         close();
 
         System.err.println("End likelihood: " + fOldLogLikelihood);
-        System.err.println(state);
+//        System.err.println(state);
         state.storeToFile(nChainLength);
         operatorSchedule.storeToFile();
     } // run;

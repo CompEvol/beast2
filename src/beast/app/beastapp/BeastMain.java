@@ -512,7 +512,7 @@ public class BeastMain {
             }
         }
 
-        if (inputFile != null && inputFile.getParent() != null) { // && working) {
+        if (inputFile != null && inputFile.getParent() != null && working) {
             System.setProperty("file.name.prefix", inputFile.getParentFile().getAbsolutePath());
         }
 

@@ -106,6 +106,9 @@ public class MRCAPrior extends Distribution {
         logP = 0;
         if (m_bOnlyUseTips) {
             // tip date
+        	if (m_dist == null) {
+        		return logP;
+        	}
             for (final int i : m_iTaxa) {
                 m_fMRCATime = m_tree.getNode(i).getDate();
                 logP += m_dist.logDensity(m_fMRCATime);

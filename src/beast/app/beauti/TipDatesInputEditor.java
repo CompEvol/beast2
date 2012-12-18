@@ -32,10 +32,8 @@ import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.operators.TipDatesRandomWalker;
-import beast.evolution.operators.TipDatesScaler;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
-import beast.math.distributions.MRCAPrior;
 
 public class TipDatesInputEditor extends PluginInputEditor {
 
@@ -60,6 +58,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
     JTable table;
     String m_sPattern = ".*(\\d\\d\\d\\d).*";
     JScrollPane scrollPane;
+    List<Taxon> taxonsets;
 
 
     @Override
@@ -126,23 +125,18 @@ public class TipDatesInputEditor extends PluginInputEditor {
 
     private Component createSamplingBox() {
         Box samplingBox = Box.createHorizontalBox();
-        JComboBox comboBox = new JComboBox(new String[]{"no tips sampling", "sample tips with same prior"});// ,"sample tips with individual priors"});
+        JComboBox comboBox = new JComboBox(new String[]{"no tips sampling", "sample tips from taxon set:"});// ,"sample tips with individual priors"});
 
         // determine mode
         m_iMode = NO_TIP_SAMPLING;
         // count nr of TipDateScalers with weight > 0
-        for (Plugin plugin : traitSet.outputs) {
-            if (plugin instanceof Tree) {
-                for (Plugin plugin2 : plugin.outputs) {
-                    if (plugin2 instanceof TipDatesRandomWalker) {
-                    	TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
-                        if (operator.m_pWeight.get() > 0) {
-                            m_iMode = SAMPLE_TIPS_SAME_PRIOR;
-                        }
-                    }
-                }
-            }
+    	String treeID = tree.getID();
+    	String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":")+1);
+    	TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
+        if (operator.m_pWeight.get() > 0) {
+            m_iMode = SAMPLE_TIPS_SAME_PRIOR;
         }
+
         m_iMode = Math.min(m_iMode, 2);
         comboBox.setSelectedIndex(m_iMode);
         comboBox.addActionListener(new ActionListener() {
@@ -154,32 +148,26 @@ public class TipDatesInputEditor extends PluginInputEditor {
         samplingBox.add(comboBox);
 
 
-        List<Taxon> taxonsets = new ArrayList<Taxon>();
+        taxonsets = new ArrayList<Taxon>();
         Taxon allTaxa = new Taxon();
         allTaxa.setID(ALL_TAXA);
         taxonsets.add(allTaxa);
+        List<String> taxonSetIDs = new ArrayList<String>();
+        taxonSetIDs.add(ALL_TAXA);
         for (Taxon taxon : doc.taxaset) {
             if (taxon instanceof TaxonSet) {
                 taxonsets.add(taxon);
+                taxonSetIDs.add(taxon.getID());
             }
         }
-        JComboBox comboBox2 = new JComboBox(taxonsets.toArray());
+        JComboBox comboBox2 = new JComboBox(taxonSetIDs.toArray());
 
         // find TipDatesSampler and set TaxonSet input
-        for (Plugin plugin : traitSet.outputs) {
-            if (plugin instanceof Tree) {
-                for (Plugin plugin2 : plugin.outputs) {
-                    if (plugin2 instanceof TipDatesScaler) {
-                        TipDatesScaler operator = (TipDatesScaler) plugin2;
-                        Taxon set = operator.m_taxonsetInput.get();
-                        if (set != null) {
-                            comboBox2.setSelectedItem(set);
-                        }
-                    }
-                }
-            }
+        Taxon set = operator.m_taxonsetInput.get();
+        if (set != null) {
+        	int i = taxonSetIDs.indexOf(set.getID());
+            comboBox2.setSelectedIndex(i);
         }
-
 
         comboBox2.addActionListener(new ActionListener() {
 
@@ -195,38 +183,56 @@ public class TipDatesInputEditor extends PluginInputEditor {
 
     private void selectTaxonSet(ActionEvent e) {
         JComboBox comboBox = (JComboBox) e.getSource();
-        Taxon taxonset = (Taxon) comboBox.getSelectedItem();
+        String taxonSetID = (String) comboBox.getSelectedItem(); 
+        Taxon taxonset = null;;
+        for (Taxon taxon: taxonsets) {
+        	if (taxon.getID().equals(taxonSetID)) {
+        		taxonset = taxon;
+        		break;
+        	}
+        }
+        
         if (taxonset.getID().equals(ALL_TAXA)) {
             taxonset = null;
         }
         try {
             // find TipDatesSampler and set TaxonSet input
-            for (Plugin plugin : traitSet.outputs) {
-                if (plugin instanceof Tree) {
-                    for (Plugin plugin2 : plugin.outputs) {
-                        if (plugin2 instanceof TipDatesScaler) {
-                            TipDatesScaler operator = (TipDatesScaler) plugin2;
-                            operator.m_taxonsetInput.setValue(taxonset, operator);
-                        }
-                    }
-                }
-            }
-
-            // TODO: find MRACPriors and set TaxonSet inputs
-            for (Plugin plugin : traitSet.outputs) {
-                if (plugin instanceof Tree) {
-                    for (Plugin plugin2 : plugin.outputs) {
-                        if (plugin2 instanceof MRCAPrior) {
-                            MRCAPrior prior = (MRCAPrior) plugin2;
-                            if (prior.m_bOnlyUseTipsInput.get()) {
-                                prior.m_taxonset.setValue(taxonset, prior);
-                            }
-                        }
-                    }
-                }
-            }
+        	
+        	String treeID = tree.getID();
+        	String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":")+1);
+        	TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
+            System.err.println("treeID = " + treeID);        
+            System.err.println("operatorID = " + operatorID);        
+            System.err.println("operator = " + operator);        
+            operator.m_taxonsetInput.setValue(taxonset, operator);
+        	
+//            for (Plugin plugin : traitSet.outputs) {
+//                if (plugin instanceof Tree) {
+//                    for (Plugin plugin2 : plugin.outputs) {
+//                        if (plugin2 instanceof TipDatesScaler) {
+//                            TipDatesScaler operator = (TipDatesScaler) plugin2;
+//                            operator.m_taxonsetInput.setValue(taxonset, operator);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            // TODO: find MRACPriors and set TaxonSet inputs
+//            for (Plugin plugin : traitSet.outputs) {
+//                if (plugin instanceof Tree) {
+//                    for (Plugin plugin2 : plugin.outputs) {
+//                        if (plugin2 instanceof MRCAPrior) {
+//                            MRCAPrior prior = (MRCAPrior) plugin2;
+//                            if (prior.m_bOnlyUseTipsInput.get()) {
+//                                prior.m_taxonset.setValue(taxonset, prior);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         } catch (Exception ex) {
             // TODO: handle exception
+        	ex.printStackTrace();
         }
     }
 
@@ -434,9 +440,13 @@ public class TipDatesInputEditor extends PluginInputEditor {
             	System.err.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
             }
         }
-        if (traitSet.m_sTraitName.get().equals("date-forward")) {
+        if (traitSet.m_sTraitName.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+            Double fMinDate = Double.MAX_VALUE;
             for (int i = 0; i < tableData.length; i++) {
-                tableData[i][2] = tableData[i][1];
+                fMinDate = Math.min(fMinDate, parseDate((String) tableData[i][1]));
+            }
+            for (int i = 0; i < tableData.length; i++) {
+                tableData[i][2] = parseDate((String) tableData[i][1]) - fMinDate;
             }
         } else {
             Double fMaxDate = 0.0;
@@ -531,7 +541,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox(new String[]{"Since some time in the past", "Before the present"});
-        if (traitSet.m_sTraitName.get().equals("date-backward")) {
+        if (traitSet.m_sTraitName.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
         	relativeToComboBox.setSelectedIndex(1);
         } else {
         	relativeToComboBox.setSelectedIndex(0);
@@ -539,9 +549,9 @@ public class TipDatesInputEditor extends PluginInputEditor {
         relativeToComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String sSelected = "date-forward";
+                String sSelected = TraitSet.DATE_BACKWARD_TRAIT;
                 if (relativeToComboBox.getSelectedIndex() == 0) {
-                    sSelected = "date-backward";
+                    sSelected = TraitSet.DATE_FORWARD_TRAIT;
                 }
                 try {
                     traitSet.m_sTraitName.setValue(sSelected, traitSet);

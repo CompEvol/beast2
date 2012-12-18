@@ -132,8 +132,9 @@ public class TaxonSetDialog extends JDialog {
         JLabel label = new JLabel("Filter:");
         box.add(label);
         filterEntry = new JTextField();
-        Dimension size = new Dimension(100, 20);
-        filterEntry.setMinimumSize(size);
+        filterEntry.setColumns(17);
+        //Dimension size = new Dimension(100, 20);
+        //filterEntry.setMinimumSize(size);
         //filterEntry.setPreferredSize(size);
         //filterEntry.setSize(size);
         filterEntry.setToolTipText("Enter regular expression to match taxa");

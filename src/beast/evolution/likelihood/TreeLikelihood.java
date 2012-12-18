@@ -312,7 +312,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 //            traverse(tree.getRoot());
 //            calcLogP();
 //            return logP;
-        } else if (logP == Double.NEGATIVE_INFINITY && m_fScale < 10) { // && !m_likelihoodCore.getUseScaling()) {
+        } else if (logP == Double.NEGATIVE_INFINITY && m_fScale < 10 && !scaling.get().equals(Scaling.none)) { // && !m_likelihoodCore.getUseScaling()) {
             m_nScale = 0;
             m_fScale *= 1.01;
             System.err.println("Turning on scaling to prevent numeric instability " + m_fScale);

@@ -17,7 +17,11 @@ public abstract class Runnable extends Plugin {
     	if (System.getProperty("state.file.name") != null) {
     		m_sStateFile = System.getProperty("state.file.name");
     	} else {
-    		m_sStateFile = sFileName;
+            if (System.getProperty("file.name.prefix") != null) {
+            	m_sStateFile = System.getProperty("file.name.prefix") + "/" + sFileName;
+            } else {
+            	m_sStateFile = sFileName;
+            }
     	}
         m_bRestoreFromFile = bRestoreFromFile;
     }
