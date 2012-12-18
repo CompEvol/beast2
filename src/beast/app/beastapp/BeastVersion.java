@@ -22,7 +22,7 @@ public class BeastVersion extends Version {
      */
     private static final String VERSION = "2.0.1";
 
-    private static final String DATE_STRING = "2002-2012";
+    private static final String DATE_STRING = "2002-2013";
 
     private static final boolean IS_PRERELEASE = false;
 
