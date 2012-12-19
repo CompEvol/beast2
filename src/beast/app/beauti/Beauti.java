@@ -36,6 +36,7 @@ import java.util.List;
 
 public class Beauti extends JTabbedPane implements BeautiDocListener {
     private static final long serialVersionUID = 1L;
+    static final String BEAUTI_ICON = "beast/app/draw/icons/beauti.png";
 
     // ExtensionFileFilter ef0 = new ExtensionFileFilter(".nex", "Nexus files");
     // ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
@@ -566,7 +567,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             BeastVersion version = new BeastVersion();
             JOptionPane.showMessageDialog(null, version.getCredits(),
                     "About Beauti 2", JOptionPane.PLAIN_MESSAGE,
-                    BeautiPanel.getIcon(0, null));
+                    BeautiPanel.getIcon(BEAUTI_ICON));
         }
     } // class ActionAbout
 
@@ -1005,7 +1006,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             JFrame frame = new JFrame("BEAUti 2: " + doc.getTemplateName()
                     + " " + doc.getFileName());
             beauti.frame = frame;
-            ImageIcon icon = BeautiPanel.getIcon(0, null);
+            ImageIcon icon = BeautiPanel.getIcon(BEAUTI_ICON);
             if (icon != null) {
                 frame.setIconImage(icon.getImage());
             }

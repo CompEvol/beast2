@@ -374,6 +374,8 @@
 	        depends="build_jar_all_BEAST_NoJUnitTest"
 	        description="release Mac version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
 		<delete dir="${Mac_package_dir}" />
+		<delete file="${Mac_dir}/pack.temp.dmg"/>
+		<delete file="${Mac_dir}/BEAST v${version}.dmg"/>
 		<!-- Create the release directory -->
 		<mkdir dir="${Mac_package_dir}" />
 
@@ -531,13 +533,15 @@
 		</copy>
 
 		<echo message="Building disk image." />
+		<exec executable='release/Mac/createdmg.sh'/>
 
+<!--
 		<exec executable='ln'>
 			<arg value="-s" />
 			<arg value="/Applications" />
 			<arg value="${Mac_package_dir}" />
 		</exec>
-		<!-- create disk image -->
+
 		<exec executable="/usr/bin/hdiutil">
 			<arg value="create" />
 			<arg value="-ov" />
@@ -549,7 +553,7 @@
 			<arg value="zlib-level=6" />
 			<arg value="${Mac_dir}/${BEAST_name} v${version}.dmg" />
 		</exec>
-
+-->
 		<echo message="Mac version release is finished." />
 	</target>
 
