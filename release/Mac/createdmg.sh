@@ -13,8 +13,7 @@ export finalDMGName=${title}
 mkdir "BEAST/BEAST ${version}"
 mv BEAST/* "BEAST/BEAST ${version}"
 
-cp mac.png ${source}/${backgroundPictureName}
-cp mac.png ${backgroundPictureName}
+cp install.png ${source}/${backgroundPictureName}
 
 hdiutil create -srcfolder "${source}" -volname "${title}" -fs HFS+ \
       -fsargs "-c c=64,a=16,e=16" -format UDRW -size ${size}k pack.temp.dmg
