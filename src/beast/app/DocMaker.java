@@ -25,6 +25,7 @@
 package beast.app;
 
 
+import beast.app.beastapp.BeastVersion;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -79,7 +80,9 @@ public class DocMaker {
     HashMap<String, String> m_descriptions;
 
     Set<String> m_sLoggables;
-
+    
+    BeastVersion version = new BeastVersion();
+    
     public DocMaker(String[] args) {
         this();
         if (args.length > 0) {
@@ -218,11 +221,12 @@ public class DocMaker {
                     "		   'http://www.w3.org/TR/html4/frameset.dtd'>\n" +
                     "		<HTML>\n" +
                     "		<HEAD>\n" +
-                    "		<TITLE>BEAST 2.0 Documentation</TITLE>\n" +
+                    "		<TITLE>BEAST " + version.getVersionString() + " Documentation</TITLE>\n" +
                     "		</HEAD>\n" +
                     "		<FRAMESET cols='20%, 80%'>\n" +
                     "		  <FRAMESET rows='50, 200'>\n" +
-                    "		      <FRAME src='http://www.omnomnomnom.com/random/rotate.php' align='center'>\n" +
+//                    "		      <FRAME src='http://www.omnomnomnom.com/random/rotate.php' align='center'>\n" +
+                    "		      <FRAME src='beast.png' align='center'>\n" +
                     "		      <FRAME src='contents.html'>\n" +
                     "		  </FRAMESET>\n" +
                     "		  <FRAME name='display' src='contents.html'>\n" +
@@ -234,8 +238,8 @@ public class DocMaker {
         }
 
         {
-            InputStream in = new FileInputStream(new File("doc/book/beast.jpg"));
-            OutputStream out = new FileOutputStream(new File(m_sDir + "/beast.jpg"));
+            InputStream in = new FileInputStream(new File("src/beast/app/draw/icons/beast.png"));
+            OutputStream out = new FileOutputStream(new File(m_sDir + "/beast.png"));
             byte[] buf = new byte[1024];
             int len;
             while ((len = in.read(buf)) > 0) {
@@ -245,11 +249,11 @@ public class DocMaker {
             out.close();
         }
         PrintStream out = new PrintStream(m_sDir + "/contents.html");
-        out.println("<html>\n<head><title>BEAST 2.0 Documentation index</title>\n" +
+        out.println("<html>\n<head><title>BEAST " + version.getVersionString() + " Documentation index</title>\n" +
                 "<link rel='StyleSheet' href='doc.css' type='text/css'>\n" +
                 "</head>\n");
         out.println("<body>\n");
-        out.println("<h1>BEAST 2.0 Documentation index</h1>\n");
+        out.println("<h1>BEAST " + version.getVersionString() + " Documentation index</h1>\n");
         String sPrev = null;
         String sPrevPackage = null;
         for (String sPlugin : m_sPluginNames) {
@@ -336,7 +340,7 @@ public class DocMaker {
 
     public String getHTML(String sPlugin, boolean bUseExternalStyleSheet) throws Exception {
         StringBuffer buf = new StringBuffer();
-        buf.append("<html>\n<head>\n<title>BEAST 2.0 Documentation: " + sPlugin + "</title>\n");
+        buf.append("<html>\n<head>\n<title>BEAST " + version.getVersionString() + " Documentation: " + sPlugin + "</title>\n");
         if (bUseExternalStyleSheet) {
             buf.append("<link rel='StyleSheet' href='doc.css' type='text/css'>\n");
         } else {
@@ -346,7 +350,7 @@ public class DocMaker {
         }
         buf.append("</head>\n");
         buf.append("<body>\n");
-        buf.append("<h1>BEAST 2.0 Documentation: " + sPlugin + "</h1>\n");
+        buf.append("<h1>BEAST " + version.getVersionString() + " Documentation: " + sPlugin + "</h1>\n");
         Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
 
         // show all implementation of this plug-in
