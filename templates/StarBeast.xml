@@ -308,6 +308,10 @@
 
 
 	<taxonset spec='beast.evolution.alignment.TaxonSet' id='taxonsuperset'>
+		<!-- 
+		need to specify at least one taxon for a TaxonSet, so insert a dummy taxon here
+		This one is cleared by the TaxonSetInputEditor 
+		-->
 		<taxon spec='beast.evolution.alignment.TaxonSet' id='Beauti2DummyTaxonSet'>
 			<taxon spec='beast.evolution.alignment.Taxon' id='dummyTaxon'/>
 		</taxon>

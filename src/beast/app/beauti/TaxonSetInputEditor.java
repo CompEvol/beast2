@@ -67,7 +67,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             taxonsets.add((TaxonSet) taxon);
         }
         add(getContent(taxonsets));
-        if (taxa.size() == 1 && taxa.get(0).getID().equals("Beauti2DummyTaxonSet")) {
+        if (taxa.size() == 1 && taxa.get(0).getID().equals("Beauti2DummyTaxonSet") || taxa.size() == 0) {
             taxa.clear();
             try {
                 // species is first character of taxon

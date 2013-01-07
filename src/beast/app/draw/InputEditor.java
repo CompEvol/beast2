@@ -34,7 +34,7 @@ import beast.core.Plugin;
  * <p/>
  * The default just provides an edit field and uses toString() on Input to get its value.
  * To change the behaviour, override
- * public void init(Input<?> input, Plugin plugin) {
+ * public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons)
  */
 /** note that it is assumed that any InputEditor is a java.awt.Component **/
 public interface InputEditor {
