@@ -266,14 +266,15 @@ public class XMLProducer extends XMLParser {
                     }
                 }
                 if (comparables.size() > 0) {
+                	// TODO: FIX THIS SO THAT NOT AN ARBITRARY `1' is used to generate the plate
                     // we can make a plate now
-                    String sRange = "1";
-                    int k = 2;
-                    for (Node sibling : comparables) {
-                        sRange += "," + k++;
-                        sibling.getParentNode().removeChild(sibling);
-                    }
-                    makePlate(child, "1", "n", sRange);
+//                    String sRange = "1";
+//                    int k = 2;
+//                    for (Node sibling : comparables) {
+//                        sRange += "," + k++;
+//                        sibling.getParentNode().removeChild(sibling);
+//                    }
+//                    makePlate(child, "1", "n", sRange);
                 }
             }
         }
@@ -325,6 +326,10 @@ public class XMLProducer extends XMLParser {
     boolean comparable(Node node1, Node node2, String sPattern1, String sPattern2) {
         // compare name
         if (!node1.getNodeName().equals(node2.getNodeName())) {
+            return false;
+        }
+        // compare text
+        if (!node1.getTextContent().trim().equals(node2.getTextContent().trim())) {
             return false;
         }
         // compare attributes
@@ -528,6 +533,12 @@ public class XMLProducer extends XMLParser {
             "<xsl:output method='xml'/>\n" +
             "\n" +
             "<xsl:template match='data'/>\n" +
+            "\n" +
+            "<xsl:template match='input[@name]'>\n" +
+            "    <xsl:element name='{@name}'>" +
+            "		<xsl:apply-templates select='node()|@*[name()!=\"name\"]'/>" +
+            "	</xsl:element>\n" +
+            "</xsl:template>\n" +
             "\n" +
             "<xsl:template match='@*|node()'>\n" +
             "  <xsl:copy>\n" +
