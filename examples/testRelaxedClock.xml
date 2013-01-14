@@ -135,8 +135,13 @@
             <log idref="rateCategories"/>
             <log idref="posterior"/>
         </logger>
-        <logger logEvery="1000" fileName="test.$(seed).trees" mode='tree'>
+        <logger logEvery="1000" fileName="test.(time).$(seed).trees" mode='tree'>
 			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>
+				<branchratemodel idref='branchRates'/>
+			</log>
+        </logger>
+        <logger logEvery="1000" fileName="test.(subst).$(seed).trees" mode='tree'>
+			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree' substitutions='true'>
 				<branchratemodel idref='branchRates'/>
 			</log>
         </logger>

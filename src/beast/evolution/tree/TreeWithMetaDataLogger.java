@@ -18,11 +18,13 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
     // TODO: make this input a list of valuables
     public Input<Valuable> m_parameter = new Input<Valuable>("metadata", "meta data to be logged with the tree nodes");
     public Input<BranchRateModel.Base> clockModel = new Input<BranchRateModel.Base>("branchratemodel", "rate to be logged with branches of the tree");
+    public Input<Boolean> substitutionsInput = new Input<Boolean>("substitutions", "report branch lengths as substitutions (branch length times clock rate for the branch)", false);
 
 
     String m_sMetaDataLabel;
     
     boolean someMetaDataNeedsLogging;
+    boolean substitutions = false;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -34,6 +36,10 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
     	someMetaDataNeedsLogging = true;
         if (m_parameter.get() != null) {
             m_sMetaDataLabel = ((Plugin) m_parameter.get()).getID() + "=";
+        }
+    	// without substitution model, reporting substitutions == reporting branch lengths 
+        if (clockModel.get() != null) {
+        	substitutions = substitutionsInput.get();
         }
     }
 
@@ -105,7 +111,12 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
 	        }
 	        buf.append(']');
         }
-        buf.append(":").append(node.getLength());
+        buf.append(":");
+        if (substitutions) {
+        	buf.append(node.getLength() * branchRateModel.getRateForBranch(node));
+        } else {
+        	buf.append(node.getLength());
+        }
         return buf.toString();
     }
 
