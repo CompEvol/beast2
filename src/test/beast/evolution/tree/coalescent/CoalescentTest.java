@@ -11,7 +11,7 @@ import test.beast.BEASTTestCase;
  * @author Alexei Drummond
  * @author Walter Xie
  */
-public class CoalenscentTest extends BEASTTestCase {
+public class CoalescentTest extends BEASTTestCase {
     String[] trees = new String[]{"(((A:1.0,B:1.0):1.0,C:2.0);", ""}; //more trees ?
     Alignment data;
     final double pop = 10000;

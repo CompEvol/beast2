@@ -38,6 +38,7 @@ public class TreeLikelihoodTest extends TestCase {
     }
 
     protected TreeLikelihood newTreeLikelihood() {
+    	System.setProperty("java.only","true");
         return new TreeLikelihood();
     }
 

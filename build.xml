@@ -18,8 +18,11 @@
 	<property name="report" value="build/junitreport" />
 
 	<path id="classpath">
-		<fileset dir="${lib}" includes="**/*.jar" />
-	</path>
+		<fileset dir="${lib}" includes="jam.jar"/>
+		<fileset dir="${lib}" includes="fest.jar"/>
+		<fileset dir="${lib}" includes="debug-1.0.jar"/>
+		<fileset dir="${lib}" includes="junit-4.8.2.jar"/>
+ 	</path>
 
 <!--
 	<path id="testclasspath">
