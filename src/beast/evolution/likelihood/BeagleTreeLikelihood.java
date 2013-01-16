@@ -57,6 +57,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private static final String PREFERRED_FLAGS_PROPERTY = "beagle.preferred.flags";
     private static final String REQUIRED_FLAGS_PROPERTY = "beagle.required.flags";
     private static final String SCALING_PROPERTY = "beagle.scaling";
+    private static final String RESCALE_FREQUENCY_PROPERTY = "beagle.rescale";
+    // Which scheme to use if choice not specified (or 'default' is selected):
+    private static final PartialsRescalingScheme DEFAULT_RESCALING_SCHEME = PartialsRescalingScheme.DYNAMIC;
 
     private static int instanceCount = 0;
     private static List<Integer> resourceOrder = null;
@@ -73,10 +76,14 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
     @Override
     public void initAndValidate() throws Exception {
+        boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
+        if (forceJava) {
+        	return;
+        }
         initialize();
     }
 
-    boolean initialize() throws Exception {
+    private boolean initialize() throws Exception {
         m_nNodeCount = m_tree.get().getNodeCount();
         m_bUseAmbiguities = m_useAmbiguities.get();
         if (!(m_pSiteModel.get() instanceof SiteModel.Base)) {
@@ -140,6 +147,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         // first set the rescaling scheme to use from the parser
         rescalingScheme = PartialsRescalingScheme.DEFAULT;// = rescalingScheme;
+        rescalingScheme = DEFAULT_RESCALING_SCHEME;
         int[] resourceList = null;
         long preferenceFlags = 0;
         long requirementFlags = 0;
@@ -179,7 +187,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 //this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
                 this.rescalingScheme = PartialsRescalingScheme.NONE;
             } else { // if CPU: just run as fast as possible
-//                    this.rescalingScheme = PartialsRescalingScheme.NONE;
+                //this.rescalingScheme = PartialsRescalingScheme.NONE;
                 // Dynamic should run as fast as none until first underflow
                 this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
             }
@@ -190,6 +198,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             useAutoScaling = true;
         } else {
 //                preferenceFlags |= BeagleFlag.SCALING_MANUAL.getMask();
+        }
+        String r = System.getProperty(RESCALE_FREQUENCY_PROPERTY);
+        if (r != null) {
+            rescalingFrequency = Integer.parseInt(r);
+            if (rescalingFrequency < 1) {
+                rescalingFrequency = RESCALE_FREQUENCY;
+            }
         }
 
         if (preferenceFlags == 0 && resourceList == null) { // else determine dataset characteristics
@@ -285,8 +300,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
 
         if (this.rescalingScheme == PartialsRescalingScheme.DYNAMIC) {
-            // TODO: uncomment following line once bug in java impl. is fixed
-            everUnderflowed = true; // If commented out, BEAST does not rescale until first under-/over-flow.
+            everUnderflowed = false; // If false, BEAST does not rescale until first under-/over-flow.
         }
 
         updateSubstitutionModel = true;
@@ -345,7 +359,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
         return order;
     }
-
+    
+    
     protected int getScaleBufferCount() {
         return internalNodeCount + 1;
     }
@@ -565,6 +580,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 rescalingCount = 0;
                 rescalingCountInner = 0;
             }
+        } else if (this.rescalingScheme == PartialsRescalingScheme.DELAYED && everUnderflowed) {
+            useScaleFactors = true;
+            recomputeScaleFactors = true;
+            m_nHasDirt = Tree.IS_FILTHY;
+            rescalingCount++;
         }
 
         for (int i = 0; i < eigenCount; i++) {
@@ -658,9 +678,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 everUnderflowed = true;
                 logL = Double.NEGATIVE_INFINITY;
 
-                if (firstRescaleAttempt && rescalingScheme == PartialsRescalingScheme.DYNAMIC) {
-                    // we have had a potential under/over flow so attempt a rescaling
-                    useScaleFactors = true;
+                if (firstRescaleAttempt && (rescalingScheme == PartialsRescalingScheme.DYNAMIC || rescalingScheme == PartialsRescalingScheme.DELAYED)) {
+                    // we have had a potential under/over flow so attempt a rescaling                	
+                	useScaleFactors = true;
                     recomputeScaleFactors = true;
 
                     for (int i = 0; i < eigenCount; i++) {
@@ -877,7 +897,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     protected /*final*/ int internalNodeCount;
     protected /*final*/ int m_nPatternCount;
 
-    private PartialsRescalingScheme rescalingScheme;
+    private PartialsRescalingScheme rescalingScheme = DEFAULT_RESCALING_SCHEME;
+    private int rescalingFrequency = RESCALE_FREQUENCY;
     protected boolean useScaleFactors = false;
     private boolean useAutoScaling = false;
     private boolean recomputeScaleFactors = false;
@@ -885,6 +906,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private int rescalingCount = 0;
     private int rescalingCountInner = 0;
 
+    
     /**
      * the pattern likelihoods
      */
@@ -981,13 +1003,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     } // class BufferIndexHelper
 
     public enum PartialsRescalingScheme {
-
-        DEFAULT("default"),
-        NONE("none"),
-        DYNAMIC("dynamic"),
-        AUTO("auto"),
-        KICK_ASS("kickAss"),
-        ALWAYS("always");
+        DEFAULT("default"), // what ever our current favourite default is
+        NONE("none"),       // no scaling
+        DYNAMIC("dynamic"), // rescale when needed and reuse scaling factors
+        ALWAYS("always"),   // rescale every node, every site, every time - slow but safe
+        DELAYED("delayed"), // postpone until first underflow then switch to 'always'
+        AUTO("auto");       // BEAGLE automatic scaling - currently playing it safe with 'always'
+//        KICK_ASS("kickAss"),// should be good, probably still to be discovered
 
         PartialsRescalingScheme(String text) {
             this.text = text;

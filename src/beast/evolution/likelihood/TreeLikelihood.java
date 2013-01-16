@@ -124,11 +124,15 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
         m_beagle = null;
         m_beagle = new BeagleTreeLikelihood();
-        m_beagle.initByName("data", m_data.get(), "tree", m_tree.get(), "siteModel", m_pSiteModel.get(), "branchRateModel", m_pBranchRateModel.get(), "useAmbiguities", m_useAmbiguities.get(), "scaling", scaling.get().toString());
-        if (m_beagle.beagle != null) {
-            //a Beagle instance was found, so we use it
-            return;
-        }
+        try {
+	        m_beagle.initByName("data", m_data.get(), "tree", m_tree.get(), "siteModel", m_pSiteModel.get(), "branchRateModel", m_pBranchRateModel.get(), "useAmbiguities", m_useAmbiguities.get(), "scaling", scaling.get().toString());
+	        if (m_beagle.beagle != null) {
+	            //a Beagle instance was found, so we use it
+	            return;
+	        }
+        } catch (Exception e) {
+			// ignore
+		}
         // No Beagle instance was found, so we use the good old java likelihood core
         m_beagle = null;
 
