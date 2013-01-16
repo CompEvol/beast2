@@ -29,6 +29,7 @@ import beagle.*;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
+import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
@@ -93,13 +94,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         m_siteModel.setDataType(m_data.get().getDataType());
         m_substitutionModel = m_siteModel.m_pSubstModel.get();
         m_branchRateModel = m_pBranchRateModel.get();
-        if (m_branchRateModel != null) {
-            m_branchLengths = new double[m_nNodeCount];
-            m_StoredBranchLengths = new double[m_nNodeCount];
-        } else {
-            m_branchLengths = new double[0];
-            m_StoredBranchLengths = new double[0];
+        if (m_branchRateModel == null) {
+        	m_branchRateModel = new StrictClockModel();
         }
+        m_branchLengths = new double[m_nNodeCount];
+        m_StoredBranchLengths = new double[m_nNodeCount];
 
         m_nStateCount = m_data.get().getMaxStateCount();
         m_nPatternCount = m_data.get().getPatternCount();
@@ -767,16 +766,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         // First update the transition probability matrix(ices) for this branch
         int update = (node.isDirty() | m_nHasDirt);
-        if (parent!=null) {
-        	update |= parent.isDirty();
-        }
-        if (!node.isRoot() && (update != Tree.IS_CLEAN)) {
-
-            final double branchRate = (m_branchRateModel == null ? 1.0 : m_branchRateModel.getRateForBranch(node));
-
-            // Get the operational time of the branch
-            final double branchTime = branchRate * (parent.getHeight() - node.getHeight());
-
+//        if (parent!=null) {
+//        	update |= parent.isDirty();
+//        }
+        final double branchRate = m_branchRateModel.getRateForBranch(node);
+        final double branchTime = node.getLength() * branchRate;
+        m_branchLengths[nodeNum] = branchTime;
+        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[nodeNum])) {
             if (branchTime < 0.0) {
                 throw new RuntimeException("Negative branch length: " + branchTime);
             }
