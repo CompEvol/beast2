@@ -30,6 +30,7 @@ import beast.core.Plugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 @Description("Nodes in building beast.tree data structure.")
@@ -569,6 +570,14 @@ public class Node extends Plugin {
         return 0;
     }
 
+    public Set<String> getMetaDataNames() {
+    	if (metaData == null) {
+    		return null;
+    	}
+    	return metaData.keySet();
+    }
+    
+    
     /**
      * scale height of this node and all its descendants
      *

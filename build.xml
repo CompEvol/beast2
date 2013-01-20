@@ -104,6 +104,8 @@
 			</fileset>
 			<zipgroupfileset dir="${lib}" includes="jam.jar" />
 			<zipgroupfileset dir="${lib}" includes="beagle.jar" />
+			<zipgroupfileset dir="${lib}" includes="colt.jar" />
+			<zipgroupfileset dir="${lib}" includes="commons-math3-3.1.1.jar" />
 		</jar>
 		<jar jarfile="${dist}/beast.src.jar">
 			<fileset dir="${src}">

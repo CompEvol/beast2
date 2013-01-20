@@ -249,7 +249,7 @@ public class NexusParser {
                 if (sDataType == null) {
                     System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
                     alignment.m_sDataType.setValue("integer", alignment);
-                } else if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
+                } else if (sDataType.toLowerCase().equals("rna") || sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
                     alignment.m_sDataType.setValue("nucleotide", alignment);
                     nTotalCount = 4;
                 } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
@@ -260,7 +260,7 @@ public class NexusParser {
                     nTotalCount = 2;
                 } else {
                     alignment.m_sDataType.setValue("integer", alignment);
-                    if (sSymbols.equals("01") || sSymbols.equals("012")) {
+                    if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
                         nTotalCount = sSymbols.length();
                     }
                 }
