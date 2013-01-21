@@ -337,13 +337,17 @@ public class Node extends Plugin {
      * in a clade
      */
     String toSortedNewick(int[] iMaxNodeInClade) {
+    	return toSortedNewick(iMaxNodeInClade, false);
+    }
+    
+    public String toSortedNewick(int[] iMaxNodeInClade, boolean printMetaData) {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade);
+            String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
             int iChild1 = iMaxNodeInClade[0];
             if (getRight() != null) {
-                String sChild2 = getRight().toSortedNewick(iMaxNodeInClade);
+                String sChild2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
                 int iChild2 = iMaxNodeInClade[0];
                 if (iChild1 > iChild2) {
                     buf.append(sChild2);
@@ -362,6 +366,9 @@ public class Node extends Plugin {
         } else {
             iMaxNodeInClade[0] = m_iLabel;
             buf.append(m_iLabel+1);
+        }
+        if (printMetaData) {
+            buf.append(getNewickMetaData());
         }
         buf.append(":").append(getLength());
         return buf.toString();
