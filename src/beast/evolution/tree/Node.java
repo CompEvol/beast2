@@ -402,7 +402,7 @@ public class Node extends Plugin {
 
     public String getNewickMetaData() {
         if (m_sMetaData != null) {
-            return '[' + m_sMetaData + ']';
+            return "[&" + m_sMetaData + ']';
         }
         return "";
     }

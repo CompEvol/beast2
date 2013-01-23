@@ -185,7 +185,11 @@ public class BeautiSubTemplate extends Plugin {
             plugins = parser.parseTemplate(_sXML, sIDMap, true);
             for (Plugin plugin : plugins) {
                 doc.addPlugin(plugin);
-                System.err.println("Adding " + plugin.getClass().getName() + " " + plugin);
+                try {
+                	System.err.println("Adding " + plugin.getClass().getName() + " " + plugin);
+                } catch (Exception e) {
+                	System.err.println("Adding " + plugin.getClass().getName());
+				}
             }
 
             for (BeautiConnector connector : connectors) {

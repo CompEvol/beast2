@@ -238,15 +238,19 @@ public class DocMaker {
         }
 
         {
-            InputStream in = new FileInputStream(new File("src/beast/app/draw/icons/beast.png"));
-            OutputStream out = new FileOutputStream(new File(m_sDir + "/beast.png"));
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            in.close();
-            out.close();
+        	try {
+	            InputStream in = new FileInputStream(new File("src/beast/app/draw/icons/beast.png"));
+	            OutputStream out = new FileOutputStream(new File(m_sDir + "/beast.png"));
+	            byte[] buf = new byte[1024];
+	            int len;
+	            while ((len = in.read(buf)) > 0) {
+	                out.write(buf, 0, len);
+	            }
+	            in.close();
+	            out.close();
+        	} catch (Exception e) {
+				// TODO: handle exception
+			}
         }
         PrintStream out = new PrintStream(m_sDir + "/contents.html");
         out.println("<html>\n<head><title>BEAST " + version.getVersionString() + " Documentation index</title>\n" +

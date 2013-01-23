@@ -53,9 +53,9 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
             		Math.max(0.0, popSizeParameter.get().getLower()), 
             		popSizeParameter.get().getUpper());
         }
-        if (growthRateParameter.get() != null) {
-            growthRateParameter.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-        }
+//        if (growthRateParameter.get() != null) {
+//            growthRateParameter.get().setBounds(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+//        }
     }
 
     /**
