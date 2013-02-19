@@ -20,7 +20,9 @@ import java.util.Set;
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -64,6 +66,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	final static int SITEMODEL_COLUMN = 5;
 	final static int CLOCKMODEL_COLUMN = 6;
 	final static int TREE_COLUMN = 7;
+	final static int USE_AMBIGUITIES_COLUMN = 8;
+	
+	final static int NR_OF_COLUMNS = 9;
 
 	/**
 	 * alignments that form a partition. These can be FilteredAlignments *
@@ -534,7 +539,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 	void initTableData() {
 		this.likelihoods = new GenericTreeLikelihood[nPartitions];
 		if (tableData == null) {
-			tableData = new Object[nPartitions][8];
+			tableData = new Object[nPartitions][NR_OF_COLUMNS];
 		}
 		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
 
@@ -564,7 +569,29 @@ System.err.println("needsRePartition = " + needsRePartition);
 			tableData[i][CLOCKMODEL_COLUMN] = getPartition(likelihood.m_pBranchRateModel);
 			// tree
 			tableData[i][TREE_COLUMN] = getPartition(likelihood.m_tree);
+			// useAmbiguities
+			tableData[i][USE_AMBIGUITIES_COLUMN] = null;
+			try {
+				if (hasUseAmbiguitiesInput(i)) {
+					tableData[i][USE_AMBIGUITIES_COLUMN] = likelihood.getInputValue("useAmbiguities");
+				}
+			} catch (Exception e) {
+				// ignore
+			}
 		}
+	}
+
+	private boolean hasUseAmbiguitiesInput(int i) {
+		try {
+			for (Input<?> input : likelihoods[i].listInputs()) {
+				if (input.getName().equals("useAmbiguities")) {
+					return true;
+				}
+			}
+		} catch (Exception e) {
+			// ignore
+		}
+		return false;
 	}
 
 	private String getPartition(Input<?> input) {
@@ -576,7 +603,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 	protected Component createListBox() {
 		String[] columnData = new String[] { "Name", "File", "Taxa", "Sites", "Data Type", "Site Model", "Clock Model",
-				"Tree" };
+				"Tree", "Ambiguities" };
 		initTableData();
 		// set up table.
 		// special features: background shading of rows
@@ -596,6 +623,33 @@ System.err.println("needsRePartition = " + needsRePartition);
 				} else {
 					comp.setBackground(Color.white);
 				}
+			    JComponent jcomp = (JComponent)comp;
+			    if (comp == jcomp) {
+			    	switch (Index_col) {
+			    	case NAME_COLUMN:			    		
+		    		case CLOCKMODEL_COLUMN: 
+		    		case TREE_COLUMN: 
+		    		case SITEMODEL_COLUMN: 
+				        jcomp.setToolTipText("Set " + table.getColumnName(Index_col).toLowerCase() + " for this partition");
+						break;
+		    		case FILE_COLUMN:
+		    		case TAXA_COLUMN:
+		    		case SITES_COLUMN:
+		    		case TYPE_COLUMN:
+				        jcomp.setToolTipText("Report " + table.getColumnName(Index_col).toLowerCase() + " for this partition");
+						break;
+		    		case USE_AMBIGUITIES_COLUMN: 
+						jcomp.setToolTipText("<html>Flag whether to use ambiguities.<br>" +
+								"If not set, the treelikelihood will treat ambiguities in the<br>" +
+								"data as unknowns<br>" +
+								"If set, the treelikelihood will use ambiguities as equally<br>" +
+								"likely values for the tips.<br>" +
+								"This will make the computation twice as slow.</html>");
+						break;
+					default:
+				        jcomp.setToolTipText(null);
+			    	}
+			    }
 				updateStatus();
 				return comp;
 			}
@@ -817,6 +871,37 @@ System.err.println("needsRePartition = " + needsRePartition);
 		col.setPreferredWidth(30);
 		col = table.getColumnModel().getColumn(SITES_COLUMN);
 		col.setPreferredWidth(30);
+		
+		col = table.getColumnModel().getColumn(USE_AMBIGUITIES_COLUMN);
+		JCheckBox checkBox = new JCheckBox();
+		checkBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox checkBox = (JCheckBox) e.getSource();
+				if (table.getSelectedRow() >= 0 && table.getSelectedColumn() >= 0) {
+					System.err.println(" " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+				}
+				try {
+					int row = table.getSelectedRow();
+					if (hasUseAmbiguitiesInput(row)) {
+						likelihoods[row].setInputValue("useAmbiguities", checkBox.isSelected());
+						tableData[row][USE_AMBIGUITIES_COLUMN] = checkBox.isSelected();
+					} else {
+						if (checkBox.isSelected()) {
+							checkBox.setSelected(false);
+						}
+					}
+				} catch (Exception ex) {
+					// TODO: handle exception
+				}
+		
+			}
+		});
+		col.setCellEditor(new DefaultCellEditor(checkBox));
+		col.setCellRenderer(new MyCheckBoxRenderer());
+		col.setPreferredWidth(20);
+		col.setMaxWidth(20);
 	}
 
 	void processPartitionName() {
@@ -904,6 +989,33 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 			// Select the current value
 			setSelectedItem(value);
+			return this;
+		}
+	}
+
+	public class MyCheckBoxRenderer extends JCheckBox implements TableCellRenderer {
+		private static final long serialVersionUID = 1L;
+
+		public MyCheckBoxRenderer() {
+			super();
+			setOpaque(true);
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+			if (hasUseAmbiguitiesInput(row)) {
+				if (isSelected) {
+					// setForeground(table.getSelectionForeground());
+					super.setBackground(table.getSelectionBackground());
+				} else {
+					setForeground(table.getForeground());
+					setBackground(table.getBackground());
+				}
+				setEnabled(true);
+				setSelected((Boolean) value);
+			} else {
+				setEnabled(false);
+			}
 			return this;
 		}
 	}

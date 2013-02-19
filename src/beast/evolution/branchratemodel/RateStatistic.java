@@ -25,6 +25,7 @@
 
 package beast.evolution.branchratemodel;
 
+
 import java.io.PrintStream;
 
 import beast.core.Description;
@@ -33,7 +34,7 @@ import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.Plugin;
 import beast.core.Valuable;
-import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.statistic.DiscreteStatistics;
@@ -43,7 +44,7 @@ import beast.math.statistic.DiscreteStatistics;
         "It has three dimensions, one for each statistic.")
 public class RateStatistic extends Plugin implements Loggable, Valuable {
 	
-    public Input<TreeLikelihood> likelihoodInput = new Input<TreeLikelihood>("treeLikelihood", "TreeLikelihood containing branch rate model that provides rates for a tree");
+    public Input<GenericTreeLikelihood> likelihoodInput = new Input<GenericTreeLikelihood>("treeLikelihood", "TreeLikelihood containing branch rate model that provides rates for a tree");
     public Input<BranchRateModel> branchRateModelInput = new Input<BranchRateModel>("branchratemodel", "model that provides rates for a tree", Validate.XOR, likelihoodInput);
     public Input<Tree> treeInput = new Input<Tree>("tree", "tree for which the rates apply");
     public Input<Boolean> internalInput = new Input<Boolean>("internal", "consider internal nodes, default true", true);

@@ -43,6 +43,10 @@ public class Coalescent extends TreeDistribution {
 
         logP = calculateLogLikelihood(intervals, popSize.get());
 
+        if (Double.isInfinite(logP)) {
+        	logP = Double.NEGATIVE_INFINITY;
+        }
+
         return logP;
     }
 
