@@ -2,9 +2,10 @@
   <headerType>gui</headerType>
   <icon>../common/icons/utility.ico</icon>
   <classPath>
-  	<mainClass>dr.app.tools.LogCombiner</mainClass>
+  	<mainClass>beast.app.tools.LogCombiner</mainClass>
   	<cp>./lib/beast.jar</cp>
   </classPath>
+  <cmdLine>-window -working -options</cmdLine>
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>
@@ -12,7 +13,7 @@
   </jre>    
   <versionInfo>
     <fileDescription>LogCombiner</fileDescription>    
-    <copyright>Beast 2 development team 2011</copyright>
+    <copyright>Beast 2 development team 2013</copyright>
     <productName>LogCombiner</productName>
     <internalName>LogCombiner</internalName>
     <originalFilename>LogCombiner.exe</originalFilename>    

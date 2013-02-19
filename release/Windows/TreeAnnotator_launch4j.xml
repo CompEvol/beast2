@@ -2,7 +2,7 @@
   <headerType>gui</headerType>
   <icon>../common/icons/utility.ico</icon>
   <classPath>
-  	<mainClass>dr.app.tools.TreeAnnotator</mainClass>
+  	<mainClass>beast.app.treeannotator.TreeAnnotator</mainClass>
   	<cp>./lib/beast.jar</cp>
   </classPath>
   <jre>
@@ -12,7 +12,7 @@
   </jre>    
   <versionInfo>
     <fileDescription>TreeAnnotator</fileDescription>    
-    <copyright>Beast 2 development team 2011</copyright>
+    <copyright>Beast 2 development team 2011-2013</copyright>
     <productName>TreeAnnotator</productName>
     <internalName>TreeAnnotator</internalName>
     <originalFilename>TreeAnnotator.exe</originalFilename>    

@@ -177,10 +177,10 @@
 
 
 	<!-- Release -->
-	<property name="version" value="2.0.1" />
-	<property name="version_number" value="2.0.1" />
+	<property name="version" value="2.0.2" />
+	<property name="version_number" value="2.0.2" />
 	<property name="release_dir" value="release" />
-	<property name="copyright" value="Beast 2 development team 2012" />
+	<property name="copyright" value="Beast 2 development team 2011-2013" />
 
 	<property name="BEAST_name" value="BEAST" />
 	<property name="BEAUti_name" value="BEAUti" />
@@ -259,25 +259,7 @@
 		          productVersion="${version_number}.0"
 		          txtProductVersion="${version}" />
 
-		<!-- TreeAnnotator v?.?.?.exe 
-		<launch4j configFile="${Windows_dir}/TreeAnnotator_launch4j.xml"
-                              jar="${dist}/beast.jar"
-                              outfile="${Windows_package_dir}/${TreeAnnotator_name}.exe"
-                              fileVersion="${version_number}.0"
-                              txtFileVersion="${version}"
-                              productVersion="${version_number}.0"
-                              txtProductVersion="${version}"/>-->
-
-		<!-- LogCombiner v?.?.?.exe 
-		<launch4j configFile="${Windows_dir}/LogCombiner_launch4j.xml"
-                              jar="${dist}/beast.jar"
-                              outfile="${Windows_package_dir}/${LogCombiner_name}.exe"
-                              fileVersion="${version_number}.0"
-                              txtFileVersion="${version}"
-                              productVersion="${version_number}.0"
-                              txtProductVersion="${version}"/>
-
-		<launch4j configFile="${Windows_dir}/TreeStat_launch4j.xml"
+		<!--<launch4j configFile="${Windows_dir}/TreeStat_launch4j.xml"
                               jar="${dist}/beast.jar"
                               outfile="${Windows_package_dir}/${TreeStat_name}.exe"
                               fileVersion="${version_number}.0"
@@ -294,6 +276,23 @@
                               productVersion="${version}.0"
                               txtProductVersion="${version}"/>      -->
 
+		<launch4j configFile="${Windows_dir}/LogCombiner_launch4j.xml"
+                              jar="${dist}/beast.jar"
+                              outfile="${Windows_package_dir}/${LogCombiner_name}.exe"
+                              fileVersion="${version_number}.0"
+                              txtFileVersion="${version}"
+                              productVersion="${version_number}.0"
+                              txtProductVersion="${version}"/>
+
+
+		<launch4j configFile="${Windows_dir}/TreeAnnotator_launch4j.xml"
+							  jar="${tools_dir}/treeannotator.jar"
+							  outfile="${Windows_package_dir}/TreeAnnotator.exe"
+                              fileVersion="${version_number}.0"
+                              txtFileVersion="${version}"
+                              productVersion="${version_number}.0"
+                              txtProductVersion="${version}"/>
+
 		<launch4j configFile="${tools_dir}/DensiTree_launch4j.xml"
 		          jar="${tools_dir}/DensiTree.jar"
 		          outfile="${Windows_package_dir}/DensiTree.exe"
@@ -305,9 +304,10 @@
 		<copy todir="${Windows_package_dir}/templates/">
 			<fileset dir="templates/" />
 		</copy>
+<!--
 		<copy file="${beast1_dir}/LogCombiner.exe" todir="${Windows_package_dir}" />
 		<copy file="${beast1_dir}/TreeAnnotator.exe" todir="${Windows_package_dir}" />
-
+-->
 		<zip destfile="${Windows_dir}/${BEAST_name} v${version}.zip">
 			<zipfileset dir="${Windows_package_dir}" prefix="${BEAST_name}" />
 		</zip>
@@ -349,7 +349,10 @@
 			<fileset dir="${Linux_dir}/lib" />
 		</copy>-->
 
+		<!--		
 		<copy file="${beast1_dir}/beast161.jar" todir="${Linux_package_dir}/lib" />
+		-->
+		<copy file="${tools_dir}/treeannotator.jar" todir="${Linux_package_dir}/lib" />
 
 		<copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
 		<copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
@@ -468,16 +471,16 @@
 		<!-- ant copy will not redirect the source, so that have to re-bundler it -->
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${LogCombiner_name}"
-		            mainclass="dr.app.tools.LogCombiner"
+		            mainclass="beast.app.tools.LogCombiner"
 		            icon="${beast1_dir}/utility.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments=""
-		            version="1.6.1"
+		            version="${version}"
 		            infostring="${LogCombiner_name}, ${copyright}"
 		            bundleid="dr.app.tools.logcombiner">
-			<jarfileset dir="${beast1_dir}">
-				<include name="**/beast161.jar" />
+			<jarfileset dir="${Mac_package_dir}/lib">
+				<include name="**/beast.jar" />
 			</jarfileset>
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
@@ -490,11 +493,11 @@
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments=""
-		            version="1.6.1"
+		            version="${version}"
 		            infostring="${TreeAnnotator_name}, ${copyright}"
-		            bundleid="dr.app.tools.treeannotator">
-			<jarfileset dir="${beast1_dir}">
-				<include name="**/beast161.jar" />
+		            bundleid="beast.app.treeannotator.treeannotator">
+			<jarfileset dir="${tools_dir}">
+				<include name="**/treeannotator.jar" />
 			</jarfileset>
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
