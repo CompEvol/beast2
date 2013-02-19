@@ -49,11 +49,11 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		// check table
 		JTableFixture t = beautiFrame.table();
 		printTableContents(t);
-		checkTableContents(f, "[coding, primate-mtDNA, 12, 693, nucleotide, coding, coding, coding]*" +
-				"[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos]");
+		checkTableContents(f, "[coding, primate-mtDNA, 12, 693, nucleotide, coding, coding, coding, false]*" +
+				"[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos, false]");
 		
 		assertThat(f).isNotNull();
 		printBeautiState(f);
@@ -70,10 +70,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		JButtonFixture deleteButton = beautiFrame.button("-");
 		deleteButton.click();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos, false]");
 		assertStateEquals("Tree.t:noncoding", "birthRate.t:noncoding", "Tree.t:3rdpos", "clockRate.c:3rdpos", "birthRate.t:3rdpos", "Tree.t:1stpos", "clockRate.c:1stpos", "birthRate.t:1stpos", "Tree.t:2ndpos", "clockRate.c:2ndpos", "birthRate.t:2ndpos");
 		assertOperatorsEqual("YuleBirthRateScaler.t:noncoding", "treeScaler.t:noncoding", "treeRootScaler.t:noncoding", "UniformOperator.t:noncoding", "SubtreeSlide.t:noncoding", "narrow.t:noncoding", "wide.t:noncoding", "WilsonBalding.t:noncoding", "StrictClockRateScaler.c:3rdpos", "YuleBirthRateScaler.t:3rdpos", "treeScaler.t:3rdpos", "treeRootScaler.t:3rdpos", "UniformOperator.t:3rdpos", "SubtreeSlide.t:3rdpos", "narrow.t:3rdpos", "wide.t:3rdpos", "WilsonBalding.t:3rdpos", "StrictClockRateScaler.c:1stpos", "YuleBirthRateScaler.t:1stpos", "treeScaler.t:1stpos", "treeRootScaler.t:1stpos", "UniformOperator.t:1stpos", "SubtreeSlide.t:1stpos", "narrow.t:1stpos", "wide.t:1stpos", "WilsonBalding.t:1stpos", "StrictClockRateScaler.c:2ndpos", "YuleBirthRateScaler.t:2ndpos", "treeScaler.t:2ndpos", "treeRootScaler.t:2ndpos", "UniformOperator.t:2ndpos", "SubtreeSlide.t:2ndpos", "narrow.t:2ndpos", "wide.t:2ndpos", "WilsonBalding.t:2ndpos", "strictClockUpDownOperator.c:3rdpos", "strictClockUpDownOperator.c:2ndpos", "strictClockUpDownOperator.c:1stpos");
 		assertPriorsEqual("YuleModel.t:1stpos", "YuleModel.t:2ndpos", "YuleModel.t:3rdpos", "YuleModel.t:noncoding", "YuleBirthRatePrior.t:1stpos", "YuleBirthRatePrior.t:2ndpos", "YuleBirthRatePrior.t:3rdpos", "YuleBirthRatePrior.t:noncoding", "ClockPrior.c:1stpos", "ClockPrior.c:2ndpos", "ClockPrior.c:3rdpos");
@@ -101,10 +101,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		comboBox.selectAllText();
 		comboBox.enterText("tree");
 		cell.stopEditing();
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, tree, false]");
 		printBeautiState(f);
 		assertStateEquals("clockRate.c:2ndpos", "Tree.t:tree", "birthRate.t:tree", "clockRate.c:1stpos", "clockRate.c:3rdpos");
 		assertOperatorsEqual("StrictClockRateScaler.c:2ndpos", "YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "StrictClockRateScaler.c:1stpos", "StrictClockRateScaler.c:3rdpos", "strictClockUpDownOperator.c:3rdpos", "strictClockUpDownOperator.c:2ndpos", "strictClockUpDownOperator.c:1stpos");
@@ -129,10 +129,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		comboBox.enterText("clock");
 		cell.stopEditing();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree, false]");
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
@@ -146,10 +146,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		JButtonFixture linkSiteModelsButton = beautiFrame.button("Link Site Models");
 		linkSiteModelsButton.click();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]");
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
@@ -166,10 +166,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		JCheckBoxFixture shapeIsEstimated = beautiFrame.checkBox("shape.isEstimated");
 		shapeIsEstimated.check();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]");
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "freqParameter.s:noncoding");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "FrequenciesExchanger.s:noncoding");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "KappaPrior.s:noncoding", "GammaShapePrior.s:noncoding");
@@ -181,10 +181,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0), TableCell.row(3).column(0));
 		beautiFrame.button("Unlink Site Models").click();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree, false]");
 
 		//6b. and make sure that site model mutation rates are relative to 3rdpos (i.e. 3rdpos.mutationRate = 1, other 3 estimated).
 		warning("6b. and make sure that site model mutation rates are relative to 3rdpos (i.e. 3rdpos.mutationRate = 1, other 3 estimated).");
@@ -300,11 +300,11 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		
 		// check table
 		printTableContents(t);
-		checkTableContents(f, "[coding, primate-mtDNA, 12, 693, nucleotide, coding, coding, coding]*" +
-				"[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos]");
+		checkTableContents(f, "[coding, primate-mtDNA, 12, 693, nucleotide, coding, coding, coding, false]*" +
+				"[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos, false]");
 		
 		assertThat(f).isNotNull();
 		printBeautiState(f);
@@ -321,10 +321,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		JButtonFixture deleteButton = beautiFrame.button("-");
 		deleteButton.click();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, noncoding, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, 1stpos, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, 2ndpos, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, 3rdpos, false]");
 		assertStateEquals("Tree.t:noncoding", "birthRate.t:noncoding", "Tree.t:3rdpos", "clockRate.c:3rdpos", "birthRate.t:3rdpos", "Tree.t:1stpos", "clockRate.c:1stpos", "birthRate.t:1stpos", "Tree.t:2ndpos", "clockRate.c:2ndpos", "birthRate.t:2ndpos");
 		assertOperatorsEqual("YuleBirthRateScaler.t:noncoding", "treeScaler.t:noncoding", "treeRootScaler.t:noncoding", "UniformOperator.t:noncoding", "SubtreeSlide.t:noncoding", "narrow.t:noncoding", "wide.t:noncoding", "WilsonBalding.t:noncoding", "StrictClockRateScaler.c:3rdpos", "YuleBirthRateScaler.t:3rdpos", "treeScaler.t:3rdpos", "treeRootScaler.t:3rdpos", "UniformOperator.t:3rdpos", "SubtreeSlide.t:3rdpos", "narrow.t:3rdpos", "wide.t:3rdpos", "WilsonBalding.t:3rdpos", "StrictClockRateScaler.c:1stpos", "YuleBirthRateScaler.t:1stpos", "treeScaler.t:1stpos", "treeRootScaler.t:1stpos", "UniformOperator.t:1stpos", "SubtreeSlide.t:1stpos", "narrow.t:1stpos", "wide.t:1stpos", "WilsonBalding.t:1stpos", "StrictClockRateScaler.c:2ndpos", "YuleBirthRateScaler.t:2ndpos", "treeScaler.t:2ndpos", "treeRootScaler.t:2ndpos", "UniformOperator.t:2ndpos", "SubtreeSlide.t:2ndpos", "narrow.t:2ndpos", "wide.t:2ndpos", "WilsonBalding.t:2ndpos", "strictClockUpDownOperator.c:3rdpos", "strictClockUpDownOperator.c:2ndpos", "strictClockUpDownOperator.c:1stpos");
 		assertPriorsEqual("YuleModel.t:1stpos", "YuleModel.t:2ndpos", "YuleModel.t:3rdpos", "YuleModel.t:noncoding", "YuleBirthRatePrior.t:1stpos", "YuleBirthRatePrior.t:2ndpos", "YuleBirthRatePrior.t:3rdpos", "YuleBirthRatePrior.t:noncoding", "ClockPrior.c:1stpos", "ClockPrior.c:2ndpos", "ClockPrior.c:3rdpos");
@@ -351,10 +351,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		comboBox.selectAllText();
 		comboBox.enterText("tree");
 		cell.stopEditing();
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, noncoding, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, 1stpos, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, 2ndpos, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, 3rdpos, tree, false]");
 		printBeautiState(f);
 		assertStateEquals("clockRate.c:2ndpos", "Tree.t:tree", "birthRate.t:tree", "clockRate.c:1stpos", "clockRate.c:3rdpos");
 		assertOperatorsEqual("StrictClockRateScaler.c:2ndpos", "YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "StrictClockRateScaler.c:1stpos", "StrictClockRateScaler.c:3rdpos", "strictClockUpDownOperator.c:3rdpos", "strictClockUpDownOperator.c:2ndpos", "strictClockUpDownOperator.c:1stpos");
@@ -379,10 +379,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		comboBox.enterText("clock");
 		cell.stopEditing();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree, false]");
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
@@ -396,10 +396,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		JButtonFixture linkSiteModelsButton = beautiFrame.button("Link Site Models");
 		linkSiteModelsButton.click();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]");
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
@@ -423,10 +423,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		beautiFrame.checkBox("FixMeanMutationRate").check();
 		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "Model.png");
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, noncoding, clock, tree, false]");
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "mutationRate.s:noncoding");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "FixMeanMutationRatesOperator");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "KappaPrior.s:noncoding", "GammaShapePrior.s:noncoding");
@@ -439,10 +439,10 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0), TableCell.row(3).column(0));
 		beautiFrame.button("Unlink Site Models").click();
 		printBeautiState(f);
-		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree]*" +
-				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree]*" +
-				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree]*" +
-				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree]");
+		checkTableContents(f, "[noncoding, primate-mtDNA, 12, 205, nucleotide, noncoding, clock, tree, false]*" +
+				"[1stpos, primate-mtDNA, 12, 231, nucleotide, 1stpos, clock, tree, false]*" +
+				"[2ndpos, primate-mtDNA, 12, 231, nucleotide, 2ndpos, clock, tree, false]*" +
+				"[3rdpos, primate-mtDNA, 12, 231, nucleotide, 3rdpos, clock, tree, false]");
 
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:noncoding", "gammaShape.s:noncoding", "mutationRate.s:noncoding", "kappa.s:1stpos", "gammaShape.s:1stpos", "mutationRate.s:1stpos", "kappa.s:2ndpos", "gammaShape.s:2ndpos", "mutationRate.s:2ndpos", "kappa.s:3rdpos", "gammaShape.s:3rdpos", "mutationRate.s:3rdpos");
 		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:noncoding", "gammaShapeScaler.s:noncoding", "FixMeanMutationRatesOperator", "gammaShapeScaler.s:1stpos", "KappaScaler.s:1stpos", "gammaShapeScaler.s:2ndpos", "KappaScaler.s:2ndpos", "gammaShapeScaler.s:3rdpos", "KappaScaler.s:3rdpos");

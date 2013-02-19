@@ -71,9 +71,9 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		t = beautiFrame.table();
 		printTableContents(t);
 		checkTableContents(t, 
-				"[RSV2_1, RSV2, 129, 209, nucleotide, RSV2_1, RSV2_1, RSV2_1]*" +
-				"[RSV2_2, RSV2, 129, 210, nucleotide, RSV2_2, RSV2_2, RSV2_2]*" +
-				"[RSV2_3, RSV2, 129, 210, nucleotide, RSV2_3, RSV2_3, RSV2_3]"
+				"[RSV2_1, RSV2, 129, 209, nucleotide, RSV2_1, RSV2_1, RSV2_1, false]*" +
+				"[RSV2_2, RSV2, 129, 210, nucleotide, RSV2_2, RSV2_2, RSV2_2, false]*" +
+				"[RSV2_3, RSV2, 129, 210, nucleotide, RSV2_3, RSV2_3, RSV2_3, false]"
 			);
 		printBeautiState(f);
 		assertStateEquals("Tree.t:RSV2_2", "clockRate.c:RSV2_2", "birthRate.t:RSV2_2", "Tree.t:RSV2_3", "clockRate.c:RSV2_3", "birthRate.t:RSV2_3", "Tree.t:RSV2_1", "birthRate.t:RSV2_1");
