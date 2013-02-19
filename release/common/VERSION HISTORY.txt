@@ -1,11 +1,27 @@
-                    BEAST v2.0.c 2011
-                 Beast 2 development team 2011
-
+                    BEAST v2.0.2 2013
+                 Beast 2 development team 2011-2013
 Version History
-Last updated: 1st December 2011
+Last updated: February 2013
+
 All issues can be viewed at http://code.google.com/p/beast2/issues/list
 
 ================================================================================
+
+Version 2.0.2 February 2013
+
+	Beagle scale issue resolved, resulting in potentially faster 
+	treelikelihood calculations
+
+	Treeannotator and logcombiner updated to version 2
+	
+	BEAUti - use-ambiguities flag in partition panel
+
+	colt and apache math-commons libraries included so not all add-ons
+	need to supply them separately
+
+	Support for path-sampling through beastii add-on
+
+
 
 Version 2.0.c released on 1st December 2011
 

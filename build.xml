@@ -488,7 +488,7 @@
 
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${TreeAnnotator_name}"
-		            mainclass="dr.app.tools.TreeAnnotator"
+		            mainclass="beast.app.treeannotator.TreeAnnotator"
 		            icon="${beast1_dir}/utility.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
