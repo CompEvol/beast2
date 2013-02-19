@@ -53,7 +53,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		JTableFixture t = beautiFrame.table();
 		String[][] tc = t.contents();
 		System.err.println(Arrays.toString(tc[0]));
-		assertArrayEquals(tc[0],"[anolis, anolis, 29, 1456, nucleotide, anolis, anolis, anolis]");
+		assertArrayEquals(tc[0],"[anolis, anolis, 29, 1456, nucleotide, anolis, anolis, anolis, false]");
 		assertThat(f).isNotNull();
 		assertStateEquals("Tree.t:anolis", "birthRate.t:anolis");
 		assertOperatorsEqual("YuleBirthRateScaler.t:anolis", "treeScaler.t:anolis", "treeRootScaler.t:anolis", "UniformOperator.t:anolis", "SubtreeSlide.t:anolis", "narrow.t:anolis", "wide.t:anolis", "WilsonBalding.t:anolis");
