@@ -40,7 +40,7 @@ public class PriorInputEditor extends InputEditor.Base {
         Box itemBox = Box.createHorizontalBox();
 
         Prior prior = (Prior) plugin;
-        String sText = /*plugin.getID() + ": " +*/ ((Plugin) prior.m_x.get()).getID();
+        String sText = prior.getParameterName();
         JLabel label = new JLabel(sText);
         label.setMinimumSize(PREFERRED_SIZE);
         label.setPreferredSize(PREFERRED_SIZE);

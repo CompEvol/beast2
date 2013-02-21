@@ -49,6 +49,14 @@ public class Prior extends Distribution {
         logP = m_dist.calcLogP(x);
         return logP;
     }
+    
+    /** return name of the parameter this prior is applied to **/
+    public String getParameterName() {
+    	if (m_x.get() instanceof Plugin) {
+    		return ((Plugin) m_x.get()).getID();
+    	}
+    	return m_x.get() + "";
+    }
 
     @Override
     public void sample(State state, Random random) {

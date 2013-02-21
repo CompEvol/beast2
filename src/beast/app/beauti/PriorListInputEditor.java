@@ -99,10 +99,10 @@ public class PriorListInputEditor extends ListInputEditor {
 							return -1;
 						}
 						if (o1 instanceof Prior) {
-							sID1 = ((Plugin)((Prior) o1).m_x.get()).getID(); 
+							sID1 = ((Prior) o1).getParameterName(); 
 						}
 						if (o2 instanceof Prior) {
-							sID2 = ((Plugin)((Prior) o2).m_x.get()).getID(); 
+							sID2 = ((Prior) o2).getParameterName(); 
 						}
 						return sID1.compareTo(sID2);
 					}
