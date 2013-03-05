@@ -163,10 +163,8 @@ public class MCMC extends Runnable {
         // State initialisation
         HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
         for (Operator op : operatorsInput.get()) {
-            for (Plugin o : op.listActivePlugins()) {
-                if (o instanceof StateNode) {
-                    operatorStateNodes.add((StateNode) o);
-                }
+            for (StateNode stateNode : op.listStateNodes()) {
+                operatorStateNodes.add(stateNode);
             }
         }
         if (m_startState.get() != null) {
@@ -196,12 +194,10 @@ public class MCMC extends Runnable {
         // sanity check: all operator state nodes should be in the state
         List<StateNode> stateNodes = this.state.stateNodeInput.get();
         for (Operator op : operatorsInput.get()) {
-            for (Plugin o : op.listActivePlugins()) {
-                if (o instanceof StateNode) {
-                    if (((StateNode) o).m_bIsEstimated.get() && !stateNodes.contains((StateNode) o)) {
-                        throw new Exception("Operator " + op.getID() + " has a statenode " + o.getID() + " in its inputs that is missing from the state.");
-                    }
-                }
+            for (StateNode stateNode : op.listStateNodes()) {
+	            if (!stateNodes.contains(stateNode)) {
+	                throw new Exception("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
+	            }
             }
         }
         // sanity check: all state nodes should be operated on

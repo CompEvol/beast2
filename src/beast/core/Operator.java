@@ -25,6 +25,8 @@
 package beast.core;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import beast.core.Input.Validate;
 
@@ -170,6 +172,25 @@ public abstract class Operator extends Plugin {
         return "";
     }
 
+    /** 
+     * return list of state nodes that this operator operates on.
+     * state nodes that are input to the operator but are never changed
+     * in a proposal should not be listed
+     **/
+    public List<StateNode> listStateNodes() throws Exception {
+    	// pick up all inputs that are stateNodes that are estimated
+    	List<StateNode> list = new ArrayList<StateNode>();
+        for (Plugin o : listActivePlugins()) {
+            if (o instanceof StateNode) {
+            	StateNode stateNode = (StateNode) o; 
+                if (stateNode.m_bIsEstimated.get()) {
+                	list.add(stateNode);
+                }
+            }
+        }
+    	return list;
+    }
+    
     public String toString() {
         String sName = getName();
         if (sName.length() < 70) {
