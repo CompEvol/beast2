@@ -166,7 +166,22 @@ public class PriorListInputEditor extends ListInputEditor {
 
     Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
         Set<Taxon> candidates = new HashSet<Taxon>();
-        for (String sTaxon : prior.m_treeInput.get().getTaxaNames()) {
+        Tree tree = prior.m_treeInput.get();
+        String [] taxa = null;
+        if (tree.m_taxonset.get() != null) {
+        	try {
+            	TaxonSet set = tree.m_taxonset.get();
+        		set.initAndValidate();
+            	taxa = set.asStringList().toArray(new String[0]);
+        	} catch (Exception e) {
+            	taxa = prior.m_treeInput.get().getTaxaNames();
+			}
+        } else {
+        	taxa = prior.m_treeInput.get().getTaxaNames();
+        }
+        
+        
+        for (String sTaxon : taxa) {
             Taxon taxon = null;
             for (Taxon taxon2 : doc.taxaset) {
                 if (taxon2.getID().equals(sTaxon)) {
