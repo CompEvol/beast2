@@ -347,10 +347,10 @@
 		        <distribution id="YuleModel.t:Species" spec="speciation.YuleModel" tree='@Tree.t:Species'>
 		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.t:Species" value='213.2021' lower='0' upper='10000' />
 		        </distribution>
-	            <distribution id='YuleBirthRatePrior.t:Species' spec='Prior' x='@birthRate.t:Species'>
+	            <distribution id='YuleBirthRatePrior.t:Species' spec='beast.math.distributions.Prior' x='@birthRate.t:Species'>
 		             <distr spec="beast.math.distributions.OneOnX"/>
 		        </distribution>
-	            <distribution id='popMean.prior' spec='Prior' x='@popMean'>
+	            <distribution id='popMean.prior' spec='beast.math.distributions.Prior' x='@popMean'>
 		            <distr spec="beast.math.distributions.OneOnX"/>
 		        </distribution>
             </distribution>
