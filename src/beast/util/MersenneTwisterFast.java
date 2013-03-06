@@ -49,6 +49,10 @@
 
 package beast.util;
 
+import beast.math.GammaFunction;
+import beast.math.statistic.DiscreteStatistics;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.Serializable;
 
 
@@ -676,6 +680,99 @@ public class MersenneTwisterFast implements Serializable {
             }
         }
     }
+    
+    /**********************************************************
+     *                                                        *
+     *  Poissonian distribution - Rejection + direct method   *
+     *                                                        *
+     **********************************************************/
+    
+    /**
+     * Rejection method from NR, apparently good for lambda>=12, although
+     * systematic errors start to creep in at lambda>=1e14.  Can we improve
+     * on this?  A straight Gaussian seems to stay accurate for larger
+     * means.
+     * 
+     * @param lambda
+     * @return 
+     */
+    private double poissonian_reject(double lambda) {
+        double sq = Math.sqrt(2.0*lambda);
+        double alxm = Math.log(lambda);
+        double g = lambda*alxm-GammaFunction.lnGamma(lambda+1.0);
+        double em, t, y;
 
+        do {
+            do {
+                y = Math.tan(Math.PI*nextDouble());
+                em = sq*y+lambda;
+            } while (em<0.0);
 
+            em = Math.floor(em);
+            t = 0.9*(1.0+y*y)*Math.exp(em*alxm
+                    -GammaFunction.lnGamma(em+1.0)-g);
+
+        } while (nextDouble()>t);
+
+        return em;
+    }
+
+    /**
+     * Direct method: only efficient for small lambda.
+     * 
+     * @param lambda
+     * @return 
+     */
+    private double poissonian_knuth(double lambda) {
+        double L = Math.exp(-lambda);
+        double p;
+        int k;
+
+        for (k = 0, p = 1; p>=L; k++)
+            p = p*nextDouble();
+
+        return k-1;
+    }
+
+    /**
+     * Sample from a Poissonian distribution.  Note that samples are expressed
+     * as doubles, allowing for sensible convergence to the appropriate
+     * Gaussian when extremely large lambdas are used.  Be aware however that
+     * systematic errors due to rounding start to creep in for lambda>1e14.
+     * Can we improve on this?
+     * 
+     * @param lambda
+     * @return Draw from Pois(lambda).
+     */
+    public double nextPoisson(double lambda) {
+        if (lambda<12)
+            return poissonian_knuth(lambda);
+
+        return poissonian_reject(lambda);
+    }
+    
+    /**
+     * Main for debugging only.
+     */
+    public static void main (String [] args) throws FileNotFoundException {
+        
+        double lambda = 1e12;
+        int reps=100000;
+        
+        double sqrtlambda = Math.sqrt(lambda);
+        double [] vals = new double[reps];
+
+        PrintStream outf = new PrintStream("vals.txt");
+        
+        for (int i=0; i<reps; i++) {
+            double val = Randomizer.nextPoisson(lambda);
+            //double val = Randomizer.nextGaussian()*sqrtlambda + lambda;
+            vals[i] = val;
+            outf.println(val);
+        }
+        outf.close();
+        
+        System.out.format("E[x]=%g\n",DiscreteStatistics.mean(vals));
+        System.out.format("Var[x]=%g\n", DiscreteStatistics.variance(vals));
+    }
 }

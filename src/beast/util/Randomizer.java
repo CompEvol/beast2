@@ -225,6 +225,18 @@ public class Randomizer {
             return random.nextGamma(alpha, lambda);
         }
     }
+    
+    /**
+     * Access a default instance of this class, access is synchronized.
+     * 
+     * @param lambda
+     * @return sample from a Poissonian distribution of mean lambda.
+     */
+    public static double nextPoisson(double lambda) {
+        synchronized (random) {
+            return random.nextPoisson(lambda);
+        }
+    }
 
     /**
      * Access a default instance of this class, access is synchronized
