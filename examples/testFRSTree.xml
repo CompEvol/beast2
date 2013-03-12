@@ -1,0 +1,68 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- Test calibration implementation: 5 taxa - prior on 2-taxon clade, uniform prior  -->
+<beast version='2.0'
+       namespace='beast.evolution.alignment:beast.evolution.speciation:beast.core:beast.evolution.tree.coalescent:beast.util:beast.core.util:beast.evolution.likelihood:beast.math.distributions:beast.evolution.operators'>
+
+    <!-- Sasha please fix -->
+
+    <taxonset spec='TaxonSet' id='taxonset'>
+        <taxon spec='Taxon' id='A'/>
+        <taxon spec='Taxon' id='B'/>
+        <taxon spec='Taxon' id='C'/>
+    </taxonset>
+
+    <trait id='traitset' spec='beast.evolution.tree.TraitSet' traitname='date-forward' units='day'
+           value='
+		A  = 2.0,
+		B  = 1.0,
+		C  = 0.0'>
+        <taxa idref='taxonset'/>
+    </trait>
+
+    <tree spec='beast.util.TreeParser' id='tree'>
+        <taxonset idref='taxonset'/>
+        <input name='newick'>
+            ((A:1.5,B:0.5):2.5,C:1);
+        </input>
+        <trait idref='traitset'/>
+    </tree>
+
+    <BirthDeathSkylineModel spec="BirthDeathSkylineModel" id="birthDeath" tree="@tree" intervalNumber="1">
+        <parameter name="orig_root" id="orig_root" value="1" lower="0." upper="1000."/>
+
+        <!-- dimension of R0, becomeUninfectiousRate and samplingProportion must be either equal to intervalNumber, or 1 (i.e. rate is constant over time) -->
+        <parameter name="R0" id="R0" value="2" lower="0." dimension="1" upper="10"/>
+        <parameter name="becomeUninfectiousRate" id="becomeUninfectiousRate" value="1." lower="0." upper="10."
+                   dimension="1"/>
+        <parameter name="samplingProportion" id="samplingProportion" value="0.01" lower="0." upper="1." dimension="1"/>
+    </BirthDeathSkylineModel>
+
+    <run spec="MCMC" id="mcmc" chainLength="10000">
+        <!-- <init spec='CalibratedYuleInitialTree' id='startTree' initial='@tree'
+              taxonset='@taxa' calibrations='@cal'>
+        </init> -->
+
+        <state>
+            <stateNode spec='beast.evolution.tree.Tree' id='tree'/>
+        </state>
+
+        <distribution spec='CompoundDistribution' id='posterior'>
+            <distribution id="bdss.prior" idref='birthDeath'/>
+        </distribution>
+
+        <operator spec='SashaSurprise' weight="15" tree="@tree"/>
+
+        <logger logEvery="100" fileName="testFRSTreeOperator.$(seed).log">
+            <model idref='posterior'/>
+            <!-- <log idref="posterior"/> -->
+            <log idref="birthDeath"/>
+        </logger>
+        <logger logEvery="100" fileName="testFRSTreeOperator.$(seed).trees">
+            <log idref="tree"/>
+        </logger>
+        <logger logEvery="1000">
+            <model idref='posterior'/>
+            <log idref="birthDeath"/>
+        </logger>
+    </run>
+</beast>
