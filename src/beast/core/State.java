@@ -560,7 +560,10 @@ public class State extends Plugin {
                                 bProgress = true;
                             }
                         } else {
-                            throw new Exception("DEVELOPER ERROR: found a non-CalculatioNode on path between StateNode and Runnable");
+                            throw new Exception("DEVELOPER ERROR: found a"
+                                    + " non-CalculatioNode ("
+                                    +output.getClass().getName()
+                                    +") on path between StateNode and Runnable");
                         }
                     }
                 }
