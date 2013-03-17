@@ -605,7 +605,7 @@ public class Node extends Plugin {
         }
     }
 
-    private void startEditing() {
+    protected void startEditing() {
         if (m_tree != null && m_tree.getState() != null) {
             m_tree.startEditing(null);
         }
