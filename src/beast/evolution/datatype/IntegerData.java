@@ -22,4 +22,13 @@ public class IntegerData extends Base {
     public boolean isAmbiguousState(int state) {
     	return state < 0;
     }
+    
+    @Override
+    public char getChar(int state) {
+    	if (state < 0) {
+    		return '?';
+    	}
+        return (char)('0'+state);
+    }
+
 }

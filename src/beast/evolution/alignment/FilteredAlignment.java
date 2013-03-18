@@ -199,6 +199,9 @@ public class FilteredAlignment extends Alignment {
         for (int m_nStateCount1 : m_nStateCounts) {
             m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCount1);
         }
+        if (convertDataType) {
+        	m_nMaxStateCount = Math.max(m_nMaxStateCount, m_dataType.getStateCount());
+        }
         // report some statistics
         //for (int i = 0; i < m_sTaxaNames.size(); i++) {
         //    System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
