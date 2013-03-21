@@ -29,6 +29,7 @@ public class MRCAPrior extends Distribution {
             "flag to indicate tip dates are to be used instead of the MRCA node. " +
                     "If set to true, the prior is applied to the height of all tips in the taxonset " +
                     "and the monophyletic flag is ignored. Default is false.", false);
+    public final Input<Boolean> m_bUseOriginateInput = new Input<Boolean>("useOriginate", "Use parent of clade instead of clade. Cannot be used with tipsonly, or on the root.", false);
 
     /**
      * shadow members *
@@ -47,6 +48,7 @@ public class MRCAPrior extends Distribution {
     // flag indicating taxon set is monophyletic
     boolean m_bIsMonophyletic = false;
     boolean m_bOnlyUseTips = false;
+    boolean m_bUseOriginate = false;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -77,7 +79,7 @@ public class MRCAPrior extends Distribution {
         if (!m_bOnlyUseTips && m_taxonset.get() == null) {
             throw new Exception("Taxonset must be specified OR tipsonly be set to true");
         }
-
+        
         // determine which taxa are in the set
         m_iTaxa = new int[m_nNrOfTaxa];
         if ( set != null )  {  // m_taxonset.get() != null) {
@@ -99,6 +101,15 @@ public class MRCAPrior extends Distribution {
                 m_iTaxa[i] = i;
             }
         }
+        
+        m_bUseOriginate = m_bUseOriginateInput.get();
+        if (m_bUseOriginate && m_bOnlyUseTips) {
+        	throw new Exception("'useOriginate' and 'tipsOnly' cannot be both true");
+        }
+        if (m_bUseOriginate && m_nNrOfTaxa == m_tree.getLeafNodeCount()) {
+        	throw new Exception("Cannot use originate of root. You can set useOriginate to false to fix this");
+        }
+
     }
 
     @Override
@@ -153,7 +164,11 @@ public class MRCAPrior extends Distribution {
                 nTaxonCount[0] = nLeftTaxa + nRightTaxa;
                 if (iTaxons == m_nNrOfTaxa) {
                     // we are at the MRCA, so record the height
-                    m_fMRCATime = node.getDate();
+                	if (m_bUseOriginate) {
+                		m_fMRCATime = node.getParent().getDate();
+                	} else {
+                		m_fMRCATime = node.getDate();
+                	}
                     m_bIsMonophyletic = (nTaxonCount[0] == m_nNrOfTaxa);
                     return iTaxons + 1;
                 }
