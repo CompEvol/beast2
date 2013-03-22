@@ -165,7 +165,12 @@ public class MRCAPrior extends Distribution {
                 if (iTaxons == m_nNrOfTaxa) {
                     // we are at the MRCA, so record the height
                 	if (m_bUseOriginate) {
-                		m_fMRCATime = node.getParent().getDate();
+                		Node parent = node.getParent();
+                		if (parent != null) {
+                			m_fMRCATime = parent.getDate();
+                		} else {
+                			m_fMRCATime = node.getDate();
+                		}
                 	} else {
                 		m_fMRCATime = node.getDate();
                 	}
