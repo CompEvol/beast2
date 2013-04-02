@@ -303,8 +303,8 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
         final Tree tree = m_tree.get();
 
-        traverse(tree.getRoot());
-        calcLogP();
+        if (traverse(tree.getRoot()) != Tree.IS_CLEAN)
+            calcLogP();
 
         m_nScale++;
         if (logP > 0 || (m_likelihoodCore.getUseScaling() && m_nScale > X)) {
