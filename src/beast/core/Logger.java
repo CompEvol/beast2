@@ -410,14 +410,18 @@ public class Logger extends Plugin {
                                 }
                             }
                             fin.close();
+                            // back up file in case something goes wrong (e.g. an out of memory error occurs)
+                            File treeFileBackup = new File(sFileName);
+                            treeFileBackup.renameTo(new File(sFileName + ".bu"));
                             // determine number of the last sample
                             if( sStrLast == null ) {
                                 // empty log file?
-                                 throw new Exception("Error 402: empty tree log file " + sFileName + "?");
+                                 throw new Exception("Error 402: empty tree log file " + sFileName + "? (check if there is a back up file " + sFileName + ".bu)");
                             }
                             final String sStr = sStrLast.split("\\s+")[1];
                             final int nSampleOffset = Integer.parseInt(sStr.substring(6));
                             if (m_nSampleOffset > 0 && nSampleOffset != m_nSampleOffset) {
+                                treeFileBackup.renameTo(new File(sFileName));
                                 throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
                             }
                             m_nSampleOffset = nSampleOffset;
@@ -425,6 +429,8 @@ public class Logger extends Plugin {
                             FileOutputStream out2 = new FileOutputStream(sFileName);
                             m_out = new PrintStream(out2);
                             m_out.print(buf.toString());
+                            // it is safe to remove the backup file now
+                            new File(sFileName + ".bu").delete();
                         }
                         System.out.println("Appending file " + sFileName);
                         return false;

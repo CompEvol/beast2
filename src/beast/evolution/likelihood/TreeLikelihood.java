@@ -353,10 +353,11 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
         final double branchRate = m_branchRateModel.getRateForBranch(node);
         final double branchTime = node.getLength() * branchRate;
-        m_branchLengths[iNode] = branchTime;
 
         // First update the transition probability matrix(ices) for this branch
-        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[iNode])) {
+        //if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[iNode])) {
+        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_branchLengths[iNode])) {
+            m_branchLengths[iNode] = branchTime;
             final Node parent = node.getParent();
             m_likelihoodCore.setNodeMatrixForUpdate(iNode);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
@@ -442,7 +443,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             return true;
         }
         if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_DIRTY;
+            //m_nHasDirt = Tree.IS_DIRTY;
             return true;
         }
         return m_tree.get().somethingIsDirty();

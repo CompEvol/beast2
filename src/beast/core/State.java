@@ -392,10 +392,16 @@ public class State extends Plugin {
                 int iStateNode = 0;
                 while (!stateNode[iStateNode].getID().equals(sID)) {
                     iStateNode++;
+                    if (iStateNode >= stateNode.length) {
+                    	System.err.println("Cannot resotre statenode sID");
+                    	break;
+                    }
                 }
-                StateNode stateNode2 = stateNode[iStateNode].copy();
-                stateNode2.fromXML(child);
-                stateNode[iStateNode].assignFromFragile(stateNode2);
+                if (iStateNode < stateNode.length) {
+	                StateNode stateNode2 = stateNode[iStateNode].copy();
+	                stateNode2.fromXML(child);
+	                stateNode[iStateNode].assignFromFragile(stateNode2);
+                }
             }
         }
     }

@@ -159,7 +159,7 @@ public class BeautiAlignmentProvider extends Plugin {
 			XMLParser parser = new XMLParser();
 			BufferedReader fin = new BufferedReader(new FileReader(file));
 			while (fin.ready()) {
-				sXML += fin.readLine();
+				sXML += fin.readLine() + "\n";
 			}
 			fin.close();
 			Plugin runnable = parser.parseFragment(sXML, false);

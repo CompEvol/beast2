@@ -474,16 +474,16 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         updateSiteModel |= m_siteModel.isDirtyCalculation();
         updateSubstitutionModel |= m_substitutionModel.isDirtyCalculation();
 
-        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
-            m_nHasDirt = Tree.IS_FILTHY;
-            return true;
-        }
         if (m_data.get().isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_FILTHY;
             return true;
         }
         if (m_siteModel.isDirtyCalculation()) {
             m_nHasDirt = Tree.IS_DIRTY;
+            return true;
+        }
+        if (m_branchRateModel != null && m_branchRateModel.isDirtyCalculation()) {
+            //m_nHasDirt = Tree.IS_FILTHY;
             return true;
         }
 
@@ -771,8 +771,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 //        }
         final double branchRate = m_branchRateModel.getRateForBranch(node);
         final double branchTime = node.getLength() * branchRate;
-        m_branchLengths[nodeNum] = branchTime;
-        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[nodeNum])) {
+        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_branchLengths[nodeNum])) {
+            m_branchLengths[nodeNum] = branchTime;
             if (branchTime < 0.0) {
                 throw new RuntimeException("Negative branch length: " + branchTime);
             }
