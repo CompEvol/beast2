@@ -69,11 +69,14 @@ public class MRCAPrior extends Distribution {
         }
 
         m_bOnlyUseTips = m_bOnlyUseTipsInput.get();
+        m_bUseOriginate = m_bUseOriginateInput.get();
         if (m_nNrOfTaxa == 1) {
             // ignore test for Monophyletic when it only involves a tree tip
-            m_bOnlyUseTips = true;
+        	if (!m_bUseOriginate && !m_bOnlyUseTips) {
+        		m_bOnlyUseTips = true;
+        	}
         }
-        if (!m_bOnlyUseTips && m_nNrOfTaxa < 2) {
+        if (!m_bOnlyUseTips && !m_bUseOriginate && m_nNrOfTaxa < 2) {
             throw new Exception("At least two taxa are required in a taxon set");
         }
         if (!m_bOnlyUseTips && m_taxonset.get() == null) {
@@ -102,7 +105,6 @@ public class MRCAPrior extends Distribution {
             }
         }
         
-        m_bUseOriginate = m_bUseOriginateInput.get();
         if (m_bUseOriginate && m_bOnlyUseTips) {
         	throw new Exception("'useOriginate' and 'tipsOnly' cannot be both true");
         }
@@ -163,6 +165,11 @@ public class MRCAPrior extends Distribution {
                 final int nRightTaxa = nTaxonCount[0];
                 nTaxonCount[0] = nLeftTaxa + nRightTaxa;
                 if (iTaxons == m_nNrOfTaxa) {
+                	if (m_nNrOfTaxa == 1 && m_bUseOriginate) {
+            			m_fMRCATime = node.getDate();
+                        m_bIsMonophyletic = true;
+                        return iTaxons + 1;
+                	}
                     // we are at the MRCA, so record the height
                 	if (m_bUseOriginate) {
                 		Node parent = node.getParent();
