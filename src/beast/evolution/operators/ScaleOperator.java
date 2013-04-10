@@ -54,7 +54,7 @@ public class ScaleOperator extends Operator {
 
     public Input<Integer> m_pDegreesOfFreedom = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used when " +
             "scaleAllIndependently=false and scaleAll=true to override default in calcualation of Hasting ratio. " +
-            "Ignored when less than 0, default 1.", 1);
+            "Ignored when less than 1, default 0.", 0);
     public Input<BooleanParameter> m_indicator = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
             "of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
             "it is assumed all dimensions are allowed to be scaled.");
