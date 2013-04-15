@@ -36,7 +36,8 @@ import java.util.List;
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
-@Citation("A prototype for BEAST 2.0: The computational science of evolutionary software. Bouckaert, Drummond, Rambaut, Alekseyenko, Suchard, Walter & the BEAST Core Development Team. 2010")
+@Citation("Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
+        "BEAST 2: A software platform for Bayesian evolutionary analysis")
 public class MCMC extends Runnable {
 
     public Input<Integer> m_oChainLength =
