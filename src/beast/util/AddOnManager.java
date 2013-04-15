@@ -84,7 +84,7 @@ public class AddOnManager {
      * return URLs containing list of downloadable add-ons *
      */
     public static String[] getAddOnURL() {
-        return new String[]{"http://beast2.cs.auckland.ac.nz/index.php/Add-ons"};
+        return new String[]{"http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2"};
     }
 
     /**
