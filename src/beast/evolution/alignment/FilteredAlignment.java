@@ -6,6 +6,7 @@ import java.util.List;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.parameter.IntegerParameter;
 import beast.evolution.datatype.DataType;
 import beast.util.AddOnManager;
 
@@ -19,6 +20,10 @@ public class FilteredAlignment extends Alignment {
             "1::3,2::3 removes every third site. " +
             "Default for range [1]-[last site], default for iterator [1]:[last site]:[1]", Validate.REQUIRED);
     public Input<Alignment> m_alignmentInput = new Input<Alignment>("data", "alignment to be filtered", Validate.REQUIRED);
+    public Input<IntegerParameter> constantSiteWeightsInput = new Input<IntegerParameter>("constantSiteWeights", "if specified, constant " +
+    		"sites will be added with weights specified by the input. The dimension and order of weights must match the datatype. " +
+    		"For example for nucleotide data, a 4 dimensional " +
+    		"parameter with weights for A, C, G and T respectively need to be specified.");
 
     // these triples specify a range for(i=From; i <= To; i += Step)
     int[] m_iFrom;
@@ -46,6 +51,14 @@ public class FilteredAlignment extends Alignment {
             m_dataType = m_userDataType.get();
             convertDataType = true;
         }
+
+        if (constantSiteWeightsInput.get() != null) {
+        	if (constantSiteWeightsInput.get().getDimension() != m_dataType.getStateCount()) {
+        		throw new Exception("constantSiteWeights should be of the same dimension as the datatype " +
+        				"(" + constantSiteWeightsInput.get().getDimension() + "!="+ m_dataType.getStateCount() +")");
+        	}
+    	}
+        
         m_counts = data.m_counts;
         m_sTaxaNames = data.m_sTaxaNames;
         m_nStateCounts = data.m_nStateCounts;
@@ -129,7 +142,9 @@ public class FilteredAlignment extends Alignment {
         int nSites = m_iFilter.length;
         
         DataType baseType = m_alignmentInput.get().m_dataType;
-
+        
+        
+        
         // convert data to transposed int array
         int[][] nData = new int[nSites][nTaxa];
         for (int i = 0; i < nTaxa; i++) {
@@ -146,7 +161,23 @@ public class FilteredAlignment extends Alignment {
                 }
             }
         }
-
+        
+        // add constant sites, if specified
+        if (constantSiteWeightsInput.get() != null) {
+        	int dim = constantSiteWeightsInput.get().getDimension();
+        	// add constant patterns
+        	int [][] nData2 = new int[nSites + dim][];
+            System.arraycopy(nData, 0, nData2, 0, nSites);
+        	for (int i = 0; i < dim; i++) {
+        		nData2[nSites + i] = new int[nTaxa];
+        		for (int j = 0; j < nTaxa; j++) {
+        			nData2[nSites+ i][j] = i;
+				}
+        	}
+        	nData = nData2;
+        	nSites += dim; 
+        }
+        
         // sort data
         SiteComparator comparator = new SiteComparator();
         Arrays.sort(nData, comparator);
@@ -166,6 +197,29 @@ public class FilteredAlignment extends Alignment {
         } else {
             nPatterns = 0;
         }
+        
+        // addjust weight of constant sites, if specified
+        if (constantSiteWeightsInput.get() != null) {
+        	Integer [] constantWeights = constantSiteWeightsInput.get().getValues(); 
+        	for (int i = 0; i < nPatterns; i++) {
+        		boolean isContant = true;
+        		for (int j = 1; j < nTaxa; j++) {
+        			if (nData[i][j] != nData[i][0]) {
+        				isContant = false;
+        				break;
+        			}
+        		}
+        		// if this is a constant site, and it is not an ambiguous site
+        		if (isContant && nData[i][0] >= 0 && nData[i][0] < constantWeights.length) {
+        			// take weights in data in account as well
+        			// by adding constant patterns, we added a weight of 1, which now gets corrected
+            		weights[i] = weights[i] - 1 + constantWeights[nData[i][0]];
+        		}
+        	}
+        	
+        	// need to decrease nSites for mapping sites to patterns in m_nPatternIndex
+        	nSites -= constantWeights.length; 
+        }        
         
         // reserve memory for patterns
         m_nWeight = new int[nPatterns];
@@ -208,7 +262,16 @@ public class FilteredAlignment extends Alignment {
         //}
         System.err.println("Filter " + m_sFilterInput.get());
         System.err.println(getNrTaxa() + " taxa");
-        System.err.println(getSiteCount() + " sites");
+        if (constantSiteWeightsInput.get() != null) {
+        	Integer [] constantWeights = constantSiteWeightsInput.get().getValues();
+        	int sum = 0; 
+        	for (int i : constantWeights) { 
+        		sum += i;
+        	}
+        	System.err.println(getSiteCount() + " sites + " + sum + " constant sites");
+        } else {
+        	System.err.println(getSiteCount() + " sites");
+        }
         System.err.println(getPatternCount() + " patterns");
     }
     

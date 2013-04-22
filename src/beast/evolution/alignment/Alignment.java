@@ -339,8 +339,10 @@ public class Alignment extends CalculationNode {
             m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCount1);
         }
         // report some statistics
-        for (int i = 0; i < m_sTaxaNames.size(); i++) {
-            System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
+        if (m_sTaxaNames.size() < 30) {
+	        for (int i = 0; i < m_sTaxaNames.size(); i++) {
+	            System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
+	        }
         }
         System.out.println(getNrTaxa() + " taxa");
         System.out.println(getSiteCount() + " sites");
