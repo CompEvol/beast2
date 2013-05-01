@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -21,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
@@ -202,7 +204,17 @@ public class TaxonSetDialog extends JDialog {
         box.setMaximumSize(new Dimension(400, 100));
         return box;
     }
-
+    
+    class TaxonCellRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+			JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			label.setText(((Taxon)value).getID());
+			return label;
+		}
+	}
+    
     Component createTaxonSelector() {
         Box box = Box.createHorizontalBox();
 
@@ -211,6 +223,8 @@ public class TaxonSetDialog extends JDialog {
         listOfTaxonCandidates = new JList(listModel1);
         listOfTaxonCandidates.setName("listOfTaxonCandidates");
         listOfTaxonCandidates.setBorder(BorderFactory.createEtchedBorder());
+        listOfTaxonCandidates.setCellRenderer(new TaxonCellRenderer());
+        
         JScrollPane scroller = new JScrollPane(listOfTaxonCandidates);
         box.add(scroller);
 
@@ -252,6 +266,8 @@ public class TaxonSetDialog extends JDialog {
         listModel2 = new DefaultListModel();
         listOfTaxonSet = new JList(listModel2);
         listOfTaxonSet.setBorder(BorderFactory.createEtchedBorder());
+        listOfTaxonSet.setCellRenderer(new TaxonCellRenderer());
+
         JScrollPane scroller2 = new JScrollPane(listOfTaxonSet);
         box.add(scroller2);
         return box;

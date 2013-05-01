@@ -543,6 +543,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         for (Taxon taxon : m_taxonset) {
             TaxonSet set = (TaxonSet) taxon;
             set.m_taxonset.get().clear();
+            doc.registerPlugin(set);
         }
 
         // group lineages with their taxon sets
@@ -567,6 +568,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         // remove unused taxon sets
         for (int i = m_taxonset.size() - 1; i >= 0; i--) {
             if (((TaxonSet) m_taxonset.get(i)).m_taxonset.get().size() == 0) {
+                doc.unregisterPlugin(m_taxonset.get(i));
                 m_taxonset.remove(i);
             }
         }
