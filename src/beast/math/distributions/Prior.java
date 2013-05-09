@@ -21,8 +21,9 @@ public class Prior extends Distribution {
     ParametricDistribution m_dist;
 
     @Override
-    public void initAndValidate() {
+    public void initAndValidate() throws Exception {
         m_dist = m_distInput.get();
+        calculateLogP();
     }
 
     @Override
