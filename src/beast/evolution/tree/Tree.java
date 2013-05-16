@@ -50,6 +50,40 @@ public class Tree extends StateNode {
     public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
     public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset", "set of taxa that correspond to the leafs in the tree");
 
+
+    /**
+     * state of dirtiness of a node in the tree
+     * DIRTY means a property on the node has changed, but not the topology
+     * FILTHY means the nodes' parent or child has changed.
+     */
+    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
+
+    /**
+     * counters of number of nodes, nodeCount = internalNodeCount + leafNodeCount *
+     */
+    protected int nodeCount = -1;
+    protected int internalNodeCount = -1;
+    protected int leafNodeCount = -1;
+
+    /**
+     * node representation of the beast.tree *
+     */
+    protected beast.evolution.tree.Node root;
+    protected beast.evolution.tree.Node storedRoot;
+
+    /**
+     * array of all nodes in the tree *
+     */
+    protected Node[] m_nodes = null;
+    protected Node[] m_storedNodes = null;
+
+    /**
+     * array of taxa names for the nodes in the tree
+     * such that m_sTaxaNames[node.getNr()] == node.getID()*
+     */
+    String[] m_sTaxaNames = null;
+
+
     @Override
     public void initAndValidate() throws Exception {
         if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
@@ -154,38 +188,6 @@ public class Tree extends StateNode {
         }
     }
 
-    /**
-     * state of dirtiness of a node in the tree
-     * DIRTY means a property on the node has changed, but not the topology
-     * FILTHY means the nodes' parent or child has changed.
-     */
-    public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
-
-    /**
-     * counters of number of nodes, nodeCount = internalNodeCount + leafNodeCount *
-     */
-    protected int nodeCount = -1;
-    protected int internalNodeCount = -1;
-    protected int leafNodeCount = -1;
-
-    /**
-     * node representation of the beast.tree *
-     */
-    protected beast.evolution.tree.Node root;
-    protected beast.evolution.tree.Node storedRoot;
-
-    /**
-     * array of all nodes in the tree *
-     */
-    Node[] m_nodes = null;
-    Node[] m_storedNodes = null;
-
-    /**
-     * array of taxa names for the nodes in the tree
-     * such that m_sTaxaNames[node.getNr()] == node.getID()*
-     */
-    String[] m_sTaxaNames = null;
-
 
     /**
      * getters and setters
@@ -249,12 +251,12 @@ public class Tree extends StateNode {
         nodeCount = this.root.getNodeCount();
         // ensure root is the last node
         if (m_nodes != null && root.m_iLabel != m_nodes.length - 1) {
-        	int rootPos = m_nodes.length - 1;
-        	Node tmp = m_nodes[rootPos];
-        	m_nodes[rootPos] = root;
-        	m_nodes[root.m_iLabel] = tmp;
-        	tmp.m_iLabel = root.m_iLabel;
-        	m_nodes[rootPos].m_iLabel = rootPos;
+            int rootPos = m_nodes.length - 1;
+            Node tmp = m_nodes[rootPos];
+            m_nodes[rootPos] = root;
+            m_nodes[root.m_iLabel] = tmp;
+            tmp.m_iLabel = root.m_iLabel;
+            m_nodes[rootPos].m_iLabel = rootPos;
         }
     }
 
@@ -306,7 +308,7 @@ public class Tree extends StateNode {
         }
     }
 
-     /**
+    /**
      * copy meta data matching sPattern to double array
      *
      * @param node     the node
@@ -357,7 +359,7 @@ public class Tree extends StateNode {
 
     /**
      * @return list of nodes in array format.
-     * *
+     *         *
      */
     public Node[] getNodesAsArray() {
         return m_nodes;
@@ -512,7 +514,7 @@ public class Tree extends StateNode {
      */
     static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
         if (node.isLeaf()) {
-            String sNr = (node.getNr()+taxaTranslationOffset) + "";
+            String sNr = (node.getNr() + taxaTranslationOffset) + "";
             String sLine = "\t\t" + "    ".substring(sNr.length()) + sNr + " " + node.getID();
             if (node.getNr() < nNodeCount) {
                 sLine += ",";
