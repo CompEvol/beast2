@@ -50,7 +50,6 @@ public class Tree extends StateNode {
     public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
     public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset", "set of taxa that correspond to the leafs in the tree");
 
-
     /**
      * state of dirtiness of a node in the tree
      * DIRTY means a property on the node has changed, but not the topology
@@ -265,6 +264,7 @@ public class Tree extends StateNode {
         //return getNode(iNodeNr, root);
     }
 
+    @Deprecated
     public String[] getTaxaNames() {
         if (m_sTaxaNames == null) {
             if (m_taxonset.get() != null) {
@@ -666,5 +666,15 @@ public class Tree extends StateNode {
             return fHeight;
         }
         return m_trait.get().getDate(fHeight);
+    }
+
+    /**
+     * This method allows the retrieval of the taxon label of a node without using the node number.
+     * @param node
+     * @return the name of the given node, or null if the node is unlabelled
+     */
+    public String getTaxonId(Node node) {
+        //TODO should be implemented to avoid using deprecated methods
+        return getTaxaNames()[node.getNr()];  //To change body of created methods use File | Settings | File Templates.
     }
 } // class Tree

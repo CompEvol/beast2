@@ -31,7 +31,7 @@ import beast.evolution.datatype.DataType;
 
 import java.util.List;
 
-@Description("Single sequence in an allignment.")
+@Description("Single sequence in an alignment.")
 public class Sequence extends Plugin {
     public Input<Integer> m_nTotalCount = new Input<Integer>("totalcount", "number of lineages for this species");
     public Input<String> m_sTaxon = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);

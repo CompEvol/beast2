@@ -27,11 +27,7 @@ package beast.evolution.tree;
 import beast.core.Description;
 import beast.core.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 @Description("Nodes in building beast.tree data structure.")
 public class Node extends Plugin {
@@ -139,7 +135,7 @@ public class Node extends Plugin {
     /**
      * @return length of branch in the beast.tree *
      */
-    public double getLength() {
+    public final double getLength() {
         if (isRoot()) {
             return 0;
         } else {

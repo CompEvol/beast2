@@ -31,6 +31,16 @@
 package beast.util;
 
 
+import beast.app.beastapp.BeastVersion;
+import beast.app.util.Arguments;
+import beast.app.util.Utils;
+import beast.evolution.alignment.Alignment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -44,18 +54,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import javax.swing.JOptionPane;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import beast.app.beastapp.BeastVersion;
-import beast.app.util.Arguments;
-import beast.app.util.Utils;
-import beast.evolution.alignment.Alignment;
 
 /**
  * This class is used to manage beast 2 add-ons, and can
@@ -368,7 +366,7 @@ public class AddOnManager {
         // add application add-on directory
         sDirs.add(getAddOnAppDir());
 
-        // pick up directories in class path, usefull when running in an IDE
+        // pick up directories in class path, useful when running in an IDE
         String strClassPath = System.getProperty("java.class.path");
         String [] paths = strClassPath.split(":");
         for (String path : paths) {

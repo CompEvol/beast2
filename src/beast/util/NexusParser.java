@@ -1,23 +1,18 @@
 package beast.util;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 //TODO: handle taxon sets
@@ -55,12 +50,28 @@ public class NexusParser {
     public List<TaxonSet> m_taxonsets = new ArrayList<TaxonSet>();
 
     /**
-     * try to reconstruct Beast II objects from the nexus file with given file name
-     * *
+     * Try to parse BEAST 2 objects from the given file
+     * @param file the file to parse.
      */
     public void parseFile(File file) throws Exception {
+        String fileName = file.getName().replaceAll(".*[\\/\\\\]", "").replaceAll("\\..*", "");
+
+        parseFile(fileName, new FileReader(file));
+    }
+
+    /**
+     * try to reconstruct Beast II objects from the given reader
+     * @param id a name to give to the parsed results
+     * @param reader a reader to parse from
+     */
+    public void parseFile(String id, Reader reader) throws Exception {
         m_nLineNr = 0;
-        BufferedReader fin = new BufferedReader(new FileReader(file));
+        BufferedReader fin = null;
+        if (reader instanceof BufferedReader) {
+            fin = (BufferedReader)reader;
+        } else {
+            fin = new BufferedReader(reader);
+        }
         try {
             while (fin.ready()) {
                 String sStr = nextLine(fin);
@@ -69,8 +80,7 @@ public class NexusParser {
                 }
                 if (sStr.toLowerCase().matches("^\\s*begin\\s+data;\\s*$") || sStr.toLowerCase().matches("^\\s*begin\\s+characters;\\s*$")) {
                     m_alignment = parseDataBlock(fin);
-                    String fileName = file.getName().replaceAll(".*[\\/\\\\]", "").replaceAll("\\..*", "");
-                    m_alignment.setID(fileName);
+                    m_alignment.setID(id);
                 } else if (sStr.toLowerCase().matches("^\\s*begin\\s+calibration;\\s*$")) {
                     m_traitSet = parseCalibrationsBlock(fin);
                 } else if (sStr.toLowerCase().matches("^\\s*begin\\s+assumptions;\\s*$") || 

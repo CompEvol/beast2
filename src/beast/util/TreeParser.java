@@ -149,10 +149,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     }
 
     /**
+     * Parses newick format. The default should be to not adjust the heights.
+     * Modifications of the input should be deliberately made by called TreeParser(newick, true).
      * @param newick a string representing a tree in newick format
      */
     public TreeParser(String newick) throws Exception {
-        this(newick, true);
+        this(newick, false);
     }
 
     /**
