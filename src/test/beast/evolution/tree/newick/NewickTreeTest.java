@@ -21,7 +21,7 @@ public class NewickTreeTest extends TestCase {
 
         for (String tree : trees1) {
 
-            TreeParser newickTree = new TreeParser(tree, false);
+            TreeParser newickTree = new TreeParser(tree, false, false);
 
 //            System.out.println(tree);
 //            System.out.println(newickTree);
@@ -31,7 +31,7 @@ public class NewickTreeTest extends TestCase {
 
         for (String tree : trees2) {
 
-            TreeParser newickTree = new TreeParser(tree, false);
+            TreeParser newickTree = new TreeParser(tree, false, false);
 
 //            System.out.println(tree);
 //            System.out.println(newickTree);

@@ -5,6 +5,7 @@ import beast.core.Description;
 import beast.core.Input;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Description("Set of taxa, useful for instance for multi-gene analysis")
@@ -46,7 +47,7 @@ public class TaxonSet extends Taxon {
 
     //  convenience methods
 
-    public boolean containsAny(final List<String> taxa) {
+    public boolean containsAny(final Collection<String> taxa) {
         final List<String> me = asStringList();
         for (final String taxon : taxa ) {
             if (me.contains(taxon)) {
@@ -56,7 +57,7 @@ public class TaxonSet extends Taxon {
         return false;
     }
 
-    public boolean containsAll(final List<String> taxa) {
+    public boolean containsAll(final Collection<String> taxa) {
         final List<String> me = asStringList();
         for (final String taxon : taxa ) {
             if (!me.contains(taxon)) {

@@ -34,6 +34,7 @@ import beast.evolution.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
@@ -63,7 +64,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
     public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", 1);
     public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under which node heights (derived from lengths) are set to zero. Default=0.", 0.0);
-    public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=false.", false);
+    public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=true.", true);
     public Input<Boolean> adjustTipHeightsWhenMissingDateTraitsInput = new Input<Boolean>("adjustTipHeights", "flag to indicate if tipHeights shall be adjusted when date traits missing. Default=true.", true);
 	public Input<Double> scale = new Input<Double>("scale", "scale used to multiply node heights during parsing." +
 			"Useful for importing starting from external programs, for instance, RaxML rooted using Path-o-gen.", 1.0);
@@ -149,23 +150,26 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     }
 
     /**
-     * Parses newick format. The default should be to not adjust the heights.
-     * Modifications of the input should be deliberately made by called TreeParser(newick, true).
+     * Parses newick format. The default does not adjust heights and allows single child nodes.
+     * Modifications of the input should be deliberately made by calling e.g. new TreeParser(newick, true, false).
      * @param newick a string representing a tree in newick format
      */
     public TreeParser(String newick) throws Exception {
-        this(newick, false);
+        this(newick, false, true);
     }
 
     /**
      * @param newick a string representing a tree in newick format
      * @param adjustTipHeights true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @param allowSingleChildNodes true if internal nodes with single children are allowed
      * @throws Exception
      */
-    public TreeParser(String newick, boolean adjustTipHeights) throws Exception {
+    public TreeParser(String newick, boolean adjustTipHeights, boolean allowSingleChildNodes) throws Exception {
         m_oNewick.setValue(newick, this);
         m_bIsLabelledNewick.setValue(true, this);
         adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeights, this);
+        m_bAllowSingleChild.setValue(allowSingleChildNodes,this);
+
         initAndValidate();
     }
 
@@ -521,5 +525,29 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             stateNodes.add(m_initial.get());
         }
         return stateNodes;
+    }
+
+    /**
+     * Given a map of name translations (string to string),
+     * rewrites all leaf ids that match a key in the map
+     * to the respective value in the matching key/value pair.
+     * If current leaf id is null, then interpret translation keys as node numbers (origin 1)
+     * and set leaf id of node n to map.get(n-1).
+     * @param translationMap
+     */
+    public void translateLeafIds(Map<String, String> translationMap) {
+
+        for (Node leaf : getExternalNodes()) {
+            String id = leaf.getID();
+
+            if (id == null) {
+                id = (leaf.getNr() + 1) + "";
+            }
+
+            String newId = translationMap.get(id);
+            if (newId != null) {
+                leaf.setID(newId);
+            }
+        }
     }
 } // class TreeParser
