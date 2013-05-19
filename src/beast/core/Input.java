@@ -26,11 +26,7 @@ package beast.core;
 
 import beast.core.parameter.RealParameter;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -382,8 +378,21 @@ public class Input<T> {
                 if (value instanceof Plugin) {
                     ((Plugin) value).outputs.add(plugin);
                 }
-            } else {
-                throw new Exception("Input 101: type mismatch for input " + getName());
+            }
+
+            else if (value instanceof List<?> && theClass.isAssignableFrom(((List)value).get(0).getClass())) {
+                // add all elements in given list to input list.
+                final List vector = (List) this.value;
+                for (Object v : ((List)value)) {
+                    vector.add(v);
+                    if (v instanceof Plugin) {
+                        ((Plugin) v).outputs.add(plugin);
+                    }
+                }
+            }
+            else {
+                throw new Exception("Input 101: type mismatch for input " + getName() +
+                        ". " + theClass.getName() +".isAssignableFrom(" + value.getClass() + ")=false");
             }
 
         } else {
