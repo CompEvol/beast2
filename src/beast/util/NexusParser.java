@@ -134,12 +134,12 @@ public class NexusParser {
                 TreeParser treeParser = null;
 
                 if (origin != -1) {
-                    treeParser = new TreeParser(m_taxa, sStr, origin);
+                    treeParser = new TreeParser(m_taxa, sStr, origin, false);
                 } else {
                     try {
-                        treeParser = new TreeParser(m_taxa, sStr, 0);
+                        treeParser = new TreeParser(m_taxa, sStr, 0, false);
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        treeParser = new TreeParser(m_taxa, sStr, 1);
+                        treeParser = new TreeParser(m_taxa, sStr, 1, false);
                     }
                 }
 //                catch (NullPointerException e) {

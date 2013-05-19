@@ -29,6 +29,7 @@ import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -53,21 +54,22 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * for memory saving, set to true *
      */
     boolean m_bSurpressMetadata = false;
+
     /**
      * if there is no translate block. This solves issues where the taxa labels are numbers e.g. in generated beast.tree data *
      */
     public Input<Boolean> m_bIsLabelledNewick = new Input<Boolean>("IsLabelledNewick", "Is the newick tree labelled? Default=false.", false);
 
 
-    public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leafs in the beast.tree");
+    public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leaves in the beast.tree");
     public Input<String> m_oNewick = new Input<String>("newick", "initial beast.tree represented in newick format");// not required, Beauti may need this for example
     public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
     public Input<Integer> m_nOffset = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", 1);
     public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under which node heights (derived from lengths) are set to zero. Default=0.", 0.0);
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=true.", true);
     public Input<Boolean> adjustTipHeightsWhenMissingDateTraitsInput = new Input<Boolean>("adjustTipHeights", "flag to indicate if tipHeights shall be adjusted when date traits missing. Default=true.", true);
-	public Input<Double> scale = new Input<Double>("scale", "scale used to multiply node heights during parsing." +
-			"Useful for importing starting from external programs, for instance, RaxML rooted using Path-o-gen.", 1.0);
+	public Input<Double> scale = new Input<Double>("scale", "scale used to multiply internal node heights during parsing." +
+			"Useful for importing starting from external programs, for instance, RaxML tree rooted using Path-o-gen.", 1.0);
 
 
     boolean createUnrecognizedTaxa = false;
@@ -142,10 +144,29 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         initAndValidate();
     }
 
-    public TreeParser(List<String> taxaNames, String newick, int offset) throws Exception {
-    	m_sLabels = taxaNames;
+    /**
+     * Create a tree from the given newick format
+     * @param taxaNames a list of taxa names to use, or null.
+     *                  If null then IsLabelledNewick will be set to true
+     * @param newick the newick of the tree
+     * @param offset the offset to map node numbers in newick format to indices in taxaNames.
+     *               so, name(node with nodeNumber) = taxaNames[nodeNumber-offset]
+     * @param adjustTipHeightsWhenMissingDateTraits true if tip heights should be adjusted to zero
+     * @throws Exception
+     */
+    public TreeParser(List<String> taxaNames,
+                      String newick,
+                      int offset,
+                      boolean adjustTipHeightsWhenMissingDateTraits) throws Exception {
+
+        if (taxaNames == null) {
+            m_bIsLabelledNewick.setValue(true,this);
+        } else {
+            m_taxonset.setValue(new TaxonSet(TaxonSet.createTaxonList(taxaNames)), this);
+        }
         m_oNewick.setValue(newick, this);
     	m_nOffset.setValue(offset, this);
+        adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeightsWhenMissingDateTraits, this);
         initAndValidate();
     }
 
@@ -164,7 +185,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * @param allowSingleChildNodes true if internal nodes with single children are allowed
      * @throws Exception
      */
-    public TreeParser(String newick, boolean adjustTipHeights, boolean allowSingleChildNodes) throws Exception {
+    public TreeParser(String newick,
+                      boolean adjustTipHeights,
+                      boolean allowSingleChildNodes) throws Exception {
+
         m_oNewick.setValue(newick, this);
         m_bIsLabelledNewick.setValue(true, this);
         adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeights, this);
