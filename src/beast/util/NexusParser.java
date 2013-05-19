@@ -112,10 +112,16 @@ public class NexusParser {
             sStr = fin.readLine().trim();
         }
 
+        int origin = -1;
+
         Map<String,String> translationMap = null;
         // if first non-empty line is "translate" then parse translate block
         if (sStr.toLowerCase().indexOf("translate") >= 0) {
             translationMap = parseTranslateBlock(fin);
+            origin = getIndexedTranslationMapOrigin(translationMap);
+            if (origin != -1) {
+                m_taxa = getIndexedTranslationMap(translationMap, origin);
+            }
         }
 
         // read trees
@@ -126,10 +132,15 @@ public class NexusParser {
                     sStr = sStr.substring(i);
                 }
                 TreeParser treeParser = null;
-                try {
-                    treeParser = new TreeParser(m_taxa, sStr, 0);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    treeParser = new TreeParser(m_taxa, sStr, 1);
+
+                if (origin != -1) {
+                    treeParser = new TreeParser(m_taxa, sStr, origin);
+                } else {
+                    try {
+                        treeParser = new TreeParser(m_taxa, sStr, 0);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        treeParser = new TreeParser(m_taxa, sStr, 1);
+                    }
                 }
 //                catch (NullPointerException e) {
 //                    treeParser = new TreeParser(m_taxa, sStr, 1);
@@ -150,6 +161,38 @@ public class NexusParser {
             sStr = fin.readLine();
             if (sStr != null) sStr = sStr.trim();
         }
+    }
+
+    private  List<String> getIndexedTranslationMap(Map<String, String> translationMap, int origin) {
+
+        System.out.println("translation map size = " + translationMap.size());
+
+        String[] taxa = new String[translationMap.size()];
+
+        for (String key : translationMap.keySet()) {
+            taxa[Integer.parseInt(key)-origin] = translationMap.get(key);
+        }
+        return Arrays.asList(taxa);
+    }
+
+    /**
+     * @param translationMap
+     * @return minimum key value if keys are a contiguous set of integers starting from zero or one, -1 otherwise
+     */
+    private int getIndexedTranslationMapOrigin(Map<String, String> translationMap) {
+
+        SortedSet<Integer> indices = new TreeSet<Integer>();
+
+        int count = 0;
+        for (String key : translationMap.keySet()) {
+            int index = Integer.parseInt(key);
+            indices.add(index);
+            count += 1;
+        }
+        if ((indices.last() - indices.first() == count - 1) && (indices.first() == 0 || indices.first() == 1)) {
+            return indices.first();
+        }
+        return -1;
     }
 
     /**
