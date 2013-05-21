@@ -176,11 +176,26 @@ public class Node extends Plugin {
         return m_Parent;
     }
 
+    /**
+     * Calls setParent(parent, true)
+     *
+     * @param parent the new parent to be set, must be called from within an operator.
+     */
     public void setParent(Node parent) {
-        startEditing();
+        setParent(parent, true);
+    }
+
+    /**
+     * Sets the parent of this node
+     *
+     * @param parent     the node to become parent
+     * @param inOperator if true, then startEditing() is called and setting the parent will make tree "filthy"
+     */
+    void setParent(Node parent, boolean inOperator) {
+        if (inOperator) startEditing();
         if (m_Parent != parent) {
             m_Parent = parent;
-            m_bIsDirty = Tree.IS_FILTHY;
+            if (inOperator) m_bIsDirty = Tree.IS_FILTHY;
         }
     }
 
@@ -253,6 +268,17 @@ public class Node extends Plugin {
     public void removeChild(Node child) {
         startEditing();
         children.remove(child);
+    }
+
+    /**
+     * Removes all children from this node.
+     *
+     * @param inOperator if true then startEditing() is called. For operator uses, called removeAllChildren(true), otherwise
+     *                   use set to false.
+     */
+    public void removeAllChildren(boolean inOperator) {
+        if (inOperator) startEditing();
+        children.clear();
     }
 
     public void addChild(Node child) {
@@ -658,5 +684,4 @@ public class Node extends Plugin {
         n.setRight(right);
         return n;
     }
-
 } // class Node

@@ -97,16 +97,16 @@ public class Tree extends StateNode {
             if (m_taxonset.get() != null) {
                 // make a caterpillar
                 List<String> sTaxa = m_taxonset.get().asStringList();
-                Node left = new Node();
+                Node left = createNode();
                 left.m_iLabel = 0;
                 left.m_fHeight = 0;
                 left.setID(sTaxa.get(0));
                 for (int i = 1; i < sTaxa.size(); i++) {
-                    Node right = new Node();
+                    Node right = createNode();
                     right.m_iLabel = i;
                     right.m_fHeight = 0;
                     right.setID(sTaxa.get(i));
-                    Node parent = new Node();
+                    Node parent = createNode();
                     parent.m_iLabel = sTaxa.size() + i - 1;
                     parent.m_fHeight = i;
                     left.m_Parent = parent;
@@ -122,7 +122,7 @@ public class Tree extends StateNode {
 
             } else {
                 // make dummy tree with a single root node
-                root = new Node();
+                root = createNode();
                 root.m_iLabel = 0;
                 root.m_fHeight = 0;
                 root.m_tree = this;
@@ -176,13 +176,13 @@ public class Tree extends StateNode {
         if (node.isLeaf()) {
             node.setMetaData(trait.getTraitName(), trait.getValue(node.getNr()));
         } else {
-            adjustTreeToNodeHeights(node.getLeft(), trait);
-            adjustTreeToNodeHeights(node.getRight(), trait);
-            if (node.m_fHeight < node.getLeft().getHeight() + EPSILON) {
-                node.m_fHeight = node.getLeft().getHeight() + EPSILON;
+            for (Node child : node.getChildren()) {
+                adjustTreeToNodeHeights(child, trait);
             }
-            if (node.m_fHeight < node.getRight().getHeight() + EPSILON) {
-                node.m_fHeight = node.getRight().getHeight() + EPSILON;
+            for (Node child : node.getChildren()) {
+                if (node.m_fHeight < child.getHeight() + EPSILON) {
+                    node.m_fHeight = child.getHeight() + EPSILON;
+                }
             }
         }
     }
@@ -257,6 +257,18 @@ public class Tree extends StateNode {
             tmp.m_iLabel = root.m_iLabel;
             m_nodes[rootPos].m_iLabel = rootPos;
         }
+    }
+
+    /**
+     * Sets root without recalculating nodeCount or ensuring that root is the last node in the internal array.
+     * Currently only used by sampled ancestor tree operators. Use carefully!
+     *
+     * @param root the new root node
+     */
+    public void setRootOnly(Node root) {
+        //TODO should we flag this with startEditing since it is an operator call?
+
+        this.root = root;
     }
 
     public Node getNode(int iNodeNr) {
@@ -349,11 +361,9 @@ public class Tree extends StateNode {
     void listNodes(Node node, Node[] nodes) {
         nodes[node.getNr()] = node;
         node.m_tree = this;
-        if (!node.isLeaf()) {
-            listNodes(node.getLeft(), nodes);
-            if (node.getRight() != null) {
-                listNodes(node.getRight(), nodes);
-            }
+
+        for (Node child : node.getChildren()) {
+            listNodes(child, nodes);
         }
     }
 
@@ -407,7 +417,7 @@ public class Tree extends StateNode {
         Tree tree = (Tree) other;
         Node[] nodes = new Node[tree.getNodeCount()];//tree.getNodesAsArray();
         for (int i = 0; i < tree.getNodeCount(); i++) {
-            nodes[i] = new Node();
+            nodes[i] = createNode();
         }
         m_sID = tree.m_sID;
         //index = tree.index;
@@ -614,50 +624,69 @@ public class Tree extends StateNode {
      */
     @Override
     protected void store() {
+
+        // this condition can only be true for sampled ancestor trees
+        if (m_storedNodes.length != nodeCount) {
+            Node[] tmp = new Node[nodeCount];
+            for (int i = 0; i < m_storedNodes.length - 1; i++) {
+                tmp[i] = m_storedNodes[i];
+            }
+            if (nodeCount > m_storedNodes.length) {
+                tmp[m_storedNodes.length - 1] = m_storedNodes[m_storedNodes.length - 1];
+                tmp[nodeCount - 1] = createNode();
+                tmp[nodeCount - 1].setNr(nodeCount - 1);
+            }
+            m_storedNodes = tmp;
+        }
+
+
+        storeNodes(0, nodeCount);
         storedRoot = m_storedNodes[root.getNr()];
-        int iRoot = root.getNr();
-        storeNodes(0, iRoot);
-        storedRoot.m_fHeight = m_nodes[iRoot].m_fHeight;
-        storedRoot.m_Parent = null;
-        if (root.getLeft() != null) {
-            storedRoot.setLeft(m_storedNodes[root.getLeft().getNr()]);
-        } else {
-            storedRoot.setLeft(null);
-        }
-        if (root.getRight() != null) {
-            storedRoot.setRight(m_storedNodes[root.getRight().getNr()]);
-        } else {
-            storedRoot.setRight(null);
-        }
-        storeNodes(iRoot + 1, nodeCount);
     }
 
+
     /**
-     * helper to store *
+     * Stores nodes with index i, for iStart <= i < iEnd
+     * (i.e. including iStart but not including iEnd)
+     *
+     * @param iStart the first index to be stored
+     * @param iEnd   nodes are stored up to but not including this index
      */
     private void storeNodes(int iStart, int iEnd) {
         for (int i = iStart; i < iEnd; i++) {
             Node sink = m_storedNodes[i];
             Node src = m_nodes[i];
             sink.m_fHeight = src.m_fHeight;
-            sink.m_Parent = m_storedNodes[src.m_Parent.getNr()];
-            if (src.getLeft() != null) {
-                sink.setLeft(m_storedNodes[src.getLeft().getNr()]);
-                if (src.getRight() != null) {
-                    sink.setRight(m_storedNodes[src.getRight().getNr()]);
-                } else {
-                    sink.setRight(null);
-                }
+
+            if (!src.isRoot()) {
+                sink.setParent(m_storedNodes[src.getParent().getNr()], false);
+            } else {
+                // currently only called in the case of sampled ancestor trees
+                // where root node is not always last in the list
+                sink.setParent(null, false);
+            }
+
+            sink.removeAllChildren(false);
+            for (Node srcChild : src.getChildren()) {
+                sink.addChild(m_storedNodes[srcChild.getNr()]);
             }
         }
     }
 
     @Override
     public void restore() {
+
+        // necessary for sampled ancestor trees
+        nodeCount = m_storedNodes.length;
+
         Node[] tmp = m_storedNodes;
         m_storedNodes = m_nodes;
         m_nodes = tmp;
         root = m_nodes[storedRoot.getNr()];
+
+        // necessary for sampled ancestor trees,
+        leafNodeCount = root.getLeafNodeCount();
+
         m_bHasStartedEditing = false;
     }
 
@@ -670,6 +699,7 @@ public class Tree extends StateNode {
 
     /**
      * This method allows the retrieval of the taxon label of a node without using the node number.
+     *
      * @param node
      * @return the name of the given node, or null if the node is unlabelled
      */
@@ -677,4 +707,51 @@ public class Tree extends StateNode {
         //TODO should be implemented to avoid using deprecated methods
         return getTaxaNames()[node.getNr()];  //To change body of created methods use File | Settings | File Templates.
     }
+
+    /**
+     * Removes the i'th node in the tree. Results in a renumbering of the remaining nodes so that their numbers
+     * faithfully describe their new position in the array. nodeCount and leafNodeCount are recalculated.
+     * Use with care!
+     *
+     * @param i the index of the node to be removed.
+     */
+    public void removeNode(int i) {
+        Node[] tmp = new Node[nodeCount - 1];
+        for (int j = 0; j < i; j++) {
+            tmp[j] = m_nodes[j];
+        }
+        for (int j = i; j < nodeCount - 1; j++) {
+            tmp[j] = m_nodes[j + 1];
+            tmp[j].setNr(j);
+        }
+        m_nodes = tmp;
+        nodeCount--;
+        leafNodeCount--;
+    }
+
+    /**
+     * Adds a node to the end of the node array. nodeCount and leafNodeCount are recalculated.
+     * Use with care!
+     */
+    public void addNode(Node newNode) {
+        Node[] tmp = new Node[nodeCount + 1];
+        for (int j = 0; j < nodeCount; j++) {
+            tmp[j] = m_nodes[j];
+        }
+        tmp[nodeCount] = newNode;
+        newNode.setNr(nodeCount);
+        m_nodes = tmp;
+        nodeCount++;
+        leafNodeCount++;
+    }
+
+    /**
+     * Should be overridden by subclasses to create the appropriate subclass of node.
+     *
+     * @return
+     */
+    public Node createNode() {
+        return new Node();
+    }
+
 } // class Tree
