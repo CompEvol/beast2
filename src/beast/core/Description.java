@@ -32,8 +32,8 @@ import java.lang.annotation.Target;
 
 /**
  * This is an annotation that can be used to both
- * o document a class at the top of the code and
- * o create user documentation for XML Beast files.
+ * + document a class at the top of the code and
+ * + create user documentation for XML Beast files.
  * <p/>
  * The idea is to add @Description("bla bla bla")
  * just before class declarations of plug-ins. Applications

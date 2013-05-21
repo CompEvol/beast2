@@ -34,7 +34,7 @@ public class Node extends Plugin {
 
     /**
      * label nr of node, used mostly when this is a leaf.
-     * */
+     */
     protected int m_iLabel;
 
     /**
@@ -53,7 +53,7 @@ public class Node extends Plugin {
      * Use getChildCount() and getChild(x) or getChildren() instead
      */
     List<Node> children = new ArrayList<Node>();
-    
+
 //    @Deprecated
 //	private Node m_left;
 //    @Deprecated
@@ -80,8 +80,9 @@ public class Node extends Plugin {
      */
     protected Tree m_tree;
 
-    public Node() {}
-    
+    public Node() {
+    }
+
     public Node(String id) throws Exception {
         setID(id);
         initAndValidate();
@@ -98,12 +99,12 @@ public class Node extends Plugin {
 
     /**
      * @return number uniquely identifying the node in the tree.
-     * This is a number between 0 and the total number of nodes in the tree
-     * Leaf nodes are number 0 to #leaf nodes -1
-     * Internal nodes are numbered  #leaf nodes  up to #nodes-1
-     * The root node is not guaranteed a number.
-     *  Node number is guaranteed not to change during an MCMC run.
-     **/
+     *         This is a number between 0 and the total number of nodes in the tree
+     *         Leaf nodes are number 0 to #leaf nodes -1
+     *         Internal nodes are numbered  #leaf nodes  up to #nodes-1
+     *         The root node is not guaranteed a number.
+     *         Node number is guaranteed not to change during an MCMC run.
+     */
     public int getNr() {
         return m_iLabel;
     }
@@ -185,12 +186,12 @@ public class Node extends Plugin {
 
     /**
      * @return a copy of a list of immediate child nodes of this node.
-     * Note that changing the list does not affect the topology of the tree.
+     *         Note that changing the list does not affect the topology of the tree.
      */
     public List<Node> getChildren() {
-    	List<Node> copyOfChildren = new ArrayList<Node>();
-    	copyOfChildren.addAll(children);
-    	return copyOfChildren;
+        List<Node> copyOfChildren = new ArrayList<Node>();
+        copyOfChildren.addAll(children);
+        return copyOfChildren;
     }
 
     /**
@@ -245,34 +246,27 @@ public class Node extends Plugin {
      * @return true if current node is a leaf node *
      */
     public boolean isLeaf() {
-    	return children.size() == 0;
+        return children.size() == 0;
         //return getLeft() == null && getRight() == null;
     }
 
     public void removeChild(Node child) {
         startEditing();
-    	children.remove(child);
+        children.remove(child);
     }
-    
+
     public void addChild(Node child) {
         child.setParent(this);
-    	children.add(child);
-//        if (getLeft() == null) {
-//            setLeft(child);
-//            child.setParent(this);
-//        } else if (getRight() == null) {
-//            setRight(child);
-//            getRight().setParent(this);
-//        } else throw new RuntimeException("Can't have more than 2 children right now because of Remco.");
+        children.add(child);
     }
-    
+
     /**
      * @return count number of nodes in beast.tree, starting with current node *
      */
     public int getNodeCount() {
         int nodes = 1;
         for (Node child : children) {
-        	nodes += child.getNodeCount();
+            nodes += child.getNodeCount();
         }
         return nodes;
     }
@@ -283,7 +277,7 @@ public class Node extends Plugin {
         }
         int nodes = 0;
         for (Node child : children) {
-       		nodes += child.getLeafNodeCount();
+            nodes += child.getLeafNodeCount();
         }
         return nodes;
     }
@@ -294,7 +288,7 @@ public class Node extends Plugin {
         }
         int nodes = 1;
         for (Node child : children) {
-        	nodes += child.getInternalNodeCount();
+            nodes += child.getInternalNodeCount();
         }
         return nodes;
     }
@@ -333,9 +327,9 @@ public class Node extends Plugin {
      * in a clade
      */
     String toSortedNewick(int[] iMaxNodeInClade) {
-    	return toSortedNewick(iMaxNodeInClade, false);
+        return toSortedNewick(iMaxNodeInClade, false);
     }
-    
+
     public String toSortedNewick(int[] iMaxNodeInClade, boolean printMetaData) {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
@@ -361,7 +355,7 @@ public class Node extends Plugin {
             buf.append(")");
         } else {
             iMaxNodeInClade[0] = m_iLabel;
-            buf.append(m_iLabel+1);
+            buf.append(m_iLabel + 1);
         }
         if (printMetaData) {
             buf.append(getNewickMetaData());
@@ -487,14 +481,10 @@ public class Node extends Plugin {
         node.m_iLabel = m_iLabel;
         node.m_sMetaData = m_sMetaData;
         node.m_Parent = null;
-        node.m_sID = m_sID;
-        if (getLeft() != null) {
-            node.setLeft(getLeft().copy());
-            node.getLeft().m_Parent = node;
-            if (getRight() != null) {
-                node.setRight(getRight().copy());
-                node.getRight().m_Parent = node;
-            }
+        node.setID(m_sID);
+
+        for (Node child : getChildren()) {
+            node.addChild(child.copy());
         }
         return node;
     } // copy
@@ -574,13 +564,13 @@ public class Node extends Plugin {
     }
 
     public Set<String> getMetaDataNames() {
-    	if (metaData == null) {
-    		return null;
-    	}
-    	return metaData.keySet();
+        if (metaData == null) {
+            return null;
+        }
+        return metaData.keySet();
     }
-    
-    
+
+
     /**
      * scale height of this node and all its descendants
      *
@@ -611,58 +601,58 @@ public class Node extends Plugin {
      * some methods that are useful for porting from BEAST 1 *
      */
     public int getChildCount() {
-    	return children.size();
+        return children.size();
     }
 
     public Node getChild(int iChild) {
-    	return children.get(iChild);
+        return children.get(iChild);
     }
 
     public void setChild(int iChild, Node node) {
-    	while (children.size() < iChild) {
-    		children.add(null);
-    	}
-    	children.set(iChild, node);
+        while (children.size() < iChild) {
+            children.add(null);
+        }
+        children.set(iChild, node);
     }
-    
-    
-	public void setLeft(Node m_left) {
-		if (children.size() == 0) {
-	    	children.add(m_left);
-		} else {
-			children.set(0, m_left);
-    	}
-	}
 
-	public Node getLeft() {
-		if (children.size() == 0) {
-			return null;
-		}
-		return children.get(0);
-	}
 
-	public void setRight(Node m_right) {
-		switch (children.size()) {
-		case 0:
-	    	children.add(null);
-		case 1:
-	    	children.add(m_right);
-	    	break;
-		default:
-			children.set(1, m_right);
-	    	break;
-    	}
-	}
+    public void setLeft(Node m_left) {
+        if (children.size() == 0) {
+            children.add(m_left);
+        } else {
+            children.set(0, m_left);
+        }
+    }
 
-	public Node getRight() {
-		if (children.size() <= 1) {
-			return null;
-		}
-		return children.get(1);
-	}
+    public Node getLeft() {
+        if (children.size() == 0) {
+            return null;
+        }
+        return children.get(0);
+    }
+
+    public void setRight(Node m_right) {
+        switch (children.size()) {
+            case 0:
+                children.add(null);
+            case 1:
+                children.add(m_right);
+                break;
+            default:
+                children.set(1, m_right);
+                break;
+        }
+    }
+
+    public Node getRight() {
+        if (children.size() <= 1) {
+            return null;
+        }
+        return children.get(1);
+    }
 
     public static Node connect(Node left, Node right, double h) {
-        Node n =  new Node();
+        Node n = new Node();
         n.setHeight(h);
         n.setLeft(left);
         n.setRight(right);
