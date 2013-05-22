@@ -68,8 +68,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public Input<Double> m_nThreshold = new Input<Double>("threshold", "threshold under which node heights (derived from lengths) are set to zero. Default=0.", 0.0);
     public Input<Boolean> m_bAllowSingleChild = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=true.", true);
     public Input<Boolean> adjustTipHeightsWhenMissingDateTraitsInput = new Input<Boolean>("adjustTipHeights", "flag to indicate if tipHeights shall be adjusted when date traits missing. Default=true.", true);
-	public Input<Double> scale = new Input<Double>("scale", "scale used to multiply internal node heights during parsing." +
-			"Useful for importing starting from external programs, for instance, RaxML tree rooted using Path-o-gen.", 1.0);
+    public Input<Double> scale = new Input<Double>("scale", "scale used to multiply internal node heights during parsing." +
+            "Useful for importing starting from external programs, for instance, RaxML tree rooted using Path-o-gen.", 1.0);
 
 
     boolean createUnrecognizedTaxa = false;
@@ -91,22 +91,22 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         } else if (m_taxonset.get() != null) {
             m_sLabels = m_taxonset.get().asStringList();
         } else {
-        	if (m_bIsLabelledNewick.get()) {
-        		m_sLabels = new ArrayList<String>();
-        		createUnrecognizedTaxa = true;
-        	} else {
-        		if (m_initial.get() != null) {
-            		// try to pick up taxa from initial tree
-        			Tree tree = m_initial.get();
-        	        if (tree.m_taxonset.get() != null) {
-        	            m_sLabels = tree.m_taxonset.get().asStringList();
-        	        } else {
-            			// m_sLabels = null;
-        	        }        			
-        		} else {
-        			// m_sLabels = null;
-        		}
-        	}
+            if (m_bIsLabelledNewick.get()) {
+                m_sLabels = new ArrayList<String>();
+                createUnrecognizedTaxa = true;
+            } else {
+                if (m_initial.get() != null) {
+                    // try to pick up taxa from initial tree
+                    Tree tree = m_initial.get();
+                    if (tree.m_taxonset.get() != null) {
+                        m_sLabels = tree.m_taxonset.get().asStringList();
+                    } else {
+                        // m_sLabels = null;
+                    }
+                } else {
+                    // m_sLabels = null;
+                }
+            }
 //            m_bIsLabelledNewick = false;
         }
         String sNewick = m_oNewick.get();
@@ -122,10 +122,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         if (m_initial.get() != null && m_initial.get().m_trait.get() != null) {
             adjustTreeToNodeHeights(root, m_initial.get().m_trait.get());
         } else if (m_trait.get() == null && adjustTipHeightsWhenMissingDateTraits) {
-        	// all nodes should be at zero height if no date-trait is available
-        	for (int i = 0; i < getLeafNodeCount(); i++) {
-        		getNode(i).setHeight(0);
-        	}
+            // all nodes should be at zero height if no date-trait is available
+            for (int i = 0; i < getLeafNodeCount(); i++) {
+                getNode(i).setHeight(0);
+            }
         }
         initStateNodes();
     } // init
@@ -146,12 +146,14 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
     /**
      * Create a tree from the given newick format
+     *
      * @param taxaNames a list of taxa names to use, or null.
      *                  If null then IsLabelledNewick will be set to true
-     * @param newick the newick of the tree
-     * @param offset the offset to map node numbers in newick format to indices in taxaNames.
-     *               so, name(node with nodeNumber) = taxaNames[nodeNumber-offset]
-     * @param adjustTipHeightsWhenMissingDateTraits true if tip heights should be adjusted to zero
+     * @param newick    the newick of the tree
+     * @param offset    the offset to map node numbers in newick format to indices in taxaNames.
+     *                  so, name(node with nodeNumber) = taxaNames[nodeNumber-offset]
+     * @param adjustTipHeightsWhenMissingDateTraits
+     *                  true if tip heights should be adjusted to zero
      * @throws Exception
      */
     public TreeParser(List<String> taxaNames,
@@ -160,12 +162,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                       boolean adjustTipHeightsWhenMissingDateTraits) throws Exception {
 
         if (taxaNames == null) {
-            m_bIsLabelledNewick.setValue(true,this);
+            m_bIsLabelledNewick.setValue(true, this);
         } else {
             m_taxonset.setValue(new TaxonSet(TaxonSet.createTaxonList(taxaNames)), this);
         }
         m_oNewick.setValue(newick, this);
-    	m_nOffset.setValue(offset, this);
+        m_nOffset.setValue(offset, this);
         adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeightsWhenMissingDateTraits, this);
         initAndValidate();
     }
@@ -173,6 +175,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     /**
      * Parses newick format. The default does not adjust heights and allows single child nodes.
      * Modifications of the input should be deliberately made by calling e.g. new TreeParser(newick, true, false).
+     *
      * @param newick a string representing a tree in newick format
      */
     public TreeParser(String newick) throws Exception {
@@ -180,8 +183,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     }
 
     /**
-     * @param newick a string representing a tree in newick format
-     * @param adjustTipHeights true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @param newick                a string representing a tree in newick format
+     * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
      * @param allowSingleChildNodes true if internal nodes with single children are allowed
      * @throws Exception
      */
@@ -192,7 +195,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         m_oNewick.setValue(newick, this);
         m_bIsLabelledNewick.setValue(true, this);
         adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeights, this);
-        m_bAllowSingleChild.setValue(allowSingleChildNodes,this);
+        m_bAllowSingleChild.setValue(allowSingleChildNodes, this);
 
         initAndValidate();
     }
@@ -326,7 +329,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             checkTaxaIsAvailable(sStr, nIndex);
             return nIndex;
         } catch (NumberFormatException e) {
-        	// apparently not a number
+            // apparently not a number
         }
         throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified. Perhaps taxa or taxonset is not specified?");
     }
@@ -551,12 +554,24 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         return stateNodes;
     }
 
+    private void labelNonLabeledNodes(Node node, int[] lastLabel) {
+
+        for (Node child : node.getChildren()) {
+            labelNonLabeledNodes(child, lastLabel);
+        }
+        if (node.getNr() == -1) {
+            node.setNr(lastLabel[0] + 1);
+            lastLabel[0] += 1;
+        }
+    }
+
     /**
      * Given a map of name translations (string to string),
      * rewrites all leaf ids that match a key in the map
      * to the respective value in the matching key/value pair.
      * If current leaf id is null, then interpret translation keys as node numbers (origin 1)
      * and set leaf id of node n to map.get(n-1).
+     *
      * @param translationMap
      */
     public void translateLeafIds(Map<String, String> translationMap) {

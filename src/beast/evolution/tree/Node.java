@@ -26,6 +26,7 @@ package beast.evolution.tree;
 
 import beast.core.Description;
 import beast.core.Plugin;
+import beast.util.HeapSort;
 
 import java.util.*;
 
@@ -460,21 +461,29 @@ public class Node extends Plugin {
      * @return
      */
     public int sort() {
-        if (getLeft() != null) {
-            int iChild1 = getLeft().sort();
-            if (getRight() != null) {
-                int iChild2 = getRight().sort();
-                if (iChild1 > iChild2) {
-                    Node tmp = getLeft();
-                    setLeft(getRight());
-                    setRight(tmp);
-                    return iChild2;
-                }
-            }
-            return iChild1;
+
+        if (isLeaf()) {
+            return m_iLabel;
         }
-        // this is a leaf node, just return the label nr
-        return m_iLabel;
+
+        int childCount = getChildCount();
+
+        if (childCount == 1) return getChild(0).sort();
+
+        List<Integer> lowest = new ArrayList<Integer>();
+        int[] indices = new int[childCount];
+
+        // relies on this being a copy of children list
+        List<Node> children = getChildren();
+
+        for (Node child : children) {
+            lowest.add(child.sort());
+        }
+        HeapSort.sort(lowest, indices);
+        for (int i = 0; i < childCount; i++) {
+            setChild(i, children.get(indices[i]));
+        }
+        return lowest.get(indices[0]);
     } // sort
 
     /**
