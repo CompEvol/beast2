@@ -417,13 +417,17 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             Vector<Node> stack = new Vector<Node>();
             Vector<Boolean> isFirstChild = new Vector<Boolean>();
             stack.add(newNode());
+            stack.lastElement().setNr(-1);
             isFirstChild.add(true);
             stack.lastElement().setHeight(DEFAULT_LENGTH);
             boolean bIsLabel = true;
+            int[] sampleSize = new int[1];
+            sampleSize[0] = 0;
             while (m_iTokenEnd < m_chars.length) {
                 switch (nextToken()) {
                     case BRACE_OPEN: {
                         Node node2 = newNode();
+                        node2.setNr(-1);
                         node2.setHeight(DEFAULT_LENGTH);
                         stack.add(node2);
                         isFirstChild.add(true);
@@ -456,6 +460,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                             stack.remove(stack.size() - 1);
                             isFirstChild.remove(isFirstChild.size() - 1);
                             Node dummyparent = newNode();
+                            dummyparent.setNr(-1);
                             dummyparent.setHeight(DEFAULT_LENGTH);
                             dummyparent.setLeft(left);
                             left.setParent(dummyparent);
@@ -480,6 +485,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     break;
                     case COMMA: {
                         Node node2 = newNode();
+                        node2.setNr(-1);
                         node2.setHeight(DEFAULT_LENGTH);
                         stack.add(node2);
                         isFirstChild.add(false);
@@ -493,9 +499,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                         if (bIsLabel) {
                             String sLabel = sStr.substring(m_iTokenStart, m_iTokenEnd);
                             stack.lastElement().setNr(getLabelIndex(sLabel));
+                            sampleSize[0]++;
                         } else {
                             String sLength = sStr.substring(m_iTokenStart, m_iTokenEnd);
                             stack.lastElement().setHeight(Double.parseDouble(sLength));
+                            bIsLabel = true;
                         }
                         break;
                     case META_DATA:
@@ -512,7 +520,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                         // at this stage, all heights are actually lengths
                         convertLengthToHeight(tree);
                         int n = tree.getLeafNodeCount();
-                        tree.labelInternalNodes(n);
+                        if (n == sampleSize[0])
+                            tree.labelInternalNodes(n);
+                        else {
+                            sampleSize[0] --;
+                            labelNonLabeledNodes(tree, sampleSize);
+                        }
                         if (!m_bSurpressMetadata) {
                             processMetadata(tree);
                         }
@@ -526,8 +539,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             // at this stage, all heights are actually lengths
             convertLengthToHeight(tree);
             int n = tree.getLeafNodeCount();
-            if (tree.getNr() == 0) {
+            if (tree.getNr() == -1 && n == sampleSize[0]) {
                 tree.labelInternalNodes(n);
+            } else {
+                sampleSize[0] --;
+                labelNonLabeledNodes(tree, sampleSize);
             }
             if (!m_bSurpressMetadata) {
                 processMetadata(tree);
@@ -562,7 +578,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         if (node.getNr() == -1) {
             node.setNr(lastLabel[0] + 1);
             lastLabel[0] += 1;
-        }
+        }  else if (m_sLabels != null && node.getNr()< m_sLabels.size())
+            node.setID(m_sLabels.get(node.getNr()));
     }
 
     /**
