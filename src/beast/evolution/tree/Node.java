@@ -338,9 +338,12 @@ public class Node extends Plugin {
                 buf.append(getRight().toShortNewick(bPrintInternalNodeNumbers));
             }
             buf.append(")");
-            if (bPrintInternalNodeNumbers) {
+            if (getID() != null) {
+                buf.append(getID());
+            } else if (bPrintInternalNodeNumbers) {
                 buf.append(getNr());
             }
+
         } else {
             buf.append(getNr());
         }
@@ -392,24 +395,26 @@ public class Node extends Plugin {
     }
 
     /**
-     * @param sLabels names of the taxa
-     * @return beast.tree in Newick format with taxon labels for leafs.
+     * @return beast.tree in Newick format with taxon labels for labelled nodes.
      */
-    public String toNewick(List<String> sLabels) {
+    public String toNewick() {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            buf.append(getLeft().toNewick(sLabels));
+            buf.append(getLeft().toNewick());
             if (getRight() != null) {
                 buf.append(',');
-                buf.append(getRight().toNewick(sLabels));
+                buf.append(getRight().toNewick());
             }
             buf.append(")");
+            if (getID() != null) {
+                buf.append(getID());
+            }
         } else {
-            if (sLabels == null) {
+            if (getID() == null) {
                 buf.append(m_iLabel);
             } else {
-                buf.append(sLabels.get(m_iLabel));
+                buf.append(getID());
             }
         }
         buf.append(getNewickMetaData());

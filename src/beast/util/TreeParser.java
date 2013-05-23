@@ -179,7 +179,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * @param newick a string representing a tree in newick format
      */
     public TreeParser(String newick) throws Exception {
-        this(newick, false, true);
+        this(newick, false, true, true, 1);
     }
 
     /**
@@ -190,12 +190,16 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      */
     public TreeParser(String newick,
                       boolean adjustTipHeights,
-                      boolean allowSingleChildNodes) throws Exception {
+                      boolean allowSingleChildNodes,
+                      boolean isLabeled,
+                      int offset) throws Exception {
 
         m_oNewick.setValue(newick, this);
-        m_bIsLabelledNewick.setValue(true, this);
+        m_bIsLabelledNewick.setValue(isLabeled, this);
         adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeights, this);
         m_bAllowSingleChild.setValue(allowSingleChildNodes, this);
+
+        m_nOffset.setValue(offset, this);
 
         initAndValidate();
     }
