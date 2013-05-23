@@ -520,10 +520,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                         // at this stage, all heights are actually lengths
                         convertLengthToHeight(tree);
                         int n = tree.getLeafNodeCount();
-                        if (n == sampleSize[0])
+                        if (n == sampleSize[0]) {
                             tree.labelInternalNodes(n);
-                        else {
-                            sampleSize[0] --;
+                        } else {
+                            sampleSize[0]--;
                             labelNonLabeledNodes(tree, sampleSize);
                         }
                         if (!m_bSurpressMetadata) {
@@ -542,7 +542,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             if (tree.getNr() == -1 && n == sampleSize[0]) {
                 tree.labelInternalNodes(n);
             } else {
-                sampleSize[0] --;
+                sampleSize[0]--;
                 labelNonLabeledNodes(tree, sampleSize);
             }
             if (!m_bSurpressMetadata) {
@@ -578,8 +578,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         if (node.getNr() == -1) {
             node.setNr(lastLabel[0] + 1);
             lastLabel[0] += 1;
-        }  else if (m_sLabels != null && node.getNr()< m_sLabels.size())
+        } else if (m_sLabels != null && node.getNr() < m_sLabels.size()) {
             node.setID(m_sLabels.get(node.getNr()));
+        }
     }
 
     /**
