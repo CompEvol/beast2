@@ -331,9 +331,6 @@ public class Node extends Plugin {
     public String toShortNewick(boolean bPrintInternalNodeLabels) {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
-            if (bPrintInternalNodeLabels) {
-                buf.append(m_iLabel).append(":");
-            }
             buf.append("(");
             buf.append(getLeft().toShortNewick(bPrintInternalNodeLabels));
             if (getRight() != null) {
@@ -341,6 +338,9 @@ public class Node extends Plugin {
                 buf.append(getRight().toShortNewick(bPrintInternalNodeLabels));
             }
             buf.append(")");
+            if (getID() != null && bPrintInternalNodeLabels) {
+                buf.append(m_iLabel);
+            }
         } else {
             buf.append(m_iLabel);
         }
