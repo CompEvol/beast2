@@ -338,8 +338,12 @@ public class Node extends Plugin {
                 buf.append(getRight().toShortNewick(bPrintInternalNodeLabels));
             }
             buf.append(")");
-            if (getID() != null && bPrintInternalNodeLabels) {
-                buf.append(m_iLabel);
+            if (bPrintInternalNodeLabels) {
+                if (getID() != null) {
+                    buf.append(m_iLabel);
+                } else {
+                    buf.append(getNr());
+                }
             }
         } else {
             buf.append(m_iLabel);

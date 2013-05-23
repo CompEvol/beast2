@@ -26,7 +26,7 @@ public class NewickTreeTest extends TestCase {
 //            System.out.println(tree);
 //            System.out.println(newickTree);
 
-            assertEquals("4:(3:(0:1.0,1:1.0):1.0,2:2.0):0.0", newickTree.toString());
+            assertEquals("((0:1.0,1:1.0)3:1.0,2:2.0)4:0.0", newickTree.toString());
         }
 
         for (String tree : trees2) {
@@ -35,7 +35,7 @@ public class NewickTreeTest extends TestCase {
 
 //            System.out.println(tree);
 //            System.out.println(newickTree);
-            assertEquals("4:(3:(0:1.5,1:0.5):1.1,2:3.0):0.0", newickTree.toString());
+            assertEquals("((0:1.5,1:0.5)3:1.1,2:3.0)4:0.0", newickTree.toString());
         }
 
     }
