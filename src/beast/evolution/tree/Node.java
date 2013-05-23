@@ -324,7 +324,8 @@ public class Node extends Plugin {
      * @return beast.tree in Newick format, with length and meta data
      *         information. Unlike toNewick(), here Nodes are numbered, instead of
      *         using the node labels.
-     *         Also, internal nodes are labelled if bPrintInternalNodeNumbers
+     *         If there are internal nodes with non-null IDs then their numbers are also printed.
+     *         Also, all internal nodes are labelled if bPrintInternalNodeNumbers
      *         is set true. This is useful for example when storing a State to file
      *         so that it can be restored.
      */
@@ -339,7 +340,7 @@ public class Node extends Plugin {
             }
             buf.append(")");
             if (getID() != null) {
-                buf.append(getID());
+                buf.append(getNr());
             } else if (bPrintInternalNodeNumbers) {
                 buf.append(getNr());
             }
@@ -354,7 +355,8 @@ public class Node extends Plugin {
 
     /**
      * prints newick string where it orders by highest leaf number
-     * in a clade
+     * in a clade. Print node numbers (m_iLabel) incremented by 1
+     * for leaves and internal nodes with non-null IDs.
      */
     String toSortedNewick(int[] iMaxNodeInClade) {
         return toSortedNewick(iMaxNodeInClade, false);
@@ -383,10 +385,14 @@ public class Node extends Plugin {
                 buf.append(sChild1);
             }
             buf.append(")");
+            if (getID() != null) {
+                buf.append(m_iLabel+1);
+            }
         } else {
             iMaxNodeInClade[0] = m_iLabel;
             buf.append(m_iLabel + 1);
         }
+
         if (printMetaData) {
             buf.append(getNewickMetaData());
         }
@@ -394,9 +400,17 @@ public class Node extends Plugin {
         return buf.toString();
     }
 
-    /**
-     * @return beast.tree in Newick format with taxon labels for labelled nodes.
-     */
+    @Deprecated
+    public String toNewick(List<String> labels) {
+        throw new UnsupportedOperationException("Please use toNewick(). Labels will come from node.getId() or node.getNr().");
+    }
+
+
+        /**
+         * @return beast.tree in Newick format with taxon labels for labelled tip nodes
+         * and labeled (having non-null ID) internal nodes.
+         * If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
+         */
     public String toNewick() {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
