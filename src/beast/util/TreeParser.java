@@ -60,7 +60,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      */
     public Input<Boolean> m_bIsLabelledNewick = new Input<Boolean>("IsLabelledNewick", "Is the newick tree labelled? Default=false.", false);
 
-
     public Input<Alignment> m_oData = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leaves in the beast.tree");
     public Input<String> m_oNewick = new Input<String>("newick", "initial beast.tree represented in newick format");// not required, Beauti may need this for example
     public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
@@ -186,6 +185,22 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * @param newick                a string representing a tree in newick format
      * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
      * @param allowSingleChildNodes true if internal nodes with single children are allowed
+     * @throws Exception
+     */
+    public TreeParser(String newick,
+                      boolean adjustTipHeights,
+                      boolean allowSingleChildNodes) throws Exception {
+        this(newick, adjustTipHeights,allowSingleChildNodes,true, 1);
+    }
+
+    /**
+     * @param newick                a string representing a tree in newick format
+     * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @param allowSingleChildNodes true if internal nodes with single children are allowed
+     * @param isLabeled             true if nodes are labeled with taxa labels
+     * @param offset                if isLabeled == false and node labeling starts with x
+     *                              then offset should be x. When isLabeled == true offset should
+     *                              be 1 as by default.
      * @throws Exception
      */
     public TreeParser(String newick,
