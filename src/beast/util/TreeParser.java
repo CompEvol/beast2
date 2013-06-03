@@ -190,7 +190,17 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public TreeParser(String newick,
                       boolean adjustTipHeights,
                       boolean allowSingleChildNodes) throws Exception {
-        this(newick, adjustTipHeights,allowSingleChildNodes,true, 1);
+        this(newick, adjustTipHeights, allowSingleChildNodes, true, 1);
+    }
+
+    /**
+     * @param newick           a string representing a tree in newick format
+     * @param adjustTipHeights true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @throws Exception
+     */
+    public TreeParser(String newick,
+                      boolean adjustTipHeights) throws Exception {
+        this(newick, adjustTipHeights, true, true, 1);
     }
 
     /**
