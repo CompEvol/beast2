@@ -170,19 +170,29 @@ public class XMLProducer extends XMLParser {
      */
     @SuppressWarnings("rawtypes")
     public String toRawXML(Plugin plugin) {
+        return toRawXML(plugin, null);
+    } // toRawXML
+
+    /**
+     * like modelToXML, but without the cleanup *
+     * For plugin without name
+     */
+    @SuppressWarnings("rawtypes")
+    public String toRawXML(Plugin plugin, String sName) {
         try {
             StringBuffer buf = new StringBuffer();
             m_bDone = new HashSet<Plugin>();
             m_bInputsDone = new HashSet<Input>();
             m_sIDs = new HashSet<String>();
             m_nIndent = 0;
-            pluginToXML(plugin, buf, null, false);
+            pluginToXML(plugin, buf, sName, false);
             return buf.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     } // toRawXML
+
 
 
     public String stateNodeToXML(Plugin plugin) {
