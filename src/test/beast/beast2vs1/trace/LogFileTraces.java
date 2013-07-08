@@ -210,5 +210,9 @@ public class LogFileTraces {
     public String getTraceName(int i) {
         return tracesNameList.get(i);
     }
+
+    public int getTraceIndex(String traceName) {
+        return tracesNameList.indexOf(traceName);
+    }
 }
 
