@@ -339,6 +339,13 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         Node finalTree = subTree[nCals - 1];
         double h = cladeHeight[nCals - 1];
 
+        for(int k = 0; k < nCals-1; ++k) {
+          final Node s = subTree[k];
+          h = Math.max(h, cladeHeight[k]) + 1;
+          finalTree = Node.connect(finalTree, s, h);
+          finalTree.setNr(++curInternal);
+        }
+
         for (int k = 0; k < used.length; ++k) {
             if (!used[k]) {
                 final String tx = tree.getNode(k).getID();
@@ -459,9 +466,15 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                         final int[] ranks = new int[hs.length];
                         for (int k = 0; k < hs.length; ++k) {
                             int r = 0;
-                            for (final double h : hs) {
-                                r += (h < hs[k]) ? 1 : 0;
+                            for(int j = 0; j < k; ++j) {
+                              r += (hs[j] <= hs[k]) ? 1 : 0;
                             }
+                            for(int j = k+1; j < hs.length; ++j) {
+                              r += (hs[j] < hs[k]) ? 1 : 0;
+                            }
+//                            for (final double h : hs) {
+//                                r += (h < hs[k]) ? 1 : 0;
+//                            }
                             ranks[k] = r + 1;
                             hss[r] = hs[k];
                         }
@@ -601,7 +614,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         final double[] lebase = new double[nLevels];
 
         for (int i = 0; i < nHeights; ++i) {
-            lebase[i] = lehs[i] + Math.log1p(-Math.exp(lehs[i + 1] - lehs[i]));
+            final double d = lehs[i + 1] - lehs[i];
+            lebase[i] = d != 0 ? lehs[i] + Math.log1p(-Math.exp(d)) : -50;
         }
 
         if (noRoot) {
