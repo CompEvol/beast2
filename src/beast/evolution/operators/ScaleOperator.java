@@ -163,7 +163,7 @@ public class ScaleOperator extends Operator {
                 // update all dimensions
                 // hasting ratio is dim-2 times of 1dim case. would be nice to have a reference here
                 // for the proof. It is supposed to be somewhere in an Alexei/Nicholes article.
-                final int df = (nDegreesOfFreedom > 0) ? -nDegreesOfFreedom : dim - 2;
+                final int df = (nDegreesOfFreedom > 0) ? nDegreesOfFreedom - 2 : dim - 2;
                 hastingsRatio = df * Math.log(scale);
 
                 // all Values assumed independent!
