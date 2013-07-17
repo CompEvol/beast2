@@ -231,7 +231,7 @@ be the default values for nucleotide data so we need to make some changes.
 
 Most of the models should be familiar to you. %(see Chapter {\ref{chapter:SubstitutionModels} for details}). 
 First, set the \textbf{Gamma Category Count} to 4 and then check the `estimate' box for the \textbf{Shape} parameter. This will allow rate variation 
-between sites in each partition to be modeled.  Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu (Figure \ref{fig:BEAUti_Model}) and select \textbf{Empirical} from the \textbf{Frequencies} drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models again). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. Finally check the `estimate' box for the \textbf{Mutation rate} parameter and select the \textbf{Fix mean mutation rate} check box. This will allow the individual partitions to have their relative rates estimated once we unlink the site models.
+between sites in each partition to be modeled.  Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu (Figure \ref{fig:BEAUti_Model}) and select \textbf{Empirical} from the \textbf{Frequencies} drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models again). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. Finally check the `estimate' box for the \textbf{Substitution rate} parameter and select the \textbf{Fix mean mutation rate} check box. This will allow the individual partitions to have their relative rates estimated once we unlink the site models.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/BEAUti_Model}
@@ -353,7 +353,7 @@ record sufficient information about the distributions of the parameters.
 You probably want to aim to store no more than 10,000 samples so this should be
 set to no less than chain length / 10000.
 
-For this exercise we will set the screen log to \screenEvery{} and the file log to \logEvery{}. The final two
+For this exercise we will set the screen log to \screenEvery{} and the trace log to \logEvery{}. The final two
 options give the file names of the log files for the sampled parameters and
 the trees. These will be set to a default based on the name of the
 imported NEXUS file. 
@@ -622,8 +622,8 @@ Finally, we can visualize the tree in another program called {\bf FigTree}. Run 
 the \mccTree{} file by using the Open command in the File menu. The tree should appear.
 You can now try selecting some of the options in the control panel on the left. Try selecting
 {\bf Node Bars} to get node age error bars. Also turn on {\bf Branch Labels} and select {\bf posterior} to get
-it to display the posterior probability for each node. Under {\bf Appearance} you can also tell FigTree
-to colour the branches by the rate.
+it to display the posterior probability for each node. 
+If you use a non strict clock model then under {\bf Appearance} you can also tell FigTree to colour the branches by the rate.
 You should end up with something similar to Figure \ref{fig:FigTree}.
 
 
