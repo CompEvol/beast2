@@ -44,7 +44,7 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
-@Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model using " +
+@Description("Calculates the probability of sequence data on a beast.tree given a site and substitution model using " +
         "a variant of the 'peeling algorithm'. For details, see" +
         "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
 public class TreeLikelihood extends GenericTreeLikelihood {
@@ -161,7 +161,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
         System.out.println("TreeLikelihood uses " + m_likelihoodCore.getClass().getName());
 
-        m_fProportionInvariant = m_siteModel.getProportianInvariant();
+        m_fProportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
         if (m_fProportionInvariant > 0) {
             calcConstantPatternIndices(nPatterns, nStateCount);
@@ -407,7 +407,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                     m_likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
 
                     if (m_iConstantPattern != null) { // && !SiteModel.g_bUseOriginal) {
-                        m_fProportionInvariant = m_siteModel.getProportianInvariant();
+                        m_fProportionInvariant = m_siteModel.getProportionInvariant();
                         // some portion of sites is invariant, so adjust root partials for this
                         for (final int i : m_iConstantPattern) {
                             m_fRootPartials[i] += m_fProportionInvariant;

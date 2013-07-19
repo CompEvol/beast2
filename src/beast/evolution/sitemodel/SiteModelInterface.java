@@ -177,7 +177,7 @@ public interface SiteModelInterface {
             m_dataType = dataType;
         }
 
-        public double getProportianInvariant() {
+        public double getProportionInvariant() {
             return 0;
         }
 
