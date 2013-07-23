@@ -14,7 +14,7 @@ public class ExchangeOperatorTest extends TestCase {
 	
 	@Test 
 	public void testNarrowExchange() throws Exception {
-        int runs = 100000;
+        int runs = 10000;
         Randomizer.setSeed(666);
         // test that going from source tree to target tree 
         // is as likely as going the other way around
@@ -46,7 +46,7 @@ public class ExchangeOperatorTest extends TestCase {
 
             double logHR = operator.proposal();
             String treeString = tree.getRoot().toNewick();
-            if (treeString.equals(targetTree)) {
+            if (treeString.equals(targetTree) && !Double.isInfinite(logHR)) {
             	// proportion of accepts equals min(HR, 1.0)
             	match += Math.min(Math.exp(logHR), 1.0);
             }
@@ -68,14 +68,14 @@ public class ExchangeOperatorTest extends TestCase {
 
             double logHR = operator.proposal();
             String treeString = tree.getRoot().toNewick();
-            if (treeString.equals(sourceTree)) {
+            if (treeString.equals(sourceTree) && !Double.isInfinite(logHR)) {
             	// proportion of accepts equals min(HR, 1.0)
             	match2 += Math.min(Math.exp(logHR), 1.0);
             }
         }
         
         System.out.println(" Matches: " + match2 * 100.0/runs+ "%");
-        assertTrue("difference(" + 100*(match-match2)/runs + ") exceeds 0.2%", 100*(match-match2)/runs < 0.2); 
+        assertTrue("difference(" + 100*(match-match2)/runs + ") exceeds 1.0%", 100.0*Math.abs(match-match2)/runs < 1.0); 
 	
 	}
 
