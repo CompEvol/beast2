@@ -13,15 +13,13 @@ import junit.framework.TestCase;
 public class ExchangeOperatorTest extends TestCase {
 	
 	@Test 
-	public void testNarrowExchange() throws Exception {
+	public void testNarrowExchange4Taxa() throws Exception {
+		
         int runs = 10000;
         Randomizer.setSeed(666);
         // test that going from source tree to target tree 
         // is as likely as going the other way around
         // taking the HR in account.
-        String sourceTree = "((A:2.0,B:2.0):1.0,(C:1.0,D:1.0):2.0):0.0"; // ((A,B),(C,D))
-        String targetTree = "((A:2.0,(C:1.0,D:1.0):1.0):1.0,B:3.0):0.0"; // ((A,(C,D)),B)
-        
         Sequence A = new Sequence("A", "A");
         Sequence B = new Sequence("B", "A");
         Sequence C = new Sequence("C", "A");
@@ -31,7 +29,51 @@ public class ExchangeOperatorTest extends TestCase {
         data.initByName("sequence", A, "sequence", B, "sequence", C, "sequence", D,
                 "dataType", "nucleotide"
         );
-		
+        String sourceTree = "((A:2.0,B:2.0):1.0,(C:1.0,D:1.0):2.0):0.0"; // ((A,B),(C,D))
+        String targetTree = "((A:2.0,(C:1.0,D:1.0):1.0):1.0,B:3.0):0.0"; // ((A,(C,D)),B)
+        testNarrowExchange(sourceTree, targetTree, runs, data);
+	}
+	
+    @Test
+	public void testNarrowExchange5Taxa() throws Exception {
+    	int runs = 10000;
+	    Randomizer.setSeed(666);
+        Sequence A = new Sequence("A", "A");
+        Sequence B = new Sequence("B", "A");
+        Sequence C = new Sequence("C", "A");
+        Sequence D = new Sequence("D", "A");
+        Sequence E = new Sequence("E", "A");
+
+        Alignment data = new Alignment();
+        data.initByName("sequence", A, "sequence", B, "sequence", C, "sequence", D, "sequence", E,
+                "dataType", "nucleotide"
+        );
+        String sourceTree = "(((A:2.0,B:2.0):1.0,(C:1.0,D:1.0):2.0):1.0,E:4.0):0.0"; // (((A,B),(C,D)),E)
+        String targetTree = "(((A:2.0,(C:1.0,D:1.0):1.0):1.0,B:3.0):1.0,E:4.0):0.0"; // (((A,(C,D)),B),E)
+        testNarrowExchange(sourceTree, targetTree, runs, data);
+    }
+
+    @Test
+	public void testNarrowExchange6Taxa() throws Exception {
+    	int runs = 10000;
+	    Randomizer.setSeed(666);
+        Sequence A = new Sequence("A", "A");
+        Sequence B = new Sequence("B", "A");
+        Sequence C = new Sequence("C", "A");
+        Sequence D = new Sequence("D", "A");
+        Sequence E = new Sequence("E", "A");
+        Sequence F = new Sequence("F", "A");
+
+        Alignment data = new Alignment();
+        data.initByName("sequence", A, "sequence", B, "sequence", C, "sequence", D, "sequence", E, "sequence", F,
+                "dataType", "nucleotide"
+        );
+        String sourceTree = "((((A:2.0,B:2.0):1.0,(C:1.0,D:1.0):2.0):1.0,E:4.0):1.0,F:5.0):0.0"; // ((((A,B),(C,D)),E),F)
+        String targetTree = "((((A:2.0,(C:1.0,D:1.0):1.0):1.0,B:3.0):1.0,E:4.0):1.0,F:5.0):0.0"; // ((((A,(C,D)),B),E),F)
+        testNarrowExchange(sourceTree, targetTree, runs, data);
+    }
+	
+	void testNarrowExchange(String sourceTree, String targetTree, int runs, Alignment data) throws Exception {
 		
         // first test going from source to target
         double match = 0;
