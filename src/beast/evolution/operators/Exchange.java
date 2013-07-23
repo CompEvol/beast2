@@ -90,6 +90,14 @@ public class Exchange extends TreeOperator {
         return fLogHastingsRatio;
     }
 
+    private int isg(final Node n) {
+      return (n.getLeft().isLeaf() && n.getRight().isLeaf()) ? 0 : 1;
+    }
+
+    private int sisg(final Node n) {
+        return n.isLeaf() ? 0 : isg(n);
+    }
+
     /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
@@ -121,9 +129,21 @@ public class Exchange extends TreeOperator {
                 return Double.NEGATIVE_INFINITY;
             }
 
+            int validGP = 0;
+            {
+                for(int i = nInternalNodes + 1; i < 1 + 2*nInternalNodes; ++i) {
+                    validGP += isg(tree.getNode(i));
+                }
+            }
+
+            final int c2 = sisg(iParent) + sisg(iUncle);
+
             final Node i = (Randomizer.nextBoolean() ? iParent.getLeft() : iParent.getRight());
             exchangeNodes(i, iUncle, iParent, iGrandParent);
-            return 0;
+
+            final int validGPafter = validGP - c2 + sisg(iParent) + sisg(iUncle);
+
+            return Math.log((float)validGP/validGPafter);
         } else {
 
             final int nNodes = tree.getNodeCount();
