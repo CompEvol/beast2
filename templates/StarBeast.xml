@@ -296,6 +296,8 @@
             <connect srcID='Tree.t:Species'     targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
             <connect srcID='Tree.t:Species'     targetID='treeTopFinder' inputName='tree' if='Tree.t:$(n)/estimate=XXX'/>
 
+			<connect srcID='birthRate.t:Species' targetID='updown.all' inputName='up' if='inposterior(birthRate.t:Species)'/>
+
 			<mergepoint id='aux-partitiontemplate'/>
         </partitiontemplate>
 
