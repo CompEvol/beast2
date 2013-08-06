@@ -25,11 +25,7 @@
 package beast.core.util;
 
 import beast.app.BeastMCMC;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Distribution;
-import beast.core.Plugin;
-import beast.core.State;
+import beast.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +33,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.lang.Runnable;
 
 @Description("Takes a collection of distributions, typically a number of likelihoods " +
         "and priors and combines them into the compound of these distributions " +
@@ -48,9 +45,9 @@ public class CompoundDistribution extends Distribution {
             new Input<List<Distribution>>("distribution",
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
                     new ArrayList<Distribution>());
-    public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads", "calculated the distributions in parallel using threads (default false)", false);
+    public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads", "calculated the distributions in parallel using threads (default true)", true);
     public Input<Boolean> ignoreInput = new Input<Boolean>("ignore", "ignore all distributions and return 1 as distribution (default false)", false);
-    
+
     /**
      * flag to indicate threads should be used. Only effective if the useThreadsInput is
      * true and BeasMCMC.nrOfThreads > 1
@@ -80,7 +77,7 @@ public class CompoundDistribution extends Distribution {
     public double calculateLogP() throws Exception {
         logP = 0;
         if (ignore) {
-        	return logP;
+            return logP;
         }
         if (useThreads) {
             logP = calculateLogPUsingThreads();
@@ -185,11 +182,11 @@ public class CompoundDistribution extends Distribution {
 
     @Override
     public List<Plugin> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
-    	if (ignoreInput.get()) {
-    		return new ArrayList<Plugin>();
-    	} else {
-    		return super.listActivePlugins();
-    	}
+        if (ignoreInput.get()) {
+            return new ArrayList<Plugin>();
+        } else {
+            return super.listActivePlugins();
+        }
     }
-    
+
 } // class CompoundProbabilityDistribution
