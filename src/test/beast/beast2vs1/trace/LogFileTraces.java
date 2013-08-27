@@ -23,10 +23,10 @@ public class LogFileTraces {
 
     private final List<String> tracesNameList = new ArrayList<String>();
     protected List<List<Double>> valuesList = new ArrayList<List<Double>>();
-    private int burnIn = -1;
-    private int firstState = -1;
-    private int lastState = -1;
-    private int stepSize = -1;
+    private long burnIn = -1;
+    private long firstState = -1;
+    private long lastState = -1;
+    private long stepSize = -1;
 
     public LogFileTraces(String name, File file) {
         this.name = name;
@@ -47,7 +47,7 @@ public class LogFileTraces {
     /**
      * @return the last state in the chain
      */
-    public int getMaxState() {
+    public long getMaxState() {
         return lastState;
     }
 
@@ -58,7 +58,7 @@ public class LogFileTraces {
     /**
      * @return the number of states excluding the burnin
      */
-    public int getStateCount() {
+    public long getStateCount() {
         // This is done as two integer divisions to ensure the same rounding for
         // the burnin...
         return ((lastState - firstState) / stepSize) - (getBurnIn() / stepSize) + 1;
@@ -67,18 +67,18 @@ public class LogFileTraces {
     /**
      * @return the number of states in the burnin
      */
-    public int getBurninStateCount() {
+    public long getBurninStateCount() {
         return (getBurnIn() / stepSize);
     }
 
     /**
      * @return the size of the step between states
      */
-    public int getStepSize() {
+    public long getStepSize() {
         return stepSize;
     }
 
-    public int getBurnIn() {
+    public long getBurnIn() {
         return burnIn;
     }
 
@@ -89,7 +89,7 @@ public class LogFileTraces {
         return tracesNameList.size();
     }
 
-    public void setBurnIn(int burnIn) {
+    public void setBurnIn(long burnIn) {
         this.burnIn = burnIn;
     }
 
@@ -124,12 +124,12 @@ public class LogFileTraces {
         tokens = reader.tokenizeLine();
         while (tokens != null && tokens.hasMoreTokens()) {
             String stateString = tokens.nextToken();
-            int state = 0;
+            long state = 0;
 
             try {
                 try {
                     // Changed this to parseDouble because LAMARC uses scientific notation for the state number
-                    state = (int) Double.parseDouble(stateString);
+                    state = (long) Double.parseDouble(stateString);
                 } catch (NumberFormatException nfe) {
                     throw new TraceException("Unable to parse state number in column 1 (Line " + reader.getLineNumber() + ")");
                 }
@@ -180,13 +180,13 @@ public class LogFileTraces {
      * @param stateNumber the state
      * @return false if the state number is inconsistent
      */
-    private boolean addState(int stateNumber) {
+    private boolean addState(long stateNumber) {
         if (firstState < 0) {
             firstState = stateNumber;
         } else if (stepSize < 0) {
             stepSize = stateNumber - firstState;
         } else {
-            int step = stateNumber - lastState;
+            long step = stateNumber - lastState;
             if (step != stepSize) {
                 return false;
             }
@@ -196,7 +196,7 @@ public class LogFileTraces {
     }
 
     public TraceStatistics analyseTrace(int index) {
-        int start = (getBurnIn() / getStepSize());
+        int start = (int) (getBurnIn() / getStepSize());
 
         List<Double> values = valuesList.get(index).subList(start, valuesList.get(index).size());
         double[] doubleValues = new double[values.size()];

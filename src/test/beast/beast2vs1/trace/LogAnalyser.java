@@ -221,12 +221,12 @@ public class LogAnalyser extends Runnable {
         System.out.flush();
     }
 
-    public LogFileTraces readLog(String fileName, int inBurnin) throws TraceException, IOException {
+    public LogFileTraces readLog(String fileName, long inBurnin) throws TraceException, IOException {
         File file = new File(fileName);
         LogFileTraces traces = new LogFileTraces(fileName, file);
         traces.loadTraces();
 
-        int burnin = inBurnin;
+        long burnin = inBurnin;
         if (burnin == -1) {
             burnin = traces.getMaxState() / 10;
         }

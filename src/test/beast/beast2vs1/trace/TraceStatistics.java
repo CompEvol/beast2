@@ -29,7 +29,7 @@ public class TraceStatistics {
         analyseDistributionContinuous(values, 0.95);
     }
 
-    public TraceStatistics(double[] values, int stepSize) {
+    public TraceStatistics(double[] values, long stepSize) {
         this(values);
 
         if (isValid) {
@@ -93,7 +93,7 @@ public class TraceStatistics {
      * @param values   the values
      * @param stepSize the sampling frequency of the values
      */
-    private void analyseCorrelationContinuous(double[] values, int stepSize) {
+    private void analyseCorrelationContinuous(double[] values, long stepSize) {
 
         final int samples = values.length;
         int maxLag = Math.min(samples - 1, MAX_LAG);
