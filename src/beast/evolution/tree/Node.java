@@ -321,6 +321,10 @@ public class Node extends Plugin {
     }
 
     /**
+     * Writes a short newick format.
+     * Note: this method suppresses internal nodes that have a zero branch length child
+     * (replacing them with the child in the newick string).
+     *
      * @return beast.tree in Newick format, with length and meta data
      *         information. Unlike toNewick(), here Nodes are numbered, instead of
      *         using the node labels.
@@ -333,18 +337,32 @@ public class Node extends Plugin {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            buf.append(getLeft().toShortNewick(bPrintInternalNodeNumbers));
-            if (getRight() != null) {
-                buf.append(',');
-                buf.append(getRight().toShortNewick(bPrintInternalNodeNumbers));
+            if (isFake()) {
+                Node directAncestor;
+                Node otherChild;
+                if (getLeft().isDirectAncestor()) {
+                    directAncestor = getLeft();
+                    otherChild = getRight();
+                } else {
+                    directAncestor = getRight();
+                    otherChild = getLeft();
+                }
+                buf.append(otherChild.toShortNewick(bPrintInternalNodeNumbers));
+                buf.append(")");
+                buf.append(directAncestor.getNr());
+            } else {
+                buf.append(getLeft().toShortNewick(bPrintInternalNodeNumbers));
+                if (getRight() != null) {
+                    buf.append(',');
+                    buf.append(getRight().toShortNewick(bPrintInternalNodeNumbers));
+                }
+                buf.append(")");
+                if (getID() != null) {
+                    buf.append(getNr());
+                } else if (bPrintInternalNodeNumbers) {
+                    buf.append(getNr());
+                }
             }
-            buf.append(")");
-            if (getID() != null) {
-                buf.append(getNr());
-            } else if (bPrintInternalNodeNumbers) {
-                buf.append(getNr());
-            }
-
         } else {
             buf.append(getNr());
         }
@@ -362,31 +380,54 @@ public class Node extends Plugin {
         return toSortedNewick(iMaxNodeInClade, false);
     }
 
+    /**
+     * Note: this method suppresses internal nodes that have a zero branch length child
+     * (replacing them with the child in the newick string).
+     *
+     * @param iMaxNodeInClade
+     * @param printMetaData
+     * @return
+     */
     public String toSortedNewick(int[] iMaxNodeInClade, boolean printMetaData) {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
-            int iChild1 = iMaxNodeInClade[0];
-            if (getRight() != null) {
-                String sChild2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
-                int iChild2 = iMaxNodeInClade[0];
-                if (iChild1 > iChild2) {
-                    buf.append(sChild2);
-                    buf.append(",");
-                    buf.append(sChild1);
+            if (isFake()) {
+                Node directAncestor;
+                Node otherChild;
+                if (getLeft().isDirectAncestor()) {
+                    directAncestor = getLeft();
+                    otherChild = getRight();
+                } else {
+                    directAncestor = getRight();
+                    otherChild = getLeft();
+                }
+                buf.append(otherChild.toSortedNewick(iMaxNodeInClade, printMetaData));
+                buf.append(")");
+                buf.append(directAncestor.getNr() + 1);
+            } else {
+                String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
+                int iChild1 = iMaxNodeInClade[0];
+                if (getRight() != null) {
+                    String sChild2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
+                    int iChild2 = iMaxNodeInClade[0];
+                    if (iChild1 > iChild2) {
+                        buf.append(sChild2);
+                        buf.append(",");
+                        buf.append(sChild1);
+                    } else {
+                        buf.append(sChild1);
+                        buf.append(",");
+                        buf.append(sChild2);
+                        iMaxNodeInClade[0] = iChild1;
+                    }
                 } else {
                     buf.append(sChild1);
-                    buf.append(",");
-                    buf.append(sChild2);
-                    iMaxNodeInClade[0] = iChild1;
                 }
-            } else {
-                buf.append(sChild1);
+                buf.append(")");
             }
-            buf.append(")");
             if (getID() != null) {
-                buf.append(m_iLabel+1);
+                buf.append(m_iLabel + 1);
             }
         } else {
             iMaxNodeInClade[0] = m_iLabel;
@@ -406,11 +447,11 @@ public class Node extends Plugin {
     }
 
 
-        /**
-         * @return beast.tree in Newick format with taxon labels for labelled tip nodes
-         * and labeled (having non-null ID) internal nodes.
-         * If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
-         */
+    /**
+     * @return beast.tree in Newick format with taxon labels for labelled tip nodes
+     *         and labeled (having non-null ID) internal nodes.
+     *         If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
+     */
     public String toNewick() {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
@@ -645,6 +686,31 @@ public class Node extends Plugin {
         }
     }
 
+    /**
+     * Scales nodes in tree (either all nodes, or non-sampled nodes)
+     *
+     * @param fScale    the scalar to multiply each scaled node age by
+     * @param scaleTips true if sampled nodes should be scaled as well as internal nodes, false if only non-sampled
+     *                  internal nodes should be scaled.
+     * @throws Exception throws exception if resulting tree would have negative branch lengths.
+     */
+    public void scaleSATrees(double fScale, boolean scaleTips) throws Exception {
+        startEditing();
+        m_bIsDirty |= Tree.IS_DIRTY;
+        if (scaleTips || (!isLeaf() && !isFake())) {
+            m_fHeight *= fScale;
+        }
+        if (!isLeaf()) {
+            getLeft().scaleSATrees(fScale, scaleTips);
+            if (getRight() != null) {
+                getRight().scaleSATrees(fScale, scaleTips);
+            }
+            if (m_fHeight <= getLeft().m_fHeight || m_fHeight <= getRight().m_fHeight) {
+                throw new Exception("Scale gives negative branch length");
+            }
+        }
+    }
+
     protected void startEditing() {
         if (m_tree != null && m_tree.getState() != null) {
             m_tree.startEditing(null);
@@ -712,4 +778,18 @@ public class Node extends Plugin {
         n.setRight(right);
         return n;
     }
+
+    //is true if this leaf actually represents a direct ancestor (i.e. is on the end of a zero-length branch)
+    public boolean isDirectAncestor() {
+        return (!isRoot() && this.getParent().getHeight() == this.getHeight());
+    }
+
+    //is true if this internal node is "fake" (i.e. one of its children is a direct ancestor)
+    //works only for trees where each node has at least 2 children
+    public boolean isFake() {
+        if (this.isLeaf())
+            return false;
+        return (this.getLeft().isDirectAncestor() || (this.getRight() != null && this.getRight().isDirectAncestor()));
+    }
+
 } // class Node

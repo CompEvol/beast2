@@ -503,6 +503,24 @@ public class Tree extends StateNode {
         return getInternalNodeCount();
     }
 
+    /**
+     * Scales nodes in tree (either all nodes, or only non-sampled nodes)
+     *
+     * @param fScale      the scalar to multiply each scaled node age by
+     * @param scaleSNodes true if sampled nodes should be scaled as well as internal nodes, false if only non-sampled
+     *                    internal nodes should be scaled.
+     * @return the number of nodes that were scaled.
+     * @throws Exception
+     */
+    public int scaleSATrees(double fScale, boolean scaleSNodes) throws Exception {
+        root.scaleSATrees(fScale, scaleSNodes);
+        if (scaleSNodes) {
+            return getNodeCount() - getDirectAncestorNodeCount();
+        } else {
+            return getInternalNodeCount() - getDirectAncestorNodeCount();
+        }
+    }
+
     /** Loggable interface implementation follows **/
 
     /**
@@ -522,7 +540,7 @@ public class Tree extends StateNode {
     /**
      * need this helper so that we can sort list of entries *
      */
-    static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
+    static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {      //TODO adapt this method for SampledAncestorTree
         if (node.isLeaf()) {
             String sNr = (node.getNr() + taxaTranslationOffset) + "";
             String sLine = "\t\t" + "    ".substring(sNr.length()) + sNr + " " + node.getID();
@@ -625,7 +643,8 @@ public class Tree extends StateNode {
     @Override
     protected void store() {
 
-        // this condition can only be true for sampled ancestor trees
+        // the following condition is only true when the number of nodes changes by 1
+        // not currently used but doing no harm
         if (m_storedNodes.length != nodeCount) {
             Node[] tmp = new Node[nodeCount];
             for (int i = 0; i < m_storedNodes.length - 1; i++) {
@@ -638,7 +657,6 @@ public class Tree extends StateNode {
             }
             m_storedNodes = tmp;
         }
-
 
         storeNodes(0, nodeCount);
         storedRoot = m_storedNodes[root.getNr()];
@@ -661,8 +679,6 @@ public class Tree extends StateNode {
             if (!src.isRoot()) {
                 sink.setParent(m_storedNodes[src.getParent().getNr()], false);
             } else {
-                // currently only called in the case of sampled ancestor trees
-                // where root node is not always last in the list
                 sink.setParent(null, false);
             }
 
@@ -676,7 +692,7 @@ public class Tree extends StateNode {
     @Override
     public void restore() {
 
-        // necessary for sampled ancestor trees
+        // the following line is only necessary in cases where the number of nodes in the tree changes
         nodeCount = m_storedNodes.length;
 
         Node[] tmp = m_storedNodes;
@@ -684,7 +700,7 @@ public class Tree extends StateNode {
         m_nodes = tmp;
         root = m_nodes[storedRoot.getNr()];
 
-        // necessary for sampled ancestor trees,
+        // the following line is only necessary in cases where the number of leaves in the tree changes
         leafNodeCount = root.getLeafNodeCount();
 
         m_bHasStartedEditing = false;
@@ -708,42 +724,62 @@ public class Tree extends StateNode {
         return getTaxaNames()[node.getNr()];  //To change body of created methods use File | Settings | File Templates.
     }
 
-    /**
-     * Removes the i'th node in the tree. Results in a renumbering of the remaining nodes so that their numbers
-     * faithfully describe their new position in the array. nodeCount and leafNodeCount are recalculated.
-     * Use with care!
-     *
-     * @param i the index of the node to be removed.
-     */
-    public void removeNode(int i) {
-        Node[] tmp = new Node[nodeCount - 1];
-        for (int j = 0; j < i; j++) {
-            tmp[j] = m_nodes[j];
-        }
-        for (int j = i; j < nodeCount - 1; j++) {
-            tmp[j] = m_nodes[j + 1];
-            tmp[j].setNr(j);
-        }
-        m_nodes = tmp;
-        nodeCount--;
-        leafNodeCount--;
-    }
+//    /**
+//     * Removes the i'th node in the tree. Results in a renumbering of the remaining nodes so that their numbers
+//     * faithfully describe their new position in the array. nodeCount and leafNodeCount are recalculated.
+//     * Use with care!
+//     *
+//     * @param i the index of the node to be removed.
+//     */
+//    public void removeNode(int i) {
+//        Node[] tmp = new Node[nodeCount - 1];
+//        for (int j = 0; j < i; j++) {
+//            tmp[j] = m_nodes[j];
+//        }
+//        for (int j = i; j < nodeCount - 1; j++) {
+//            tmp[j] = m_nodes[j + 1];
+//            tmp[j].setNr(j);
+//        }
+//        m_nodes = tmp;
+//        nodeCount--;
+//        leafNodeCount--;
+//    }
 
-    /**
-     * Adds a node to the end of the node array. nodeCount and leafNodeCount are recalculated.
-     * Use with care!
-     */
-    public void addNode(Node newNode) {
-        Node[] tmp = new Node[nodeCount + 1];
-        for (int j = 0; j < nodeCount; j++) {
-            tmp[j] = m_nodes[j];
-        }
-        tmp[nodeCount] = newNode;
-        newNode.setNr(nodeCount);
-        m_nodes = tmp;
-        nodeCount++;
-        leafNodeCount++;
-    }
+//    public void removeNode(int i) {
+//        m_nodes[i] = null;
+//        nodeCount = this.root.getNodeCount();  // TODO change to nodeCount--; and leafNodeCount--;
+//        leafNodeCount = this.root.getLeafNodeCount();
+//        internalNodeCount = this.root.getInternalNodeCount();
+//    }
+
+//    /**
+//     * Adds a node to the end of the node array. nodeCount and leafNodeCount are recalculated.
+//     * Use with care!
+//     */
+//    public void addNode(Node newNode) {
+//        Node[] tmp = new Node[nodeCount + 1];
+//        for (int j = 0; j < nodeCount; j++) {
+//            tmp[j] = m_nodes[j];
+//        }
+//        tmp[nodeCount] = newNode;
+//        newNode.setNr(nodeCount);
+//        m_nodes = tmp;
+//        nodeCount++;
+//        leafNodeCount++;
+//    }
+
+//    public void addNode(Node newNode) {
+//        int index;
+//        for (index = 0; index < m_nodes.length; index++) {
+//            if (m_nodes[index] == null)
+//                break;
+//        }
+//        newNode.setNr(index);
+//        m_nodes[index] = newNode;
+//        nodeCount = this.root.getNodeCount();  // TODO change to nodeCount++; and leafNodeCount++;
+//        leafNodeCount = this.root.getLeafNodeCount();
+//        internalNodeCount = this.root.getInternalNodeCount();
+//    }
 
     /**
      * Should be overridden by subclasses to create the appropriate subclass of node.
@@ -752,6 +788,16 @@ public class Tree extends StateNode {
      */
     public Node createNode() {
         return new Node();
+    }
+
+    public int getDirectAncestorNodeCount() {
+        int directAncestorNodeCount = 0;
+        for (int i = 0; i < leafNodeCount; i++) {
+            if (this.getNode(i).isDirectAncestor()) {
+                directAncestorNodeCount += 1;
+            }
+        }
+        return directAncestorNodeCount;
     }
 
 } // class Tree

@@ -1,10 +1,10 @@
 package beast.evolution.tree.coalescent;
 
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.State;
-import beast.core.CalculationNode;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.Binomial;
 
@@ -44,7 +44,7 @@ public class Coalescent extends TreeDistribution {
         logP = calculateLogLikelihood(intervals, popSize.get());
 
         if (Double.isInfinite(logP)) {
-        	logP = Double.NEGATIVE_INFINITY;
+            logP = Double.NEGATIVE_INFINITY;
         }
 
         return logP;
@@ -119,7 +119,7 @@ public class Coalescent extends TreeDistribution {
                 final double demographicAtCoalPoint = popSizeFunction.getPopSize(finishTime);
 
                 // if value at end is many orders of magnitude different than mean over interval reject the interval
-                // This is protection against cases where ridiculous infitisimal
+                // This is protection against cases where ridiculous infinitesimal
                 // population size at the end of a linear interval drive coalescent values to infinity.
 
                 if (duration == 0.0 || demographicAtCoalPoint * (intervalArea / duration) >= threshold) {
