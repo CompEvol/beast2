@@ -21,6 +21,8 @@ import beast.core.Input;
 import beast.core.Operator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -41,9 +43,24 @@ public class JointOperator extends Operator {
     @Override
     public double proposal() {
         double logHR = 0;
-        
-        for (Operator op : operatorsInput.get())
+       
+        for (Operator op : operatorsInput.get()) {
+
             logHR += op.proposal();
+            
+            // Stop here if the move is going to be rejected anyway
+            if (logHR == Double.NEGATIVE_INFINITY)
+                break;
+            
+            // Update calculation nodes as subsequent operators may depend on
+            // state nodes made dirty by this operation.
+            try {
+                if (!op.listStateNodes().isEmpty())
+                    op.listStateNodes().get(0).getState().checkCalculationNodesDirtiness();
+            } catch (Exception ex) {
+                Logger.getLogger(JointOperator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         
         return logHR;
     }
