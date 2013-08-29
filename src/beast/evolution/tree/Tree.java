@@ -479,6 +479,7 @@ public class Tree extends StateNode {
     }
 
 
+    @Override
     public String toString() {
         return root.toString();
     }
@@ -566,6 +567,7 @@ public class Tree extends StateNode {
         }
     }
 
+    @Override
     public void init(PrintStream out) throws Exception {
         Node node = getRoot();
         out.println("#NEXUS\n");
@@ -582,6 +584,7 @@ public class Tree extends StateNode {
         out.print(";");
     }
 
+    @Override
     public void log(int nSample, PrintStream out) {
         Tree tree = (Tree) getCurrent();
         out.print("tree STATE_" + nSample + " = ");
@@ -596,6 +599,7 @@ public class Tree extends StateNode {
     /**
      * @see beast.core.Loggable *
      */
+    @Override
     public void close(PrintStream out) {
         out.print("End;");
     }
@@ -625,14 +629,17 @@ public class Tree extends StateNode {
     /**
      * Valuable implementation *
      */
+    @Override
     public int getDimension() {
         return getNodeCount();
     }
 
+    @Override
     public double getArrayValue() {
         return (double) root.m_fHeight;
     }
 
+    @Override
     public double getArrayValue(int iValue) {
         return (double) m_nodes[iValue].m_fHeight;
     }

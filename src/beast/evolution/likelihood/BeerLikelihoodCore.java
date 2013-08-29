@@ -581,6 +581,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param iNodeIndex2 the 'child 2' node
      * @param iNodeIndex3 the 'parent' node
      */
+    @Override
     public void calculatePartials(int iNodeIndex1, int iNodeIndex2, int iNodeIndex3) {
         if (m_iStates[iNodeIndex1] != null) {
             if (m_iStates[iNodeIndex2] != null) {
