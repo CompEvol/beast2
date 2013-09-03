@@ -4,33 +4,35 @@ import java.io.PrintStream;
 
 import beast.core.CalculationNode;
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Loggable;
-import beast.core.Plugin;
-import beast.core.Valuable;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.IntegerParameter;
 
+
+
 @Description("calculates sum of a valuable")
-public class Sum extends CalculationNode implements Valuable, Loggable {
-    public Input<Valuable> m_value = new Input<Valuable>("arg", "argument to be summed", Validate.REQUIRED);
+public class Sum extends CalculationNode implements Function, Loggable {
+    public Input<Function> functionInput = new Input<Function>("arg", "argument to be summed", Validate.REQUIRED);
 
     enum Mode {integer_mode, double_mode}
 
-    Mode m_mode;
+    Mode mode;
 
-    boolean m_bRecompute = true;
-    double m_fSum = 0;
-    double m_fStoredSum = 0;
+    boolean needsRecompute = true;
+    double sum = 0;
+    double storedSum = 0;
 
     @Override
     public void initAndValidate() {
-        Valuable valuable = m_value.get();
+        Function valuable = functionInput.get();
         if (valuable instanceof IntegerParameter || valuable instanceof BooleanParameter) {
-            m_mode = Mode.integer_mode;
+            mode = Mode.integer_mode;
         } else {
-            m_mode = Mode.double_mode;
+            mode = Mode.double_mode;
         }
     }
 
@@ -41,22 +43,22 @@ public class Sum extends CalculationNode implements Valuable, Loggable {
 
     @Override
     public double getArrayValue() {
-        if (m_bRecompute) {
+        if (needsRecompute) {
             compute();
         }
-        return m_fSum;
+        return sum;
     }
 
     /**
      * do the actual work, and reset flag *
      */
     void compute() {
-        m_fSum = 0;
-        final Valuable v = m_value.get();
+        sum = 0;
+        final Function v = functionInput.get();
         for (int i = 0; i < v.getDimension(); i++) {
-            m_fSum += v.getArrayValue(i);
+            sum += v.getArrayValue(i);
         }
-        m_bRecompute = false;
+        needsRecompute = false;
     }
 
     @Override
@@ -72,19 +74,19 @@ public class Sum extends CalculationNode implements Valuable, Loggable {
      */
     @Override
     public void store() {
-        m_fStoredSum = m_fSum;
+        storedSum = sum;
         super.store();
     }
 
     @Override
     public void restore() {
-        m_fSum = m_fStoredSum;
+        sum = storedSum;
         super.restore();
     }
 
     @Override
     public boolean requiresRecalculation() {
-        m_bRecompute = true;
+        needsRecompute = true;
         return true;
     }
 
@@ -93,18 +95,18 @@ public class Sum extends CalculationNode implements Valuable, Loggable {
      */
     @Override
     public void init(PrintStream out) throws Exception {
-        out.print("sum(" + ((Plugin) m_value.get()).getID() + ")\t");
+        out.print("sum(" + ((BEASTObject) functionInput.get()).getID() + ")\t");
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
-        Valuable valuable = m_value.get();
+        Function valuable = functionInput.get();
         final int nDimension = valuable.getDimension();
         double fSum = 0;
         for (int iValue = 0; iValue < nDimension; iValue++) {
             fSum += valuable.getArrayValue(iValue);
         }
-        if (m_mode == Mode.integer_mode) {
+        if (mode == Mode.integer_mode) {
             out.print((int) fSum + "\t");
         } else {
             out.print(fSum + "\t");

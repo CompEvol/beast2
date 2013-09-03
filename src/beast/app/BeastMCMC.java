@@ -63,6 +63,7 @@ import beast.app.beauti.Beauti;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.util.Version;
 import beast.core.Logger;
+import beast.core.Logger.LogFileMode;
 import beast.core.Runnable;
 
 import beast.util.AddOnManager;
@@ -115,16 +116,16 @@ public class BeastMCMC {
                     if (args[i].equals("")) {
                         i += 1;
                     } else if (args[i].equals("-batch")) {
-                        Logger.FILE_MODE = Logger.FILE_ONLY_NEW_OR_EXIT;
+                        Logger.FILE_MODE = Logger.LogFileMode.only_new_or_exit;
                         i += 1;
                     } else if (args[i].equals("-resume")) {
                         resume = true;
-                        Logger.FILE_MODE = Logger.FILE_APPEND;
+                        Logger.FILE_MODE = Logger.LogFileMode.resume;
                         System.setProperty("beast.resume", "true");
                         System.setProperty("beast.debug", "false");
                         i += 1;
                     } else if (args[i].equals("-overwrite")) {
-                        Logger.FILE_MODE = Logger.FILE_OVERWRITE;
+                        Logger.FILE_MODE = Logger.LogFileMode.overwrite;
                         i += 1;
                     } else if (args[i].equals("-seed")) {
                         if (args[i + 1].equals("random")) {

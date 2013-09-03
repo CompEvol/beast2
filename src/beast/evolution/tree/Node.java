@@ -24,24 +24,26 @@
 */
 package beast.evolution.tree;
 
-import beast.core.Description;
-import beast.core.Plugin;
-import beast.util.HeapSort;
 
 import java.util.*;
 
+import beast.core.Description;
+import beast.core.BEASTObject;
+import beast.util.HeapSort;
+
+
 @Description("Nodes in building beast.tree data structure.")
-public class Node extends Plugin {
+public class Node extends BEASTObject {
 
     /**
      * label nr of node, used mostly when this is a leaf.
      */
-    protected int m_iLabel;
+    protected int labelNr;
 
     /**
      * height of this node.
      */
-    protected double m_fHeight = Double.MAX_VALUE;
+    protected double height = Double.MAX_VALUE;
 
     /**
      * Arbitrarily labeled metadata on this node. Not currently implemented as part of state!
@@ -63,17 +65,17 @@ public class Node extends Plugin {
     /**
      * parent node in the beast.tree, null if root *
      */
-    Node m_Parent = null;
+    Node parent = null;
 
     /**
      * status of this node after an operation is performed on the state *
      */
-    int m_bIsDirty = Tree.IS_CLEAN;
+    int isDirty = Tree.IS_CLEAN;
 
     /**
      * meta-data contained in square brackets in Newick *
      */
-    public String m_sMetaData;
+    public String metaDataString;
 
     /**
      * The Tree that this node is a part of.
@@ -107,29 +109,29 @@ public class Node extends Plugin {
      *         Node number is guaranteed not to change during an MCMC run.
      */
     public int getNr() {
-        return m_iLabel;
+        return labelNr;
     }
 
     public void setNr(int iLabel) {
-        m_iLabel = iLabel;
+        labelNr = iLabel;
     }
 
     public double getHeight() {
-        return m_fHeight;
+        return height;
     }
 
     public double getDate() {
-        return m_tree.getDate(m_fHeight);
+        return m_tree.getDate(height);
     }
 
     public void setHeight(double fHeight) {
         startEditing();
-        m_fHeight = fHeight;
-        m_bIsDirty |= Tree.IS_DIRTY;
+        height = fHeight;
+        isDirty |= Tree.IS_DIRTY;
         if (!isLeaf()) {
-            getLeft().m_bIsDirty |= Tree.IS_DIRTY;
+            getLeft().isDirty |= Tree.IS_DIRTY;
             if (getRight() != null) {
-                getRight().m_bIsDirty |= Tree.IS_DIRTY;
+                getRight().isDirty |= Tree.IS_DIRTY;
             }
         }
     }
@@ -141,7 +143,7 @@ public class Node extends Plugin {
         if (isRoot()) {
             return 0;
         } else {
-            return getParent().m_fHeight - m_fHeight;
+            return getParent().height - height;
         }
     }
 
@@ -152,15 +154,15 @@ public class Node extends Plugin {
      * Otherwise the node is Tree.IS_CLEAN *
      */
     public int isDirty() {
-        return m_bIsDirty;
+        return isDirty;
     }
 
     public void makeDirty(int nDirty) {
-        m_bIsDirty |= nDirty;
+        isDirty |= nDirty;
     }
 
     public void makeAllDirty(int nDirty) {
-        m_bIsDirty = nDirty;
+        isDirty = nDirty;
         if (!isLeaf()) {
             getLeft().makeAllDirty(nDirty);
             if (getRight() != null) {
@@ -174,7 +176,7 @@ public class Node extends Plugin {
      * @return parent node, or null if this is root *
      */
     public Node getParent() {
-        return m_Parent;
+        return parent;
     }
 
     /**
@@ -194,9 +196,9 @@ public class Node extends Plugin {
      */
     void setParent(Node parent, boolean inOperator) {
         if (inOperator) startEditing();
-        if (m_Parent != parent) {
-            m_Parent = parent;
-            if (inOperator) m_bIsDirty = Tree.IS_FILTHY;
+        if (this.parent != parent) {
+        	this.parent = parent;
+            if (inOperator) isDirty = Tree.IS_FILTHY;
         }
     }
 
@@ -255,7 +257,7 @@ public class Node extends Plugin {
      * @return true if current node is root node *
      */
     public boolean isRoot() {
-        return m_Parent == null;
+        return parent == null;
     }
 
     /**
@@ -321,10 +323,6 @@ public class Node extends Plugin {
     }
 
     /**
-     * Writes a short newick format.
-     * Note: this method suppresses internal nodes that have a zero branch length child
-     * (replacing them with the child in the newick string).
-     *
      * @return beast.tree in Newick format, with length and meta data
      *         information. Unlike toNewick(), here Nodes are numbered, instead of
      *         using the node labels.
@@ -337,32 +335,18 @@ public class Node extends Plugin {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            if (isFake()) {
-                Node directAncestor;
-                Node otherChild;
-                if (getLeft().isDirectAncestor()) {
-                    directAncestor = getLeft();
-                    otherChild = getRight();
-                } else {
-                    directAncestor = getRight();
-                    otherChild = getLeft();
-                }
-                buf.append(otherChild.toShortNewick(bPrintInternalNodeNumbers));
-                buf.append(")");
-                buf.append(directAncestor.getNr());
-            } else {
-                buf.append(getLeft().toShortNewick(bPrintInternalNodeNumbers));
-                if (getRight() != null) {
-                    buf.append(',');
-                    buf.append(getRight().toShortNewick(bPrintInternalNodeNumbers));
-                }
-                buf.append(")");
-                if (getID() != null) {
-                    buf.append(getNr());
-                } else if (bPrintInternalNodeNumbers) {
-                    buf.append(getNr());
-                }
+            buf.append(getLeft().toShortNewick(bPrintInternalNodeNumbers));
+            if (getRight() != null) {
+                buf.append(',');
+                buf.append(getRight().toShortNewick(bPrintInternalNodeNumbers));
             }
+            buf.append(")");
+            if (getID() != null) {
+                buf.append(getNr());
+            } else if (bPrintInternalNodeNumbers) {
+                buf.append(getNr());
+            }
+
         } else {
             buf.append(getNr());
         }
@@ -380,58 +364,35 @@ public class Node extends Plugin {
         return toSortedNewick(iMaxNodeInClade, false);
     }
 
-    /**
-     * Note: this method suppresses internal nodes that have a zero branch length child
-     * (replacing them with the child in the newick string).
-     *
-     * @param iMaxNodeInClade
-     * @param printMetaData
-     * @return
-     */
     public String toSortedNewick(int[] iMaxNodeInClade, boolean printMetaData) {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            if (isFake()) {
-                Node directAncestor;
-                Node otherChild;
-                if (getLeft().isDirectAncestor()) {
-                    directAncestor = getLeft();
-                    otherChild = getRight();
-                } else {
-                    directAncestor = getRight();
-                    otherChild = getLeft();
-                }
-                buf.append(otherChild.toSortedNewick(iMaxNodeInClade, printMetaData));
-                buf.append(")");
-                buf.append(directAncestor.getNr() + 1);
-            } else {
-                String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
-                int iChild1 = iMaxNodeInClade[0];
-                if (getRight() != null) {
-                    String sChild2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
-                    int iChild2 = iMaxNodeInClade[0];
-                    if (iChild1 > iChild2) {
-                        buf.append(sChild2);
-                        buf.append(",");
-                        buf.append(sChild1);
-                    } else {
-                        buf.append(sChild1);
-                        buf.append(",");
-                        buf.append(sChild2);
-                        iMaxNodeInClade[0] = iChild1;
-                    }
+            String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
+            int iChild1 = iMaxNodeInClade[0];
+            if (getRight() != null) {
+                String sChild2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
+                int iChild2 = iMaxNodeInClade[0];
+                if (iChild1 > iChild2) {
+                    buf.append(sChild2);
+                    buf.append(",");
+                    buf.append(sChild1);
                 } else {
                     buf.append(sChild1);
+                    buf.append(",");
+                    buf.append(sChild2);
+                    iMaxNodeInClade[0] = iChild1;
                 }
-                buf.append(")");
+            } else {
+                buf.append(sChild1);
             }
+            buf.append(")");
             if (getID() != null) {
-                buf.append(m_iLabel + 1);
+                buf.append(labelNr+1);
             }
         } else {
-            iMaxNodeInClade[0] = m_iLabel;
-            buf.append(m_iLabel + 1);
+            iMaxNodeInClade[0] = labelNr;
+            buf.append(labelNr + 1);
         }
 
         if (printMetaData) {
@@ -447,11 +408,11 @@ public class Node extends Plugin {
     }
 
 
-    /**
-     * @return beast.tree in Newick format with taxon labels for labelled tip nodes
-     *         and labeled (having non-null ID) internal nodes.
-     *         If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
-     */
+        /**
+         * @return beast.tree in Newick format with taxon labels for labelled tip nodes
+         * and labeled (having non-null ID) internal nodes.
+         * If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
+         */
     public String toNewick() {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
@@ -467,7 +428,7 @@ public class Node extends Plugin {
             }
         } else {
             if (getID() == null) {
-                buf.append(m_iLabel);
+                buf.append(labelNr);
             } else {
                 buf.append(getID());
             }
@@ -478,8 +439,8 @@ public class Node extends Plugin {
     }
 
     public String getNewickMetaData() {
-        if (m_sMetaData != null) {
-            return "[&" + m_sMetaData + ']';
+        if (metaDataString != null) {
+            return "[&" + metaDataString + ']';
         }
         return "";
     }
@@ -500,11 +461,11 @@ public class Node extends Plugin {
             }
             buf.append(")");
         } else {
-            buf.append(sLabels.get(m_iLabel));
+            buf.append(sLabels.get(labelNr));
         }
-        if (m_sMetaData != null) {
+        if (metaDataString != null) {
             buf.append('[');
-            buf.append(m_sMetaData);
+            buf.append(metaDataString);
             buf.append(']');
         }
         buf.append(":").append(getLength());
@@ -523,7 +484,7 @@ public class Node extends Plugin {
     public int sort() {
 
         if (isLeaf()) {
-            return m_iLabel;
+            return labelNr;
         }
 
         int childCount = getChildCount();
@@ -562,7 +523,7 @@ public class Node extends Plugin {
             if (getRight() != null) {
                 iLabel = getRight().labelInternalNodes(iLabel);
             }
-            m_iLabel = iLabel++;
+            labelNr = iLabel++;
         }
         return iLabel;
     } // labelInternalNodes
@@ -572,11 +533,11 @@ public class Node extends Plugin {
      */
     public Node copy() {
         Node node = new Node();
-        node.m_fHeight = m_fHeight;
-        node.m_iLabel = m_iLabel;
-        node.m_sMetaData = m_sMetaData;
-        node.m_Parent = null;
-        node.setID(m_sID);
+        node.height = height;
+        node.labelNr = labelNr;
+        node.metaDataString = metaDataString;
+        node.parent = null;
+        node.setID(ID);
 
         for (Node child : getChildren()) {
             node.addChild(child.copy());
@@ -589,19 +550,19 @@ public class Node extends Plugin {
      */
     public void assignTo(Node[] nodes) {
         Node node = nodes[getNr()];
-        node.m_fHeight = m_fHeight;
-        node.m_iLabel = m_iLabel;
-        node.m_sMetaData = m_sMetaData;
-        node.m_Parent = null;
-        node.m_sID = m_sID;
+        node.height = height;
+        node.labelNr = labelNr;
+        node.metaDataString = metaDataString;
+        node.parent = null;
+        node.ID = ID;
         if (getLeft() != null) {
             node.setLeft(nodes[getLeft().getNr()]);
             getLeft().assignTo(nodes);
-            node.getLeft().m_Parent = node;
+            node.getLeft().parent = node;
             if (getRight() != null) {
                 node.setRight(nodes[getRight().getNr()]);
                 getRight().assignTo(nodes);
-                node.getRight().m_Parent = node;
+                node.getRight().parent = node;
             }
         }
     }
@@ -610,19 +571,19 @@ public class Node extends Plugin {
      * assign values from a tree in array representation *
      */
     public void assignFrom(Node[] nodes, Node node) {
-        m_fHeight = node.m_fHeight;
-        m_iLabel = node.m_iLabel;
-        m_sMetaData = node.m_sMetaData;
-        m_Parent = null;
-        m_sID = node.m_sID;
+        height = node.height;
+        labelNr = node.labelNr;
+        metaDataString = node.metaDataString;
+        parent = null;
+        ID = node.ID;
         if (node.getLeft() != null) {
             setLeft(nodes[node.getLeft().getNr()]);
             getLeft().assignFrom(nodes, node.getLeft());
-            getLeft().m_Parent = this;
+            getLeft().parent = this;
             if (node.getRight() != null) {
                 setRight(nodes[node.getRight().getNr()]);
                 getRight().assignFrom(nodes, node.getRight());
-                getRight().m_Parent = this;
+                getRight().parent = this;
             }
         }
     }
@@ -637,8 +598,8 @@ public class Node extends Plugin {
         if (sPattern.equals(TraitSet.DATE_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
-            m_fHeight = (Double) fValue;
-            m_bIsDirty |= Tree.IS_DIRTY;
+            height = (Double) fValue;
+            isDirty |= Tree.IS_DIRTY;
         } else {
             if (metaData == null) metaData = new TreeMap<String, Object>();
             metaData.put(sPattern, fValue);
@@ -650,7 +611,7 @@ public class Node extends Plugin {
         if (sPattern.equals(TraitSet.DATE_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
-            return m_fHeight;
+            return height;
         } else if (metaData != null) {
             Object d = metaData.get(sPattern);
             if (d != null) return d;
@@ -673,39 +634,14 @@ public class Node extends Plugin {
      */
     public void scale(double fScale) throws Exception {
         startEditing();
-        m_bIsDirty |= Tree.IS_DIRTY;
+        isDirty |= Tree.IS_DIRTY;
         if (!isLeaf()) {
-            m_fHeight *= fScale;
+            height *= fScale;
             getLeft().scale(fScale);
             if (getRight() != null) {
                 getRight().scale(fScale);
             }
-            if (m_fHeight < getLeft().m_fHeight || m_fHeight < getRight().m_fHeight) {
-                throw new Exception("Scale gives negative branch length");
-            }
-        }
-    }
-
-    /**
-     * Scales nodes in tree (either all nodes, or non-sampled nodes)
-     *
-     * @param fScale    the scalar to multiply each scaled node age by
-     * @param scaleTips true if sampled nodes should be scaled as well as internal nodes, false if only non-sampled
-     *                  internal nodes should be scaled.
-     * @throws Exception throws exception if resulting tree would have negative branch lengths.
-     */
-    public void scaleSATrees(double fScale, boolean scaleTips) throws Exception {
-        startEditing();
-        m_bIsDirty |= Tree.IS_DIRTY;
-        if (scaleTips || (!isLeaf() && !isFake())) {
-            m_fHeight *= fScale;
-        }
-        if (!isLeaf()) {
-            getLeft().scaleSATrees(fScale, scaleTips);
-            if (getRight() != null) {
-                getRight().scaleSATrees(fScale, scaleTips);
-            }
-            if (m_fHeight <= getLeft().m_fHeight || m_fHeight <= getRight().m_fHeight) {
+            if (height < getLeft().height || height < getRight().height) {
                 throw new Exception("Scale gives negative branch length");
             }
         }
@@ -779,17 +715,11 @@ public class Node extends Plugin {
         return n;
     }
 
-    //is true if this leaf actually represents a direct ancestor (i.e. is on the end of a zero-length branch)
-    public boolean isDirectAncestor() {
-        return (!isRoot() && this.getParent().getHeight() == this.getHeight());
-    }
-
-    //is true if this internal node is "fake" (i.e. one of its children is a direct ancestor)
-    //works only for trees where each node has at least 2 children
-    public boolean isFake() {
-        if (this.isLeaf())
-            return false;
-        return (this.getLeft().isDirectAncestor() || (this.getRight() != null && this.getRight().isDirectAncestor()));
-    }
-
+    /** 
+     * is true if this leaf actually represents a direct ancestor (i.e. is on the end of a zero-length branch) 
+     */
+	public boolean isDirectAncestor() {
+		return (!isRoot() && this.getParent().getHeight() == this.getHeight());
+	}
+	
 } // class Node

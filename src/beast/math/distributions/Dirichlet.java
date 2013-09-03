@@ -5,15 +5,17 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
-import beast.core.Valuable;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+
+
 
 @Description("Dirichlet distribution.  p(x_1,...,x_n;alpha_1,...,alpha_n) = 1/B(alpha) prod_{i=1}^K x_i^{alpha_i - 1} " +
         "where B() is the beta function B(alpha) = prod_{i=1}^K Gamma(alpha_i)/ Gamma(sum_{i=1}^K alpha_i}. ")
 public class Dirichlet extends ParametricDistribution {
-    public Input<RealParameter> m_alpha = new Input<RealParameter>("alpha", "coefficients of the Dirichlet distribution", Validate.REQUIRED);
+    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "coefficients of the Dirichlet distribution", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() throws Exception {
@@ -59,10 +61,10 @@ public class Dirichlet extends ParametricDistribution {
 
 
     @Override
-    public double calcLogP(Valuable pX) throws Exception {
-        Double[] fAlpha = m_alpha.get().getValues();
-        if (m_alpha.get().getDimension() != pX.getDimension()) {
-            throw new Exception("Dimensions of alpha and x should be the same, but dim(alpha)=" + m_alpha.get().getDimension()
+    public double calcLogP(Function pX) throws Exception {
+        Double[] fAlpha = alphaInput.get().getValues();
+        if (alphaInput.get().getDimension() != pX.getDimension()) {
+            throw new Exception("Dimensions of alpha and x should be the same, but dim(alpha)=" + alphaInput.get().getDimension()
                     + " and dim(x)=" + pX.getDimension());
         }
         double fLogP = 0;

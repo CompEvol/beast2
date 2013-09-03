@@ -2,14 +2,16 @@ package beast.evolution.operators;
 
 import java.text.DecimalFormat;
 
-import beast.core.Distribution;
-import beast.core.Evaluator;
 import beast.core.Description;
+import beast.core.Distribution;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.Operator;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Evaluator;
 import beast.util.Randomizer;
+
+
 
 
 @Description("A random walk operator that selects a random dimension of the real parameter and perturbs the value a " +
@@ -28,7 +30,7 @@ public class SliceOperator extends Operator {
     double W;
 
     double windowSize = 1;
-    Distribution g;
+    Distribution sliceDensity;
 
     public void initAndValidate() {
         totalDelta = 0.0;
@@ -36,7 +38,7 @@ public class SliceOperator extends Operator {
         n_learning_iterations = 100;
         W = 0.0;
         windowSize = windowSizeInput.get();
-        g = sliceDensityInput.get();
+        sliceDensity = sliceDensityInput.get();
     }
 
     boolean in_range(RealParameter X, double x) {
@@ -52,7 +54,7 @@ public class SliceOperator extends Operator {
     }
 
     public Distribution getEvaluatorDistribution() {
-        return g;
+        return sliceDensity;
     }
 
     Double evaluate(Evaluator E) {

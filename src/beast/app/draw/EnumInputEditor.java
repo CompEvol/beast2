@@ -10,7 +10,9 @@ import javax.swing.JComboBox;
 
 import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
+
+
 
 /**
  * Input editor for enumeration inputs *
@@ -35,7 +37,7 @@ public class EnumInputEditor extends InputEditor.Base {
      * o a combo box for selecting another value in the enumeration
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;

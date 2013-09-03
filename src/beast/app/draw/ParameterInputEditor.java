@@ -20,11 +20,13 @@ import beast.app.beauti.PartitionContext;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.math.distributions.ParametricDistribution;
 import beast.math.distributions.Prior;
+
+
 
 public class ParameterInputEditor extends PluginInputEditor {
 	boolean isParametricDistributionParameter = false;
@@ -44,7 +46,7 @@ public class ParameterInputEditor extends PluginInputEditor {
     
     
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	m_plugin = plugin;
     }
@@ -54,10 +56,10 @@ public class ParameterInputEditor extends PluginInputEditor {
         if (m_input.get() != null) {
         	if (itemNr < 0) {
         		RealParameter parameter = (RealParameter) m_input.get();
-        		m_entry.setText(parameter.m_pValues.get());
+        		m_entry.setText(parameter.valuesInput.get());
         	} else {
         		RealParameter parameter = (RealParameter) ((List)m_input.get()).get(itemNr);
-        		m_entry.setText(parameter.m_pValues.get());
+        		m_entry.setText(parameter.valuesInput.get());
         	}
         }
     }
@@ -67,7 +69,7 @@ public class ParameterInputEditor extends PluginInputEditor {
         try {
             String sValue = m_entry.getText();
             RealParameter parameter = (RealParameter) m_input.get();
-            parameter.m_pValues.setValue(sValue, parameter);
+            parameter.valuesInput.setValue(sValue, parameter);
             parameter.initAndValidate();
             validateInput();
         } catch (Exception ex) {
@@ -80,7 +82,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 
 
     @Override
-    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
         Box paramBox = Box.createHorizontalBox();
         RealParameter parameter = null;
         if (itemNr >= 0) {
@@ -96,7 +98,7 @@ public class ParameterInputEditor extends PluginInputEditor {
             paramBox.add(m_entry);
             if (doc.bAllowLinking) {
 	            boolean isLinked = doc.isLinked(m_input);
-				if (isLinked || doc.suggestedLinks((Plugin) m_input.get()).size() > 0) {
+				if (isLinked || doc.suggestedLinks((BEASTObject) m_input.get()).size() > 0) {
 		            JButton linkbutton = new JButton(BeautiPanel.getIcon(BeautiPanel.ICONPATH + 
 		            		(isLinked ? "link.png" : "unlink.png")));
 		            linkbutton.setBorder(BorderFactory.createEmptyBorder());
@@ -107,7 +109,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 							if (doc.isLinked(m_input)) {
 								// unlink
 								try {
-									Plugin candidate = doc.getUnlinkCandidate(m_input, m_plugin);
+									BEASTObject candidate = doc.getUnlinkCandidate(m_input, m_plugin);
 									m_input.setValue(candidate, m_plugin);
 									doc.deLink(m_input);
 								} catch (Exception e2) {
@@ -116,10 +118,10 @@ public class ParameterInputEditor extends PluginInputEditor {
 								
 							} else {
 								// create a link
-								List<Plugin> candidates = doc.suggestedLinks((Plugin) m_input.get());
+								List<BEASTObject> candidates = doc.suggestedLinks((BEASTObject) m_input.get());
 								JComboBox jcb = new JComboBox(candidates.toArray());
 								JOptionPane.showMessageDialog( null, jcb, "select parameter to link with", JOptionPane.QUESTION_MESSAGE);
-								Plugin candidate = (Plugin) jcb.getSelectedItem();
+								BEASTObject candidate = (BEASTObject) jcb.getSelectedItem();
 								if (candidate != null) {
 									try {
 										m_input.setValue(candidate, m_plugin);
@@ -138,15 +140,15 @@ public class ParameterInputEditor extends PluginInputEditor {
             
             paramBox.add(Box.createHorizontalGlue());
 
-            m_isEstimatedBox = new JCheckBox(doc.beautiConfig.getInputLabel(parameter, parameter.m_bIsEstimated.getName()));
+            m_isEstimatedBox = new JCheckBox(doc.beautiConfig.getInputLabel(parameter, parameter.isEstimatedInput.getName()));
             m_isEstimatedBox.setName(input.getName() + ".isEstimated");
             if (input.get() != null) {
-                m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
+                m_isEstimatedBox.setSelected(parameter.isEstimatedInput.get());
             }
-            m_isEstimatedBox.setToolTipText(parameter.m_bIsEstimated.getTipText());
+            m_isEstimatedBox.setToolTipText(parameter.isEstimatedInput.getTipText());
 
             boolean bIsClockRate = false;
-            for (Plugin output : parameter.outputs) {
+            for (BEASTObject output : parameter.outputs) {
                 if (output instanceof BranchRateModel.Base) {
                     bIsClockRate |= ((BranchRateModel.Base) output).meanRateInput.get() == parameter;
                 }
@@ -159,21 +161,21 @@ public class ParameterInputEditor extends PluginInputEditor {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         RealParameter parameter = (RealParameter) m_input.get();
-                        parameter.m_bIsEstimated.setValue(m_isEstimatedBox.isSelected(), parameter);
+                        parameter.isEstimatedInput.setValue(m_isEstimatedBox.isSelected(), parameter);
                         if (isParametricDistributionParameter) {
                         	String sID = parameter.getID();
                         	
 
                         	if (sID.startsWith("RealParameter")) {
                             	ParametricDistribution parent = null; 
-                	            for (Plugin plugin2 : parameter.outputs) {
+                	            for (BEASTObject plugin2 : parameter.outputs) {
                 	                if (plugin2 instanceof ParametricDistribution) {
                                 		parent = (ParametricDistribution) plugin2; 
                 	                    break;
                 	                }
                 	            }
                 	            Distribution grandparent = null; 
-                	            for (Plugin plugin2 : parent.outputs) {
+                	            for (BEASTObject plugin2 : parent.outputs) {
                 	                if (plugin2 instanceof Distribution) {
                                 		grandparent = (Distribution) plugin2; 
                 	                    break;
@@ -205,14 +207,14 @@ public class ParameterInputEditor extends PluginInputEditor {
             //m_editPluginButton.setVisible(false);
             //m_bAddButtons = false;
             if (itemNr < 0) {
-	            for (Plugin plugin2 : ((Plugin) m_input.get()).outputs) {
+	            for (BEASTObject plugin2 : ((BEASTObject) m_input.get()).outputs) {
 	                if (plugin2 instanceof ParametricDistribution) {
 	                    m_isEstimatedBox.setVisible(true);
 	                	isParametricDistributionParameter = true;
 	                    break;
 	                }
 	            }
-	            for (Plugin plugin2 : ((Plugin) m_input.get()).outputs) {
+	            for (BEASTObject plugin2 : ((BEASTObject) m_input.get()).outputs) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);
@@ -220,7 +222,7 @@ public class ParameterInputEditor extends PluginInputEditor {
 	                }
 	            }
             } else {
-	            for (Plugin plugin2 : ((Plugin) ((List)m_input.get()).get(itemNr)).outputs) {
+	            for (BEASTObject plugin2 : ((BEASTObject) ((List)m_input.get()).get(itemNr)).outputs) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);
@@ -244,8 +246,8 @@ public class ParameterInputEditor extends PluginInputEditor {
     @Override
     void refresh() {
         RealParameter parameter = (RealParameter) m_input.get();
-        m_entry.setText(parameter.m_pValues.get());
-        m_isEstimatedBox.setSelected(parameter.m_bIsEstimated.get());
+        m_entry.setText(parameter.valuesInput.get());
+        m_isEstimatedBox.setSelected(parameter.isEstimatedInput.get());
         repaint();
     }
 

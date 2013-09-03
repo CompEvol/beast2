@@ -50,15 +50,17 @@
 package beast.evolution.operators;
 
 
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implements the subtree slide move.
@@ -69,16 +71,16 @@ import java.util.List;
         "slide down into.")
 public class SubtreeSlide extends TreeOperator {
 
-    public Input<Double> m_size = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
-    public Input<Boolean> m_gaussian = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
-    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
+    public Input<Double> sizeInput = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
+    public Input<Boolean> gaussianInput = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
+    public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
 
     // shadows m_size
     double m_fSize;
 
     @Override
     public void initAndValidate() {
-        m_fSize = m_size.get();
+        m_fSize = sizeInput.get();
     }
 
     /**
@@ -88,7 +90,7 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public double proposal() {
-        final Tree tree = m_tree.get(this);
+        final Tree tree = treeInput.get(this);
 
         double logq;
 
@@ -205,7 +207,7 @@ public class SubtreeSlide extends TreeOperator {
     }
 
     private double getDelta() {
-        if (!m_gaussian.get()) {
+        if (!gaussianInput.get()) {
             return (Randomizer.nextDouble() * m_fSize) - (m_fSize / 2.0);
         } else {
             return Randomizer.nextGaussian() * m_fSize;
@@ -237,7 +239,7 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public void optimize(final double logAlpha) {
-        if (m_bOptimise.get()) {
+        if (optimiseInput.get()) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(m_fSize);
             m_fSize = Math.exp(fDelta);

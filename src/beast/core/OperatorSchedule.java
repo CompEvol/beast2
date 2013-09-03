@@ -12,8 +12,10 @@ import java.util.List;
 
 import beast.util.Randomizer;
 
+
+
 @Description("Specify operator selection and optimisation schedule")
-public class OperatorSchedule extends Plugin {
+public class OperatorSchedule extends BEASTObject {
 
     enum OptimisationTransform {none, log, sqrt}
 
@@ -180,6 +182,10 @@ public class OperatorSchedule extends Plugin {
             case sqrt:
                 count = Math.sqrt(count);
                 break;
+            case none:
+            	break;
+            default:
+            	break;
         }
 
         final double deltaP = ((1.0 / count) * (Math.exp(Math.min(logAlpha, 0)) - target));

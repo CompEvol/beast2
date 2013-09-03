@@ -1,14 +1,16 @@
 package beast.app.draw;
 
 
-import beast.app.beauti.BeautiDoc;
-import beast.core.Input;
-import beast.core.Plugin;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import beast.app.beauti.BeautiDoc;
+import beast.core.Input;
+import beast.core.BEASTObject;
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -62,9 +64,9 @@ public class ListInputEditor extends InputEditor.Base {
 
     public abstract class ExpandActionListener implements ActionListener {
         Box m_box;
-        Plugin m_plugin;
+        BEASTObject m_plugin;
 
-        public ExpandActionListener(Box box, Plugin plugin) {
+        public ExpandActionListener(Box box, BEASTObject plugin) {
             super();
             m_box = box;
             m_plugin = plugin;
@@ -92,7 +94,7 @@ public class ListInputEditor extends InputEditor.Base {
      * return type of the list *
      */
     public Class<?> baseType() {
-        return Plugin.class;
+        return BEASTObject.class;
     }
 
     /**
@@ -102,7 +104,7 @@ public class ListInputEditor extends InputEditor.Base {
      * o a set of buttons for adding, deleting, editing items in the list
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_bExpandOption = bExpandOption;
         m_input = input;
@@ -119,8 +121,8 @@ public class ListInputEditor extends InputEditor.Base {
         m_listBox = Box.createVerticalBox();
         // list of inputs 
         for (Object o : (List<?>) input.get()) {
-            if (o instanceof Plugin) {
-                Plugin plugin2 = (Plugin) o;
+            if (o instanceof BEASTObject) {
+                BEASTObject plugin2 = (BEASTObject) o;
                 addSingleItem(plugin2);
             }
         }
@@ -164,7 +166,7 @@ public class ListInputEditor extends InputEditor.Base {
         updateState();
     } // init
 
-    protected void addSingleItem(Plugin plugin) {
+    protected void addSingleItem(BEASTObject plugin) {
         Box itemBox = Box.createHorizontalBox();
 
 //    	String sFullInputName = plugin.getClass().getName() + "." + m_input.getName();
@@ -288,7 +290,7 @@ public class ListInputEditor extends InputEditor.Base {
      * @param itemBox box to add components to
      * @param plugin  plugin to add
      */
-    protected InputEditor addPluginItem(Box itemBox, Plugin plugin) {
+    protected InputEditor addPluginItem(Box itemBox, BEASTObject plugin) {
         String sName = plugin.getID();
         if (sName == null || sName.length() == 0) {
             sName = plugin.getClass().getName();
@@ -317,10 +319,10 @@ public class ListInputEditor extends InputEditor.Base {
 
 
     class IDDocumentListener implements DocumentListener {
-        Plugin m_plugin;
+        BEASTObject m_plugin;
         JTextField m_entry;
 
-        IDDocumentListener(Plugin plugin, JTextField entry) {
+        IDDocumentListener(BEASTObject plugin, JTextField entry) {
             m_plugin = plugin;
             m_entry = entry;
         }
@@ -355,9 +357,9 @@ public class ListInputEditor extends InputEditor.Base {
         for (int i = 0; i < m_entries.size(); i++) {
             sTabuList.add(m_entries.get(i).getText());
         }
-        List<Plugin> plugins = pluginSelector(m_input, m_plugin, sTabuList);
+        List<BEASTObject> plugins = pluginSelector(m_input, m_plugin, sTabuList);
         if (plugins != null) {
-            for (Plugin plugin : plugins) {
+            for (BEASTObject plugin : plugins) {
                 try {
                 	setValue(plugin);
                     //m_input.setValue(plugin, m_plugin);
@@ -376,13 +378,13 @@ public class ListInputEditor extends InputEditor.Base {
 
     protected Object editItem(Object o) {
         int i = ((List<?>) m_input.get()).indexOf(o);
-        Plugin plugin = (Plugin) ((List<?>) m_input.get()).get(i);
+        BEASTObject plugin = (BEASTObject) ((List<?>) m_input.get()).get(i);
         PluginDialog dlg = new PluginDialog(plugin, m_input.getType(), doc);
         if (dlg.showDialog()) {
             //m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
             m_entries.get(i).setText(dlg.m_panel.m_plugin.getID());
             //o = dlg.m_panel.m_plugin;
-            dlg.accept((Plugin) o, doc);
+            dlg.accept((BEASTObject) o, doc);
             refreshPanel();
         }
         PluginPanel.m_position.x -= 20;
@@ -420,8 +422,8 @@ public class ListInputEditor extends InputEditor.Base {
      * Suppress existing plug-ins with IDs from the tabu list.
      * Return null if nothing is selected.
      */
-    public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
-        List<Plugin> selectedPlugins = new ArrayList<Plugin>();
+    public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject parent, List<String> sTabuList) {
+        List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
         List<String> sPlugins = doc.getInpuEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
         /* select a plugin **/
         String sClassName = null;
@@ -453,7 +455,7 @@ public class ListInputEditor extends InputEditor.Base {
         }
         /* create new plugin */
         try {
-            Plugin plugin = (Plugin) Class.forName(sClassName.substring(4)).newInstance();
+            BEASTObject plugin = (BEASTObject) Class.forName(sClassName.substring(4)).newInstance();
             PluginPanel.addPluginToMap(plugin, doc);
             selectedPlugins.add(plugin);
             return selectedPlugins;
@@ -469,7 +471,7 @@ public class ListInputEditor extends InputEditor.Base {
     protected void updateState() {
         for (int i = 0; i < ((List<?>) m_input.get()).size(); i++) {
             try {
-                Plugin plugin = (Plugin) ((List<?>) m_input.get()).get(i);
+                BEASTObject plugin = (BEASTObject) ((List<?>) m_input.get()).get(i);
                 plugin.validateInputs();
                 m_validateLabels.get(i).setVisible(false);
             } catch (Exception e) {

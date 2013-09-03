@@ -8,6 +8,8 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.operators.Exchange;
 import beast.util.Randomizer;
 import beast.util.TreeParser;
+
+
 import junit.framework.TestCase;
 
 public class ExchangeOperatorTest extends TestCase {
@@ -68,8 +70,12 @@ public class ExchangeOperatorTest extends TestCase {
         data.initByName("sequence", A, "sequence", B, "sequence", C, "sequence", D, "sequence", E, "sequence", F,
                 "dataType", "nucleotide"
         );
-        String sourceTree = "((((A:2.0,B:2.0):1.0,(C:1.0,D:1.0):2.0):1.0,E:4.0):1.0,F:5.0):0.0"; // ((((A,B),(C,D)),E),F)
-        String targetTree = "((((A:2.0,(C:1.0,D:1.0):1.0):1.0,B:3.0):1.0,E:4.0):1.0,F:5.0):0.0"; // ((((A,(C,D)),B),E),F)
+        //String sourceTree = "((((A:2.0,B:2.0):1.0,(C:1.0,D:1.0):2.0):1.0,E:4.0):1.0,F:5.0):0.0"; // ((((A,B),(C,D)),E),F)
+        //String targetTree = "((((A:2.0,(C:1.0,D:1.0):1.0):1.0,B:3.0):1.0,E:4.0):1.0,F:5.0):0.0"; // ((((A,(C,D)),B),E),F)
+
+        String sourceTree = "(((A:5.0,B:5.0):2.0,((C:5.0,D:5.0):1.0,E:6.0):1.0):1.0,F:8.0):0.0"; 
+        String targetTree = "(((A:5.0,B:5.0):2.0,F:7.0):1.0,((C:5.0,D:5.0):1.0,E:6.0):2.0):0.0"; 
+
         testNarrowExchange(sourceTree, targetTree, runs, data);
     }
 	

@@ -11,10 +11,12 @@ import javax.swing.JComponent;
 
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.substitutionmodel.Frequencies;
+
+
 
 public class FrequenciesInputEditor extends PluginInputEditor {
     RealParameter freqsParameter;
@@ -34,29 +36,29 @@ public class FrequenciesInputEditor extends PluginInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     } // init
 
 
     @Override
     /** suppress combobox **/
-    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
         Frequencies freqs = (Frequencies) input.get();
 
         JComboBox comboBox = new JComboBox(new String[]{"Estimated", "Empirical", "All equal"});
-        if (freqs.frequencies.get() != null) {
+        if (freqs.frequenciesInput.get() != null) {
             comboBox.setSelectedIndex(0);
-            freqsParameter = freqs.frequencies.get();
-            alignment = (Alignment) getCandidate(freqs.m_data, freqs);
-        } else if (freqs.m_bEstimate.get()) {
+            freqsParameter = freqs.frequenciesInput.get();
+            alignment = (Alignment) getCandidate(freqs.dataInput, freqs);
+        } else if (freqs.estimateInput.get()) {
             comboBox.setSelectedIndex(1);
-            alignment = freqs.m_data.get();
-            freqsParameter = (RealParameter) getCandidate(freqs.frequencies, freqs);
+            alignment = freqs.dataInput.get();
+            freqsParameter = (RealParameter) getCandidate(freqs.frequenciesInput, freqs);
         } else {
             comboBox.setSelectedIndex(2);
-            alignment = freqs.m_data.get();
-            freqsParameter = (RealParameter) getCandidate(freqs.frequencies, freqs);
+            alignment = freqs.dataInput.get();
+            freqsParameter = (RealParameter) getCandidate(freqs.frequenciesInput, freqs);
         }
         comboBox.addActionListener(new ActionListener() {
             @Override
@@ -67,18 +69,18 @@ public class FrequenciesInputEditor extends PluginInputEditor {
                 try {
                     switch (iSelected) {
                         case 0:
-                            freqs.frequencies.setValue(freqsParameter, freqs);
-                            freqs.m_data.setValue(null, freqs);
+                            freqs.frequenciesInput.setValue(freqsParameter, freqs);
+                            freqs.dataInput.setValue(null, freqs);
                             break;
                         case 1:
-                            freqs.frequencies.setValue(null, freqs);
-                            freqs.m_data.setValue(alignment, freqs);
-                            freqs.m_bEstimate.setValue(true, freqs);
+                            freqs.frequenciesInput.setValue(null, freqs);
+                            freqs.dataInput.setValue(alignment, freqs);
+                            freqs.estimateInput.setValue(true, freqs);
                             break;
                         case 2:
-                            freqs.frequencies.setValue(null, freqs);
-                            freqs.m_data.setValue(alignment, freqs);
-                            freqs.m_bEstimate.setValue(false, freqs);
+                            freqs.frequenciesInput.setValue(null, freqs);
+                            freqs.dataInput.setValue(alignment, freqs);
+                            freqs.estimateInput.setValue(false, freqs);
                             break;
                     }
                 } catch (Exception e2) {
@@ -90,7 +92,7 @@ public class FrequenciesInputEditor extends PluginInputEditor {
         box.add(comboBox);
     }
 
-    private Plugin getCandidate(Input<?> input, Frequencies freqs) {
+    private BEASTObject getCandidate(Input<?> input, Frequencies freqs) {
         return getDoc().getPartition(freqs);
 //		List<String> sCandidates = PluginPanel.getAvailablePlugins(input, freqs, null);
 //		String sID = sCandidates.get(0);

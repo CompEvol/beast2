@@ -2,6 +2,8 @@ package test.beast.evolution.likelihood;
 
 
 import junit.framework.TestCase;
+import org.junit.Test;
+
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
@@ -23,7 +25,7 @@ import beast.evolution.substitutionmodel.MutationDeathModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.WAG;
 import beast.evolution.tree.Tree;
-import org.junit.Test;
+
 import test.beast.BEASTTestCase;
 
 /**
@@ -555,16 +557,16 @@ public class TreeLikelihoodTest extends TestCase {
         dataType.initByName("states", 2, "codeMap", "0=1, 1=0, ?=0 1, -=0 1");
         Alignment data = new Alignment();
 
-        Sequence German_ST = new Sequence("German_ST", BEASTTestCase.German_ST.m_sData.get());
-        Sequence Dutch_List = new Sequence("Dutch_List", BEASTTestCase.Dutch_List.m_sData.get());
+        Sequence German_ST = new Sequence("German_ST", BEASTTestCase.German_ST.dataInput.get());
+        Sequence Dutch_List = new Sequence("Dutch_List", BEASTTestCase.Dutch_List.dataInput.get());
         ;
-        Sequence English_ST = new Sequence("English_ST", BEASTTestCase.English_ST.m_sData.get());
+        Sequence English_ST = new Sequence("English_ST", BEASTTestCase.English_ST.dataInput.get());
         ;
-        Sequence French = new Sequence("French", BEASTTestCase.French.m_sData.get());
+        Sequence French = new Sequence("French", BEASTTestCase.French.dataInput.get());
         ;
-        Sequence Italian = new Sequence("Italian", BEASTTestCase.Italian.m_sData.get());
+        Sequence Italian = new Sequence("Italian", BEASTTestCase.Italian.dataInput.get());
         ;
-        Sequence Spanish = new Sequence("Spanish", BEASTTestCase.Spanish.m_sData.get());
+        Sequence Spanish = new Sequence("Spanish", BEASTTestCase.Spanish.dataInput.get());
         ;
 
 

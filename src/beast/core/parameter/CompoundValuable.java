@@ -5,17 +5,19 @@ import java.util.List;
 
 import beast.core.CalculationNode;
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.Plugin;
 import beast.core.StateNode;
-import beast.core.Valuable;
+import beast.core.BEASTObject;
+import beast.core.Input.Validate;
+
+
 
 @Description("Summarizes a set of valuables so that for example a rate matrix can be " +
         "specified that uses a parameter in various places in the matrix.")
-public class CompoundValuable extends CalculationNode implements Valuable {
-    public Input<List<Plugin>> m_values = new Input<List<Plugin>>("var", "reference to a valuable",
-            new ArrayList<Plugin>(), Validate.REQUIRED, Valuable.class);
+public class CompoundValuable extends CalculationNode implements Function {
+    public Input<List<BEASTObject>> m_values = new Input<List<BEASTObject>>("var", "reference to a valuable",
+            new ArrayList<BEASTObject>(), Validate.REQUIRED, Function.class);
 
     boolean m_bRecompute = true;
     /**
@@ -27,11 +29,11 @@ public class CompoundValuable extends CalculationNode implements Valuable {
     public void initAndValidate() throws Exception {
         // determine dimension
         int nDimension = 0;
-        for (Plugin plugin : m_values.get()) {
-            if (!(plugin instanceof Valuable)) {
+        for (BEASTObject plugin : m_values.get()) {
+            if (!(plugin instanceof Function)) {
                 throw new Exception("Input does not implement Valuable");
             }
-            nDimension += ((Valuable) plugin).getDimension();
+            nDimension += ((Function) plugin).getDimension();
         }
         m_fValues = new double[nDimension];
     }
@@ -65,8 +67,8 @@ public class CompoundValuable extends CalculationNode implements Valuable {
      */
     private void recompute() {
         int k = 0;
-        for (Plugin plugin : m_values.get()) {
-            Valuable valuable = (Valuable) plugin;
+        for (BEASTObject plugin : m_values.get()) {
+            Function valuable = (Function) plugin;
             if (plugin instanceof StateNode) {
                 valuable = ((StateNode) plugin).getCurrent();
             }

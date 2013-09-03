@@ -9,35 +9,37 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 
+
+
 /**
  * @author Alexei Drummond
  */
 @Description("A log-normal distribution with mean and variance parameters.")
 public class LogNormalDistributionModel extends ParametricDistribution {
-    public Input<RealParameter> MParameter = new Input<RealParameter>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
-    public Input<RealParameter> SParameter = new Input<RealParameter>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
-    public Input<Boolean> m_bMeanInRealSpaceInput = new Input<Boolean>("meanInRealSpace", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
+    public Input<RealParameter> MParameterInput = new Input<RealParameter>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
+    public Input<RealParameter> SParameterInput = new Input<RealParameter>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
+    public Input<Boolean> hasMeanInRealSpaceInput = new Input<Boolean>("meanInRealSpace", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
 
-    boolean m_bMeanInRealSpace;
-    LogNormalImpl m_dist = new LogNormalImpl(0, 1);
+    boolean hasMeanInRealSpace;
+    LogNormalImpl dist = new LogNormalImpl(0, 1);
 
     public void initAndValidate() throws Exception {
-        m_bMeanInRealSpace = m_bMeanInRealSpaceInput.get();
-        if (MParameter.get() != null) {
-            if (MParameter.get().getLower() == null) {
-                MParameter.get().setLower(Double.NEGATIVE_INFINITY);
+        hasMeanInRealSpace = hasMeanInRealSpaceInput.get();
+        if (MParameterInput.get() != null) {
+            if (MParameterInput.get().getLower() == null) {
+                MParameterInput.get().setLower(Double.NEGATIVE_INFINITY);
             }
-            if (MParameter.get().getUpper() == null) {
-                MParameter.get().setUpper(Double.POSITIVE_INFINITY);
+            if (MParameterInput.get().getUpper() == null) {
+                MParameterInput.get().setUpper(Double.POSITIVE_INFINITY);
             }
         }
 
-        if (SParameter.get() != null) {
-            if (SParameter.get().getLower() == null) {
-                SParameter.get().setLower(0.0);
+        if (SParameterInput.get() != null) {
+            if (SParameterInput.get().getLower() == null) {
+                SParameterInput.get().setLower(0.0);
             }
-            if (SParameter.get().getUpper() == null) {
-                SParameter.get().setUpper(Double.POSITIVE_INFINITY);
+            if (SParameterInput.get().getUpper() == null) {
+                SParameterInput.get().setUpper(Double.POSITIVE_INFINITY);
             }
         }
         refresh();
@@ -49,34 +51,34 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     void refresh() {
         double fMean;
         double fSigma;
-        if (SParameter.get() == null) {
+        if (SParameterInput.get() == null) {
             fSigma = 1;
         } else {
-            fSigma = SParameter.get().getValue();
+            fSigma = SParameterInput.get().getValue();
         }
-        if (MParameter.get() == null) {
+        if (MParameterInput.get() == null) {
             fMean = 0;
         } else {
-            fMean = MParameter.get().getValue();
+            fMean = MParameterInput.get().getValue();
         }
-        if (m_bMeanInRealSpace) {
+        if (hasMeanInRealSpace) {
             fMean = Math.log(fMean) - (0.5 * fSigma * fSigma);
         }
-        m_dist.setMeanAndStdDev(fMean, fSigma);
+        dist.setMeanAndStdDev(fMean, fSigma);
     }
 
     @Override
     public Distribution getDistribution() {
         refresh();
-        return m_dist;
+        return dist;
     }
 
-    class LogNormalImpl implements ContinuousDistribution {
+    public class LogNormalImpl implements ContinuousDistribution {
         double m_fMean;
         double m_fStdDev;
         NormalDistributionImpl m_normal = new NormalDistributionImpl(0, 1);
 
-        LogNormalImpl(double fMean, double fStdDev) {
+        public LogNormalImpl(double fMean, double fStdDev) {
             setMeanAndStdDev(fMean, fStdDev);
         }
 
@@ -115,11 +117,11 @@ public class LogNormalDistributionModel extends ParametricDistribution {
 
     @Override
     public double getMean() {
-    	if (m_bMeanInRealSpace) {
-    		if (MParameter.get() != null) {
-    			return m_offset.get() + MParameter.get().getValue();
+    	if (hasMeanInRealSpace) {
+    		if (MParameterInput.get() != null) {
+    			return offsetInput.get() + MParameterInput.get().getValue();
     		} else {
-    			return m_offset.get();
+    			return offsetInput.get();
     		}
     	} else {
     		throw new RuntimeException("Not implemented yet");

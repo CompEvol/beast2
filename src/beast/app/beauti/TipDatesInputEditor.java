@@ -28,12 +28,14 @@ import javax.swing.table.TableCellRenderer;
 
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+
+
 
 public class TipDatesInputEditor extends PluginInputEditor {
 
@@ -62,7 +64,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
 
 
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
 		this.itemNr = itemNr;
 		if (itemNr >= 0) {
@@ -241,9 +243,9 @@ public class TipDatesInputEditor extends PluginInputEditor {
         m_iMode = comboBox.getSelectedIndex();
         try {
             // clear
-            for (Plugin plugin : traitSet.outputs) {
+            for (BEASTObject plugin : traitSet.outputs) {
                 if (plugin instanceof Tree) {
-                    for (Plugin plugin2 : plugin.outputs) {
+                    for (BEASTObject plugin2 : plugin.outputs) {
                         if (plugin2 instanceof TipDatesRandomWalker) {
                         	TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
                             switch (m_iMode) {
@@ -275,7 +277,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
     }
 
     private Component createListBox() {
-        sTaxa = traitSet.m_taxa.get().asStringList();
+        sTaxa = traitSet.taxaInput.get().asStringList();
         String[] columnData = new String[]{"Name", "Date", "Height"};
         tableData = new Object[sTaxa.size()][3];
         convertTraitToTableData();
@@ -420,7 +422,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
             tableData[i][1] = "0";
             tableData[i][2] = "0";
         }
-        String[] sTraits = traitSet.m_traits.get().split(",");
+        String[] sTraits = traitSet.traitsInput.get().split(",");
         for (String sTrait : sTraits) {
             sTrait = sTrait.replaceAll("\\s+", " ");
             String[] sStrs = sTrait.split("=");
@@ -440,7 +442,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
             	System.err.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
             }
         }
-        if (traitSet.m_sTraitName.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+        if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             Double fMinDate = Double.MAX_VALUE;
             for (int i = 0; i < tableData.length; i++) {
                 fMinDate = Math.min(fMinDate, parseDate((String) tableData[i][1]));
@@ -508,7 +510,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
             }
         }
         try {
-            traitSet.m_traits.setValue(sTrait, traitSet);
+            traitSet.traitsInput.setValue(sTrait, traitSet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -524,13 +526,13 @@ public class TipDatesInputEditor extends PluginInputEditor {
         label.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
         buttonBox.add(label);
         unitsComboBox = new JComboBox(TraitSet.Units.values());
-        unitsComboBox.setSelectedItem(traitSet.m_sUnits.get());
+        unitsComboBox.setSelectedItem(traitSet.unitsInput.get());
         unitsComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String sSelected = (String) unitsComboBox.getSelectedItem().toString();
                 try {
-                    traitSet.m_sUnits.setValue(sSelected, traitSet);
+                    traitSet.unitsInput.setValue(sSelected, traitSet);
                     //System.err.println("Traitset is now: " + m_traitSet.m_sUnits.get());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -541,7 +543,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox(new String[]{"Since some time in the past", "Before the present"});
-        if (traitSet.m_sTraitName.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+        if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
         	relativeToComboBox.setSelectedIndex(1);
         } else {
         	relativeToComboBox.setSelectedIndex(0);
@@ -554,8 +556,8 @@ public class TipDatesInputEditor extends PluginInputEditor {
                     sSelected = TraitSet.DATE_FORWARD_TRAIT;
                 }
                 try {
-                    traitSet.m_sTraitName.setValue(sSelected, traitSet);
-                    System.err.println("Relative position is now: " + traitSet.m_sTraitName.get());
+                    traitSet.traitNameInput.setValue(sSelected, traitSet);
+                    System.err.println("Relative position is now: " + traitSet.traitNameInput.get());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -594,7 +596,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
                 	break;
                 }
                 try {
-                    traitSet.m_traits.setValue(sTrait, traitSet);
+                    traitSet.traitsInput.setValue(sTrait, traitSet);
                     convertTraitToTableData();
                     convertTableDataToTrait();
                 } catch (Exception ex) {
@@ -611,7 +613,7 @@ public class TipDatesInputEditor extends PluginInputEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    traitSet.m_traits.setValue("", traitSet);
+                    traitSet.traitsInput.setValue("", traitSet);
                 } catch (Exception ex) {
                     // TODO: handle exception
                 }

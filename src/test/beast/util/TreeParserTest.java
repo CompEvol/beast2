@@ -1,8 +1,10 @@
 package test.beast.util;
 
-import beast.util.TreeParser;
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import beast.util.TreeParser;
+
 
 public class TreeParserTest extends TestCase {
 
@@ -16,7 +18,7 @@ public class TreeParserTest extends TestCase {
             boolean isLabeled = false;
 
             TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 0);
-            treeParser.m_nOffset.setValue(0, treeParser);
+            treeParser.offsetInput.setValue(0, treeParser);
 
             assertEquals(newick.split(";")[0], treeParser.getRoot().toShortNewick(true));
 

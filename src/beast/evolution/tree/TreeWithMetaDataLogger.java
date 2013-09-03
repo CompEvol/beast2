@@ -3,60 +3,62 @@ package beast.evolution.tree;
 import java.io.PrintStream;
 
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Loggable;
-import beast.core.Plugin;
-import beast.core.Input.Validate;
 import beast.core.StateNode;
-import beast.core.Valuable;
+import beast.core.BEASTObject;
+import beast.core.Input.Validate;
 import beast.core.parameter.Parameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 
+
+
 @Description("Logs tree annotated with metadata and/or rates")
-public class TreeWithMetaDataLogger extends Plugin implements Loggable {
-    public Input<Tree> m_tree = new Input<Tree>("tree", "tree to be logged", Validate.REQUIRED);
+public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
+    public Input<Tree> treeInput = new Input<Tree>("tree", "tree to be logged", Validate.REQUIRED);
     // TODO: make this input a list of valuables
-    public Input<Valuable> m_parameter = new Input<Valuable>("metadata", "meta data to be logged with the tree nodes");
-    public Input<BranchRateModel.Base> clockModel = new Input<BranchRateModel.Base>("branchratemodel", "rate to be logged with branches of the tree");
+    public Input<Function> parameterInput = new Input<Function>("metadata", "meta data to be logged with the tree nodes");
+    public Input<BranchRateModel.Base> clockModelInput = new Input<BranchRateModel.Base>("branchratemodel", "rate to be logged with branches of the tree");
     public Input<Boolean> substitutionsInput = new Input<Boolean>("substitutions", "report branch lengths as substitutions (branch length times clock rate for the branch)", false);
 
 
-    String m_sMetaDataLabel;
+    String metaDataLabel;
     
     boolean someMetaDataNeedsLogging;
     boolean substitutions = false;
 
     @Override
     public void initAndValidate() throws Exception {
-        if (m_parameter.get() == null && clockModel.get() == null) {
+        if (parameterInput.get() == null && clockModelInput.get() == null) {
         	someMetaDataNeedsLogging = false;
         	return;
             //throw new Exception("At least one of the metadata and branchratemodel inputs must be defined");
         }
     	someMetaDataNeedsLogging = true;
-        if (m_parameter.get() != null) {
-            m_sMetaDataLabel = ((Plugin) m_parameter.get()).getID() + "=";
+        if (parameterInput.get() != null) {
+            metaDataLabel = ((BEASTObject) parameterInput.get()).getID() + "=";
         }
     	// without substitution model, reporting substitutions == reporting branch lengths 
-        if (clockModel.get() != null) {
+        if (clockModelInput.get() != null) {
         	substitutions = substitutionsInput.get();
         }
     }
 
     @Override
     public void init(PrintStream out) throws Exception {
-        m_tree.get().init(out);
+        treeInput.get().init(out);
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
         // make sure we get the current version of the inputs
-        Tree tree = (Tree) m_tree.get().getCurrent();
-        Valuable metadata = m_parameter.get();
+        Tree tree = (Tree) treeInput.get().getCurrent();
+        Function metadata = parameterInput.get();
         if (metadata != null && metadata instanceof StateNode) {
             metadata = ((StateNode) metadata).getCurrent();
         }
-        BranchRateModel.Base branchRateModel = clockModel.get();
+        BranchRateModel.Base branchRateModel = clockModelInput.get();
         // write out the log tree with meta data
         out.print("tree STATE_" + nSample + " = ");
         tree.getRoot().sort();
@@ -66,7 +68,7 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
     }
 
 
-    String toNewick(Node node, Valuable metadata, BranchRateModel.Base branchRateModel) {
+    String toNewick(Node node, Function metadata, BranchRateModel.Base branchRateModel) {
         StringBuffer buf = new StringBuffer();
         if (node.getLeft() != null) {
             buf.append("(");
@@ -77,29 +79,29 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
             }
             buf.append(")");
         } else {
-            buf.append(node.m_iLabel + 1);
+            buf.append(node.labelNr + 1);
         }
         if (someMetaDataNeedsLogging) {
 	        buf.append("[&");
 	        if (metadata != null) {
-	            buf.append(m_sMetaDataLabel);
+	            buf.append(metaDataLabel);
 	            if (metadata instanceof Parameter<?>) {
 	            	Parameter p = (Parameter) metadata;
 	            	int dim = p.getMinorDimension1();
 	            	if (dim > 1) {
 		            	buf.append('{');
 		            	for (int i = 0; i < dim; i++) {
-			            	buf.append(p.getMatrixValue(node.m_iLabel, i));
+			            	buf.append(p.getMatrixValue(node.labelNr, i));
 			            	if (i < dim - 1) {
 				            	buf.append(',');
 			            	}
 		            	}
 		            	buf.append('}');
 	            	} else {
-		            	buf.append(metadata.getArrayValue(node.m_iLabel));
+		            	buf.append(metadata.getArrayValue(node.labelNr));
 	            	}
 	            } else {
-	            	buf.append(metadata.getArrayValue(node.m_iLabel));
+	            	buf.append(metadata.getArrayValue(node.labelNr));
 	            }
 	            if (branchRateModel != null) {
 	                buf.append(",");
@@ -123,7 +125,7 @@ public class TreeWithMetaDataLogger extends Plugin implements Loggable {
 
     @Override
     public void close(PrintStream out) {
-        m_tree.get().close(out);
+        treeInput.get().close(out);
     }
 
 }

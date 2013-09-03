@@ -1,10 +1,12 @@
 package beast.core.parameter;
 
 
+
+import java.io.PrintStream;
+
 import beast.core.Description;
 import beast.core.Input;
 
-import java.io.PrintStream;
 
 
 /**
@@ -59,7 +61,7 @@ public class RealParameter extends Parameter<Double> {
             m_fUpper = Double.POSITIVE_INFINITY;
         }
 
-        String sValue = m_pValues.get();
+        String sValue = valuesInput.get();
         // remove start and end spaces
         sValue = sValue.replaceAll("^\\s+", "");
         sValue = sValue.replaceAll("\\s+$", "");

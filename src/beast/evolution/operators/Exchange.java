@@ -64,7 +64,7 @@ import beast.util.Randomizer;
         "The narrow exchange is very similar to a rooted-beast.tree nearest-neighbour " +
         "interchange but with the restriction that node height must remain consistent.")
 public class Exchange extends TreeOperator {
-    public Input<Boolean> m_bIsNarrow = new Input<Boolean>("isNarrow", "if true (default) a narrow exchange is performed, otherwise a wide exchange", true);
+    public Input<Boolean> isNarrowInput = new Input<Boolean>("isNarrow", "if true (default) a narrow exchange is performed, otherwise a wide exchange", true);
 
     @Override
     public void initAndValidate() {
@@ -77,11 +77,11 @@ public class Exchange extends TreeOperator {
      */
     @Override
     public double proposal() {
-        final Tree tree = m_tree.get(this);
+        final Tree tree = treeInput.get(this);
 
         double fLogHastingsRatio = 0;
 
-        if (m_bIsNarrow.get()) {
+        if (isNarrowInput.get()) {
             fLogHastingsRatio = narrow(tree);
         } else {
             fLogHastingsRatio = wide(tree);

@@ -1,14 +1,16 @@
 package beast.evolution.alignment;
 
 
-import beast.core.Description;
-import beast.core.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.Description;
+import beast.core.BEASTObject;
+
+
 @Description("For identifying a single taxon")
-public class Taxon extends Plugin {
+public class Taxon extends BEASTObject {
     // we can use the ID to identify a taxon name/taxon label
     // if there are multiple taxaset with the same taxa, use
     // idref to refer to the single taxon.

@@ -1,43 +1,45 @@
 package beast.evolution.operators;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.Operator;
-import beast.core.StateNode;
-import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
-import beast.util.Randomizer;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Operator;
+import beast.core.StateNode;
+import beast.core.Input.Validate;
+import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
+import beast.util.Randomizer;
+
 
 @Description("This element represents an operator that scales two parameters in different directions. " +
         "Each operation involves selecting a scale uniformly at random between scaleFactor and 1/scaleFactor. " +
         "The up parameter is multiplied by this scale and the down parameter is divided by this scale.")
 public class UpDownOperator extends Operator {
 
-    public Input<Double> m_scaleFactor = new Input<Double>("scaleFactor",
+    public Input<Double> scaleFactorInput = new Input<Double>("scaleFactor",
             "magnitude factor used for scaling", Validate.REQUIRED);
-    public Input<List<StateNode>> m_up = new Input<List<StateNode>>("up",
+    public Input<List<StateNode>> upInput = new Input<List<StateNode>>("up",
             "zero or more items to scale upwards", new ArrayList<StateNode>());
-    public Input<List<StateNode>> m_down = new Input<List<StateNode>>("down",
+    public Input<List<StateNode>> downInput = new Input<List<StateNode>>("down",
             "zero or more items to scale downwards", new ArrayList<StateNode>());
-    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
-    public Input<Boolean> elementWise = new Input<Boolean>("elementWise", "flag to indicate that the scaling is applied to a random index in multivariate parameters (default false)", false);
+    public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
+    public Input<Boolean> elementWiseInput = new Input<Boolean>("elementWise", "flag to indicate that the scaling is applied to a random index in multivariate parameters (default false)", false);
 
-    double m_fScaleFactor;
+    double scaleFactor;
 
     @Override
     public void initAndValidate() throws Exception {
-        m_fScaleFactor = m_scaleFactor.get();
+        scaleFactor = scaleFactorInput.get();
         // sanity checks
-        if (m_up.get().size() + m_down.get().size() == 0) {
+        if (upInput.get().size() + downInput.get().size() == 0) {
             System.err.println("WARNING: At least one up or down item must be specified");
         }
-        if (m_up.get().size() == 0 || m_down.get().size() == 0) {
-            System.err.println("WARNING: no " + (m_up.get().size() == 0 ? "up" : "down") + " item specified in UpDownOperator");
+        if (upInput.get().size() == 0 || downInput.get().size() == 0) {
+            System.err.println("WARNING: no " + (upInput.get().size() == 0 ? "up" : "down") + " item specified in UpDownOperator");
         }
     }
 
@@ -50,13 +52,13 @@ public class UpDownOperator extends Operator {
     @Override
     public final double proposal() {
 
-        final double scale = (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
+        final double scale = (scaleFactor + (Randomizer.nextDouble() * ((1.0 / scaleFactor) - scaleFactor)));
         int goingUp = 0, goingDown = 0;
 
 
-        if (elementWise.get()) {
+        if (elementWiseInput.get()) {
             int size = 0;
-            for (StateNode up : m_up.get()) {
+            for (StateNode up : upInput.get()) {
                 if (size == 0) size = up.getDimension();
                 if (size > 0 && up.getDimension() != size) {
                     throw new RuntimeException("elementWise=true but parameters of differing lengths!");
@@ -64,7 +66,7 @@ public class UpDownOperator extends Operator {
                 goingUp += 1;
             }
 
-            for (StateNode down : m_down.get()) {
+            for (StateNode down : downInput.get()) {
                 if (size == 0) size = down.getDimension();
                 if (size > 0 && down.getDimension() != size) {
                     throw new RuntimeException("elementWise=true but parameters of differing lengths!");
@@ -74,7 +76,7 @@ public class UpDownOperator extends Operator {
 
             int index = Randomizer.nextInt(size);
 
-            for (StateNode up : m_up.get()) {
+            for (StateNode up : upInput.get()) {
                 if (up instanceof RealParameter) {
                     RealParameter p = (RealParameter) up;
                     p.setValue(p.getValue(index) * scale);
@@ -84,7 +86,7 @@ public class UpDownOperator extends Operator {
                 }
             }
 
-            for (StateNode down : m_down.get()) {
+            for (StateNode down : downInput.get()) {
                 if (down instanceof RealParameter) {
                     RealParameter p = (RealParameter) down;
                     p.setValue(p.getValue(index) / scale);
@@ -96,7 +98,7 @@ public class UpDownOperator extends Operator {
         } else {
 
             try {
-                for (StateNode up : m_up.get()) {
+                for (StateNode up : upInput.get()) {
                     up = up.getCurrentEditable(this);
                     goingUp += up.scale(scale);
                     if (outsideBounds(up)) {
@@ -104,7 +106,7 @@ public class UpDownOperator extends Operator {
                     }
                 }
 
-                for (StateNode down : m_down.get()) {
+                for (StateNode down : downInput.get()) {
                     down = down.getCurrentEditable(this);
                     goingDown += down.scale(1.0 / scale);
                     if (outsideBounds(down)) {
@@ -137,21 +139,21 @@ public class UpDownOperator extends Operator {
      */
     @Override
     public void optimize(final double logAlpha) {
-        if (m_bOptimise.get()) {
+        if (optimiseInput.get()) {
             double fDelta = calcDelta(logAlpha);
-            fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
-            m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+            fDelta += Math.log(1.0 / scaleFactor - 1.0);
+            scaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
         }
     }
 
     @Override
     public double getCoercableParameterValue() {
-        return m_fScaleFactor;
+        return scaleFactor;
     }
 
     @Override
     public void setCoercableParameterValue(final double fValue) {
-        m_fScaleFactor = fValue;
+        scaleFactor = fValue;
     }
 
     @Override
@@ -164,7 +166,7 @@ public class UpDownOperator extends Operator {
         if (ratio < 0.5) ratio = 0.5;
 
         // new scale factor
-        final double sf = Math.pow(m_fScaleFactor, ratio);
+        final double sf = Math.pow(scaleFactor, ratio);
 
         final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {

@@ -14,11 +14,11 @@ import beast.util.Randomizer;
  */
 @Description("Sample values from a distribution")
 public class SampleOffValues extends Operator {
-    public Input<RealParameter> m_values = new Input<RealParameter>("values", "vector of target values", Input.Validate.REQUIRED);
+    public Input<RealParameter> valuesInput = new Input<RealParameter>("values", "vector of target values", Input.Validate.REQUIRED);
 
-    public Input<BooleanParameter> m_indicators = new Input<BooleanParameter>("indicators", "Sample only entries which are 'off'");
+    public Input<BooleanParameter> indicatorsInput = new Input<BooleanParameter>("indicators", "Sample only entries which are 'off'");
 
-    public Input<ParametricDistribution> m_distInput = new Input<ParametricDistribution>("dist",
+    public Input<ParametricDistribution> distInput = new Input<ParametricDistribution>("dist",
             "distribution to sample from.", Input.Validate.REQUIRED);
 
     public void initAndValidate() {
@@ -26,9 +26,9 @@ public class SampleOffValues extends Operator {
 
     @Override
     public double proposal() {
-        final BooleanParameter indicators = m_indicators.get(this);
-        final RealParameter data = m_values.get(this);
-        final ParametricDistribution distribution = m_distInput.get();
+        final BooleanParameter indicators = indicatorsInput.get(this);
+        final RealParameter data = valuesInput.get(this);
+        final ParametricDistribution distribution = distInput.get();
 
         final int idim = indicators.getDimension();
 

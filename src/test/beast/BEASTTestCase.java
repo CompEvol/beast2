@@ -1,14 +1,16 @@
 package test.beast;
 
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
-import junit.framework.TestCase;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class BEASTTestCase extends TestCase {
     public static final double PRECISION = 1e-6;
@@ -106,13 +108,13 @@ public class BEASTTestCase extends TestCase {
         AscertainedAlignment data = null;
         data = new AscertainedAlignment();
         for (Sequence sequence : sequences) {
-            data.m_pSequences.setValue(sequence, data);
+            data.sequenceInput.setValue(sequence, data);
         }
         //data.m_nStateCount.setValue(4, data);
-        data.m_sDataType.setValue("nucleotide", data);
-        data.m_excludefrom.setValue(0, data);
-        data.m_excludeto.setValue(4, data);
-        data.m_excludeevery.setValue(1, data);
+        data.dataTypeInput.setValue("nucleotide", data);
+        data.excludefromInput.setValue(0, data);
+        data.excludetoInput.setValue(4, data);
+        data.excludeeveryInput.setValue(1, data);
         data.initAndValidate();
 
         return data;

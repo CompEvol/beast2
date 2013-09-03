@@ -10,8 +10,8 @@ import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
-import beast.core.Plugin;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.TaxonSet;
@@ -19,6 +19,8 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
+
+
 
 @Description("Yule with calibrated monophyletic clades. With this prior, the marginal distribution of the" +
         " calibrated nodes (the MRCA of clades) is identical to the specified calibration, but the Yule is not preserved over" +
@@ -44,17 +46,17 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     }
 
     // Q2R does this makes sense, or it has to be a realParameter??
-    public Input<RealParameter> birthRate =
+    public Input<RealParameter> birthRateInput =
             new Input<RealParameter>("birthRate", "birth rate of splitting a linage into two", Validate.REQUIRED);
 
-    public Input<List<CalibrationPoint>> calibrations =
+    public Input<List<CalibrationPoint>> calibrationsInput =
             new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>());//,Input.Validate.REQUIRED);
 
-    public Input<Type> correctionType = new Input<Type>("type", "Type of correction (default all). However, 'all'" +
+    public Input<Type> correctionTypeInput = new Input<Type>("type", "Type of correction (default all). However, 'all'" +
             " is possible only in a few special cases (a single clade or two nested clades).",
             Type.OVER_ALL_TOPOS, Type.values());
 
-    public Input<RPNcalculator> userMar = new Input<RPNcalculator>("logMarginal",
+    public Input<RPNcalculator> userMarInput = new Input<RPNcalculator>("logMarginal",
             "Used provided correction (log of marginal) for special cases.", (RPNcalculator) null);
 
     // Which correction to apply
@@ -84,12 +86,12 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public void initAndValidate() throws Exception {
         super.initAndValidate();
 
-        type = correctionType.get();
+        type = correctionTypeInput.get();
 
-        final Tree tree = m_tree.get();
+        final Tree tree = treeInput.get();
 
         // shallow copy. we will be changing cals later
-        final List<CalibrationPoint> cals = new ArrayList<CalibrationPoint>(calibrations.get());
+        final List<CalibrationPoint> cals = new ArrayList<CalibrationPoint>(calibrationsInput.get());
         int nCals = cals.size();
         final List<TaxonSet> taxaSets = new ArrayList<TaxonSet>(nCals);
         if (cals.size() > 0) {
@@ -102,22 +104,22 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         } else {
             // find calibration points from prior
-            for (Plugin plugin : outputs) {
+            for (BEASTObject plugin : outputs) {
                 if (plugin instanceof CompoundDistribution) {
                     CompoundDistribution prior = (CompoundDistribution) plugin;
                     for (Distribution distr : prior.pDistributions.get()) {
                         if (distr instanceof MRCAPrior) {
                             MRCAPrior _MRCAPrior = (MRCAPrior) distr;
                             // make sure MRCAPrior is monophyletic
-                            if (_MRCAPrior.m_distInput.get() != null) {
+                            if (_MRCAPrior.distInput.get() != null) {
                                 // make sure MRCAPrior is monophyletic
-                                if (!_MRCAPrior.m_bIsMonophyleticInput.get()) {
+                                if (!_MRCAPrior.isMonophyleticInput.get()) {
                                     throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
                                 }
                                 // create CalibrationPoint from MRCAPrior
                                 CalibrationPoint cal = new CalibrationPoint();
-                                cal.m_distInput.setValue(_MRCAPrior.m_distInput.get(), cal);
-                                cal.m_taxonset.setValue(_MRCAPrior.m_taxonset.get(), cal);
+                                cal.distInput.setValue(_MRCAPrior.distInput.get(), cal);
+                                cal.taxonsetInput.setValue(_MRCAPrior.taxonsetInput.get(), cal);
                                 cal.initAndValidate();
                                 cals.add(cal);
                                 taxaSets.add(cal.taxa());
@@ -125,7 +127,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                                 nCals++;
                                 calcCalibrations = false;
                             } else {
-                                if (_MRCAPrior.m_bIsMonophyleticInput.get()) {
+                                if (_MRCAPrior.isMonophyleticInput.get()) {
                                     System.err.println("WARNING: MRCAPriors must have a distribution when monophyletic for Calibrated Yule prior");
                                 }
                             }
@@ -222,7 +224,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             }
         }
 
-        userPDF = userMar.get();
+        userPDF = userMarInput.get();
         if (userPDF == null) {
 
             if (type == Type.OVER_ALL_TOPOS) {
@@ -231,7 +233,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 } else {
                     boolean anyParent = false;
                     for (final CalibrationPoint c : orderedCalibrations) {
-                        if (c.m_forParent.get()) {
+                        if (c.forParentInput.get()) {
                             anyParent = true;
                         }
                     }
@@ -294,7 +296,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             }
         }
 
-        final Tree tree = m_tree.get();
+        final Tree tree = treeInput.get();
         final int nNodes = tree.getLeafNodeCount();
         final boolean[] used = new boolean[nNodes];
 
@@ -365,7 +367,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     @Override
     double calculateTreeLogLikelihood(final Tree tree) {
-        final double lam = birthRate.get().getArrayValue();
+        final double lam = birthRateInput.get().getArrayValue();
 
         double logL = calculateYuleLikelihood(tree, lam);
 
@@ -837,7 +839,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public void log(final int nSample, final PrintStream out) {
         out.print(getCurrentLogP() + "\t");
         if (calcCalibrations) {
-            final Tree tree = m_tree.get();
+            final Tree tree = treeInput.get();
             for (int k = 0; k < orderedCalibrations.length; ++k) {
                 final CalibrationPoint cal = orderedCalibrations[k];
                 Node c;
@@ -861,7 +863,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     @Override
     protected boolean requiresRecalculation() {
-        return super.requiresRecalculation() || birthRate.get().somethingIsDirty();
+        return super.requiresRecalculation() || birthRateInput.get().somethingIsDirty();
     }
     
     @Override

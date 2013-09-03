@@ -9,7 +9,7 @@ package beast.core;
  * @author Andrew Rambaut
  */
 @Description("Plugin that performs calculations based on the State.")
-public class CalculationNode extends Plugin {
+public class CalculationNode extends BEASTObject {
 
     //=================================================================
     // The API of CalculationNode. These 3 functions (store/restore/requireCalculation)

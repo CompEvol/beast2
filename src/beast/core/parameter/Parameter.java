@@ -25,8 +25,6 @@
 package beast.core.parameter;
 
 
-import beast.core.*;
-import beast.core.Input.Validate;
 
 import java.io.PrintStream;
 import java.lang.reflect.Array;
@@ -37,17 +35,21 @@ import java.util.regex.Pattern;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import beast.core.*;
+import beast.core.Input.Validate;
+
+
 
 @Description("A parameter represents a value in the state space that can be changed " +
         "by operators.")
-public abstract class Parameter<T> extends StateNode {
+public abstract class Parameter<T> extends StateNode implements Function {
     /**
      * value is a required input since it is very hard to ensure any internal consistency
      * when no value is specified. When	another class wants to set the dimension, say,
      * this will make it the responsibility of the other class to maintain internal consistency of
      * the parameter.
      */
-    public Input<String> m_pValues = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", Validate.REQUIRED);
+    public Input<String> valuesInput = new Input<String>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", Validate.REQUIRED);
     public final Input<java.lang.Integer> m_nDimension =
             new Input<java.lang.Integer>("dimension", "dimension of the parameter (default 1, i.e scalar)", 1);
     public final Input<Integer> minorDimensionInput = new Input<Integer>("minordimension", "minor-dimension when the parameter is interpreted as a matrix (default 1)", 1);
@@ -75,6 +77,7 @@ public abstract class Parameter<T> extends StateNode {
         if (minorDimension > 0 && m_nDimension.get() % minorDimension > 0) {
             throw new Exception("Dimension must be divisble by stride");
         }
+        this.storedValues = values.clone();
     }
 
 
@@ -155,11 +158,18 @@ public abstract class Parameter<T> extends StateNode {
                 values2[i] = values[i % getDimension()];
             }
             values = (T[]) values2;
-            storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
+            //storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
         }
         m_bIsDirty = new boolean[nDimension];
     }
-
+    
+    public void setMinorDimension(final int nDimension) throws Exception {
+        minorDimension = nDimension;
+        if (minorDimension > 0 && m_nDimension.get() % minorDimension > 0) {
+            throw new Exception("Dimension must be divisble by stride");
+        }
+    }
+    
     public T getValue() {
         return values[0];
     }
@@ -237,7 +247,7 @@ public abstract class Parameter<T> extends StateNode {
      */
     public String toString() {
         final StringBuilder buf = new StringBuilder();
-        buf.append(m_sID).append("[").append(values.length);
+        buf.append(ID).append("[").append(values.length);
         if (minorDimension > 0) {
             buf.append(" ").append(minorDimension);
         }
@@ -413,8 +423,12 @@ public abstract class Parameter<T> extends StateNode {
         }
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void store() {
+    	if (storedValues.length != values.length) {
+    		storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), values.length);
+    	}
         System.arraycopy(values, 0, storedValues, 0, values.length);
     }
 
@@ -423,6 +437,9 @@ public abstract class Parameter<T> extends StateNode {
         final T[] tmp = storedValues;
         storedValues = values;
         values = tmp;
-        m_bHasStartedEditing = false;
+        hasStartedEditing = false;
+    	if (m_bIsDirty.length != values.length) {
+    		m_bIsDirty = new boolean[values.length];
+    	}
     }
 } // class Parameter

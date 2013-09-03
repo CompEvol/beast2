@@ -1,10 +1,12 @@
 package test.beast.evolution.alignment;
 
+import junit.framework.TestCase;
+import org.junit.Test;
+
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
-import junit.framework.TestCase;
-import org.junit.Test;
+
 
 public class FilteredAlignmentTest extends TestCase {
 

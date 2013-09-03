@@ -34,16 +34,18 @@ import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ArrayList;
 
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.StateNode;
+import beast.core.StateNodeInitialiser;
+import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+
+
 
 /**
  * Adapted from Weka's HierarchicalClustering class *
@@ -90,7 +92,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     public void initAndValidate() throws Exception {
 
         if (Boolean.valueOf(System.getProperty("beast.resume")) &&
-                (m_bIsEstimated.get() || (m_initial.get() != null && m_initial.get().m_bIsEstimated.get()))) {
+                (isEstimatedInput.get() || (m_initial.get() != null && m_initial.get().isEstimatedInput.get()))) {
             // don't bother creating a cluster tree to save some time, if it is read from file anyway
             // make a caterpillar
             List<String> sTaxa = m_pData.get().getTaxaNames();

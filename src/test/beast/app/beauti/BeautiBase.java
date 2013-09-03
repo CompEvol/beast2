@@ -33,11 +33,13 @@ import beast.core.Distribution;
 import beast.core.Logger;
 import beast.core.MCMC;
 import beast.core.Operator;
-import beast.core.Plugin;
 import beast.core.State;
 import beast.core.StateNode;
+import beast.core.BEASTObject;
 import beast.core.util.CompoundDistribution;
 import beast.util.XMLParser;
+
+
 
 /**
  * Basic test methods for Beauti  
@@ -88,7 +90,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	
 	String traceLogAsString() {
 		Logger logger = (Logger) doc.pluginmap.get("tracelog");
-		List<Plugin> logs = logger.m_pLoggers.get();
+		List<BEASTObject> logs = logger.loggersInput.get();
 		return "assertTraceLogEqual" + pluginListAsString(logs);
 	}
 
@@ -99,7 +101,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		}
 		StringBuffer bf = new StringBuffer();
 		for (Object o : list) {
-			Plugin plugin = (Plugin) o;
+			BEASTObject plugin = (BEASTObject) o;
 			bf.append('"');
 			bf.append(plugin.getID());
 			bf.append("\", ");
@@ -114,7 +116,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		List<Distribution> priors = prior.pDistributions.get();
 		for (String id : ids) {
 			boolean found = false;
-			for (Plugin node : priors) {
+			for (BEASTObject node : priors) {
 				if (node.getID().equals(id)) {
 					found = true;
 				}
@@ -129,7 +131,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		for (String id : ids) {
 			boolean found = false;
 			for (Object o: list) {
-				Plugin node = (Plugin) o;
+				BEASTObject node = (BEASTObject) o;
 				if (node.getID().equals(id)) {
 					found = true;
 					break;
@@ -141,7 +143,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		Set<String> idsInList = new HashSet<String>();
 		Set<String> duplicates = new HashSet<String>();
 		for (Object o : list) {
-			String id = ((Plugin) o).getID();
+			String id = ((BEASTObject) o).getID();
 			if (idsInList.contains(id)) {
 				duplicates.add(id);
 			} else {
@@ -154,7 +156,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 			// list.size > ids.length, otherwise it would have been picked up above
 			List<String> extraIDs = new ArrayList<String>(); 
 			for (Object o : list) {
-				String id = ((Plugin) o).getID();
+				String id = ((BEASTObject) o).getID();
 				boolean found = false;
 				for (String id2 : ids) {
 					if (id2.equals(id)) {
@@ -187,7 +189,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	void assertTraceLogEqual(String... ids) {
 		System.err.println("assertTraceLogEqual");
 		Logger logger = (Logger) doc.pluginmap.get("tracelog");
-		List<Plugin> logs = logger.m_pLoggers.get();
+		List<BEASTObject> logs = logger.loggersInput.get();
 		asserListsEqual(logs, ids);
 	}
 

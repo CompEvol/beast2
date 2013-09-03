@@ -1,6 +1,10 @@
 package beast.evolution.tree.coalescent;
 
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
@@ -9,8 +13,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.HeapSort;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * TreeIntervals.java
@@ -47,7 +49,7 @@ import java.util.List;
 @Description("Extracts the intervals from a tree. Points in the intervals " +
         "are defined by the heights of nodes in the tree.")
 public class TreeIntervals extends CalculationNode implements IntervalList {
-    public Input<Tree> m_tree = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
+    public Input<Tree> treeInput = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
 
     public TreeIntervals() {
         super();
@@ -124,7 +126,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 
     public int getSampleCount() {
         // Assumes a binary tree!
-        return m_tree.get().getInternalNodeCount();
+        return treeInput.get().getInternalNodeCount();
     }
 
     /**
@@ -309,7 +311,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      */
     @SuppressWarnings("unchecked")
     protected void calculateIntervals() {
-        Tree tree = m_tree.get();
+        Tree tree = treeInput.get();
 
         final int nodeCount = tree.getNodeCount();
 

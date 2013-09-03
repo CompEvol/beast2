@@ -3,6 +3,11 @@ package beast.app.beauti;
 import javax.swing.*;
 import javax.swing.table.*;
 
+import beast.evolution.alignment.Alignment;
+import beast.evolution.datatype.DataType;
+import beast.util.NexusParser;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,9 +15,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import beast.evolution.alignment.Alignment;
-import beast.evolution.datatype.DataType;
-import beast.util.NexusParser;
 
 public class AlignmentViewer extends JPanel {
     private static final long serialVersionUID = 1L;

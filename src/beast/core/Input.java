@@ -24,17 +24,21 @@
 */
 package beast.core;
 
-import beast.core.parameter.RealParameter;
 
+import java.io.File;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import beast.core.parameter.RealParameter;
+
 
 /**
- * Represents input of a Plugin class.
- * Inputs connect Plugins with outputs of other Plugins,
+ * Represents input of a YABBYObject class.
+ * Inputs connect YABBYObjects with outputs of other YABBYObjects,
  * e.g. a Logger can get the result it needs to log from a
- * Plugin that actually performs a calculation.
+ * YABBYObject that actually performs a calculation.
  */
 public class Input<T> {
     /**
@@ -251,9 +255,38 @@ public class Input<T> {
     public String getTipText() {
         return tipText;
     }
-
+    
+	public String getValueTipText() {
+		if (theClass == Boolean.class) {
+			return ("[true|false]");
+		}
+		if (theClass == Integer.class) {
+			return ("<integer>");
+		}
+		if (theClass == Long.class) {
+			return ("<long>");
+		}
+		if (theClass == Double.class) {
+			return ("<double>");
+		}
+		if (theClass == String.class) {
+			return "<string>";
+		}
+		if (theClass == File.class) {
+			return "<filename>";
+		}
+		if (theClass.isEnum()) {
+			return Arrays.toString(possibleValues).replaceAll(",","|");
+		}
+		return "";
+	}
+    
     public Class<?> getType() {
         return theClass;
+    }
+    
+    public void setType(Class<?> theClass) {
+        this.theClass = theClass;
     }
 
     public Validate getRule() {
@@ -346,11 +379,11 @@ public class Input<T> {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void setValue(final Object value, final Plugin plugin) throws Exception {
+    public void setValue(final Object value, final BEASTObject plugin) throws Exception {
         if (value == null) {
             if (this.value != null) {
-                if (this.value instanceof Plugin) {
-                    ((Plugin) this.value).outputs.remove(plugin);
+                if (this.value instanceof BEASTObject) {
+                    ((BEASTObject) this.value).outputs.remove(plugin);
                 }
             }
             this.value = null;
@@ -375,18 +408,19 @@ public class Input<T> {
 //                    }
 //                }
                 vector.add(value);
-                if (value instanceof Plugin) {
-                    ((Plugin) value).outputs.add(plugin);
+                if (value instanceof BEASTObject) {
+                    ((BEASTObject) value).outputs.add(plugin);
                 }
             }
 
-            else if (value instanceof List<?> && theClass.isAssignableFrom(((List)value).get(0).getClass())) {
+            else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>)value).get(0).getClass())) {
                 // add all elements in given list to input list.
-                final List vector = (List) this.value;
-                for (Object v : ((List)value)) {
+                @SuppressWarnings("rawtypes")
+				final List<Object> vector = (List) this.value;
+                for (Object v : ((List<?>)value)) {
                     vector.add(v);
-                    if (v instanceof Plugin) {
-                        ((Plugin) v).outputs.add(plugin);
+                    if (v instanceof BEASTObject) {
+                        ((BEASTObject) v).outputs.add(plugin);
                     }
                 }
             }
@@ -397,11 +431,11 @@ public class Input<T> {
 
         } else {
             if (theClass.isAssignableFrom(value.getClass())) {
-                if (value instanceof Plugin) {
+                if (value instanceof BEASTObject) {
                     if (this.value != null) {
-                        ((Plugin) this.value).outputs.remove(plugin);
+                        ((BEASTObject) this.value).outputs.remove(plugin);
                     }
-                    ((Plugin) value).outputs.add(plugin);
+                    ((BEASTObject) value).outputs.add(plugin);
                 }
                 this.value = (T) value;
             } else {
@@ -419,16 +453,18 @@ public class Input<T> {
      * It is best for Beauti to throw an Exception from canSetName() with some
      * diagnostic info when the value cannot be set.
      */
-    public boolean canSetValue(Object value, Plugin plugin) throws Exception {
-        String sName = new String(name.charAt(0) + "").toUpperCase() + name.substring(1);
+    public boolean canSetValue(Object value, BEASTObject plugin) throws Exception {
+        String inputName = new String(name.charAt(0) + "").toUpperCase() + name.substring(1);
         try {
-            Method method = plugin.getClass().getMethod("canSet" + sName, Object.class);
+            Method method = plugin.getClass().getMethod("canSet" + inputName, Object.class);
             //System.err.println("Calling method " + plugin.getClass().getName() +"."+ method.getName());
             Object o = method.invoke(plugin, value);
             return (Boolean) o;
         } catch (java.lang.NoSuchMethodException e) {
             return true;
         } catch (java.lang.reflect.InvocationTargetException e) {
+        	System.err.println(plugin.getClass().getName() + "." + getName() + ": " + e.getCause());
+        	
             if (e.getCause() != null) {
                 throw new Exception(e.getCause().getMessage());
             }
@@ -445,7 +481,7 @@ public class Input<T> {
      * @param plugin whose type is to be determined
      * @throws Exception
      */
-    public void determineClass(final Plugin plugin) throws Exception {
+    public void determineClass(final Object plugin) throws Exception {
         try {
             final Field[] fields = plugin.getClass().getFields();
             // find this input in the plugin
@@ -462,12 +498,23 @@ public class Input<T> {
                         if (value != null && value instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
                             theClass = (Class<?>) genericTypes2[0];
+                        // gettting type of map is not possible?!?
+                        //} else if (value != null && value instanceof Map<?,?>) {
+                        //    Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
+                        //    theClass = (Class<?>) genericTypes2[0];
                         } else {
                             // it is not a list (or if it is, this will fail)
                             try {
                                 theClass = (Class<?>) genericTypes[0];
                             } catch (Exception e) {
-                                System.err.println(plugin.getClass().getName() + " " + plugin.getID() + " failed. " +
+                            	// resolve ID
+                            	String id = "";
+                                Method method = plugin.getClass().getMethod("getID");
+                                if (method != null) {
+                                	id = method.invoke(plugin).toString();
+                                }
+                                // assemble error message
+                                System.err.println(plugin.getClass().getName() + " " + id + " failed. " +
                                         "Possibly template or abstract Plugin used " +
                                         "or if it is a list, the list was not initilised???");
                                 System.err.println("class is " + plugin.getClass());
@@ -492,7 +539,7 @@ public class Input<T> {
      * @throws Exception when all conversions fail
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setStringValue(final String sValue, final Plugin plugin) throws Exception {
+    private void setStringValue(final String sValue, final BEASTObject plugin) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (theClass.equals(Integer.class)) {
             value = (T) new Integer(sValue);
@@ -512,7 +559,7 @@ public class Input<T> {
                 return;
             }
         }
-        if (theClass.equals(Valuable.class)) {
+        if (theClass.equals(Function.class)) {
             final RealParameter param = new RealParameter();
             param.initByName("value", sValue, "upper", 0.0, "lower", 0.0, "dimension", 1);
             param.initAndValidate();
@@ -532,7 +579,7 @@ public class Input<T> {
                     return;
                 }
             }
-            throw new Exception("Input 104: value " + sValue + " not found in " + Arrays.toString(possibleValues));
+            throw new Exception("Input 104: value " + sValue + " not found. Select one of " + Arrays.toString(possibleValues));
         }
 
         // call a string constructor of theClass
@@ -545,8 +592,8 @@ public class Input<T> {
             } else {
                 value = (T) o;
             }
-            if (o instanceof Plugin) {
-                ((Plugin) o).outputs.add(plugin);
+            if (o instanceof BEASTObject) {
+                ((BEASTObject) o).outputs.add(plugin);
             }
         } catch (Exception e) {
             throw new Exception("Input 103: type mismatch, cannot initialize input '" + getName() +

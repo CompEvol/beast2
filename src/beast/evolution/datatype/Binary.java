@@ -13,10 +13,10 @@ public class Binary extends Base {
     };
 
     public Binary() {
-        m_nStateCount = 2;
-        m_mapCodeToStateSet = x;
-        m_nCodeLength = 1;
-        m_sCodeMap = "01" + GAP_CHAR + MISSING_CHAR;
+        stateCount = 2;
+        mapCodeToStateSet = x;
+        codeLength = 1;
+        codeMap = "01" + GAP_CHAR + MISSING_CHAR;
     }
 
     @Override

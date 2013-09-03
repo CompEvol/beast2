@@ -37,31 +37,31 @@ public class XMLParserException extends Exception {
     /**
      * DOM Node where the anomaly was in the vicinity *
      */
-    Node m_node;
+    Node _node;
     /**
      * short description of the anomaly *
      */
-    String m_sMsg;
+    String msg;
     /**
      * number of the anomaly, for ease of finding in the code *
      */
-    int m_nErrorNr;
+    int errorNr;
 
     public XMLParserException(Node node, String sMsg, int nErrorNr) {
         super(sMsg);
-        m_node = node;
-        m_sMsg = "";
-        m_nErrorNr = nErrorNr;
+        _node = node;
+        msg = "";
+        errorNr = nErrorNr;
     }
 
     // format message and resolve parent
     public String getMessage() {
-        String sMsg = "\nError " + m_nErrorNr + " parsing the xml input file\n\n" + m_sMsg + super.getMessage();
-        if (m_node == null) {
+        String sMsg = "\nError " + errorNr + " parsing the xml input file\n\n" + msg + super.getMessage();
+        if (_node == null) {
             return "NULL NODE\n" + sMsg;
         }
-        String sPath = "";
-        Node node = m_node;
+        String path = "";
+        Node node = _node;
         while (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
             String sID;
             sID = getAttribute(node, "id");
@@ -86,11 +86,11 @@ public class XMLParserException extends Exception {
             } else {
                 sSpec = "";
             }
-            sPath = sPath.replaceAll("  <", "      <");
-            sPath = "  <" + node.getNodeName() + sID + sName + sSpec + ">\n" + sPath;
+            path = path.replaceAll("  <", "      <");
+            path = "  <" + node.getNodeName() + sID + sName + sSpec + ">\n" + path;
             node = node.getParentNode();
         }
-        sMsg += "\n\nError detected about here:\n" + sPath;
+        sMsg += "\n\nError detected about here:\n" + path;
         return sMsg;
     } // getMessage
 

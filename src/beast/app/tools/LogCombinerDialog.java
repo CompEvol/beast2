@@ -28,10 +28,6 @@ package beast.app.tools;
 
 //import dr.app.gui.FileDrop;
 
-import beast.app.beastapp.WholeNumberField;
-import beast.app.beauti.Beauti;
-import beast.app.util.FileDrop;
-import beast.app.util.Utils;
 //import dr.app.gui.table.TableEditorStopper;
 //import dr.app.gui.components.WholeNumberField;
 import jam.panels.ActionPanel;
@@ -44,6 +40,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+
+import beast.app.beauti.Beauti;
+import beast.app.util.FileDrop;
+import beast.app.util.Utils;
+import beast.app.util.WholeNumberField;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

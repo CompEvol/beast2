@@ -14,9 +14,11 @@ import javax.swing.JLabel;
 import beast.app.draw.InputEditor;
 import beast.app.draw.PluginDialog;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.Prior;
+
+
 
 public class PriorInputEditor extends InputEditor.Base {
 	private static final long serialVersionUID = 1L;
@@ -31,7 +33,7 @@ public class PriorInputEditor extends InputEditor.Base {
 	}
 
 	@Override
-	public void init(Input<?> input, Plugin plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTObject plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
@@ -47,11 +49,11 @@ public class PriorInputEditor extends InputEditor.Base {
         itemBox.add(label);
 
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
+        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
 
-        String sID = prior.m_distInput.get().getID();
+        String sID = prior.distInput.get().getID();
         System.err.println("id=" + sID);
         sID = sID.substring(0, sID.indexOf('.'));
         for (BeautiSubTemplate template : sAvailablePlugins) {
@@ -69,10 +71,10 @@ public class PriorInputEditor extends InputEditor.Base {
                 BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
                 //String sID = ((Plugin) list.get(iItem)).getID();
                 //String sPartition = BeautiDoc.parsePartition(sID);
-                PartitionContext context = doc.getContextFor((Plugin) list.get(itemNr));
+                PartitionContext context = doc.getContextFor((BEASTObject) list.get(itemNr));
                 Prior prior = (Prior) list.get(itemNr);
                 try {
-                    template.createSubNet(context, prior, prior.m_distInput, true);
+                    template.createSubNet(context, prior, prior.distInput, true);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -122,7 +124,7 @@ public class PriorInputEditor extends InputEditor.Base {
     String paramToString(RealParameter p) {
         Double lower = p.lowerValueInput.get();
         Double upper = p.upperValueInput.get();
-        return "initial = " + p.m_pValues.get() +
+        return "initial = " + p.valuesInput.get() +
                 " [" + (lower == null ? "-\u221E" : lower + "") +
                 "," + (upper == null ? "\u221E" : upper + "") + "]";
     }

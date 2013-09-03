@@ -17,9 +17,11 @@ import java.util.Locale;
 
 import javax.swing.JFrame;
 
-import beast.app.beastapp.BeastVersion;
+import beast.app.BEASTVersion;
 import beast.app.tools.LogCombinerDialog;
 import beast.util.LogAnalyser;
+
+
 
 /**
  * combines log files produced by a ParticleFilter for
@@ -201,11 +203,12 @@ public class LogCombiner extends LogAnalyser {
             if (sStr.matches("^tree STATE_.*")) {
                 if (++nData >= 0) {
                     if (m_nSampleInterval < 0) {
-                        String sStr2 = sStr.substring(11, sStr.indexOf("="));
+                        String sStr2 = sStr.substring(11, sStr.indexOf("=")).trim();
+                        sStr2 = sStr2.split("\\s")[0];
                         if (nSample0 < 0) {
-                            nSample0 = Integer.parseInt(sStr2.replaceAll("\\s", ""));
+                            nSample0 = Integer.parseInt(sStr2);
                         } else {
-                            m_nSampleInterval = Integer.parseInt(sStr2.replaceAll("\\s", "")) - nSample0;
+                            m_nSampleInterval = Integer.parseInt(sStr2) - nSample0;
                         }
 
                     }
@@ -391,7 +394,7 @@ public class LogCombiner extends LogAnalyser {
      * @param args
      */
     public static void main(String[] args) {
-        BeastVersion version = new BeastVersion();
+        BEASTVersion version = new BEASTVersion();
         final String versionString = version.getVersionString();
         String nameString = "LogCombiner " + versionString;
         String aboutString = "<html><center><p>" + versionString + ", " + version.getDateString() + "</p>" +

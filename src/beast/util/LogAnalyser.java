@@ -11,9 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import beast.app.beastapp.BeastVersion;
+import beast.app.BEASTVersion;
 import beast.app.util.Utils;
 import beast.core.util.ESS;
+
+
 
 public class LogAnalyser {
 
@@ -439,7 +441,7 @@ public class LogAnalyser {
         try {
             LogAnalyser analyser;
             if (args.length == 0) {
-                BeastVersion version = new BeastVersion();
+                BEASTVersion version = new BEASTVersion();
                 File file = Utils.getLoadFile("LogAnalyser " + version.getVersionString() + " - Select log file to analyse",
                         null, "BEAST log (*.log) Files", "log", "txt");
                 if (file == null) {

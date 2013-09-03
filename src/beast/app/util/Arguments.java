@@ -58,7 +58,7 @@ public class Arguments {
 
         String value = null;
     }
-
+    
     public static class IntegerOption extends Option {
 
         public IntegerOption(String label, String description) {

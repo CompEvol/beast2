@@ -2,13 +2,14 @@ package test.beast.math.distributions;
 
 import org.junit.Test;
 
-import test.beast.BEASTTestCase;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.Exponential;
 import beast.math.distributions.MRCAPrior;
 import beast.util.TreeParser;
+
+import test.beast.BEASTTestCase;
 import junit.framework.TestCase;
 
 public class MRCAPriorTest extends TestCase {

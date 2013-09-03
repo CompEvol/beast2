@@ -25,11 +25,7 @@
 package beast.util;
 
 
-import beast.core.*;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Tree;
+
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -45,7 +41,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import java.io.FileWriter;
+import beast.core.*;
+
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -63,20 +61,20 @@ public class XMLProducer extends XMLParser {
     /**
      * list of objects already converted to XML, so an idref suffices
      */
-    HashSet<Plugin> m_bDone;
+    HashSet<BEASTObject> isDone;
     @SuppressWarnings("rawtypes")
-    HashSet<Input> m_bInputsDone;
+    HashSet<Input> inputsDone;
     /**
      * list of IDs of elements produces, used to prevent duplicate ID generation
      */
-    HashSet<String> m_sIDs;
+    HashSet<String> IDs;
     /**
      * #spaces before elements in XML *
      */
-    int m_nIndent;
+    int indent;
 
     final public static String DEFAULT_NAMESPACE = "beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood";
-    final public static String DO_NOT_EDIT_WARNING = "DO NOT EDIT the following machine generated text, they are used in Beauti";
+    //final public static String DO_NOT_EDIT_WARNING = "DO NOT EDIT the following machine generated text, they are used in Beauti";
 
     public XMLProducer() {
         super();
@@ -88,24 +86,24 @@ public class XMLProducer extends XMLParser {
      * representing the plug-in. This assumes plugin is Runnable
      */
     @SuppressWarnings("rawtypes")
-    public String toXML(Plugin plugin) {
-        return toXML(plugin, new ArrayList<Plugin>());
+    public String toXML(BEASTObject plugin) {
+        return toXML(plugin, new ArrayList<BEASTObject>());
     }
 
-    public String toXML(Plugin plugin, Collection<Plugin> others) {
+    public String toXML(BEASTObject plugin, Collection<BEASTObject> others) {
         try {
             StringBuffer buf = new StringBuffer();
             buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0' namespace='" + DEFAULT_NAMESPACE + "'>\n");
-            for (String element : m_sElement2ClassMap.keySet()) {
-            	if (!m_sReservedElements.contains(element)) {
-            		buf.append("<map name='" + element + "'>" + m_sElement2ClassMap.get(element) +"</map>\n");
+            for (String element : element2ClassMap.keySet()) {
+            	if (!reservedElements.contains(element)) {
+            		buf.append("<map name='" + element + "'>" + element2ClassMap.get(element) +"</map>\n");
             	}
             }
             buf.append("\n\n");
-            m_bDone = new HashSet<Plugin>();
-            m_bInputsDone = new HashSet<Input>();
-            m_sIDs = new HashSet<String>();
-            m_nIndent = 0;
+            isDone = new HashSet<BEASTObject>();
+            inputsDone = new HashSet<Input>();
+            IDs = new HashSet<String>();
+            indent = 0;
             pluginToXML(plugin, buf, null, true);
             String sEndBeast = "</" + XMLParser.BEAST_ELEMENT + ">";
             buf.append(sEndBeast);
@@ -125,8 +123,8 @@ public class XMLProducer extends XMLParser {
 
             buf = new StringBuffer();
             if (others.size() > 0) {
-                for (Plugin plugin2 : others) {
-                    if (!m_sIDs.contains(plugin2.getID())) {
+                for (BEASTObject plugin2 : others) {
+                    if (!IDs.contains(plugin2.getID())) {
                         pluginToXML(plugin2, buf, null, false);
                     }
                 }
@@ -135,8 +133,9 @@ public class XMLProducer extends XMLParser {
             String extras = buf.toString();
             // prevent double -- inside XML comment, this can happen in sequences
             extras = extras.replaceAll("--","- - ");
-            sXML = sXML.substring(0, iEnd) + "\n\n<!-- " + DO_NOT_EDIT_WARNING + " \n\n" + 
-            	extras +  "\n\n-->\n\n" + sEndBeast;
+            sXML = sXML.substring(0, iEnd) //+ "\n\n<!-- " + DO_NOT_EDIT_WARNING + " \n\n" + 
+            	//extras +  "\n\n-->\n\n" 
+            		+ sEndBeast;
 
             return sXML;
         } catch (Exception e) {
@@ -148,7 +147,7 @@ public class XMLProducer extends XMLParser {
     /**
      * like toXML() but without the assumption that plugin is Runnable *
      */
-    public String modelToXML(Plugin plugin) {
+    public String modelToXML(BEASTObject plugin) {
         try {
             String sXML0 = toRawXML(plugin);
             String sXML = cleanUpXML(sXML0, m_sSupressAlignmentXSL);
@@ -169,7 +168,7 @@ public class XMLProducer extends XMLParser {
      * like modelToXML, but without the cleanup *
      */
     @SuppressWarnings("rawtypes")
-    public String toRawXML(Plugin plugin) {
+    public String toRawXML(BEASTObject plugin) {
         return toRawXML(plugin, null);
     } // toRawXML
 
@@ -178,13 +177,13 @@ public class XMLProducer extends XMLParser {
      * For plugin without name
      */
     @SuppressWarnings("rawtypes")
-    public String toRawXML(Plugin plugin, String sName) {
+    public String toRawXML(BEASTObject plugin, String sName) {
         try {
             StringBuffer buf = new StringBuffer();
-            m_bDone = new HashSet<Plugin>();
-            m_bInputsDone = new HashSet<Input>();
-            m_sIDs = new HashSet<String>();
-            m_nIndent = 0;
+            isDone = new HashSet<BEASTObject>();
+            inputsDone = new HashSet<Input>();
+            IDs = new HashSet<String>();
+            indent = 0;
             pluginToXML(plugin, buf, sName, false);
             return buf.toString();
         } catch (Exception e) {
@@ -195,13 +194,13 @@ public class XMLProducer extends XMLParser {
 
 
 
-    public String stateNodeToXML(Plugin plugin) {
+    public String stateNodeToXML(BEASTObject plugin) {
         try {
             StringBuffer buf = new StringBuffer();
             //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
-            m_bDone = new HashSet<Plugin>();
-            m_sIDs = new HashSet<String>();
-            m_nIndent = 0;
+            isDone = new HashSet<BEASTObject>();
+            IDs = new HashSet<String>();
+            indent = 0;
             pluginToXML(plugin, buf, null, false);
             return buf.toString();
         } catch (Exception e) {
@@ -238,16 +237,16 @@ public class XMLProducer extends XMLParser {
     // compress parts into plates
     String findPlates(String sXML) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        m_doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
-        m_doc.normalize();
+        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        doc.normalize();
 
-        Node topNode = m_doc.getElementsByTagName("*").item(0);
+        Node topNode = doc.getElementsByTagName("*").item(0);
         findPlates(topNode);
 
         //create string from xml tree
         StringWriter sw = new StringWriter();
         StreamResult result = new StreamResult(sw);
-        DOMSource source = new DOMSource(m_doc);
+        DOMSource source = new DOMSource(doc);
         TransformerFactory factory2 = TransformerFactory.newInstance();
         Transformer transformer = factory2.newTransformer();
         transformer.transform(source, result);
@@ -299,15 +298,15 @@ public class XMLProducer extends XMLParser {
      * replace node element by a plate element with variable sVar and range sRange *
      */
     void makePlate(Node node, String sPattern, String sVar, String sRange) {
-        Element plate = m_doc.createElement("plate");
+        Element plate = doc.createElement("plate");
         plate.setAttribute("var", sVar);
         plate.setAttribute("range", sRange);
         String sIndent = node.getPreviousSibling().getTextContent();
         replace(node, sPattern, sVar);
         node.getParentNode().replaceChild(plate, node);
-        plate.appendChild(m_doc.createTextNode(sIndent + "  "));
+        plate.appendChild(doc.createTextNode(sIndent + "  "));
         plate.appendChild(node);
-        plate.appendChild(m_doc.createTextNode(sIndent));
+        plate.appendChild(doc.createTextNode(sIndent));
     }
 
     /**
@@ -564,11 +563,11 @@ public class XMLProducer extends XMLParser {
      * that is moderately readable.
      */
     @SuppressWarnings("rawtypes")
-    void pluginToXML(Plugin plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
+    void pluginToXML(BEASTObject plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
-        for (String key : m_sElement2ClassMap.keySet()) {
-        	String className = m_sElement2ClassMap.get(key);
+        for (String key : element2ClassMap.keySet()) {
+        	String className = element2ClassMap.get(key);
         	Class _class = Class.forName(className);
         	if (_class.equals(plugin.getClass())) {
         		sElementName = key;
@@ -603,16 +602,16 @@ public class XMLProducer extends XMLParser {
         if (bIsTopLevel) {
             sElementName = XMLParser.RUN_ELEMENT;
         }
-        for (int i = 0; i < m_nIndent; i++) {
+        for (int i = 0; i < indent; i++) {
             buf.append("    ");
         }
-        m_nIndent++;
+        indent++;
 
         // open element
         buf.append("<").append(sElementName);
 
         boolean bSkipInputs = false;
-        if (m_bDone.contains(plugin)) {
+        if (isDone.contains(plugin)) {
             // XML is already produced, we can idref it
             buf.append(" idref='" + plugin.getID() + "'");
             bSkipInputs = true;
@@ -621,21 +620,21 @@ public class XMLProducer extends XMLParser {
             if (plugin.getID() != null && !plugin.getID().equals("")) {
                 String sID = plugin.getID();
                 // ensure ID is unique
-                if (m_sIDs.contains(sID)) {
+                if (IDs.contains(sID)) {
                     int k = 1;
-                    while (m_sIDs.contains(sID + k)) {
+                    while (IDs.contains(sID + k)) {
                         k++;
                     }
                     sID = sID + k;
                 }
                 buf.append(" id='" + sID + "'");
-                m_sIDs.add(sID);
+                IDs.add(sID);
             }
-            m_bDone.add(plugin);
+            isDone.add(plugin);
         }
         String sClassName = plugin.getClass().getName();
-        if (bSkipInputs == false && (!m_sElement2ClassMap.containsKey(sElementName) ||
-                !m_sElement2ClassMap.get(sElementName).equals(sClassName))) {
+        if (bSkipInputs == false && (!element2ClassMap.containsKey(sElementName) ||
+                !element2ClassMap.get(sElementName).equals(sClassName))) {
             // only add spec element if it cannot be deduced otherwise (i.e., by idref or default mapping
             buf.append(" spec='" + sClassName + "'");
         }
@@ -658,14 +657,14 @@ public class XMLProducer extends XMLParser {
             }
             if (buf2.length() == 0) {
                 // if nothing was added by the inputs, close element
-                m_nIndent--;
+                indent--;
                 buf.append("/>\n");
             } else {
                 // add contribution of inputs
                 buf.append(">\n");
                 buf.append(buf2);
-                m_nIndent--;
-                for (int i = 0; i < m_nIndent; i++) {
+                indent--;
+                for (int i = 0; i < indent; i++) {
                     buf.append("    ");
                 }
                 // add closing element
@@ -673,10 +672,10 @@ public class XMLProducer extends XMLParser {
             }
         } else {
             // close element
-            m_nIndent--;
+            indent--;
             buf.append("/>\n");
         }
-        if (m_nIndent < 2) {
+        if (indent < 2) {
             buf.append("\n");
         }
     } // pluginToXML
@@ -693,7 +692,7 @@ public class XMLProducer extends XMLParser {
      * @throws Exception
      */
     @SuppressWarnings("rawtypes")
-    void inputToXML(String sInput, Plugin plugin, StringBuffer buf, boolean bShort) throws Exception {
+    void inputToXML(String sInput, BEASTObject plugin, StringBuffer buf, boolean bShort) throws Exception {
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
@@ -705,18 +704,18 @@ public class XMLProducer extends XMLParser {
                         if (input.get() instanceof List) {
                             if (!bShort) {
                                 for (Object o2 : (List) input.get()) {
-                                    pluginToXML((Plugin) o2, buf, sInput, false);
+                                    pluginToXML((BEASTObject) o2, buf, sInput, false);
                                 }
                             }
                             return;
-                        } else if (input.get() instanceof Plugin) {
+                        } else if (input.get() instanceof BEASTObject) {
                         	if (!input.get().equals(input.defaultValue)) {
-	                            if (bShort && m_bDone.contains((Plugin) input.get())) {
-	                                buf.append(" " + sInput + "='@" + ((Plugin) input.get()).getID() + "'");
-	                                m_bInputsDone.add(input);
+	                            if (bShort && isDone.contains((BEASTObject) input.get())) {
+	                                buf.append(" " + sInput + "='@" + ((BEASTObject) input.get()).getID() + "'");
+	                                inputsDone.add(input);
 	                            }
-	                            if (!bShort && !m_bInputsDone.contains(input)) {
-	                                pluginToXML((Plugin) input.get(), buf, sInput, false);
+	                            if (!bShort && !inputsDone.contains(input)) {
+	                                pluginToXML((BEASTObject) input.get(), buf, sInput, false);
 	                            }
                         	}
                             return;
@@ -730,7 +729,7 @@ public class XMLProducer extends XMLParser {
 	                                }
 	                            } else {
 	                                if (sValue.indexOf('\n') >= 0) {
-	                                    for (int j = 0; j < m_nIndent; j++) {
+	                                    for (int j = 0; j < indent; j++) {
 	                                        buf.append("    ");
 	                                    }
 	                                    if (sInput.equals("value")) {

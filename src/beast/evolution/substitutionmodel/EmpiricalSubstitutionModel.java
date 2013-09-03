@@ -1,7 +1,7 @@
 package beast.evolution.substitutionmodel;
 
-import beast.core.Input.Validate;
 import beast.core.Description;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 
@@ -11,25 +11,25 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 
     public EmpiricalSubstitutionModel() {
         frequenciesInput.setRule(Validate.OPTIONAL);
-        m_rates.setRule(Validate.OPTIONAL);
+        ratesInput.setRule(Validate.OPTIONAL);
     }
 
     double[] m_empiricalRates;
 
     @Override
     public void initAndValidate() throws Exception {
-        m_frequencies = getEmpericalFrequencieValues();
+        frequencies = getEmpericalFrequencieValues();
         m_empiricalRates = getEmpericalRateValues();
-        int nFreqs = m_frequencies.getFreqs().length;
+        int nFreqs = frequencies.getFreqs().length;
         if (m_empiricalRates.length != nFreqs * (nFreqs - 1)) {
             throw new Exception("The number of empirical rates (" + m_empiricalRates.length + ") should be " +
                     "equal to #frequencies * (#frequencies-1) = (" + nFreqs + "*" + (nFreqs - 1) + ").");
         }
 
         updateMatrix = true;
-        m_nStates = m_frequencies.getFreqs().length;
+        nrOfStates = frequencies.getFreqs().length;
         eigenSystem = createEigenSystem();
-        m_rateMatrix = new double[m_nStates][m_nStates];
+        rateMatrix = new double[nrOfStates][nrOfStates];
         relativeRates = new double[m_empiricalRates.length];
         storedRelativeRates = new double[m_empiricalRates.length];
     } // initAndValidate
@@ -82,7 +82,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
                 "upper", 1.0,
                 "dimension", nStates
         );
-        freqsParam.frequencies.setValue(freqsRParam, freqsParam);
+        freqsParam.frequenciesInput.setValue(freqsRParam, freqsParam);
         freqsParam.initAndValidate();
         return freqsParam;
     }

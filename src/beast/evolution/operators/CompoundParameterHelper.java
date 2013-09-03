@@ -1,9 +1,11 @@
 package beast.evolution.operators;
 
+
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.parameter.Parameter;
 
-import java.util.List;
 
 @Description("A temporary helper class to solve compound state nodes for operators, " +
         "but it cannot be used as input, before the framework is modified.")

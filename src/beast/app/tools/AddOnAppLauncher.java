@@ -33,6 +33,8 @@ import org.w3c.dom.NodeList;
 import beast.app.beauti.BeautiPanel;
 import beast.util.AddOnManager;
 
+
+
 /**
  * launch applications specific to add-ons installed, for example utilities for
  * post-processing add-on specific data.

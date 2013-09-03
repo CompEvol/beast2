@@ -10,24 +10,24 @@ import beast.evolution.datatype.Nucleotide;
 @Description("General Time Reversible model of nucleotide evolution. " +
         "Rates that are not specified are assumed to be 1. ")
 public class GTR extends GeneralSubstitutionModel {
-    public Input<RealParameter> m_rateACInput = new Input<RealParameter>("rateAC", "substitution rate for A to C (default 1)");
-    public Input<RealParameter> m_rateAGInput = new Input<RealParameter>("rateAG", "substitution rate for A to G (default 1)");
-    public Input<RealParameter> m_rateATInput = new Input<RealParameter>("rateAT", "substitution rate for A to T (default 1)");
-    public Input<RealParameter> m_rateCGInput = new Input<RealParameter>("rateCG", "substitution rate for C to G (default 1)");
-    public Input<RealParameter> m_rateCTInput = new Input<RealParameter>("rateCT", "substitution rate for C to T (default 1)");
-    public Input<RealParameter> m_rateGTInput = new Input<RealParameter>("rateGT", "substitution rate for G to T (default 1)");
+    public Input<RealParameter> rateACInput = new Input<RealParameter>("rateAC", "substitution rate for A to C (default 1)");
+    public Input<RealParameter> rateAGInput = new Input<RealParameter>("rateAG", "substitution rate for A to G (default 1)");
+    public Input<RealParameter> rateATInput = new Input<RealParameter>("rateAT", "substitution rate for A to T (default 1)");
+    public Input<RealParameter> rateCGInput = new Input<RealParameter>("rateCG", "substitution rate for C to G (default 1)");
+    public Input<RealParameter> rateCTInput = new Input<RealParameter>("rateCT", "substitution rate for C to T (default 1)");
+    public Input<RealParameter> rateGTInput = new Input<RealParameter>("rateGT", "substitution rate for G to T (default 1)");
 
-    RealParameter m_rateAC;
-    RealParameter m_rateAG;
-    RealParameter m_rateAT;
-    RealParameter m_rateCG;
-    RealParameter m_rateCT;
-    RealParameter m_rateGT;
+    RealParameter rateAC;
+    RealParameter rateAG;
+    RealParameter rateAT;
+    RealParameter rateCG;
+    RealParameter rateCT;
+    RealParameter rateGT;
 
     public GTR() {
-        m_rates.setRule(Validate.OPTIONAL);
+        ratesInput.setRule(Validate.OPTIONAL);
         try {
-        	m_rates.setValue(null, this);
+        	ratesInput.setValue(null, this);
         } catch (Exception e) {
         	e.printStackTrace();
 			// TODO: handle exception
@@ -36,28 +36,28 @@ public class GTR extends GeneralSubstitutionModel {
 
     @Override
     public void initAndValidate() throws Exception {
-        if (m_rates.get() != null) {
+        if (ratesInput.get() != null) {
             throw new Exception("the rates attribute should not be used. Use the individual rates rateAC, rateCG, etc, instead.");
         }
 
-        m_frequencies = frequenciesInput.get();
+        frequencies = frequenciesInput.get();
         updateMatrix = true;
-        m_nStates = m_frequencies.getFreqs().length;
-        if (m_nStates != 4) {
-            throw new Exception("Frequencies has wrong size. Expected 4, but got " + m_nStates);
+        nrOfStates = frequencies.getFreqs().length;
+        if (nrOfStates != 4) {
+            throw new Exception("Frequencies has wrong size. Expected 4, but got " + nrOfStates);
         }
 
         eigenSystem = createEigenSystem();
-        m_rateMatrix = new double[m_nStates][m_nStates];
-        relativeRates = new double[m_nStates * (m_nStates - 1)];
-        storedRelativeRates = new double[m_nStates * (m_nStates - 1)];
+        rateMatrix = new double[nrOfStates][nrOfStates];
+        relativeRates = new double[nrOfStates * (nrOfStates - 1)];
+        storedRelativeRates = new double[nrOfStates * (nrOfStates - 1)];
 
-        m_rateAC = getParameter(m_rateACInput);
-        m_rateAG = getParameter(m_rateAGInput);
-        m_rateAT = getParameter(m_rateATInput);
-        m_rateCG = getParameter(m_rateCGInput);
-        m_rateCT = getParameter(m_rateCTInput);
-        m_rateGT = getParameter(m_rateGTInput);
+        rateAC = getParameter(rateACInput);
+        rateAG = getParameter(rateAGInput);
+        rateAT = getParameter(rateATInput);
+        rateCG = getParameter(rateCGInput);
+        rateCT = getParameter(rateCTInput);
+        rateGT = getParameter(rateGTInput);
     }
 
     private RealParameter getParameter(Input<RealParameter> parameterInput) throws Exception {
@@ -69,21 +69,21 @@ public class GTR extends GeneralSubstitutionModel {
 
     @Override
     protected void setupRelativeRates() {
-        relativeRates[0] = m_rateAC.getValue(); // A->C
-        relativeRates[1] = m_rateAG.getValue(); // A->G
-        relativeRates[2] = m_rateAT.getValue(); // A->T
+        relativeRates[0] = rateAC.getValue(); // A->C
+        relativeRates[1] = rateAG.getValue(); // A->G
+        relativeRates[2] = rateAT.getValue(); // A->T
 
-        relativeRates[3] = m_rateAC.getValue(); // C->A
-        relativeRates[4] = m_rateCG.getValue(); // C->G
-        relativeRates[5] = m_rateCT.getValue(); // C->T
+        relativeRates[3] = rateAC.getValue(); // C->A
+        relativeRates[4] = rateCG.getValue(); // C->G
+        relativeRates[5] = rateCT.getValue(); // C->T
 
-        relativeRates[6] = m_rateAG.getValue(); // G->A
-        relativeRates[7] = m_rateCG.getValue(); // G->C
-        relativeRates[8] = m_rateGT.getValue(); // G->T
+        relativeRates[6] = rateAG.getValue(); // G->A
+        relativeRates[7] = rateCG.getValue(); // G->C
+        relativeRates[8] = rateGT.getValue(); // G->T
 
-        relativeRates[9] = m_rateAT.getValue(); // T->A
-        relativeRates[10] = m_rateCT.getValue(); //T->C
-        relativeRates[11] = m_rateGT.getValue(); //T->G
+        relativeRates[9] = rateAT.getValue(); // T->A
+        relativeRates[10] = rateCT.getValue(); //T->C
+        relativeRates[11] = rateGT.getValue(); //T->G
     }
 
     @Override

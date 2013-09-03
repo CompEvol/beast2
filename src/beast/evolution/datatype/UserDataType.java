@@ -9,37 +9,39 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType.Base;
 
+
+
 @Description("User defined datatype. Allows custom symbols to map onto statesets.")
 public class UserDataType extends Base {
-    public Input<Integer> m_nStateCountInput = new Input<Integer>("states", "total number of states", Validate.REQUIRED);
-    public Input<Integer> m_nCodeLengthInput = new Input<Integer>("codelength", "length of code, if negative a variable length code is assumed, default 1", 1);
-    public Input<String> m_sCodeMapInput = new Input<String>("codeMap", "mapping of codes to states. " +
+    public Input<Integer> stateCountInput = new Input<Integer>("states", "total number of states", Validate.REQUIRED);
+    public Input<Integer> codeLengthInput = new Input<Integer>("codelength", "length of code, if negative a variable length code is assumed, default 1", 1);
+    public Input<String> codeMapInput = new Input<String>("codeMap", "mapping of codes to states. " +
             "A comma separated string of codes with a subset of states. " +
             "A state set is a space separates list of zero based integers, up to the number of states, " +
             "e.g. A=0, C=1, R=0 2, ? = 0 1 2 3", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() throws Exception {
-        m_nStateCount = m_nStateCountInput.get();
-        m_nCodeLength = m_nCodeLengthInput.get();
+        stateCount = stateCountInput.get();
+        codeLength = codeLengthInput.get();
 
-        String sCodeMap = m_sCodeMapInput.get();
+        String sCodeMap = codeMapInput.get();
         String[] sStrs = sCodeMap.split(",");
-        m_sCodeMap = "";
-        m_mapCodeToStateSet = new int[sStrs.length][];
+        codeMap = "";
+        mapCodeToStateSet = new int[sStrs.length][];
         int k = 0;
         for (String sStr : sStrs) {
             String[] sStrs2 = sStr.split("=");
             // parse the code
             String sCode = sStrs2[0].replaceAll("\\s", "");
 
-            m_sCodeMap += sCode;
-            if (m_nCodeLength > 0) {
-                if (sCode.length() != m_nCodeLength) {
-                    throw new Exception("Invalide code '" + sCode + "'. Expected code of length " + m_nCodeLength);
+            codeMap += sCode;
+            if (codeLength > 0) {
+                if (sCode.length() != codeLength) {
+                    throw new Exception("Invalide code '" + sCode + "'. Expected code of length " + codeLength);
                 }
             } else {
-                m_sCodeMap += ",";
+                codeMap += ",";
             }
             // parse the state set
             List<Integer> stateSet = new ArrayList<Integer>();
@@ -47,7 +49,7 @@ public class UserDataType extends Base {
             for (String sStr2 : sStrs2) {
                 if (sStr2.length() > 0) {
                     int i = Integer.parseInt(sStr2);
-                    if (i < 0 || i >= m_nStateCount) {
+                    if (i < 0 || i >= stateCount) {
                         throw new Exception("state index should be from 0 to statecount, not " + i);
                     }
                     stateSet.add(i);
@@ -58,13 +60,13 @@ public class UserDataType extends Base {
             for (int i = 0; i < stateSet.size(); i++) {
                 stateSet2[i] = stateSet.get(i);
             }
-            m_mapCodeToStateSet[k++] = stateSet2;
+            mapCodeToStateSet[k++] = stateSet2;
         }
     }
 
     @Override
     public String getCode(int state) {
-        return String.valueOf(m_sCodeMap.split(",")[state]);
+        return String.valueOf(codeMap.split(",")[state]);
     }
 
     @Override

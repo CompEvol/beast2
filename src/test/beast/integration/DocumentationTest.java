@@ -9,8 +9,10 @@ import org.junit.Test;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.util.AddOnManager;
+
+
 
 public class DocumentationTest extends TestCase {
 
@@ -20,7 +22,7 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testDescriptions() {
-        List<String> sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         List<String> sUndocumentedPlugins = new ArrayList<String>();
         for (String sPlugin : sPluginNames) {
             try {
@@ -51,11 +53,11 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testInputTipText() {
-        List<String> sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         List<String> sUndocumentedInputs = new ArrayList<String>();
         for (String sPlugin : sPluginNames) {
             try {
-                Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+                BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
                 List<Input<?>> inputs = plugin.listInputs();
                 for (Input<?> input : inputs) {
                     boolean hasSatisfactoryDescription = false;

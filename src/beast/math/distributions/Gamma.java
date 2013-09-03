@@ -8,12 +8,14 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 
+
+
 @Description("Gamma distribution.    for x>0  g(x;alpha,beta) = \\frac{beta^{alpha}}{Gamma(alpha)} x^{alpha-1} e^{-beta {x}}" +
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Gamma extends ParametricDistribution {
-    public Input<RealParameter> m_alpha = new Input<RealParameter>("alpha", "shape parameter, defaults to 2");
-    public Input<RealParameter> m_beta = new Input<RealParameter>("beta", "scale parameter, defaults to 2");
+    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "shape parameter, defaults to 2");
+    public Input<RealParameter> betaInput = new Input<RealParameter>("beta", "scale parameter, defaults to 2");
 
     static org.apache.commons.math.distribution.GammaDistribution m_dist = new GammaDistributionImpl(1, 1);
 
@@ -28,15 +30,15 @@ public class Gamma extends ParametricDistribution {
     void refresh() {
         double fAlpha;
         double fBeta;
-        if (m_alpha.get() == null) {
+        if (alphaInput.get() == null) {
             fAlpha = 2;
         } else {
-            fAlpha = m_alpha.get().getValue();
+            fAlpha = alphaInput.get().getValue();
         }
-        if (m_beta.get() == null) {
+        if (betaInput.get() == null) {
             fBeta = 2;
         } else {
-            fBeta = m_beta.get().getValue();
+            fBeta = betaInput.get().getValue();
         }
         m_dist.setAlpha(fAlpha);
         m_dist.setBeta(fBeta);
@@ -50,6 +52,6 @@ public class Gamma extends ParametricDistribution {
 
     @Override
     public double getMean() {
-    	return m_offset.get() + m_dist.getAlpha() / m_dist.getBeta();
+    	return offsetInput.get() + m_dist.getAlpha() / m_dist.getBeta();
     }
 } // class Gamma

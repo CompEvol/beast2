@@ -26,14 +26,16 @@ package beast.evolution.sitemodel;
 
 
 
+
+import org.apache.commons.math.distribution.GammaDistribution;
+import org.apache.commons.math.distribution.GammaDistributionImpl;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 
-import org.apache.commons.math.distribution.GammaDistribution;
-import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 
 /**
@@ -112,7 +114,7 @@ public class SiteModel extends SiteModelInterface.Base {
         }
 
         if (/*invarParameter != null && */invarParameter.getValue() > 0) {
-            if (m_bPropInvariantIsCategory) {
+            if (hasPropInvariantCategory) {
                 categoryCount += 1;
             }
         }
@@ -186,7 +188,7 @@ public class SiteModel extends SiteModelInterface.Base {
      */
     @Override
     public SubstitutionModel getSubstitutionModel() {
-        return m_pSubstModel.get();
+        return substModelInput.get();
     }
 
     /**
@@ -234,12 +236,12 @@ public class SiteModel extends SiteModelInterface.Base {
         int cat = 0;
 
         if (/*invarParameter != null && */invarParameter.getValue() > 0) {
-            if (m_bPropInvariantIsCategory) {
+            if (hasPropInvariantCategory) {
                 categoryRates[0] = 0.0;
                 categoryProportions[0] = invarParameter.getValue();
             }
             propVariable = 1.0 - invarParameter.getValue();
-            if (m_bPropInvariantIsCategory) {
+            if (hasPropInvariantCategory) {
                 cat = 1;
             }
         }
@@ -311,7 +313,7 @@ public class SiteModel extends SiteModelInterface.Base {
                 ratesKnown = false;
             }
         } else {
-            if (muParameter.somethingIsDirty() || !m_bPropInvariantIsCategory && invarParameter.somethingIsDirty()) {
+            if (muParameter.somethingIsDirty() || !hasPropInvariantCategory && invarParameter.somethingIsDirty()) {
                 ratesKnown = false;
             }
         }

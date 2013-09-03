@@ -1,23 +1,21 @@
 package beast.core;
 
 /**
- * Allows a Plugin, in particular a StateNode or CalculationNode to present itself as
- * an array of values. This is particular handy for generic calculations on a Plugin,
+ * Allows a YABBYObject, in particular a StateNode or CalculationNode to present itself as
+ * an array of values. This is particular handy for generic calculations on a YABBYObject,
  * like calculation of ESS, posterior of a distribution or in the SpreadSheet interface
  * where the possibilities of calculations are limitless.
  * *
  */
-    // RRB: Should be renamed Statistic?
-    // (Q2R): how come trees and other bizzare stuff are valuable's??
-public interface Valuable {
+public interface Function {
 
     /**
-     * @return dimension of the Valuable *
+     * @return dimension of the Function *
      */
     public int getDimension();
 
     /**
-     * @return main value. For a 1 dimensional Valuable, this is the only
+     * @return main value. For a 1 dimensional Function, this is the only
      *         value, but for a Tree this can be the root height, while the individual
      *         values obtained from getValue(iDim) return the node heights.
      */

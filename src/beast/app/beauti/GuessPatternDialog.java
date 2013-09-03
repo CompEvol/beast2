@@ -28,9 +28,11 @@ import java.io.FileReader;
 import javax.swing.JSeparator;
 import javax.swing.JButton;
 
-import beast.app.util.Utils;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
+
+import beast.app.util.Utils;
+
 
 public class GuessPatternDialog extends JDialog {
 	private static final long serialVersionUID = 1L;

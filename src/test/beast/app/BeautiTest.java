@@ -8,6 +8,8 @@ import org.junit.Test;
 import beast.app.beauti.Beauti;
 import beast.app.beauti.BeautiDoc;
 
+
+
 import junit.framework.TestCase;
 
 public class BeautiTest extends TestCase {

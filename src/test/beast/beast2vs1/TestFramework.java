@@ -1,12 +1,13 @@
 package test.beast.beast2vs1;
 
-import beast.core.Logger;
-import beast.util.Randomizer;
-import beast.util.XMLParser;
 import junit.framework.TestCase;
 
 import java.io.File;
 import java.util.List;
+
+import beast.core.Logger;
+import beast.util.Randomizer;
+import beast.util.XMLParser;
 
 import test.beast.beast2vs1.trace.Expectation;
 import test.beast.beast2vs1.trace.LogAnalyser;
@@ -29,7 +30,7 @@ public abstract class TestFramework extends TestCase {
 //        for (int i = 0; i < xmls.length; i++) {
 //            if (giveExpectations(i).size() > 0) {
         Randomizer.setSeed(SEED);
-        Logger.FILE_MODE = Logger.FILE_OVERWRITE;
+        Logger.FILE_MODE = Logger.LogFileMode.overwrite;
         String sDir = System.getProperty("user.dir");
 
         String sFileName = sDir + "/examples/beast2vs1/" + xmls[index_XML];

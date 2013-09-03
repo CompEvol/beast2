@@ -10,14 +10,16 @@ import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
 
+
+
 @Description("Laplace distribution.    f(x|\\mu,b) = \\frac{1}{2b} \\exp \\left( -\\frac{|x-\\mu|}{b} \\right)" +
         "The probability density function of the Laplace distribution is also reminiscent of the normal distribution; " +
         "however, whereas the normal distribution is expressed in terms of the squared difference from the mean ?, " +
         "the Laplace density is expressed in terms of the absolute difference from the mean. Consequently the Laplace " +
         "distribution has fatter tails than the normal distribution.")
 public class LaplaceDistribution extends ParametricDistribution {
-    public Input<RealParameter> m_mu = new Input<RealParameter>("mu", "location parameter, defaults to 0");
-    public Input<RealParameter> m_scale = new Input<RealParameter>("scale", "scale parameter, defaults to 1");
+    public Input<RealParameter> muInput = new Input<RealParameter>("mu", "location parameter, defaults to 0");
+    public Input<RealParameter> scaleInput = new Input<RealParameter>("scale", "scale parameter, defaults to 1");
 
     // the mean parameter
     double mu;
@@ -25,7 +27,7 @@ public class LaplaceDistribution extends ParametricDistribution {
     double scale;
     // the maximum density
     double c;
-    LaplaceImpl m_dist = new LaplaceImpl();
+    LaplaceImpl dist = new LaplaceImpl();
 
     @Override
     public void initAndValidate() {
@@ -38,15 +40,15 @@ public class LaplaceDistribution extends ParametricDistribution {
     void refresh() {
         double fMu;
         double fScale;
-        if (m_mu.get() == null) {
+        if (muInput.get() == null) {
             fMu = 0;
         } else {
-            fMu = m_mu.get().getValue();
+            fMu = muInput.get().getValue();
         }
-        if (m_scale.get() == null) {
+        if (scaleInput.get() == null) {
             fScale = 1;
         } else {
-            fScale = m_scale.get().getValue();
+            fScale = scaleInput.get().getValue();
         }
         setParameters(fMu, fScale);
     }
@@ -88,7 +90,7 @@ public class LaplaceDistribution extends ParametricDistribution {
     @Override
     public ContinuousDistribution getDistribution() {
         refresh();
-        return m_dist;
+        return dist;
 //        throw new UnsupportedOperationException();
     }
 

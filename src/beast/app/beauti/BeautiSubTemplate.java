@@ -10,13 +10,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.xml.sax.InputSource;
 
-//import beast.app.beauti.BeautiConnector.ConnectCondition;
 import beast.app.draw.PluginPanel;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.Logger;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
+import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.likelihood.GenericTreeLikelihood;
@@ -24,9 +23,12 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.util.XMLParser;
 
+
+//import beast.app.beauti.BeautiConnector.ConnectCondition;
+
 @Description("Template that specifies which sub-net needs to be created when " +
         "a plugin of a paricular class is created.")
-public class BeautiSubTemplate extends Plugin {
+public class BeautiSubTemplate extends BEASTObject {
     public Input<String> sClassInput = new Input<String>("class", "name of the class (with full class path) to be created", Validate.REQUIRED);
     public Input<String> sMainInput = new Input<String>("mainid", "specifies id of the main plugin to be created by the template", Validate.REQUIRED);
     //public Input<XML> sXMLInput = new Input<XML>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
@@ -102,9 +104,9 @@ public class BeautiSubTemplate extends Plugin {
             // nothing to do
             return;
         }
-        Plugin plugin = null;
-        if (o instanceof Plugin) {
-            plugin = (Plugin) o;
+        BEASTObject plugin = null;
+        if (o instanceof BEASTObject) {
+            plugin = (BEASTObject) o;
         }
 
         // find template that created this plugin
@@ -125,48 +127,48 @@ public class BeautiSubTemplate extends Plugin {
         removeSubNet(template, context);
     }
 
-    public Plugin createSubNet(PartitionContext partition, Plugin plugin, Input<?> input, boolean init) throws Exception {
+    public BEASTObject createSubNet(PartitionContext partition, BEASTObject plugin, Input<?> input, boolean init) throws Exception {
         removeSubNet(input.get());
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             input.setValue(null, plugin);
             return null;
         }
-        Plugin o = createSubNet(partition, doc.pluginmap, init);
+        BEASTObject o = createSubNet(partition, doc.pluginmap, init);
         input.setValue(o, plugin);
         return o;
     }
 
-    public Plugin createSubNet(PartitionContext partition, List<Plugin> list, int iItem, boolean init) throws Exception {
+    public BEASTObject createSubNet(PartitionContext partition, List<BEASTObject> list, int iItem, boolean init) throws Exception {
         removeSubNet(list.get(iItem));
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             list.set(iItem, null);
             return null;
         }
-        Plugin o = createSubNet(partition, doc.pluginmap, init);
+        BEASTObject o = createSubNet(partition, doc.pluginmap, init);
         list.set(iItem, o);
         return o;
     }
 
-    public Plugin createSubNet(PartitionContext partition, boolean init) throws Exception {
+    public BEASTObject createSubNet(PartitionContext partition, boolean init) throws Exception {
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             return null;
         }
-        Plugin o = createSubNet(partition, doc.pluginmap, init);
+        BEASTObject o = createSubNet(partition, doc.pluginmap, init);
         return o;
     }
 
 
-    Plugin createSubNet(Alignment data, BeautiDoc doc, boolean init) {
+    BEASTObject createSubNet(Alignment data, BeautiDoc doc, boolean init) {
         String sPartition = data.getID();
-        HashMap<String, Plugin> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
+        HashMap<String, BEASTObject> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
         sIDMap.put(sPartition, data);
         return createSubNet(new PartitionContext(sPartition), sIDMap, init);
     }
 
-    private Plugin createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, Plugin> sIDMap, boolean init) {
+    private BEASTObject createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTObject> sIDMap, boolean init) {
         // wrap in a beast element with appropriate name spaces
         String _sXML = "<beast version='2.0' \n" +
                 "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
@@ -180,10 +182,10 @@ public class BeautiSubTemplate extends Plugin {
 
         XMLParser parser = new XMLParser();
         parser.setRequiredInputProvider(doc, context);
-        List<Plugin> plugins = null;
+        List<BEASTObject> plugins = null;
         try {
             plugins = parser.parseTemplate(_sXML, sIDMap, true);
-            for (Plugin plugin : plugins) {
+            for (BEASTObject plugin : plugins) {
                 doc.addPlugin(plugin);
                 try {
                 	System.err.println("Adding " + plugin.getClass().getName() + " " + plugin);
@@ -219,20 +221,20 @@ public class BeautiSubTemplate extends Plugin {
 
         String sID = sMainID;
         sID = BeautiDoc.translatePartitionNames(sID, context); //sID.replaceAll("\\$\\(n\\)", sPartition);
-        Plugin plugin = doc.pluginmap.get(sID);
+        BEASTObject plugin = doc.pluginmap.get(sID);
 
         if (this == doc.beautiConfig.partitionTemplate.get()) {
             // HACK: need to make sure the subst model is of the correct type
-            Plugin treeLikelihood = doc.pluginmap.get("treeLikelihood." + context.partition);
-            if (treeLikelihood != null && ((GenericTreeLikelihood) treeLikelihood).m_pSiteModel.get() instanceof SiteModel.Base) {
-	            SiteModel.Base siteModel = (SiteModel.Base) ((GenericTreeLikelihood) treeLikelihood).m_pSiteModel.get();
-	            SubstitutionModel substModel = siteModel.m_pSubstModel.get();
+            BEASTObject treeLikelihood = doc.pluginmap.get("treeLikelihood." + context.partition);
+            if (treeLikelihood != null && ((GenericTreeLikelihood) treeLikelihood).siteModelInput.get() instanceof SiteModel.Base) {
+	            SiteModel.Base siteModel = (SiteModel.Base) ((GenericTreeLikelihood) treeLikelihood).siteModelInput.get();
+	            SubstitutionModel substModel = siteModel.substModelInput.get();
 	            try {
 	                siteModel.canSetSubstModel(substModel);
 	            } catch (Exception e) {
-	                Object o = doc.createInput(siteModel, siteModel.m_pSubstModel, context);
+	                Object o = doc.createInput(siteModel, siteModel.substModelInput, context);
 	                try {
-	                    siteModel.m_pSubstModel.setValue(o, siteModel);
+	                    siteModel.substModelInput.setValue(o, siteModel);
 	                } catch (Exception ex) {
 	                    ex.printStackTrace();
 	                }
@@ -242,15 +244,15 @@ public class BeautiSubTemplate extends Plugin {
             // HACK2: rename file name for trace log if it has the default value
             Logger logger = (Logger) doc.pluginmap.get("tracelog");
             if (logger != null) {
-	            String fileName = logger.m_pFileName.get();
+	            String fileName = logger.fileNameInput.get();
 	            if (fileName.startsWith("beast.") && treeLikelihood != null) {
-	            	Alignment data = ((GenericTreeLikelihood)treeLikelihood).m_data.get();
+	            	Alignment data = ((GenericTreeLikelihood)treeLikelihood).dataInput.get();
 	            	while (data instanceof FilteredAlignment) {
-	            		data = ((FilteredAlignment) data).m_alignmentInput.get();
+	            		data = ((FilteredAlignment) data).alignmentInput.get();
 	            	}
 	            	fileName = data.getID() + fileName.substring(5);
 	            	try {
-						logger.m_pFileName.setValue(fileName, logger);
+						logger.fileNameInput.setValue(fileName, logger);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

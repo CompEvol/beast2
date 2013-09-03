@@ -28,6 +28,8 @@ import org.junit.Test;
 
 import beast.app.util.Utils;
 
+
+
 public class BeautiRateTutorialTest extends BeautiBase {
 	// file used to store, then reload xml
 	final static String XML_FILE = "rsv.xml";

@@ -36,7 +36,9 @@ import javax.swing.JPanel;
 import org.w3c.dom.Node;
 
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
+
+
 
 public class InputShape extends Shape {
     Input<?> m_input;
@@ -62,7 +64,7 @@ public class InputShape extends Shape {
         m_pluginShape = function;
     }
 
-    Plugin getPlugin() {
+    BEASTObject getPlugin() {
         return m_pluginShape.m_plugin;
     }
 
@@ -134,8 +136,8 @@ public class InputShape extends Shape {
                 o instanceof Double ||
                 o instanceof Boolean) {
             return o.toString();
-        } else if (o instanceof Plugin) {
-            return ((Plugin) o).getID();
+        } else if (o instanceof BEASTObject) {
+            return ((BEASTObject) o).getID();
         }
         return "";
     }
@@ -149,8 +151,8 @@ public class InputShape extends Shape {
                     o instanceof Double ||
                     o instanceof Boolean) {
                 sLabel += "=" + o.toString();
-            } else if (o instanceof Plugin) {
-                sLabel += "=" + ((Plugin) o).getID();
+            } else if (o instanceof BEASTObject) {
+                sLabel += "=" + ((BEASTObject) o).getID();
             } else if (o instanceof List<?>) {
                 sLabel += "=[";
                 boolean bNeedsComma = false;

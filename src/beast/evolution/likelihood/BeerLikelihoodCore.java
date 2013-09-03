@@ -5,35 +5,35 @@ package beast.evolution.likelihood;
  * standard likelihood core, uses no caching *
  */
 public class BeerLikelihoodCore extends LikelihoodCore {
-    protected int m_nStates;
-    protected int m_nNodes;
-    protected int m_nPatterns;
-    protected int m_nPartialsSize;
-    protected int m_nMatrixSize;
-    protected int m_nMatrices;
+    protected int nrOfStates;
+    protected int nrOfNodes;
+    protected int nrOfPatterns;
+    protected int partialsSize;
+    protected int matrixSize;
+    protected int nrOfMatrices;
 
-    protected boolean m_bIntegrateCategories;
+    protected boolean integrateCategories;
 
-    protected double[][][] m_fPartials;
+    protected double[][][] partials;
 
-    protected int[][] m_iStates;
+    protected int[][] states;
 
-    protected double[][][] m_fMatrices;
+    protected double[][][] matrices;
 
-    protected int[] m_iCurrentMatrices;
-    protected int[] m_iStoredMatrices;
-    protected int[] m_iCurrentPartials;
-    protected int[] m_iStoredPartials;
+    protected int[] currentMatrixIndex;
+    protected int[] storedMatrixIndex;
+    protected int[] currentPartialsIndex;
+    protected int[] storedPartialsIndex;
 
-    protected boolean m_bUseScaling = false;
+    protected boolean useScaling = false;
 
-    protected double[][][] m_fScalingFactors;
+    protected double[][][] scalingFactors;
 
-    private double m_fScalingThreshold = 1.0E-100;
+    private double scalingThreshold = 1.0E-100;
     double SCALE = 2;
 
-    public BeerLikelihoodCore(int nStateCount) {
-        this.m_nStates = nStateCount;
+    public BeerLikelihoodCore(int nrOfStates) {
+        this.nrOfStates = nrOfStates;
     } // c'tor
 
 
@@ -45,49 +45,49 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                                                 double[] fPartials3) {
         int v = 0;
 
-        for (int l = 0; l < m_nMatrices; l++) {
+        for (int l = 0; l < nrOfMatrices; l++) {
 
-            for (int k = 0; k < m_nPatterns; k++) {
+            for (int k = 0; k < nrOfPatterns; k++) {
 
                 int state1 = iStates1[k];
                 int state2 = iStates2[k];
 
-                int w = l * m_nMatrixSize;
+                int w = l * matrixSize;
 
-                if (state1 < m_nStates && state2 < m_nStates) {
+                if (state1 < nrOfStates && state2 < nrOfStates) {
 
-                    for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < nrOfStates; i++) {
 
                         fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
 
                         v++;
-                        w += m_nStates;
+                        w += nrOfStates;
                     }
 
-                } else if (state1 < m_nStates) {
+                } else if (state1 < nrOfStates) {
                     // child 2 has a gap or unknown state so treat it as unknown
 
-                    for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < nrOfStates; i++) {
 
                         fPartials3[v] = fMatrices1[w + state1];
 
                         v++;
-                        w += m_nStates;
+                        w += nrOfStates;
                     }
-                } else if (state2 < m_nStates) {
+                } else if (state2 < nrOfStates) {
                     // child 2 has a gap or unknown state so treat it as unknown
 
-                    for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < nrOfStates; i++) {
 
                         fPartials3[v] = fMatrices2[w + state2];
 
                         v++;
-                        w += m_nStates;
+                        w += nrOfStates;
                     }
                 } else {
                     // both children have a gap or unknown state so set partials to 1
 
-                    for (int j = 0; j < m_nStates; j++) {
+                    for (int j = 0; j < nrOfStates; j++) {
                         fPartials3[v] = 1.0;
                         v++;
                     }
@@ -108,22 +108,22 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         int u = 0;
         int v = 0;
 
-        for (int l = 0; l < m_nMatrices; l++) {
-            for (int k = 0; k < m_nPatterns; k++) {
+        for (int l = 0; l < nrOfMatrices; l++) {
+            for (int k = 0; k < nrOfPatterns; k++) {
 
                 int state1 = iStates1[k];
 
-                int w = l * m_nMatrixSize;
+                int w = l * matrixSize;
 
-                if (state1 < m_nStates) {
+                if (state1 < nrOfStates) {
 
 
-                    for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < nrOfStates; i++) {
 
                         tmp = fMatrices1[w + state1];
 
                         sum = 0.0;
-                        for (int j = 0; j < m_nStates; j++) {
+                        for (int j = 0; j < nrOfStates; j++) {
                             sum += fMatrices2[w] * fPartials2[v + j];
                             w++;
                         }
@@ -132,14 +132,14 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                         u++;
                     }
 
-                    v += m_nStates;
+                    v += nrOfStates;
                 } else {
                     // Child 1 has a gap or unknown state so don't use it
 
-                    for (int i = 0; i < m_nStates; i++) {
+                    for (int i = 0; i < nrOfStates; i++) {
 
                         sum = 0.0;
-                        for (int j = 0; j < m_nStates; j++) {
+                        for (int j = 0; j < nrOfStates; j++) {
                             sum += fMatrices2[w] * fPartials2[v + j];
                             w++;
                         }
@@ -148,7 +148,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                         u++;
                     }
 
-                    v += m_nStates;
+                    v += nrOfStates;
                 }
             }
         }
@@ -165,17 +165,17 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         int u = 0;
         int v = 0;
 
-        for (int l = 0; l < m_nMatrices; l++) {
+        for (int l = 0; l < nrOfMatrices; l++) {
 
-            for (int k = 0; k < m_nPatterns; k++) {
+            for (int k = 0; k < nrOfPatterns; k++) {
 
-                int w = l * m_nMatrixSize;
+                int w = l * matrixSize;
 
-                for (int i = 0; i < m_nStates; i++) {
+                for (int i = 0; i < nrOfStates; i++) {
 
                     sum1 = sum2 = 0.0;
 
-                    for (int j = 0; j < m_nStates; j++) {
+                    for (int j = 0; j < nrOfStates; j++) {
                         sum1 += fMatrices1[w] * fPartials1[v + j];
                         sum2 += fMatrices2[w] * fPartials2[v + j];
 
@@ -185,7 +185,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                     fPartials3[u] = sum1 * sum2;
                     u++;
                 }
-                v += m_nStates;
+                v += nrOfStates;
             }
         }
     }
@@ -198,47 +198,47 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                                                 double[] fPartials3, int[] iMatrixMap) {
         int v = 0;
 
-        for (int k = 0; k < m_nPatterns; k++) {
+        for (int k = 0; k < nrOfPatterns; k++) {
 
             int state1 = iStates1[k];
             int state2 = iStates2[k];
 
-            int w = iMatrixMap[k] * m_nMatrixSize;
+            int w = iMatrixMap[k] * matrixSize;
 
-            if (state1 < m_nStates && state2 < m_nStates) {
+            if (state1 < nrOfStates && state2 < nrOfStates) {
 
-                for (int i = 0; i < m_nStates; i++) {
+                for (int i = 0; i < nrOfStates; i++) {
 
                     fPartials3[v] = fMatrices1[w + state1] * fMatrices2[w + state2];
 
                     v++;
-                    w += m_nStates;
+                    w += nrOfStates;
                 }
 
-            } else if (state1 < m_nStates) {
+            } else if (state1 < nrOfStates) {
                 // child 2 has a gap or unknown state so treat it as unknown
 
-                for (int i = 0; i < m_nStates; i++) {
+                for (int i = 0; i < nrOfStates; i++) {
 
                     fPartials3[v] = fMatrices1[w + state1];
 
                     v++;
-                    w += m_nStates;
+                    w += nrOfStates;
                 }
-            } else if (state2 < m_nStates) {
+            } else if (state2 < nrOfStates) {
                 // child 2 has a gap or unknown state so treat it as unknown
 
-                for (int i = 0; i < m_nStates; i++) {
+                for (int i = 0; i < nrOfStates; i++) {
 
                     fPartials3[v] = fMatrices2[w + state2];
 
                     v++;
-                    w += m_nStates;
+                    w += nrOfStates;
                 }
             } else {
                 // both children have a gap or unknown state so set partials to 1
 
-                for (int j = 0; j < m_nStates; j++) {
+                for (int j = 0; j < nrOfStates; j++) {
                     fPartials3[v] = 1.0;
                     v++;
                 }
@@ -258,20 +258,20 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         int u = 0;
         int v = 0;
 
-        for (int k = 0; k < m_nPatterns; k++) {
+        for (int k = 0; k < nrOfPatterns; k++) {
 
             int state1 = iStates1[k];
 
-            int w = iMatrixMap[k] * m_nMatrixSize;
+            int w = iMatrixMap[k] * matrixSize;
 
-            if (state1 < m_nStates) {
+            if (state1 < nrOfStates) {
 
-                for (int i = 0; i < m_nStates; i++) {
+                for (int i = 0; i < nrOfStates; i++) {
 
                     tmp = fMatrices1[w + state1];
 
                     sum = 0.0;
-                    for (int j = 0; j < m_nStates; j++) {
+                    for (int j = 0; j < nrOfStates; j++) {
                         sum += fMatrices2[w] * fPartials2[v + j];
                         w++;
                     }
@@ -280,14 +280,14 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                     u++;
                 }
 
-                v += m_nStates;
+                v += nrOfStates;
             } else {
                 // Child 1 has a gap or unknown state so don't use it
 
-                for (int i = 0; i < m_nStates; i++) {
+                for (int i = 0; i < nrOfStates; i++) {
 
                     sum = 0.0;
-                    for (int j = 0; j < m_nStates; j++) {
+                    for (int j = 0; j < nrOfStates; j++) {
                         sum += fMatrices2[w] * fPartials2[v + j];
                         w++;
                     }
@@ -296,7 +296,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                     u++;
                 }
 
-                v += m_nStates;
+                v += nrOfStates;
             }
         }
     }
@@ -312,15 +312,15 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         int u = 0;
         int v = 0;
 
-        for (int k = 0; k < m_nPatterns; k++) {
+        for (int k = 0; k < nrOfPatterns; k++) {
 
-            int w = iMatrixMap[k] * m_nMatrixSize;
+            int w = iMatrixMap[k] * matrixSize;
 
-            for (int i = 0; i < m_nStates; i++) {
+            for (int i = 0; i < nrOfStates; i++) {
 
                 sum1 = sum2 = 0.0;
 
-                for (int j = 0; j < m_nStates; j++) {
+                for (int j = 0; j < nrOfStates; j++) {
                     sum1 += fMatrices1[w] * fPartials1[v + j];
                     sum2 += fMatrices2[w] * fPartials2[v + j];
 
@@ -330,7 +330,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
                 fPartials3[u] = sum1 * sum2;
                 u++;
             }
-            v += m_nStates;
+            v += nrOfStates;
         }
     }
 
@@ -345,9 +345,9 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 
         int u = 0;
         int v = 0;
-        for (int k = 0; k < m_nPatterns; k++) {
+        for (int k = 0; k < nrOfPatterns; k++) {
 
-            for (int i = 0; i < m_nStates; i++) {
+            for (int i = 0; i < nrOfStates; i++) {
 
                 fOutPartials[u] = fInPartials[v] * fProportions[0];
                 u++;
@@ -356,12 +356,12 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         }
 
 
-        for (int l = 1; l < m_nMatrices; l++) {
+        for (int l = 1; l < nrOfMatrices; l++) {
             u = 0;
 
-            for (int k = 0; k < m_nPatterns; k++) {
+            for (int k = 0; k < nrOfPatterns; k++) {
 
-                for (int i = 0; i < m_nStates; i++) {
+                for (int i = 0; i < nrOfStates; i++) {
 
                     fOutPartials[u] += fInPartials[v] * fProportions[l];
                     u++;
@@ -380,10 +380,10 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods) {
         int v = 0;
-        for (int k = 0; k < m_nPatterns; k++) {
+        for (int k = 0; k < nrOfPatterns; k++) {
 
             double sum = 0.0;
-            for (int i = 0; i < m_nStates; i++) {
+            for (int i = 0; i < nrOfStates; i++) {
 
                 sum += fFrequencies[i] * fPartials[v];
                 v++;
@@ -403,65 +403,65 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories, boolean bUseAmbiguities) {
 
-        this.m_nNodes = nNodeCount;
-        this.m_nPatterns = nPatternCount;
-        this.m_nMatrices = nMatrixCount;
+        this.nrOfNodes = nNodeCount;
+        this.nrOfPatterns = nPatternCount;
+        this.nrOfMatrices = nMatrixCount;
 
-        this.m_bIntegrateCategories = bIntegrateCategories;
+        this.integrateCategories = bIntegrateCategories;
 
         if (bIntegrateCategories) {
-            m_nPartialsSize = nPatternCount * m_nStates * nMatrixCount;
+            partialsSize = nPatternCount * nrOfStates * nMatrixCount;
         } else {
-            m_nPartialsSize = nPatternCount * m_nStates;
+            partialsSize = nPatternCount * nrOfStates;
         }
 
-        m_fPartials = new double[2][nNodeCount][];
+        partials = new double[2][nNodeCount][];
 
-        m_iCurrentMatrices = new int[nNodeCount];
-        m_iStoredMatrices = new int[nNodeCount];
+        currentMatrixIndex = new int[nNodeCount];
+        storedMatrixIndex = new int[nNodeCount];
 
-        m_iCurrentPartials = new int[nNodeCount];
-        m_iStoredPartials = new int[nNodeCount];
+        currentPartialsIndex = new int[nNodeCount];
+        storedPartialsIndex = new int[nNodeCount];
 
-        m_iStates = new int[nNodeCount][];
+        states = new int[nNodeCount][];
 
         for (int i = 0; i < nNodeCount; i++) {
-            m_fPartials[0][i] = null;
-            m_fPartials[1][i] = null;
+            partials[0][i] = null;
+            partials[1][i] = null;
 
-            m_iStates[i] = null;
+            states[i] = null;
         }
 
-        m_nMatrixSize = m_nStates * m_nStates;
+        matrixSize = nrOfStates * nrOfStates;
 
-        m_fMatrices = new double[2][nNodeCount][nMatrixCount * m_nMatrixSize];
+        matrices = new double[2][nNodeCount][nMatrixCount * matrixSize];
     }
 
     /**
      * cleans up and deallocates arrays.
      */
     public void finalize() throws java.lang.Throwable {
-        m_nNodes = 0;
-        m_nPatterns = 0;
-        m_nMatrices = 0;
+        nrOfNodes = 0;
+        nrOfPatterns = 0;
+        nrOfMatrices = 0;
 
-        m_fPartials = null;
-        m_iCurrentPartials = null;
-        m_iStoredPartials = null;
-        m_iStates = null;
-        m_fMatrices = null;
-        m_iCurrentMatrices = null;
-        m_iStoredMatrices = null;
+        partials = null;
+        currentPartialsIndex = null;
+        storedPartialsIndex = null;
+        states = null;
+        matrices = null;
+        currentMatrixIndex = null;
+        storedMatrixIndex = null;
 
-        m_fScalingFactors = null;
+        scalingFactors = null;
     }
 
     @Override
     public void setUseScaling(double fScale) {
-        m_bUseScaling = (fScale != 1.0);
+        useScaling = (fScale != 1.0);
 
-        if (m_bUseScaling) {
-            m_fScalingFactors = new double[2][m_nNodes][m_nPatterns];
+        if (useScaling) {
+            scalingFactors = new double[2][nrOfNodes][nrOfPatterns];
         }
     }
 
@@ -470,8 +470,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     public void createNodePartials(int iNodeIndex) {
 
-        this.m_fPartials[0][iNodeIndex] = new double[m_nPartialsSize];
-        this.m_fPartials[1][iNodeIndex] = new double[m_nPartialsSize];
+        this.partials[0][iNodeIndex] = new double[partialsSize];
+        this.partials[1][iNodeIndex] = new double[partialsSize];
     }
 
     /**
@@ -479,23 +479,23 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     public void setNodePartials(int iNodeIndex, double[] fPartials) {
 
-        if (this.m_fPartials[0][iNodeIndex] == null) {
+        if (this.partials[0][iNodeIndex] == null) {
             createNodePartials(iNodeIndex);
         }
-        if (fPartials.length < m_nPartialsSize) {
+        if (fPartials.length < partialsSize) {
             int k = 0;
-            for (int i = 0; i < m_nMatrices; i++) {
-                System.arraycopy(fPartials, 0, this.m_fPartials[0][iNodeIndex], k, fPartials.length);
+            for (int i = 0; i < nrOfMatrices; i++) {
+                System.arraycopy(fPartials, 0, this.partials[0][iNodeIndex], k, fPartials.length);
                 k += fPartials.length;
             }
         } else {
-            System.arraycopy(fPartials, 0, this.m_fPartials[0][iNodeIndex], 0, fPartials.length);
+            System.arraycopy(fPartials, 0, this.partials[0][iNodeIndex], 0, fPartials.length);
         }
     }
 
     @Override
     public void getNodePartials(int iNodeIndex, double[] fPartials) {
-        System.arraycopy(m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex], 0, fPartials, 0, fPartials.length);
+        System.arraycopy(partials[currentPartialsIndex[iNodeIndex]][iNodeIndex], 0, fPartials, 0, fPartials.length);
     }
 
     /**
@@ -503,7 +503,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     public void createNodeStates(int iNodeIndex) {
 
-        this.m_iStates[iNodeIndex] = new int[m_nPatterns];
+        this.states[iNodeIndex] = new int[nrOfPatterns];
     }
 
     /**
@@ -511,22 +511,22 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     public void setNodeStates(int iNodeIndex, int[] iStates) {
 
-        if (this.m_iStates[iNodeIndex] == null) {
+        if (this.states[iNodeIndex] == null) {
             createNodeStates(iNodeIndex);
         }
-        System.arraycopy(iStates, 0, this.m_iStates[iNodeIndex], 0, m_nPatterns);
+        System.arraycopy(iStates, 0, this.states[iNodeIndex], 0, nrOfPatterns);
     }
 
     /**
      * Gets states for a node
      */
     public void getNodeStates(int iNodeIndex, int[] iStates) {
-        System.arraycopy(this.m_iStates[iNodeIndex], 0, iStates, 0, m_nPatterns);
+        System.arraycopy(this.states[iNodeIndex], 0, iStates, 0, nrOfPatterns);
     }
 
     @Override
     public void setNodeMatrixForUpdate(int iNodeIndex) {
-        m_iCurrentMatrices[iNodeIndex] = 1 - m_iCurrentMatrices[iNodeIndex];
+        currentMatrixIndex[iNodeIndex] = 1 - currentMatrixIndex[iNodeIndex];
 
     }
 
@@ -535,13 +535,13 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * Sets probability matrix for a node
      */
     public void setNodeMatrix(int iNodeIndex, int iMatrixIndex, double[] fMatrix) {
-        System.arraycopy(fMatrix, 0, m_fMatrices[m_iCurrentMatrices[iNodeIndex]][iNodeIndex],
-                iMatrixIndex * m_nMatrixSize, m_nMatrixSize);
+        System.arraycopy(fMatrix, 0, matrices[currentMatrixIndex[iNodeIndex]][iNodeIndex],
+                iMatrixIndex * matrixSize, matrixSize);
     }
 
     public void setPaddedNodeMatrices(int iNode, double[] fMatrix) {
-        System.arraycopy(fMatrix, 0, m_fMatrices[m_iCurrentMatrices[iNode]][iNode],
-                0, m_nMatrices * m_nMatrixSize);
+        System.arraycopy(fMatrix, 0, matrices[currentMatrixIndex[iNode]][iNode],
+                0, nrOfMatrices * matrixSize);
     }
 
 
@@ -549,13 +549,13 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * Gets probability matrix for a node
      */
     public void getNodeMatrix(int iNodeIndex, int iMatrixIndex, double[] fMatrix) {
-        System.arraycopy(m_fMatrices[m_iCurrentMatrices[iNodeIndex]][iNodeIndex],
-                iMatrixIndex * m_nMatrixSize, fMatrix, 0, m_nMatrixSize);
+        System.arraycopy(matrices[currentMatrixIndex[iNodeIndex]][iNodeIndex],
+                iMatrixIndex * matrixSize, fMatrix, 0, matrixSize);
     }
 
     @Override
     public void setNodePartialsForUpdate(int iNodeIndex) {
-        m_iCurrentPartials[iNodeIndex] = 1 - m_iCurrentPartials[iNodeIndex];
+        currentPartialsIndex[iNodeIndex] = 1 - currentPartialsIndex[iNodeIndex];
     }
 
     /**
@@ -563,14 +563,14 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * need to repeatedly copy the partials for the different category partitions
      */
     public void setCurrentNodePartials(int iNodeIndex, double[] fPartials) {
-        if (fPartials.length < m_nPartialsSize) {
+        if (fPartials.length < partialsSize) {
             int k = 0;
-            for (int i = 0; i < m_nMatrices; i++) {
-                System.arraycopy(fPartials, 0, this.m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex], k, fPartials.length);
+            for (int i = 0; i < nrOfMatrices; i++) {
+                System.arraycopy(fPartials, 0, this.partials[currentPartialsIndex[iNodeIndex]][iNodeIndex], k, fPartials.length);
                 k += fPartials.length;
             }
         } else {
-            System.arraycopy(fPartials, 0, this.m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex], 0, fPartials.length);
+            System.arraycopy(fPartials, 0, this.partials[currentPartialsIndex[iNodeIndex]][iNodeIndex], 0, fPartials.length);
         }
     }
 
@@ -581,32 +581,31 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param iNodeIndex2 the 'child 2' node
      * @param iNodeIndex3 the 'parent' node
      */
-    @Override
     public void calculatePartials(int iNodeIndex1, int iNodeIndex2, int iNodeIndex3) {
-        if (m_iStates[iNodeIndex1] != null) {
-            if (m_iStates[iNodeIndex2] != null) {
+        if (states[iNodeIndex1] != null) {
+            if (states[iNodeIndex2] != null) {
                 calculateStatesStatesPruning(
-                        m_iStates[iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_iStates[iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3]);
+                        states[iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        states[iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3]);
             } else {
-                calculateStatesPartialsPruning(m_iStates[iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex2]][iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3]);
+                calculateStatesPartialsPruning(states[iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        partials[currentPartialsIndex[iNodeIndex2]][iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3]);
             }
         } else {
-            if (m_iStates[iNodeIndex2] != null) {
-                calculateStatesPartialsPruning(m_iStates[iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex1]][iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3]);
+            if (states[iNodeIndex2] != null) {
+                calculateStatesPartialsPruning(states[iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex1]][iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3]);
             } else {
-                calculatePartialsPartialsPruning(m_fPartials[m_iCurrentPartials[iNodeIndex1]][iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex2]][iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3]);
+                calculatePartialsPartialsPruning(partials[currentPartialsIndex[iNodeIndex1]][iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        partials[currentPartialsIndex[iNodeIndex2]][iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3]);
             }
         }
 
-        if (m_bUseScaling) {
+        if (useScaling) {
             scalePartials(iNodeIndex3);
         }
 
@@ -634,40 +633,40 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param iMatrixMap  a map of which matrix to use for each pattern (can be null if integrating over categories)
      */
     public void calculatePartials(int iNodeIndex1, int iNodeIndex2, int iNodeIndex3, int[] iMatrixMap) {
-        if (m_iStates[iNodeIndex1] != null) {
-            if (m_iStates[iNodeIndex2] != null) {
+        if (states[iNodeIndex1] != null) {
+            if (states[iNodeIndex2] != null) {
                 calculateStatesStatesPruning(
-                        m_iStates[iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_iStates[iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3], iMatrixMap);
+                        states[iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        states[iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3], iMatrixMap);
             } else {
                 calculateStatesPartialsPruning(
-                        m_iStates[iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex2]][iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3], iMatrixMap);
+                        states[iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        partials[currentPartialsIndex[iNodeIndex2]][iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3], iMatrixMap);
             }
         } else {
-            if (m_iStates[iNodeIndex2] != null) {
+            if (states[iNodeIndex2] != null) {
                 calculateStatesPartialsPruning(
-                        m_iStates[iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex1]][iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3], iMatrixMap);
+                        states[iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex1]][iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3], iMatrixMap);
             } else {
                 calculatePartialsPartialsPruning(
-                        m_fPartials[m_iCurrentPartials[iNodeIndex1]][iNodeIndex1], m_fMatrices[m_iCurrentMatrices[iNodeIndex1]][iNodeIndex1],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex2]][iNodeIndex2], m_fMatrices[m_iCurrentMatrices[iNodeIndex2]][iNodeIndex2],
-                        m_fPartials[m_iCurrentPartials[iNodeIndex3]][iNodeIndex3], iMatrixMap);
+                        partials[currentPartialsIndex[iNodeIndex1]][iNodeIndex1], matrices[currentMatrixIndex[iNodeIndex1]][iNodeIndex1],
+                        partials[currentPartialsIndex[iNodeIndex2]][iNodeIndex2], matrices[currentMatrixIndex[iNodeIndex2]][iNodeIndex2],
+                        partials[currentPartialsIndex[iNodeIndex3]][iNodeIndex3], iMatrixMap);
             }
         }
 
-        if (m_bUseScaling) {
+        if (useScaling) {
             scalePartials(iNodeIndex3);
         }
     }
 
 
     public void integratePartials(int iNodeIndex, double[] fProportions, double[] fOutPartials) {
-        calculateIntegratePartials(m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex], fProportions, fOutPartials);
+        calculateIntegratePartials(partials[currentPartialsIndex[iNodeIndex]][iNodeIndex], fProportions, fOutPartials);
     }
 
 
@@ -699,36 +698,36 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //        }
         int u = 0;
 
-        for (int i = 0; i < m_nPatterns; i++) {
+        for (int i = 0; i < nrOfPatterns; i++) {
 
             double scaleFactor = 0.0;
             int v = u;
-            for (int k = 0; k < m_nMatrices; k++) {
-                for (int j = 0; j < m_nStates; j++) {
-                    if (m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex][v] > scaleFactor) {
-                        scaleFactor = m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex][v];
+            for (int k = 0; k < nrOfMatrices; k++) {
+                for (int j = 0; j < nrOfStates; j++) {
+                    if (partials[currentPartialsIndex[iNodeIndex]][iNodeIndex][v] > scaleFactor) {
+                        scaleFactor = partials[currentPartialsIndex[iNodeIndex]][iNodeIndex][v];
                     }
                     v++;
                 }
-                v += (m_nPatterns - 1) * m_nStates;
+                v += (nrOfPatterns - 1) * nrOfStates;
             }
 
-            if (scaleFactor < m_fScalingThreshold) {
+            if (scaleFactor < scalingThreshold) {
 
                 v = u;
-                for (int k = 0; k < m_nMatrices; k++) {
-                    for (int j = 0; j < m_nStates; j++) {
-                        m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex][v] /= scaleFactor;
+                for (int k = 0; k < nrOfMatrices; k++) {
+                    for (int j = 0; j < nrOfStates; j++) {
+                        partials[currentPartialsIndex[iNodeIndex]][iNodeIndex][v] /= scaleFactor;
                         v++;
                     }
-                    v += (m_nPatterns - 1) * m_nStates;
+                    v += (nrOfPatterns - 1) * nrOfStates;
                 }
-                m_fScalingFactors[m_iCurrentPartials[iNodeIndex]][iNodeIndex][i] = Math.log(scaleFactor);
+                scalingFactors[currentPartialsIndex[iNodeIndex]][iNodeIndex][i] = Math.log(scaleFactor);
 
             } else {
-                m_fScalingFactors[m_iCurrentPartials[iNodeIndex]][iNodeIndex][i] = 0.0;
+                scalingFactors[currentPartialsIndex[iNodeIndex]][iNodeIndex][i] = 0.0;
             }
-            u += m_nStates;
+            u += nrOfStates;
 
 
         }
@@ -748,9 +747,9 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //    		return 0;
 //    	}        
         double logScalingFactor = 0.0;
-        if (m_bUseScaling) {
-            for (int i = 0; i < m_nNodes; i++) {
-                logScalingFactor += m_fScalingFactors[m_iCurrentPartials[i]][i][iPattern];
+        if (useScaling) {
+            for (int i = 0; i < nrOfNodes; i++) {
+                logScalingFactor += scalingFactors[currentPartialsIndex[i]][i][iPattern];
             }
         }
         return logScalingFactor;
@@ -763,9 +762,9 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param fOutPartials an array into which the partials will go
      */
     public void getPartials(int iNodeIndex, double[] fOutPartials) {
-        double[] partials1 = m_fPartials[m_iCurrentPartials[iNodeIndex]][iNodeIndex];
+        double[] partials1 = partials[currentPartialsIndex[iNodeIndex]][iNodeIndex];
 
-        System.arraycopy(partials1, 0, fOutPartials, 0, m_nPartialsSize);
+        System.arraycopy(partials1, 0, fOutPartials, 0, partialsSize);
     }
 
     /**
@@ -774,18 +773,18 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     @Override
     public void restore() {
         // Rather than copying the stored stuff back, just swap the pointers...
-        int[] iTmp1 = m_iCurrentMatrices;
-        m_iCurrentMatrices = m_iStoredMatrices;
-        m_iStoredMatrices = iTmp1;
+        int[] iTmp1 = currentMatrixIndex;
+        currentMatrixIndex = storedMatrixIndex;
+        storedMatrixIndex = iTmp1;
 
-        int[] iTmp2 = m_iCurrentPartials;
-        m_iCurrentPartials = m_iStoredPartials;
-        m_iStoredPartials = iTmp2;
+        int[] iTmp2 = currentPartialsIndex;
+        currentPartialsIndex = storedPartialsIndex;
+        storedPartialsIndex = iTmp2;
     }
 
     public void unstore() {
-        System.arraycopy(m_iStoredMatrices, 0, m_iCurrentMatrices, 0, m_nNodes);
-        System.arraycopy(m_iStoredPartials, 0, m_iCurrentPartials, 0, m_nNodes);
+        System.arraycopy(storedMatrixIndex, 0, currentMatrixIndex, 0, nrOfNodes);
+        System.arraycopy(storedPartialsIndex, 0, currentPartialsIndex, 0, nrOfNodes);
     }
 
     /**
@@ -793,8 +792,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     @Override
     public void store() {
-        System.arraycopy(m_iCurrentMatrices, 0, m_iStoredMatrices, 0, m_nNodes);
-        System.arraycopy(m_iCurrentPartials, 0, m_iStoredPartials, 0, m_nNodes);
+        System.arraycopy(currentMatrixIndex, 0, storedMatrixIndex, 0, nrOfNodes);
+        System.arraycopy(currentPartialsIndex, 0, storedPartialsIndex, 0, nrOfNodes);
     }
 
 

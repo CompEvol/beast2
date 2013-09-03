@@ -25,13 +25,6 @@
 package beast.app;
 
 
-import beast.app.beastapp.BeastVersion;
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.Plugin;
-import beast.util.AddOnManager;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -43,6 +36,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import beast.core.Citation;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Loggable;
+import beast.core.BEASTObject;
+import beast.util.AddOnManager;
+
 
 
 /**
@@ -81,7 +82,7 @@ public class DocMaker {
 
     Set<String> m_sLoggables;
     
-    BeastVersion version = new BeastVersion();
+    BEASTVersion version = new BEASTVersion();
     
     public DocMaker(String[] args) {
         this();
@@ -96,7 +97,7 @@ public class DocMaker {
 
     public DocMaker() {
         // find plug ins to document
-        m_sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
+        m_sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         /** determine hierarchical relation between plug-ins **/
         m_isa = new HashMap<String, String[]>();
         m_ancestors = new HashMap<String, List<String>>();
@@ -108,7 +109,7 @@ public class DocMaker {
         for (String sPlugin : m_sPluginNames) {
             try {
                 Class _class = Class.forName(sPlugin);
-                Plugin plugin = (Plugin) _class.newInstance();
+                BEASTObject plugin = (BEASTObject) _class.newInstance();
                 String sDescription = getInheritableDescription(plugin.getClass());
                 System.err.println(sPlugin + " => " + sDescription);
                 m_descriptions.put(sPlugin, sDescription);
@@ -135,7 +136,7 @@ public class DocMaker {
     void makeJavaDoc() {
         for (String sPlugin : m_sPluginNames) {
             try {
-                Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+                BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
                 System.out.println(sPlugin + ":@description:" + plugin.getDescription());
                 for (Input<?> input : plugin.listInputs()) {
                     System.out.println(sPlugin + ":" + input.getName() + ":" + input.getTipText());
@@ -288,7 +289,7 @@ public class DocMaker {
     /**
      * Find all plugins that are derived from given plugin *
      */
-    String[] getImplementations(Plugin plugin) {
+    String[] getImplementations(BEASTObject plugin) {
         String sName = plugin.getClass().getName();
         List<String> sImplementations = new ArrayList<String>();
         for (String sPlugin : m_sPluginNames) {
@@ -355,7 +356,7 @@ public class DocMaker {
         buf.append("</head>\n");
         buf.append("<body>\n");
         buf.append("<h1>BEAST " + version.getVersionString() + " Documentation: " + sPlugin + "</h1>\n");
-        Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+        BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
 
         // show all implementation of this plug-in
         String[] sImplementations = m_isa.get(sPlugin);
@@ -440,7 +441,7 @@ public class DocMaker {
     /**
      * determine type of input of a plug in with name sName
      */
-    String getType(Plugin plugin, String sName) {
+    String getType(BEASTObject plugin, String sName) {
         try {
             Field[] fields = plugin.getClass().getFields();
             for (int i = 0; i < fields.length; i++) {
@@ -450,10 +451,10 @@ public class DocMaker {
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
                         if (input.getType() != null) {
-                            return (input.getType().isAssignableFrom(Plugin.class) ? "<a href='" + input.getType().getName() + ".html'>" : "") +
+                            return (input.getType().isAssignableFrom(BEASTObject.class) ? "<a href='" + input.getType().getName() + ".html'>" : "") +
                                     input.getType().getName() +
                                     (input.get() != null && input.get() instanceof List<?> ? "***" : "") +
-                                    (input.getType().isAssignableFrom(Plugin.class) ? "</a>" : "");
+                                    (input.getType().isAssignableFrom(BEASTObject.class) ? "</a>" : "");
                         }
                         if (input.get() != null && input.get() instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
@@ -463,7 +464,7 @@ public class DocMaker {
                                 o = Class.forName(_class.getName()).newInstance();
                             } catch (Exception e) {
                             }
-                            if (o != null && o instanceof Plugin) {
+                            if (o != null && o instanceof BEASTObject) {
                                 return "<a href='" + _class.getName() + ".html'>" + _class.getName() + "***</a>";
                             } else {
                                 return _class.getName() + "***";
@@ -476,7 +477,7 @@ public class DocMaker {
                                 o = Class.forName(_class.getName()).newInstance();
                             } catch (Exception e) {
                             }
-                            if (o != null && o instanceof Plugin) {
+                            if (o != null && o instanceof BEASTObject) {
                                 return "<a href='" + _class.getName() + ".html'>" + _class.getName() + "</a>";
                             } else {
                                 return _class.getName();

@@ -26,12 +26,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import beast.app.beastapp.BeastVersion;
-import beast.app.beastapp.WholeNumberField;
+import beast.app.BEASTVersion;
 import beast.app.util.Utils;
+import beast.app.util.WholeNumberField;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction.Type;
 import beast.math.statistic.DiscreteStatistics;
+
+
 
 public class EBSPAnalyser {
     String m_sFileOut;
@@ -353,7 +355,7 @@ public class EBSPAnalyser {
      * @param args
      */
     public static void main(String[] args) {
-        BeastVersion version = new BeastVersion();
+        BEASTVersion version = new BEASTVersion();
         final String versionString = version.getVersionString();
         String nameString = "EBSP Analyser " + versionString;
         String aboutString = "<html><center><p>" + versionString + ", " + version.getDateString() + "</p>" +

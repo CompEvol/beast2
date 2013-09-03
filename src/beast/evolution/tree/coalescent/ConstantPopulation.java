@@ -1,12 +1,13 @@
 package beast.evolution.tree.coalescent;
 
+
+import java.util.Collections;
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-
-import java.util.Collections;
-import java.util.List;
 /*
  * ConstantPopulation.java
  *
@@ -31,6 +32,7 @@ import java.util.List;
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
+
 
 /**
  * @author Andrew Rambaut

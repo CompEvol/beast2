@@ -1,18 +1,20 @@
 package beast.evolution.tree;
 
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Valuable;
-import beast.core.Input.Validate;
-import beast.core.Loggable;
 
 import java.io.PrintStream;
 
+import beast.core.CalculationNode;
+import beast.core.Description;
+import beast.core.Function;
+import beast.core.Input;
+import beast.core.Loggable;
+import beast.core.Input.Validate;
+
+
 @Description("Logger to report height of a tree")
-public class TreeHeightLogger extends CalculationNode implements Loggable, Valuable {
-    public Input<Tree> m_tree = new Input<Tree>("tree", "tree to report height for.", Validate.REQUIRED);
+public class TreeHeightLogger extends CalculationNode implements Loggable, Function {
+    public Input<Tree> treeInput = new Input<Tree>("tree", "tree to report height for.", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() {
@@ -21,7 +23,7 @@ public class TreeHeightLogger extends CalculationNode implements Loggable, Valua
 
     @Override
     public void init(PrintStream out) throws Exception {
-        final Tree tree = m_tree.get();
+        final Tree tree = treeInput.get();
         if (getID() == null || getID().matches("\\s*")) {
             out.print(tree.getID() + ".height\t");
         } else {
@@ -31,7 +33,7 @@ public class TreeHeightLogger extends CalculationNode implements Loggable, Valua
 
     @Override
     public void log(int nSample, PrintStream out) {
-        final Tree tree = m_tree.get();
+        final Tree tree = treeInput.get();
         out.print(tree.getRoot().getHeight() + "\t");
     }
 
@@ -47,11 +49,11 @@ public class TreeHeightLogger extends CalculationNode implements Loggable, Valua
 
     @Override
     public double getArrayValue() {
-        return m_tree.get().getRoot().getHeight();
+        return treeInput.get().getRoot().getHeight();
     }
 
     @Override
     public double getArrayValue(int iDim) {
-        return m_tree.get().getRoot().getHeight();
+        return treeInput.get().getRoot().getHeight();
     }
 }

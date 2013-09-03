@@ -8,6 +8,8 @@ import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.tree.Node;
 
+
+
 @Description("Jukes Cantor substitution model: all rates equal and " + "uniformly distributed frequencies")
 public class JukesCantor extends SubstitutionModel.Base {
 

@@ -9,6 +9,8 @@ import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 
+
+
 import java.io.File;
 
 /**
@@ -21,7 +23,7 @@ public class ResumeTest extends TestCase {
     @Test
     public void test_ThatXmlExamplesRun() throws Exception {
         Randomizer.setSeed(127);
-        Logger.FILE_MODE = Logger.FILE_OVERWRITE;
+        Logger.FILE_MODE = Logger.LogFileMode.overwrite;
         String dir = System.getProperty("user.dir") + "/examples";
         String fileName = dir + "/" + XML_FILE;
 
@@ -38,7 +40,7 @@ public class ResumeTest extends TestCase {
         System.out.println("Done " + fileName);
 
         System.out.println("Resuming " + fileName);
-        Logger.FILE_MODE = Logger.FILE_APPEND;
+        Logger.FILE_MODE = Logger.LogFileMode.resume;
         parser = new XMLParser();
         runable = parser.parseFile(new File(fileName));
         runable.setStateFile("tmp.state", true);

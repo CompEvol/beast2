@@ -70,7 +70,7 @@ public class Uniform extends TreeOperator {
      */
     @Override
     public double proposal() {
-        final Tree tree = m_tree.get(this);
+        final Tree tree = treeInput.get(this);
 
         // randomly select internal node
         final int nNodeCount = tree.getNodeCount();

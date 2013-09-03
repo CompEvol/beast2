@@ -6,13 +6,15 @@ import java.util.List;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Plugin;
 import beast.core.StateNode;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
+
+
 
 
 /**
@@ -34,7 +36,7 @@ public interface SiteModelInterface {
 
     @Description(value = "Base implementation of a site model with subtitution model and rate categories.", isInheritable = false)
     public abstract class Base extends CalculationNode implements SiteModelInterface {
-    	public Input<SubstitutionModel.Base> m_pSubstModel =
+    	public Input<SubstitutionModel.Base> substModelInput =
                 new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", null, Validate.REQUIRED);
 
     	/**
@@ -101,10 +103,10 @@ public interface SiteModelInterface {
             final SubstitutionModel substModel = (SubstitutionModel) o;
             if (m_dataType == null) {
             	// try to find out the data type from the data in a treelikelihood in an output
-            	for (Plugin plugin : outputs) {
+            	for (BEASTObject plugin : outputs) {
             		if (plugin instanceof TreeLikelihood) {
             			TreeLikelihood likelihood = (TreeLikelihood) plugin;
-            			m_dataType = likelihood.m_data.get().getDataType();
+            			m_dataType = likelihood.dataInput.get().getDataType();
             			break;
             		}
             	}
@@ -124,10 +126,10 @@ public interface SiteModelInterface {
          * a TreeLikelihood has to deal with the proportional invariant category
          * separately -- and potentially much more efficiently.
          */
-        public boolean m_bPropInvariantIsCategory = true;
+        public boolean hasPropInvariantCategory = true;
 
         public void setPropInvariantIsCategory(final boolean bPropInvariantIsCategory) {
-            m_bPropInvariantIsCategory = bPropInvariantIsCategory;
+            hasPropInvariantCategory = bPropInvariantIsCategory;
             refresh();
         }
 
@@ -143,7 +145,7 @@ public interface SiteModelInterface {
          * @return the substitution model
          */
         public SubstitutionModel getSubstitutionModel() {
-            return m_pSubstModel.get();
+            return substModelInput.get();
         }
 
 

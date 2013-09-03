@@ -7,21 +7,21 @@ import beast.evolution.datatype.DataType.Base;
 public class Aminoacid extends Base {
 
     public Aminoacid() {
-        m_nStateCount = 20;
-        m_nCodeLength = 1;
-        m_sCodeMap = "ACDEFGHIKLMNPQRSTVWY" + GAP_CHAR + MISSING_CHAR;
+        stateCount = 20;
+        codeLength = 1;
+        codeMap = "ACDEFGHIKLMNPQRSTVWY" + GAP_CHAR + MISSING_CHAR;
 
-        m_mapCodeToStateSet = new int[22][];
+        mapCodeToStateSet = new int[22][];
         for (int i = 0; i < 20; i++) {
-            m_mapCodeToStateSet[i] = new int[1];
-            m_mapCodeToStateSet[i][0] = i;
+            mapCodeToStateSet[i] = new int[1];
+            mapCodeToStateSet[i][0] = i;
         }
         int[] all = new int[20];
         for (int i = 0; i < 20; i++) {
             all[i] = i;
         }
-        m_mapCodeToStateSet[20] = all;
-        m_mapCodeToStateSet[21] = all;
+        mapCodeToStateSet[20] = all;
+        mapCodeToStateSet[21] = all;
     }
 
     @Override

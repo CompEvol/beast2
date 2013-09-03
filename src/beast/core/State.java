@@ -41,11 +41,13 @@ import org.w3c.dom.NodeList;
 import beast.core.Input;
 
 
+
+
 @Description("The state represents the current point in the state space, and " +
         "maintains values of a set of StateNodes, such as parameters and trees. " +
         "Furthermore, the state manages which parts of the model need to be stored/restored " +
         "and notified that recalculation is appropriate.")
-public class State extends Plugin {
+public class State extends BEASTObject {
 
     public Input<List<StateNode>> stateNodeInput =
             new Input<List<StateNode>>("stateNode", "anything that is part of the state", new ArrayList<StateNode>());
@@ -67,22 +69,22 @@ public class State extends Plugin {
     /**
      * number of state nodes *
      */
-    private int m_nStateNode;
+    private int nrOfStateNodes;
 
     public int getNrOfStateNodes() {
-        return m_nStateNode;
+        return nrOfStateNodes;
     }
 
     /**
      * pointers to memory allocated to stateNodes and storedStateNodes *
      */
-    private StateNode[] m_stateNodeMem;
+    private StateNode[] stateNodeMem;
 
     /**
      * File name used for storing the state, either periodically or at the end of an MCMC chain
      * so that the chain can be resumed.
      */
-    private String m_sStateFileName = "state.backup.xml";
+    private String stateFileName = "state.backup.xml";
 
 
     /** The following members are involved in calculating the set of
@@ -95,14 +97,14 @@ public class State extends Plugin {
      * Maps a Plugin to a list of Outputs.
      * This map only contains those plug-ins that have a path to the posterior *
      */
-    private HashMap<Plugin, List<Plugin>> m_outputMap;
+    private HashMap<BEASTObject, List<BEASTObject>> outputMap;
 
     /**
      * Same as m_outputMap, but only for StateNodes indexed by the StateNode number
      * We need this since the StateNode changes regularly, so unlike the output map
      * for Plugins cannot be accessed by the current StateNode as key.
      */
-    private List<CalculationNode>[] m_stateNodeOutputs;
+    private List<CalculationNode>[] stateNodeOutputs;
 
     /**
      * Code that represents configuration of StateNodes that have changed
@@ -114,7 +116,7 @@ public class State extends Plugin {
      * is requested by an operator, changeStateNodes is updated.
      */
     private int[] changeStateNodes;
-    private int nChangedStateNodes;
+    private int nrOfChangedStateNodes;
 
     /**
      * Maps the changed states node code to
@@ -178,21 +180,21 @@ public class State extends Plugin {
         }
         // make itself known
         for (StateNode state : stateNode) {
-            state.m_state = this;
+            state.state = this;
         }
 
-        m_nStateNode = stateNode.length;
+        nrOfStateNodes = stateNode.length;
         // allocate memory for StateNodes and a copy.
-        m_stateNodeMem = new StateNode[m_nStateNode * 2];
-        for (int i = 0; i < m_nStateNode; i++) {
-            m_stateNodeMem[i] = stateNode[i];
-            m_stateNodeMem[m_nStateNode + i] = m_stateNodeMem[i].copy();
+        stateNodeMem = new StateNode[nrOfStateNodes * 2];
+        for (int i = 0; i < nrOfStateNodes; i++) {
+            stateNodeMem[i] = stateNode[i];
+            stateNodeMem[nrOfStateNodes + i] = stateNodeMem[i].copy();
         }
 
         // set up data structure for encoding which StateNodes change by an operation
         changeStateNodes = new int[stateNode.length];
         //Arrays.fill(changeStateNodes, -1);
-        nChangedStateNodes = 0;
+        nrOfChangedStateNodes = 0;
         trie = new Trie();
         // add the empty list for the case none of the StateNodes have changed
         trie.list = new ArrayList<CalculationNode>();
@@ -219,12 +221,12 @@ public class State extends Plugin {
      * method on the input associated with this StateNode.
      */
     protected StateNode getEditableStateNode(int nID, Operator operator) {
-        for (int i = 0; i < nChangedStateNodes; i++) {
+        for (int i = 0; i < nrOfChangedStateNodes; i++) {
             if (changeStateNodes[i] == nID) {
                 return stateNode[nID];
             }
         }
-        changeStateNodes[nChangedStateNodes++] = nID;
+        changeStateNodes[nrOfChangedStateNodes++] = nID;
         return stateNode[nID];
     }
 
@@ -240,7 +242,7 @@ public class State extends Plugin {
      */
     public void store(int iSample) {
         //Arrays.fill(changeStateNodes, -1);
-        nChangedStateNodes = 0;
+        nrOfChangedStateNodes = 0;
     }
 
     /**
@@ -249,7 +251,7 @@ public class State extends Plugin {
      * NB this does not affect any Inputs connected to any stateNode. *
      */
     public void restore() {
-        for (int i = 0; i < nChangedStateNodes; i++) {
+        for (int i = 0; i < nrOfChangedStateNodes; i++) {
             stateNode[changeStateNodes[i]].restore();
         }
     }
@@ -303,7 +305,7 @@ public class State extends Plugin {
      */
     public void setStateFileName(String sFileName) {
         if (sFileName != null) {
-            m_sStateFileName = sFileName;
+            stateFileName = sFileName;
         }
     }
 
@@ -315,12 +317,12 @@ public class State extends Plugin {
      */
     public void storeToFile(int iSample) {
         try {
-            PrintStream out = new PrintStream(m_sStateFileName + ".new");
+            PrintStream out = new PrintStream(stateFileName + ".new");
             out.print(toXML(iSample));
             //out.print(new XMLProducer().toXML(this));
             out.close();
-            File newStateFile = new File(m_sStateFileName + ".new");
-            File oldStateFile = new File(m_sStateFileName);
+            File newStateFile = new File(stateFileName + ".new");
+            File oldStateFile = new File(stateFileName);
             oldStateFile.delete();
             newStateFile.renameTo(oldStateFile);
         } catch (Exception e) {
@@ -380,7 +382,7 @@ public class State extends Plugin {
     public void restoreFromFile() throws Exception {
         System.out.println("Restoring from file");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().parse(new File(m_sStateFileName));
+        Document doc = factory.newDocumentBuilder().parse(new File(stateFileName));
         doc.normalize();
         NodeList nodes = doc.getElementsByTagName("*");
         Node topNode = nodes.item(0);
@@ -436,7 +438,7 @@ public class State extends Plugin {
             for (int i = 0; i < stateNode.length; i++) {
                 changeStateNodes[i] = i;
             }
-            nChangedStateNodes = stateNode.length;
+            nrOfChangedStateNodes = stateNode.length;
         }
     }
 
@@ -447,33 +449,33 @@ public class State extends Plugin {
      * NB the output map only contains outputs on a path to the posterior Plugin!
      */
     @SuppressWarnings("unchecked")
-    public void setPosterior(Plugin posterior) throws Exception {
+    public void setPosterior(BEASTObject posterior) throws Exception {
         // first, calculate output map that maps Plugins on a path
         // to the posterior to the list of output Plugins. Strictly
         // speaking, this is a bit of overkill, since only
         // CalculationNodes need to be taken in account, but for
         // debugging purposes (developer forgot to derive from CalculationNode)
         // we keep track of the lot.
-        m_outputMap = new HashMap<Plugin, List<Plugin>>();
-        m_outputMap.put(posterior, new ArrayList<Plugin>());
+        outputMap = new HashMap<BEASTObject, List<BEASTObject>>();
+        outputMap.put(posterior, new ArrayList<BEASTObject>());
         boolean bProgress = true;
-        List<Plugin> plugins = new ArrayList<Plugin>();
+        List<BEASTObject> plugins = new ArrayList<BEASTObject>();
         plugins.add(posterior);
         while (bProgress) {
             bProgress = false;
             // loop over plug-ins, till no more plug-ins can be added
             // efficiency is no issue here
             for (int iPlugin = 0; iPlugin < plugins.size(); iPlugin++) {
-                Plugin plugin = plugins.get(iPlugin);
+                BEASTObject plugin = plugins.get(iPlugin);
                 try {
-                    for (Plugin inputPlugin : plugin.listActivePlugins()) {
-                        if (!m_outputMap.containsKey(inputPlugin)) {
-                            m_outputMap.put(inputPlugin, new ArrayList<Plugin>());
+                    for (BEASTObject inputPlugin : plugin.listActivePlugins()) {
+                        if (!outputMap.containsKey(inputPlugin)) {
+                            outputMap.put(inputPlugin, new ArrayList<BEASTObject>());
                             plugins.add(inputPlugin);
                             bProgress = true;
                         }
-                        if (!m_outputMap.get(inputPlugin).contains(plugin)) {
-                            m_outputMap.get(inputPlugin).add(plugin);
+                        if (!outputMap.get(inputPlugin).contains(plugin)) {
+                            outputMap.get(inputPlugin).add(plugin);
                             bProgress = true;
                         }
                     }
@@ -485,13 +487,13 @@ public class State extends Plugin {
         // Set of array of StateNode outputs. Since the StateNodes have a potential
         // to be changing objects (when store/restore is applied) it is necessary
         // to use another method to find the outputs, an array in this case.
-        m_stateNodeOutputs = new List[stateNode.length];
+        stateNodeOutputs = new List[stateNode.length];
         for (int i = 0; i < stateNode.length; i++) {
-            m_stateNodeOutputs[i] = new ArrayList<CalculationNode>();
-            if (m_outputMap.containsKey(stateNode[i])) {
-                for (Plugin plugin : m_outputMap.get(stateNode[i])) {
+            stateNodeOutputs[i] = new ArrayList<CalculationNode>();
+            if (outputMap.containsKey(stateNode[i])) {
+                for (BEASTObject plugin : outputMap.get(stateNode[i])) {
                     if (plugin instanceof CalculationNode) {
-                        m_stateNodeOutputs[i].add((CalculationNode) plugin);
+                        stateNodeOutputs[i].add((CalculationNode) plugin);
                     } else {
                         throw new Exception("DEVELOPER ERROR: output of StateNode (" + stateNode[i].getID() + ") should be a CalculationNode, but " + plugin.getClass().getName() + " is not.");
                     }
@@ -506,7 +508,7 @@ public class State extends Plugin {
      * return current set of calculation nodes based on the set of StateNodes that have changed *
      */
     private List<CalculationNode> getCurrentCalculationNodes() {
-        List<CalculationNode> calcNodes = trie.get(nChangedStateNodes);
+        List<CalculationNode> calcNodes = trie.get(nrOfChangedStateNodes);
         if (calcNodes != null) {
             // the list is pre-calculated
             return calcNodes;
@@ -519,7 +521,7 @@ public class State extends Plugin {
             System.exit(1);
         }
 
-        trie.set(calcNodes, nChangedStateNodes);
+        trie.set(calcNodes, nrOfChangedStateNodes);
 
 //    	System.err.print(Arrays.toString(changeStateNodes) + ":");
 //    	for (CalculationNode node : calcNodes) {
@@ -540,12 +542,12 @@ public class State extends Plugin {
         List<CalculationNode> calcNodes = new ArrayList<CalculationNode>();
 //    	for (int i = 0; i < stateNode.length; i++) {
 //    		if (m_changedStateNodeCode.get(i)) {
-        for (int k = 0; k < nChangedStateNodes; k++) {
+        for (int k = 0; k < nrOfChangedStateNodes; k++) {
             int i = changeStateNodes[k];
             // go grab the path to the Runnable
             // first the outputs of the StateNodes that is changed
             boolean bProgress = false;
-            for (CalculationNode node : m_stateNodeOutputs[i]) {
+            for (CalculationNode node : stateNodeOutputs[i]) {
                 if (!calcNodes.contains(node)) {
                     calcNodes.add(node);
                     bProgress = true;
@@ -558,7 +560,7 @@ public class State extends Plugin {
                 // efficiency is no issue here
                 for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
                     CalculationNode node = calcNodes.get(iCalcNode);
-                    for (Plugin output : m_outputMap.get(node)) {
+                    for (BEASTObject output : outputMap.get(node)) {
                         if (output instanceof CalculationNode) {
                             CalculationNode calcNode = (CalculationNode) output;
                             if (!calcNodes.contains(calcNode)) {
@@ -580,7 +582,7 @@ public class State extends Plugin {
         // put calc nodes in partial order
         for (int i = 0; i < calcNodes.size(); i++) {
             CalculationNode node = calcNodes.get(i);
-            List<Plugin> inputList = node.listActivePlugins();
+            List<BEASTObject> inputList = node.listActivePlugins();
             for (int j = calcNodes.size() - 1; j > i; j--) {
                 if (inputList.contains(calcNodes.get(j))) {
                     // swap

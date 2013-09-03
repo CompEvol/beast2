@@ -9,6 +9,8 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
+
+
 // From Gernhard 2008, Yule density (p; conditioned on n nodes) should be:
 // double p = 0.0;
 // p = lambda^(n-1) * exp(-lambda*rootHeight);
@@ -18,9 +20,9 @@ import beast.evolution.tree.Tree;
 
 @Description("Pure birth model (i.e. no deaths)")
 public class YuleModel extends SpeciesTreeDistribution {
-    public Input<RealParameter> birthDiffRateParameter =
+    public Input<RealParameter> birthDiffRateParameterInput =
             new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
-    public Input<Boolean> m_pConditionlOnRoot =
+    public Input<Boolean> conditionlOnRootInput =
             new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
 
     protected boolean conditionalOnRoot;
@@ -28,13 +30,13 @@ public class YuleModel extends SpeciesTreeDistribution {
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-        conditionalOnRoot = m_pConditionlOnRoot.get();
+        conditionalOnRoot = conditionlOnRootInput.get();
 
         // make sure that all tips are at the same height,
         // otherwise this Yule Model is not appropriate
-        Tree tree = m_tree.get();
+        Tree tree = treeInput.get();
         if (tree == null) {
-        	tree = treeIntervals.get().m_tree.get();
+        	tree = treeIntervalsInput.get().treeInput.get();
         }
         List<Node> leafs = tree.getExternalNodes();
         double height = leafs.get(0).getHeight();
@@ -53,7 +55,7 @@ public class YuleModel extends SpeciesTreeDistribution {
 
     protected double calculateTreeLogLikelihood(final Tree tree, final double rho, final double a) {
         final int taxonCount = tree.getLeafNodeCount();
-        final double r = birthDiffRateParameter.get().getValue();
+        final double r = birthDiffRateParameterInput.get().getValue();
 
         double logL = logTreeProbability(taxonCount, r, rho, a);
 
@@ -143,7 +145,7 @@ public class YuleModel extends SpeciesTreeDistribution {
 
     @Override
     protected boolean requiresRecalculation() {
-        return super.requiresRecalculation() || birthDiffRateParameter.get().somethingIsDirty();
+        return super.requiresRecalculation() || birthDiffRateParameterInput.get().somethingIsDirty();
     }
     
     @Override

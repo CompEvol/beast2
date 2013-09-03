@@ -79,7 +79,7 @@ public class WilsonBalding extends TreeOperator {
      */
     @Override
     public double proposal() {
-        Tree tree = m_tree.get(this);
+        Tree tree = treeInput.get(this);
 
         double oldMinAge, newMinAge, newRange, oldRange, newAge, fHastingsRatio;
 

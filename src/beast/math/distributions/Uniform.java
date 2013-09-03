@@ -7,27 +7,29 @@ import org.apache.commons.math.distribution.Distribution;
 import beast.core.Description;
 import beast.core.Input;
 
+
+
 @Description("Uniform distribution over a given interval (including lower and upper values)")
 public class Uniform extends ParametricDistribution {
-    public Input<Double> m_lower = new Input<Double>("lower", "lower bound on the interval, defaul 0", 0.0);
-    public Input<Double> m_upper = new Input<Double>("upper", "lower bound on the interval, defaul 1", 1.0);
+    public Input<Double> lowerInput = new Input<Double>("lower", "lower bound on the interval, defaul 0", 0.0);
+    public Input<Double> upperInput = new Input<Double>("upper", "lower bound on the interval, defaul 1", 1.0);
 
     UniformImpl distr = new UniformImpl();
 
-    double m_fLower, m_fUpper, m_fDensity;
+    double _lower, _upper, density;
 
     @Override
     public void initAndValidate() throws Exception {
-        m_fLower = m_lower.get();
-        m_fUpper = m_upper.get();
-        if (m_fLower >= m_fUpper) {
+        _lower = lowerInput.get();
+        _upper = upperInput.get();
+        if (_lower >= _upper) {
             throw new Exception("Upper value should be higher than lower value");
         }
-        distr.setBounds(m_fLower, m_fUpper);
-        if (Double.isInfinite(m_fLower) || Double.isInfinite(m_fUpper)) {
-            m_fDensity = 1.0;
+        distr.setBounds(_lower, _upper);
+        if (Double.isInfinite(_lower) || Double.isInfinite(_upper)) {
+            density = 1.0;
         } else {
-            m_fDensity = 1.0 / (m_fUpper - m_fLower);
+            density = 1.0 / (_upper - _lower);
         }
     }
 
@@ -68,7 +70,7 @@ public class Uniform extends ParametricDistribution {
         @Override
         public double density(double x) {
             if (x >= lower && x <= upper) {
-                return m_fDensity;
+                return density;
             } else {
                 return 0;
             }
@@ -88,7 +90,7 @@ public class Uniform extends ParametricDistribution {
 
     @Override
     public double density(double x) {
-        if (x >= m_fLower && x <= m_fUpper) {
+        if (x >= _lower && x <= _upper) {
             return 1;
         } else {
             return 0;

@@ -27,10 +27,10 @@ public class Nucleotide extends Base {
     };
 
     public Nucleotide() {
-        m_nStateCount = 4;
-        m_mapCodeToStateSet = x;
-        m_nCodeLength = 1;
-        m_sCodeMap = "ACGTURYMWSKBDHVN" + GAP_CHAR + MISSING_CHAR;
+        stateCount = 4;
+        mapCodeToStateSet = x;
+        codeLength = 1;
+        codeMap = "ACGTURYMWSKBDHVN" + GAP_CHAR + MISSING_CHAR;
     }
 
     @Override

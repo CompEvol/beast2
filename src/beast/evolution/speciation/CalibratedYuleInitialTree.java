@@ -25,20 +25,22 @@
 
 package beast.evolution.speciation;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.tree.Tree;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Description("This class provides the basic engine for coalescent simulation of a given demographic model over a given time period.")
 public class CalibratedYuleInitialTree extends Tree implements StateNodeInitialiser {
 
-    public Input<List<CalibrationPoint>> calibrations =
+    public Input<List<CalibrationPoint>> calibrationsInput =
             new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>(),
                     Input.Validate.REQUIRED);
 
@@ -54,7 +56,7 @@ public class CalibratedYuleInitialTree extends Tree implements StateNodeInitiali
         // it does not exist since the tree being initialized is one of its arguments. So, build a temporary
         // one using the initializer tree.
 
-        final List<CalibrationPoint> cals = calibrations.get();
+        final List<CalibrationPoint> cals = calibrationsInput.get();
 
         final CalibratedYuleModel cym = new CalibratedYuleModel();
         for( final CalibrationPoint cal : cals ) {

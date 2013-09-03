@@ -17,10 +17,10 @@ public class TwoStateCovarion extends Base {
     };
 
     public TwoStateCovarion() {
-        m_nStateCount = 4;
-        m_mapCodeToStateSet = x;
-        m_nCodeLength = 1;
-        m_sCodeMap = "01abcd" + GAP_CHAR + MISSING_CHAR;
+        stateCount = 4;
+        mapCodeToStateSet = x;
+        codeLength = 1;
+        codeMap = "01abcd" + GAP_CHAR + MISSING_CHAR;
     }
 
     @Override
@@ -30,6 +30,6 @@ public class TwoStateCovarion extends Base {
 
     @Override
     public char getChar(int state) {
-        return m_sCodeMap.charAt(state);
+        return codeMap.charAt(state);
     }
 }

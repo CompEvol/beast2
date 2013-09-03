@@ -24,15 +24,18 @@
 */
 package beast.core;
 
-import beast.core.Input.Validate;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.Input.Validate;
+import beast.core.util.Evaluator;
+
+
 
 @Description("Proposes a move in state space.")
-public abstract class Operator extends Plugin {
+public abstract class Operator extends BEASTObject {
     public Input<Double> m_pWeight = new Input<Double>("weight", "weight with which this operator is selected", Validate.REQUIRED);
 
     /**
@@ -179,10 +182,10 @@ public abstract class Operator extends Plugin {
     public List<StateNode> listStateNodes() throws Exception {
         // pick up all inputs that are stateNodes that are estimated
         List<StateNode> list = new ArrayList<StateNode>();
-        for (Plugin o : listActivePlugins()) {
+        for (BEASTObject o : listActivePlugins()) {
             if (o instanceof StateNode) {
                 StateNode stateNode = (StateNode) o;
-                if (stateNode.m_bIsEstimated.get()) {
+                if (stateNode.isEstimatedInput.get()) {
                     list.add(stateNode);
                 }
             }

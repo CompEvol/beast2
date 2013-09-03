@@ -30,7 +30,7 @@ import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
         "a log probability for instance for running an MCMC chain.")
-public abstract class Distribution extends CalculationNode implements Loggable, Valuable {
+public abstract class Distribution extends CalculationNode implements Loggable, Function {
 
     /**
      * current and stored log probability/log likelihood/log distribution *

@@ -10,10 +10,12 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.State;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
+
+
 
 /**
  * Initial version Ported from Beast 1.7 ExponentialMarkovModel
@@ -25,10 +27,10 @@ import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
         "Handy for population parameters. ")
 public class MarkovChainDistribution extends Distribution {
 
-    public Input<Boolean> bIsJeffreysInput = new Input<Boolean>("jeffreys", "use Jeffrey's prior (default false)", false);
-    public Input<Boolean> bIsReverseInput = new Input<Boolean>("reverse", "parameter in reverse (default false)", false);
-    public Input<Boolean> bUseLogInput = new Input<Boolean>("uselog", "use logarithm of parameter values (default false)", false);
-    public Input<Double> fShapeInput = new Input<Double>("shape", "shape parameter of the Gamma distribution (default 1.0 = exponential distribution) " +
+    public Input<Boolean> isJeffreysInput = new Input<Boolean>("jeffreys", "use Jeffrey's prior (default false)", false);
+    public Input<Boolean> isReverseInput = new Input<Boolean>("reverse", "parameter in reverse (default false)", false);
+    public Input<Boolean> useLogInput = new Input<Boolean>("uselog", "use logarithm of parameter values (default false)", false);
+    public Input<Double> shapeInput = new Input<Double>("shape", "shape parameter of the Gamma distribution (default 1.0 = exponential distribution) " +
     		" or precision parameter if the log normal is used.", 1.0);
     public Input<RealParameter> parameterInput = new Input<RealParameter>("parameter", "chain parameter to calculate distribution over", Validate.REQUIRED);
     public Input<Boolean> useLogNormalInput = new Input<Boolean>("useLogNormal", "use Log Normal distribution instead of Gamma (default false)", false);
@@ -47,10 +49,10 @@ public class MarkovChainDistribution extends Distribution {
 
     @Override
     public void initAndValidate() throws Exception {
-        reverse = bIsReverseInput.get();
-        jeffreys = bIsJeffreysInput.get();
-        uselog = bUseLogInput.get();
-        shape = fShapeInput.get();
+        reverse = isReverseInput.get();
+        jeffreys = isJeffreysInput.get();
+        uselog = useLogInput.get();
+        shape = shapeInput.get();
         chainParameter = parameterInput.get();
         useLogNormal = useLogNormalInput.get();
         gamma = new GammaDistributionImpl(shape, 1);

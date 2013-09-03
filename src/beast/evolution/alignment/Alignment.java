@@ -25,6 +25,12 @@
 package beast.evolution.alignment;
 
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
@@ -32,13 +38,6 @@ import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.util.AddOnManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
-/* Class representing alignment data.
- * **/
 
 @Description("Class representing alignment data")
 public class Alignment extends CalculationNode {
@@ -55,7 +54,7 @@ public class Alignment extends CalculationNode {
     /**
      * list of data type descriptions, obtained from DataType classes *
      */
-    static List<String> m_sTypes = new ArrayList<String>();
+    static List<String> types = new ArrayList<String>();
 
     static {
     	findDataTypes();
@@ -69,8 +68,8 @@ public class Alignment extends CalculationNode {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
                 if (dataType.isStandard()) {
                     String sDescription = dataType.getDescription();
-                    if (!m_sTypes.contains(sDescription)) {
-                    	m_sTypes.add(sDescription);
+                    if (!types.contains(sDescription)) {
+                    	types.add(sDescription);
                     }
                 }
             } catch (Exception e) {
@@ -80,34 +79,34 @@ public class Alignment extends CalculationNode {
     }
 
 
-    public Input<List<Sequence>> m_pSequences =
+    public Input<List<Sequence>> sequenceInput =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
-    public Input<Integer> m_nStateCount = new Input<Integer>("statecount", "maximum number of states in all sequences");
+    public Input<Integer> stateCountInput = new Input<Integer>("statecount", "maximum number of states in all sequences");
     //public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
-    public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + m_sTypes, NUCLEOTIDE, m_sTypes.toArray(new String[0]));
-    public Input<DataType.Base> m_userDataType = new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
-    public Input<Boolean> m_bStripInvariantSites = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
+    public Input<String> dataTypeInput = new Input<String>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
+    public Input<DataType.Base> userDataTypeInput= new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
+    public Input<Boolean> stripInvariantSitesInput = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
 
     /**
      * list of taxa names defined through the sequences in the alignment *
      */
-    protected List<String> m_sTaxaNames = new ArrayList<String>();
+    protected List<String> taxaNames = new ArrayList<String>();
 
     /**
      * list of state counts for each of the sequences, typically these are
      * constant throughout the whole alignment.
      */
-    protected List<Integer> m_nStateCounts = new ArrayList<Integer>();
+    protected List<Integer> stateCounts = new ArrayList<Integer>();
 
     /**
      * maximum of m_nStateCounts *
      */
-    protected int m_nMaxStateCount;
+    protected int maxStateCount;
 
     /**
      * state codes for the sequences *
      */
-    protected List<List<Integer>> m_counts = new ArrayList<List<Integer>>();
+    protected List<List<Integer>> counts = new ArrayList<List<Integer>>();
 
     /**
      * data type, useful for converting String sequence to Code sequence, and back *
@@ -117,17 +116,17 @@ public class Alignment extends CalculationNode {
     /**
      * weight over the columns of a matrix *
      */
-    protected int[] m_nWeight;
+    protected int[] patternWeight;
 
     /**
      * pattern state encodings *
      */
-    protected int[][] m_nPatterns; // #patters x #taxa
+    protected int[][] sitePatterns; // #patters x #taxa
 
     /**
      * maps site nr to pattern nr *
      */
-    protected int[] m_nPatternIndex;
+    protected int[] patternIndex;
 
 
     public Alignment() {
@@ -144,10 +143,10 @@ public class Alignment extends CalculationNode {
     public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) throws Exception {
 
         for (Sequence sequence : sequences) {
-            m_pSequences.setValue(sequence, this);
+            sequenceInput.setValue(sequence, this);
         }
         //m_nStateCount.setValue(stateCount, this);
-        m_sDataType.setValue(dataType, this);
+        dataTypeInput.setValue(dataType, this);
         initAndValidate();
     }
 
@@ -155,17 +154,17 @@ public class Alignment extends CalculationNode {
     @Override
     public void initAndValidate() throws Exception {
         // determine data type, either user defined or one of the standard ones
-        if (m_userDataType.get() != null) {
-            m_dataType = m_userDataType.get();
+        if (userDataTypeInput.get() != null) {
+            m_dataType = userDataTypeInput.get();
         } else {
-            if (m_sTypes.indexOf(m_sDataType.get()) < 0) {
-                throw new Exception("data type + '" + m_sDataType.get() + "' cannot be found. " +
-                        "Choose one of " + Arrays.toString(m_sTypes.toArray(new String[0])));
+            if (types.indexOf(dataTypeInput.get()) < 0) {
+                throw new Exception("data type + '" + dataTypeInput.get() + "' cannot be found. " +
+                        "Choose one of " + Arrays.toString(types.toArray(new String[0])));
             }
             List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
             for (String sDataType : sDataTypes) {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
-                if (m_sDataType.get().equals(dataType.getDescription())) {
+                if (dataTypeInput.get().equals(dataType.getDescription())) {
                     m_dataType = dataType;
                     break;
                 }
@@ -173,26 +172,26 @@ public class Alignment extends CalculationNode {
         }
 
         // grab data from child sequences
-        m_sTaxaNames.clear();
-        m_nStateCounts.clear();
-        m_counts.clear();
-        for (Sequence seq : m_pSequences.get()) {
+        taxaNames.clear();
+        stateCounts.clear();
+        counts.clear();
+        for (Sequence seq : sequenceInput.get()) {
             //m_counts.add(seq.getSequence(getMap()));
-            m_counts.add(seq.getSequence(m_dataType));
-            if (m_sTaxaNames.indexOf(seq.m_sTaxon.get()) >= 0) {
-                throw new Exception("Duplicate taxon found in alignment: " + seq.m_sTaxon.get());
+            counts.add(seq.getSequence(m_dataType));
+            if (taxaNames.indexOf(seq.taxonInput.get()) >= 0) {
+                throw new Exception("Duplicate taxon found in alignment: " + seq.taxonInput.get());
             }
-            m_sTaxaNames.add(seq.m_sTaxon.get());
-            m_nStateCounts.add(seq.m_nTotalCount.get());
+            taxaNames.add(seq.taxonInput.get());
+            stateCounts.add(seq.totalCountInput.get());
         }
-        if (m_counts.size() == 0) {
+        if (counts.size() == 0) {
             // no sequence data
             throw new Exception("Sequence data expected, but none found");
         }
 
         // Sanity check: make sure sequences are of same length
-        int nLength = m_counts.get(0).size();
-        for (List<Integer> seq : m_counts) {
+        int nLength = counts.get(0).size();
+        for (List<Integer> seq : counts) {
             if (seq.size() != nLength) {
                 throw new Exception("Two sequences with different length found: " + nLength + " != " + seq.size());
             }
@@ -206,15 +205,23 @@ public class Alignment extends CalculationNode {
      * assorted getters and setters *
      */
     public List<String> getTaxaNames() {
-        return m_sTaxaNames;
+        if (taxaNames.size() == 0) {
+        	try {
+        		initAndValidate();
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        		throw new RuntimeException(e);
+        	}
+        }
+        return taxaNames;
     }
 
     public List<Integer> getStateCounts() {
-        return m_nStateCounts;
+        return stateCounts;
     }
 
     public List<List<Integer>> getCounts() {
-        return m_counts;
+        return counts;
     }
 
     public DataType getDataType() {
@@ -222,43 +229,43 @@ public class Alignment extends CalculationNode {
     }
 
     public int getNrTaxa() {
-        return m_sTaxaNames.size();
+        return taxaNames.size();
     }
 
     public int getTaxonIndex(String sID) {
-        return m_sTaxaNames.indexOf(sID);
+        return taxaNames.indexOf(sID);
     }
 
     public int getPatternCount() {
-        return m_nPatterns.length;
+        return sitePatterns.length;
     }
 
     public int[] getPattern(int id) {
-        return m_nPatterns[id];
+        return sitePatterns[id];
     }
 
     public int getPattern(int iTaxon, int id) {
-        return m_nPatterns[id][iTaxon];
+        return sitePatterns[id][iTaxon];
     }
 
     public int getPatternWeight(int id) {
-        return m_nWeight[id];
+        return patternWeight[id];
     }
 
     public int getMaxStateCount() {
-        return m_nMaxStateCount;
+        return maxStateCount;
     }
 
     public int getPatternIndex(int iSite) {
-        return m_nPatternIndex[iSite];
+        return patternIndex[iSite];
     }
 
     public int getSiteCount() {
-        return m_nPatternIndex.length;
+        return patternIndex.length;
     }
 
     public int[] getWeights() {
-        return m_nWeight;
+        return patternWeight;
     }
 
 
@@ -285,13 +292,13 @@ public class Alignment extends CalculationNode {
      * *
      */
     protected void calcPatterns() {
-        int nTaxa = m_counts.size();
-        int nSites = m_counts.get(0).size();
+        int nTaxa = counts.size();
+        int nSites = counts.get(0).size();
 
         // convert data to transposed int array
         int[][] nData = new int[nSites][nTaxa];
         for (int i = 0; i < nTaxa; i++) {
-            List<Integer> sites = m_counts.get(i);
+            List<Integer> sites = counts.get(i);
             for (int j = 0; j < nSites; j++) {
                 nData[j][i] = sites.get(j);
             }
@@ -314,34 +321,34 @@ public class Alignment extends CalculationNode {
         }
 
         // reserve memory for patterns
-        m_nWeight = new int[nPatterns];
-        m_nPatterns = new int[nPatterns][nTaxa];
+        patternWeight = new int[nPatterns];
+        sitePatterns = new int[nPatterns][nTaxa];
         for (int i = 0; i < nPatterns; i++) {
-            m_nWeight[i] = weights[i];
-            m_nPatterns[i] = nData[i];
+            patternWeight[i] = weights[i];
+            sitePatterns[i] = nData[i];
         }
 
         // find patterns for the sites
-        m_nPatternIndex = new int[nSites];
+        patternIndex = new int[nSites];
         for (int i = 0; i < nSites; i++) {
             int[] sites = new int[nTaxa];
             for (int j = 0; j < nTaxa; j++) {
-                sites[j] = m_counts.get(j).get(i);
+                sites[j] = counts.get(j).get(i);
             }
-            m_nPatternIndex[i] = Arrays.binarySearch(m_nPatterns, sites, comparator);
+            patternIndex[i] = Arrays.binarySearch(sitePatterns, sites, comparator);
         }
 
         // determine maximum state count
         // Usually, the state count is equal for all sites,
         // though for SnAP analysis, this is typically not the case.
-        m_nMaxStateCount = 0;
-        for (int m_nStateCount1 : m_nStateCounts) {
-            m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCount1);
+        maxStateCount = 0;
+        for (int m_nStateCount1 : stateCounts) {
+            maxStateCount = Math.max(maxStateCount, m_nStateCount1);
         }
         // report some statistics
-        if (m_sTaxaNames.size() < 30) {
-	        for (int i = 0; i < m_sTaxaNames.size(); i++) {
-	            System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
+        if (taxaNames.size() < 30) {
+	        for (int i = 0; i < taxaNames.size(); i++) {
+	            System.err.println(taxaNames.get(i) + ": " + counts.get(i).size() + " " + stateCounts.get(i));
 	        }
         }
         System.out.println(getNrTaxa() + " taxa");
@@ -349,11 +356,11 @@ public class Alignment extends CalculationNode {
         System.out.println(getPatternCount() + " patterns");
 
 
-        if (m_bStripInvariantSites.get()) {
+        if (stripInvariantSitesInput.get()) {
             // don't add patterns that are invariant, e.g. all gaps
             System.err.print("Stripping invariant sites");
             for (int i = 0; i < nPatterns; i++) {
-                int[] nPattern = m_nPatterns[i];
+                int[] nPattern = sitePatterns[i];
                 int iValue = nPattern[0];
                 boolean bIsInvariant = true;
                 for (int k = 1; k < nPattern.length; k++) {
@@ -363,7 +370,7 @@ public class Alignment extends CalculationNode {
                     }
                 }
                 if (bIsInvariant) {
-                    m_nWeight[i] = 0;
+                    patternWeight[i] = 0;
                     System.err.print(" <" + iValue + "> ");
                 }
             }
@@ -388,7 +395,7 @@ public class Alignment extends CalculationNode {
     }
 
     boolean isAmbiguousState(int state) {
-        return (state >= 0 && state < m_nMaxStateCount);
+        return (state >= 0 && state < maxStateCount);
     }
 
 } // class Data

@@ -9,8 +9,8 @@ import java.util.Random;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.State;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -19,47 +19,49 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 
+
+
 @Description("Calculates probability of gene tree conditioned on a species tree (as in *BEAST)")
 public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
-    public Input<Tree> m_speciesTree =
+    public Input<Tree> speciesTreeInput =
             new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
 //    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
     
-    public Input<Double> m_ploidy =
+    public Input<Double> ploidyInput =
             new Input<Double>("ploidy", "ploidy for this gene, typically a whole number of half (default 2 for autosomal_nuclear)", 2.0);
 //    public Input<PLOIDY> m_ploidy =
 //        new Input<PLOIDY>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
 
     
-    public Input<SpeciesTreePrior> m_speciesTreePrior =
+    public Input<SpeciesTreePrior> speciesTreePriorInput =
             new Input<SpeciesTreePrior>("speciesTreePrior", "defines population function and its parameters", Validate.REQUIRED);
 
-    public Input<TreeTopFinder> treeTopFinder =
+    public Input<TreeTopFinder> treeTopFinderInput =
             new Input<TreeTopFinder>("treetop", "calculates height of species tree, required only for linear *beast analysis");
 
     // intervals for each of the species tree branches
-    private PriorityQueue<Double>[] m_intervals;
+    private PriorityQueue<Double>[] intervalsInput;
     // count nr of lineages at the bottom of species tree branches
-    private int[] m_nLineages;
+    private int[] nrOfLineages;
     // maps gene tree leaf nodes to species tree leaf nodes. Indexed by node number.
-    protected int[] m_nLineageToSpeciesMap;
+    protected int[] nrOfLineageToSpeciesMap;
 
     beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction m_bIsConstantPopFunction;
-    RealParameter m_fPopSizesBottom;
-    RealParameter m_fPopSizesTop;
+    RealParameter popSizesBottom;
+    RealParameter popSizesTop;
 
     // Ploidy is a constant - cache value of input here
-    private double m_fPloidy;
+    private double ploidy;
 
     //???
     public GeneTreeForSpeciesTreeDistribution() {
-        m_tree.setRule(Validate.REQUIRED);
+        treeInput.setRule(Validate.REQUIRED);
     }
 
     @Override
     public void initAndValidate() throws Exception {
-    	m_fPloidy = m_ploidy.get();
+    	ploidy = ploidyInput.get();
 //    	switch (m_ploidy.get()) {
 //			case autosomal_nuclear: m_fPloidy = 2.0; break;
 //			case X: m_fPloidy = 1.5; break;
@@ -67,10 +69,10 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 //			case mitrochondrial: m_fPloidy = 0.5; break;
 //			default: throw new Exception("Unknown value for ploidy");
 //		}
-        final Node[] gtNodes = m_tree.get().getNodesAsArray();
-        final int nGtLineages = m_tree.get().getLeafNodeCount();
-        final Node[] sptNodes = m_speciesTree.get().getNodesAsArray();
-        final int nSpecies = m_speciesTree.get().getNodeCount();
+        final Node[] gtNodes = treeInput.get().getNodesAsArray();
+        final int nGtLineages = treeInput.get().getLeafNodeCount();
+        final Node[] sptNodes = speciesTreeInput.get().getNodesAsArray();
+        final int nSpecies = speciesTreeInput.get().getNodeCount();
 
 
         if (nSpecies <= 1 && sptNodes[0].getID().equals("Beauti2DummyTaxonSet")) {
@@ -80,9 +82,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
 
         // reserve memory for priority queues
-        m_intervals = new PriorityQueue[nSpecies];
+        intervalsInput = new PriorityQueue[nSpecies];
         for (int i = 0; i < nSpecies; i++) {
-            m_intervals[i] = new PriorityQueue<Double>();
+            intervalsInput[i] = new PriorityQueue<Double>();
         }
 
         // sanity check lineage nodes are all at height=0
@@ -93,9 +95,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             }
         }
         // set up m_nLineageToSpeciesMap
-        m_nLineageToSpeciesMap = new int[nGtLineages];
+        nrOfLineageToSpeciesMap = new int[nGtLineages];
 
-        Arrays.fill(m_nLineageToSpeciesMap, -1);
+        Arrays.fill(nrOfLineageToSpeciesMap, -1);
         for (int i = 0; i < nGtLineages; i++) {
             final String sSpeciesID = getSetID(gtNodes[i].getID());
             // ??? can this be a startup check? can this happen during run due to tree change?
@@ -104,17 +106,17 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             }
             for (int iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
                 if (sSpeciesID.equals(sptNodes[iSpecies].getID())) {
-                    m_nLineageToSpeciesMap[i] = iSpecies;
+                    nrOfLineageToSpeciesMap[i] = iSpecies;
                     break;
                 }
             }
-            if (m_nLineageToSpeciesMap[i] < 0) {
+            if (nrOfLineageToSpeciesMap[i] < 0) {
                 throw new Exception("Cannot find species with name " + sSpeciesID + " in species tree");
             }
         }
 
         // calculate nr of lineages per species
-        m_nLineages = new int[nSpecies];
+        nrOfLineages = new int[nSpecies];
 //        for (final Node node : gtNodes) {
 //            if (node.isLeaf()) {
 //                final int iSpecies = m_nLineageToSpeciesMap[node.getNr()];
@@ -122,12 +124,12 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 //            }
 //        }
 
-        final SpeciesTreePrior popInfo = m_speciesTreePrior.get();
-        m_bIsConstantPopFunction = popInfo.m_popFunctionInput.get();
-        m_fPopSizesBottom = popInfo.m_popSizesBottom.get();
-        m_fPopSizesTop = popInfo.m_popSizesTop.get();
+        final SpeciesTreePrior popInfo = speciesTreePriorInput.get();
+        m_bIsConstantPopFunction = popInfo.popFunctionInput.get();
+        popSizesBottom = popInfo.popSizesBottomInput.get();
+        popSizesTop = popInfo.popSizesTopInput.get();
 
-        assert( ! (m_bIsConstantPopFunction == PopSizeFunction.linear && treeTopFinder.get() == null ) );
+        assert( ! (m_bIsConstantPopFunction == PopSizeFunction.linear && treeTopFinderInput.get() == null ) );
     }
 
     /**
@@ -135,10 +137,10 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      * @return species ID to which the lineage ID belongs according to the TaxonSets
      */
     String getSetID(final String sLineageID) {
-        final TaxonSet taxonSuperset = m_speciesTreePrior.get().m_taxonSet.get();
-        final List<Taxon> taxonSets = taxonSuperset.m_taxonset.get();
+        final TaxonSet taxonSuperset = speciesTreePriorInput.get().taxonSetInput.get();
+        final List<Taxon> taxonSets = taxonSuperset.taxonsetInput.get();
         for (final Taxon taxonSet : taxonSets) {
-            final List<Taxon> taxa = ((TaxonSet) taxonSet).m_taxonset.get();
+            final List<Taxon> taxa = ((TaxonSet) taxonSet).taxonsetInput.get();
             for (final Taxon aTaxa : taxa) {
                 if (aTaxa.getID().equals(sLineageID)) {
                     return taxonSet.getID();
@@ -151,16 +153,16 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     @Override
     public double calculateLogP() {
         logP = 0;
-        for (final PriorityQueue<Double> m_interval : m_intervals) {
+        for (final PriorityQueue<Double> m_interval : intervalsInput) {
             m_interval.clear();
         }
 
-        Arrays.fill(m_nLineages, 0);
+        Arrays.fill(nrOfLineages, 0);
 
-        final Tree stree = m_speciesTree.get();
+        final Tree stree = speciesTreeInput.get();
         final Node[] speciesNodes = stree.getNodesAsArray();
 
-        traverseLineageTree(speciesNodes, m_tree.get().getRoot());
+        traverseLineageTree(speciesNodes, treeInput.get().getRoot());
 //		System.err.println(getID());
 //		for (int i = 0; i < m_intervals.length; i++) {
 //			System.err.println(m_intervals[i]);
@@ -188,19 +190,19 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
         // k, as defined in the paper
         //System.err.println(Arrays.toString(m_nLineages));
-        final int k = m_intervals[iNode].size();
+        final int k = intervalsInput[iNode].size();
         final double[] fTimes = new double[k + 2];
         fTimes[0] = node.getHeight();
         for (int i = 1; i <= k; i++) {
-            fTimes[i] = m_intervals[iNode].poll();
+            fTimes[i] = intervalsInput[iNode].poll();
         }
         if (!node.isRoot()) {
             fTimes[k + 1] = node.getParent().getHeight();
         } else {
             if (m_bIsConstantPopFunction == PopSizeFunction.linear) {
-                fTimes[k + 1] = treeTopFinder.get().getHighestTreeHeight();
+                fTimes[k + 1] = treeTopFinderInput.get().getHighestTreeHeight();
             } else {
-                fTimes[k + 1] = Math.max(node.getHeight(), m_tree.get().getRoot().getHeight());
+                fTimes[k + 1] = Math.max(node.getHeight(), treeInput.get().getRoot().getHeight());
             }
         }
         // sanity check
@@ -211,11 +213,11 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             }
         }
 
-        final int nLineagesBottom = m_nLineages[iNode];
+        final int nLineagesBottom = nrOfLineages[iNode];
 
         switch (m_bIsConstantPopFunction) {
             case constant:
-                calcConstantPopSizeContribution(nLineagesBottom, m_fPopSizesBottom.getValue(iNode), fTimes, k);
+                calcConstantPopSizeContribution(nLineagesBottom, popSizesBottom.getValue(iNode), fTimes, k);
                 break;
             case linear:
                 calcLinearPopSizeContribution(nLineagesBottom, iNode, fTimes, k, node);
@@ -236,7 +238,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
       */
     private void calcConstantPopSizeContribution(final int nLineagesBottom, final double fPopSize2,
                                                  final double[] fTimes, final int k) {
-        final double fPopSize = fPopSize2 * m_fPloidy;
+        final double fPopSize = fPopSize2 * ploidy;
         logP += -k * Math.log(fPopSize);
 //		System.err.print(logP);
         for (int i = 0; i <= k; i++) {
@@ -252,12 +254,12 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
                                                final int k, final Node node) {
         final double fPopSizeBottom;
         if (node.isLeaf()) {
-            fPopSizeBottom = m_fPopSizesBottom.getValue(iNode) * m_fPloidy;
+            fPopSizeBottom = popSizesBottom.getValue(iNode) * ploidy;
         } else {
             // use sum of left and right child branches for internal nodes
-            fPopSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr())) * m_fPloidy;
+            fPopSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr())) * ploidy;
         }
-        final double fPopSizeTop = getTopPopSize(iNode) * m_fPloidy;
+        final double fPopSizeTop = getTopPopSize(iNode) * ploidy;
         final double a = (fPopSizeTop - fPopSizeBottom) / (fTimes[k + 1] - fTimes[0]);
         final double b = fPopSizeBottom;
         for (int i = 0; i < k; i++) {
@@ -287,8 +289,8 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      */
     private int traverseLineageTree(final Node[] speciesNodes, final Node node) {
         if (node.isLeaf()) {
-            final int iSpecies = m_nLineageToSpeciesMap[node.getNr()];
-            m_nLineages[iSpecies]++;
+            final int iSpecies = nrOfLineageToSpeciesMap[node.getNr()];
+            nrOfLineages[iSpecies]++;
             return iSpecies;
         } else {
             int nSpeciesLeft = traverseLineageTree(speciesNodes, node.getLeft());
@@ -297,11 +299,11 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
             while (!speciesNodes[nSpeciesLeft].isRoot() && fHeight > speciesNodes[nSpeciesLeft].getParent().getHeight()) {
                 nSpeciesLeft = speciesNodes[nSpeciesLeft].getParent().getNr();
-                m_nLineages[nSpeciesLeft]++;
+                nrOfLineages[nSpeciesLeft]++;
             }
             while (!speciesNodes[nSpeciesRight].isRoot() && fHeight > speciesNodes[nSpeciesRight].getParent().getHeight()) {
                 nSpeciesRight = speciesNodes[nSpeciesRight].getParent().getNr();
-                m_nLineages[nSpeciesRight]++;
+                nrOfLineages[nSpeciesRight]++;
             }
             // validity check
             if (nSpeciesLeft != nSpeciesRight) {
@@ -309,7 +311,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
                 // not fit in the species tree
                 logP = Double.NEGATIVE_INFINITY;
             }
-            m_intervals[nSpeciesRight].add(fHeight);
+            intervalsInput[nSpeciesRight].add(fHeight);
             return nSpeciesRight;
         }
     }
@@ -320,10 +322,10 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
       * and we can use that entry in m_fPopSizesTop for the rogue internal node.
       */
     private double getTopPopSize(final int iNode) {
-        if (iNode < m_fPopSizesTop.getDimension()) {
-            return m_fPopSizesTop.getArrayValue(iNode);
+        if (iNode < popSizesTop.getDimension()) {
+            return popSizesTop.getArrayValue(iNode);
         }
-        return m_fPopSizesTop.getArrayValue(m_speciesTree.get().getRoot().getNr());
+        return popSizesTop.getArrayValue(speciesTreeInput.get().getRoot().getNr());
     }
 
 

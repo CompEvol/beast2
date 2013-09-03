@@ -14,11 +14,13 @@ import javax.swing.JComboBox;
 import beast.app.beauti.PriorListInputEditor.MRCAPriorActionListener;
 import beast.app.draw.InputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
+
+
 
 public class MRCAPriorInputEditor extends InputEditor.Base {
 	private static final long serialVersionUID = 1L;
@@ -33,7 +35,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 	}
 
 	@Override
-	public void init(Input<?> input, Plugin plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTObject plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
@@ -55,12 +57,12 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
                 List<?> list = (List<?>) m_input.get();
                 MRCAPrior prior = (MRCAPrior) list.get(itemNr);
                 try {
-                    TaxonSet taxonset = prior.m_taxonset.get();
+                    TaxonSet taxonset = prior.taxonsetInput.get();
                     Set<Taxon> candidates = getTaxonCandidates(prior);
                     TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates, doc);
                     if (dlg.showDialog()) {
                         prior.setID(dlg.taxonSet.getID());
-                        prior.m_taxonset.setValue(dlg.taxonSet, prior);
+                        prior.taxonsetInput.setValue(dlg.taxonSet, prior);
                     }
                 } catch (Exception e1) {
                     // TODO Auto-generated catch block
@@ -71,22 +73,22 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         });
 
 
-        if (prior.m_distInput.getType() == null) {
+        if (prior.distInput.getType() == null) {
             try {
-                prior.m_distInput.setValue(new OneOnX(), prior);
-                prior.m_distInput.setValue(null, prior);
+                prior.distInput.setValue(new OneOnX(), prior);
+                prior.distInput.setValue(null, prior);
             } catch (Exception e) {
                 // TODO: handle exception
             }
 
         }
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.m_distInput, prior, null, doc);
+        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
 
-        if (prior.m_distInput.get() != null) {
-            String sID = prior.m_distInput.get().getID();
+        if (prior.distInput.get() != null) {
+            String sID = prior.distInput.get().getID();
             //sID = BeautiDoc.parsePartition(sID);
             sID = sID.substring(0, sID.indexOf('.'));
             for (BeautiSubTemplate template : sAvailablePlugins) {
@@ -114,7 +116,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 //				}
                 try {
                     //Plugin plugin2 =
-                    template.createSubNet(new PartitionContext(""), prior, prior.m_distInput, true);
+                    template.createSubNet(new PartitionContext(""), prior, prior.distInput, true);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -123,10 +125,10 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         });
         itemBox.add(comboBox);
 
-        JCheckBox isMonophyleticdBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.m_bIsMonophyleticInput.getName()));
+        JCheckBox isMonophyleticdBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.isMonophyleticInput.getName()));
         isMonophyleticdBox.setName(sText+".isMonophyletic");
-        isMonophyleticdBox.setSelected(prior.m_bIsMonophyleticInput.get());
-        isMonophyleticdBox.setToolTipText(prior.m_bIsMonophyleticInput.getTipText());
+        isMonophyleticdBox.setSelected(prior.isMonophyleticInput.get());
+        isMonophyleticdBox.setToolTipText(prior.isMonophyleticInput.getTipText());
         isMonophyleticdBox.addActionListener(new MRCAPriorActionListener(prior));
         itemBox.add(isMonophyleticdBox);
         itemBox.add(Box.createGlue());
@@ -136,7 +138,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 	
     Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
         Set<Taxon> candidates = new HashSet<Taxon>();
-        for (String sTaxon : prior.m_treeInput.get().getTaxaNames()) {
+        for (String sTaxon : prior.treeInput.get().getTaxaNames()) {
             Taxon taxon = null;
             for (Taxon taxon2 : doc.taxaset) {
                 if (taxon2.getID().equals(sTaxon)) {
@@ -167,7 +169,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                m_prior.m_bIsMonophyleticInput.setValue(((JCheckBox) e.getSource()).isSelected(), m_prior);
+                m_prior.isMonophyleticInput.setValue(((JCheckBox) e.getSource()).isSelected(), m_prior);
                 refreshPanel();
             } catch (Exception ex) {
                 System.err.println("PriorListInputEditor " + ex.getMessage());

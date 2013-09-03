@@ -8,11 +8,13 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
-import beast.core.Plugin;
+
+
 
 @Description("Specifies which part of the template get connected to the main network")
-public class BeautiConnector extends Plugin {
+public class BeautiConnector extends BEASTObject {
     public Input<String> sMethodnput = new Input<String>("method", "name of static method that should be called with BeautiDoc as " +
     		"argument. For example beast.app.beauti.SiteModelInputEditor.custmoConnector");
 
@@ -127,8 +129,8 @@ public class BeautiConnector extends Plugin {
     /**
      * check that conditions in the 'if' input are met *
      */
-    public boolean isActivated(PartitionContext partitionContext, List<Plugin> posteriorPredecessors,
-    		List<Plugin> likelihoodPredecessors, BeautiDoc doc) {
+    public boolean isActivated(PartitionContext partitionContext, List<BEASTObject> posteriorPredecessors,
+    		List<BEASTObject> likelihoodPredecessors, BeautiDoc doc) {
         if (atInitialisationOnly()) {
             return false;
         }
@@ -150,7 +152,7 @@ public class BeautiConnector extends Plugin {
         for (int i = 0; i < sConditionIDs.length; i++) {
         	//String sID = sConditionIDs[i].replaceAll("\\$\\(n\\)", sPartition);
         	String sID = BeautiDoc.translatePartitionNames(sConditionIDs[i], partitionContext);
-            Plugin plugin = doc.pluginmap.get(sID);
+            BEASTObject plugin = doc.pluginmap.get(sID);
             if (plugin == null) {
             	if (conditionOperations[i] != Operation.IS_NOT_AN_OPERTOR) {
                     return false;

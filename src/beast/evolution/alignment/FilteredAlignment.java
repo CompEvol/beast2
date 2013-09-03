@@ -8,47 +8,48 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.datatype.DataType;
-import beast.util.AddOnManager;
+
+
 
 @Description("Alignemnt based on a filter operation on another alignment")
 public class FilteredAlignment extends Alignment {
-    public Input<String> m_sFilterInput = new Input<String>("filter", "specifies which of the sites in the input alignment should be selected " +
+    public Input<String> filterInput = new Input<String>("filter", "specifies which of the sites in the input alignment should be selected " +
             "First site is 1." +
             "Filter specs are comma separated, either a range [from]-[to] or iteration [from]:[to]:[step]; " +
             "1-100 defines a range, " +
             "1-100\3 or 1:100:3 defines every third in range 1-100, " +
             "1::3,2::3 removes every third site. " +
             "Default for range [1]-[last site], default for iterator [1]:[last site]:[1]", Validate.REQUIRED);
-    public Input<Alignment> m_alignmentInput = new Input<Alignment>("data", "alignment to be filtered", Validate.REQUIRED);
+    public Input<Alignment> alignmentInput = new Input<Alignment>("data", "alignment to be filtered", Validate.REQUIRED);
     public Input<IntegerParameter> constantSiteWeightsInput = new Input<IntegerParameter>("constantSiteWeights", "if specified, constant " +
     		"sites will be added with weights specified by the input. The dimension and order of weights must match the datatype. " +
     		"For example for nucleotide data, a 4 dimensional " +
     		"parameter with weights for A, C, G and T respectively need to be specified.");
 
     // these triples specify a range for(i=From; i <= To; i += Step)
-    int[] m_iFrom;
-    int[] m_iTo;
-    int[] m_iStep;
+    int[] from;
+    int[] to;
+    int[] step;
     /**
      * list of indices filtered from input alignment *
      */
-    int[] m_iFilter;
+    int[] filter;
     
     boolean convertDataType = false;
 
     public FilteredAlignment() {
-        m_pSequences.setRule(Validate.OPTIONAL);
+        sequenceInput.setRule(Validate.OPTIONAL);
     }
 
     @Override
     public void initAndValidate() throws Exception {
         parseFilterSpec();
         calcFilter();
-        Alignment data = m_alignmentInput.get();
+        Alignment data = alignmentInput.get();
         m_dataType = data.m_dataType;
         // see if this filter changes data type
-        if (m_userDataType.get() != null) {
-            m_dataType = m_userDataType.get();
+        if (userDataTypeInput.get() != null) {
+            m_dataType = userDataTypeInput.get();
             convertDataType = true;
         }
 
@@ -59,102 +60,102 @@ public class FilteredAlignment extends Alignment {
         	}
     	}
         
-        m_counts = data.m_counts;
-        m_sTaxaNames = data.m_sTaxaNames;
-        m_nStateCounts = data.m_nStateCounts;
+        counts = data.counts;
+        taxaNames = data.taxaNames;
+        stateCounts = data.stateCounts;
 
         calcPatterns();
     }
 
     private void parseFilterSpec() throws Exception {
         // parse filter specification
-        String sFilter = m_sFilterInput.get();
-        String[] sFilters = sFilter.split(",");
-        m_iFrom = new int[sFilters.length];
-        m_iTo = new int[sFilters.length];
-        m_iStep = new int[sFilters.length];
-        for (int i = 0; i < sFilters.length; i++) {
-            sFilter = " " + sFilters[i] + " ";
-            if (sFilter.matches(".*-.*")) {
+        String filterString = filterInput.get();
+        String[] filters = filterString.split(",");
+        from = new int[filters.length];
+        to = new int[filters.length];
+        step = new int[filters.length];
+        for (int i = 0; i < filters.length; i++) {
+            filterString = " " + filters[i] + " ";
+            if (filterString.matches(".*-.*")) {
                 // range, e.g. 1-100/3
-                if (sFilter.indexOf('\\') >= 0) {
-                	String sStr2 = sFilter.substring(sFilter.indexOf('\\') + 1); 
-                	m_iStep[i] = parseInt(sStr2, 1);
-                	sFilter = sFilter.substring(0, sFilter.indexOf('\\'));
+                if (filterString.indexOf('\\') >= 0) {
+                	String str2 = filterString.substring(filterString.indexOf('\\') + 1); 
+                	step[i] = parseInt(str2, 1);
+                	filterString = filterString.substring(0, filterString.indexOf('\\'));
                 } else {
-                	m_iStep[i] = 1;
+                	step[i] = 1;
                 }
-                String[] sStrs = sFilter.split("-");
-                m_iFrom[i] = parseInt(sStrs[0], 1) - 1;
-                m_iTo[i] = parseInt(sStrs[1], m_alignmentInput.get().getSiteCount()) - 1;
-            } else if (sFilter.matches(".*:.*:.+")) {
+                String[] strs = filterString.split("-");
+                from[i] = parseInt(strs[0], 1) - 1;
+                to[i] = parseInt(strs[1], alignmentInput.get().getSiteCount()) - 1;
+            } else if (filterString.matches(".*:.*:.+")) {
                 // iterator, e.g. 1:100:3
-                String[] sStrs = sFilter.split(":");
-                m_iFrom[i] = parseInt(sStrs[0], 1) - 1;
-                m_iTo[i] = parseInt(sStrs[1], m_alignmentInput.get().getSiteCount()) - 1;
-                m_iStep[i] = parseInt(sStrs[2], 1);
-            } else if (sFilter.trim().matches("[0-9]*")) {
-                m_iFrom[i] = parseInt(sFilter.trim(), 1) - 1;
-                m_iTo[i] = m_iFrom[i];
-            	m_iStep[i] = 1;
+                String[] strs = filterString.split(":");
+                from[i] = parseInt(strs[0], 1) - 1;
+                to[i] = parseInt(strs[1], alignmentInput.get().getSiteCount()) - 1;
+                step[i] = parseInt(strs[2], 1);
+            } else if (filterString.trim().matches("[0-9]*")) {
+                from[i] = parseInt(filterString.trim(), 1) - 1;
+                to[i] = from[i];
+            	step[i] = 1;
             } else {
-                throw new Exception("Don't know how to parse filter " + sFilter);
+                throw new Exception("Don't know how to parse filter " + filterString);
             }
         }
     }
 
-    int parseInt(String sStr, int nDefault) {
-        sStr = sStr.replaceAll("\\s+", "");
+    int parseInt(String str, int defaultValue) {
+        str = str.replaceAll("\\s+", "");
         try {
-            return Integer.parseInt(sStr);
+            return Integer.parseInt(str);
         } catch (Exception e) {
-            return nDefault;
+            return defaultValue;
         }
     }
 
     private void calcFilter() {
-        boolean[] bUsed = new boolean[m_alignmentInput.get().getSiteCount()];
-        for (int i = 0; i < m_iTo.length; i++) {
-            for (int k = m_iFrom[i]; k <= m_iTo[i]; k += m_iStep[i]) {
-                bUsed[k] = true;
+        boolean[] isUsed = new boolean[alignmentInput.get().getSiteCount()];
+        for (int i = 0; i < to.length; i++) {
+            for (int k = from[i]; k <= to[i]; k += step[i]) {
+                isUsed[k] = true;
             }
         }
         // count
         int k = 0;
-        for (int i = 0; i < bUsed.length; i++) {
-            if (bUsed[i]) {
+        for (int i = 0; i < isUsed.length; i++) {
+            if (isUsed[i]) {
                 k++;
             }
         }
         // set up index set
-        m_iFilter = new int[k];
+        filter = new int[k];
         k = 0;
-        for (int i = 0; i < bUsed.length; i++) {
-            if (bUsed[i]) {
-                m_iFilter[k++] = i;
+        for (int i = 0; i < isUsed.length; i++) {
+            if (isUsed[i]) {
+                filter[k++] = i;
             }
         }
     }
 
     @Override
     protected void calcPatterns() {
-        int nTaxa = m_counts.size();
-        int nSites = m_iFilter.length;
+        int nrOfTaxa = counts.size();
+        int nrOfSites = filter.length;
         
-        DataType baseType = m_alignmentInput.get().m_dataType;
+        DataType baseType = alignmentInput.get().m_dataType;
         
         
         
         // convert data to transposed int array
-        int[][] nData = new int[nSites][nTaxa];
-        for (int i = 0; i < nTaxa; i++) {
-            List<Integer> sites = m_counts.get(i);
-            for (int j = 0; j < nSites; j++) {
-                nData[j][i] = sites.get(m_iFilter[j]);
+        int[][] data = new int[nrOfSites][nrOfTaxa];
+        for (int i = 0; i < nrOfTaxa; i++) {
+            List<Integer> sites = counts.get(i);
+            for (int j = 0; j < nrOfSites; j++) {
+                data[j][i] = sites.get(filter[j]);
                 if (convertDataType) {
                 	try {
-                		String code = baseType.getCode(nData[j][i]);
-						nData[j][i] = m_dataType.string2state(code).get(0);
+                		String code = baseType.getCode(data[j][i]);
+						data[j][i] = m_dataType.string2state(code).get(0);
                 	} catch (Exception e) {
                 		e.printStackTrace();
                 	}
@@ -166,75 +167,75 @@ public class FilteredAlignment extends Alignment {
         if (constantSiteWeightsInput.get() != null) {
         	int dim = constantSiteWeightsInput.get().getDimension();
         	// add constant patterns
-        	int [][] nData2 = new int[nSites + dim][];
-            System.arraycopy(nData, 0, nData2, 0, nSites);
+        	int [][] data2 = new int[nrOfSites + dim][];
+            System.arraycopy(data, 0, data2, 0, nrOfSites);
         	for (int i = 0; i < dim; i++) {
-        		nData2[nSites + i] = new int[nTaxa];
-        		for (int j = 0; j < nTaxa; j++) {
-        			nData2[nSites+ i][j] = i;
+        		data2[nrOfSites + i] = new int[nrOfTaxa];
+        		for (int j = 0; j < nrOfTaxa; j++) {
+        			data2[nrOfSites+ i][j] = i;
 				}
         	}
-        	nData = nData2;
-        	nSites += dim; 
+        	data = data2;
+        	nrOfSites += dim; 
         }
         
         // sort data
         SiteComparator comparator = new SiteComparator();
-        Arrays.sort(nData, comparator);
+        Arrays.sort(data, comparator);
 
         // count patterns in sorted data
-        int[] weights = new int[nSites];
-        int nPatterns = 1;
-        if (nSites > 0) {
+        int[] weights = new int[nrOfSites];
+        int nrOfPatterns = 1;
+        if (nrOfSites > 0) {
 	        weights[0] = 1;
-	        for (int i = 1; i < nSites; i++) {
-	            if (comparator.compare(nData[i - 1], nData[i]) != 0) {
-	                nPatterns++;
-	                nData[nPatterns - 1] = nData[i];
+	        for (int i = 1; i < nrOfSites; i++) {
+	            if (comparator.compare(data[i - 1], data[i]) != 0) {
+	                nrOfPatterns++;
+	                data[nrOfPatterns - 1] = data[i];
 	            }
-	            weights[nPatterns - 1]++;
+	            weights[nrOfPatterns - 1]++;
 	        }
         } else {
-            nPatterns = 0;
+            nrOfPatterns = 0;
         }
         
         // addjust weight of constant sites, if specified
         if (constantSiteWeightsInput.get() != null) {
         	Integer [] constantWeights = constantSiteWeightsInput.get().getValues(); 
-        	for (int i = 0; i < nPatterns; i++) {
+        	for (int i = 0; i < nrOfPatterns; i++) {
         		boolean isContant = true;
-        		for (int j = 1; j < nTaxa; j++) {
-        			if (nData[i][j] != nData[i][0]) {
+        		for (int j = 1; j < nrOfTaxa; j++) {
+        			if (data[i][j] != data[i][0]) {
         				isContant = false;
         				break;
         			}
         		}
         		// if this is a constant site, and it is not an ambiguous site
-        		if (isContant && nData[i][0] >= 0 && nData[i][0] < constantWeights.length) {
+        		if (isContant && data[i][0] >= 0 && data[i][0] < constantWeights.length) {
         			// take weights in data in account as well
         			// by adding constant patterns, we added a weight of 1, which now gets corrected
-            		weights[i] = weights[i] - 1 + constantWeights[nData[i][0]];
+            		weights[i] = weights[i] - 1 + constantWeights[data[i][0]];
         		}
         	}
         	
         	// need to decrease nSites for mapping sites to patterns in m_nPatternIndex
-        	nSites -= constantWeights.length; 
+        	nrOfSites -= constantWeights.length; 
         }        
         
         // reserve memory for patterns
-        m_nWeight = new int[nPatterns];
-        m_nPatterns = new int[nPatterns][nTaxa];
-        for (int i = 0; i < nPatterns; i++) {
-            m_nWeight[i] = weights[i];
-            m_nPatterns[i] = nData[i];
+        patternWeight = new int[nrOfPatterns];
+        sitePatterns = new int[nrOfPatterns][nrOfTaxa];
+        for (int i = 0; i < nrOfPatterns; i++) {
+            patternWeight[i] = weights[i];
+            sitePatterns[i] = data[i];
         }
 
         // find patterns for the sites
-        m_nPatternIndex = new int[nSites];
-        for (int i = 0; i < nSites; i++) {
-            int[] sites = new int[nTaxa];
-            for (int j = 0; j < nTaxa; j++) {
-                sites[j] = m_counts.get(j).get(m_iFilter[i]);
+        patternIndex = new int[nrOfSites];
+        for (int i = 0; i < nrOfSites; i++) {
+            int[] sites = new int[nrOfTaxa];
+            for (int j = 0; j < nrOfTaxa; j++) {
+                sites[j] = counts.get(j).get(filter[i]);
                 if (convertDataType) {
                 	try {
                 		sites[j] = m_dataType.string2state(baseType.getCode(sites[j])).get(0);
@@ -243,24 +244,24 @@ public class FilteredAlignment extends Alignment {
                 	}
                 }
             }
-            m_nPatternIndex[i] = Arrays.binarySearch(m_nPatterns, sites, comparator);
+            patternIndex[i] = Arrays.binarySearch(sitePatterns, sites, comparator);
         }
 
         // determine maximum state count
         // Usually, the state count is equal for all sites,
         // though for SnAP analysis, this is typically not the case.
-        m_nMaxStateCount = 0;
-        for (int m_nStateCount1 : m_nStateCounts) {
-            m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCount1);
+        maxStateCount = 0;
+        for (int stateCount1 : stateCounts) {
+            maxStateCount = Math.max(maxStateCount, stateCount1);
         }
         if (convertDataType) {
-        	m_nMaxStateCount = Math.max(m_nMaxStateCount, m_dataType.getStateCount());
+        	maxStateCount = Math.max(maxStateCount, m_dataType.getStateCount());
         }
         // report some statistics
         //for (int i = 0; i < m_sTaxaNames.size(); i++) {
         //    System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
         //}
-        System.err.println("Filter " + m_sFilterInput.get());
+        System.err.println("Filter " + filterInput.get());
         System.err.println(getNrTaxa() + " taxa");
         if (constantSiteWeightsInput.get() != null) {
         	Integer [] constantWeights = constantSiteWeightsInput.get().getValues();
@@ -277,6 +278,6 @@ public class FilteredAlignment extends Alignment {
     
     /** return indices of the sites that the filter uses **/
     public int [] indices() {
-    	return m_iFilter.clone();
+    	return filter.clone();
     }
 }

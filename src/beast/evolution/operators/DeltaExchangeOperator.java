@@ -1,6 +1,11 @@
 package beast.evolution.operators;
 
 
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
@@ -8,9 +13,6 @@ import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A generic operator for use with a sum-constrained (possibly weighted) vector parameter.
@@ -29,11 +31,11 @@ public class DeltaExchangeOperator extends Operator {
     public final Input<List<IntegerParameter>> intparameterInput = new Input<List<IntegerParameter>>("intparameter",
             "if specified, this parameter is operated on", new ArrayList<IntegerParameter>());
 
-    public final Input<Double> input_delta = new Input<Double>("delta", "Magnitude of change for two randomly picked values.", 1.0);
-    public final Input<Boolean> input_autoOptimize =
+    public final Input<Double> deltaInput = new Input<Double>("delta", "Magnitude of change for two randomly picked values.", 1.0);
+    public final Input<Boolean> autoOptimizeiInput =
             new Input<Boolean>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
-    public final Input<Boolean> input_isIntegerOperator = new Input<Boolean>("integer", "if true, changes are all integers.", false);
-    public final Input<IntegerParameter> input_parameterWeights = new Input<IntegerParameter>("weightvector", "weights on a vector parameter");
+    public final Input<Boolean> sIntegerOperatorInput = new Input<Boolean>("integer", "if true, changes are all integers.", false);
+    public final Input<IntegerParameter> parameterWeightsInput = new Input<IntegerParameter>("weightvector", "weights on a vector parameter");
 
     private boolean autoOptimize;
     private double delta;
@@ -44,9 +46,9 @@ public class DeltaExchangeOperator extends Operator {
 
     public void initAndValidate() {
 
-        autoOptimize = input_autoOptimize.get();
-        delta = input_delta.get();
-        isIntegerOperator = input_isIntegerOperator.get();
+        autoOptimize = autoOptimizeiInput.get();
+        delta = deltaInput.get();
+        isIntegerOperator = sIntegerOperatorInput.get();
 
         if (parameterInput.get().isEmpty()) {
             if (intparameterInput.get().size() > 1)
@@ -69,12 +71,12 @@ public class DeltaExchangeOperator extends Operator {
             parameterWeights = new int[compoundParameter.getDimension()];
         }
 
-        if (input_parameterWeights.get() != null) {
-            if (parameterWeights.length != input_parameterWeights.get().getDimension())
+        if (parameterWeightsInput.get() != null) {
+            if (parameterWeights.length != parameterWeightsInput.get().getDimension())
                 throw new IllegalArgumentException("Weights vector should have the same length as parameter dimension");
 
             for (int i = 0; i < parameterWeights.length; i++) {
-                parameterWeights[i] = input_parameterWeights.get().getValue(i);
+                parameterWeights[i] = parameterWeightsInput.get().getValue(i);
             }
         } else {
             for (int i = 0; i < parameterWeights.length; i++) {

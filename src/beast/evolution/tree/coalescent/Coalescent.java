@@ -1,16 +1,18 @@
 package beast.evolution.tree.coalescent;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.State;
-import beast.evolution.tree.TreeDistribution;
-import beast.math.Binomial;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import beast.core.CalculationNode;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.State;
+import beast.core.Input.Validate;
+import beast.evolution.tree.TreeDistribution;
+import beast.math.Binomial;
+
 
 /**
  * @author Alexei Drummond
@@ -21,13 +23,13 @@ import java.util.Random;
         "in account, in other words, the constant required for making this a proper distribution that integrates " +
         "to unity is not calculated (partly, because we don't know how for sequentially samples data).")
 public class Coalescent extends TreeDistribution {
-    public Input<PopulationFunction> popSize = new Input<PopulationFunction>("populationModel", "A population size model", Validate.REQUIRED);
+    public Input<PopulationFunction> popSizeInput = new Input<PopulationFunction>("populationModel", "A population size model", Validate.REQUIRED);
 
     TreeIntervals intervals;
 
     @Override
     public void initAndValidate() throws Exception {
-        intervals = treeIntervals.get();
+        intervals = treeIntervalsInput.get();
         if (intervals == null) {
             throw new Exception("Expected treeIntervals to be specified");
         }
@@ -41,10 +43,10 @@ public class Coalescent extends TreeDistribution {
     @Override
     public double calculateLogP() throws Exception {
 
-        logP = calculateLogLikelihood(intervals, popSize.get());
+        logP = calculateLogLikelihood(intervals, popSizeInput.get());
 
         if (Double.isInfinite(logP)) {
-            logP = Double.NEGATIVE_INFINITY;
+        	logP = Double.NEGATIVE_INFINITY;
         }
 
         return logP;
@@ -60,14 +62,14 @@ public class Coalescent extends TreeDistribution {
      * @return a list of unique ids for the state nodes that form the argument
      */
     public List<String> getArguments() {
-        return Collections.singletonList(treeIntervals.get().getID());
+        return Collections.singletonList(treeIntervalsInput.get().getID());
     }
 
     /**
      * @return a list of unique ids for the state nodes that make up the conditions
      */
     public List<String> getConditions() {
-        return popSize.get().getParameterIds();
+        return popSizeInput.get().getParameterIds();
     }
 
 
@@ -138,6 +140,6 @@ public class Coalescent extends TreeDistribution {
 
     @Override
     protected boolean requiresRecalculation() {
-        return ((CalculationNode) popSize.get()).isDirtyCalculation() || super.requiresRecalculation();
+        return ((CalculationNode) popSizeInput.get()).isDirtyCalculation() || super.requiresRecalculation();
     }
 }

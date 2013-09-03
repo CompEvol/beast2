@@ -1,5 +1,8 @@
 package beast.app.seqgen;
 
+import java.io.PrintStream;
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -12,8 +15,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
-import java.io.PrintStream;
-import java.util.List;
+
 
 /**
  * @author remco@cs.waikato.ac.nz
@@ -69,7 +71,7 @@ public class SimulatedAlignment extends Alignment {
     public SimulatedAlignment() {
         
         // Override the sequence input requirement.
-        m_pSequences.setRule(Validate.OPTIONAL);
+        sequenceInput.setRule(Validate.OPTIONAL);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class SimulatedAlignment extends Alignment {
         m_probabilities = new double[m_categoryCount][m_stateCount * m_stateCount];
         m_outputFileName = m_outputFileNameInput.get();
         
-        m_pSequences.get().clear();
+        sequenceInput.get().clear();
         
         simulate();        
         
@@ -119,8 +121,8 @@ public class SimulatedAlignment extends Alignment {
 //    		}
 //			sSeq.append(seq[m_sequenceLength-1] + "");
 //    	}
-        List<Sequence> taxa = m_data.get().m_pSequences.get();
-        String sTaxon = taxa.get(node.getNr()).m_sTaxon.get();
+        List<Sequence> taxa = m_data.get().sequenceInput.get();
+        String sTaxon = taxa.get(node.getNr()).taxonInput.get();
         return new Sequence(sTaxon, sSeq.toString());
     } // intArray2Sequence
 
@@ -179,7 +181,7 @@ public class SimulatedAlignment extends Alignment {
             }
 
             if (child.isLeaf()) {
-                m_pSequences.setValue(intArray2Sequence(seq, child), this);
+                sequenceInput.setValue(intArray2Sequence(seq, child), this);
             } else {
                 traverse(child, seq, category);
             }

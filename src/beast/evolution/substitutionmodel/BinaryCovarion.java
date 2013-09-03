@@ -27,10 +27,10 @@ import beast.evolution.datatype.TwoStateCovarion;
  */
 @Description("Covarion model for Binary data")
 public class BinaryCovarion extends GeneralSubstitutionModel {
-    public Input<RealParameter> m_alpha = new Input<RealParameter>("alpha", "the rate of evolution in slow mode", Validate.REQUIRED);
-    public Input<RealParameter> m_switchRate = new Input<RealParameter>("switchRate", "the rate of flipping between slow and fast modes", Validate.REQUIRED);
-    public Input<RealParameter> m_frequenciesInput = new Input<RealParameter>("vfrequencies", "the frequencies of the visible states", Validate.REQUIRED);
-    public Input<RealParameter> m_hfrequencies = new Input<RealParameter>("hfrequencies", "the frequencies of the hidden rates", Validate.REQUIRED);
+    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "the rate of evolution in slow mode", Validate.REQUIRED);
+    public Input<RealParameter> switchRateInput = new Input<RealParameter>("switchRate", "the rate of flipping between slow and fast modes", Validate.REQUIRED);
+    public Input<RealParameter> frequenciesInput = new Input<RealParameter>("vfrequencies", "the frequencies of the visible states", Validate.REQUIRED);
+    public Input<RealParameter> hfrequenciesInput = new Input<RealParameter>("hfrequencies", "the frequencies of the hidden rates", Validate.REQUIRED);
 
     private RealParameter alpha;
     private RealParameter switchRate;
@@ -42,16 +42,16 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
     int stateCount;
 
     public BinaryCovarion() {
-        m_rates.setRule(Validate.OPTIONAL);
+        ratesInput.setRule(Validate.OPTIONAL);
         frequenciesInput.setRule(Validate.OPTIONAL);
     }
 
     @Override
     public void initAndValidate() throws Exception {
-        alpha = m_alpha.get();
-        switchRate = m_switchRate.get();
-        frequencies = m_frequenciesInput.get();
-        hiddenFrequencies = m_hfrequencies.get();
+        alpha = alphaInput.get();
+        switchRate = switchRateInput.get();
+        frequencies = frequenciesInput.get();
+        hiddenFrequencies = hfrequenciesInput.get();
 
         if (alpha.getDimension() != 1) {
             throw new Exception("alpha should have dimension 1");
@@ -66,13 +66,13 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
             throw new Exception("hiddenFrequenciesshould have dimension 2");
         }
 
-        m_nStates = 4;
+        nrOfStates = 4;
         unnormalizedQ = new double[4][4];
         storedUnnormalizedQ = new double[4][4];
 
         updateMatrix = true;
         eigenSystem = createEigenSystem();
-        m_rateMatrix = new double[m_nStates][m_nStates];
+        rateMatrix = new double[nrOfStates][nrOfStates];
         relativeRates = new double[4 * 3];
         storedRelativeRates = new double[4 * 3];
     }
@@ -99,7 +99,7 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                m_rateMatrix[i][j] = unnormalizedQ[i][j];
+                rateMatrix[i][j] = unnormalizedQ[i][j];
             }
         }
         // bring in frequencies
@@ -110,16 +110,16 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 //            }
 //        }
         // set up diagonal
-        for (int i = 0; i < m_nStates; i++) {
+        for (int i = 0; i < nrOfStates; i++) {
             double fSum = 0.0;
-            for (int j = 0; j < m_nStates; j++) {
+            for (int j = 0; j < nrOfStates; j++) {
                 if (i != j)
-                    fSum += m_rateMatrix[i][j];
+                    fSum += rateMatrix[i][j];
             }
-            m_rateMatrix[i][i] = -fSum;
+            rateMatrix[i][i] = -fSum;
         }
         // normalise rate matrix to one expected substitution per unit time
-        normalize(m_rateMatrix, getFrequencies());
+        normalize(rateMatrix, getFrequencies());
     } // setupRateMatrix
 
     @Override

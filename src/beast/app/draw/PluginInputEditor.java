@@ -1,14 +1,16 @@
 package beast.app.draw;
 
 
-import beast.app.beauti.BeautiDoc;
-import beast.app.beauti.BeautiSubTemplate;
-import beast.core.Input;
-import beast.core.Plugin;
-import beast.util.AddOnManager;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+
+import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.BeautiSubTemplate;
+import beast.core.Input;
+import beast.core.BEASTObject;
+import beast.util.AddOnManager;
+
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -30,7 +32,7 @@ public class PluginInputEditor extends InputEditor.Base {
 
     @Override
     public Class<?> type() {
-        return Plugin.class;
+        return BEASTObject.class;
     }
 
     /**
@@ -41,7 +43,7 @@ public class PluginInputEditor extends InputEditor.Base {
      * o validation label -- optional, if input is not valid
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	//box.setAlignmentY(LEFT_ALIGNMENT);
     	
         m_bAddButtons = bAddButtons;
@@ -61,14 +63,14 @@ public class PluginInputEditor extends InputEditor.Base {
      * a validation icon
      * *
      */
-    void simpleInit(Input<?> input, Plugin plugin) {
+    void simpleInit(Input<?> input, BEASTObject plugin) {
 
         addInputLabel();
 
         addComboBox(this, input, plugin);
 
         if (m_bAddButtons) {
-            if (PluginPanel.countInputs((Plugin) m_input.get(), doc) > 0) {
+            if (PluginPanel.countInputs((BEASTObject) m_input.get(), doc) > 0) {
                 m_editPluginButton = new SmallButton("e", true);
                 if (input.get() == null) {
                     m_editPluginButton.setEnabled(false);
@@ -78,10 +80,10 @@ public class PluginInputEditor extends InputEditor.Base {
                 m_editPluginButton.addActionListener(new ActionListener() {
                     // implements ActionListener
                     public void actionPerformed(ActionEvent e) {
-                        PluginDialog dlg = new PluginDialog((Plugin) m_input.get(), m_input.getType(), doc);
+                        PluginDialog dlg = new PluginDialog((BEASTObject) m_input.get(), m_input.getType(), doc);
                         if (dlg.showDialog()) {
                             try {
-                                dlg.accept((Plugin) m_input.get(), doc);
+                                dlg.accept((BEASTObject) m_input.get(), doc);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -100,7 +102,7 @@ public class PluginInputEditor extends InputEditor.Base {
     void refresh() {
     	if (m_selectPluginBox != null) {
 	        String sOldID = (String) m_selectPluginBox.getSelectedItem();
-	        String sID = ((Plugin) m_input.get()).getID();
+	        String sID = ((BEASTObject) m_input.get()).getID();
 	        if (!sID.equals(sOldID)) {
 	            m_selectPluginBox.addItem(sID);
 	            m_selectPluginBox.setSelectedItem(sID);
@@ -139,7 +141,7 @@ public class PluginInputEditor extends InputEditor.Base {
 
     Box m_expansionBox = null;
 
-    void expandedInit(Input<?> input, Plugin plugin) {
+    void expandedInit(Input<?> input, BEASTObject plugin) {
         addInputLabel();
         Box box = Box.createVerticalBox();
         // add horizontal box with combobox of Plugins to select from
@@ -147,7 +149,7 @@ public class PluginInputEditor extends InputEditor.Base {
         addComboBox(combobox, input, plugin);
         box.add(combobox);
 
-        doc.getInpuEditorFactory().addInputs(box, (Plugin) input.get(), this, this, doc);
+        doc.getInpuEditorFactory().addInputs(box, (BEASTObject) input.get(), this, this, doc);
 
         box.setBorder(new EtchedBorder());
         //box.setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -162,7 +164,7 @@ public class PluginInputEditor extends InputEditor.Base {
      * On choosing a new value, create plugin (if is not already an object)
      * Furthermore, if expanded, update expanded inputs
      */
-    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
     	if (itemNr >= 0) {
     		box.add(new JLabel(plugin.getID()));
     		box.add(Box.createGlue());
@@ -193,7 +195,7 @@ public class PluginInputEditor extends InputEditor.Base {
             if (o == null) {
                 sID = plugin.getID();
             } else {
-                sID = ((Plugin) o).getID();
+                sID = ((BEASTObject) o).getID();
             }
             if (sID.indexOf('.')>=0) {
             	sID = sID.substring(0, sID.indexOf('.'));
@@ -215,7 +217,7 @@ public class PluginInputEditor extends InputEditor.Base {
 
                     // get a handle of the selected plugin
                     BeautiSubTemplate sSelected = (BeautiSubTemplate) m_selectPluginBox.getSelectedItem();
-                    Plugin plugin = (Plugin) m_input.get();
+                    BEASTObject plugin = (BEASTObject) m_input.get();
                     String sID = plugin.getID();
                     String sPartition = sID.substring(sID.indexOf('.') + 1);
                     if (sPartition.indexOf(':') >= 0) {
@@ -319,7 +321,7 @@ public class PluginInputEditor extends InputEditor.Base {
                         sync();
                         refreshPanel();
                     } catch (Exception ex) {
-                        sID = ((Plugin) m_input.get()).getID();
+                        sID = ((BEASTObject) m_input.get()).getID();
                         m_selectPluginBox.setSelectedItem(sID);
                         //ex.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Could not change plugin: " +

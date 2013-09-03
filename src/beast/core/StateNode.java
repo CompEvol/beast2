@@ -13,12 +13,12 @@ import org.w3c.dom.Node;
  * @author Alexei Drummond
  */
 @Description("A node that can be part of the state.")
-public abstract class StateNode extends Plugin implements Loggable, Cloneable, Valuable {
+public abstract class StateNode extends BEASTObject implements Loggable, Cloneable, Function {
     /**
      * Flag to indicate the StateNode is not constant.
      * This is particularly useful for Beauti *
      */
-    public Input<Boolean> m_bIsEstimated = new Input<Boolean>("estimate", "whether to estimate this item or keep constant to its initial value", true);
+    public Input<Boolean> isEstimatedInput = new Input<Boolean>("estimate", "whether to estimate this item or keep constant to its initial value", true);
 
     /**
      * @return this StateNode if it is not in the State.
@@ -26,10 +26,10 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      *         (i.e. not the stored one).
      */
     public StateNode getCurrent() {
-        if (m_state == null) {
+        if (state == null) {
             return this;
         }
-        return m_state.getStateNode(index);
+        return state.getStateNode(index);
     }
 
     /**
@@ -52,11 +52,11 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      * *
      */
     public boolean somethingIsDirty() {
-        return this.m_bHasStartedEditing;
+        return this.hasStartedEditing;
     }
 
     public void setSomethingIsDirty(final boolean isDirty) {
-        this.m_bHasStartedEditing = isDirty;
+        this.hasStartedEditing = isDirty;
     }
 
     /**
@@ -93,9 +93,9 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      * NB: Should only be used for initialisation!
      */
     public void assignFromWithoutID(StateNode other) {
-        final String sID = m_sID;
+        final String sID = ID;
         assignFrom(other);
-        m_sID = sID;
+        ID = sID;
     }
 
     /**
@@ -164,10 +164,10 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
     /**
      * Pointer to state, null if not part of a State.
      */
-    protected State m_state = null;
+    protected State state = null;
 
     public State getState() {
-        return m_state;
+        return state;
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      * For multidimensional parameters, there is an internal flag to indicate which
      * dimension is dirty
      */
-    protected boolean m_bHasStartedEditing = false;
+    protected boolean hasStartedEditing = false;
 
     /**
      * The index of the parameter for identifying this StateNode
@@ -194,25 +194,31 @@ public abstract class StateNode extends Plugin implements Loggable, Cloneable, V
      */
     public void startEditing(final Operator operator) {
     	assert (isCalledFromOperator(4));
-        if (m_bHasStartedEditing) {
+        if (hasStartedEditing) {
             // we are already editing
             return;
         }
-        m_bHasStartedEditing = true;
+        hasStartedEditing = true;
         // notify the state
-        m_state.getEditableStateNode(this.index, operator);
+        state.getEditableStateNode(this.index, operator);
         store();
     }
 
     private boolean isCalledFromOperator(int level) {
-    	Class<?> caller = sun.reflect.Reflection.getCallerClass(level);
-    	while (caller != null) {
-    		if (Operator.class.isAssignableFrom(caller)) {
-    			return true;
-    		}
-    		caller = sun.reflect.Reflection.getCallerClass(++level);
-    	}
-    	return false;
+    	// TODO: sun.reflect.Reflection.getCallerClass is not available in JDK7
+    	// and alternative methods are really slow according to
+    	// http://stackoverflow.com/questions/421280/in-java-how-do-i-find-the-caller-of-a-method-using-stacktrace-or-reflection
+    	
+//    	Class<?> caller = sun.reflect.Reflection.getCallerClass(level);
+//    	while (caller != null) {
+//    		if (Operator.class.isAssignableFrom(caller)) {
+//    			return true;
+//    		}
+//    		caller = sun.reflect.Reflection.getCallerClass(++level);
+//    	}
+//    	return false;
+    	
+    	return true;
 	}
 
 	abstract protected void store();

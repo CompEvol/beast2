@@ -1,11 +1,13 @@
 package test.beast.evolution.tree.coalescent;
 
 
+import junit.framework.TestCase;
+import org.junit.Test;
+
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.BayesianSkyline;
 import beast.evolution.tree.coalescent.TreeIntervals;
-import junit.framework.TestCase;
-import org.junit.Test;
+
 
 
 /**

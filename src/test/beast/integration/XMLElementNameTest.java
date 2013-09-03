@@ -9,9 +9,11 @@ import java.util.Set;
 import org.junit.Test;
 
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.util.AddOnManager;
 import beast.util.XMLParser;
+
+
 
 import junit.framework.TestCase;
 
@@ -23,11 +25,11 @@ public class XMLElementNameTest extends TestCase {
      */
     @Test
     public void test_NameUniqueness() {
-        List<String> sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         List<String> sImproperInputs = new ArrayList<String>();
         for (String sPlugin : sPluginNames) {
             try {
-                Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+                BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
                 List<Input<?>> inputs = plugin.listInputs();
                 Set<String> sNames = new HashSet<String>();
                 for (Input<?> input : inputs) {
@@ -67,11 +69,11 @@ public class XMLElementNameTest extends TestCase {
         sElement2ClassMap.put("parameter", "beast.core.parameter.Parameter");
 
         // check each plugin
-        List<String> sPluginNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         List<String> sImproperInputs = new ArrayList<String>();
         for (String sPlugin : sPluginNames) {
             try {
-                Plugin plugin = (Plugin) Class.forName(sPlugin).newInstance();
+                BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
                 // check each input
                 List<Input<?>> inputs = plugin.listInputs();
                 for (Input<?> input : inputs) {

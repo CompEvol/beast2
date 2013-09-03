@@ -41,7 +41,7 @@ import beast.app.draw.SmallButton;
 import beast.app.util.Utils;
 import beast.core.Input;
 import beast.core.MCMC;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
@@ -51,6 +51,8 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.Tree;
+
+
 
 // TODO: add useAmbiguities flag
 // TODO: add warning if useAmbiguities=false and nr of patterns=1 (happens when all data is ambiguous)
@@ -110,7 +112,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		this.itemNr = itemNr;
 		if (input.get() instanceof List) {
 			alignments = (List<Alignment>) input.get();
@@ -301,14 +303,14 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			switch (nColumn) {
 			case SITEMODEL_COLUMN:
 				if (!doc.pluginmap.containsKey("SiteModel.s:" + sPartition)) {
-					String sID = ((Plugin)likelihoods[iRow].m_pSiteModel.get()).getID();
+					String sID = ((BEASTObject)likelihoods[iRow].siteModelInput.get()).getID();
 					oldName = BeautiDoc.parsePartition(sID);
 					doc.renamePartition(BeautiDoc.SITEMODEL_PARTITION, oldName, sPartition);
 					isRenaming = true;
 				}
 				break;
 			case CLOCKMODEL_COLUMN: {
-				String sID = likelihoods[iRow].m_pBranchRateModel.get().getID();
+				String sID = likelihoods[iRow].branchRateModelInput.get().getID();
 				String sClockModelName = sID.substring(0, sID.indexOf('.')) + ".c:" + sPartition;
 				if (!doc.pluginmap.containsKey(sClockModelName)) {
 					oldName = BeautiDoc.parsePartition(sID);
@@ -319,7 +321,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				break;
 			case TREE_COLUMN:
 				if (!doc.pluginmap.containsKey("Tree.t:" + sPartition)) {
-					String sID = likelihoods[iRow].m_tree.get().getID();
+					String sID = likelihoods[iRow].treeInput.get().getID();
 					oldName = BeautiDoc.parsePartition(sID);
 					doc.renamePartition(BeautiDoc.TREEMODEL_PARTITION, oldName, sPartition);
 					isRenaming = true;
@@ -370,27 +372,27 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(sPartition,
 											// BeautiDoc.SITEMODEL_PARTITION) !=
 											// iRow) {
-				siteModel = treeLikelihood.m_pSiteModel.get();
+				siteModel = treeLikelihood.siteModelInput.get();
 			} else {
 				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sPartition);
-				if (siteModel != likelihoods[iRow].m_pSiteModel.get()) {
+				if (siteModel != likelihoods[iRow].siteModelInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
-					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((Plugin) likelihoods[iRow].m_pSiteModel.get(),
+					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTObject) likelihoods[iRow].siteModelInput.get(),
 							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
-			SiteModelInterface target = this.likelihoods[iRow].m_pSiteModel.get();
+			SiteModelInterface target = this.likelihoods[iRow].siteModelInput.get();
 			if (target instanceof SiteModel.Base && siteModel instanceof SiteModel.Base) {
-				if (!((SiteModel.Base)target).m_pSubstModel.canSetValue(((SiteModel.Base)siteModel).m_pSubstModel.get(), (SiteModel.Base) target)) {
+				if (!((SiteModel.Base)target).substModelInput.canSetValue(((SiteModel.Base)siteModel).substModelInput.get(), (SiteModel.Base) target)) {
 					throw new Exception("Cannot link site model: substitution models are incompatible");
 				}
 			} else {
 				throw new Exception("Don't know how to link this site model");
 			}
-			needsRePartition = (this.likelihoods[iRow].m_pSiteModel.get() != siteModel);
-			this.likelihoods[iRow].m_pSiteModel.setValue(siteModel, this.likelihoods[iRow]);
+			needsRePartition = (this.likelihoods[iRow].siteModelInput.get() != siteModel);
+			this.likelihoods[iRow].siteModelInput.setValue(siteModel, this.likelihoods[iRow]);
 
-			sPartition = ((Plugin)likelihoods[iRow].m_pSiteModel.get()).getID();
+			sPartition = ((BEASTObject)likelihoods[iRow].siteModelInput.get()).getID();
 			sPartition = BeautiDoc.parsePartition(sPartition);
 			getDoc().setCurrentPartition(BeautiDoc.SITEMODEL_PARTITION, iRow, sPartition);
 		}
@@ -400,12 +402,12 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(sPartition,
 											// BeautiDoc.CLOCKMODEL_PARTITION)
 											// != iRow) {
-				clockModel = treeLikelihood.m_pBranchRateModel.get();
+				clockModel = treeLikelihood.branchRateModelInput.get();
 			} else {
 				clockModel = getDoc().getClockModel(sPartition);
-				if (clockModel != likelihoods[iRow].m_pBranchRateModel.get()) {
+				if (clockModel != likelihoods[iRow].branchRateModelInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
-					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[iRow].m_pBranchRateModel.get(),
+					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[iRow].branchRateModelInput.get(),
 							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
@@ -413,19 +415,19 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			// the same as
 			// for the likelihood
 			Tree tree = null;
-			for (Input<?> input : ((Plugin) clockModel).listInputs()) {
+			for (Input<?> input : ((BEASTObject) clockModel).listInputs()) {
 				if (input.getName().equals("tree")) {
 					tree = (Tree) input.get();
 				}
 
 			}
-			if (tree != null && tree != this.likelihoods[iRow].m_tree.get()) {
+			if (tree != null && tree != this.likelihoods[iRow].treeInput.get()) {
 				throw new Exception("Cannot link clock model with different trees");
 			}
 
-			needsRePartition = (this.likelihoods[iRow].m_pBranchRateModel.get() != clockModel);
-			this.likelihoods[iRow].m_pBranchRateModel.setValue(clockModel, this.likelihoods[iRow]);
-			sPartition = likelihoods[iRow].m_pBranchRateModel.get().getID();
+			needsRePartition = (this.likelihoods[iRow].branchRateModelInput.get() != clockModel);
+			this.likelihoods[iRow].branchRateModelInput.setValue(clockModel, this.likelihoods[iRow]);
+			sPartition = likelihoods[iRow].branchRateModelInput.get().getID();
 			sPartition = BeautiDoc.parsePartition(sPartition);
 			getDoc().setCurrentPartition(BeautiDoc.CLOCKMODEL_PARTITION, iRow, sPartition);
 		}
@@ -435,18 +437,18 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(sPartition,
 											// BeautiDoc.TREEMODEL_PARTITION) !=
 											// iRow) {
-				tree = treeLikelihood.m_tree.get();
+				tree = treeLikelihood.treeInput.get();
 			} else {
 				tree = (Tree) doc.pluginmap.get("Tree.t:" + sPartition);
-				if (tree != likelihoods[iRow].m_tree.get()) {
+				if (tree != likelihoods[iRow].treeInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
-					tree = (Tree) BeautiDoc.deepCopyPlugin(likelihoods[iRow].m_tree.get(), likelihoods[iRow],
+					tree = (Tree) BeautiDoc.deepCopyPlugin(likelihoods[iRow].treeInput.get(), likelihoods[iRow],
 							(MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
 			// sanity check: make sure taxon sets are compatible
 			String[] taxa = tree.getTaxaNames();
-			List<String> taxa2 = this.likelihoods[iRow].m_data.get().getTaxaNames();
+			List<String> taxa2 = this.likelihoods[iRow].dataInput.get().getTaxaNames();
 			if (taxa.length != taxa2.size()) {
 				throw new Exception("Cannot link trees: incompatible taxon sets");
 			}
@@ -463,20 +465,20 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				}
 			}
 
-			needsRePartition = (this.likelihoods[iRow].m_tree.get() != tree);
+			needsRePartition = (this.likelihoods[iRow].treeInput.get() != tree);
 System.err.println("needsRePartition = " + needsRePartition);			
 			if (needsRePartition) {
-				Tree oldTree = this.likelihoods[iRow].m_tree.get();
+				Tree oldTree = this.likelihoods[iRow].treeInput.get();
 				List<Tree> tModels = new ArrayList<Tree>();
 				for (GenericTreeLikelihood likelihood : likelihoods) {
-					if (likelihood.m_tree.get() == oldTree) {
-						tModels.add(likelihood.m_tree.get());
+					if (likelihood.treeInput.get() == oldTree) {
+						tModels.add(likelihood.treeInput.get());
 					}
 				}
 				if (tModels.size() == 1) {
 					// remove old tree from model
-					oldTree.m_bIsEstimated.setValue(false, this.likelihoods[iRow].m_tree.get());
-					for (Plugin plugin : oldTree.outputs.toArray(new Plugin[0])) {
+					oldTree.isEstimatedInput.setValue(false, this.likelihoods[iRow].treeInput.get());
+					for (BEASTObject plugin : oldTree.outputs.toArray(new BEASTObject[0])) {
 						for (Input<?> input : plugin.listInputs()) {
 							try {
 							if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
@@ -494,14 +496,14 @@ System.err.println("needsRePartition = " + needsRePartition);
 					}
 				}
 			}
-			likelihoods[iRow].m_tree.setValue(tree, likelihoods[iRow]);
+			likelihoods[iRow].treeInput.setValue(tree, likelihoods[iRow]);
 			// TreeDistribution d = getDoc().getTreePrior(sPartition);
 			// CompoundDistribution prior = (CompoundDistribution)
 			// doc.pluginmap.get("prior");
 			// if (!getDoc().posteriorPredecessors.contains(d)) {
 			// prior.pDistributions.setValue(d, prior);
 			// }
-			sPartition = likelihoods[iRow].m_tree.get().getID();
+			sPartition = likelihoods[iRow].treeInput.get().getID();
 			sPartition = BeautiDoc.parsePartition(sPartition);
 			getDoc().setCurrentPartition(BeautiDoc.TREEMODEL_PARTITION, iRow, sPartition);
 		}
@@ -550,7 +552,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 			// alignment name
 			if (data instanceof FilteredAlignment) {
-				tableData[i][FILE_COLUMN] = ((FilteredAlignment) data).m_alignmentInput.get();
+				tableData[i][FILE_COLUMN] = ((FilteredAlignment) data).alignmentInput.get();
 			} else {
 				tableData[i][FILE_COLUMN] = data;
 			}
@@ -564,11 +566,11 @@ System.err.println("needsRePartition = " + needsRePartition);
 			GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(i);
 			assert (likelihood != null);
 			this.likelihoods[i] = likelihood;
-			tableData[i][SITEMODEL_COLUMN] = getPartition(likelihood.m_pSiteModel);
+			tableData[i][SITEMODEL_COLUMN] = getPartition(likelihood.siteModelInput);
 			// clock model
-			tableData[i][CLOCKMODEL_COLUMN] = getPartition(likelihood.m_pBranchRateModel);
+			tableData[i][CLOCKMODEL_COLUMN] = getPartition(likelihood.branchRateModelInput);
 			// tree
-			tableData[i][TREE_COLUMN] = getPartition(likelihood.m_tree);
+			tableData[i][TREE_COLUMN] = getPartition(likelihood.treeInput);
 			// useAmbiguities
 			tableData[i][USE_AMBIGUITIES_COLUMN] = null;
 			try {
@@ -595,7 +597,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 	}
 
 	private String getPartition(Input<?> input) {
-		Plugin plugin = (Plugin) input.get();
+		BEASTObject plugin = (BEASTObject) input.get();
 		String sID = plugin.getID();
 		String sPartition = BeautiDoc.parsePartition(sID);
 		return sPartition;
@@ -830,9 +832,9 @@ System.err.println("needsRePartition = " + needsRePartition);
 			partitionNames[i] = new HashSet<String>();
 		}
 		for (int i = 0; i < nPartitions; i++) {
-			partitionNames[0].add(((Plugin) likelihoods[i].m_pSiteModel.get()).getID());
-			partitionNames[1].add(likelihoods[i].m_pBranchRateModel.get().getID());
-			partitionNames[2].add(likelihoods[i].m_tree.get().getID());
+			partitionNames[0].add(((BEASTObject) likelihoods[i].siteModelInput.get()).getID());
+			partitionNames[1].add(likelihoods[i].branchRateModelInput.get().getID());
+			partitionNames[2].add(likelihoods[i].treeInput.get().getID());
 		}
 		String[][] sPartitionNames = new String[3][];
 		for (int i = 0; i < 3; i++) {
@@ -1021,14 +1023,14 @@ System.err.println("needsRePartition = " + needsRePartition);
 	}
 
 	@Override
-	protected void addSingleItem(Plugin plugin) {
+	protected void addSingleItem(BEASTObject plugin) {
 		initTableData();
 		repaint();
 	}
 
 	@Override
 	protected void addItem() {
-		List<Plugin> plugins = pluginSelector(m_input, m_plugin, null);
+		List<BEASTObject> plugins = pluginSelector(m_input, m_plugin, null);
 
 		// Component c = this;
 		if (plugins != null) {
@@ -1048,21 +1050,21 @@ System.err.println("needsRePartition = " + needsRePartition);
 			// before deleting, unlink site model, clock model and tree
 			
 			// check whether any of the models are linked
-			BranchRateModel.Base clockModel = likelihoods[iRow].m_pBranchRateModel.get();
-			SiteModelInterface siteModel = likelihoods[iRow].m_pSiteModel.get();
-			Tree tree = likelihoods[iRow].m_tree.get();
+			BranchRateModel.Base clockModel = likelihoods[iRow].branchRateModelInput.get();
+			SiteModelInterface siteModel = likelihoods[iRow].siteModelInput.get();
+			Tree tree = likelihoods[iRow].treeInput.get();
 			List<GenericTreeLikelihood> cModels = new ArrayList<GenericTreeLikelihood>();
 			List<GenericTreeLikelihood> sModels = new ArrayList<GenericTreeLikelihood>();
 			List<GenericTreeLikelihood> tModels = new ArrayList<GenericTreeLikelihood>();
 			for (GenericTreeLikelihood likelihood : likelihoods) {
 				if (likelihood != likelihoods[iRow]) {
-				if (likelihood.m_pBranchRateModel.get() == clockModel) {
+				if (likelihood.branchRateModelInput.get() == clockModel) {
 					cModels.add(likelihood);
 				}
-				if (likelihood.m_pSiteModel.get() == siteModel) {
+				if (likelihood.siteModelInput.get() == siteModel) {
 					sModels.add(likelihood);
 				}
-				if (likelihood.m_tree.get() == tree) {
+				if (likelihood.treeInput.get() == tree) {
 					tModels.add(likelihood);
 				}
 				}
@@ -1082,7 +1084,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				
 				if (sModels.size() > 0) {
 					// site model is linked, so we need to unlink
-					if (doc.getPartitionNr((Plugin) siteModel) != iRow) {
+					if (doc.getPartitionNr((BEASTObject) siteModel) != iRow) {
 						tableData[iRow][SITEMODEL_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
 					} else {
 						int iFreePartition = doc.getPartitionNr(sModels.get(0));
@@ -1156,7 +1158,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			try {
 				for (int j = 0; j < filters.length; j++) {
 					FilteredAlignment f = new FilteredAlignment();
-					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.m_sDataType.get());
+					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.dataTypeInput.get());
 					f.setID(alignment.getID() + ids[j]);
 					getDoc().addAlignmentWithSubnet(f);
 				}
@@ -1169,7 +1171,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 	} // splitItem
 
 	@Override
-	public List<Plugin> pluginSelector(Input<?> input, Plugin plugin, List<String> sTabuList) {
+	public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject plugin, List<String> sTabuList) {
 		List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
 		BeautiAlignmentProvider selectedProvider = null;
 		if (providers.size() == 1) {
@@ -1183,7 +1185,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				return null;
 			}
 		}
-		List<Plugin> selectedPlugins = selectedProvider.getAlignments(doc);
+		List<BEASTObject> selectedPlugins = selectedProvider.getAlignments(doc);
 		return selectedPlugins;
 		
 	} // pluginSelector

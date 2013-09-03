@@ -101,26 +101,26 @@ public interface SubstitutionModel {
         /**
          * shadows frequencies, or can be set by subst model *
          */
-        Frequencies m_frequencies;
+        Frequencies frequencies;
 
         /**
          * number of states *
          */
-        int m_nStates;
+        int nrOfStates;
 
         @Override
         public void initAndValidate() throws Exception {
-            m_frequencies = frequenciesInput.get();
+            frequencies = frequenciesInput.get();
         }
 
         @Override
         public double[] getFrequencies() {
-            return m_frequencies.getFreqs();
+            return frequencies.getFreqs();
         }
 
         @Override
         public int getStateCount() {
-            return m_nStates;
+            return nrOfStates;
         }
 
 

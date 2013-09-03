@@ -1,48 +1,50 @@
 package beast.evolution.alignment;
 
 
-import beast.core.Description;
-import beast.core.Input;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import beast.core.Description;
+import beast.core.Input;
+
+
 @Description("Set of taxa, useful for instance for multi-gene analysis")
 public class TaxonSet extends Taxon {
-    public Input<List<Taxon>> m_taxonset = new Input<List<Taxon>>("taxon", "list of taxa making up the set", new ArrayList<Taxon>());
-    public Input<Alignment> m_alignment = new Input<Alignment>("alignment", "alignment where each sequence represents a taxon");
+    public Input<List<Taxon>> taxonsetInput = new Input<List<Taxon>>("taxon", "list of taxa making up the set", new ArrayList<Taxon>());
+    public Input<Alignment> alignmentInput = new Input<Alignment>("alignment", "alignment where each sequence represents a taxon");
 
-    List<String> m_taxonList;
+    List<String> taxaNames;
 
     public TaxonSet() {
     }
 
     public TaxonSet(final List<Taxon> taxa) throws Exception {
-        m_taxonset.setValue(taxa, this);
+        taxonsetInput.setValue(taxa, this);
         initAndValidate();
     }
 
     @Override
     public void initAndValidate() throws Exception {
-        if (m_alignment.get() != null) {
-            if (m_taxonset.get().size() > 0) {
+        if (alignmentInput.get() != null) {
+            if (taxonsetInput.get().size() > 0) {
                 throw new Exception("Only one of taxon and alignment should be specified, not both.");
             }
-            m_taxonList = m_alignment.get().m_sTaxaNames;
+            taxaNames = alignmentInput.get().taxaNames;
         } else {
-            if (m_taxonset.get().size() == 0) {
+            if (taxonsetInput.get().size() == 0) {
                 throw new Exception("One of taxon and alignment should be specified, (but not both).");
             }
-            m_taxonList = new ArrayList<String>();
-            for (final Taxon taxon : m_taxonset.get()) {
-                m_taxonList.add(taxon.getID());
+            taxaNames = new ArrayList<String>();
+            for (final Taxon taxon : taxonsetInput.get()) {
+            	taxaNames.add(taxon.getID());
             }
         }
     }
 
     public List<String> asStringList() {
-        return m_taxonList;
+        return taxaNames;
     }
 
     //  convenience methods
@@ -93,7 +95,7 @@ public class TaxonSet extends Taxon {
 		StringBuffer buf = new StringBuffer();
 		buf.append(indent).append(getID()).append("\n");
 		indent += "\t";
-		for (Taxon taxon : m_taxonset.get()) {
+		for (Taxon taxon : taxonsetInput.get()) {
 			buf.append(taxon.toString(indent));
 		}
 		return buf.toString();

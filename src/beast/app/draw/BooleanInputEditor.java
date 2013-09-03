@@ -8,7 +8,9 @@ import javax.swing.JCheckBox;
 
 import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
+
+
 
 public class BooleanInputEditor extends InputEditor.Base {
     public BooleanInputEditor(BeautiDoc doc) {
@@ -29,7 +31,7 @@ public class BooleanInputEditor extends InputEditor.Base {
      * create input editor containing a check box *
      */
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_plugin = plugin;
         m_input = input;

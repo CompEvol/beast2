@@ -8,13 +8,15 @@ import java.util.Set;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
-import beast.core.Plugin;
 import beast.util.XMLParser;
+
+
 
 @Description("Beauti configuration object, used to find Beauti configuration " +
         "information from Beauti template files.")
-public class BeautiConfig extends Plugin {
+public class BeautiConfig extends BEASTObject {
     public Input<String> inlineInput = new Input<String>("inlinePlugins", "comma separated list of inputs that should " +
             "go inline, e.g. beast.evolution.sitemodel.SiteModel.substModel");
     public Input<String> collapsedInput = new Input<String>("collapsedPlugins", "comma separated list of inputs that should " +
@@ -157,7 +159,7 @@ public class BeautiConfig extends Plugin {
         panels = new ArrayList<BeautiPanelConfig>();
     }
 
-    public List<BeautiSubTemplate> getInputCandidates(Plugin plugin, Input<?> input, Class<?> type) {
+    public List<BeautiSubTemplate> getInputCandidates(BEASTObject plugin, Input<?> input, Class<?> type) {
         List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
         for (BeautiSubTemplate template : subTemplates) {
             if (type.isAssignableFrom(template._class)) {
@@ -220,7 +222,7 @@ public class BeautiConfig extends Plugin {
         return sStr;
     }
 
-    public String getInputLabel(Plugin plugin, String sName) {
+    public String getInputLabel(BEASTObject plugin, String sName) {
         if (inputLabelMap.containsKey(plugin.getClass().getName() + "." + sName)) {
             sName = inputLabelMap.get(plugin.getClass().getName() + "." + sName);
         }

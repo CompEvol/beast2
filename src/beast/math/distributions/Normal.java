@@ -8,14 +8,16 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 
+
+
 @Description("Normal distribution.  f(x) = frac{1}{\\sqrt{2\\pi\\sigma^2}} e^{ -\\frac{(x-\\mu)^2}{2\\sigma^2} } " +
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Normal extends ParametricDistribution {
-    public Input<RealParameter> m_mean = new Input<RealParameter>("mean", "mean of the normal distribution, defaults to 0");
-    public Input<RealParameter> m_sigma = new Input<RealParameter>("sigma", "variance of the normal distribution, defaults to 1");
+    public Input<RealParameter> meanInput = new Input<RealParameter>("mean", "mean of the normal distribution, defaults to 0");
+    public Input<RealParameter> sigmaInput = new Input<RealParameter>("sigma", "variance of the normal distribution, defaults to 1");
 
-    static org.apache.commons.math.distribution.NormalDistribution m_dist = new NormalDistributionImpl(0, 1);
+    static org.apache.commons.math.distribution.NormalDistribution dist = new NormalDistributionImpl(0, 1);
 
     @Override
     public void initAndValidate() {
@@ -28,32 +30,32 @@ public class Normal extends ParametricDistribution {
     void refresh() {
         double fMean;
         double fSigma;
-        if (m_mean.get() == null) {
+        if (meanInput.get() == null) {
             fMean = 0;
         } else {
-            fMean = m_mean.get().getValue();
+            fMean = meanInput.get().getValue();
         }
-        if (m_sigma.get() == null) {
+        if (sigmaInput.get() == null) {
             fSigma = 1;
         } else {
-            fSigma = m_sigma.get().getValue();
+            fSigma = sigmaInput.get().getValue();
         }
-        m_dist.setMean(fMean);
-        m_dist.setStandardDeviation(fSigma);
+        dist.setMean(fMean);
+        dist.setStandardDeviation(fSigma);
     }
 
     @Override
     public ContinuousDistribution getDistribution() {
         refresh();
-        return m_dist;
+        return dist;
     }
 
     @Override
     public double getMean() {
-        if (m_mean.get() == null) {
-        	return m_offset.get();
+        if (meanInput.get() == null) {
+        	return offsetInput.get();
         } else {
-        	return m_offset.get() + m_mean.get().getValue();
+        	return offsetInput.get() + meanInput.get().getValue();
         }
     }
 } // class Normal

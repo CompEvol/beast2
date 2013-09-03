@@ -1,12 +1,14 @@
 package beast.evolution.speciation;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Tree;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Description("Finds height of highest tree among a set of trees")
 public class TreeTopFinder extends CalculationNode {
@@ -14,13 +16,13 @@ public class TreeTopFinder extends CalculationNode {
 
     List<Tree> trees;
 
-    double fOldHeight;
-    double fHeight;
+    double oldHeight;
+    double height;
 
     public void initAndValidate() throws Exception {
-        fOldHeight = Double.NaN;
+        oldHeight = Double.NaN;
         trees = treeInputs.get();
-        fHeight = calcHighestTreeHeight();
+        height = calcHighestTreeHeight();
     }
 
     public double getHighestTreeHeight() {
@@ -38,8 +40,8 @@ public class TreeTopFinder extends CalculationNode {
     @Override
     protected boolean requiresRecalculation() {
         double fTop = calcHighestTreeHeight();
-        if (fTop != fHeight) {
-            fHeight = fTop;
+        if (fTop != height) {
+            height = fTop;
             return true;
         }
         return false;
@@ -47,13 +49,13 @@ public class TreeTopFinder extends CalculationNode {
 
     @Override
     protected void store() {
-        fOldHeight = fHeight;
+        oldHeight = height;
         super.store();
     }
 
     @Override
     protected void restore() {
-        fHeight = fOldHeight;
+        height = oldHeight;
         super.restore();
     }
 }

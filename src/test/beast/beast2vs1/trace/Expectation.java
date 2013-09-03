@@ -3,8 +3,8 @@ package test.beast.beast2vs1.trace;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
-import beast.core.Plugin;
 
 
 @Description("It is used by LogAnalyser. assertExpectation(TraceStatistics) sets TraceStatistics instance " +
@@ -12,7 +12,7 @@ import beast.core.Plugin;
         "to statisctial mean considering stand error of mean. If true, then set isPassed = false, which makes JUnit " +
         "test assertion failed.")
 @Citation("Created by Walter Xie")
-public class Expectation extends Plugin {
+public class Expectation extends BEASTObject {
 
     public Input<String> traceName = new Input<String>("traceName", "The trace name of a loggable plugin", Validate.REQUIRED);
 

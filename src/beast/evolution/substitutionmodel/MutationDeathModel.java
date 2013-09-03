@@ -13,28 +13,28 @@ public class MutationDeathModel extends SubstitutionModel.Base {
     public Input<RealParameter> delParameter = new Input<RealParameter>("deathprob", "rate of death, used to calculate death probability", Validate.REQUIRED);
     // mutation rate is already provided in SiteModel, so no need to duplicate it here
     //public Input<RealParameter> mutationRate = new Input<RealParameter>("mu", "mutation rate, default 1");
-    public Input<SubstitutionModel.Base> m_CTMCModel = new Input<SubstitutionModel.Base>("substmodel", "CTMC Model for the life states, so should have " +
+    public Input<SubstitutionModel.Base> CTMCModelInput = new Input<SubstitutionModel.Base>("substmodel", "CTMC Model for the life states, so should have " +
             "a state-space one less than this model. If not specified, ...");
     // TODO: figure out the end of the last sentence
 
     /**
      * transition matrix for live states *
      */
-    protected double[] m_trMatrix;
+    protected double[] trMatrix;
     /**
      * number of states *
      */
-    int m_nStates;
+    int nrOfStates;
 
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         double[] freqs = getFrequencies();
-        m_nStates = freqs.length;
-        m_trMatrix = new double[(m_nStates - 1) * (m_nStates - 1)];
-        if (m_CTMCModel.get() != null) {
-            if (m_CTMCModel.get().frequenciesInput.get().m_fFreqs.length != m_nStates - 1) {
-                throw new Exception("substmodel does not have the correct state space: should be " + (m_nStates - 1));
+        nrOfStates = freqs.length;
+        trMatrix = new double[(nrOfStates - 1) * (nrOfStates - 1)];
+        if (CTMCModelInput.get() != null) {
+            if (CTMCModelInput.get().frequenciesInput.get().freqs.length != nrOfStates - 1) {
+                throw new Exception("substmodel does not have the correct state space: should be " + (nrOfStates - 1));
             }
         }
     }
@@ -60,25 +60,25 @@ public class MutationDeathModel extends SubstitutionModel.Base {
         for (i = 0; i < freqs.length - 1; ++i) {
             mutationR *= freqs[i];
         }
-        SubstitutionModel.Base CTMCModel = m_CTMCModel.get();
+        SubstitutionModel.Base CTMCModel = CTMCModelInput.get();
         if (CTMCModel != null) {
-            CTMCModel.getTransitionProbabilities(node, fStartTime, fEndTime, mutationR * fRate, m_trMatrix);
+            CTMCModel.getTransitionProbabilities(node, fStartTime, fEndTime, mutationR * fRate, trMatrix);
         } else {
-            m_trMatrix[0] = 1.0;
+            trMatrix[0] = 1.0;
         }
 
-        for (i = 0; i < m_nStates - 1; ++i) {
-            for (j = 0; j < m_nStates - 1; j++) {
-                matrix[i * (m_nStates) + j] = m_trMatrix[i * (m_nStates - 1) + j] * deathProb;
+        for (i = 0; i < nrOfStates - 1; ++i) {
+            for (j = 0; j < nrOfStates - 1; j++) {
+                matrix[i * (nrOfStates) + j] = trMatrix[i * (nrOfStates - 1) + j] * deathProb;
             }
-            matrix[i * (m_nStates) + j] = (1.0 - deathProb);
+            matrix[i * (nrOfStates) + j] = (1.0 - deathProb);
         }
 
-        for (j = 0; j < m_nStates - 1; ++j) {
-            matrix[m_nStates * (m_nStates - 1) + j] = 0.0;
+        for (j = 0; j < nrOfStates - 1; ++j) {
+            matrix[nrOfStates * (nrOfStates - 1) + j] = 0.0;
         }
 
-        matrix[m_nStates * m_nStates - 1] = 1.0;
+        matrix[nrOfStates * nrOfStates - 1] = 1.0;
     } // getTransitionProbabilities
 
     /**
@@ -92,10 +92,10 @@ public class MutationDeathModel extends SubstitutionModel.Base {
 
     @Override
     public boolean canHandleDataType(DataType dataType) throws Exception {
-    	if (m_CTMCModel.get() == null) {
+    	if (CTMCModelInput.get() == null) {
     		return dataType.getStateCount() == 2;
     	} else {
-    		int states = m_CTMCModel.get().m_nStates;
+    		int states = CTMCModelInput.get().nrOfStates;
     		return dataType.getStateCount() == states + 1;
     	}
     }

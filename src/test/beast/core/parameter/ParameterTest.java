@@ -3,6 +3,8 @@ package test.beast.core.parameter;
 import org.junit.Test;
 
 import beast.core.parameter.RealParameter;
+
+
 import junit.framework.TestCase;
 
 public class ParameterTest extends TestCase {

@@ -26,14 +26,16 @@ package beast.app.draw;
 
 
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import beast.core.Input;
-import beast.core.Plugin;
 import beast.core.Runnable;
+import beast.core.BEASTObject;
 import beast.util.AddOnManager;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
@@ -93,7 +95,7 @@ public class Document {
 
     public Document() {
         // load all parsers
-        List<String> sPlugInNames = AddOnManager.find(beast.core.Plugin.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> sPlugInNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         m_sPlugInNames = sPlugInNames.toArray(new String[0]);
         tabulist = new HashSet<String>();
         Properties properties = new Properties();
@@ -257,7 +259,7 @@ public class Document {
         if (shape.m_plugin.getID() != null && shape.m_plugin.getID().length() > 0) {
             return;
         }
-        Plugin plugin = shape.m_plugin;
+        BEASTObject plugin = shape.m_plugin;
         String sBase = plugin.getClass().getName().replaceAll(".*\\.", "");
         int nID = 0;
         while (containsID(sBase + nID, m_objects, null)) {
@@ -306,8 +308,8 @@ public class Document {
         try {
             List<Input<?>> inputs = ((PluginShape) shape).m_plugin.listInputs();
             for (Input<?> input : inputs) {
-                if (input.get() instanceof Plugin) {
-                    Plugin plugin = (Plugin) input.get();
+                if (input.get() instanceof BEASTObject) {
+                    BEASTObject plugin = (BEASTObject) input.get();
                     PluginShape pluginShape = new PluginShape(plugin, this);
                     pluginShape.m_x = Math.max(shape.m_x - DX, 0);
                     pluginShape.m_y = shape.m_y;
@@ -1363,13 +1365,13 @@ public class Document {
     final static int DY = 80;
 
     void addInput(PluginShape shape, Object o2, int nDepth, String sInput) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        if (o2 instanceof Plugin) {
-            PluginShape shape2 = getPluginShapeWithLabel(((Plugin) o2).getID());
+        if (o2 instanceof BEASTObject) {
+            PluginShape shape2 = getPluginShapeWithLabel(((BEASTObject) o2).getID());
             if (shape2 == null) {
-                shape2 = new PluginShape((Plugin) o2, this);
+                shape2 = new PluginShape((BEASTObject) o2, this);
                 shape2.m_x = nDepth * DX;
                 shape2.m_w = DY;
-                shape2.m_plugin = (Plugin) o2;
+                shape2.m_plugin = (BEASTObject) o2;
                 setPluginID(shape2);
                 m_objects.add(shape2);
             }
@@ -1378,7 +1380,7 @@ public class Document {
     }
 
     void process(PluginShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        Plugin plugin = shape.m_plugin;
+        BEASTObject plugin = shape.m_plugin;
         List<Input<?>> sInputs = plugin.listInputs();
         for (Input<?> input_ : sInputs) {
             Object o = input_.get();
@@ -1387,7 +1389,7 @@ public class Document {
                     for (Object o2 : (List<?>) o) {
                         addInput(shape, o2, nDepth + 1, input_.getName());
                     }
-                } else if (o instanceof Plugin) {
+                } else if (o instanceof BEASTObject) {
                     addInput(shape, o, nDepth + 1, input_.getName());
                     // } else {
                     // it is a primitive type
@@ -1412,7 +1414,7 @@ public class Document {
             } finally {
                 scanner.close();
             }
-            Plugin plugin0 = parser.parseBareFragment(sXML.toString(), false);
+            BEASTObject plugin0 = parser.parseBareFragment(sXML.toString(), false);
             init(plugin0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1425,7 +1427,7 @@ public class Document {
         m_objects.clear();
         try {
             XMLParser parser = new XMLParser();
-            Plugin plugin0 = parser.parseBareFragment(sXML, false);
+            BEASTObject plugin0 = parser.parseBareFragment(sXML, false);
             init(plugin0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1433,14 +1435,14 @@ public class Document {
         }
     }
 
-    public void init(Plugin plugin0) {
+    public void init(BEASTObject plugin0) {
         try {
             if (plugin0 instanceof PluginSet) {
-                List<Plugin> set = ((PluginSet) plugin0).m_plugins.get();
+                List<BEASTObject> set = ((PluginSet) plugin0).m_plugins.get();
                 if (set == null) {
                     return;
                 }
-                for (Plugin plugin : set) {
+                for (BEASTObject plugin : set) {
                     PluginShape shape = new PluginShape(plugin, this);
                     shape.m_plugin = plugin;
                     setPluginID(shape);
@@ -1532,12 +1534,12 @@ public class Document {
      */
     PluginSet calcPluginSet() {
         // collect all plug-ins
-        Collection<Plugin> plugins = getPlugins();
+        Collection<BEASTObject> plugins = getPlugins();
         // calc outputs
-        HashMap<Plugin, List<Plugin>> outputs = PluginPanel.getOutputs(plugins);
+        HashMap<BEASTObject, List<BEASTObject>> outputs = PluginPanel.getOutputs(plugins);
         // put all plugins with no ouputs in the PluginSet
         PluginSet pluginSet = new PluginSet();
-        for (Plugin plugin : outputs.keySet()) {
+        for (BEASTObject plugin : outputs.keySet()) {
             if (outputs.get(plugin).size() == 0) {
                 try {
                     pluginSet.setInputValue("plugin", plugin);
@@ -1552,8 +1554,8 @@ public class Document {
     /**
      * convert m_objects in set of plugins *
      */
-    Collection<Plugin> getPlugins() {
-        Collection<Plugin> plugins = new HashSet<Plugin>();
+    Collection<BEASTObject> getPlugins() {
+        Collection<BEASTObject> plugins = new HashSet<BEASTObject>();
         for (Shape shape : m_objects) {
             if (shape instanceof PluginShape) {
                 plugins.add(((PluginShape) shape).m_plugin);
@@ -1565,9 +1567,9 @@ public class Document {
     /**
      * return true if source is ascendant of target *
      */
-    boolean isAscendant(Plugin source, Plugin target) {
-        Collection<Plugin> plugins = getPlugins();
-        List<Plugin> ascendants = PluginPanel.listAscendants(target, plugins);
+    boolean isAscendant(BEASTObject source, BEASTObject target) {
+        Collection<BEASTObject> plugins = getPlugins();
+        List<BEASTObject> ascendants = PluginPanel.listAscendants(target, plugins);
         return ascendants.contains(source);
     }
 
@@ -1858,7 +1860,7 @@ public class Document {
             return STATUS_ORPHANS_IN_MODEL;
         }
         boolean hasRunable = false;
-        for (Plugin plugin : pluginSet.m_plugins.get()) {
+        for (BEASTObject plugin : pluginSet.m_plugins.get()) {
             if (plugin instanceof Runnable) {
                 hasRunable = true;
             }
@@ -1881,7 +1883,7 @@ public class Document {
             }
         }
         // build map for quick resolution of PluginShapes
-        HashMap<Plugin, PluginShape> map = new HashMap<Plugin, PluginShape>();
+        HashMap<BEASTObject, PluginShape> map = new HashMap<BEASTObject, PluginShape>();
         for (Shape shape : m_objects) {
             if (shape instanceof PluginShape) {
                 map.put(((PluginShape) shape).m_plugin, (PluginShape) shape);
@@ -1892,13 +1894,13 @@ public class Document {
             Shape shape = m_objects.get(i);
             if (shape instanceof PluginShape) {
                 PluginShape headShape = ((PluginShape) shape);
-                Plugin plugin = headShape.m_plugin;
+                BEASTObject plugin = headShape.m_plugin;
                 try {
                     List<Input<?>> inputs = plugin.listInputs();
                     for (Input<?> input : inputs) {
                         if (input.get() != null) {
-                            if (input.get() instanceof Plugin) {
-                                PluginShape tailShape = map.get((Plugin) input.get());
+                            if (input.get() instanceof BEASTObject) {
+                                PluginShape tailShape = map.get((BEASTObject) input.get());
                                 try {
 	                                Arrow arrow = new Arrow(tailShape, headShape, input.getName());
 	                                arrow.setID(getNewID(null));
@@ -1909,8 +1911,8 @@ public class Document {
                             }
                             if (input.get() instanceof List<?>) {
                                 for (Object o : (List<?>) input.get()) {
-                                    if (o != null && o instanceof Plugin) {
-                                        PluginShape tailShape = map.get((Plugin) o);
+                                    if (o != null && o instanceof BEASTObject) {
+                                        PluginShape tailShape = map.get((BEASTObject) o);
                                         try {
 	                                        Arrow arrow = new Arrow(tailShape, headShape, input.getName());
 	                                        arrow.setID(getNewID(null));

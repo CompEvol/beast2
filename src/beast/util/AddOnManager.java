@@ -31,13 +31,16 @@
 package beast.util;
 
 
-import beast.app.beastapp.BeastVersion;
-import beast.app.util.Arguments;
-import beast.app.util.Utils;
-import beast.evolution.alignment.Alignment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import beast.app.BEASTVersion;
+import beast.app.util.Arguments;
+import beast.app.util.Utils;
+import beast.core.util.Log;
+import beast.evolution.alignment.Alignment;
+
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -63,6 +66,7 @@ import java.util.zip.ZipFile;
  * - load jars from installed add ons
  * - discover classes in add ons that implement a certain interface or a derived from a certain class
  */
+// TODO: on windows allow installation on drive D: and pick up add-ons in drive C:
 public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
@@ -82,7 +86,9 @@ public class AddOnManager {
      * return URLs containing list of downloadable add-ons *
      */
     public static String[] getAddOnURL() {
-        return new String[]{"http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2"};
+        return new String[]{//"http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2",
+        "http://localhost/todo/Add-ons2.0.2"		
+        };        
     }
 
     /**
@@ -433,6 +439,7 @@ public class AddOnManager {
             if (jarDir.exists() && jarDir.isDirectory()) {
                 for (String sFile : jarDir.list()) {
                     if (sFile.endsWith(".jar")) {
+                    	Log.debug.print("Probing: " + sFile + " ");
                         // check that we are not reload existing classes
                         String loadedClass = null;
                         try {
@@ -466,7 +473,7 @@ public class AddOnManager {
                         if (loadedClass == null) {
                             addURL(url);
                         } else {
-                            System.err.println("Skip loading " + url + ": contains classs " + loadedClass + " that is already loaded");
+                            Log.debug.println("Skip loading " + url + ": contains classs " + loadedClass + " that is already loaded");
                         }
                     }
                 }
@@ -567,7 +574,7 @@ public class AddOnManager {
         }
 
         HashMap<String, Double> addonVersion = new HashMap<String, Double>();
-        BeastVersion beastVersion = new BeastVersion();
+        BEASTVersion beastVersion = new BEASTVersion();
         addonVersion.put("beast2", parseVersion(beastVersion.getVersion()));
         List<AddonDependency> dependencies = new ArrayList<AddonDependency>();
 
@@ -643,7 +650,7 @@ public class AddOnManager {
         URL urls[] = sysLoader.getURLs();
         for (int i = 0; i < urls.length; i++) {
             if (urls[i].toString().toLowerCase().equals(u.toString().toLowerCase())) {
-                System.err.println("URL " + u + " is already in the CLASSPATH");
+                Log.debug.println("URL " + u + " is already in the CLASSPATH");
                 return;
             }
         }
@@ -654,7 +661,7 @@ public class AddOnManager {
             Method method = sysclass.getDeclaredMethod("addURL", parameters);
             method.setAccessible(true);
             method.invoke(sysLoader, new Object[]{u});
-            System.err.println("Loaded URL " + u);
+            Log.debug.println("Loaded URL " + u);
         } catch (Throwable t) {
             t.printStackTrace();
             throw new IOException("Error, could not add URL to system classloader");
@@ -681,7 +688,7 @@ public class AddOnManager {
         String classpath = System.getProperty("java.class.path");
 
         for (String path : classpath.split(pathSep)) {
-        	//System.err.println("loadallclasses " + path);
+        	//Log.debug.println("loadallclasses " + path);
             File filepath = new File(path);
 
             if (filepath.isDirectory()) {
@@ -692,7 +699,7 @@ public class AddOnManager {
                 try {
                     jar = new JarFile(filepath);
                 } catch (IOException e) {
-                    System.err.println("WARNING: " + filepath + " could not be opened!");
+                    Log.debug.println("WARNING: " + filepath + " could not be opened!");
                     continue;
                 }
 
@@ -705,7 +712,7 @@ public class AddOnManager {
             } else if (path.endsWith(".class")) {
                 all_classes.add(path);
             } else {
-                System.err.println("Warning: corrupt classpath entry: " + path);
+                Log.debug.println("Warning: corrupt classpath entry: " + path);
             }
 
         }
@@ -902,11 +909,11 @@ public class AddOnManager {
         for (int i = all_classes.size() - 1; i >= 0; i--) {
             String sClass = all_classes.get(i);
             sClass = sClass.replaceAll("/", ".");
-            //System.err.println(sClass + " " + pkgname);
+            //Log.debug.println(sClass + " " + pkgname);
             
             // must match package
             if (sClass.startsWith(pkgname)) {
-                //System.err.println(sClass);
+                //Log.debug.println(sClass);
                 try {
                     Class<?> clsNew = Class.forName(sClass);
 
@@ -919,7 +926,7 @@ public class AddOnManager {
                         result.add(sClass);
                     }
                 } catch (Throwable e) {
-                    System.err.println("Checking class: " + sClass);
+                    Log.debug.println("Checking class: " + sClass);
                     e.printStackTrace();
                 }
 
@@ -975,7 +982,7 @@ public class AddOnManager {
                             new Arguments.StringOption("add", "NAME", "Install the <NAME> add-on "),
                             new Arguments.StringOption("del", "NAME", "Uninstall the <NAME> add-on "),
                             new Arguments.Option("useAppDir", "Use application (system wide) installation directory. Note this requires writing rights to the application directory. If not specified, the user's BEAST directory will be used."),
-                            new Arguments.StringOption("dir", "DIR", "Install/uninstall add-on in direcotry <DIR>. This overrides the useAppDir option"),
+                            new Arguments.StringOption("dir", "DIR", "Install/uninstall add-on in directory <DIR>. This overrides the useAppDir option"),
                             new Arguments.Option("help", "Show help"),
                     });
             try {
@@ -998,9 +1005,9 @@ public class AddOnManager {
             	System.setProperty("BEAST_ADDON_PATH", (path != null ? path + ":" : "") +customDir);
             }
 
-            System.err.print("Getting list of add-ons ...");
+            Log.debug.print("Getting list of add-ons ...");
             List<List<String>> addOns = AddOnManager.getAddOns();
-            System.err.println("Done!\n");
+            Log.debug.println("Done!\n");
 
             if (arguments.hasOption("list")) {
                 System.out.println("Name : status : Description ");
@@ -1016,7 +1023,7 @@ public class AddOnManager {
                     if (addOn.get(2).equals(name)) {
                         processed = true;
                         if (!addOn.get(3).equals("installed")) {
-                            System.err.println("Start installation");
+                            Log.debug.println("Start installation");
                             String dir = installAddOn(addOn.get(1), useAppDir, customDir);
                             System.out.println("Add-on " + name + " is installed in " + dir + ".");
                         } else {
@@ -1037,7 +1044,7 @@ public class AddOnManager {
                     if (addOn.get(2).equals(name)) {
                         processed = true;
                         if (!addOn.get(3).equals("not installed")) {
-                            System.err.println("Start un-installation");
+                            Log.debug.println("Start un-installation");
                             String dir = uninstallAddOn(addOn.get(1), useAppDir, customDir);
                             System.out.println("Add-on " + name + " is uninstalled from " + dir + ".");
                         } else {

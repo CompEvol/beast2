@@ -24,9 +24,11 @@
 */
 package beast.core.parameter;
 
-import beast.core.Description;
 
 import java.io.PrintStream;
+
+import beast.core.Description;
+
 
 /**
  * @author Joseph Heled
@@ -62,7 +64,7 @@ public class BooleanParameter extends Parameter<java.lang.Boolean> {
 
     @Override
     public void initAndValidate() throws Exception {
-        String sValue = m_pValues.get();
+        String sValue = valuesInput.get();
         // remove start and end spaces
         sValue = sValue.replaceAll("^\\s+", "");
         sValue = sValue.replaceAll("\\s+$", "");

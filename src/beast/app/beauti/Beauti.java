@@ -1,11 +1,5 @@
 package beast.app.beauti;
 
-import beast.app.beastapp.BeastVersion;
-import beast.app.beauti.BeautiDoc.ActionOnExit;
-import beast.app.beauti.BeautiDoc.DOC_STATUS;
-import beast.app.draw.*;
-import beast.app.util.Utils;
-import beast.util.AddOnManager;
 
 import jam.framework.DocumentFrame;
 
@@ -16,6 +10,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import beast.app.BEASTVersion;
+import beast.app.beauti.BeautiDoc.ActionOnExit;
+import beast.app.beauti.BeautiDoc.DOC_STATUS;
+import beast.app.draw.*;
+import beast.app.util.Utils;
+import beast.util.AddOnManager;
+
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -564,7 +566,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            BeastVersion version = new BeastVersion();
+            BEASTVersion version = new BEASTVersion();
             JOptionPane.showMessageDialog(null, version.getCredits(),
                     "About Beauti 2", JOptionPane.PLAIN_MESSAGE,
                     BeautiPanel.getIcon(BEAUTI_ICON));

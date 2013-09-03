@@ -29,20 +29,22 @@ package beast.evolution.branchratemodel;
 import java.io.PrintStream;
 
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.Loggable;
-import beast.core.Plugin;
-import beast.core.Valuable;
+import beast.core.BEASTObject;
+import beast.core.Input.Validate;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.statistic.DiscreteStatistics;
 
 
+
+
 @Description("A statistic that tracks the mean, variance and coefficent of variation of rates. " +
         "It has three dimensions, one for each statistic.")
-public class RateStatistic extends Plugin implements Loggable, Valuable {
+public class RateStatistic extends BEASTObject implements Loggable, Function {
 	
     public Input<GenericTreeLikelihood> likelihoodInput = new Input<GenericTreeLikelihood>("treeLikelihood", "TreeLikelihood containing branch rate model that provides rates for a tree");
     public Input<BranchRateModel> branchRateModelInput = new Input<BranchRateModel>("branchratemodel", "model that provides rates for a tree", Validate.XOR, likelihoodInput);
@@ -64,7 +66,7 @@ public class RateStatistic extends Plugin implements Loggable, Valuable {
         tree = treeInput.get();
         branchRateModel = branchRateModelInput.get();
         if (branchRateModel == null) {
-            branchRateModel = likelihoodInput.get().m_pBranchRateModel.get();
+            branchRateModel = likelihoodInput.get().branchRateModelInput.get();
         }
         this.internal = internalInput.get();
         this.external = externalInput.get();

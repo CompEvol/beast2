@@ -16,9 +16,11 @@ import beast.app.beauti.BeautiSubTemplate;
 import beast.app.draw.InputEditor.ButtonStatus;
 import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.util.AddOnManager;
+
+
 
 /** Can create InputEditors for inputs of Plugins 
  * and there are some associated utility methods **/
@@ -81,7 +83,7 @@ public class InputEditorFactory {
     /**
      * add all inputs of a plugin to a box *
      */
-    public List<InputEditor> addInputs(Box box, Plugin plugin, InputEditor editor, InputEditor validateListener, BeautiDoc doc) {
+    public List<InputEditor> addInputs(Box box, BEASTObject plugin, InputEditor editor, InputEditor validateListener, BeautiDoc doc) {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
         List<InputEditor> editors = new ArrayList<InputEditor>();
@@ -117,22 +119,23 @@ public class InputEditorFactory {
     } // addInputs
 
 
-    public InputEditor createInputEditor(Input<?> input, Plugin plugin, BeautiDoc doc) throws Exception {
+    public InputEditor createInputEditor(Input<?> input, BEASTObject plugin, BeautiDoc doc) throws Exception {
         return createInputEditor(input, plugin, true, InputEditor.ExpandOption.FALSE, ButtonStatus.ALL, null, doc);
     }
 
-    public InputEditor createInputEditor(Input<?> input, Plugin plugin, boolean bAddButtons,
+    public InputEditor createInputEditor(Input<?> input, BEASTObject plugin, boolean bAddButtons,
                                                 ExpandOption bForceExpansion, ButtonStatus buttonStatus,
                                                 InputEditor editor, BeautiDoc doc) throws Exception {
     	return createInputEditor(input, -1, plugin, bAddButtons, bForceExpansion, buttonStatus, editor, doc);
     }
     
-    public InputEditor createInputEditor(Input<?> input, int listItemNr, Plugin plugin, boolean bAddButtons,
+    public InputEditor createInputEditor(Input<?> input, int listItemNr, BEASTObject plugin, boolean bAddButtons,
                 ExpandOption bForceExpansion, ButtonStatus buttonStatus,
                 InputEditor editor, BeautiDoc doc) throws Exception {
         if (input.getType() == null) {
             input.determineClass(plugin);
         }
+        //Class<?> inputClass = input.get() != null ? input.get().getClass(): input.getType();
         Class<?> inputClass = input.getType();
         if (inputClass == null) {
         	return null;
@@ -141,10 +144,11 @@ public class InputEditorFactory {
         	inputClass = ((List<?>)input.get()).get(listItemNr).getClass();
         }
 
+System.err.print(inputClass.getName() + " => ");        
         InputEditor inputEditor;
 
         // check whether the super.editor has a custom method for creating an Editor
-        if (editor != null) {
+        if (editor != null) {        	
             try {
                 String sName = input.getName();
                 sName = new String(sName.charAt(0) + "").toUpperCase() + sName.substring(1);
@@ -152,6 +156,7 @@ public class InputEditorFactory {
                 Class<?> _class = editor.getClass();
                 Method method = _class.getMethod(sName);
                 inputEditor = (InputEditor) method.invoke(editor);
+System.err.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");        
                 return inputEditor;
             } catch (Exception e) {
                 // ignore
@@ -214,16 +219,16 @@ public class InputEditorFactory {
                     Object o = input.get();
                     if (o instanceof ArrayList) {
                         for (Object o2 : (ArrayList<?>) o) {
-                            if (o2 instanceof Plugin) {
-                                String sID = ((Plugin) o2).getID();
+                            if (o2 instanceof BEASTObject) {
+                                String sID = ((BEASTObject) o2).getID();
                                 if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
                                     ListInputEditor.g_initiallyCollapsedIDs.add(sID);
                                     ListInputEditor.g_collapsedIDs.add(sID);
                                 }
                             }
                         }
-                    } else if (o instanceof Plugin) {
-                        String sID = ((Plugin) o).getID();
+                    } else if (o instanceof BEASTObject) {
+                        String sID = ((BEASTObject) o).getID();
                         if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
                             ListInputEditor.g_initiallyCollapsedIDs.add(sID);
                             ListInputEditor.g_collapsedIDs.add(sID);
@@ -237,6 +242,7 @@ public class InputEditorFactory {
         inputEditor.init(input, plugin, listItemNr, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
         inputEditor.getComponent().setVisible(true);
+System.err.println(inputEditor.getClass().getName());        
         return inputEditor;
     } // createInputEditor
 
@@ -249,7 +255,7 @@ public class InputEditorFactory {
      * @return
      */
     
-    public List<String> getAvailablePlugins(Input<?> input, Plugin parent, List<String> sTabuList, BeautiDoc doc) {
+    public List<String> getAvailablePlugins(Input<?> input, BEASTObject parent, List<String> sTabuList, BeautiDoc doc) {
 
         //List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
         List<String> sPlugins = new ArrayList<String>();
@@ -263,7 +269,7 @@ public class InputEditorFactory {
             sTabuList = new ArrayList<String>();
         }
         if (!doc.isExpertMode()) {
-            for (Plugin plugin : PluginPanel.listAscendants(parent, doc.pluginmap.values())) {
+            for (BEASTObject plugin : PluginPanel.listAscendants(parent, doc.pluginmap.values())) {
                 sTabuList.add(plugin.getID());
             }
         }
@@ -271,7 +277,7 @@ public class InputEditorFactory {
 
         /* collect all plugins in the system, that are not in the tabu list*/
         sPlugins = new ArrayList<String>();
-        for (Plugin plugin : doc.pluginmap.values()) {
+        for (BEASTObject plugin : doc.pluginmap.values()) {
             if (input.getType().isAssignableFrom(plugin.getClass())) {
                 boolean bIsTabu = false;
                 if (sTabuList != null) {
@@ -318,7 +324,7 @@ public class InputEditorFactory {
      * @return
      */
 
-    public List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, Plugin parent, List<String> sTabuList, BeautiDoc doc) {
+    public List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, BEASTObject parent, List<String> sTabuList, BeautiDoc doc) {
         Class<?> type = input.getType();
         List<BeautiSubTemplate> candidates = doc.beautiConfig.getInputCandidates(parent, input, type);
         if (input.getRule().equals(Validate.OPTIONAL)) {

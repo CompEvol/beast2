@@ -2,11 +2,12 @@ package test.beast.evolution.speciation;
 
 import org.junit.Test;
 
-import test.beast.BEASTTestCase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.speciation.BirthDeathGernhard08Model;
 import beast.evolution.tree.Tree;
+
+import test.beast.BEASTTestCase;
 import junit.framework.TestCase;
 
 public class BirthDeathGernhard08ModelTest extends TestCase {

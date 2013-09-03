@@ -27,12 +27,14 @@ package beast.evolution.substitutionmodel;
 import java.util.Arrays;
 
 import beast.core.CalculationNode;
-import beast.core.Input;
 import beast.core.Description;
-import beast.core.parameter.RealParameter;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.datatype.DataType;
+
+
 
 // RRB: TODO: make this an interface?
 
@@ -40,19 +42,19 @@ import beast.evolution.datatype.DataType;
         "Calculates empirical frequencies of characters in sequence data, or simply assumes a uniform " +
         "distribution if the estimate flag is set to false.")
 public class Frequencies extends CalculationNode {
-    public Input<Alignment> m_data = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
-    public Input<Boolean> m_bEstimate = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
-    public Input<RealParameter> frequencies = new Input<RealParameter>("frequencies", "A set of frequencies specified as space separated values summing to 1", Validate.XOR, m_data);
+    public Input<Alignment> dataInput = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
+    public Input<Boolean> estimateInput = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
+    public Input<RealParameter> frequenciesInput = new Input<RealParameter>("frequencies", "A set of frequencies specified as space separated values summing to 1", Validate.XOR, dataInput);
 
     /**
      * contains frequency distribution *
      */
-    protected double[] m_fFreqs;
+    protected double[] freqs;
 
     /**
      * flag to indicate m_fFreqs is up to date *
      */
-    boolean m_bNeedsUpdate;
+    boolean needsUpdate;
 
 
     @Override
@@ -70,41 +72,41 @@ public class Frequencies extends CalculationNode {
      * return up to date frequencies *
      */
     public double[] getFreqs() {
-        if (m_bNeedsUpdate) {
+        if (needsUpdate) {
 
             update();
         }
 
-        return m_fFreqs;
+        return freqs;
     }
 
     /**
      * recalculate frequencies, unless it is fixed *
      */
     void update() {
-        if (frequencies.get() != null) {
+        if (frequenciesInput.get() != null) {
 
             // if user specified, parse frequencies from space delimited string
-            m_fFreqs = new double[frequencies.get().getDimension()];
+            freqs = new double[frequenciesInput.get().getDimension()];
 
-            for (int i = 0; i < m_fFreqs.length; i++) {
-                m_fFreqs[i] = frequencies.get().getValue(i);
+            for (int i = 0; i < freqs.length; i++) {
+                freqs[i] = frequenciesInput.get().getValue(i);
             }
 
 
-        } else if (m_bEstimate.get()) { // if not user specified, either estimate from data or set as fixed
+        } else if (estimateInput.get()) { // if not user specified, either estimate from data or set as fixed
             // estimate
             estimateFrequencies();
             checkFrequencies();
         } else {
             // uniformly distributed
-            int nStates = m_data.get().getMaxStateCount();
-            m_fFreqs = new double[nStates];
+            int nStates = dataInput.get().getMaxStateCount();
+            freqs = new double[nStates];
             for (int i = 0; i < nStates; i++) {
-                m_fFreqs[i] = 1.0 / nStates;
+                freqs[i] = 1.0 / nStates;
             }
         }
-        m_bNeedsUpdate = false;
+        needsUpdate = false;
     } // update
 
 
@@ -113,12 +115,12 @@ public class Frequencies extends CalculationNode {
      * This version matches the implementation in Beast 1 & PAUP  *
      */
     void estimateFrequencies() {
-        Alignment alignment = m_data.get();
+        Alignment alignment = dataInput.get();
         DataType dataType = alignment.getDataType();
         int stateCount = alignment.getMaxStateCount();
 
-        m_fFreqs = new double[stateCount];
-        Arrays.fill(m_fFreqs, 1.0 / stateCount);
+        freqs = new double[stateCount];
+        Arrays.fill(freqs, 1.0 / stateCount);
 
         int nAttempts = 0;
         double fDifference;
@@ -135,11 +137,11 @@ public class Frequencies extends CalculationNode {
 
                     double sum = 0.0;
                     for (int iCode : codes) {
-                        sum += m_fFreqs[iCode];
+                        sum += freqs[iCode];
                     }
 
                     for (int iCode : codes) {
-                        double fTmp = (m_fFreqs[iCode] * fWeight) / sum;
+                        double fTmp = (freqs[iCode] * fWeight) / sum;
                         fTmpFreq[iCode] += fTmp;
                         fTotal += fTmp;
                     }
@@ -148,8 +150,8 @@ public class Frequencies extends CalculationNode {
 
             fDifference = 0.0;
             for (int i = 0; i < stateCount; i++) {
-                fDifference += Math.abs((fTmpFreq[i] / fTotal) - m_fFreqs[i]);
-                m_fFreqs[i] = fTmpFreq[i] / fTotal;
+                fDifference += Math.abs((fTmpFreq[i] / fTotal) - freqs[i]);
+                freqs[i] = fTmpFreq[i] / fTotal;
             }
             nAttempts++;
         } while (fDifference > 1E-8 && nAttempts < 1000);
@@ -180,7 +182,7 @@ public class Frequencies extends CalculationNode {
 //        for (int i = 0; i < m_fFreqs.length; i++) {
 //            m_fFreqs[i] /= fSum;
 //        }
-        System.err.println("Starting frequencies: " + Arrays.toString(m_fFreqs));
+        System.err.println("Starting frequencies: " + Arrays.toString(freqs));
     } // calcFrequencies
 
     /**
@@ -199,23 +201,23 @@ public class Frequencies extends CalculationNode {
         int maxi = 0;
         double sum = 0.0;
         double maxfreq = 0.0;
-        for (int i = 0; i < m_fFreqs.length; i++) {
-            double freq = m_fFreqs[i];
-            if (freq < MINFREQ) m_fFreqs[i] = MINFREQ;
+        for (int i = 0; i < freqs.length; i++) {
+            double freq = freqs[i];
+            if (freq < MINFREQ) freqs[i] = MINFREQ;
             if (freq > maxfreq) {
                 maxfreq = freq;
                 maxi = i;
             }
-            sum += m_fFreqs[i];
+            sum += freqs[i];
         }
         double diff = 1.0 - sum;
-        m_fFreqs[maxi] += diff;
+        freqs[maxi] += diff;
 
-        for (int i = 0; i < m_fFreqs.length - 1; i++) {
-            for (int j = i + 1; j < m_fFreqs.length; j++) {
-                if (m_fFreqs[i] == m_fFreqs[j]) {
-                    m_fFreqs[i] += MINFDIFF;
-                    m_fFreqs[j] += MINFDIFF;
+        for (int i = 0; i < freqs.length - 1; i++) {
+            for (int j = i + 1; j < freqs.length; j++) {
+                if (freqs[i] == freqs[j]) {
+                    freqs[i] += MINFDIFF;
+                    freqs[j] += MINFDIFF;
                 }
             }
         }
@@ -227,9 +229,9 @@ public class Frequencies extends CalculationNode {
     @Override
     protected boolean requiresRecalculation() {
         boolean recalculates = false;
-        if (frequencies.get().somethingIsDirty()) {
+        if (frequenciesInput.get().somethingIsDirty()) {
 
-            m_bNeedsUpdate = true;
+            needsUpdate = true;
             recalculates = true;
         }
 
@@ -249,7 +251,7 @@ public class Frequencies extends CalculationNode {
     }
 
     public void restore() {
-        m_bNeedsUpdate = true;
+        needsUpdate = true;
         super.restore();
     }
 

@@ -31,6 +31,8 @@ import javax.swing.event.DocumentListener;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 
+
+
 public class TaxonSetDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     public boolean isOK = false;
@@ -65,7 +67,7 @@ public class TaxonSetDialog extends JDialog {
         //box.add(createCancelOKButtons());
 
         // initialise lists
-        List<Taxon> taxonset = taxonSet.m_taxonset.get();
+        List<Taxon> taxonset = taxonSet.taxonsetInput.get();
         Comparator<Taxon> comparator = new Comparator<Taxon>() {
             public int compare(Taxon o1, Taxon o2) {
                 return o1.getID().compareTo(o2.getID());
@@ -114,7 +116,7 @@ public class TaxonSetDialog extends JDialog {
         isOK =  (result != JOptionPane.CANCEL_OPTION);
         if (isOK) {
             taxonSet.setID(sID);
-            List<Taxon> taxa = taxonSet.m_taxonset.get();
+            List<Taxon> taxa = taxonSet.taxonsetInput.get();
             while (taxa.size() > 0) {
                 taxa.remove(0);
             }
@@ -281,7 +283,7 @@ public class TaxonSetDialog extends JDialog {
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 taxonSet.setID(sID);
-                List<Taxon> taxa = taxonSet.m_taxonset.get();
+                List<Taxon> taxa = taxonSet.taxonsetInput.get();
                 while (taxa.size() > 0) {
                     taxa.remove(0);
                 }

@@ -16,12 +16,14 @@ import beast.app.draw.SmallLabel;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.operators.DeltaExchangeOperator;
+
+
 
 public class ClockModelListInputEditor extends ListInputEditor {
     private static final long serialVersionUID = 1L;
@@ -50,7 +52,7 @@ public class ClockModelListInputEditor extends ListInputEditor {
     protected SmallLabel fixMeanRatesValidateLabel;
     
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean rate of clock models");
     	m_buttonStatus = ButtonStatus.NONE;
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
@@ -123,11 +125,11 @@ public class ClockModelListInputEditor extends ListInputEditor {
 	    		BranchRateModel.Base clockModel = (BranchRateModel.Base) doc.clockModels.get(i);
 	    		RealParameter clockRate = clockModel.meanRateInput.get();
 	    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
-	    		if (clockRate.m_bIsEstimated.get()) {
+	    		if (clockRate.isEstimatedInput.get()) {
 	    			if (commonClockRate < 0) {
-	    				commonClockRate = Double.parseDouble(clockRate.m_pValues.get());
+	    				commonClockRate = Double.parseDouble(clockRate.valuesInput.get());
 	    			} else {
-	    				if (Math.abs(commonClockRate - Double.parseDouble(clockRate.m_pValues.get())) > 1e-10) {
+	    				if (Math.abs(commonClockRate - Double.parseDouble(clockRate.valuesInput.get())) > 1e-10) {
 	    					bAllClocksAreEqual = false;
 	    				}
 	    			}
@@ -149,8 +151,8 @@ public class ClockModelListInputEditor extends ListInputEditor {
 
 	    	IntegerParameter weightParameter = new IntegerParameter(weights);
 			weightParameter.setID("weightparameter");
-			weightParameter.m_bIsEstimated.setValue(false, weightParameter);
-	    	operator.input_parameterWeights.setValue(weightParameter, operator);
+			weightParameter.isEstimatedInput.setValue(false, weightParameter);
+	    	operator.parameterWeightsInput.setValue(weightParameter, operator);
 	    	if (!bAllClocksAreEqual) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;

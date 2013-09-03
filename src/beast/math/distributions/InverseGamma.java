@@ -9,14 +9,16 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 
+
+
 @Description("Inverse Gamma distribution, used as prior.    for x>0  f(x; alpha, beta) = \frac{beta^alpha}{Gamma(alpha)} (1/x)^{alpha + 1}exp(-beta/x) " +
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class InverseGamma extends ParametricDistribution {
-    public Input<RealParameter> m_alpha = new Input<RealParameter>("alpha", "shape parameter, defaults to 2");
-    public Input<RealParameter> m_beta = new Input<RealParameter>("beta", "scale parameter, defaults to 2");
+    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "shape parameter, defaults to 2");
+    public Input<RealParameter> betaInput = new Input<RealParameter>("beta", "scale parameter, defaults to 2");
 
-    InverseGammaImpl m_dist = new InverseGammaImpl(2, 2);
+    InverseGammaImpl dist = new InverseGammaImpl(2, 2);
 
     @Override
     public void initAndValidate() {
@@ -29,23 +31,23 @@ public class InverseGamma extends ParametricDistribution {
     void refresh() {
         double fAlpha;
         double fBeta;
-        if (m_alpha.get() == null) {
+        if (alphaInput.get() == null) {
             fAlpha = 2;
         } else {
-            fAlpha = m_alpha.get().getValue();
+            fAlpha = alphaInput.get().getValue();
         }
-        if (m_beta.get() == null) {
+        if (betaInput.get() == null) {
             fBeta = 2;
         } else {
-            fBeta = m_beta.get().getValue();
+            fBeta = betaInput.get().getValue();
         }
-        m_dist.setAlphaBeta(fAlpha, fBeta);
+        dist.setAlphaBeta(fAlpha, fBeta);
     }
 
     @Override
     public Distribution getDistribution() {
         refresh();
-        return m_dist;
+        return dist;
     }
 
     class InverseGammaImpl implements ContinuousDistribution {

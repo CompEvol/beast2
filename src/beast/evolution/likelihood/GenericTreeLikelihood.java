@@ -13,6 +13,8 @@ import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.Tree;
 
+
+
 @Description("Generic tree likelihood for an alignment given a generic SiteModel, " +
 		"a beast tree and a branch rate model")
 // Use this as base class to define any non-standard TreeLikelihood.
@@ -22,13 +24,13 @@ import beast.evolution.tree.Tree;
 //
 public class GenericTreeLikelihood extends Distribution {
     
-    public Input<Alignment> m_data = new Input<Alignment>("data", "sequence data for the beast.tree", Validate.REQUIRED);
+    public Input<Alignment> dataInput = new Input<Alignment>("data", "sequence data for the beast.tree", Validate.REQUIRED);
 
-    public Input<Tree> m_tree = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
+    public Input<Tree> treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
 
-    public Input<SiteModelInterface> m_pSiteModel = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+    public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     
-    public Input<BranchRateModel.Base> m_pBranchRateModel = new Input<BranchRateModel.Base>("branchRateModel",
+    public Input<BranchRateModel.Base> branchRateModelInput = new Input<BranchRateModel.Base>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
 
     

@@ -17,14 +17,14 @@ import javax.swing.SwingUtilities;
 import beast.app.draw.InputEditor;
 import beast.app.draw.SmallLabel;
 import beast.core.Input;
-import beast.core.Plugin;
-//import beast.evolution.speciation.BirthDeathGernhard08Model;
-//import beast.evolution.speciation.YuleModel;
+import beast.core.BEASTObject;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
-//import beast.evolution.tree.coalescent.BayesianSkyline;
-//import beast.evolution.tree.coalescent.Coalescent;
+
+
+//import beast.evolution.speciation.BirthDeathGernhard08Model;
+//import beast.evolution.speciation.YuleModel;
 
 public class TreeDistributionInputEditor extends InputEditor.Base {
 	private static final long serialVersionUID = 1L;
@@ -52,7 +52,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 	ActionEvent m_e;
 	
 	@Override
-	public void init(Input<?> input, Plugin plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTObject plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
 		m_input = input;
 		m_plugin = plugin;
@@ -62,10 +62,10 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 
 		TreeDistribution distr = (TreeDistribution) plugin;
 		String sText = ""/* plugin.getID() + ": " */;
-		if (distr.m_tree.get() != null) {
-			sText += distr.m_tree.get().getID();
+		if (distr.treeInput.get() != null) {
+			sText += distr.treeInput.get().getID();
 		} else {
-			sText += distr.treeIntervals.get().m_tree.get().getID();
+			sText += distr.treeIntervalsInput.get().treeInput.get().getID();
 		}
 		JLabel label = new JLabel(sText);
 		label.setMinimumSize(PriorListInputEditor.PREFERRED_SIZE);
@@ -108,9 +108,9 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 					public void run() {
 						JComboBox currentComboBox = (JComboBox) m_e.getSource();
 						@SuppressWarnings("unchecked")
-						List<Plugin> list = (List<Plugin>) m_input.get();
+						List<BEASTObject> list = (List<BEASTObject>) m_input.get();
 						BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
-						PartitionContext partitionContext = doc.getContextFor((Plugin) list.get(itemNr));
+						PartitionContext partitionContext = doc.getContextFor((BEASTObject) list.get(itemNr));
 						try {
 							template.createSubNet(partitionContext, list, itemNr, true);
 						} catch (Exception ex) {
@@ -136,12 +136,12 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 	@Override
 	public void validateInput() {
 		TreeDistribution distr = (TreeDistribution) m_plugin;
-	    Tree tree = distr.m_tree.get();
+	    Tree tree = distr.treeInput.get();
 	    if (tree == null) {
-	    	tree = distr.treeIntervals.get().m_tree.get();
+	    	tree = distr.treeIntervalsInput.get().treeInput.get();
 	    }
         if (tree.m_trait.get() != null) {
-        	String traitName = tree.m_trait.get().m_sTraitName.get();
+        	String traitName = tree.m_trait.get().traitNameInput.get();
         	if (traitName.equals(TraitSet.DATE_TRAIT) ||
         		traitName.equals(TraitSet.DATE_BACKWARD_TRAIT) ||
         		traitName.equals(TraitSet.DATE_FORWARD_TRAIT)) {

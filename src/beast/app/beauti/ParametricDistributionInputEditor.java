@@ -20,10 +20,12 @@ import org.apache.commons.math.MathException;
 
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.ParametricDistribution;
+
+
 
 public class ParametricDistributionInputEditor extends PluginInputEditor {
 
@@ -41,7 +43,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         useDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
 
 //    	if (useDefaultBehavior && false) {
@@ -61,7 +63,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
 
     @Override
     /** suppress combobox **/
-    protected void addComboBox(JComponent box, Input<?> input, Plugin plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
         if (useDefaultBehavior) {
             super.addComboBox(box, input, plugin);
         }
@@ -181,7 +183,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
             // draw ticks on edge
             Font smallFont = new Font(font.getName(), font.getStyle(), 8);
             g.setFont(smallFont);
-            fMinValue += m_distr.m_offset.get();
+            fMinValue += m_distr.offsetInput.get();
             for (int i = 0; i <= NR_OF_TICKS_X; i++) {
                 int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;
                 g.drawLine(x, graphoffset + nGraphHeight, x, graphoffset + nGraphHeight + 5);
@@ -200,7 +202,7 @@ public class ParametricDistributionInputEditor extends PluginInputEditor {
                 Double[] fQuantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
                 for (k = 0; k < 5; k++) {
                 	try {
-                		g.drawString(format(m_distr.m_offset.get() +  m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                		g.drawString(format(m_distr.offsetInput.get() +  m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
                     } catch (MathException e) {
                     	g.drawString("not available", nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
                     }

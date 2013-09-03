@@ -25,10 +25,6 @@
 package beast.core;
 
 
-import beast.core.Input.Validate;
-import beast.evolution.tree.Tree;
-import beast.util.Randomizer;
-import beast.util.XMLProducer;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -43,8 +39,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import beast.core.Input.Validate;
+import beast.core.util.Log;
+import beast.evolution.tree.Tree;
+import beast.util.Randomizer;
+import beast.util.XMLProducer;
+
+
 @Description("Logs results of a calculation processes on regular intervals.")
-public class Logger extends Plugin {
+public class Logger extends BEASTObject {
     /**
      * currently supported modes *
      */
@@ -56,41 +59,44 @@ public class Logger extends Plugin {
         none, alphabetic, smart
     }
 
-    public Input<String> m_pFileName = new Input<String>("fileName", "Name of the file, or stdout if left blank");
+    public Input<String> fileNameInput = new Input<String>("fileName", "Name of the file, or stdout if left blank");
 
-    public Input<Integer> m_pEvery = new Input<Integer>("logEvery", "Number of the samples logged", 1);
-    public Input<Plugin> m_pModelPlugin = new Input<Plugin>("model", "Model to log at the top of the log. " +
+    public Input<Integer> everyInput = new Input<Integer>("logEvery", "Number of the samples logged", 1);
+    public Input<BEASTObject> modelInput = new Input<BEASTObject>("model", "Model to log at the top of the log. " +
             "If specified, XML will be produced for the model, commented out by # at the start of a line. " +
             "Alignments are suppressed. This way, the log file documents itself. ");
-    public Input<LOGMODE> m_sMode = new Input<LOGMODE>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
-    public Input<SORTMODE> sortMode = new Input<SORTMODE>("sort", "sort items to be logged, one of " + SORTMODE.values(), SORTMODE.none, SORTMODE.values());
-    public Input<Boolean> sanitiseHeaders = new Input<Boolean>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
+    public Input<LOGMODE> modeInput = new Input<LOGMODE>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
+    public Input<SORTMODE> sortModeInput = new Input<SORTMODE>("sort", "sort items to be logged, one of " + SORTMODE.values(), SORTMODE.none, SORTMODE.values());
+    public Input<Boolean> sanitiseHeadersInput = new Input<Boolean>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
 
-    public Input<List<Plugin>> m_pLoggers = new Input<List<Plugin>>("log",
+    public Input<List<BEASTObject>> loggersInput = new Input<List<BEASTObject>>("log",
             "Element in a log. This can be any plug in that is Loggable.",
-            new ArrayList<Plugin>(), Validate.REQUIRED, Loggable.class);
+            new ArrayList<BEASTObject>(), Validate.REQUIRED, Loggable.class);
 
     /**
      * list of loggers, if any
      */
-    List<Loggable> m_loggers;
-    public final static int FILE_ONLY_NEW = 0, FILE_OVERWRITE = 1, FILE_APPEND = 2, FILE_ONLY_NEW_OR_EXIT = 3;
-    public static int FILE_MODE = FILE_ONLY_NEW;
+    List<Loggable> loggerList;
+    public enum LogFileMode {
+    	only_new, overwrite, resume, only_new_or_exit
+    }
+    //public final static int FILE_ONLY_NEW = 0, FILE_OVERWRITE = 1, FILE_APPEND = 2, FILE_ONLY_NEW_OR_EXIT = 3;
+    public static LogFileMode FILE_MODE = LogFileMode.only_new;
     /**
      * Compound loggers get a sample number printed at the beginning of the line,
      * while tree loggers don't.
      */
     public final static int COMPOUND_LOGGER = 0, TREE_LOGGER = 2;
-    public int m_mode = COMPOUND_LOGGER;
+    public int mode = COMPOUND_LOGGER;
     /**
      * offset for the sample number, which is non-zero when a chain is resumed *
      */
-    static int m_nSampleOffset = 0;
+    static int sampleOffset = 0;
 
     /**
      * number of samples between logs *
      */
-    int m_nEvery = 1;
+    int every = 1;
 
     /**
      * stream to log to
@@ -100,54 +106,54 @@ public class Logger extends Plugin {
     /**
      * keep track of time taken between logs to estimate speed *
      */
-    long m_nStartLogTime = -5;
-    int m_nStartSample;
+    long startLogTime = -5;
+    int startSample;
 
 
     @Override
     public void initAndValidate() throws Exception {
-        List<Plugin> loggers = m_pLoggers.get();
+        List<BEASTObject> loggers = loggersInput.get();
         final int nLoggers = loggers.size();
         if (nLoggers == 0) {
             throw new Exception("Logger with nothing to log specified");
         }
 
-        m_loggers = new ArrayList<Loggable>();
+        loggerList = new ArrayList<Loggable>();
         for (int k = 0; k < nLoggers; ++k) {
-            m_loggers.add((Loggable) loggers.get(k));
+            loggerList.add((Loggable) loggers.get(k));
         }
 
         // determine logging mode
-        LOGMODE sMode = m_sMode.get();
+        LOGMODE sMode = modeInput.get();
         if (sMode.equals(LOGMODE.autodetect)) {
-            m_mode = COMPOUND_LOGGER;
-            if (nLoggers == 1 && m_loggers.get(0) instanceof Tree) {
-                m_mode = TREE_LOGGER;
+            mode = COMPOUND_LOGGER;
+            if (nLoggers == 1 && loggerList.get(0) instanceof Tree) {
+                mode = TREE_LOGGER;
             }
         } else if (sMode.equals(LOGMODE.tree)) {
-            m_mode = TREE_LOGGER;
+            mode = TREE_LOGGER;
         } else if (sMode.equals(LOGMODE.compound)) {
-            m_mode = COMPOUND_LOGGER;
+            mode = COMPOUND_LOGGER;
         } else {
             throw new Exception("Mode '" + sMode + "' is not supported. Choose one of " + LOGMODE.values());
         }
 
-        if (m_pEvery.get() != null) {
-            m_nEvery = m_pEvery.get();
+        if (everyInput.get() != null) {
+            every = everyInput.get();
         }
         
-        if (m_mode == COMPOUND_LOGGER) {
-        	switch (sortMode.get()) {
+        if (mode == COMPOUND_LOGGER) {
+        	switch (sortModeInput.get()) {
         	case none:
         		// nothing to do
        			break;
         	case alphabetic:
         		// sort loggers by id
-        		Collections.sort(m_loggers, new Comparator<Loggable>() {
+        		Collections.sort(loggerList, new Comparator<Loggable>() {
 					@Override
 					public int compare(Loggable o1, Loggable o2) {
-						String id1 = ((Plugin)o1).getID();
-						String id2 = ((Plugin)o1).getID();
+						String id1 = ((BEASTObject)o1).getID();
+						String id2 = ((BEASTObject)o1).getID();
 						if (id1 == null || id2 == null) {return 0;}
 						return id1.compareTo(id2);
 					}
@@ -159,8 +165,8 @@ public class Logger extends Plugin {
         		// This way, multi-partition analysis generated by BEAUti get all  
         		// related log items together in Tracer
         		List<String> ids = new ArrayList<String>();
-        		for (int i = 0; i < m_loggers.size(); i++) {
-        			String id = ((Plugin)m_loggers.get(i)).getID();
+        		for (int i = 0; i < loggerList.size(); i++) {
+        			String id = ((BEASTObject)loggerList.get(i)).getID();
         			if (id == null) {
         				id = "";
         			}
@@ -169,15 +175,15 @@ public class Logger extends Plugin {
         			}
         			ids.add(id);
         		}
-        		for (int i = 0; i < m_loggers.size(); i++) {
+        		for (int i = 0; i < loggerList.size(); i++) {
         			int k = 1;
         			String id = ids.get(i);
-        			for (int j = i + 1; j < m_loggers.size(); j++) {
+        			for (int j = i + 1; j < loggerList.size(); j++) {
         				if (ids.get(j).equals(id)) {
         					ids.remove(j);
         					ids.add(i + k, id);
-        					Loggable l = m_loggers.remove(j);
-        					m_loggers.add(i + k, l);
+        					Loggable l = loggerList.remove(j);
+        					loggerList.add(i + k, l);
         					k++;
         				}
         			}
@@ -192,11 +198,11 @@ public class Logger extends Plugin {
      * initialise log, open file (if necessary) and produce header of log
      */
     public void init() throws Exception {
-        boolean bNeedsHeader = openLogFile();
-        if (bNeedsHeader) {
-            if (m_pModelPlugin.get() != null) {
+        boolean needsHeader = openLogFile();
+        if (needsHeader) {
+            if (modelInput.get() != null) {
                 // print model at top of log
-                String sXML = new XMLProducer().modelToXML(m_pModelPlugin.get());
+                String sXML = new XMLProducer().modelToXML(modelInput.get());
                 sXML = "#" + sXML.replaceAll("\\n", "\n#");
                 m_out.println("#\n#model:\n#");
                 m_out.println(sXML);
@@ -211,13 +217,13 @@ public class Logger extends Plugin {
             }
             ByteArrayOutputStream rawbaos = new ByteArrayOutputStream();
             PrintStream out = new PrintStream(rawbaos);
-            if (m_mode == COMPOUND_LOGGER) {
+            if (mode == COMPOUND_LOGGER) {
                 out.print("Sample\t");
             }
-            for (Loggable m_logger : m_loggers) {
+            for (Loggable m_logger : loggerList) {
                 m_logger.init(out);
             }
-            if (sanitiseHeaders.get()) {
+            if (sanitiseHeadersInput.get()) {
             	m_out.print(sanitiseHeader(rawbaos.toString()));
             } else {
             	m_out.print(rawbaos.toString());
@@ -309,39 +315,40 @@ public class Logger extends Plugin {
 
 
 	boolean openLogFile() throws Exception {
-        String sFileName = m_pFileName.get();
+        String sFileName = fileNameInput.get();
         if (sFileName == null || sFileName.length() == 0) {
             m_out = System.out;
             return true;
         } else {
             if (sFileName.contains("$(tree)")) {
             	String treeName = "tree";
-            	for (Loggable logger : m_loggers) {
-            		if (logger instanceof Plugin) {
-            			String id = ((Plugin) logger).getID();
+            	for (Loggable logger : loggerList) {
+            		if (logger instanceof BEASTObject) {
+            			String id = ((BEASTObject) logger).getID();
             			if (id.indexOf(".t:") > 0) {
             				treeName = id.substring(id.indexOf(".t:") + 3); 
             			}
             		}
             	}
                 sFileName = sFileName.replace("$(tree)", treeName);
-                m_pFileName.setValue(sFileName, this);
+                fileNameInput.setValue(sFileName, this);
             }
             if (sFileName.contains("$(seed)")) {
                 sFileName = sFileName.replace("$(seed)", Randomizer.getSeed() + "");
-                m_pFileName.setValue(sFileName, this);
+                fileNameInput.setValue(sFileName, this);
             }
             if (System.getProperty("file.name.prefix") != null) {
                 sFileName = System.getProperty("file.name.prefix") + "/" + sFileName;
             }
             switch (FILE_MODE) {
-                case FILE_ONLY_NEW:// only open file if the file does not already exists
-                case FILE_ONLY_NEW_OR_EXIT: {
+                case only_new:// only open file if the file does not already exists
+                case only_new_or_exit: {
                     File file = new File(sFileName);
                     if (file.exists()) {
-                        if (FILE_MODE == FILE_ONLY_NEW_OR_EXIT) {
-                            System.out.println("Trying to write file " + sFileName + " but the file already exists. Exiting now.");
-                            System.exit(0);
+                        if (FILE_MODE == LogFileMode.only_new_or_exit) {
+                            Log.err.println("Trying to write file " + sFileName + " but the file already exists. Exiting now.");
+                            throw new RuntimeException("Use overwrite or resume option, or remove the file");
+                            //System.exit(0);
                         }
                         // Check with user what to do next
                         System.out.println("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
@@ -358,7 +365,7 @@ public class Logger extends Plugin {
                     System.out.println("Writing file " + sFileName);
                     return true;
                 }
-                case FILE_OVERWRITE:// (over)write log file
+                case overwrite:// (over)write log file
                 {
                     String sMsg = "Writing";
                     if (new File(sFileName).exists()) {
@@ -368,11 +375,11 @@ public class Logger extends Plugin {
                     System.out.println(sMsg + " file " + sFileName);
                     return true;
                 }
-                case FILE_APPEND:// append log file, pick up SampleOffset by reading existing log
+                case resume:// append log file, pick up SampleOffset by reading existing log
                 {
                     File file = new File(sFileName);
                     if (file.exists()) {
-                        if (m_mode == COMPOUND_LOGGER) {
+                        if (mode == COMPOUND_LOGGER) {
                             // first find the sample nr offset
                             BufferedReader fin = new BufferedReader(new FileReader(sFileName));
                             String sStr = null;
@@ -381,10 +388,10 @@ public class Logger extends Plugin {
                             }
                             fin.close();
                             int nSampleOffset = Integer.parseInt(sStr.split("\\s")[0]);
-                            if (m_nSampleOffset > 0 && nSampleOffset != m_nSampleOffset) {
+                            if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
                                 throw new Exception("Error 400: Cannot resume: log files do not end in same sample number");
                             }
-                            m_nSampleOffset = nSampleOffset;
+                            sampleOffset = nSampleOffset;
                             // open the file for appending
                             FileOutputStream out2 = new FileOutputStream(sFileName, true);
                             m_out = new PrintStream(out2);
@@ -420,11 +427,11 @@ public class Logger extends Plugin {
                             }
                             final String sStr = sStrLast.split("\\s+")[1];
                             final int nSampleOffset = Integer.parseInt(sStr.substring(6));
-                            if (m_nSampleOffset > 0 && nSampleOffset != m_nSampleOffset) {
+                            if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
                                 treeFileBackup.renameTo(new File(sFileName));
                                 throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
                             }
-                            m_nSampleOffset = nSampleOffset;
+                            sampleOffset = nSampleOffset;
                             // open the file and write back all but the last line
                             FileOutputStream out2 = new FileOutputStream(sFileName);
                             m_out = new PrintStream(out2);
@@ -452,15 +459,15 @@ public class Logger extends Plugin {
      * * @param nSample
      */
     public void log(int nSample) {
-        if ((nSample < 0) || (nSample % m_nEvery > 0)) {
+        if ((nSample < 0) || (nSample % every > 0)) {
             return;
         }
-        if (m_nSampleOffset > 0) {
+        if (sampleOffset > 0) {
             if (nSample == 0) {
                 // don't need to duplicate the last line in the log
                 return;
             }
-            nSample += m_nSampleOffset;
+            nSample += sampleOffset;
         }
         ByteArrayOutputStream baos = null;
         PrintStream tmp = null;
@@ -469,10 +476,10 @@ public class Logger extends Plugin {
             baos = new ByteArrayOutputStream();
             m_out = new PrintStream(baos);
         }
-        if (m_mode == COMPOUND_LOGGER) {
+        if (mode == COMPOUND_LOGGER) {
             m_out.print((nSample) + "\t");
         }
-        for (Loggable m_logger : m_loggers) {
+        for (Loggable m_logger : loggerList) {
             m_logger.log(nSample, m_out);
         }
         if ( baos != null ) {
@@ -486,19 +493,19 @@ public class Logger extends Plugin {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            if (m_nStartLogTime < 0) {
-                if (nSample - m_nSampleOffset > 6000) {
-                    m_nStartLogTime++;
-                    if (m_nStartLogTime == 0) {
-                        m_nStartLogTime = System.currentTimeMillis();
-                        m_nStartSample = nSample;
+            if (startLogTime < 0) {
+                if (nSample - sampleOffset > 6000) {
+                    startLogTime++;
+                    if (startLogTime == 0) {
+                        startLogTime = System.currentTimeMillis();
+                        startSample = nSample;
                     }
                 }
                 m_out.print(" --");
             } else {
 
                 long nLogTime = System.currentTimeMillis();
-                int nSecondsPerMSamples = (int) ((nLogTime - m_nStartLogTime) * 1000.0 / (nSample - m_nStartSample + 1.0));
+                int nSecondsPerMSamples = (int) ((nLogTime - startLogTime) * 1000.0 / (nSample - startSample + 1.0));
                 String sTimePerMSamples =
                         (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
                                 (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
@@ -561,7 +568,7 @@ public class Logger extends Plugin {
      * stop logging, produce end of log message and close file (if necessary) *
      */
     public void close() {
-        for (Loggable m_logger : m_loggers) {
+        for (Loggable m_logger : loggerList) {
             m_logger.close(m_out);
         }
 
@@ -573,7 +580,7 @@ public class Logger extends Plugin {
 
 
     public static int getSampleOffset() {
-        return m_nSampleOffset;
+        return sampleOffset;
     }
 
 } // class Logger

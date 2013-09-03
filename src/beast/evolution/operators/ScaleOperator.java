@@ -36,30 +36,32 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
+
+
 @Description("Scales a parameter or a complete beast.tree (depending on which of the two is specified.")
 public class ScaleOperator extends Operator {
 
-    public final Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
+    public final Input<Tree> treeInput = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
 
-    public final Input<RealParameter> m_pParameter = new Input<RealParameter>("parameter", "if specified, this parameter is scaled",
-            Input.Validate.XOR, m_pTree);
+    public final Input<RealParameter> parameterInput = new Input<RealParameter>("parameter", "if specified, this parameter is scaled",
+            Input.Validate.XOR, treeInput);
 
-    public final Input<Double> m_pScaleFactor = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
-    public final Input<Boolean> m_pScaleAll =
+    public final Input<Double> scaleFactorInput = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
+    public final Input<Boolean> scaleAllInput =
             new Input<Boolean>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
                     false);
-    public final Input<Boolean> m_pScaleAllIndependently =
+    public final Input<Boolean> scaleAllIndependentlyInput =
             new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
                     "a different factor, otherwise a single factor is used", false);
 
-    public Input<Integer> m_pDegreesOfFreedom = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used when " +
+    public Input<Integer> degreesOfFreedomInput = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used when " +
             "scaleAllIndependently=false and scaleAll=true to override default in calcualation of Hasting ratio. " +
             "Ignored when less than 1, default 0.", 0);
-    public Input<BooleanParameter> m_indicator = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
+    public Input<BooleanParameter> ndicatorInput = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
             "of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
             "it is assumed all dimensions are allowed to be scaled.");
-    public Input<Boolean> m_pRootOnly = new Input<Boolean>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
-    public Input<Boolean> m_bOptimise = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
+    public Input<Boolean> rootOnlyInput = new Input<Boolean>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
+    public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
 
     /**
@@ -74,15 +76,15 @@ public class ScaleOperator extends Operator {
 
     @Override
     public void initAndValidate() throws Exception {
-        m_fScaleFactor = m_pScaleFactor.get();
-        m_bIsTreeScaler = (m_pTree.get() != null);
+        m_fScaleFactor = scaleFactorInput.get();
+        m_bIsTreeScaler = (treeInput.get() != null);
 
-        final BooleanParameter indicators = m_indicator.get();
+        final BooleanParameter indicators = ndicatorInput.get();
         if (indicators != null) {
             if (m_bIsTreeScaler) {
                 throw new Exception("indicator is specified which has no effect for scaling a tree");
             }
-            final int dataDim = m_pParameter.get().getDimension();
+            final int dataDim = parameterInput.get().getDimension();
             final int indsDim = indicators.getDimension();
             if (!(indsDim == dataDim || indsDim + 1 == dataDim)) {
                 throw new Exception("indicator dimension not compatible from parameter dimension");
@@ -116,8 +118,8 @@ public class ScaleOperator extends Operator {
             final double scale = getScaler();
 
             if (m_bIsTreeScaler) {
-                Tree tree = m_pTree.get(this);
-                if (m_pRootOnly.get()) {
+                Tree tree = treeInput.get(this);
+                if (rootOnlyInput.get()) {
                     Node root = tree.getRoot();
                     double fNewHeight = root.getHeight() * scale;
                     if (fNewHeight < Math.max(root.getLeft().getHeight(), root.getRight().getHeight())) {
@@ -133,11 +135,11 @@ public class ScaleOperator extends Operator {
             }
 
             // not a tree scaler, so scale a parameter
-            final boolean bScaleAll = m_pScaleAll.get();
-            final int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
-            final boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
+            final boolean bScaleAll = scaleAllInput.get();
+            final int nDegreesOfFreedom = degreesOfFreedomInput.get();
+            final boolean bScaleAllIndependently = scaleAllIndependentlyInput.get();
 
-            final RealParameter param = m_pParameter.get(this);
+            final RealParameter param = parameterInput.get(this);
 
             assert param.getLower() != null && param.getUpper() != null;
 
@@ -180,7 +182,7 @@ public class ScaleOperator extends Operator {
 
                 // which position to scale
                 final int index;
-                final BooleanParameter indicators = m_indicator.get();
+                final BooleanParameter indicators = ndicatorInput.get();
                 if (indicators != null) {
                     final int nDim = indicators.getDimension();
                     Boolean[] indicator = indicators.getValues();
@@ -246,7 +248,7 @@ public class ScaleOperator extends Operator {
      */
     @Override
     public void optimize(double logAlpha) {
-        if (m_bOptimise.get()) {
+        if (optimiseInput.get()) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
             m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);

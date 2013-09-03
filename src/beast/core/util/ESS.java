@@ -5,42 +5,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beast.core.Description;
-//import beast.core.Distribution;
+import beast.core.Function;
 import beast.core.Input;
-import beast.core.Valuable;
-import beast.core.Input.Validate;
 import beast.core.Loggable;
-import beast.core.Plugin;
-//import beast.core.parameter.RealParameter;
+import beast.core.BEASTObject;
+import beast.core.Input.Validate;
+
+
+//import beast.core.Distribution;
 
 @Description("Report effective sample size of a parameter or log values from a distribution. " +
         "This uses the same criterion as Tracer and assumes 10% burn in.")
-public class ESS extends Plugin implements Loggable {
-    public Input<Valuable> m_pParam =
-            new Input<Valuable>("arg", "value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
+public class ESS extends BEASTObject implements Loggable {
+    public Input<Function> functionInput =
+            new Input<Function>("arg", "value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
 
     /**
      * values from which the ESS is calculated *
      */
-    List<Double> m_trace;
+    List<Double> trace;
     /**
      * sum of trace, excluding burn-in *
      */
-    double m_fSum = 0;
+    double sum = 0;
     /**
      * keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  *
      */
-    List<Double> m_fSquareLaggedSums;
+    List<Double> squareLaggedSums;
 
     @Override
     public void initAndValidate() {
-        m_trace = new ArrayList<Double>();
-        m_fSquareLaggedSums = new ArrayList<Double>();
+        trace = new ArrayList<Double>();
+        squareLaggedSums = new ArrayList<Double>();
     }
 
     @Override
     public void init(PrintStream out) throws Exception {
-        final String sID = ((Plugin) m_pParam.get()).getID();
+        final String sID = ((BEASTObject) functionInput.get()).getID();
         out.print("ESS(" + sID + ")\t");
     }
 
@@ -64,52 +65,52 @@ public class ESS extends Plugin implements Loggable {
     @Override
     public void log(final int nSample, PrintStream out) {
 //		final Double fNewValue = (m_distribution == null? m_pParam.get().getValue() : m_distribution.getCurrentLogP());
-        final Double fNewValue = m_pParam.get().getArrayValue();
-        m_trace.add(fNewValue);
-        m_fSum += fNewValue;
+        final Double fNewValue = functionInput.get().getArrayValue();
+        trace.add(fNewValue);
+        sum += fNewValue;
 
-        final int nTotalSamples = m_trace.size();
+        final int nTotalSamples = trace.size();
 
         // take 10% burn in
         final int iStart = nTotalSamples / 10;
         if (iStart != ((nTotalSamples - 1) / 10)) {
             // compensate for 10% burnin
-            m_fSum -= m_trace.get((nTotalSamples - 1) / 10);
+            sum -= trace.get((nTotalSamples - 1) / 10);
         }
         final int nSamples = nTotalSamples - iStart;
         final int nMaxLag = Math.min(nSamples, MAX_LAG);
 
         // calculate mean
-        final double fMean = m_fSum / nSamples;
+        final double fMean = sum / nSamples;
 
         if (iStart != ((nTotalSamples - 1) / 10)) {
             // compensate for 10% burnin
             int iTrace = ((nTotalSamples - 1) / 10);
-            for (int iLag = 0; iLag < m_fSquareLaggedSums.size(); iLag++) {
-                m_fSquareLaggedSums.set(iLag, m_fSquareLaggedSums.get(iLag) - m_trace.get(iTrace) * m_trace.get(iTrace + iLag));
+            for (int iLag = 0; iLag < squareLaggedSums.size(); iLag++) {
+                squareLaggedSums.set(iLag, squareLaggedSums.get(iLag) - trace.get(iTrace) * trace.get(iTrace + iLag));
             }
         }
 
-        while (m_fSquareLaggedSums.size() < nMaxLag) {
-            m_fSquareLaggedSums.add(0.0);
+        while (squareLaggedSums.size() < nMaxLag) {
+            squareLaggedSums.add(0.0);
         }
 
         // calculate auto correlation for selected lag times
         double[] fAutoCorrelation = new double[nMaxLag];
         // fSum1 = \sum_{iStart ... nTotalSamples-iLag-1} trace
-        double fSum1 = m_fSum;
+        double fSum1 = sum;
         // fSum1 = \sum_{iStart+iLag ... nTotalSamples-1} trace
-        double fSum2 = m_fSum;
+        double fSum2 = sum;
         for (int iLag = 0; iLag < nMaxLag; iLag++) {
-            m_fSquareLaggedSums.set(iLag, m_fSquareLaggedSums.get(iLag) + m_trace.get(nTotalSamples - iLag - 1) * m_trace.get(nTotalSamples - 1));
+            squareLaggedSums.set(iLag, squareLaggedSums.get(iLag) + trace.get(nTotalSamples - iLag - 1) * trace.get(nTotalSamples - 1));
             // The following line is the same approximation as in Tracer 
             // (valid since fMean *(nSamples - iLag), fSum1, and fSum2 are approximately the same)
             // though a more accurate estimate would be
             // fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - fSum1 * fSum2
-            fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - (fSum1 + fSum2) * fMean + fMean * fMean * (nSamples - iLag);
+            fAutoCorrelation[iLag] = squareLaggedSums.get(iLag) - (fSum1 + fSum2) * fMean + fMean * fMean * (nSamples - iLag);
             fAutoCorrelation[iLag] /= ((double) (nSamples - iLag));
-            fSum1 -= m_trace.get(nTotalSamples - 1 - iLag);
-            fSum2 -= m_trace.get(iStart + iLag);
+            fSum1 -= trace.get(nTotalSamples - 1 - iLag);
+            fSum2 -= trace.get(iStart + iLag);
         }
 
         double integralOfACFunctionTimes2 = 0.0;

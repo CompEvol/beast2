@@ -186,7 +186,7 @@ public class LogFileTraces {
         } else if (stepSize < 0) {
             stepSize = stateNumber - firstState;
         } else {
-            long step = stateNumber - lastState;
+        	long step = stateNumber - lastState;
             if (step != stepSize) {
                 return false;
             }
@@ -196,7 +196,7 @@ public class LogFileTraces {
     }
 
     public TraceStatistics analyseTrace(int index) {
-        int start = (int) (getBurnIn() / getStepSize());
+    	int start = (int) (getBurnIn() / getStepSize());
 
         List<Double> values = valuesList.get(index).subList(start, valuesList.get(index).size());
         double[] doubleValues = new double[values.size()];

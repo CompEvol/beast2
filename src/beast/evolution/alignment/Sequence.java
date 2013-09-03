@@ -24,18 +24,20 @@
 */
 package beast.evolution.alignment;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Plugin;
-import beast.evolution.datatype.DataType;
 
 import java.util.List;
 
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.BEASTObject;
+import beast.evolution.datatype.DataType;
+
+
 @Description("Single sequence in an alignment.")
-public class Sequence extends Plugin {
-    public Input<Integer> m_nTotalCount = new Input<Integer>("totalcount", "number of lineages for this species");
-    public Input<String> m_sTaxon = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
-    public Input<String> m_sData = new Input<String>("value",
+public class Sequence extends BEASTObject {
+    public Input<Integer> totalCountInput = new Input<Integer>("totalcount", "number of lineages for this species");
+    public Input<String> taxonInput = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
+    public Input<String> dataInput = new Input<String>("value",
             "sequence data, either encoded as a string or as comma separated list of integers." +
                     "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
 
@@ -50,8 +52,8 @@ public class Sequence extends Plugin {
      * @throws Exception
      */
     public Sequence(String taxon, String sequence) throws Exception {
-        m_sTaxon.setValue(taxon, this);
-        m_sData.setValue(sequence, this);
+        taxonInput.setValue(taxon, this);
+        dataInput.setValue(sequence, this);
         initAndValidate();
     }
 
@@ -61,24 +63,24 @@ public class Sequence extends Plugin {
     } // initAndValidate
 
     public List<Integer> getSequence(DataType dataType) throws Exception {
-        String sData = m_sData.get();
+        String data = dataInput.get();
         // remove spaces
-        sData = sData.replaceAll("\\s", "");
-        List<Integer> sequence = dataType.string2state(sData);
+        data = data.replaceAll("\\s", "");
+        List<Integer> sequence = dataType.string2state(data);
 
-        if (m_nTotalCount.get() == null) {
+        if (totalCountInput.get() == null) {
             // derive default from char-map
-            m_nTotalCount.setValue(dataType.getStateCount(), this);
+            totalCountInput.setValue(dataType.getStateCount(), this);
         }
         return sequence;
     }
 
-    int mapCharToData(String sDataMap, char c) {
-        int i = sDataMap.indexOf(c);
+    int mapCharToData(String dataMap, char c) {
+        int i = dataMap.indexOf(c);
         if (i >= 0) {
             return i;
         }
-        return sDataMap.length();
+        return dataMap.length();
     } // mapCharToData
 
 } // class Sequence

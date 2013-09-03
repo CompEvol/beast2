@@ -26,16 +26,16 @@ package beast.evolution.operators;
 
 
 import beast.core.Description;
-
 import beast.core.Input;
-import beast.evolution.tree.Node;
 import beast.core.Operator;
-import beast.evolution.tree.Tree;
 import beast.core.Input.Validate;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
+
 
 @Description("This operator changes a beast.tree.")
 abstract public class TreeOperator extends Operator {
-    public Input<Tree> m_tree = new Input<Tree>("tree", "beast.tree on which this operation is performed", Validate.REQUIRED);
+    public Input<Tree> treeInput = new Input<Tree>("tree", "beast.tree on which this operation is performed", Validate.REQUIRED);
 
 
     /**

@@ -25,14 +25,16 @@
 
 package test.beast.beast2vs1.trace;
 
-import beast.core.*;
-import beast.core.Input.Validate;
-import beast.core.Runnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import beast.core.*;
+import beast.core.Input.Validate;
+import beast.core.Runnable;
+
 
 @Description("Log Analyser: analyse BEAST log and provide statistics result including mean, min, max, median, standard deviation, " +
         "mean squared error, variance, ESS, hpd lower, hpd upper, cpd lower, cpd upper, standard error of mean, auto correlation time " +

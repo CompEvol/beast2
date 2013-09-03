@@ -14,7 +14,9 @@ import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
+
+
 
 /**
  * panel making up each of the tabs in Beauti *
@@ -181,7 +183,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         	// this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
         	return;
         }
-        for (Plugin partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
+        for (BEASTObject partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
             String sPartition = partition.getID();
             sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
             listModel.addElement(sPartition);
@@ -247,7 +249,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //		g_currentPanel = this;
     }
 
-    void refreshInputPanel(Plugin plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
+    void refreshInputPanel(BEASTObject plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
         if (centralComponent != null) {
             remove(centralComponent);
         }
@@ -285,7 +287,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     void refreshInputPanel() throws Exception {
     	doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
-        Plugin plugin = config;
+        BEASTObject plugin = config;
         Input<?> input = config.resolveInput(doc, iPartition);
 
         boolean bAddButtons = config.addButtons();

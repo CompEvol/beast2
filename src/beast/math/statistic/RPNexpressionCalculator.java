@@ -1,8 +1,10 @@
 package beast.math.statistic;
 
-import beast.core.Description;
 
 import java.util.Stack;
+
+import beast.core.Description;
+
 
 /**
  * Simple RPN expression evaluator.

@@ -25,11 +25,13 @@
 package beast.app;
 
 
-import beast.util.AddOnManager;
-import beast.util.Randomizer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import beast.util.AddOnManager;
+import beast.util.Randomizer;
+
 
 import java.awt.*;
 import java.net.URL;

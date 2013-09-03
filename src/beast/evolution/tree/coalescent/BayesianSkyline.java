@@ -1,11 +1,17 @@
 package beast.evolution.tree.coalescent;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 import beast.core.Description;
 import beast.core.Distribution;
+import beast.core.Function;
 import beast.core.Input;
-import beast.core.Plugin;
 import beast.core.State;
-import beast.core.Valuable;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.speciation.SpeciesTreeDistribution;
@@ -13,10 +19,6 @@ import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.Binomial;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 
 /**
@@ -26,7 +28,7 @@ import java.util.Random;
 public class BayesianSkyline extends TreeDistribution {
 //public class BayesianSkyline extends PopulationFunction.Abstract {
 
-    public Input<Valuable> popSizeParamInput = new Input<Valuable>("popSizes", "present-day population size. "
+    public Input<Function> popSizeParamInput = new Input<Function>("popSizes", "present-day population size. "
             + "If time units are set to Units.EXPECTED_SUBSTITUTIONS then"
             + "the N0 parameter will be interpreted as N0 * mu. "
             + "Also note that if you are dealing with a diploid population " + "N0 will be out by a factor of 2.",
@@ -38,7 +40,7 @@ public class BayesianSkyline extends TreeDistribution {
 //	public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals",
 //			"The intervals of the tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
 
-    Valuable popSizes;
+    Function popSizes;
     IntegerParameter groupSizes;
     Tree tree;
     TreeIntervals intervals;
@@ -64,15 +66,15 @@ public class BayesianSkyline extends TreeDistribution {
     // }
 
     public void initAndValidate() throws Exception {
-        if (m_tree.get() != null) {
+        if (treeInput.get() != null) {
             throw new Exception("only tree intervals (not tree) should not be specified");
         }
-        intervals = treeIntervals.get();
+        intervals = treeIntervalsInput.get();
         groupSizes = groupSizeParamInput.get();
         popSizes = popSizeParamInput.get();
 
         // make sure that the sum of groupsizes == number of coalescent events
-        int events = intervals.m_tree.get().getInternalNodeCount();
+        int events = intervals.treeInput.get().getInternalNodeCount();
         if (groupSizes.getDimension() > events) {
             throw new IllegalArgumentException("There are more groups than coalescent nodes in the tree.");
         }
@@ -160,7 +162,7 @@ public class BayesianSkyline extends TreeDistribution {
     public List<String> getParameterIds() {
 
         List<String> paramIDs = new ArrayList<String>();
-        paramIDs.add(((Plugin) popSizes).getID());
+        paramIDs.add(((BEASTObject) popSizes).getID());
         paramIDs.add(groupSizes.getID());
 
         return paramIDs;

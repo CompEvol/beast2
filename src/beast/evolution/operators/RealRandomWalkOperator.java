@@ -4,10 +4,12 @@ import java.text.DecimalFormat;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.Operator;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
+
+
 
 
 @Description("A random walk operator that selects a random dimension of the real parameter and perturbs the value a " +
@@ -21,11 +23,11 @@ public class RealRandomWalkOperator extends Operator {
             new Input<Boolean>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
 
     double windowSize = 1;
-    boolean m_bUseGaussian;
+    boolean useGaussian;
 
     public void initAndValidate() {
         windowSize = windowSizeInput.get();
-        m_bUseGaussian = useGaussianInput.get();
+        useGaussian = useGaussianInput.get();
     }
 
     /**
@@ -40,7 +42,7 @@ public class RealRandomWalkOperator extends Operator {
         int i = Randomizer.nextInt(param.getDimension());
         double value = param.getValue(i);
         double newValue = value;
-        if (m_bUseGaussian) {
+        if (useGaussian) {
             newValue += Randomizer.nextGaussian() * windowSize;
         } else {
             newValue += Randomizer.nextDouble() * 2 * windowSize - windowSize;

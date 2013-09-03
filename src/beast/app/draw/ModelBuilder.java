@@ -25,16 +25,18 @@
 package beast.app.draw;
 
 
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+
 import beast.app.util.Utils;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.alignment.Sequence;
 import beast.util.AddOnManager;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 
 //import com.itextpdf.awt.PdfGraphics2D;
 //import com.itextpdf.text.pdf.PdfContentByte;
@@ -1263,7 +1265,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
     } // init
 
-    boolean needsDrawing(Plugin plugin) {
+    boolean needsDrawing(BEASTObject plugin) {
         if (plugin == null) {
             return true;
         }
@@ -1290,7 +1292,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 shape.m_bNeedsDrawing = true;
             }
             if (shape instanceof PluginShape) {
-                Plugin plugin = ((PluginShape) shape).m_plugin;
+                BEASTObject plugin = ((PluginShape) shape).m_plugin;
                 if (needsDrawing(plugin)) {
                     shape.m_bNeedsDrawing = true;
                 }
@@ -1634,7 +1636,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 // resolve the associated input
                                 InputShape ellipse = (InputShape) shape;
                                 String sInput = ellipse.getInputName();
-                                Plugin plugin = ellipse.getPlugin();
+                                BEASTObject plugin = ellipse.getPlugin();
                                 if (plugin.isPrimitive(sInput)) {
                                     String sValue = "";
                                     if (plugin.getInputValue(sInput) != null) {
@@ -1725,9 +1727,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     public void actionPerformed(ActionEvent ae) {
                         Shape shape = m_Selection.getSingleSelectionShape();
                         if (shape instanceof PluginShape) {
-                            Plugin plugin = ((PluginShape) shape).m_plugin;
+                            BEASTObject plugin = ((PluginShape) shape).m_plugin;
 
-                            List<Plugin> plugins = new ArrayList<Plugin>();
+                            List<BEASTObject> plugins = new ArrayList<BEASTObject>();
                             for (Shape shape2 : m_doc.m_objects) {
                                 if (shape2 instanceof PluginShape) {
                                     plugins.add(((PluginShape) shape2).m_plugin);
@@ -1738,7 +1740,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 // add newly created Plug-ins
                                 int nNewShapes = 0;
                                 if (plugins.size() < PluginPanel.g_plugins.size()) {
-                                    for (Plugin plugin2 : PluginPanel.g_plugins.values()) {
+                                    for (BEASTObject plugin2 : PluginPanel.g_plugins.values()) {
                                         if (!plugins.contains(plugin2)) {
                                             try {
                                                 nNewShapes++;
@@ -1770,7 +1772,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 saveAsItem.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
                         Shape shape = m_Selection.getSingleSelectionShape();
-                        Plugin plugin = ((PluginShape) shape).m_plugin;
+                        BEASTObject plugin = ((PluginShape) shape).m_plugin;
                         JFileChooser fc = new JFileChooser(m_sDir);
                         fc.addChoosableFileFilter(ef1);
                         fc.setDialogTitle("Save Plugin As");

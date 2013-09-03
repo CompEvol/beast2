@@ -23,7 +23,7 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
@@ -32,6 +32,8 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
+
+
 
 public class SiteModelInputEditor extends PluginInputEditor {
     private static final long serialVersionUID = 1L;
@@ -56,7 +58,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
     }
     
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr,
+    public void init(Input<?> input, BEASTObject plugin, int itemNr,
     		ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean mutation rate");
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
@@ -126,7 +128,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 			public void validateInput() {
         		super.validateInput();
             	SiteModel sitemodel = (SiteModel) m_plugin; 
-                if (sitemodel.gammaCategoryCount.get() < 2 && ((RealParameter)sitemodel.shapeParameterInput.get()).m_bIsEstimated.get()) {
+                if (sitemodel.gammaCategoryCount.get() < 2 && ((RealParameter)sitemodel.shapeParameterInput.get()).isEstimatedInput.get()) {
                 	m_validateLabel.m_circleColor = Color.orange;
                 	m_validateLabel.setToolTipText("shape parameter is estimated, but not used");
                 	m_validateLabel.setVisible(true);
@@ -170,7 +172,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
 
     public InputEditor createShapeEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
-        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, (Plugin) m_input.get(), doc);
+        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, (BEASTObject) m_input.get(), doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
@@ -183,12 +185,12 @@ public class SiteModelInputEditor extends PluginInputEditor {
 			@Override
             public void validateInput() {
 				RealParameter p = (RealParameter) m_input.get();
-				if (p.m_bIsEstimated.get() && Double.parseDouble(p.m_pValues.get()) <= 0.0) {
+				if (p.isEstimatedInput.get() && Double.parseDouble(p.valuesInput.get()) <= 0.0) {
                     m_validateLabel.setVisible(true);
                     m_validateLabel.setToolTipText("<html><p>Proportion invariant should be non-zero when estimating</p></html>");
                     return;
 				}
-				if (Double.parseDouble(p.m_pValues.get()) < 0.0 || Double.parseDouble(p.m_pValues.get()) >= 1.0) {
+				if (Double.parseDouble(p.valuesInput.get()) < 0.0 || Double.parseDouble(p.valuesInput.get()) >= 1.0) {
                     m_validateLabel.setVisible(true);
                     m_validateLabel.setToolTipText("<html><p>Proportion invariant should be from 0 to 1 (exclusive 1)</p></html>");
                     return;
@@ -196,7 +198,7 @@ public class SiteModelInputEditor extends PluginInputEditor {
             	super.validateInput();
             }
         };
-        inVarEditor.init(input, (Plugin) m_input.get(), -1, ExpandOption.FALSE, true);
+        inVarEditor.init(input, (BEASTObject) m_input.get(), -1, ExpandOption.FALSE, true);
         inVarEditor.addValidationListener(this);
         return inVarEditor;
     }
@@ -214,17 +216,17 @@ public class SiteModelInputEditor extends PluginInputEditor {
 		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
 			for (Distribution d : likelihood.pDistributions.get()) {
 				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
-	    		Alignment data = treelikelihood.m_data.get(); 
+	    		Alignment data = treelikelihood.dataInput.get(); 
 	    		int weight = data.getSiteCount();
-	    		if (treelikelihood.m_pSiteModel.get() instanceof SiteModel) {
-		    		SiteModel siteModel = (SiteModel) treelikelihood.m_pSiteModel.get();
+	    		if (treelikelihood.siteModelInput.get() instanceof SiteModel) {
+		    		SiteModel siteModel = (SiteModel) treelikelihood.siteModelInput.get();
 		    		RealParameter mutationRate = siteModel.muParameterInput.get();
 		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
-		    		if (mutationRate.m_bIsEstimated.get()) {
+		    		if (mutationRate.isEstimatedInput.get()) {
 		    			if (commonClockRate < 0) {
-		    				commonClockRate = Double.parseDouble(mutationRate.m_pValues.get());
+		    				commonClockRate = Double.parseDouble(mutationRate.valuesInput.get());
 		    			} else {
-		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.m_pValues.get())) > 1e-10) {
+		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.valuesInput.get())) > 1e-10) {
 //		    					bAllClocksAreEqual = false;
 		    				}
 		    			}
@@ -236,8 +238,8 @@ public class SiteModelInputEditor extends PluginInputEditor {
 
 	    	IntegerParameter weightParameter = new IntegerParameter(weights);
 			weightParameter.setID("weightparameter");
-			weightParameter.m_bIsEstimated.setValue(false, weightParameter);
-	    	operator.input_parameterWeights.setValue(weightParameter, operator);
+			weightParameter.isEstimatedInput.setValue(false, weightParameter);
+	    	operator.parameterWeightsInput.setValue(weightParameter, operator);
 		} catch (Exception e) {
 			
 		}
@@ -255,15 +257,15 @@ public class SiteModelInputEditor extends PluginInputEditor {
     		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
     			for (Distribution d : likelihood.pDistributions.get()) {
     				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
-    	    		if (treelikelihood.m_pSiteModel.get() instanceof SiteModel) {
-    		    		SiteModel siteModel = (SiteModel) treelikelihood.m_pSiteModel.get();
+    	    		if (treelikelihood.siteModelInput.get() instanceof SiteModel) {
+    		    		SiteModel siteModel = (SiteModel) treelikelihood.siteModelInput.get();
     		    		RealParameter mutationRate = siteModel.muParameterInput.get();
     		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
-    		    		if (mutationRate.m_bIsEstimated.get()) {
+    		    		if (mutationRate.isEstimatedInput.get()) {
     		    			if (commonClockRate < 0) {
-    		    				commonClockRate = Double.parseDouble(mutationRate.m_pValues.get());
+    		    				commonClockRate = Double.parseDouble(mutationRate.valuesInput.get());
     		    			} else {
-    		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.m_pValues.get())) > 1e-10) {
+    		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.valuesInput.get())) > 1e-10) {
     		    					bAllClocksAreEqual = false;
     		    				}
     		    			}

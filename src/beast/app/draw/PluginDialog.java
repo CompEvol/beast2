@@ -1,14 +1,17 @@
 package beast.app.draw;
 
-import beast.app.beauti.BeautiDoc;
-import beast.core.Input;
-import beast.core.MCMC;
-import beast.core.Plugin;
-import beast.util.XMLProducer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+
+import beast.app.beauti.BeautiDoc;
+import beast.core.Input;
+import beast.core.MCMC;
+import beast.core.BEASTObject;
+import beast.util.XMLProducer;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,11 +50,11 @@ public class PluginDialog extends JDialog {
         this.doc = doc;
     }
 
-    public PluginDialog(Plugin plugin, Class<? extends Plugin> aClass, List<Plugin> plugins, BeautiDoc doc) {
+    public PluginDialog(BEASTObject plugin, Class<? extends BEASTObject> aClass, List<BEASTObject> plugins, BeautiDoc doc) {
         this(new PluginPanel(plugin, aClass, plugins, doc), doc);
     }
 
-    public PluginDialog(Plugin plugin, Class<?> type, BeautiDoc doc) {
+    public PluginDialog(BEASTObject plugin, Class<?> type, BeautiDoc doc) {
         this(new PluginPanel(plugin, type, doc), doc);
     }
 
@@ -83,7 +86,7 @@ public class PluginDialog extends JDialog {
     }
     
     /* to be called when OK is pressed **/
-    public void accept(Plugin plugin, BeautiDoc doc) {
+    public void accept(BEASTObject plugin, BeautiDoc doc) {
         try {
             for (Input<?> input : m_panel.m_plugin.listInputs()) {
                 plugin.setInputValue(input.getName(), input.get());
@@ -172,12 +175,12 @@ public class PluginDialog extends JDialog {
                 } finally {
                     scanner.close();
                 }
-                Plugin plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
+                BEASTObject plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
                 dlg = new PluginDialog(new PluginPanel(plugin, plugin.getClass(), null), null);
             } else if (args.length == 1) {
-                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null), null);
+                dlg = new PluginDialog(new PluginPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null), null);
             } else if (args.length == 2) {
-                dlg = new PluginDialog(new PluginPanel((Plugin) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null), null);
+                dlg = new PluginDialog(new PluginPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null), null);
             } else {
                 throw new Exception("Incorrect number of arguments");
             }
@@ -192,7 +195,7 @@ public class PluginDialog extends JDialog {
         }
         dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         if (dlg.showDialog()) {
-            Plugin plugin = dlg.m_panel.m_plugin;
+            BEASTObject plugin = dlg.m_panel.m_plugin;
             String sXML = new XMLProducer().modelToXML(plugin);
             System.out.println(sXML);
         }

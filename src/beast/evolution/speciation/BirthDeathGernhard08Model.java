@@ -26,6 +26,9 @@
 package beast.evolution.speciation;
 
 
+
+import java.util.Arrays;
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -33,7 +36,6 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
-import java.util.Arrays;
 
 import static org.apache.commons.math.special.Gamma.logGamma;
 
@@ -56,18 +58,18 @@ public class BirthDeathGernhard08Model extends YuleModel {
 
     final static String[] TYPES = {"unscaled", "timesonly", "oriented", "labeled"};
 
-    public Input<String> m_pType =
+    public Input<String> typeInput =
             new Input<String>("type", "tree type, should be one of " + Arrays.toString(TYPES) + " (default unscaled)",
                     "unscaled", TYPES);
-    public Input<RealParameter> relativeDeathRateParameter =
+    public Input<RealParameter> relativeDeathRateParameterInput =
             new Input<RealParameter>("relativeDeathRate", "relative death rate parameter, mu/lambda in birth death model", Validate.REQUIRED);
-    public Input<RealParameter> sampleProbability =
+    public Input<RealParameter> sampleProbabilityInput =
             new Input<RealParameter>("sampleProbability", "sample probability, rho in birth/death model");
 
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-        final String sType = m_pType.get().toLowerCase();
+        final String sType = typeInput.get().toLowerCase();
         if (sType.equals("unscaled")) {
             type = TreeType.UNSCALED;
         } else if (sType.equals("timesonly")) {
@@ -83,8 +85,8 @@ public class BirthDeathGernhard08Model extends YuleModel {
 
     @Override
     public double calculateTreeLogLikelihood(final Tree tree) {
-        final double a = relativeDeathRateParameter.get().getValue();
-        final double rho = (sampleProbability.get() == null ? 1.0 : sampleProbability.get().getValue());
+        final double a = relativeDeathRateParameterInput.get().getValue();
+        final double rho = (sampleProbabilityInput.get() == null ? 1.0 : sampleProbabilityInput.get().getValue());
         return calculateTreeLogLikelihood(tree, rho, a);
     }
 
@@ -127,6 +129,6 @@ public class BirthDeathGernhard08Model extends YuleModel {
 
     @Override
     protected boolean requiresRecalculation() {
-        return super.requiresRecalculation() || relativeDeathRateParameter.get().somethingIsDirty() || sampleProbability.get().somethingIsDirty();
+        return super.requiresRecalculation() || relativeDeathRateParameterInput.get().somethingIsDirty() || sampleProbabilityInput.get().somethingIsDirty();
     }
 } // class BirthDeathGernhard08Model

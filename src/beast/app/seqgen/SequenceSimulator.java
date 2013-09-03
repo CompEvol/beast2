@@ -8,8 +8,8 @@ import java.util.List;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
-import beast.core.Plugin;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.branchratemodel.BranchRateModel;
@@ -21,6 +21,8 @@ import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
+
+
 
 /**
  * @author remco@cs.waikato.ac.nz
@@ -123,8 +125,8 @@ public class SequenceSimulator extends beast.core.Runnable {
 //    		}
 //			sSeq.append(seq[m_sequenceLength-1] + "");
 //    	}
-        List<Sequence> taxa = m_data.get().m_pSequences.get();
-        String sTaxon = taxa.get(node.getNr()).m_sTaxon.get();
+        List<Sequence> taxa = m_data.get().sequenceInput.get();
+        String sTaxon = taxa.get(node.getNr()).taxonInput.get();
         return new Sequence(sTaxon, sSeq.toString());
     } // intArray2Sequence
 
@@ -186,7 +188,7 @@ public class SequenceSimulator extends beast.core.Runnable {
             }
 
             if (child.isLeaf()) {
-                alignment.m_pSequences.setValue(intArray2Sequence(seq, child), alignment);
+                alignment.sequenceInput.setValue(intArray2Sequence(seq, child), alignment);
             } else {
                 traverse(child, seq, category, alignment);
             }
@@ -226,8 +228,8 @@ public class SequenceSimulator extends beast.core.Runnable {
     /**
      * find a treelikelihood object among the plug-ins by recursively inspecting plug-ins *
      */
-    static TreeLikelihood getTreeLikelihood(Plugin plugin) throws Exception {
-        for (Plugin plugin2 : plugin.listActivePlugins()) {
+    static TreeLikelihood getTreeLikelihood(BEASTObject plugin) throws Exception {
+        for (BEASTObject plugin2 : plugin.listActivePlugins()) {
             if (plugin2 instanceof TreeLikelihood) {
                 return (TreeLikelihood) plugin2;
             } else {
@@ -278,7 +280,7 @@ public class SequenceSimulator extends beast.core.Runnable {
 
             // parse the xml
             XMLParser parser = new XMLParser();
-            Plugin plugin = parser.parseFragment(sXML, true);
+            BEASTObject plugin = parser.parseFragment(sXML, true);
 
             // find relevant objects from the model
             TreeLikelihood treeLikelihood = getTreeLikelihood(plugin);
