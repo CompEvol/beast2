@@ -29,10 +29,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
     public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
-    public Input<Boolean> initialiseInput = new Input<Boolean>("initialise", "Whether to initilise rates by a heuristic instead of random (default false).", false);
+//    public Input<Boolean> initialiseInput = new Input<Boolean>("initialise", "Whether to initilise rates by a heuristic instead of random (default false).", false);
 
     RealParameter meanRate;
-    boolean initialise;
+//    boolean initialise;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -74,7 +74,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         } catch (RuntimeException e) {
 			// ignore
 		}
-        initialise = initialiseInput.get();
+//        initialise = initialiseInput.get();
     }
 
     public double getRateForBranch(Node node) {
@@ -139,10 +139,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
 
     private void prepare() {
-    	if (initialise) {
-    		initialise();
-    		initialise = false;
-    	}
+//    	if (initialise) {
+//    		initialise();
+//    		initialise = false;
+//    	}
         //System.out.println("prepare");
 
         categories = (IntegerParameter) categoryInput.get();
@@ -167,102 +167,103 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     }
 
     /** initialise rate categories by matching rates to tree using JC69 **/
-    private void initialise() {
-    	try {
-			for (BEASTObject output : outputs) {
-				if (output.getInput("data") != null && output.getInput("tree") != null) {
-					
-					// set up treelikelihood with Jukes Cantor no gamma, no inv, strict clock
-					Alignment data = (Alignment) output.getInput("data").get();
-					Tree tree = (Tree) output.getInput("tree").get();
-					TreeLikelihoodD likelihood = new TreeLikelihoodD();
-					SiteModel siteModel = new SiteModel();
-					JukesCantor substitutionModel = new JukesCantor();
-					substitutionModel.initAndValidate();
-					siteModel.initByName("substModel", substitutionModel);
-					likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
-					likelihood.calculateLogP();
-					
-					// calculate distances
-					Node [] nodes = tree.getNodesAsArray();
-					double [] distance = new double[nodes.length];
-					for (int i = 0; i < distance.length - 1; i++) {
-						double len = nodes[i].getLength();
-						double dist = likelihood.calcDistance(nodes[i]);
-						distance[i] = len / dist;
-					}
-					
-					// match category to distance
-					double min = distance[0], max = min;
-					for (int i = 1; i < distance.length - 1; i++) {
-						if (!Double.isNaN(distance[i]) && !Double.isInfinite(distance[i])) {
-							min = Math.min(min, distance[i]);
-							max = Math.max(max, distance[i]);
-						}
-					}
-					IntegerParameter categoriesParameter = categoryInput.get();
-					Integer[] categories = new Integer[categoriesParameter.getDimension()];
-					for (int i = 0; i < distance.length - 1; i++) {
-						if (!Double.isNaN(distance[i]) && !Double.isInfinite(distance[i])) {
-							categories[i] = (int)((distance.length - 2) * (distance[i]-min)/(max-min));
-						} else {
-							categories[i] = distance.length / 2;
-						}
-					}
-					IntegerParameter other = new IntegerParameter(categories);
-					other.setBounds(categoriesParameter.getLower(), categoriesParameter.getUpper());
-					categoriesParameter.assignFromWithoutID(other);
-				}
-			}
-    	} catch (Exception e) {
-			// ignore
-    		System.err.println("WARNING: UCRelaxedClock heuristic initialisation failed");
-		}
-	}
-
-    class TreeLikelihoodD extends TreeLikelihood {
-    
-    	double calcDistance(Node node) {
-    		int iNode = node.getNr();
-    		int patterncount = dataInput.get().getPatternCount();
-    		int statecount = dataInput.get().getDataType().getStateCount();
-            double [] fParentPartials = new double[patterncount * statecount];
-    		likelihoodCore.getNodePartials(node.getParent().getNr(), fParentPartials);
-    		if (node.isLeaf()) {
-        		// distance of leaf to its parent, ignores ambiguities
-    			int [] nStates = new int[patterncount ];
-        		likelihoodCore.getNodeStates(iNode, nStates);
-        		double distance = 0;
-        		for (int i = 0; i < patterncount; i++) {
-        			int k = nStates[i];
-        			double d = 0;
-        			for (int j = 0; j < statecount; j++) {
-        				if (j == k) {
-        					d += 1.0 - fParentPartials[i * statecount + j];
-        				} else {
-        					d += fParentPartials[i * statecount + j];
-        				}
-        			}
-        			distance += d * dataInput.get().getPatternWeight(i);
-        		}
-    			return distance;
-    		} else {
-        		// L1 distance of internal node partials to its parent partials
-                double [] fPartials = new double[fParentPartials.length];
-        		likelihoodCore.getNodePartials(iNode, fPartials);
-        		double distance = 0;
-        		for (int i = 0; i < patterncount; i++) {
-        			double d = 0;
-        			for (int j = 0; j < statecount; j++) {
-       					d += Math.abs(fPartials[i * statecount + j] - fParentPartials[i * statecount + j]);
-        			}
-        			distance += d * dataInput.get().getPatternWeight(i);
-        		}
-    			return distance;
-    		}
-    	}
-    	
-    }
+//    private void initialise() {
+//    	try {
+//			for (BEASTObject output : outputs) {
+//				if (output.getInput("data") != null && output.getInput("tree") != null) {
+//					
+//					// set up treelikelihood with Jukes Cantor no gamma, no inv, strict clock
+//					Alignment data = (Alignment) output.getInput("data").get();
+//					Tree tree = (Tree) output.getInput("tree").get();
+//					TreeLikelihoodD likelihood = new TreeLikelihoodD();
+//					SiteModel siteModel = new SiteModel();
+//					JukesCantor substitutionModel = new JukesCantor();
+//					substitutionModel.initAndValidate();
+//					siteModel.initByName("substModel", substitutionModel);
+//					likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
+//					likelihood.calculateLogP();
+//					
+//					// calculate distances
+//					Node [] nodes = tree.getNodesAsArray();
+//					double [] distance = new double[nodes.length];
+//					for (int i = 0; i < distance.length - 1; i++) {
+//						double len = nodes[i].getLength();
+//						double dist = likelihood.calcDistance(nodes[i]);
+//						distance[i] = len / dist;
+//					}
+//					
+//					// match category to distance
+//					double min = distance[0], max = min;
+//					for (int i = 1; i < distance.length - 1; i++) {
+//						if (!Double.isNaN(distance[i]) && !Double.isInfinite(distance[i])) {
+//							min = Math.min(min, distance[i]);
+//							max = Math.max(max, distance[i]);
+//						}
+//					}
+//					IntegerParameter categoriesParameter = categoryInput.get();
+//					Integer[] categories = new Integer[categoriesParameter.getDimension()];
+//					for (int i = 0; i < distance.length - 1; i++) {
+//						if (!Double.isNaN(distance[i]) && !Double.isInfinite(distance[i])) {
+//							categories[i] = (int)((distance.length - 2) * (distance[i]-min)/(max-min));
+//						} else {
+//							categories[i] = distance.length / 2;
+//						}
+//					}
+//					IntegerParameter other = new IntegerParameter(categories);
+//					other.setBounds(categoriesParameter.getLower(), categoriesParameter.getUpper());
+//					categoriesParameter.assignFromWithoutID(other);
+//				}
+//			}
+//    	} catch (Exception e) {
+//			// ignore
+//    		System.err.println("WARNING: UCRelaxedClock heuristic initialisation failed");
+//		}
+//	}
+//
+//    @Description("Treelikelihood used to guesstimate rates on branches by using the JC69 model on the data")
+//    class TreeLikelihoodD extends TreeLikelihood {
+//    
+//    	double calcDistance(Node node) {
+//    		int iNode = node.getNr();
+//    		int patterncount = dataInput.get().getPatternCount();
+//    		int statecount = dataInput.get().getDataType().getStateCount();
+//            double [] fParentPartials = new double[patterncount * statecount];
+//    		likelihoodCore.getNodePartials(node.getParent().getNr(), fParentPartials);
+//    		if (node.isLeaf()) {
+//        		// distance of leaf to its parent, ignores ambiguities
+//    			int [] nStates = new int[patterncount ];
+//        		likelihoodCore.getNodeStates(iNode, nStates);
+//        		double distance = 0;
+//        		for (int i = 0; i < patterncount; i++) {
+//        			int k = nStates[i];
+//        			double d = 0;
+//        			for (int j = 0; j < statecount; j++) {
+//        				if (j == k) {
+//        					d += 1.0 - fParentPartials[i * statecount + j];
+//        				} else {
+//        					d += fParentPartials[i * statecount + j];
+//        				}
+//        			}
+//        			distance += d * dataInput.get().getPatternWeight(i);
+//        		}
+//    			return distance;
+//    		} else {
+//        		// L1 distance of internal node partials to its parent partials
+//                double [] fPartials = new double[fParentPartials.length];
+//        		likelihoodCore.getNodePartials(iNode, fPartials);
+//        		double distance = 0;
+//        		for (int i = 0; i < patterncount; i++) {
+//        			double d = 0;
+//        			for (int j = 0; j < statecount; j++) {
+//       					d += Math.abs(fPartials[i * statecount + j] - fParentPartials[i * statecount + j]);
+//        			}
+//        			distance += d * dataInput.get().getPatternWeight(i);
+//        		}
+//    			return distance;
+//    		}
+//    	}
+//    	
+//    }
 
 
 	@Override
