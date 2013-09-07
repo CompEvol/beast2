@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import beast.app.draw.InputEditor;
-import beast.app.draw.PluginPanel;
+import beast.app.draw.BEASTObjectPanel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.BEASTObject;
@@ -111,7 +111,7 @@ public class BeautiPanelConfig extends BEASTObject {
         }
         inputs = new ArrayList<BEASTObject>();
         startInputs = new ArrayList<BEASTObject>();
-        PluginPanel.getID(this);
+        BEASTObjectPanel.getID(this);
     }
 
     /**

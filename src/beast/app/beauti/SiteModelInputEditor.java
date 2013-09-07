@@ -17,7 +17,7 @@ import javax.swing.event.DocumentListener;
 import beast.app.draw.InputEditor;
 import beast.app.draw.IntegerInputEditor;
 import beast.app.draw.ParameterInputEditor;
-import beast.app.draw.PluginInputEditor;
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.app.draw.SmallLabel;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -35,7 +35,7 @@ import beast.evolution.sitemodel.SiteModelInterface;
 
 
 
-public class SiteModelInputEditor extends PluginInputEditor {
+public class SiteModelInputEditor extends BEASTObjectInputEditor {
     private static final long serialVersionUID = 1L;
 
     IntegerInputEditor categoryCountEditor;

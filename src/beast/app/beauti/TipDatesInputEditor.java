@@ -26,7 +26,7 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import beast.app.draw.PluginInputEditor;
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.evolution.alignment.Taxon;
@@ -37,7 +37,7 @@ import beast.evolution.tree.Tree;
 
 
 
-public class TipDatesInputEditor extends PluginInputEditor {
+public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
 	public TipDatesInputEditor(BeautiDoc doc) {
 		super(doc);

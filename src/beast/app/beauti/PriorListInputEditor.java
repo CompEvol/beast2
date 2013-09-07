@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
-import beast.app.draw.PluginPanel;
+import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.SmallButton;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -263,7 +263,7 @@ public class PriorListInputEditor extends ListInputEditor {
                 return null;
             }
             taxonSet = dlg.taxonSet;
-            PluginPanel.addPluginToMap(taxonSet, doc);
+            BEASTObjectPanel.addPluginToMap(taxonSet, doc);
             prior.taxonsetInput.setValue(taxonSet, prior);
             prior.setID(taxonSet.getID() + ".prior");
             // this sets up the type

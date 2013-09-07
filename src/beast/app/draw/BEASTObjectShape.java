@@ -47,25 +47,25 @@ import beast.util.Randomizer;
 
 
 
-public class PluginShape extends Shape {
+public class BEASTObjectShape extends Shape {
     static Font g_PluginFont = new Font("arial", Font.PLAIN, 11);
     public beast.core.BEASTObject m_plugin;
     List<InputShape> m_inputs;
 
 
-    public PluginShape() {
+    public BEASTObjectShape() {
         super();
         m_fillcolor = new Color(Randomizer.nextInt(256), 128 + Randomizer.nextInt(128), Randomizer.nextInt(128));
     }
 
-    public PluginShape(BEASTObject plugin, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public BEASTObjectShape(BEASTObject plugin, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         super();
         m_plugin = plugin;
         m_fillcolor = new Color(Randomizer.nextInt(256), 128 + Randomizer.nextInt(128), Randomizer.nextInt(128));
         init(plugin.getClass().getName(), doc);
     }
 
-    public PluginShape(Node node, Document doc, boolean bReconstructPlugins) {
+    public BEASTObjectShape(Node node, Document doc, boolean bReconstructPlugins) {
         parse(node, doc, bReconstructPlugins);
     }
 

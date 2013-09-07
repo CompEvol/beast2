@@ -36,7 +36,7 @@ import java.util.List;
  * *
  */
 
-public class PluginPanel extends JPanel {
+public class BEASTObjectPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     /**
      * plug in to be edited *
@@ -97,7 +97,7 @@ public class PluginPanel extends JPanel {
     }
 
 
-    public PluginPanel(BEASTObject plugin, Class<?> _pluginClass, List<BEASTObject> plugins, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTObject plugin, Class<?> _pluginClass, List<BEASTObject> plugins, BeautiDoc doc) {
         //g_plugins = new HashMap<String, Plugin>();
         for (BEASTObject plugin2 : plugins) {
             String sID = getID(plugin2);
@@ -155,11 +155,11 @@ public class PluginPanel extends JPanel {
         registerPlugin(sID, plugin, doc);
     }
 
-    public PluginPanel(BEASTObject plugin, Class<?> _pluginClass, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTObject plugin, Class<?> _pluginClass, BeautiDoc doc) {
         this(plugin, _pluginClass, true, doc);
     }
 
-    public PluginPanel(BEASTObject plugin, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTObject plugin, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
         initPlugins(plugin, doc);
         init(plugin, _pluginClass, bShowHeader, doc);
     }
@@ -204,14 +204,14 @@ public class PluginPanel extends JPanel {
         Dimension dim = mainBox.getPreferredSize();
         setSize(dim.width + 10, dim.height + 30);
 
-        PluginPanel.m_position.x += 30;
-        PluginPanel.m_position.y += 30;
-        setLocation(PluginPanel.m_position);
+        BEASTObjectPanel.m_position.x += 30;
+        BEASTObjectPanel.m_position.y += 30;
+        setLocation(BEASTObjectPanel.m_position);
     } // c'tor
 
     public boolean getOK() {
-        PluginPanel.m_position.x -= 30;
-        PluginPanel.m_position.y -= 30;
+        BEASTObjectPanel.m_position.x -= 30;
+        BEASTObjectPanel.m_position.y -= 30;
         return m_bOK;
     }
 
@@ -445,10 +445,10 @@ public class PluginPanel extends JPanel {
      */
     public static void main(String[] args) {
         init();
-        PluginPanel pluginPanel = null;
+        BEASTObjectPanel pluginPanel = null;
         try {
             if (args.length == 0) {
-                pluginPanel = new PluginPanel(new MCMC(), Runnable.class, null);
+                pluginPanel = new BEASTObjectPanel(new MCMC(), Runnable.class, null);
             } else if (args[0].equals("-x")) {
                 StringBuilder text = new StringBuilder();
                 String NL = System.getProperty("line.separator");
@@ -461,17 +461,17 @@ public class PluginPanel extends JPanel {
                     scanner.close();
                 }
                 BEASTObject plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
-                pluginPanel = new PluginPanel(plugin, plugin.getClass(), null);
+                pluginPanel = new BEASTObjectPanel(plugin, plugin.getClass(), null);
             } else if (args.length == 1) {
-                pluginPanel = new PluginPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null);
+                pluginPanel = new BEASTObjectPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null);
             } else if (args.length == 2) {
-                pluginPanel = new PluginPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null);
+                pluginPanel = new BEASTObjectPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null);
             } else {
                 throw new Exception("Incorrect number of arguments");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Usage: " + PluginPanel.class.getName() + " [-x file ] [class [type]]\n" +
+            System.err.println("Usage: " + BEASTObjectPanel.class.getName() + " [-x file ] [class [type]]\n" +
                     "where [class] (optional, default MCMC) is a Plugin to edit\n" +
                     "and [type] (optional only if class is specified, default Runnable) the type of the Plugin.\n" +
                     "for example\n" +

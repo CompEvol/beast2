@@ -920,7 +920,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         try {
             AddOnManager.loadExternalJars();
             Utils.loadUIManager();
-            PluginPanel.init();
+            BEASTObjectPanel.init();
 
             BeautiDoc doc = new BeautiDoc();
             if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {

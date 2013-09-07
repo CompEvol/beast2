@@ -186,7 +186,7 @@ System.err.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");
         		inputClass2 = inputClass2.getSuperclass(); 
         	}
         	if (inputClass2 == null) {
-        		inputEditor = new PluginInputEditor(doc);
+        		inputEditor = new BEASTObjectInputEditor(doc);
         	} else {
 	            // handle Plugin-input with custom input editors
 	            String sInputEditor = inputEditorMap.get(inputClass2);
@@ -269,7 +269,7 @@ System.err.println(inputEditor.getClass().getName());
             sTabuList = new ArrayList<String>();
         }
         if (!doc.isExpertMode()) {
-            for (BEASTObject plugin : PluginPanel.listAscendants(parent, doc.pluginmap.values())) {
+            for (BEASTObject plugin : BEASTObjectPanel.listAscendants(parent, doc.pluginmap.values())) {
                 sTabuList.add(plugin.getID());
             }
         }

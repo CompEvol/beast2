@@ -28,7 +28,7 @@ import beast.math.distributions.Prior;
 
 
 
-public class ParameterInputEditor extends PluginInputEditor {
+public class ParameterInputEditor extends BEASTObjectInputEditor {
 	boolean isParametricDistributionParameter = false;
 	
     //public ParameterInputEditor() {}

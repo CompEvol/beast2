@@ -3,14 +3,14 @@ package beast.app.beauti;
 import javax.swing.Box;
 import javax.swing.JComponent;
 
-import beast.app.draw.PluginInputEditor;
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.evolution.speciation.SpeciesTreePrior;
 
 
 
-public class SpeciesTreePriorInputEditor extends PluginInputEditor {
+public class SpeciesTreePriorInputEditor extends BEASTObjectInputEditor {
 	private static final long serialVersionUID = 1L;
 
 	public SpeciesTreePriorInputEditor(BeautiDoc doc) {

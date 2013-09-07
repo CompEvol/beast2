@@ -134,8 +134,8 @@ public class Document {
      */
     void adjustInputs() {
         for (Shape shape : m_objects) {
-            if (shape instanceof PluginShape) {
-                ((PluginShape) shape).adjustInputs();
+            if (shape instanceof BEASTObjectShape) {
+                ((BEASTObjectShape) shape).adjustInputs();
             }
         }
     }
@@ -255,7 +255,7 @@ public class Document {
         return sID;
     }
 
-    void setPluginID(PluginShape shape) {
+    void setPluginID(BEASTObjectShape shape) {
         if (shape.m_plugin.getID() != null && shape.m_plugin.getID().length() > 0) {
             return;
         }
@@ -284,15 +284,15 @@ public class Document {
             if (shape instanceof Arrow) {
                 ((Arrow) shape).setID(getNewID(null));
             }
-            if (shape instanceof PluginShape) {
-                setPluginID((PluginShape) shape);
+            if (shape instanceof BEASTObjectShape) {
+                setPluginID((BEASTObjectShape) shape);
             }
         }
         m_objects.add(shape);
-        if (shape instanceof PluginShape) {
+        if (shape instanceof BEASTObjectShape) {
             List<Integer> iObjects = new ArrayList<Integer>();
             iObjects.add(m_objects.size() - 1);
-            checkForOtherPluginShapes(iObjects, (PluginShape) shape);
+            checkForOtherPluginShapes(iObjects, (BEASTObjectShape) shape);
             if (iObjects.size() == 1) {
                 addUndoAction(new PluginAction(m_objects.size() - 1, UndoAction.ADD_PLUGIN_ACTION));
             } else {
@@ -303,14 +303,14 @@ public class Document {
         }
     } // addNewShape
 
-    void checkForOtherPluginShapes(List<Integer> iObjects, PluginShape shape) {
+    void checkForOtherPluginShapes(List<Integer> iObjects, BEASTObjectShape shape) {
         // check whether we need to create any input plugins
         try {
-            List<Input<?>> inputs = ((PluginShape) shape).m_plugin.listInputs();
+            List<Input<?>> inputs = ((BEASTObjectShape) shape).m_plugin.listInputs();
             for (Input<?> input : inputs) {
                 if (input.get() instanceof BEASTObject) {
                     BEASTObject plugin = (BEASTObject) input.get();
-                    PluginShape pluginShape = new PluginShape(plugin, this);
+                    BEASTObjectShape pluginShape = new BEASTObjectShape(plugin, this);
                     pluginShape.m_x = Math.max(shape.m_x - DX, 0);
                     pluginShape.m_y = shape.m_y;
                     pluginShape.m_w = 100;
@@ -318,7 +318,7 @@ public class Document {
                     setPluginID(pluginShape);
                     m_objects.add(pluginShape);
                     iObjects.add(m_objects.size() - 1);
-                    Arrow arrow = new Arrow(pluginShape, (PluginShape) shape, input.getName());
+                    Arrow arrow = new Arrow(pluginShape, (BEASTObjectShape) shape, input.getName());
                     m_objects.add(arrow);
                     iObjects.add(m_objects.size() - 1);
                     // recurse
@@ -402,8 +402,8 @@ public class Document {
             if (shape instanceof Arrow) {
                 ((Arrow) shape).setID(getNewID(tabulist));
             }
-            if (shape instanceof PluginShape) {
-                setPluginID((PluginShape) shape);
+            if (shape instanceof BEASTObjectShape) {
+                setPluginID((BEASTObjectShape) shape);
             }
         }
         tabulist.add(shape.getID());
@@ -419,9 +419,9 @@ public class Document {
             if (shape instanceof Arrow) {
                 ((Arrow) shape).setID(getNewID(null));
             }
-            if (shape instanceof PluginShape) {
-                ((PluginShape) shape).m_plugin.setID(null);
-                setPluginID((PluginShape) shape);
+            if (shape instanceof BEASTObjectShape) {
+                ((BEASTObjectShape) shape).m_plugin.setID(null);
+                setPluginID((BEASTObjectShape) shape);
                 // ensure the new shape does not overlap exactly with an existing shape
                 int nOffset = 0;
                 boolean bMatch = false;
@@ -486,7 +486,7 @@ public class Document {
         if (shape instanceof InputShape) {
             findInputs((InputShape) shape, selection);
         } else {
-            for (InputShape ellipse : ((PluginShape) shape).m_inputs) {
+            for (InputShape ellipse : ((BEASTObjectShape) shape).m_inputs) {
                 findInputs(ellipse, selection);
             }
         }
@@ -596,7 +596,7 @@ public class Document {
     public void setID(String sID, int iObject) {
         addUndoAction(new UndoAction(iObject, UndoAction.SET_LABEL_ACTION));
         Shape shape = (Shape) m_objects.get(iObject);
-        ((PluginShape) shape).m_plugin.setID(sID);
+        ((BEASTObjectShape) shape).m_plugin.setID(sID);
     }
 
     public void toggleFilled(int iObject) {
@@ -605,7 +605,7 @@ public class Document {
         shape.toggleFilled();
     }
 
-    void setInputValue(PluginShape pluginShape, String sInput, String sValue) throws Exception {
+    void setInputValue(BEASTObjectShape pluginShape, String sInput, String sValue) throws Exception {
         addUndoAction(new SetInputAction(pluginShape, sInput, sValue));
         //pluginShape.m_plugin.setInputValue(sInput, sValue);
     }
@@ -614,11 +614,11 @@ public class Document {
      * action representing assignment of value to a primitive input *
      */
     class SetInputAction extends UndoAction {
-        PluginShape m_pluginShape;
+        BEASTObjectShape m_pluginShape;
         String m_sInput;
         String m_sValue;
 
-        SetInputAction(PluginShape pluginShape, String sInput, String sValue) {
+        SetInputAction(BEASTObjectShape pluginShape, String sInput, String sValue) {
             m_pluginShape = pluginShape;
             m_sInput = sInput;
             m_sValue = sValue;
@@ -965,7 +965,7 @@ public class Document {
         /* single selection undo actions **/
 
         public UndoAction(int nSelection, int nActionType) {
-            if (!(m_objects.get(nSelection) instanceof PluginShape)) {
+            if (!(m_objects.get(nSelection) instanceof BEASTObjectShape)) {
                 return;
             }
             m_nActionType = nActionType;
@@ -979,7 +979,7 @@ public class Document {
             m_nActionType = nActionType;
             m_nPositions = new ArrayList<Integer>();
             for (int i = 0; i < selection.size(); i++) {
-                if (m_objects.get(selection.get(i)) instanceof PluginShape) {
+                if (m_objects.get(selection.get(i)) instanceof BEASTObjectShape) {
                     m_nPositions.add(new Integer(((Integer) selection.get(i)).intValue()));
                 }
             }
@@ -998,7 +998,7 @@ public class Document {
         boolean isSelection(List<Integer> nPositions) {
             int nMatches = 0;
             for (Integer i : nPositions) {
-                if (m_objects.get(i) instanceof PluginShape) {
+                if (m_objects.get(i) instanceof BEASTObjectShape) {
                     if (m_nPositions.contains(i)) {
                         nMatches++;
                     } else {
@@ -1040,7 +1040,7 @@ public class Document {
                 int iShape = ((Integer) m_nPositions.get(i)).intValue();
                 Shape originalShape = m_objects.get(iShape);
                 Shape shape = (Shape) shapes.get(i);
-                ((PluginShape) shape).m_plugin = ((PluginShape) originalShape).m_plugin;
+                ((BEASTObjectShape) shape).m_plugin = ((BEASTObjectShape) originalShape).m_plugin;
                 originalShape.assignFrom(shape);
             }
             m_sXML = sXML;
@@ -1056,7 +1056,7 @@ public class Document {
         public PluginAction(int nPosition, int nActionType) {
             // assumes pluginShape + all its inputs has just been added
             m_nActionType = nActionType;
-            PluginShape pluginShape = (PluginShape) m_objects.get(nPosition);
+            BEASTObjectShape pluginShape = (BEASTObjectShape) m_objects.get(nPosition);
             m_nPositions = new ArrayList<Integer>();
             m_nPositions.add(nPosition);
             nPosition--;
@@ -1205,7 +1205,7 @@ public class Document {
             List<Integer> iPluginsShapes = new ArrayList<Integer>();
             for (int i : nPositions) {
                 Shape shape = m_objects.get(i);
-                if (shape instanceof PluginShape) {
+                if (shape instanceof BEASTObjectShape) {
                     iPluginsShapes.add(i);
                 } else if (shape instanceof Arrow) {
                     iArrows.add(i);
@@ -1339,11 +1339,11 @@ public class Document {
     } // redo
 
 
-    PluginShape getPluginShapeWithLabel(String sLabel) {
+    BEASTObjectShape getPluginShapeWithLabel(String sLabel) {
         for (Shape shape : m_objects) {
-            if (shape instanceof PluginShape) {
+            if (shape instanceof BEASTObjectShape) {
                 if (shape.getLabel() != null && shape.getLabel().equals(sLabel)) {
-                    return (PluginShape) shape;
+                    return (BEASTObjectShape) shape;
                 }
             }
         }
@@ -1364,11 +1364,11 @@ public class Document {
     final static int DX = 120;
     final static int DY = 80;
 
-    void addInput(PluginShape shape, Object o2, int nDepth, String sInput) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void addInput(BEASTObjectShape shape, Object o2, int nDepth, String sInput) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         if (o2 instanceof BEASTObject) {
-            PluginShape shape2 = getPluginShapeWithLabel(((BEASTObject) o2).getID());
+            BEASTObjectShape shape2 = getPluginShapeWithLabel(((BEASTObject) o2).getID());
             if (shape2 == null) {
-                shape2 = new PluginShape((BEASTObject) o2, this);
+                shape2 = new BEASTObjectShape((BEASTObject) o2, this);
                 shape2.m_x = nDepth * DX;
                 shape2.m_w = DY;
                 shape2.m_plugin = (BEASTObject) o2;
@@ -1379,7 +1379,7 @@ public class Document {
         }
     }
 
-    void process(PluginShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+    void process(BEASTObjectShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         BEASTObject plugin = shape.m_plugin;
         List<Input<?>> sInputs = plugin.listInputs();
         for (Input<?> input_ : sInputs) {
@@ -1437,13 +1437,13 @@ public class Document {
 
     public void init(BEASTObject plugin0) {
         try {
-            if (plugin0 instanceof PluginSet) {
-                List<BEASTObject> set = ((PluginSet) plugin0).m_plugins.get();
+            if (plugin0 instanceof BEASTObjectSet) {
+                List<BEASTObject> set = ((BEASTObjectSet) plugin0).m_plugins.get();
                 if (set == null) {
                     return;
                 }
                 for (BEASTObject plugin : set) {
-                    PluginShape shape = new PluginShape(plugin, this);
+                    BEASTObjectShape shape = new BEASTObjectShape(plugin, this);
                     shape.m_plugin = plugin;
                     setPluginID(shape);
                     m_objects.add(shape);
@@ -1455,7 +1455,7 @@ public class Document {
                     shape.m_h = 50;
                 }
             } else {
-                PluginShape shape = new PluginShape(plugin0, this);
+                BEASTObjectShape shape = new BEASTObjectShape(plugin0, this);
                 shape.m_plugin = plugin0;
                 setPluginID(shape);
                 m_objects.add(shape);
@@ -1514,14 +1514,14 @@ public class Document {
         } else if (node.getNodeName().equals(ARROW_ELEMENT) && bReconstructPlugins) {
             shape = new Arrow(node, doc, bReconstructPlugins);
         } else if (node.getNodeName().equals(PLUGIN_SHAPE_ELEMENT)) {
-            shape = new PluginShape(node, doc, bReconstructPlugins);
+            shape = new BEASTObjectShape(node, doc, bReconstructPlugins);
         }
         return shape;
     } // parseNode
 
     public String toXML() {
         XMLProducer xmlProducer = new XMLProducer();
-        PluginSet pluginSet = calcPluginSet();
+        BEASTObjectSet pluginSet = calcPluginSet();
         if (pluginSet.m_plugins.get().size() == 1) {
             return xmlProducer.toXML(pluginSet.m_plugins.get().get(0));
         }
@@ -1532,13 +1532,13 @@ public class Document {
     /**
      * collect all objects and put all top-level plugins in a PluginSet
      */
-    PluginSet calcPluginSet() {
+    BEASTObjectSet calcPluginSet() {
         // collect all plug-ins
         Collection<BEASTObject> plugins = getPlugins();
         // calc outputs
-        HashMap<BEASTObject, List<BEASTObject>> outputs = PluginPanel.getOutputs(plugins);
+        HashMap<BEASTObject, List<BEASTObject>> outputs = BEASTObjectPanel.getOutputs(plugins);
         // put all plugins with no ouputs in the PluginSet
-        PluginSet pluginSet = new PluginSet();
+        BEASTObjectSet pluginSet = new BEASTObjectSet();
         for (BEASTObject plugin : outputs.keySet()) {
             if (outputs.get(plugin).size() == 0) {
                 try {
@@ -1557,8 +1557,8 @@ public class Document {
     Collection<BEASTObject> getPlugins() {
         Collection<BEASTObject> plugins = new HashSet<BEASTObject>();
         for (Shape shape : m_objects) {
-            if (shape instanceof PluginShape) {
-                plugins.add(((PluginShape) shape).m_plugin);
+            if (shape instanceof BEASTObjectShape) {
+                plugins.add(((BEASTObjectShape) shape).m_plugin);
             }
         }
         return plugins;
@@ -1569,7 +1569,7 @@ public class Document {
      */
     boolean isAscendant(BEASTObject source, BEASTObject target) {
         Collection<BEASTObject> plugins = getPlugins();
-        List<BEASTObject> ascendants = PluginPanel.listAscendants(target, plugins);
+        List<BEASTObject> ascendants = BEASTObjectPanel.listAscendants(target, plugins);
         return ascendants.contains(source);
     }
 
@@ -1595,19 +1595,19 @@ public class Document {
      */
     void layout() {
         // first construct input map for ease of navigation
-        HashMap<PluginShape, List<PluginShape>> inputMap = new HashMap<PluginShape, List<PluginShape>>();
-        HashMap<PluginShape, List<PluginShape>> outputMap = new HashMap<PluginShape, List<PluginShape>>();
+        HashMap<BEASTObjectShape, List<BEASTObjectShape>> inputMap = new HashMap<BEASTObjectShape, List<BEASTObjectShape>>();
+        HashMap<BEASTObjectShape, List<BEASTObjectShape>> outputMap = new HashMap<BEASTObjectShape, List<BEASTObjectShape>>();
         for (Shape shape : m_objects) {
-            if (shape instanceof PluginShape && shape.m_bNeedsDrawing) {
-                inputMap.put((PluginShape) shape, new ArrayList<PluginShape>());
-                outputMap.put((PluginShape) shape, new ArrayList<PluginShape>());
+            if (shape instanceof BEASTObjectShape && shape.m_bNeedsDrawing) {
+                inputMap.put((BEASTObjectShape) shape, new ArrayList<BEASTObjectShape>());
+                outputMap.put((BEASTObjectShape) shape, new ArrayList<BEASTObjectShape>());
             }
         }
         for (Shape shape : m_objects) {
             if (shape instanceof Arrow && shape.m_bNeedsDrawing) {
                 Shape headShape = ((Arrow) shape).m_headShape;
-                PluginShape pluginShape = ((InputShape) headShape).m_pluginShape;
-                PluginShape inputShape = ((Arrow) shape).m_tailShape;
+                BEASTObjectShape pluginShape = ((InputShape) headShape).m_pluginShape;
+                BEASTObjectShape inputShape = ((Arrow) shape).m_tailShape;
                 inputMap.get(pluginShape).add(inputShape);
                 outputMap.get(inputShape).add(pluginShape);
             }
@@ -1664,24 +1664,24 @@ public class Document {
      * Adjust y-coordinate of PluginShapes so they don't overlap
      * and are close to their inputs. Helper method for layout() *
      */
-    void layoutAdjustY(HashMap<PluginShape, List<PluginShape>> inputMap) {
+    void layoutAdjustY(HashMap<BEASTObjectShape, List<BEASTObjectShape>> inputMap) {
         // next, optimise top down order
         boolean bProgress = true;
         int iX = DX;
         while (bProgress) {
-            List<PluginShape> shapes = new ArrayList<PluginShape>();
+            List<BEASTObjectShape> shapes = new ArrayList<BEASTObjectShape>();
             // find shapes with same x-coordinate
-            for (PluginShape shape : inputMap.keySet()) {
+            for (BEASTObjectShape shape : inputMap.keySet()) {
                 if (shape.m_x == iX) {
                     shapes.add(shape);
                 }
             }
             int k = 1;
-            HashMap<Integer, PluginShape> ycoordMap = new HashMap<Integer, PluginShape>();
+            HashMap<Integer, BEASTObjectShape> ycoordMap = new HashMap<Integer, BEASTObjectShape>();
             // set y-coordinate as mean of inputs
             // if there are no inputs, order them top to bottom at DY intervals
-            for (PluginShape shape : shapes) {
-                List<PluginShape> inputs = inputMap.get(shape);
+            for (BEASTObjectShape shape : shapes) {
+                List<BEASTObjectShape> inputs = inputMap.get(shape);
                 if (inputs.size() == 0) {
                     shape.m_y = k * DY;
                 } else {
@@ -1704,7 +1704,7 @@ public class Document {
             Collections.sort(yCoords);
             int dY = 0;
             for (Integer i : yCoords) {
-                PluginShape shape = ycoordMap.get(i);
+                BEASTObjectShape shape = ycoordMap.get(i);
                 if (shape.m_y < nPrevY + DY) {
                     dY = nPrevY + DY - shape.m_y;
                     shape.m_y = nPrevY + DY;
@@ -1714,7 +1714,7 @@ public class Document {
             // upwards correction
             if (dY > 0) {
                 dY /= shapes.size();
-                for (PluginShape shape : shapes) {
+                for (BEASTObjectShape shape : shapes) {
                     shape.m_y -= dY;
                 }
             }
@@ -1808,12 +1808,12 @@ public class Document {
         }
         // Step 2: repulse (pairwise)
         for (Shape shape1 : objects) {
-            if (shape1 instanceof PluginShape) {
+            if (shape1 instanceof BEASTObjectShape) {
                 int p1x = shape1.m_x + shape1.m_w / 2;
                 int p1y = shape1.m_y + shape1.m_h / 2;
                 double dx = 0, dy = 0;
                 for (Shape shape2 : objects) {
-                    if (shape2 instanceof PluginShape) {
+                    if (shape2 instanceof BEASTObjectShape) {
                         int p2x = shape2.m_x + shape2.m_w / 2;
                         int p2y = shape2.m_y + shape2.m_h / 2;
                         double vx = p1x - p2x;
@@ -1836,8 +1836,8 @@ public class Document {
 
         // Step 3: move dependent objects in place
         for (Shape shape : objects) {
-            if (shape instanceof PluginShape) {
-                ((PluginShape) shape).adjustInputs();
+            if (shape instanceof BEASTObjectShape) {
+                ((BEASTObjectShape) shape).adjustInputs();
             }
         }
         adjustArrows();
@@ -1852,7 +1852,7 @@ public class Document {
             STATUS_EMPTY_MODEL = 3, STATUS_ORPHANS_IN_MODEL = 4;
 
     int isValidModel() {
-        PluginSet pluginSet = calcPluginSet();
+        BEASTObjectSet pluginSet = calcPluginSet();
         if (pluginSet.m_plugins.get().size() == 0) {
             return STATUS_EMPTY_MODEL;
         }
@@ -1883,24 +1883,24 @@ public class Document {
             }
         }
         // build map for quick resolution of PluginShapes
-        HashMap<BEASTObject, PluginShape> map = new HashMap<BEASTObject, PluginShape>();
+        HashMap<BEASTObject, BEASTObjectShape> map = new HashMap<BEASTObject, BEASTObjectShape>();
         for (Shape shape : m_objects) {
-            if (shape instanceof PluginShape) {
-                map.put(((PluginShape) shape).m_plugin, (PluginShape) shape);
+            if (shape instanceof BEASTObjectShape) {
+                map.put(((BEASTObjectShape) shape).m_plugin, (BEASTObjectShape) shape);
             }
         }
         // re-insert arrows, if any
         for (int i = m_objects.size() - 1; i >= 0; i--) {
             Shape shape = m_objects.get(i);
-            if (shape instanceof PluginShape) {
-                PluginShape headShape = ((PluginShape) shape);
+            if (shape instanceof BEASTObjectShape) {
+                BEASTObjectShape headShape = ((BEASTObjectShape) shape);
                 BEASTObject plugin = headShape.m_plugin;
                 try {
                     List<Input<?>> inputs = plugin.listInputs();
                     for (Input<?> input : inputs) {
                         if (input.get() != null) {
                             if (input.get() instanceof BEASTObject) {
-                                PluginShape tailShape = map.get((BEASTObject) input.get());
+                                BEASTObjectShape tailShape = map.get((BEASTObject) input.get());
                                 try {
 	                                Arrow arrow = new Arrow(tailShape, headShape, input.getName());
 	                                arrow.setID(getNewID(null));
@@ -1912,7 +1912,7 @@ public class Document {
                             if (input.get() instanceof List<?>) {
                                 for (Object o : (List<?>) input.get()) {
                                     if (o != null && o instanceof BEASTObject) {
-                                        PluginShape tailShape = map.get((BEASTObject) o);
+                                        BEASTObjectShape tailShape = map.get((BEASTObject) o);
                                         try {
 	                                        Arrow arrow = new Arrow(tailShape, headShape, input.getName());
 	                                        arrow.setID(getNewID(null));

@@ -17,15 +17,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class PluginInputEditor extends InputEditor.Base {
+public class BEASTObjectInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
     JComboBox m_selectPluginBox;
     SmallButton m_editPluginButton;
 
-    PluginInputEditor _this;
+    BEASTObjectInputEditor _this;
 
     //public PluginInputEditor() {}
-    public PluginInputEditor(BeautiDoc doc) {
+    public BEASTObjectInputEditor(BeautiDoc doc) {
         super(doc);
         _this = this;
     }
@@ -70,7 +70,7 @@ public class PluginInputEditor extends InputEditor.Base {
         addComboBox(this, input, plugin);
 
         if (m_bAddButtons) {
-            if (PluginPanel.countInputs((BEASTObject) m_input.get(), doc) > 0) {
+            if (BEASTObjectPanel.countInputs((BEASTObject) m_input.get(), doc) > 0) {
                 m_editPluginButton = new SmallButton("e", true);
                 if (input.get() == null) {
                     m_editPluginButton.setEnabled(false);
@@ -80,7 +80,7 @@ public class PluginInputEditor extends InputEditor.Base {
                 m_editPluginButton.addActionListener(new ActionListener() {
                     // implements ActionListener
                     public void actionPerformed(ActionEvent e) {
-                        PluginDialog dlg = new PluginDialog((BEASTObject) m_input.get(), m_input.getType(), doc);
+                        BEASTObjectDialog dlg = new BEASTObjectDialog((BEASTObject) m_input.get(), m_input.getType(), doc);
                         if (dlg.showDialog()) {
                             try {
                                 dlg.accept((BEASTObject) m_input.get(), doc);

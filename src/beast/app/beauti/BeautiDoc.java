@@ -39,7 +39,7 @@ import org.xml.sax.InputSource;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditorFactory;
-import beast.app.draw.PluginPanel;
+import beast.app.draw.BEASTObjectPanel;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -333,7 +333,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	public void newAnalysis() {
 		try {
 			clear();
-			PluginPanel.init();
+			BEASTObjectPanel.init();
 			beautiConfig.clear();
 			String sXML = processTemplate(templateFileName);
 			loadTemplate(sXML);
@@ -746,7 +746,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		XMLParser parser = new XMLParser();
 		BEASTObject MCMC = parser.parseFragment(sXML, true);
 		mcmc.setValue(MCMC, this);
-		PluginPanel.addPluginToMap(MCMC, this);
+		BEASTObjectPanel.addPluginToMap(MCMC, this);
 
 		// reconstruct all objects from templates
 		try {
@@ -850,7 +850,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	void loadTemplate(String sXML) throws Exception {
 		// load the template and its beauti configuration parts
 		XMLParser parser = new XMLParser();
-		PluginPanel.init();
+		BEASTObjectPanel.init();
 		List<BEASTObject> plugins = parser.parseTemplate(sXML, new HashMap<String, BEASTObject>(), true);
 		for (BEASTObject plugin : plugins) {
 			if (plugin instanceof beast.core.Runnable) {
@@ -861,7 +861,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 			} else {
 				System.err.println("template item " + plugin.getID() + " is ignored");
 			}
-			PluginPanel.addPluginToMap(plugin, this);
+			BEASTObjectPanel.addPluginToMap(plugin, this);
 		}
 	}
 
@@ -1218,17 +1218,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		// @Override
 		// public void run() {
 		//
-		PluginPanel.addPluginToMap(plugin, this);
+		BEASTObjectPanel.addPluginToMap(plugin, this);
 		try {
 			for (Input<?> input : plugin.listInputs()) {
 				if (input.get() != null) {
 					if (input.get() instanceof BEASTObject) {
-						PluginPanel.addPluginToMap((BEASTObject) input.get(), this);
+						BEASTObjectPanel.addPluginToMap((BEASTObject) input.get(), this);
 					}
 					if (input.get() instanceof List<?>) {
 						for (Object o : (List<?>) input.get()) {
 							if (o instanceof BEASTObject) {
-								PluginPanel.addPluginToMap((BEASTObject) o, this);
+								BEASTObjectPanel.addPluginToMap((BEASTObject) o, this);
 							}
 						}
 					}

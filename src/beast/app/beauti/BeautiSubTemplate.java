@@ -10,7 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.xml.sax.InputSource;
 
-import beast.app.draw.PluginPanel;
+import beast.app.draw.BEASTObjectPanel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Logger;

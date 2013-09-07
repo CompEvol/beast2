@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 
 import org.apache.commons.math.MathException;
 
-import beast.app.draw.PluginInputEditor;
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.evolution.tree.TreeDistribution;
@@ -27,7 +27,7 @@ import beast.math.distributions.ParametricDistribution;
 
 
 
-public class ParametricDistributionInputEditor extends PluginInputEditor {
+public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
     public ParametricDistributionInputEditor(BeautiDoc doc) {
 		super(doc);

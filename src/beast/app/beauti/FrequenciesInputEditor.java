@@ -9,7 +9,7 @@ import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
-import beast.app.draw.PluginInputEditor;
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
@@ -18,7 +18,7 @@ import beast.evolution.substitutionmodel.Frequencies;
 
 
 
-public class FrequenciesInputEditor extends PluginInputEditor {
+public class FrequenciesInputEditor extends BEASTObjectInputEditor {
     RealParameter freqsParameter;
     Alignment alignment;
 

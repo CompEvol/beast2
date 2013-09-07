@@ -12,7 +12,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 import beast.app.draw.InputEditor;
-import beast.app.draw.PluginDialog;
+import beast.app.draw.BEASTObjectDialog;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
@@ -97,7 +97,7 @@ public class PriorInputEditor extends InputEditor.Base {
                     List<?> list = (List<?>) m_input.get();
                     Prior prior = (Prior) list.get(itemNr);
                     RealParameter p = (RealParameter) prior.m_x.get();
-                    PluginDialog dlg = new PluginDialog(p, RealParameter.class, doc);
+                    BEASTObjectDialog dlg = new BEASTObjectDialog(p, RealParameter.class, doc);
                     if (dlg.showDialog()) {
                         dlg.accept(p, doc);
                         rangeButton.setText(paramToString(p));
