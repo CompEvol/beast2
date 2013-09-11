@@ -25,7 +25,9 @@
 package beast.evolution.substitutionmodel;
 
 
-import beast.core.*;
+import beast.core.CalculationNode;
+import beast.core.Description;
+import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
@@ -44,7 +46,7 @@ public interface SubstitutionModel {
      * @param fEndTime   we assume start time is larger than end time
      * @param fRate      rate, includes gamma rates and branch rates
      * @param matrix     an array to store the matrix which represents the transition probability
-     * matrix in the form of an array. So, matrix must be of size n*n where n is number of states.
+     *                   matrix in the form of an array. So, matrix must be of size n*n where n is number of states.
      */
     void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix);
 
@@ -135,5 +137,38 @@ public interface SubstitutionModel {
         }
 
     } // class Base
+
+    /**
+     * basic implementation of a SubstitutionModel bringing together relevant super class*
+     */
+    @Description(value = "Base implementation of a nucleotide substitution model.", isInheritable = false)
+    public abstract class NucleotideBase extends Base {
+
+        public double freqA, freqC, freqG, freqT,
+        // A+G
+        freqR,
+        // C+T
+        freqY;
+
+
+        @Override
+        public int getStateCount() {
+            assert nrOfStates == 4;
+            return nrOfStates;
+        }
+
+        protected void calculateFreqRY() {
+            double[] freqs = frequencies.getFreqs();
+            freqA = freqs[0];
+            freqC = freqs[1];
+            freqG = freqs[2];
+            freqT = freqs[3];
+            freqR = freqA + freqG;
+            freqY = freqC + freqT;
+        }
+
+
+    } // class NucleotideBase
+
 
 } // class SubstitutionModel
