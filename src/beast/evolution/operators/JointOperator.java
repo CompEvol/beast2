@@ -19,6 +19,7 @@ package beast.evolution.operators;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.StateNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -65,4 +66,13 @@ public class JointOperator extends Operator {
         return logHR;
     }
     
+    @Override
+    public List<StateNode> listStateNodes() throws Exception {
+        List<StateNode> stateNodeList = new ArrayList<StateNode>();
+        
+        for (Operator op : operatorsInput.get())
+            stateNodeList.addAll(op.listStateNodes());
+        
+        return stateNodeList;
+    }
 }
