@@ -54,6 +54,7 @@ import beast.evolution.tree.Node;
  *
  * @author Joseph Heled
  * @author Alexei Drummond
+ * @author Marc Suchard
  */
 
 @Description("TN93 (Tamura and Nei, 1993) substitution model of nucleotide evolution.")
@@ -225,97 +226,84 @@ public class TN93 extends SubstitutionModel.NucleotideBase {
 
     public EigenDecomposition getEigenDecomposition(Node node) {
 
-        //TODO
+        if (eigenDecomposition == null) {
+            double[] evec = new double[STATE_COUNT * STATE_COUNT];
+            double[] ivec = new double[STATE_COUNT * STATE_COUNT];
+            double[] eval = new double[STATE_COUNT];
+            eigenDecomposition = new EigenDecomposition(evec, ivec, eval);
 
-        System.out.println("tn93.getEigenDecomposition(node) not implemented!");
+            ivec[2 * STATE_COUNT + 1] = 1; // left eigenvectors 3 = (0,1,0,-1); 4 = (1,0,-1,0)
+            ivec[2 * STATE_COUNT + 3] = -1;
 
-        return null;
+            ivec[3 * STATE_COUNT + 0] = 1;
+            ivec[3 * STATE_COUNT + 2] = -1;
+
+            evec[0 * STATE_COUNT + 0] = 1; // right eigenvector 1 = (1,1,1,1)'
+            evec[1 * STATE_COUNT + 0] = 1;
+            evec[2 * STATE_COUNT + 0] = 1;
+            evec[3 * STATE_COUNT + 0] = 1;
+
+            updateEigen = true;
+
+        }
+
+        if (updateEigen) {
+
+            double[] evec = eigenDecomposition.getEigenVectors();
+            double[] ivec = eigenDecomposition.getInverseEigenVectors();
+            double[] pi = frequencies.getFreqs();
+            double piR = pi[0] + pi[2];
+            double piY = pi[1] + pi[3];
+
+            // left eigenvector #1
+            ivec[0 * STATE_COUNT + 0] = pi[0]; // or, evec[0] = pi;
+            ivec[0 * STATE_COUNT + 1] = pi[1];
+            ivec[0 * STATE_COUNT + 2] = pi[2];
+            ivec[0 * STATE_COUNT + 3] = pi[3];
+
+            // left eigenvector #2
+            ivec[1 * STATE_COUNT + 0] = pi[0] * piY;
+            ivec[1 * STATE_COUNT + 1] = -pi[1] * piR;
+            ivec[1 * STATE_COUNT + 2] = pi[2] * piY;
+            ivec[1 * STATE_COUNT + 3] = -pi[3] * piR;
+
+            // right eigenvector #2
+            evec[0 * STATE_COUNT + 1] = 1.0 / piR;
+            evec[1 * STATE_COUNT + 1] = -1.0 / piY;
+            evec[2 * STATE_COUNT + 1] = 1.0 / piR;
+            evec[3 * STATE_COUNT + 1] = -1.0 / piY;
+
+            // right eigenvector #3
+            evec[1 * STATE_COUNT + 2] = pi[3] / piY;
+            evec[3 * STATE_COUNT + 2] = -pi[1] / piY;
+
+            // right eigenvector #4
+            evec[0 * STATE_COUNT + 3] = pi[2] / piR;
+            evec[2 * STATE_COUNT + 3] = -pi[0] / piR;
+
+            // eigenvectors
+            double[] eval = eigenDecomposition.getEigenValues();
+
+            final double kappa1 = getKappa1();
+            final double kappa2 = getKappa2();
+            final double beta = -1.0 / (2.0 * (piR * piY + kappa1 * pi[0] * pi[2] + kappa2 * pi[1] * pi[3]));
+            final double A_R = 1.0 + piR * (kappa1 - 1);
+            final double A_Y = 1.0 + piY * (kappa2 - 1);
+
+            eval[1] = beta;
+            eval[2] = beta * A_Y;
+            eval[3] = beta * A_R;
+
+            updateEigen = false;
+        }
+
+        return eigenDecomposition;
     }
-
-//    @Override
-//    public EigenDecomposition getEigenDecomposition(Node node) {
-//
-//        if (eigenDecomposition == null) {
-//            double[] evec = new double[STATE_COUNT * STATE_COUNT];
-//            double[] ivec = new double[STATE_COUNT * STATE_COUNT];
-//            double[] eval = new double[STATE_COUNT];
-//            eigenDecomposition = new EigenDecomposition(evec, ivec, eval);
-//
-//            ivec[2 * STATE_COUNT + 1] = 1; // left eigenvectors 3 = (0,1,0,-1); 4 = (1,0,-1,0)
-//            ivec[2 * STATE_COUNT + 3] = -1;
-//
-//            ivec[3 * STATE_COUNT + 0] = 1;
-//            ivec[3 * STATE_COUNT + 2] = -1;
-//
-//            evec[0 * STATE_COUNT + 0] = 1; // right eigenvector 1 = (1,1,1,1)'
-//            evec[1 * STATE_COUNT + 0] = 1;
-//            evec[2 * STATE_COUNT + 0] = 1;
-//            evec[3 * STATE_COUNT + 0] = 1;
-//
-//            updateEigen = true;
-//        }
-//
-//        if (updateEigen) {
-//
-//            double[] evec = eigenDecomposition.getEigenVectors();
-//            double[] ivec = eigenDecomposition.getInverseEigenVectors();
-//            double[] pi = frequencies.getFreqs();
-//            double piR = pi[0] + pi[2];
-//            double piY = pi[1] + pi[3];
-//
-//            // left eigenvector #1
-//            ivec[0 * STATE_COUNT + 0] = pi[0]; // or, evec[0] = pi;
-//            ivec[0 * STATE_COUNT + 1] = pi[1];
-//            ivec[0 * STATE_COUNT + 2] = pi[2];
-//            ivec[0 * STATE_COUNT + 3] = pi[3];
-//
-//            // left eigenvector #2
-//            ivec[1 * STATE_COUNT + 0] = pi[0] * piY;
-//            ivec[1 * STATE_COUNT + 1] = -pi[1] * piR;
-//            ivec[1 * STATE_COUNT + 2] = pi[2] * piY;
-//            ivec[1 * STATE_COUNT + 3] = -pi[3] * piR;
-//
-//            // right eigenvector #2
-//            evec[0 * STATE_COUNT + 1] = 1.0 / piR;
-//            evec[1 * STATE_COUNT + 1] = -1.0 / piY;
-//            evec[2 * STATE_COUNT + 1] = 1.0 / piR;
-//            evec[3 * STATE_COUNT + 1] = -1.0 / piY;
-//
-//            // right eigenvector #3
-//            evec[1 * STATE_COUNT + 2] = pi[3] / piY;
-//            evec[3 * STATE_COUNT + 2] = -pi[1] / piY;
-//
-//            // right eigenvector #4
-//            evec[0 * STATE_COUNT + 3] = pi[2] / piR;
-//            evec[2 * STATE_COUNT + 3] = -pi[0] / piR;
-//
-//            // eigenvectors
-//            double[] eval = eigenDecomposition.getEigenValues();
-//            final double k = kappaInput.get().getValue();
-//
-//            final double beta = -1.0 / (2.0 * (piR * piY + k * (pi[0] * pi[2] + pi[1] * pi[3])));
-//            final double A_R = 1.0 + piR * (k - 1);
-//            final double A_Y = 1.0 + piY * (k - 1);
-//
-//            eval[1] = beta;
-//            eval[2] = beta * A_Y;
-//            eval[3] = beta * A_R;
-//
-//            updateEigen = false;
-//
-//        }
-//
-//        return eigenDecomposition;
-//    }
 
     /**
      * Used for precalculations
      */
-    protected double beta, A_R, A_Y;
-    protected double tab1A, tab2A, tab3A;
-    protected double tab1C, tab2C, tab3C;
-    protected double tab1G, tab2G, tab3G;
-    protected double tab1T, tab2T, tab3T;
+    protected double beta;
 
     private void calculateIntermediates() {
 
