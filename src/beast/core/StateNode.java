@@ -1,8 +1,8 @@
 package beast.core;
 
-import java.io.PrintStream;
-
 import org.w3c.dom.Node;
+
+import java.io.PrintStream;
 
 /**
  * This class represents a node of the state. Concrete classes include Parameters and Trees.
@@ -160,7 +160,6 @@ public abstract class StateNode extends BEASTObject implements Loggable, Cloneab
      */
     abstract public int scale(double fScale) throws Exception;
 
-
     /**
      * Pointer to state, null if not part of a State.
      */
@@ -193,7 +192,7 @@ public abstract class StateNode extends BEASTObject implements Loggable, Cloneab
      * @param operator
      */
     public void startEditing(final Operator operator) {
-    	assert (isCalledFromOperator(4));
+        assert (isCalledFromOperator(4));
         if (hasStartedEditing) {
             // we are already editing
             return;
@@ -205,10 +204,10 @@ public abstract class StateNode extends BEASTObject implements Loggable, Cloneab
     }
 
     private boolean isCalledFromOperator(int level) {
-    	// TODO: sun.reflect.Reflection.getCallerClass is not available in JDK7
-    	// and alternative methods are really slow according to
-    	// http://stackoverflow.com/questions/421280/in-java-how-do-i-find-the-caller-of-a-method-using-stacktrace-or-reflection
-    	
+        // TODO: sun.reflect.Reflection.getCallerClass is not available in JDK7
+        // and alternative methods are really slow according to
+        // http://stackoverflow.com/questions/421280/in-java-how-do-i-find-the-caller-of-a-method-using-stacktrace-or-reflection
+
 //    	Class<?> caller = sun.reflect.Reflection.getCallerClass(level);
 //    	while (caller != null) {
 //    		if (Operator.class.isAssignableFrom(caller)) {
@@ -217,11 +216,11 @@ public abstract class StateNode extends BEASTObject implements Loggable, Cloneab
 //    		caller = sun.reflect.Reflection.getCallerClass(++level);
 //    	}
 //    	return false;
-    	
-    	return true;
-	}
 
-	abstract protected void store();
+        return true;
+    }
+
+    abstract protected void store();
 
     abstract public void restore();
 
