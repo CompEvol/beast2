@@ -18,6 +18,8 @@ public class Uniform extends ParametricDistribution {
 
     double _lower, _upper, density;
 
+    private boolean infiniteSupport;
+
     @Override
     public void initAndValidate() throws Exception {
         _lower = lowerInput.get();
@@ -26,7 +28,8 @@ public class Uniform extends ParametricDistribution {
             throw new Exception("Upper value should be higher than lower value");
         }
         distr.setBounds(_lower, _upper);
-        if (Double.isInfinite(_lower) || Double.isInfinite(_upper)) {
+        infiniteSupport = Double.isInfinite(_lower) || Double.isInfinite(_upper);
+        if (infiniteSupport) {
             density = 1.0;
         } else {
             density = 1.0 / (_upper - _lower);
@@ -38,7 +41,7 @@ public class Uniform extends ParametricDistribution {
         private double lower;
         private double upper;
 
-        public void setBounds(double lower, double upper) {
+        public void setBounds(final double lower, final double upper) {
             this.lower = lower;
             this.upper = upper;
         }
@@ -60,15 +63,26 @@ public class Uniform extends ParametricDistribution {
         }
 
         @Override
-        public double inverseCumulativeProbability(double p) throws MathException {
+        public double inverseCumulativeProbability(final double p) throws MathException {
             if (p < 0.0 || p > 1.0) {
                 throw new RuntimeException("inverseCumulativeProbability::argument out of range [0...1]");
+            }
+            if( p == 0 ) {
+                // works even when one bound is infinite
+                return _lower;
+            }
+            if( p == 1 ) {
+                // works even when one bound is infinite
+                return _upper;
+            }
+            if( infiniteSupport ) {
+                 throw new RuntimeException("Inverse Cumulative Probability for 0 < p < 1 and infinite support") ;
             }
             return (upper - lower) * p + lower;
         }
 
         @Override
-        public double density(double x) {
+        public double density(final double x) {
             if (x >= lower && x <= upper) {
                 return density;
             } else {
@@ -77,7 +91,7 @@ public class Uniform extends ParametricDistribution {
         }
 
         @Override
-        public double logDensity(double x) {
+        public double logDensity(final double x) {
             return Math.log(density(x));
         }
     } // class UniformImpl
@@ -89,7 +103,7 @@ public class Uniform extends ParametricDistribution {
     }
 
     @Override
-    public double density(double x) {
+    public double density(final double x) {
         if (x >= _lower && x <= _upper) {
             return 1;
         } else {
