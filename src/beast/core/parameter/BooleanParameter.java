@@ -25,9 +25,9 @@
 package beast.core.parameter;
 
 
-import java.io.PrintStream;
-
 import beast.core.Description;
+
+import java.io.PrintStream;
 
 
 /**
@@ -35,7 +35,7 @@ import beast.core.Description;
  */
 @Description("A Boolean-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
-public class BooleanParameter extends Parameter<java.lang.Boolean> {
+public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
     public BooleanParameter() {
         m_fUpper = true;
     }

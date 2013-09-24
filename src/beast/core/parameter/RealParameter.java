@@ -1,12 +1,10 @@
 package beast.core.parameter;
 
 
-
-import java.io.PrintStream;
-
 import beast.core.Description;
 import beast.core.Input;
 
+import java.io.PrintStream;
 
 
 /**
@@ -15,7 +13,7 @@ import beast.core.Input;
 
 @Description("A real-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
-public class RealParameter extends Parameter<Double> {
+public class RealParameter extends Parameter.Base<Double> {
     public Input<Double> lowerValueInput = new Input<Double>("lower", "lower value for this parameter (default -infinity)");
     public Input<Double> upperValueInput = new Input<Double>("upper", "upper value for this parameter (default +infinity)");
 
