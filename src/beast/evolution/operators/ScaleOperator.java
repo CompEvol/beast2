@@ -57,18 +57,21 @@ public class ScaleOperator extends Operator {
     public Input<Integer> degreesOfFreedomInput = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used when " +
             "scaleAllIndependently=false and scaleAll=true to override default in calcualation of Hasting ratio. " +
             "Ignored when less than 1, default 0.", 0);
-    public Input<BooleanParameter> ndicatorInput = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
+    public Input<BooleanParameter> indicatorInput = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
             "of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
             "it is assumed all dimensions are allowed to be scaled.");
     public Input<Boolean> rootOnlyInput = new Input<Boolean>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
     public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
+    public Input<Double> scaleUpperLimit = new Input<Double>("upper", "Upper Limit of scale factor", 1.0);
+    public Input<Double> scaleLowerLimit = new Input<Double>("lower", "Lower limit of scale factor", 0.0);
 
     /**
      * shadows input *
      */
-    double m_fScaleFactor;
+    private double m_fScaleFactor;
 
+    private double upper,lower;
     /**
      * flag to indicate this scales trees as opposed to scaling a parameter *
      */
@@ -78,8 +81,10 @@ public class ScaleOperator extends Operator {
     public void initAndValidate() throws Exception {
         m_fScaleFactor = scaleFactorInput.get();
         m_bIsTreeScaler = (treeInput.get() != null);
+        upper = scaleUpperLimit.get();
+        lower = scaleLowerLimit.get();
 
-        final BooleanParameter indicators = ndicatorInput.get();
+        final BooleanParameter indicators = indicatorInput.get();
         if (indicators != null) {
             if (m_bIsTreeScaler) {
                 throw new Exception("indicator is specified which has no effect for scaling a tree");
@@ -93,7 +98,7 @@ public class ScaleOperator extends Operator {
     }
 
 
-    protected boolean outsideBounds(double value, RealParameter param) {
+    protected boolean outsideBounds(final double value, final RealParameter param) {
         final Double l = param.getLower();
         final Double h = param.getUpper();
 
@@ -118,10 +123,10 @@ public class ScaleOperator extends Operator {
             final double scale = getScaler();
 
             if (m_bIsTreeScaler) {
-                Tree tree = treeInput.get(this);
+                final Tree tree = treeInput.get(this);
                 if (rootOnlyInput.get()) {
-                    Node root = tree.getRoot();
-                    double fNewHeight = root.getHeight() * scale;
+                    final Node root = tree.getRoot();
+                    final double fNewHeight = root.getHeight() * scale;
                     if (fNewHeight < Math.max(root.getLeft().getHeight(), root.getRight().getHeight())) {
                         return Double.NEGATIVE_INFINITY;
                     }
@@ -182,10 +187,10 @@ public class ScaleOperator extends Operator {
 
                 // which position to scale
                 final int index;
-                final BooleanParameter indicators = ndicatorInput.get();
+                final BooleanParameter indicators = indicatorInput.get();
                 if (indicators != null) {
                     final int nDim = indicators.getDimension();
-                    Boolean[] indicator = indicators.getValues();
+                    final Boolean[] indicator = indicators.getValues();
                     final boolean impliedOne = nDim == (dim - 1);
 
                     // available bit locations. there can be hundreds of them. scan list only once.
@@ -247,11 +252,11 @@ public class ScaleOperator extends Operator {
      * automatic parameter tuning *
      */
     @Override
-    public void optimize(double logAlpha) {
+    public void optimize(final double logAlpha) {
         if (optimiseInput.get()) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
-            m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+            setCoercableParameterValue(1.0 / (Math.exp(fDelta) + 1.0));
         }
     }
 
@@ -261,14 +266,14 @@ public class ScaleOperator extends Operator {
     }
 
     @Override
-    public void setCoercableParameterValue(double fValue) {
-        m_fScaleFactor = fValue;
+    public void setCoercableParameterValue(final double fValue) {
+        m_fScaleFactor = Math.max(Math.min(fValue,upper),lower);
     }
 
     @Override
     public String getPerformanceSuggestion() {
-        double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
-        double targetProb = getTargetAcceptanceProbability();
+        final double prob = m_nNrAccepted / (m_nNrAccepted + m_nNrRejected + 0.0);
+        final double targetProb = getTargetAcceptanceProbability();
 
         double ratio = prob / targetProb;
         if (ratio > 2.0) ratio = 2.0;
