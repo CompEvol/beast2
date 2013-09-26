@@ -248,11 +248,17 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      */
     void setStates(Node node, int patternCount) {
         if (node.isLeaf()) {
+            Alignment data = dataInput.get();
             int i;
             int[] states = new int[patternCount];
-            int iTaxon = dataInput.get().getTaxonIndex(node.getID());
+            int iTaxon = data.getTaxonIndex(node.getID());
             for (i = 0; i < patternCount; i++) {
-                states[i] = dataInput.get().getPattern(iTaxon, i);
+                int code = data.getPattern(iTaxon, i);
+                int[] statesForCode = data.getDataType().getStatesForCode(code);
+                if (statesForCode.length==1)
+                    states[i] = statesForCode[0];
+                else
+                    states[i] = code; // Causes ambiguous states to be ignored.
             }
             likelihoodCore.setNodeStates(node.getNr(), states);
 
