@@ -49,11 +49,13 @@ import beast.core.Input;
         "and notified that recalculation is appropriate.")
 public class State extends BEASTObject {
 
-    public Input<List<StateNode>> stateNodeInput =
+    public final Input<List<StateNode>> stateNodeInput =
             new Input<List<StateNode>>("stateNode", "anything that is part of the state", new ArrayList<StateNode>());
     public Input<Integer> m_storeEvery =
             new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
                     "resume computation later on if the process failed half-way.", -1);
+//    public Input<Boolean> m_checkPoint =
+//            new Input<Boolean>("checkpoint", "keep saved states (every X samples).", false);
 
     /**
      * The components of the state, for instance tree & parameters.
@@ -130,7 +132,7 @@ public class State extends BEASTObject {
      */
     class Trie {
         List<CalculationNode> list;
-        Trie[] children;
+        final Trie[] children;
 
         Trie() {
             children = new Trie[stateNode.length];
@@ -138,12 +140,13 @@ public class State extends BEASTObject {
 
         /**
          * get entry from Trie, return null if no entry is present yet *
+         * @param iPos
          */
-        List<CalculationNode> get(int iPos) {
+        List<CalculationNode> get(final int iPos) {
             if (iPos == 0) {
                 return list;
             }
-            Trie child = children[changeStateNodes[iPos - 1]];
+            final Trie child = children[changeStateNodes[iPos - 1]];
             if (child == null) {
                 return null;
             }
@@ -153,7 +156,7 @@ public class State extends BEASTObject {
         /**
          * set entry int Trie, create new entries if no entry is present yet *
          */
-        void set(List<CalculationNode> list, int iPos) {
+        void set(final List<CalculationNode> list, final int iPos) {
             if (iPos == 0) {
                 this.list = list;
                 return;
@@ -207,7 +210,7 @@ public class State extends BEASTObject {
      * changing it. To change a StateNode, say from an Operator,
      * getEditableStateNode() should be called. *
      */
-    public StateNode getStateNode(int nID) {
+    public StateNode getStateNode(final int nID) {
         return stateNode[nID];
     }
 
@@ -239,8 +242,9 @@ public class State extends BEASTObject {
      * Also, store the state to disk for resumption of analysis later on.
      *
      * @param iSample chain state number
+     * @return  true if stored  to disk
      */
-    public void store(int iSample) {
+    public void store(final int iSample) {
         //Arrays.fill(changeStateNodes, -1);
         nrOfChangedStateNodes = 0;
     }
@@ -273,29 +277,29 @@ public class State extends BEASTObject {
      * themselves
      */
     public void storeCalculationNodes() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+        final List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (final CalculationNode calculationNode : currentSetOfCalculationNodes) {
             calculationNode.store();
         }
     }
 
     public void checkCalculationNodesDirtiness() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+        final List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (final CalculationNode calculationNode : currentSetOfCalculationNodes) {
             calculationNode.checkDirtiness();
         }
     }
 
     public void restoreCalculationNodes() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+        final List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (final CalculationNode calculationNode : currentSetOfCalculationNodes) {
             calculationNode.restore();
         }
     }
 
     public void acceptCalculationNodes() {
-        List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
-        for (CalculationNode calculationNode : currentSetOfCalculationNodes) {
+        final List<CalculationNode> currentSetOfCalculationNodes = getCurrentCalculationNodes();
+        for (final CalculationNode calculationNode : currentSetOfCalculationNodes) {
             calculationNode.accept();
         }
     }
@@ -303,7 +307,7 @@ public class State extends BEASTObject {
     /**
      * set name of state file, used when storing/restoring the state to disk *
      */
-    public void setStateFileName(String sFileName) {
+    public void setStateFileName(final String sFileName) {
         if (sFileName != null) {
             stateFileName = sFileName;
         }
@@ -315,7 +319,7 @@ public class State extends BEASTObject {
      *
      * @param iSample TODO
      */
-    public void storeToFile(int iSample) {
+    public void storeToFile(final int iSample) {
         try {
             PrintStream out = new PrintStream(stateFileName + ".new");
             out.print(toXML(iSample));
@@ -336,10 +340,10 @@ public class State extends BEASTObject {
      *
      * @param iSample TODO*
      */
-    public String toXML(int iSample) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("<itsabeastystatewerein version='2.0' sample='" + iSample + "'>\n");
-        for (StateNode node : stateNode) {
+    public String toXML(final int iSample) {
+        final StringBuilder buf = new StringBuilder();
+        buf.append("<itsabeastystatewerein version='2.0' sample='").append(iSample).append("'>\n");
+        for (final StateNode node : stateNode) {
             buf.append(node.toXML());
         }
         buf.append("</itsabeastystatewerein>\n");
@@ -349,23 +353,23 @@ public class State extends BEASTObject {
     /**
      * Restore state from an XML fragment *
      */
-    public void fromXML(String sXML) {
+    public void fromXML(final String sXML) {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(sXML.getBytes()));
+            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            final Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(sXML.getBytes()));
             doc.normalize();
-            NodeList nodes = doc.getElementsByTagName("*");
-            Node topNode = nodes.item(0);
-            NodeList children = topNode.getChildNodes();
+            final NodeList nodes = doc.getElementsByTagName("*");
+            final Node topNode = nodes.item(0);
+            final NodeList children = topNode.getChildNodes();
             for (int iChild = 0; iChild < children.getLength(); iChild++) {
-                Node child = children.item(iChild);
+                final Node child = children.item(iChild);
                 if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    String sID = child.getAttributes().getNamedItem("id").getNodeValue();
+                    final String sID = child.getAttributes().getNamedItem("id").getNodeValue();
                     int iStateNode = 0;
                     while (!stateNode[iStateNode].getID().equals(sID)) {
                         iStateNode++;
                     }
-                    StateNode stateNode2 = stateNode[iStateNode].copy();
+                    final StateNode stateNode2 = stateNode[iStateNode].copy();
                     stateNode2.fromXML(child);
                     stateNode[iStateNode].assignFromFragile(stateNode2);
                 }
@@ -384,15 +388,19 @@ public class State extends BEASTObject {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         Document doc = factory.newDocumentBuilder().parse(new File(stateFileName));
         doc.normalize();
-        NodeList nodes = doc.getElementsByTagName("*");
-        Node topNode = nodes.item(0);
-        NodeList children = topNode.getChildNodes();
+        final NodeList nodes = doc.getElementsByTagName("*");
+        final Node topNode = nodes.item(0);
+        final NodeList children = topNode.getChildNodes();
         for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            Node child = children.item(iChild);
+            final Node child = children.item(iChild);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                String sID = child.getAttributes().getNamedItem("id").getNodeValue();
+                final String sID = child.getAttributes().getNamedItem("id").getNodeValue();
                 int iStateNode = 0;
-                while (!stateNode[iStateNode].getID().equals(sID)) {
+
+                // An init node without ID - should not bring the house down, does it?
+                // I have not checked if the state is restored correctly or not (JH)
+                while (stateNode[iStateNode].getID() != null &&
+                        !stateNode[iStateNode].getID().equals(sID)) {
                     iStateNode++;
                     if (iStateNode >= stateNode.length) {
                     	System.err.println("Cannot resotre statenode sID");
@@ -400,7 +408,7 @@ public class State extends BEASTObject {
                     }
                 }
                 if (iStateNode < stateNode.length) {
-	                StateNode stateNode2 = stateNode[iStateNode].copy();
+	                final StateNode stateNode2 = stateNode[iStateNode].copy();
 	                stateNode2.fromXML(child);
 	                stateNode[iStateNode].assignFromFragile(stateNode2);
                 }
@@ -413,8 +421,8 @@ public class State extends BEASTObject {
         if (stateNode == null) {
             return "";
         }
-        StringBuffer buf = new StringBuffer();
-        for (StateNode node : stateNode) {
+        final StringBuilder buf = new StringBuilder();
+        for (final StateNode node : stateNode) {
             buf.append(node.toString());
             buf.append("\n");
         }
@@ -428,8 +436,8 @@ public class State extends BEASTObject {
      * parameters mark all their dimension as isDirty and
      * trees mark all their nodes as isDirty.
      */
-    public void setEverythingDirty(boolean isDirty) {
-        for (StateNode node : stateNode) {
+    public void setEverythingDirty(final boolean isDirty) {
+        for (final StateNode node : stateNode) {
             node.setEverythingDirty(isDirty);
         }
 
@@ -539,7 +547,7 @@ public class State extends BEASTObject {
      * partial order as determined by the Plugins input relations.
      */
     private List<CalculationNode> calculateCalcNodePath() throws Exception {
-        List<CalculationNode> calcNodes = new ArrayList<CalculationNode>();
+        final List<CalculationNode> calcNodes = new ArrayList<CalculationNode>();
 //    	for (int i = 0; i < stateNode.length; i++) {
 //    		if (m_changedStateNodeCode.get(i)) {
         for (int k = 0; k < nrOfChangedStateNodes; k++) {
@@ -562,7 +570,7 @@ public class State extends BEASTObject {
                     CalculationNode node = calcNodes.get(iCalcNode);
                     for (BEASTObject output : outputMap.get(node)) {
                         if (output instanceof CalculationNode) {
-                            CalculationNode calcNode = (CalculationNode) output;
+                            final CalculationNode calcNode = (CalculationNode) output;
                             if (!calcNodes.contains(calcNode)) {
                                 calcNodes.add(calcNode);
                                 bProgress = true;
@@ -586,7 +594,7 @@ public class State extends BEASTObject {
             for (int j = calcNodes.size() - 1; j > i; j--) {
                 if (inputList.contains(calcNodes.get(j))) {
                     // swap
-                    CalculationNode node2 = calcNodes.get(j);
+                    final CalculationNode node2 = calcNodes.get(j);
                     calcNodes.set(j, node);
                     calcNodes.set(i, node2);
                     j = 0;
@@ -598,4 +606,15 @@ public class State extends BEASTObject {
         return calcNodes;
     } // calculateCalcNodePath
 
+
+    public double robustlyCalcPosterior(final Distribution posterior) throws Exception {
+        store(-1);
+        setEverythingDirty(true);
+        //state.storeCalculationNodes();
+        checkCalculationNodesDirtiness();
+        final double fLogLikelihood = posterior.calculateLogP();
+        setEverythingDirty(false);
+        acceptCalculationNodes();
+        return fLogLikelihood;
+    }
 } // class State
