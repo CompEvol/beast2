@@ -217,7 +217,7 @@ public class Frequencies extends CalculationNode {
             for (int j = i + 1; j < freqs.length; j++) {
                 if (freqs[i] == freqs[j]) {
                     freqs[i] += MINFDIFF;
-                    freqs[j] += MINFDIFF;
+                    freqs[j] -= MINFDIFF;
                 }
             }
         }
