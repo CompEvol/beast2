@@ -42,8 +42,6 @@ import java.util.regex.Pattern;
 
 public interface Parameter<T> extends Function {
 
-    public int getDimension();
-
     public T getValue(int i);
 
     public T getValue();
@@ -63,6 +61,8 @@ public interface Parameter<T> extends Function {
     public String getID();
 
     public int getMinorDimension1();
+    
+    public int getMinorDimension2();
 
     public T getMatrixValue(int i, int j);
 
