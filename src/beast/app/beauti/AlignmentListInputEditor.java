@@ -56,7 +56,7 @@ import beast.evolution.tree.TreeInterface;
 
 
 
-// TODO: add useAmbiguities flag
+// TODO: add useAmbiguities flag 
 // TODO: add warning if useAmbiguities=false and nr of patterns=1 (happens when all data is ambiguous)
 
 public class AlignmentListInputEditor extends ListInputEditor {

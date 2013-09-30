@@ -303,7 +303,7 @@ abstract public class BEASTObject {
         for (Input<?> input : listInputs()) {
             inputNames += input.getName() + ",";
         }
-        throw new Exception("This YABBYObject (" + (this.getID() == null ? this.getClass().getName() : this.getID()) + ") has no input with name " + name + ". " +
+        throw new Exception("This BEASTObject (" + (this.getID() == null ? this.getClass().getName() : this.getID()) + ") has no input with name " + name + ". " +
                 "Choose one of these inputs:" + inputNames.substring(0, inputNames.length() - 1));
     } // getInput
 

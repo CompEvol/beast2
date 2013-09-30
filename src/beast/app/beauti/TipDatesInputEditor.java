@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -34,6 +35,7 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 
 
 
@@ -48,10 +50,10 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
     @Override
     public Class<?> type() {
-        return Tree.class;
+        return TreeInterface.class;
     }
 
-    Tree tree;
+    TreeInterface tree;
     TraitSet traitSet;
     JComboBox unitsComboBox;
     JComboBox relativeToComboBox;
@@ -68,14 +70,19 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         m_bAddButtons = bAddButtons;
 		this.itemNr = itemNr;
 		if (itemNr >= 0) {
-	        tree = (Tree) ((List<?>)input.get()).get(itemNr);
+	        tree = (TreeInterface) ((List<?>)input.get()).get(itemNr);
 		} else {
-	        tree = (Tree) input.get();			
+	        tree = (TreeInterface) input.get();			
 		}
         if (tree != null) {
-            m_input = tree.m_trait;
-            m_plugin = tree;
-            traitSet = tree.m_trait.get();
+            try {
+				m_input = ((BEASTObject) tree).getInput("trait");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            m_plugin = (BEASTObject) tree;
+            traitSet = (TraitSet) m_input.get();
 
             Box box = Box.createVerticalBox();
 
@@ -90,7 +97,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                             if (traitSet == null) {
                                 traitSet = new TraitSet();
                                 traitSet.initByName("traitname", "date",
-                                        "taxa", tree.m_taxonset.get(),
+                                        "taxa", tree.getTaxonset(),
                                         "value", "");
                                 traitSet.setID("dateTrait.t:" + BeautiDoc.parsePartition(tree.getID()));
                             }
