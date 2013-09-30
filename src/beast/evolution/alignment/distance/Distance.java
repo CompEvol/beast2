@@ -6,13 +6,14 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.DataType;
 
-@Description("Provides distance between two sequences in an alignment")
+@Description("Provides distance between taxa")
 public interface Distance {
 	
 	/** return distance of two taxa, identified by their indices **/
 	double pairwiseDistance(int taxon1, int taxon2);
 	
 	
+	@Description("Provides distance between two sequences in an alignment")
 	public class Base extends BEASTObject implements Distance {
 	
 	    //public static final double MAX_DISTANCE = 1000.0;
