@@ -67,6 +67,7 @@ import beast.core.Logger.LogFileMode;
 import beast.core.Runnable;
 
 import beast.util.AddOnManager;
+import beast.util.JSONParser;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLParserException;
@@ -247,7 +248,11 @@ public class BeastMCMC {
         AddOnManager.loadExternalJars();
         // parse xml
         Randomizer.setSeed(m_nSeed);
-        m_runnable = new XMLParser().parseFile(beastFile);
+        if (beastFile.getPath().toLowerCase().endsWith(".json")) {
+            m_runnable = new JSONParser().parseFile(beastFile);
+        } else {        	
+        	m_runnable = new XMLParser().parseFile(beastFile);
+        }
         m_runnable.setStateFile(beastFile.getName() + ".state", resume);
     } // parseArgs
 

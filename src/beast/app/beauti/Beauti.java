@@ -51,6 +51,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      * File extension for Beast specifications
      */
     static public final String FILE_EXT = ".xml";
+    static public final String FILE_EXT2 = ".json";
 
     /**
      * document in document-view pattern. BTW this class is the view
@@ -203,7 +204,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             return false;
         }
         File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(
-                doc.getFileName()), null, (String[]) null);
+                doc.getFileName()), null, FILE_EXT, FILE_EXT2);
         if (file != null) {
             if (file.exists() && !Utils.isMac()) {
                 if (JOptionPane.showConfirmDialog(null,
@@ -224,7 +225,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 g_sDir = doc.getFileName().substring(0,
                         doc.getFileName().lastIndexOf(fileSep));
             }
-            if (!doc.getFileName().endsWith(FILE_EXT))
+            if (!doc.getFileName().toLowerCase().endsWith(FILE_EXT) && !doc.getFileName().toLowerCase().endsWith(FILE_EXT2))
                 doc.setFileName(doc.getFileName().concat(FILE_EXT));
             saveFile(doc.getFileName());
             setTitle();

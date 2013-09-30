@@ -220,7 +220,7 @@ public class JSONParser {
 	 * plate variable with the appropriate value.
 	 * "plate":{"var":"n",
 	 *  "range": ["CO1", "CO2", "Nuc"],
-	 *  "content":
+	 *  "content": [
 	 *      {"part":"$(n)"}
 	 *      {"otherpart":"$(n).$(m)"}
 	 *      {"yetotherpart":"xyz$(n)"}
@@ -613,7 +613,7 @@ public class JSONParser {
 		// parameter clutch
 		if (plugin instanceof Parameter<?>) {
 			for (String nameSpace : m_sNameSpaces) {
-				nameSpace = nameSpace.replaceAll("beast", "yabby");
+				//nameSpace = nameSpace.replaceAll("beast", "yabby");
 				if ((nameSpace + sClass).equals(RealParameter.class.getName())) {
 					return true;
 				}
@@ -623,7 +623,7 @@ public class JSONParser {
 			return true;
 		}
 		for (String nameSpace : m_sNameSpaces) {
-			nameSpace = nameSpace.replaceAll("beast", "yabby");
+			//nameSpace = nameSpace.replaceAll("beast", "yabby");
 			try {
 				if (Class.forName(nameSpace + sClass).isInstance(plugin)) {
 					return true;
@@ -636,7 +636,7 @@ public class JSONParser {
 	} // checkType
 
 	BEASTObject createObject(JSONObject node, String className, BEASTObject parent) throws Exception {
-		className = className.replaceAll("beast", "yabby");
+		//className = className.replaceAll("beast", "yabby");
 		// try the IDMap first
 		String ID = getID(node);
 
@@ -687,7 +687,7 @@ public class JSONParser {
 		if (spec != null) {
 			specClass = spec;
 		}
-		specClass = specClass.replaceAll("beast", "yabby");
+		//specClass = specClass.replaceAll("beast", "yabby");
 
 		Object o = null;
 		// try to create object from sSpecName, taking namespaces in account
@@ -696,7 +696,7 @@ public class JSONParser {
 			for (String nameSpace : m_sNameSpaces) {
 				try {
 					if (!bDone) {
-						nameSpace = nameSpace.replaceAll("beast", "yabby");
+						//nameSpace = nameSpace.replaceAll("beast", "yabby");
 						Class c = Class.forName(nameSpace + specClass); 
 						o = c.newInstance();
 						bDone = true;

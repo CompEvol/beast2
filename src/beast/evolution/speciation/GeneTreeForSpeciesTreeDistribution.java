@@ -47,7 +47,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     // maps gene tree leaf nodes to species tree leaf nodes. Indexed by node number.
     protected int[] nrOfLineageToSpeciesMap;
 
-    beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction m_bIsConstantPopFunction;
+    beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction isConstantPopFunction;
     RealParameter popSizesBottom;
     RealParameter popSizesTop;
 
@@ -125,11 +125,11 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 //        }
 
         final SpeciesTreePrior popInfo = speciesTreePriorInput.get();
-        m_bIsConstantPopFunction = popInfo.popFunctionInput.get();
+        isConstantPopFunction = popInfo.popFunctionInput.get();
         popSizesBottom = popInfo.popSizesBottomInput.get();
         popSizesTop = popInfo.popSizesTopInput.get();
 
-        assert( ! (m_bIsConstantPopFunction == PopSizeFunction.linear && treeTopFinderInput.get() == null ) );
+        assert( ! (isConstantPopFunction == PopSizeFunction.linear && treeTopFinderInput.get() == null ) );
     }
 
     /**
@@ -199,7 +199,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         if (!node.isRoot()) {
             fTimes[k + 1] = node.getParent().getHeight();
         } else {
-            if (m_bIsConstantPopFunction == PopSizeFunction.linear) {
+            if (isConstantPopFunction == PopSizeFunction.linear) {
                 fTimes[k + 1] = treeTopFinderInput.get().getHighestTreeHeight();
             } else {
                 fTimes[k + 1] = Math.max(node.getHeight(), treeInput.get().getRoot().getHeight());
@@ -215,7 +215,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
         final int nLineagesBottom = nrOfLineages[iNode];
 
-        switch (m_bIsConstantPopFunction) {
+        switch (isConstantPopFunction) {
             case constant:
                 calcConstantPopSizeContribution(nLineagesBottom, popSizesBottom.getValue(iNode), fTimes, k);
                 break;

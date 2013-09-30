@@ -57,11 +57,15 @@ import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
+import beast.util.JSONProducer;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
 import beast.util.XMLParser.RequiredInputProvider;
+
+
 
 
 
@@ -681,12 +685,32 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		determinePartitions();
 		scrubAll(false, false);
 		// String sXML = new XMLProducer().toXML(mcmc.get(), );
-		String sXML = toXML();
+		String spec = null;
+		if (file.getPath().toLowerCase().endsWith(".json")) {
+			spec = toJSON();
+		} else {
+			spec = toXML();
+		}
 		FileWriter outfile = new FileWriter(file);
-		outfile.write(sXML);
+		outfile.write(spec);
 		outfile.close();
 	} // save
 
+	private String toJSON() {
+		Set<BEASTObject> plugins = new HashSet<BEASTObject>();
+		String json = new JSONProducer().toJSON(mcmc.get(), plugins);
+		
+		String beautiStatus = "";
+		if (!bAutoSetClockRate) {
+			beautiStatus = "noAutoSetClockRate";
+		}
+		if (bAllowLinking) {
+			beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";			
+		}
+		json = json.replaceFirst("\\{", "{ beautitemplate:\"" + templateName + "\", beautistatus:\"" + beautiStatus + "\", ");
+		return json + "\n";
+	}
+	
 	public String toXML() {
 		Set<BEASTObject> plugins = new HashSet<BEASTObject>();
 //		for (Plugin plugin : pluginmap.values()) {
@@ -873,8 +897,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 			CompoundDistribution likelihood = (CompoundDistribution) pluginmap.get("likelihood");
 			for (Distribution d : likelihood.pDistributions.get()) {
 				if (d instanceof GenericTreeLikelihood) {
-					Tree tree = ((GenericTreeLikelihood) d).treeInput.get();
 					try {
+						// TODO: this might not be a valid type conversion from TreeInterface to Tree 
+						Tree tree = (Tree) ((GenericTreeLikelihood) d).treeInput.get();
 						tree.m_trait.setValue(trait, tree);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -1032,7 +1057,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
 			}
 			for (BEASTObject plugin : pPartition[2]) {
-				Tree tree = ((GenericTreeLikelihood) plugin).treeInput.get();
+				// TODO: this might not be a valid type conversion from TreeInterface to Tree 
+				Tree tree = (Tree) ((GenericTreeLikelihood) plugin).treeInput.get();
 				tree.isEstimatedInput.setValue(true, tree);
             }
 			if (pluginmap.containsKey("Tree.t:Species")) {
@@ -1183,7 +1209,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 						BranchRateModel.Base model = (BranchRateModel.Base) treeLikelihood.branchRateModelInput.get();
 						bNeedsEstimation = (model.meanRateInput.get() != firstClock) || firstClock.isEstimatedInput.get();
 					} else {
-						Tree tree = treeLikelihood.treeInput.get();
+						// TODO: this might not be a valid type conversion from TreeInterface to Tree 
+						Tree tree = (Tree) treeLikelihood.treeInput.get();
 						// check whether there are tip dates
 						TraitSet trait = tree.m_trait.get();
 						if (trait != null) {
@@ -1439,7 +1466,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 						nCurrentPartitions[1].add(0);
 					}
 
-					nPartition = getPartitionNr(treeLikelihood.treeInput.get());
+					nPartition = getPartitionNr((BEASTObject) treeLikelihood.treeInput.get());
 					treeLikelihood2 = treeLikelihoods.get(nPartition);
 					treeLikelihood.treeInput.setValue(treeLikelihood2.treeInput.get(), treeLikelihood);
 					nCurrentPartitions[2].add(nPartition);

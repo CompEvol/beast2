@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+
 import java.util.List;
 import java.util.Random;
 
@@ -11,7 +12,9 @@ import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.sitemodel.SiteModelInterface;
-import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
+
+
 
 
 
@@ -26,7 +29,7 @@ public class GenericTreeLikelihood extends Distribution {
     
     public Input<Alignment> dataInput = new Input<Alignment>("data", "sequence data for the beast.tree", Validate.REQUIRED);
 
-    public Input<Tree> treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
+    public Input<TreeInterface> treeInput = new Input<TreeInterface>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
 
     public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     

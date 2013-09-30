@@ -7,11 +7,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TraitSet;
+
+
 
 
 
@@ -49,7 +52,7 @@ public class JSONProducer {
      * #spaces before elements in XML *
      */
     int indentCount;
-
+    
     final public static String DEFAULT_NAMESPACE = "beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood";
 
     public JSONProducer() {
@@ -58,7 +61,7 @@ public class JSONProducer {
 
     /**
      * Main entry point for this class
-     * Given a plug-in, produces the XML in BEAST 2.0 format
+     * Given a plug-in, produces the XML in BEAST 2 format
      * representing the plug-in. This assumes plugin is Runnable
      */
     public String toJSON(BEASTObject plugin) {
@@ -144,7 +147,7 @@ public class JSONProducer {
     public String stateNodeToJSON(BEASTObject plugin) {
         try {
             StringBuffer buf = new StringBuffer();
-            //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
+            //buf.append("<" + XMLParser.beast_ELEMENT + " version='2.0'>\n");
             isDone = new HashSet<BEASTObject>();
             IDs = new HashSet<String>();
             indentCount = 1;
@@ -243,8 +246,8 @@ public class JSONProducer {
                 if (buf3.length() > 0) {
                 	buf2.append((needsComma == true) ? ",\n" : "\n");
                 	buf2.append(buf3);
+                    needsComma = true;
                 }
-                needsComma = true;
             }
             if (buf2.length() != 0) {
                 buf.append(buf2);
@@ -263,7 +266,7 @@ public class JSONProducer {
         //if (m_nIndent < 2) {
         // collapse newlines if there are no sub-objects
         String str = buf.toString();
-        if (str.indexOf('}') < 0) {
+        if (str.indexOf('}') < 0 && str.length() < 1024) {
         	str = str.replaceAll("\\s+", " ");
         	buf.delete(0, buf.length());
         	buf.append(indent);
@@ -294,8 +297,32 @@ public class JSONProducer {
                 if (input.getName().equals(input0)) {
                     // found the input with name sInput
                     if (input.get() != null) {
-                        // distinguish between List, Plugin and primitive input types
-                        if (input.get() instanceof List) {
+                        // distinguish between Map, List, Plugin and primitive input types
+                        if (input.get() instanceof Map) {
+                            if (!isShort) {
+	                        	Map<String,?> map = (Map<String,?>) input.get();
+	                        	StringBuffer buf2 = new StringBuffer();
+	                        	// determine label widith
+	                        	int whiteSpaceWidth = 0;
+	                        	for (String key : map.keySet()) {
+	                        		whiteSpaceWidth = Math.max(whiteSpaceWidth, key.length());
+	                        	}
+	                        	boolean needsComma = false;
+	                        	for (String key : map.keySet()) {
+	                            	if (needsComma) {
+	                            		buf2.append(",\n");
+	                            	}
+	                        		buf2.append(indent + " " + key);
+	                        		for (int k = key.length(); k < whiteSpaceWidth; k++) {
+	                        			buf2.append(' ');
+	                        		}
+	                        		buf2.append(" :\"" + map.get(key) +"\"");
+	                        		needsComma = true;
+	                        	}
+	                        	buf.append(buf2);
+                            }
+                        	return;
+                        } else if (input.get() instanceof List) {
                             if (!isShort) {
                             	StringBuffer buf2 = new StringBuffer();
                             	//buf2.append(indent + " \"" + input0 + "\": [\n");
@@ -307,7 +334,11 @@ public class JSONProducer {
                                 		buf2.append(",\n");
                                 	}
                                 	StringBuffer buf3 = new StringBuffer();
-                                    pluginToJSON((BEASTObject) o2, input.getType(), buf3, null, false);
+                                	if (o2 instanceof BEASTObject) {
+                                		pluginToJSON((BEASTObject) o2, input.getType(), buf3, null, false);
+                                	} else {
+                                		buf2.append(o2.toString());
+                                	}
                                     buf2.append(buf3);
                                     needsComma = oldLen < buf2.length();
                                 }
