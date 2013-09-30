@@ -56,7 +56,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 
     @Override
     public Class<?> type() {
-        return SiteModel.Base.class;
+        return SiteModelInterface.Base.class;
     }
     
     @Override

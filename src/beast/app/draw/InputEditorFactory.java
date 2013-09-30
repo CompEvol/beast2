@@ -142,6 +142,12 @@ public class InputEditorFactory {
         }
         if (listItemNr >= 0) {
         	inputClass = ((List<?>)input.get()).get(listItemNr).getClass();
+        } else {
+        	if (input.get() != null && !input.get().getClass().equals(inputClass)
+        			&& !(input.get() instanceof ArrayList)) {
+        		System.err.println(input.get().getClass() + " != " + inputClass);
+        		inputClass = input.get().getClass();
+        	}
         }
 
 System.err.print(inputClass.getName() + " => ");        
