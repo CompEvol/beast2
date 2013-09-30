@@ -35,6 +35,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 
 
 import static org.apache.commons.math.special.Gamma.logGamma;
@@ -84,7 +85,7 @@ public class BirthDeathGernhard08Model extends YuleModel {
     }
 
     @Override
-    public double calculateTreeLogLikelihood(final Tree tree) {
+    public double calculateTreeLogLikelihood(final TreeInterface tree) {
         final double a = relativeDeathRateParameterInput.get().getValue();
         final double rho = (sampleProbabilityInput.get() == null ? 1.0 : sampleProbabilityInput.get().getValue());
         return calculateTreeLogLikelihood(tree, rho, a);

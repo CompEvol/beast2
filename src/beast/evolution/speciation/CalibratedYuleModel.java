@@ -17,6 +17,7 @@ import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
 
@@ -88,7 +89,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         type = correctionTypeInput.get();
 
-        final Tree tree = treeInput.get();
+        final TreeInterface tree = treeInput.get();
 
         // shallow copy. we will be changing cals later
         final List<CalibrationPoint> cals = new ArrayList<CalibrationPoint>(calibrationsInput.get());
@@ -296,7 +297,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             }
         }
 
-        final Tree tree = treeInput.get();
+        final TreeInterface tree = treeInput.get();
         final int nNodes = tree.getLeafNodeCount();
         final boolean[] used = new boolean[nNodes];
 
@@ -366,7 +367,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     }
 
     @Override
-    double calculateTreeLogLikelihood(final Tree tree) {
+    double calculateTreeLogLikelihood(final TreeInterface tree) {
         final double lam = birthRateInput.get().getArrayValue();
 
         double logL = calculateYuleLikelihood(tree, lam);
@@ -376,7 +377,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         return logL;
     }
 
-    private static double calculateYuleLikelihood(final Tree tree, final double lam) {
+    private static double calculateYuleLikelihood(final TreeInterface tree, final double lam) {
         final int taxonCount = tree.getLeafNodeCount();
 
         // add all lambda multipliers here
@@ -394,7 +395,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         return logL;
     }
 
-    public double getCorrection(final Tree tree, final double lam) {
+    public double getCorrection(final TreeInterface tree, final double lam) {
         double logL = 0.0;
 
         final int nCals = orderedCalibrations.length;
@@ -775,7 +776,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     // Q2R Those generic functions could find a better home
 
-    public static int getTaxonIndex(final Tree tree, final String taxon) {
+    public static int getTaxonIndex(final TreeInterface tree, final String taxon) {
         for (int i = 0; i < tree.getNodeCount(); i++) {
             final Node node = tree.getNode(i);
             if (node.isLeaf() && node.getID().equals(taxon)) {
@@ -801,7 +802,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     // return the node-ref of the MRCA.
 
     // would be nice to use nodeRef's, but they are not preserved :(
-    public static Node getCommonAncestor(final Tree tree, final int[] nodes) {
+    public static Node getCommonAncestor(final TreeInterface tree, final int[] nodes) {
         Node cur = tree.getNode(nodes[0]);
 
         for (int k = 1; k < nodes.length; ++k) {
@@ -839,7 +840,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public void log(final int nSample, final PrintStream out) {
         out.print(getCurrentLogP() + "\t");
         if (calcCalibrations) {
-            final Tree tree = treeInput.get();
+            final TreeInterface tree = treeInput.get();
             for (int k = 0; k < orderedCalibrations.length; ++k) {
                 final CalibrationPoint cal = orderedCalibrations[k];
                 Node c;

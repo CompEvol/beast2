@@ -33,6 +33,7 @@ import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
+import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
 import beast.math.distributions.Prior;
@@ -74,11 +75,11 @@ public class PriorListInputEditor extends ListInputEditor {
 					// first the tree priors
 					if (o1 instanceof TreeDistribution) {
 						if (o2 instanceof TreeDistribution) {
-							Tree tree1 = ((TreeDistribution)o1).treeInput.get();
+							TreeInterface tree1 = ((TreeDistribution)o1).treeInput.get();
 							if (tree1 == null) {
 								tree1 = ((TreeDistribution)o1).treeIntervalsInput.get().treeInput.get();
 							}
-							Tree tree2 = ((TreeDistribution)o2).treeInput.get();
+							TreeInterface tree2 = ((TreeDistribution)o2).treeInput.get();
 							if (tree2 == null) {
 								tree2 = ((TreeDistribution)o2).treeIntervalsInput.get().treeInput.get();
 							}

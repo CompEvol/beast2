@@ -8,6 +8,7 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 
 
 
@@ -34,7 +35,7 @@ public class YuleModel extends SpeciesTreeDistribution {
 
         // make sure that all tips are at the same height,
         // otherwise this Yule Model is not appropriate
-        Tree tree = treeInput.get();
+        TreeInterface tree = treeInput.get();
         if (tree == null) {
         	tree = treeIntervalsInput.get().treeInput.get();
         }
@@ -49,11 +50,11 @@ public class YuleModel extends SpeciesTreeDistribution {
     }
 
     @Override
-    public double calculateTreeLogLikelihood(final Tree tree) {
+    public double calculateTreeLogLikelihood(final TreeInterface tree) {
         return calculateTreeLogLikelihood(tree, 1, 0);
     }
 
-    protected double calculateTreeLogLikelihood(final Tree tree, final double rho, final double a) {
+    protected double calculateTreeLogLikelihood(final TreeInterface tree, final double rho, final double a) {
         final int taxonCount = tree.getLeafNodeCount();
         final double r = birthDiffRateParameterInput.get().getValue();
 

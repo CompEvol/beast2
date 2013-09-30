@@ -34,6 +34,7 @@ import beast.core.Description;
 import beast.core.State;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
+import beast.evolution.tree.TreeInterface;
 
 
 /**
@@ -57,7 +58,7 @@ abstract public class SpeciesTreeDistribution extends TreeDistribution {
     public double calculateLogP() {
         // (Q2R): what if tree intervals?
         // (Q2R): always the same tree, no? so why pass in argument
-        final Tree tree = treeInput.get();
+        final TreeInterface tree = treeInput.get();
         logP = calculateTreeLogLikelihood(tree);
         return logP;
     } // calculateLogP
@@ -69,7 +70,7 @@ abstract public class SpeciesTreeDistribution extends TreeDistribution {
      * @param tree
      * @return log-likelihood of density
      */
-    abstract double calculateTreeLogLikelihood(Tree tree);
+    abstract double calculateTreeLogLikelihood(TreeInterface tree);
 
     // ****************************************************************
     // Private and protected stuff

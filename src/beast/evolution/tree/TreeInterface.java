@@ -2,6 +2,8 @@ package beast.evolution.tree;
 
 
 
+import java.util.List;
+
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 
@@ -16,6 +18,9 @@ public interface TreeInterface {
     Node getNode(int i);
     Node [] getNodesAsArray();
 
+    List<Node> getExternalNodes();
+    List<Node> getInternalNodes();
+    
     TaxonSet getTaxonset();
     
 	boolean somethingIsDirty();

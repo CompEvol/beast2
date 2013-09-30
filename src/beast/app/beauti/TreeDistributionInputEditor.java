@@ -21,6 +21,7 @@ import beast.core.BEASTObject;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
+import beast.evolution.tree.TreeInterface;
 
 
 //import beast.evolution.speciation.BirthDeathGernhard08Model;
@@ -136,7 +137,8 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 	@Override
 	public void validateInput() {
 		TreeDistribution distr = (TreeDistribution) m_plugin;
-	    Tree tree = distr.treeInput.get();
+		// TODO: robustify for the case the tree is not a simple binary tree
+	    Tree tree = (Tree) distr.treeInput.get();
 	    if (tree == null) {
 	    	tree = distr.treeIntervalsInput.get().treeInput.get();
 	    }
