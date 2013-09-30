@@ -82,7 +82,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     public Input<String> clusterTypeInput = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
             "Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE + ")", M_AVERAGE, TYPES);
     public Input<Alignment> dataInput = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
-    public Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "specifies taxon set in same order as used for distance", Validate.XOR, dataInput);
+    //public Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "specifies taxon set in same order as used for distance", Validate.XOR, dataInput);
     public Input<Distance> distanceInput = new Input<Distance>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
 
     /**
@@ -94,11 +94,15 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     @Override
     public void initAndValidate() throws Exception {
+    	
 
     	if (dataInput.get() != null) {
     		taxaNames = dataInput.get().getTaxaNames();
     	} else {
-    		taxaNames = taxonSetInput.get().asStringList();
+    		if (m_taxonset.get() == null) {
+    			throw new Exception("At least one of taxa and taxonset input needs to be specified");
+    		}
+    		taxaNames = m_taxonset.get().asStringList();
     	}
         if (Boolean.valueOf(System.getProperty("beast.resume")) &&
                 (isEstimatedInput.get() || (m_initial.get() != null && m_initial.get().isEstimatedInput.get()))) {
