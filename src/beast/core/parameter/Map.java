@@ -1,18 +1,21 @@
 package beast.core.parameter;
 
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.lang.String;
 
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
+
+
 
 
 @Description("Unordered set mapping keys to values")
-abstract public class Map<T> extends BEASTObject {	
+abstract public class Map<T> extends CalculationNode {	
 	
 	public Input<java.util.Map<java.lang.String, T>> defaultInput = new Input<java.util.Map<java.lang.String, T>>("*",
 			"Input containing the map", new HashMap<java.lang.String, T>());

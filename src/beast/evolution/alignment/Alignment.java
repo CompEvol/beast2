@@ -26,22 +26,26 @@ package beast.evolution.alignment;
 
 
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.parameter.Map;
 import beast.evolution.datatype.DataType;
 import beast.util.AddOnManager;
 
 
+
 @Description("Class representing alignment data")
-public class Alignment extends CalculationNode {
-    /**
+public class Alignment extends Map<String> {
+	protected Class<?> mapType() {return String.class;}
+
+	/**
      * default data type *
      */
     final static String NUCLEOTIDE = "nucleotide";
@@ -80,7 +84,7 @@ public class Alignment extends CalculationNode {
 
 
     public Input<List<Sequence>> sequenceInput =
-            new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.REQUIRED);
+            new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.OPTIONAL);
     public Input<Integer> stateCountInput = new Input<Integer>("statecount", "maximum number of states in all sequences");
     //public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
     public Input<String> dataTypeInput = new Input<String>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
@@ -153,6 +157,10 @@ public class Alignment extends CalculationNode {
 
     @Override
     public void initAndValidate() throws Exception {
+    	if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
+    		throw new Exception("Either a sequence input must be specified, or a map of strings must be specified");
+    	}
+    	
         // determine data type, either user defined or one of the standard ones
         if (userDataTypeInput.get() != null) {
             m_dataType = userDataTypeInput.get();
@@ -170,25 +178,37 @@ public class Alignment extends CalculationNode {
                 }
             }
         }
-
+        
         // grab data from child sequences
         taxaNames.clear();
         stateCounts.clear();
         counts.clear();
-        for (Sequence seq : sequenceInput.get()) {
-            //m_counts.add(seq.getSequence(getMap()));
-            counts.add(seq.getSequence(m_dataType));
-            if (taxaNames.indexOf(seq.taxonInput.get()) >= 0) {
-                throw new Exception("Duplicate taxon found in alignment: " + seq.taxonInput.get());
-            }
-            taxaNames.add(seq.taxonInput.get());
-            stateCounts.add(seq.totalCountInput.get());
+        if (sequenceInput.get().size() > 0) {
+	        for (Sequence seq : sequenceInput.get()) {
+	            //m_counts.add(seq.getSequence(getMap()));
+	            counts.add(seq.getSequence(m_dataType));
+	            if (taxaNames.indexOf(seq.taxonInput.get()) >= 0) {
+	                throw new Exception("Duplicate taxon found in alignment: " + seq.taxonInput.get());
+	            }
+	            taxaNames.add(seq.taxonInput.get());
+	            stateCounts.add(seq.totalCountInput.get());
+	        }
+	        if (counts.size() == 0) {
+	            // no sequence data
+	            throw new Exception("Sequence data expected, but none found");
+	        }
+        } else {
+        	for (String key : map.keySet()) {
+        		String sequence = map.get(key);
+        		List<Integer> list = m_dataType.string2state(sequence);
+        		counts.add(list);
+	            if (taxaNames.indexOf(key) >= 0) {
+	                throw new Exception("Duplicate taxon found in alignment: " + key);
+	            }
+	            taxaNames.add(key);
+	            stateCounts.add(m_dataType.getStateCount());
+        	}
         }
-        if (counts.size() == 0) {
-            // no sequence data
-            throw new Exception("Sequence data expected, but none found");
-        }
-
         // Sanity check: make sure sequences are of same length
         int nLength = counts.get(0).size();
         for (List<Integer> seq : counts) {

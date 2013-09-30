@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -308,7 +309,10 @@ public class JSONProducer {
 	                        		whiteSpaceWidth = Math.max(whiteSpaceWidth, key.length());
 	                        	}
 	                        	boolean needsComma = false;
-	                        	for (String key : map.keySet()) {
+	                        	List<String> keys = new ArrayList<String>();
+	                        	keys.addAll(map.keySet());
+	                        	Collections.sort(keys);
+	                        	for (String key : keys) {
 	                            	if (needsComma) {
 	                            		buf2.append(",\n");
 	                            	}

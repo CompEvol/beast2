@@ -3,7 +3,7 @@
 *
 * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
-* This file is part of BEAST2.
+* This file is part of BEAST 2.
 * See the NOTICE file distributed with this work for additional
 * information regarding copyright ownership and licensing.
 *
@@ -50,8 +50,10 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -137,7 +139,23 @@ public class XMLProducer extends XMLParser {
             	//extras +  "\n\n-->\n\n" 
             		+ sEndBeast;
 
-            return sXML;
+            sXML = sXML.replaceAll("xmlns=\"http://www.w3.org/TR/xhtml1/strict\"", "");
+
+            //insert newlines in alignments
+            int k = sXML.indexOf("<data ");
+            StringBuffer buf2 = new StringBuffer(sXML); 
+            while (k > 0) {
+            	while (sXML.charAt(k) != '>') {
+            		if (sXML.charAt(k) == ' ') {
+            			buf2.setCharAt(k, '\n');
+            		}
+            		k++;
+            	}
+            	k = sXML.indexOf("<data ", k + 1);
+            }
+            
+
+            return buf2.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -689,10 +707,10 @@ public class XMLProducer extends XMLParser {
      * @param plugin: plugin to produce this input XML for
      * @param buf:    gets XML results are appended
      * @param bShort: flag to indicate attribute/value format (true) or element format (false)
-     * @throws Exception
+     * @throws Exception 
      */
     @SuppressWarnings("rawtypes")
-    void inputToXML(String sInput, BEASTObject plugin, StringBuffer buf, boolean bShort) throws Exception {
+    void inputToXML(String sInput, BEASTObject plugin, StringBuffer buf, boolean isShort) throws Exception {
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
@@ -700,21 +718,52 @@ public class XMLProducer extends XMLParser {
                 if (input.getName().equals(sInput)) {
                     // found the input with name sInput
                     if (input.get() != null) {
-                        // distinguish between List, Plugin and primitive input types
-                        if (input.get() instanceof List) {
-                            if (!bShort) {
-                                for (Object o2 : (List) input.get()) {
-                                    pluginToXML((BEASTObject) o2, buf, sInput, false);
+                        if (input.get() instanceof Map) {
+                            // distinguish between List, Plugin and primitive input types
+                        	if (isShort) {
+	                        	Map<String,?> map = (Map<String,?>) input.get();
+	                        	// determine label width
+	                        	int whiteSpaceWidth = 0;
+	                        	List<String> keys = new ArrayList<String>();
+	                        	keys.addAll(map.keySet());
+	                        	Collections.sort(keys);
+	                        	for (String key : keys) {
+	                        		whiteSpaceWidth = Math.max(whiteSpaceWidth, key.length());
+	                        	}
+	                        	for (String key : map.keySet()) {
+                                    //buf.append("        <input name='" + key + "'>");
+                                    buf.append("\n        " + key);
+	                        		for (int k = key.length(); k < whiteSpaceWidth; k++) {
+	                        			buf.append(' ');
+	                        		}
+	                        		buf.append("=\"" + normalise(map.get(key).toString()) + "\"");
+	                        	}
+                            }
+                        	return;
+                        } else if (input.get() instanceof List) {
+                            if (!isShort) {
+                            	int k = 0;
+                            	List list = (List) input.get();
+                                for (Object o2 : list) {
+                                	if (o2 instanceof BEASTObject) {
+                                		pluginToXML((BEASTObject) o2, buf, sInput, false);
+                                	} else {
+                                		k++;
+                                		buf.append(o2.toString());
+                                		if (k < list.size()-1) {
+                                			buf.append(' ');
+                                		}
+                                	}
                                 }
                             }
                             return;
                         } else if (input.get() instanceof BEASTObject) {
                         	if (!input.get().equals(input.defaultValue)) {
-	                            if (bShort && isDone.contains((BEASTObject) input.get())) {
+	                            if (isShort && isDone.contains((BEASTObject) input.get())) {
 	                                buf.append(" " + sInput + "='@" + ((BEASTObject) input.get()).getID() + "'");
 	                                inputsDone.add(input);
 	                            }
-	                            if (!bShort && !inputsDone.contains(input)) {
+	                            if (!isShort && !inputsDone.contains(input)) {
 	                                pluginToXML((BEASTObject) input.get(), buf, sInput, false);
 	                            }
                         	}
@@ -723,7 +772,7 @@ public class XMLProducer extends XMLParser {
                         	if (!input.get().equals(input.defaultValue)) {
 	                            // primitive type, see if
 	                            String sValue = input.get().toString();
-	                            if (bShort) {
+	                            if (isShort) {
 	                                if (sValue.indexOf('\n') < 0) {
 	                                    buf.append(" " + sInput + "='" + normalise(input.get().toString()) + "'");
 	                                }
