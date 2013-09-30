@@ -4,6 +4,7 @@ package beast.app.beauti;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Box;
@@ -124,7 +125,7 @@ public class PriorInputEditor extends InputEditor.Base {
     String paramToString(RealParameter p) {
         Double lower = p.lowerValueInput.get();
         Double upper = p.upperValueInput.get();
-        return "initial = " + p.valuesInput.get() +
+        return "initial = " + Arrays.toString(p.valuesInput.get().toArray()) +
                 " [" + (lower == null ? "-\u221E" : lower + "") +
                 "," + (upper == null ? "\u221E" : upper + "") + "]";
     }

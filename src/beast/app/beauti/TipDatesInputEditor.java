@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -35,7 +36,6 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreeInterface;
 
 
 
@@ -50,10 +50,10 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
     @Override
     public Class<?> type() {
-        return TreeInterface.class;
+        return Tree.class;
     }
 
-    TreeInterface tree;
+    Tree tree;
     TraitSet traitSet;
     JComboBox unitsComboBox;
     JComboBox relativeToComboBox;
@@ -70,9 +70,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         m_bAddButtons = bAddButtons;
 		this.itemNr = itemNr;
 		if (itemNr >= 0) {
-	        tree = (TreeInterface) ((List<?>)input.get()).get(itemNr);
+	        tree = (Tree) ((List<?>)input.get()).get(itemNr);
 		} else {
-	        tree = (TreeInterface) input.get();			
+	        tree = (Tree) input.get();			
 		}
         if (tree != null) {
             try {
