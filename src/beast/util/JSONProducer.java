@@ -69,6 +69,7 @@ public class JSONProducer {
     	return toJSON(plugin, new ArrayList<BEASTObject>());
     }
 
+	@SuppressWarnings("rawtypes")
     public String toJSON(BEASTObject plugin, Collection<BEASTObject> others) {
         try {
             StringBuffer buf = new StringBuffer();
@@ -168,7 +169,7 @@ public class JSONProducer {
      * that is moderately readable.
      */
 //    @SuppressWarnings("rawtypes")
-    void pluginToJSON(BEASTObject plugin, Class defaultType, StringBuffer buf, String name, boolean bIsTopLevel) throws Exception {
+    void pluginToJSON(BEASTObject plugin, Class<?> defaultType, StringBuffer buf, String name, boolean bIsTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
 
     	String indent = "";
@@ -289,7 +290,7 @@ public class JSONProducer {
      * @param isShort: flag to indicate attribute/value format (true) or element format (false)
      * @throws Exception
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     void inputToJSON(String input0, BEASTObject plugin, StringBuffer buf, boolean isShort, String indent) throws Exception {
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
@@ -401,7 +402,7 @@ public class JSONProducer {
 
     
    /** convert plain text string to XML string, replacing some entities **/
-    String normalise(Input input, String str) {
+    String normalise(Input<?> input, String str) {
     	str = str.replaceAll("\\\\", "\\\\\\\\");
     	str = str.replaceAll("/", "\\\\/");
     	str = str.replaceAll("\b", "\\\\b");
@@ -420,6 +421,7 @@ public class JSONProducer {
     
 
 	
+	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {
 		// convert BEAST 2 XML to BEAST json file
 		XMLParser parser = new XMLParser();
@@ -436,6 +438,7 @@ public class JSONProducer {
 		JSONProducer writer = new JSONProducer();
 		String JSON = writer.toJSON(plugin);
 		out.println(JSON);
+		out.close();
 		
 		
 	}

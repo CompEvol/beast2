@@ -95,15 +95,15 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     @Override
     public void initAndValidate() throws Exception {
 
-        if (Boolean.valueOf(System.getProperty("yabby.resume")) &&
+    	if (dataInput.get() != null) {
+    		taxaNames = dataInput.get().getTaxaNames();
+    	} else {
+    		taxaNames = taxonSetInput.get().asStringList();
+    	}
+        if (Boolean.valueOf(System.getProperty("beast.resume")) &&
                 (isEstimatedInput.get() || (m_initial.get() != null && m_initial.get().isEstimatedInput.get()))) {
             // don't bother creating a cluster tree to save some time, if it is read from file anyway
             // make a caterpillar
-        	if (dataInput.get() != null) {
-        		taxaNames = dataInput.get().getTaxaNames();
-        	} else {
-        		taxaNames = taxonSetInput.get().asStringList();
-        	}
             Node left = newNode();
             left.setNr(0);
             left.setID(taxaNames.get(0));

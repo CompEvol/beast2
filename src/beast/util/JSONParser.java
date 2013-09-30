@@ -27,7 +27,6 @@ package beast.util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import beast.app.beauti.PartitionContext;
 import beast.core.*;
@@ -38,7 +37,6 @@ import beast.core.parameter.RealParameter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -697,7 +695,7 @@ public class JSONParser {
 				try {
 					if (!bDone) {
 						//nameSpace = nameSpace.replaceAll("beast", "yabby");
-						Class c = Class.forName(nameSpace + specClass); 
+						Class<?> c = Class.forName(nameSpace + specClass); 
 						o = c.newInstance();
 						bDone = true;
 						break;
