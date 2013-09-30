@@ -679,12 +679,18 @@ public class XMLProducer extends XMLParser {
                 buf.append("/>\n");
             } else {
                 // add contribution of inputs
-                buf.append(">\n");
-                buf.append(buf2);
-                indent--;
-                for (int i = 0; i < indent; i++) {
-                    buf.append("    ");
-                }
+            	if (buf2.indexOf("<") >= 0) {
+                    buf.append(">\n");
+                    buf.append(buf2);
+                    indent--;
+                    for (int i = 0; i < indent; i++) {
+                        buf.append("    ");
+                    }
+            	} else {
+                    buf.append(">");
+            		buf.append(buf2.toString().trim());
+                    indent--;
+            	}
                 // add closing element
                 buf.append("</" + sElementName + ">\n");
             }
@@ -750,7 +756,7 @@ public class XMLProducer extends XMLParser {
                                 	} else {
                                 		k++;
                                 		buf.append(o2.toString());
-                                		if (k < list.size()-1) {
+                                		if (k < list.size()) {
                                 			buf.append(' ');
                                 		}
                                 	}
@@ -812,6 +818,8 @@ public class XMLProducer extends XMLParser {
     	str = str.replaceAll(">", "&gt;");
     	return str;
     }
+
+    
     
 } // class XMLProducer
 
