@@ -1,31 +1,4 @@
-/*
-* File Tree.java
-*
-* Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
-*
-* This file is part of BEAST2.
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership and licensing.
-*
-* BEAST is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as
-* published by the Free Software Foundation; either version 2
-* of the License, or (at your option) any later version.
-*
-*  BEAST is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with BEAST; if not, write to the
-* Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
-* Boston, MA  02110-1301  USA
-*/
 package beast.evolution.tree;
-
-
-
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -40,18 +13,13 @@ import beast.evolution.alignment.TaxonSet;
 import beast.util.TreeParser;
 
 
-/*
-* Note that leaf nodes are always numbered 0,...,nodeCount-1
-* Internal nodes are numbered higher, but the root has no guaranteed 
-* number.
-*/
-
 @Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
         "other time-beast.tree relationships among sequence data.")
-public class Tree extends StateNode {
+public class Tree extends StateNode implements TreeInterface {
     public Input<Tree> m_initial = new Input<Tree>("initial", "tree to start with");
     public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
     public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset", "set of taxa that correspond to the leafs in the tree");
+    public Input<String> nodeTypeInput = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
 
     /**
      * state of dirtiness of a node in the tree
@@ -100,16 +68,16 @@ public class Tree extends StateNode {
             if (m_taxonset.get() != null) {
                 // make a caterpillar
                 List<String> sTaxa = m_taxonset.get().asStringList();
-                Node left = createNode();
+                Node left = newNode();
                 left.labelNr = 0;
                 left.height = 0;
                 left.setID(sTaxa.get(0));
                 for (int i = 1; i < sTaxa.size(); i++) {
-                    Node right = createNode();
+                    Node right = newNode();
                     right.labelNr = i;
                     right.height = 0;
                     right.setID(sTaxa.get(i));
-                    Node parent = createNode();
+                    Node parent = newNode();
                     parent.labelNr = sTaxa.size() + i - 1;
                     parent.height = i;
                     left.parent = parent;
@@ -125,7 +93,7 @@ public class Tree extends StateNode {
 
             } else {
                 // make dummy tree with a single root node
-                root = createNode();
+                root = newNode();
                 root.labelNr = 0;
                 root.height = 0;
                 root.m_tree = this;
@@ -141,6 +109,15 @@ public class Tree extends StateNode {
         if (nodeCount >= 0) {
             initArrays();
         }
+    }
+
+    protected Node newNode() {
+    	try {
+    		return (Node) Class.forName(nodeTypeInput.get()).newInstance();
+    	} catch (Exception e) {
+    		throw new RuntimeException("Cannot create node of tyep " + nodeTypeInput.get() + ": " + e.getMessage());
+    	}
+        //return new NodeData();
     }
 
     protected void initArrays() {
@@ -290,7 +267,7 @@ public class Tree extends StateNode {
             }
         }
         // sanity check
-        if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null && Boolean.valueOf(System.getProperty("beast.resume"))) {
+        if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null && Boolean.valueOf(System.getProperty("yabby.resume"))) {
             System.err.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
         }
         return m_sTaxaNames;
@@ -420,7 +397,7 @@ public class Tree extends StateNode {
         Tree tree = (Tree) other;
         Node[] nodes = new Node[tree.getNodeCount()];//tree.getNodesAsArray();
         for (int i = 0; i < tree.getNodeCount(); i++) {
-            nodes[i] = createNode();
+            nodes[i] = newNode();
         }
         ID = tree.ID;
         //index = tree.index;
@@ -636,7 +613,7 @@ public class Tree extends StateNode {
             }
             if (nodeCount > m_storedNodes.length) {
                 tmp[m_storedNodes.length - 1] = m_storedNodes[m_storedNodes.length - 1];
-                tmp[nodeCount - 1] = createNode();
+                tmp[nodeCount - 1] = newNode();
                 tmp[nodeCount - 1].setNr(nodeCount - 1);
             }
             m_storedNodes = tmp;
@@ -748,15 +725,6 @@ public class Tree extends StateNode {
         leafNodeCount++;
     }
 
-    /**
-     * Should be overridden by subclasses to create the appropriate subclass of node.
-     *
-     * @return
-     */
-    public Node createNode() {
-        return new Node();
-    }
-
     public int getDirectAncestorNodeCount() {
 		int directAncestorNodeCount = 0;
 		for (int i = 0; i < leafNodeCount; i++) {
@@ -766,5 +734,10 @@ public class Tree extends StateNode {
 		}
 		return directAncestorNodeCount;
 	}
-    
+
+
+	@Override
+	public TaxonSet getTaxonset() {
+    	return m_taxonset.get();
+	}
 } // class Tree

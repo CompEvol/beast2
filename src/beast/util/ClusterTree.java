@@ -47,6 +47,8 @@ import beast.evolution.tree.Tree;
 
 
 
+
+
 /**
  * Adapted from Weka's HierarchicalClustering class *
  */
@@ -76,26 +78,25 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     final static String[] TYPES = {M_SINGLE, M_AVERAGE, M_COMPLETE, M_UPGMA, M_MEAN, M_CENTROID, M_WARD, M_ADJCOMPLETE, M_NEIGHBORJOINING, M_NEIGHBORJOINING2};
 
-    public Input<String> m_sClusterType = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
+    public Input<String> clusterTypeInput = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
             "Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE + ")", M_AVERAGE, TYPES);
-    public Input<Alignment> m_pData = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering", Validate.REQUIRED);
-    public Input<String> m_oNodeType = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
+    public Input<Alignment> dataInput = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering", Validate.REQUIRED);
     public Input<Distance> distanceInput = new Input<Distance>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
 
     /**
      * Whether the distance represent node height (if false) or branch length (if true).
      */
-    protected boolean m_bDistanceIsBranchLength = false;
+    protected boolean distanceIsBranchLength = false;
     Distance distance;
 
     @Override
     public void initAndValidate() throws Exception {
 
-        if (Boolean.valueOf(System.getProperty("beast.resume")) &&
+        if (Boolean.valueOf(System.getProperty("yabby.resume")) &&
                 (isEstimatedInput.get() || (m_initial.get() != null && m_initial.get().isEstimatedInput.get()))) {
             // don't bother creating a cluster tree to save some time, if it is read from file anyway
             // make a caterpillar
-            List<String> sTaxa = m_pData.get().getTaxaNames();
+            List<String> sTaxa = dataInput.get().getTaxaNames();
             Node left = newNode();
             left.setNr(0);
             left.setID(sTaxa.get(0));
@@ -126,9 +127,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         if (distance == null) {
             distance = new JukesCantorDistance();
         }
-        distance.setPatterns(m_pData.get());
+        distance.setPatterns(dataInput.get());
 
-        String sType = m_sClusterType.get().toLowerCase();
+        String sType = clusterTypeInput.get().toLowerCase();
         if (sType.equals(M_SINGLE)) {
             m_nLinkType = SINGLE;
         } else if (sType.equals(M_COMPLETE)) {
@@ -147,10 +148,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             m_nLinkType = ADJCOMLPETE;
         } else if (sType.equals(M_NEIGHBORJOINING)) {
             m_nLinkType = NEIGHBOR_JOINING;
-            m_bDistanceIsBranchLength = true;
+            distanceIsBranchLength = true;
         } else if (sType.equals(M_NEIGHBORJOINING2)) {
             m_nLinkType = NEIGHBOR_JOINING2;
-            m_bDistanceIsBranchLength = true;
+            distanceIsBranchLength = true;
         } else {
             System.out.println("Warning: unrecognized cluster type. Using Average/UPGMA.");
             m_nLinkType = AVERAGE;
@@ -179,12 +180,6 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
         
         initStateNodes();
-    }
-
-
-    Node newNode() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        return (Node) Class.forName(m_oNodeType.get()).newInstance();
-        //return new NodeData();
     }
 
     /**
@@ -262,16 +257,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
             if (m_left == null) {
                 if (m_right == null) {
-                    return "(" + m_pData.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
-                            m_pData.get().getTaxaNames().get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
+                    return "(" + dataInput.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
+                            dataInput.get().getTaxaNames().get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
                 } else {
-                    return "(" + m_pData.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
+                    return "(" + dataInput.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
                             m_right.toString() + ":" + myFormatter.format(m_fRightLength) + ")";
                 }
             } else {
                 if (m_right == null) {
                     return "(" + m_left.toString() + ":" + myFormatter.format(m_fLeftLength) + "," +
-                            m_pData.get().getTaxaNames().get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
+                            dataInput.get().getTaxaNames().get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
                 } else {
                     return "(" + m_left.toString() + ":" + myFormatter.format(m_fLeftLength) + "," + m_right.toString() + ":" + myFormatter.format(m_fRightLength) + ")";
                 }
@@ -284,12 +279,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             if (m_left == null) {
                 node.setLeft(newNode());
                 node.getLeft().setNr(m_iLeftInstance);
-                node.getLeft().setID(m_pData.get().getTaxaNames().get(m_iLeftInstance));
+                node.getLeft().setID(dataInput.get().getTaxaNames().get(m_iLeftInstance));
                 node.getLeft().setHeight(m_fHeight - m_fLeftLength);
                 if (m_right == null) {
                     node.setRight(newNode());
                     node.getRight().setNr(m_iRightInstance);
-                    node.getRight().setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
+                    node.getRight().setID(dataInput.get().getTaxaNames().get(m_iRightInstance));
                     node.getRight().setHeight(m_fHeight - m_fRightLength);
                 } else {
                     node.setRight(m_right.toNode());
@@ -299,7 +294,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 if (m_right == null) {
                     node.setRight(newNode());
                     node.getRight().setNr(m_iRightInstance);
-                    node.getRight().setID(m_pData.get().getTaxaNames().get(m_iRightInstance));
+                    node.getRight().setID(dataInput.get().getTaxaNames().get(m_iRightInstance));
                     node.getRight().setHeight(m_fHeight - m_fRightLength);
                 } else {
                     node.setRight(m_right.toNode());
@@ -359,16 +354,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     // 1-norm
     double distance(double[] nPattern1, double[] nPattern2) {
         double fDist = 0;
-        for (int i = 0; i < m_pData.get().getPatternCount(); i++) {
-            fDist += m_pData.get().getPatternWeight(i) * Math.abs(nPattern1[i] - nPattern2[i]);
+        for (int i = 0; i < dataInput.get().getPatternCount(); i++) {
+            fDist += dataInput.get().getPatternWeight(i) * Math.abs(nPattern1[i] - nPattern2[i]);
         }
-        return fDist / m_pData.get().getSiteCount();
+        return fDist / dataInput.get().getSiteCount();
     }
 
 
     @SuppressWarnings("unchecked")
     public Node buildClusterer() throws Exception {
-        int nTaxa = m_pData.get().getNrTaxa();
+        int nTaxa = dataInput.get().getNrTaxa();
         if (nTaxa == 1) {
             // patalogical case
             Node node = newNode();
@@ -416,7 +411,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * @param clusterNodes
      */
     void neighborJoining(int nClusters, List<Integer>[] nClusterID, NodeX[] clusterNodes) {
-        int n = m_pData.get().getNrTaxa();
+        int n = dataInput.get().getNrTaxa();
 
         double[][] fDist = new double[nClusters][nClusters];
         for (int i = 0; i < nClusters; i++) {
@@ -539,7 +534,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * @param clusterNodes
      */
     void doLinkClustering(int nClusters, List<Integer>[] nClusterID, NodeX[] clusterNodes) {
-        int nInstances = m_pData.get().getNrTaxa();
+        int nInstances = dataInput.get().getNrTaxa();
         PriorityQueue<Tuple> queue = new PriorityQueue<Tuple>(nClusters * nClusters / 2, new TupleComparator());
         double[][] fDistance0 = new double[nClusters][nClusters];
         for (int i = 0; i < nClusters; i++) {
@@ -605,7 +600,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             node.m_right = clusterNodes[iMin2];
             clusterNodes[iMin2].m_parent = node;
         }
-        if (m_bDistanceIsBranchLength) {
+        if (distanceIsBranchLength) {
             node.setLength(fDist1, fDist2);
         } else {
             node.setHeight(fDist1, fDist2);
@@ -745,19 +740,19 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             break;
             case CENTROID:
                 // finds the distance of the centroids of the clusters
-                int nPatterns = m_pData.get().getPatternCount();
+                int nPatterns = dataInput.get().getPatternCount();
                 double[] centroid1 = new double[nPatterns];
                 for (int i = 0; i < cluster1.size(); i++) {
                     int iTaxon = cluster1.get(i);
                     for (int j = 0; j < nPatterns; j++) {
-                        centroid1[j] += m_pData.get().getPattern(iTaxon, j);
+                        centroid1[j] += dataInput.get().getPattern(iTaxon, j);
                     }
                 }
                 double[] centroid2 = new double[nPatterns];
                 for (int i = 0; i < cluster2.size(); i++) {
                     int iTaxon = cluster2.get(i);
                     for (int j = 0; j < nPatterns; j++) {
-                        centroid2[j] += m_pData.get().getPattern(iTaxon, j);
+                        centroid2[j] += dataInput.get().getPattern(iTaxon, j);
                     }
                 }
                 for (int j = 0; j < nPatterns; j++) {
@@ -788,12 +783,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * calculated error sum-of-squares for instances wrt centroid *
      */
     double calcESS(List<Integer> cluster) {
-        int nPatterns = m_pData.get().getPatternCount();
+        int nPatterns = dataInput.get().getPatternCount();
         double[] centroid = new double[nPatterns];
         for (int i = 0; i < cluster.size(); i++) {
             int iTaxon = cluster.get(i);
             for (int j = 0; j < nPatterns; j++) {
-                centroid[j] += m_pData.get().getPattern(iTaxon, j);
+                centroid[j] += dataInput.get().getPattern(iTaxon, j);
             }
         }
         for (int j = 0; j < nPatterns; j++) {
@@ -805,7 +800,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             double[] instance = new double[nPatterns];
             int iTaxon = cluster.get(i);
             for (int j = 0; j < nPatterns; j++) {
-                instance[j] += m_pData.get().getPattern(iTaxon, j);
+                instance[j] += dataInput.get().getPattern(iTaxon, j);
             }
             fESS += distance(centroid, instance);
         }

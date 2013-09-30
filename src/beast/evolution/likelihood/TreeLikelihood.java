@@ -43,6 +43,9 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
+
+
 
 
 
@@ -309,7 +312,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             logP = beagle.calculateLogP();
             return logP;
         }
-        final Tree tree = treeInput.get();
+        final TreeInterface tree = treeInput.get();
 
         if (traverse(tree.getRoot()) != Tree.IS_CLEAN)
             calcLogP();
