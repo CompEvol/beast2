@@ -40,6 +40,7 @@ import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
@@ -80,7 +81,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     public Input<String> clusterTypeInput = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
             "Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE + ")", M_AVERAGE, TYPES);
-    public Input<Alignment> dataInput = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering", Validate.REQUIRED);
+    public Input<Alignment> dataInput = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
+    public Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "specifies taxon set in same order as used for distance", Validate.XOR, dataInput);
     public Input<Distance> distanceInput = new Input<Distance>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
 
     /**
@@ -88,6 +90,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      */
     protected boolean distanceIsBranchLength = false;
     Distance distance;
+    List<String> taxaNames;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -96,18 +99,22 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 (isEstimatedInput.get() || (m_initial.get() != null && m_initial.get().isEstimatedInput.get()))) {
             // don't bother creating a cluster tree to save some time, if it is read from file anyway
             // make a caterpillar
-            List<String> sTaxa = dataInput.get().getTaxaNames();
+        	if (dataInput.get() != null) {
+        		taxaNames = dataInput.get().getTaxaNames();
+        	} else {
+        		taxaNames = taxonSetInput.get().asStringList();
+        	}
             Node left = newNode();
             left.setNr(0);
-            left.setID(sTaxa.get(0));
+            left.setID(taxaNames.get(0));
             left.setHeight(0);
-            for (int i = 1; i < sTaxa.size(); i++) {
+            for (int i = 1; i < taxaNames.size(); i++) {
                 Node right = newNode();
                 right.setNr(i);
-                right.setID(sTaxa.get(i));
+                right.setID(taxaNames.get(i));
                 right.setHeight(0);
                 Node parent = newNode();
-                parent.setNr(sTaxa.size() + i - 1);
+                parent.setNr(taxaNames.size() + i - 1);
                 parent.setHeight(i);
                 left.setParent(parent);
                 parent.setLeft(left);
@@ -116,7 +123,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 left = parent;
             }
             root = left;
-            leafNodeCount = sTaxa.size();
+            leafNodeCount = taxaNames.size();
             nodeCount = leafNodeCount * 2 - 1;
             internalNodeCount = leafNodeCount - 1;
             super.initAndValidate();
@@ -127,7 +134,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         if (distance == null) {
             distance = new JukesCantorDistance();
         }
-        distance.setPatterns(dataInput.get());
+        if (distance instanceof Distance.Base){
+        	if (dataInput.get() == null) {
+        		// Distance requires an alignment?
+        	}
+        	((Distance.Base) distance).setPatterns(dataInput.get());
+        }
 
         String sType = clusterTypeInput.get().toLowerCase();
         if (sType.equals(M_SINGLE)) {
@@ -257,16 +269,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
             if (m_left == null) {
                 if (m_right == null) {
-                    return "(" + dataInput.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
-                            dataInput.get().getTaxaNames().get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
+                    return "(" + taxaNames.get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
+                            taxaNames.get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
                 } else {
-                    return "(" + dataInput.get().getTaxaNames().get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
+                    return "(" + taxaNames.get(m_iLeftInstance) + ":" + myFormatter.format(m_fLeftLength) + "," +
                             m_right.toString() + ":" + myFormatter.format(m_fRightLength) + ")";
                 }
             } else {
                 if (m_right == null) {
                     return "(" + m_left.toString() + ":" + myFormatter.format(m_fLeftLength) + "," +
-                            dataInput.get().getTaxaNames().get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
+                            taxaNames.get(m_iRightInstance) + ":" + myFormatter.format(m_fRightLength) + ")";
                 } else {
                     return "(" + m_left.toString() + ":" + myFormatter.format(m_fLeftLength) + "," + m_right.toString() + ":" + myFormatter.format(m_fRightLength) + ")";
                 }
@@ -279,12 +291,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             if (m_left == null) {
                 node.setLeft(newNode());
                 node.getLeft().setNr(m_iLeftInstance);
-                node.getLeft().setID(dataInput.get().getTaxaNames().get(m_iLeftInstance));
+                node.getLeft().setID(taxaNames.get(m_iLeftInstance));
                 node.getLeft().setHeight(m_fHeight - m_fLeftLength);
                 if (m_right == null) {
                     node.setRight(newNode());
                     node.getRight().setNr(m_iRightInstance);
-                    node.getRight().setID(dataInput.get().getTaxaNames().get(m_iRightInstance));
+                    node.getRight().setID(taxaNames.get(m_iRightInstance));
                     node.getRight().setHeight(m_fHeight - m_fRightLength);
                 } else {
                     node.setRight(m_right.toNode());
@@ -294,7 +306,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 if (m_right == null) {
                     node.setRight(newNode());
                     node.getRight().setNr(m_iRightInstance);
-                    node.getRight().setID(dataInput.get().getTaxaNames().get(m_iRightInstance));
+                    node.getRight().setID(taxaNames.get(m_iRightInstance));
                     node.getRight().setHeight(m_fHeight - m_fRightLength);
                 } else {
                     node.setRight(m_right.toNode());
@@ -348,7 +360,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     // return distance according to distance metric
     double distance(int iTaxon1, int iTaxon2) {
-        return distance.calculatePairwiseDistance(iTaxon1, iTaxon2);
+        return distance.pairwiseDistance(iTaxon1, iTaxon2);
     } // distance
 
     // 1-norm
@@ -363,7 +375,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     @SuppressWarnings("unchecked")
     public Node buildClusterer() throws Exception {
-        int nTaxa = dataInput.get().getNrTaxa();
+        int nTaxa = taxaNames.size();
         if (nTaxa == 1) {
             // patalogical case
             Node node = newNode();
@@ -411,7 +423,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * @param clusterNodes
      */
     void neighborJoining(int nClusters, List<Integer>[] nClusterID, NodeX[] clusterNodes) {
-        int n = dataInput.get().getNrTaxa();
+        int n = taxaNames.size();
 
         double[][] fDist = new double[nClusters][nClusters];
         for (int i = 0; i < nClusters; i++) {
@@ -534,7 +546,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * @param clusterNodes
      */
     void doLinkClustering(int nClusters, List<Integer>[] nClusterID, NodeX[] clusterNodes) {
-        int nInstances = dataInput.get().getNrTaxa();
+        int nInstances = taxaNames.size();
         PriorityQueue<Tuple> queue = new PriorityQueue<Tuple>(nClusters * nClusters / 2, new TupleComparator());
         double[][] fDistance0 = new double[nClusters][nClusters];
         for (int i = 0; i < nClusters; i++) {

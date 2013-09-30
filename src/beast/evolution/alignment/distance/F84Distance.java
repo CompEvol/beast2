@@ -37,11 +37,12 @@ import beast.evolution.substitutionmodel.Frequencies;
  * @version $Id: F84DistanceMatrix.java,v 1.3 2005/05/24 20:25:56 rambaut Exp $
  */
 @Description("compute HKY corrected distance")
-public class F84Distance extends Distance {
+public class F84Distance extends Distance.Base {
 
     /**
      * set the pattern source
      */
+    @Override
     public void setPatterns(Alignment patterns) {
         super.setPatterns(patterns);
 
@@ -74,7 +75,8 @@ public class F84Distance extends Distance {
     /**
      * Calculate a pairwise distance
      */
-    public double calculatePairwiseDistance(int taxon1, int taxon2) {
+    @Override
+    public double pairwiseDistance(int taxon1, int taxon2) {
         int state1, state2;
 
         int n = patterns.getPatternCount();

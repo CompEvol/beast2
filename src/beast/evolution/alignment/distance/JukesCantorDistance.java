@@ -34,12 +34,13 @@ import beast.evolution.alignment.Alignment;
  * @version $Id: JukesCantorDistanceMatrix.java,v 1.4 2005/05/24 20:25:56 rambaut Exp $
  */
 @Description("compute jukes-cantor corrected distance")
-public class JukesCantorDistance extends Distance {
+public class JukesCantorDistance extends Distance.Base {
 
 
     /**
      * set the pattern source
      */
+    @Override
     public void setPatterns(Alignment patterns) {
         super.setPatterns(patterns);
 
@@ -52,8 +53,9 @@ public class JukesCantorDistance extends Distance {
     /**
      * Calculate a pairwise distance
      */
-    public double calculatePairwiseDistance(int i, int j) {
-        final double obsDist = super.calculatePairwiseDistance(i, j);
+    @Override
+    public double pairwiseDistance(int i, int j) {
+        final double obsDist = super.pairwiseDistance(i, j);
 
         if (obsDist == 0.0) return 0.0;
 
