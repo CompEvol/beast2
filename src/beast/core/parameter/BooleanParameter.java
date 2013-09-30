@@ -52,37 +52,6 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
         init(sValue, 1);
         m_fUpper = true;
     }
-//    /**
-//     * Constructor for testing.
-//     * @param value
-//     * @param dimension
-//     * @throws Exception
-//     */
-//    public BooleanParameter(String value, Integer dimension) throws Exception {
-//    	init(value, dimension);
-//    }
-
-    @Override
-    public void initAndValidate() throws Exception {
-        String sValue = valuesInput.get();
-        // remove start and end spaces
-        sValue = sValue.replaceAll("^\\s+", "");
-        sValue = sValue.replaceAll("\\s+$", "");
-        // split into space-separated bits
-        String[] sValues = sValue.split("\\s+");
-        int nDimension = Math.max(m_nDimension.get(), sValues.length);
-        m_nDimension.setValue(nDimension, this);
-        values = new java.lang.Boolean[nDimension];
-        storedValues = new java.lang.Boolean[nDimension];
-        String tempValue;
-        for (int i = 0; i < values.length; i++) {
-            tempValue = sValues[i % sValues.length];
-            if (tempValue.equals("1.") || tempValue.equals("1") || tempValue.equals("1.0")) tempValue = "true";
-            if (tempValue.equals("0.") || tempValue.equals("0") || tempValue.equals("0.0")) tempValue = "false";
-            values[i] = new Boolean(tempValue);
-        }
-        super.initAndValidate();
-    }
 
 
     @Override

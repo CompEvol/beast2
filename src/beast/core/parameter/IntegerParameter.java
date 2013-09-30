@@ -31,12 +31,6 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
         init(0, 0, sValue, 1);
     }
 
-    /**
-     * Constructor for testing.
-     */
-//    public IntegerParameter(String value, Integer lower, Integer upper, Integer dimension) throws Exception {
-//    	init(lower, upper, value, dimension);
-//    }
     @Override
     public void initAndValidate() throws Exception {
         if (lowerValueInput.get() != null) {
@@ -48,19 +42,6 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
             m_fUpper = upperValueInput.get();
         } else {
             m_fUpper = Integer.MAX_VALUE - 1;
-        }
-        String sValue = valuesInput.get();
-        // remove start and end spaces
-        sValue = sValue.replaceAll("^\\s+", "");
-        sValue = sValue.replaceAll("\\s+$", "");
-        // split into space-separated bits
-        String[] sValues = sValue.split("\\s+");
-        int nDimension = Math.max(m_nDimension.get(), sValues.length);
-        m_nDimension.setValue(nDimension, this);
-        values = new java.lang.Integer[nDimension];
-        storedValues = new java.lang.Integer[nDimension];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = new Integer(sValues[i % sValues.length]);
         }
         super.initAndValidate();
     }

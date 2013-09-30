@@ -16,7 +16,7 @@ analysis: [
 	 spec: "MCMC", chainLength: 10000000,
 	 state: { storeEvery: 100000,
 		 stateNode: [
-			 {id: "hky.kappa", spec: "parameter.RealParameter", lower: 0.0, value: " 1.0 " },
+			 {id: "hky.kappa", spec: "parameter.RealParameter", lower: 0.0, value: [ 1.0 ] },
 			 {id: "tree", spec: "beast.evolution.tree.Tree" }
 		  ]
 		},
@@ -25,10 +25,10 @@ analysis: [
 		 spec: "beast.evolution.tree.RandomTree", initial: "@tree",
 		 taxa: {id: "alignment",
 			 spec: "FilteredAlignment", filter: "::", data: "@alignment.org",
-				 constantSiteWeights: { lower: 0, upper: 0, value: " 100 200 300 400 ", dimension: 4 }
+				 constantSiteWeights: { lower: 0, upper: 0, dimension: 4, value: [ 100, 200, 300, 400 ] }
 			},
 		 populationModel: {spec: "ConstantPopulation",
-				 popSize: { value: " 1.0 " }
+				 popSize: { value: [ 1.0 ] }
 			}
 		}
 	  ],

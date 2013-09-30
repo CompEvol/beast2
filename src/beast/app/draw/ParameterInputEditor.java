@@ -24,7 +24,8 @@ import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.math.distributions.ParametricDistribution;
-import beast.math.distributions.Prior;
+
+
 
 
 
@@ -56,10 +57,18 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
         if (m_input.get() != null) {
         	if (itemNr < 0) {
         		RealParameter parameter = (RealParameter) m_input.get();
-        		m_entry.setText(parameter.valuesInput.get());
+        		String s = "";
+        		for (Double d : parameter.valuesInput.get()) {
+        			s += d + " ";
+        		}
+        		m_entry.setText(s);
         	} else {
         		RealParameter parameter = (RealParameter) ((List)m_input.get()).get(itemNr);
-        		m_entry.setText(parameter.valuesInput.get());
+        		String s = "";
+        		for (Double d : parameter.valuesInput.get()) {
+        			s += d + " ";
+        		}
+        		m_entry.setText(s);
         	}
         }
     }
@@ -246,7 +255,11 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     @Override
     void refresh() {
         RealParameter parameter = (RealParameter) m_input.get();
-        m_entry.setText(parameter.valuesInput.get());
+		String s = "";
+		for (Double d : parameter.valuesInput.get()) {
+			s += d + " ";
+		}
+		m_entry.setText(s);
         m_isEstimatedBox.setSelected(parameter.isEstimatedInput.get());
         repaint();
     }

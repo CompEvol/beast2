@@ -25,6 +25,8 @@ import beast.evolution.operators.DeltaExchangeOperator;
 
 
 
+
+
 public class ClockModelListInputEditor extends ListInputEditor {
     private static final long serialVersionUID = 1L;
     List<JTextField> textFields = new ArrayList<JTextField>();
@@ -127,9 +129,9 @@ public class ClockModelListInputEditor extends ListInputEditor {
 	    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
 	    		if (clockRate.isEstimatedInput.get()) {
 	    			if (commonClockRate < 0) {
-	    				commonClockRate = Double.parseDouble(clockRate.valuesInput.get());
+	    				commonClockRate = clockRate.valuesInput.get().get(0);
 	    			} else {
-	    				if (Math.abs(commonClockRate - Double.parseDouble(clockRate.valuesInput.get())) > 1e-10) {
+	    				if (Math.abs(commonClockRate - clockRate.valuesInput.get().get(0)) > 1e-10) {
 	    					bAllClocksAreEqual = false;
 	    				}
 	    			}

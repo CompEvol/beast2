@@ -58,20 +58,6 @@ public class RealParameter extends Parameter.Base<Double> {
         } else {
             m_fUpper = Double.POSITIVE_INFINITY;
         }
-
-        String sValue = valuesInput.get();
-        // remove start and end spaces
-        sValue = sValue.replaceAll("^\\s+", "");
-        sValue = sValue.replaceAll("\\s+$", "");
-        // split into space-separated bits
-        String[] sValues = sValue.split("\\s+");
-        int nDimension = Math.max(m_nDimension.get(), sValues.length);
-        m_nDimension.setValue(nDimension, this);
-        values = new java.lang.Double[nDimension];
-        storedValues = new java.lang.Double[nDimension];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = new Double(sValues[i % sValues.length]);
-        }
         super.initAndValidate();
     }
 

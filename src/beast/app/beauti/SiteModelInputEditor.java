@@ -17,8 +17,8 @@ import javax.swing.event.DocumentListener;
 import beast.app.draw.InputEditor;
 import beast.app.draw.IntegerInputEditor;
 import beast.app.draw.ParameterInputEditor;
-import beast.app.draw.BEASTObjectInputEditor;
 import beast.app.draw.SmallLabel;
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.MCMC;
@@ -32,6 +32,8 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
+
+
 
 
 
@@ -54,7 +56,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 
     @Override
     public Class<?> type() {
-        return SiteModelInterface.class;
+        return SiteModel.Base.class;
     }
     
     @Override
@@ -185,12 +187,12 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 			@Override
             public void validateInput() {
 				RealParameter p = (RealParameter) m_input.get();
-				if (p.isEstimatedInput.get() && Double.parseDouble(p.valuesInput.get()) <= 0.0) {
+				if (p.isEstimatedInput.get() && p.valuesInput.get().get(0) <= 0.0) {
                     m_validateLabel.setVisible(true);
                     m_validateLabel.setToolTipText("<html><p>Proportion invariant should be non-zero when estimating</p></html>");
                     return;
 				}
-				if (Double.parseDouble(p.valuesInput.get()) < 0.0 || Double.parseDouble(p.valuesInput.get()) >= 1.0) {
+				if (p.valuesInput.get().get(0) < 0.0 || p.valuesInput.get().get(0) >= 1.0) {
                     m_validateLabel.setVisible(true);
                     m_validateLabel.setToolTipText("<html><p>Proportion invariant should be from 0 to 1 (exclusive 1)</p></html>");
                     return;
@@ -224,9 +226,9 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
 		    		if (mutationRate.isEstimatedInput.get()) {
 		    			if (commonClockRate < 0) {
-		    				commonClockRate = Double.parseDouble(mutationRate.valuesInput.get());
+		    				commonClockRate = mutationRate.valuesInput.get().get(0);
 		    			} else {
-		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.valuesInput.get())) > 1e-10) {
+		    				if (Math.abs(commonClockRate - mutationRate.valuesInput.get().get(0)) > 1e-10) {
 //		    					bAllClocksAreEqual = false;
 		    				}
 		    			}
@@ -263,9 +265,9 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
     		    		if (mutationRate.isEstimatedInput.get()) {
     		    			if (commonClockRate < 0) {
-    		    				commonClockRate = Double.parseDouble(mutationRate.valuesInput.get());
+    		    				commonClockRate = mutationRate.valuesInput.get().get(0);
     		    			} else {
-    		    				if (Math.abs(commonClockRate - Double.parseDouble(mutationRate.valuesInput.get())) > 1e-10) {
+    		    				if (Math.abs(commonClockRate - mutationRate.valuesInput.get().get(0)) > 1e-10) {
     		    					bAllClocksAreEqual = false;
     		    				}
     		    			}
