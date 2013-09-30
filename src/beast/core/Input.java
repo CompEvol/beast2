@@ -558,7 +558,8 @@ public class Input<T> {
 	            	list.add(new Double(sValues[i % sValues.length]));
 	            }
 	            else if (theClass.equals(Boolean.class)) {
-	            	list.add(new Boolean(sValues[i % sValues.length]));
+	            	String str = sValues[i % sValues.length].toLowerCase();
+	            	list.add(str.equals("1") || str.equals("true") || str.equals("yes"));
 	            }
 	            else if (theClass.equals(String.class)) {
 	            	list.add(new String(sValues[i % sValues.length]));
