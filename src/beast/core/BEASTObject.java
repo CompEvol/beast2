@@ -69,10 +69,10 @@ abstract public class BEASTObject {
       * inputs are declared in the class, then calls
       * initAndValidate().
       */
-    public void init(Object... objects) throws Exception {
-        List<Input<?>> inputs = listInputs();
+    public void init(final Object... objects) throws Exception {
+        final List<Input<?>> inputs = listInputs();
         int i = 0;
-        for (Object object : objects) {
+        for (final Object object : objects) {
             inputs.get(i++).setValue(object, this);
         }
         initAndValidate();
@@ -85,13 +85,13 @@ abstract public class BEASTObject {
       * assigns 2 to input kappa and true to input lambda.
       * After assigning inputs, initAndValidate() is called.
       */
-    public void initByName(Object... objects) throws Exception {
+    public void initByName(final Object... objects) throws Exception {
         if (objects.length % 2 == 1) {
             throw new Exception("Expected even number of arguments, name-value pairs");
         }
         for (int i = 0; i < objects.length; i += 2) {
             if (objects[i] instanceof String) {
-                String sName = (String) objects[i];
+                final String sName = (String) objects[i];
                 setInputValue(sName, objects[i + 1]);
             } else {
                 throw new Exception("Expected a String in " + i + "th argument ");
@@ -107,7 +107,7 @@ abstract public class BEASTObject {
         return ID;
     }
 
-    public void setID(String ID) {
+    public void setID(final String ID) {
         this.ID = ID;
     }
 
@@ -116,10 +116,10 @@ abstract public class BEASTObject {
      * @return description from @Description annotation
      */
     public String getDescription() {
-        Annotation[] classAnnotations = this.getClass().getAnnotations();
-        for (Annotation annotation : classAnnotations) {
+        final Annotation[] classAnnotations = this.getClass().getAnnotations();
+        for (final Annotation annotation : classAnnotations) {
             if (annotation instanceof Description) {
-                Description description = (Description) annotation;
+                final Description description = (Description) annotation;
                 return description.value();
             }
         }
@@ -130,8 +130,8 @@ abstract public class BEASTObject {
      * @return citation from @Citation annotation *
      */
     public final Citation getCitation() {
-        Annotation[] classAnnotations = this.getClass().getAnnotations();
-        for (Annotation annotation : classAnnotations) {
+        final Annotation[] classAnnotations = this.getClass().getAnnotations();
+        for (final Annotation annotation : classAnnotations) {
             if (annotation instanceof Citation) {
                 return (Citation) annotation;
             }
@@ -146,14 +146,14 @@ abstract public class BEASTObject {
         return getCitations(new HashSet<String>(), new HashSet<String>());
     }
 
-    private String getCitations(HashSet<String> citations, HashSet<String> IDs) {
+    private String getCitations(final HashSet<String> citations, final HashSet<String> IDs) {
     	if (getID() != null) {
     		if (IDs.contains(getID())) {
     			return "";
     		}
     		IDs.add(getID());
     	}
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         if (getCitation() != null) {
            // only add citation if it is not already processed
            if (!citations.contains(getCitation().value())) {
@@ -165,7 +165,7 @@ abstract public class BEASTObject {
             //return buf.toString();
         }
         try {
-            for (BEASTObject plugin : listActivePlugins()) {
+            for (final BEASTObject plugin : listActivePlugins()) {
                 buf.append(plugin.getCitations(citations, IDs));
             }
         } catch (Exception e) {
@@ -179,11 +179,11 @@ abstract public class BEASTObject {
      * create list of inputs to this plug-in *
      */
     public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
-        List<Input<?>> inputs = new ArrayList<Input<?>>();
-        Field[] fields = getClass().getFields();
-        for (Field field : fields) {
+        final List<Input<?>> inputs = new ArrayList<Input<?>>();
+        final Field[] fields = getClass().getFields();
+        for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(this);
                 inputs.add(input);
             }
         }
@@ -200,15 +200,15 @@ abstract public class BEASTObject {
      * @throws IllegalArgumentException
      */
     public List<BEASTObject> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
-        List<BEASTObject> plugins = new ArrayList<BEASTObject>();
-        Field[] fields = getClass().getFields();
-        for (Field field : fields) {
+        final List<BEASTObject> plugins = new ArrayList<BEASTObject>();
+        final Field[] fields = getClass().getFields();
+        for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(this);
                 if (input.get() != null) {
                     if (input.get() instanceof List<?>) {
-                        List<?> vector = (List<?>) input.get();
-                        for (Object o : vector) {
+                        final List<?> vector = (List<?>) input.get();
+                        for (final Object o : vector) {
                             if (o instanceof BEASTObject) {
                                 plugins.add((BEASTObject) o);
                             }
@@ -228,11 +228,11 @@ abstract public class BEASTObject {
      * @param name of the input
      * @return list of inputs
      */
-    public String getTipText(String name) throws IllegalArgumentException, IllegalAccessException {
-        Field[] fields = getClass().getDeclaredFields();
-        for (Field field : fields) {
+    public String getTipText(final String name) throws IllegalArgumentException, IllegalAccessException {
+        final Field[] fields = getClass().getDeclaredFields();
+        for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(this);
                 if (input.getName().equals(name)) {
                     return input.getTipText();
                 }
@@ -245,39 +245,48 @@ abstract public class BEASTObject {
     /**
      * check whether the input is an Integer, Double, Boolean or String *
      */
-    public boolean isPrimitive(String name) throws Exception {
-        Input<?> input = getInput(name);
-        if (input.getType() == null) {
+    public boolean isPrimitive(final String name) throws Exception {
+        final Input<?> input = getInput(name);
+        final Class<?> inputType = input.getType();
+
+        if (inputType == null) {
             input.determineClass(this);
         }
-        if (input.getType().isAssignableFrom(Integer.class)) {
-            return true;
+
+        assert inputType != null;
+        for( final Class c : new Class[]{Integer.class, Double.class, Boolean.class, String.class} ) {
+            if (inputType.isAssignableFrom(c)) {
+                return true;
+            }
         }
-        if (input.getType().isAssignableFrom(Double.class)) {
-            return true;
-        }
-        if (input.getType().isAssignableFrom(Boolean.class)) {
-            return true;
-        }
-        if (input.getType().isAssignableFrom(String.class)) {
-            return true;
-        }
+//        if (inputType.isAssignableFrom(Integer.class)) {
+//            return true;
+//        }
+//        if (inputType.isAssignableFrom(Double.class)) {
+//            return true;
+//        }
+//        if (inputType.isAssignableFrom(Boolean.class)) {
+//            return true;
+//        }
+//        if (inputType.isAssignableFrom(String.class)) {
+//            return true;
+//        }
         return false;
     } // isPrimitive
 
     /**
      * get value of an input by input name *
      */
-    public Object getInputValue(String name) throws Exception {
-        Input<?> input = getInput(name);
+    public Object getInputValue(final String name) throws Exception {
+        final Input<?> input = getInput(name);
         return input.get();
     } // getInputValue
 
     /**
      * set value of an input by input name *
      */
-    public void setInputValue(String name, Object value) throws Exception {
-        Input<?> input = getInput(name);
+    public void setInputValue(final String name, final Object value) throws Exception {
+        final Input<?> input = getInput(name);
         if (!input.canSetValue(value, this)) {
             throw new Exception("Cannot set input value of " + name);
         }
@@ -287,11 +296,11 @@ abstract public class BEASTObject {
     /**
      * get input by input name *
      */
-    public Input<?> getInput(String name) throws Exception {
-        Field[] fields = getClass().getFields();
-        for (Field field : fields) {
+    public Input<?> getInput(final String name) throws Exception {
+        final Field[] fields = getClass().getFields();
+        for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(this);
                 if (input.getName().equals(name)) {
                     return input;
                 }
@@ -300,7 +309,7 @@ abstract public class BEASTObject {
 
 
         String inputNames = " "; // <- space here to prevent error in .substring below
-        for (Input<?> input : listInputs()) {
+        for (final Input<?> input : listInputs()) {
             inputNames += input.getName() + ",";
         }
         throw new Exception("This BEASTObject (" + (this.getID() == null ? this.getClass().getName() : this.getID()) + ") has no input with name " + name + ". " +
@@ -319,8 +328,8 @@ abstract public class BEASTObject {
         // As a result, there is no place that lists all Operators, which is a bit of a shame.
         // Perhaps DocMaker can be fixed to work around this, otherwise I see no issues making this abstract.
 
-        throw new Exception("Plugin.initAndValidate(): Every plugin should implement this method to assure the class behaves, " +
-                "even when inputs are not specified");
+        throw new Exception("BEASTobject.initAndValidate(): Every BEAST object should implement this method to" +
+                " assure the class behaves, even when inputs are not specified");
     }
 
     /**
@@ -329,7 +338,7 @@ abstract public class BEASTObject {
      * @throws Exception when validation fails
      */
     public void validateInputs() throws Exception {
-        for (Input<?> input : listInputs()) {
+        for (final Input<?> input : listInputs()) {
             input.validate();
         }
     }
@@ -343,10 +352,10 @@ abstract public class BEASTObject {
      * (but x need not necessarily be a predecesor of y)
      */
 
-    public void getPredecessors(List<BEASTObject> predecessors) {
+    public void getPredecessors(final List<BEASTObject> predecessors) {
 		predecessors.add(this);
 		try {
-			for (BEASTObject plugin2 : listActivePlugins()) {
+			for (final BEASTObject plugin2 : listActivePlugins()) {
 				if (!predecessors.contains(plugin2)) {
 					plugin2.getPredecessors(predecessors);
 				}
@@ -362,6 +371,4 @@ abstract public class BEASTObject {
         return getID();
     } // toString
 
-	
-	
 } // class BEASTObject
