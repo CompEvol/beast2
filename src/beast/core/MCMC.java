@@ -118,19 +118,19 @@ public class MCMC extends Runnable {
         Log.info.println("======================================================");
 
         operatorSchedule = operatorScheduleInput.get();
-        for (Operator op : operatorsInput.get()) {
+        for (final Operator op : operatorsInput.get()) {
             operatorSchedule.addOperator(op);
         }
 
         if (sampleFromPriorInput.get()) {
             // remove plugin with id likelihood from posterior, if it is a CompoundDistribution
             if (posteriorInput.get() instanceof CompoundDistribution) {
-                CompoundDistribution posterior = (CompoundDistribution) posteriorInput.get();
-                List<Distribution> distrs = posterior.pDistributions.get();
-                int nDistr = distrs.size();
+                final CompoundDistribution posterior = (CompoundDistribution) posteriorInput.get();
+                final List<Distribution> distrs = posterior.pDistributions.get();
+                final int nDistr = distrs.size();
                 for (int i = 0; i < nDistr; i++) {
-                    Distribution distr = distrs.get(i);
-                    String sID = distr.getID();
+                    final Distribution distr = distrs.get(i);
+                    final String sID = distr.getID();
                     if (sID != null && sID.equals("likelihood")) {
                         distrs.remove(distr);
                         break;
@@ -149,11 +149,12 @@ public class MCMC extends Runnable {
 
         // StateNode initialisation, only required when the state is not read from file
         if (restoreFromFile) {
-            HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
-            for (StateNodeInitialiser initialiser : initilisersInput.get()) {
+            final HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
+            for (final StateNodeInitialiser initialiser : initilisersInput.get()) {
                 // make sure that the initialiser does not re-initialises a StateNode
-                List<StateNode> list = initialiser.getInitialisedStateNodes();
-                for (StateNode stateNode : list) {
+                final List<StateNode> list = new ArrayList<StateNode>(1);
+                initialiser.getInitialisedStateNodes(list);
+                for (final StateNode stateNode : list) {
                     if (initialisedStateNodes.contains(stateNode)) {
                         throw new Exception("Trying to initialise stateNode (id=" + stateNode.getID() + ") more than once. " +
                                 "Remove an initialiser from MCMC to fix this.");
@@ -166,9 +167,9 @@ public class MCMC extends Runnable {
         }
 
         // State initialisation
-        HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
-        for (Operator op : operatorsInput.get()) {
-            for (StateNode stateNode : op.listStateNodes()) {
+        final HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
+        for (final Operator op : operatorsInput.get()) {
+            for (final StateNode stateNode : op.listStateNodes()) {
                 operatorStateNodes.add(stateNode);
             }
         }
@@ -180,7 +181,7 @@ public class MCMC extends Runnable {
         } else {
             // create state from scratch by collecting StateNode inputs from Operators
             this.state = new State();
-            for (StateNode stateNode : operatorStateNodes) {
+            for (final StateNode stateNode : operatorStateNodes) {
                 this.state.stateNodeInput.setValue(stateNode, this.state);
             }
             this.state.m_storeEvery.setValue(storeEveryInput.get(), this.state);
@@ -197,30 +198,30 @@ public class MCMC extends Runnable {
         this.state.setPosterior(posteriorInput.get());
 
         // sanity check: all operator state nodes should be in the state
-        List<StateNode> stateNodes = this.state.stateNodeInput.get();
-        for (Operator op : operatorsInput.get()) {
-            for (StateNode stateNode : op.listStateNodes()) {
+        final List<StateNode> stateNodes = this.state.stateNodeInput.get();
+        for (final Operator op : operatorsInput.get()) {
+            for (final StateNode stateNode : op.listStateNodes()) {
 	            if (!stateNodes.contains(stateNode)) {
 	                throw new Exception("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
 	            }
             }
         }
         // sanity check: all state nodes should be operated on
-        for (StateNode stateNode : stateNodes) {
+        for (final StateNode stateNode : stateNodes) {
             if (!operatorStateNodes.contains(stateNode)) {
                 System.out.println("Warning: state contains a node " + stateNode.getID() + " for which there is no operator.");
             }
         }
     } // init
 
-    public void log(int sampleNr) {
-        for (Logger log : loggersInput.get()) {
+    public void log(final int sampleNr) {
+        for (final Logger log : loggersInput.get()) {
             log.log(sampleNr);
         }
     } // log
 
     public void close() {
-        for (Logger log : loggersInput.get()) {
+        for (final Logger log : loggersInput.get()) {
             log.close();
         }
     } // close
@@ -253,16 +254,16 @@ public class MCMC extends Runnable {
             state.restoreFromFile();
             operatorSchedule.restoreFromFile();
             burnIn = 0;
-            oldLogLikelihood = robustlyCalcPosterior(posterior);
+            oldLogLikelihood = state.robustlyCalcPosterior(posterior);
         } else {
             do {
-                for (StateNodeInitialiser initialiser : initilisersInput.get()) {
+                for (final StateNodeInitialiser initialiser : initilisersInput.get()) {
                     initialiser.initStateNodes();
                 }
-                oldLogLikelihood = robustlyCalcPosterior(posterior);
+                oldLogLikelihood = state.robustlyCalcPosterior(posterior);
             } while (Double.isInfinite(oldLogLikelihood) && nInitiliasiationAttemps++ < 10);
         }
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
 
         // do the sampling
         logAlpha = 0;
@@ -279,14 +280,14 @@ public class MCMC extends Runnable {
         }
 
         // initialises log so that log file headers are written, etc.
-        for (Logger log : loggersInput.get()) {
+        for (final Logger log : loggersInput.get()) {
             log.init();
         }
 
         doLoop();
 
         operatorSchedule.showOperatorRates(System.out);
-        long endTime = System.currentTimeMillis();
+        final long endTime = System.currentTimeMillis();
         System.out.println("Total calculation time: " + (endTime - startTime) / 1000.0 + " seconds");
         close();
 
@@ -294,6 +295,7 @@ public class MCMC extends Runnable {
 //        System.err.println(state);
         state.storeToFile(chainLength);
         operatorSchedule.storeToFile();
+        //Randomizer.storeToFile(stateFileName);
     } // run;
 
 
@@ -306,12 +308,12 @@ public class MCMC extends Runnable {
             final int currentState = sampleNr;
 
             state.store(currentState);
-            if (storeEvery > 0 && sampleNr % storeEvery == 0 && sampleNr > 0) {
-                state.storeToFile(sampleNr);
-            	operatorSchedule.storeToFile();
-            }
+//            if (m_nStoreEvery > 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
+//                state.storeToFile(iSample);
+//            	operatorSchedule.storeToFile();
+//            }
 
-            Operator operator = operatorSchedule.selectOperator();
+            final Operator operator = operatorSchedule.selectOperator();
             //System.out.print("\n" + iSample + " " + operator.getName()+ ":");
 
             final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
@@ -341,7 +343,7 @@ public class MCMC extends Runnable {
                 };
             }
 
-            double logHastingsRatio = operator.proposal(evaluator);
+            final double logHastingsRatio = operator.proposal(evaluator);
 
             if (logHastingsRatio != Double.NEGATIVE_INFINITY) {
 
@@ -384,7 +386,7 @@ public class MCMC extends Runnable {
             if (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0) {
                 // check that the posterior is correctly calculated at every third
                 // sample, as long as we are in debug mode
-                double fLogLikelihood = robustlyCalcPosterior(posterior);
+                final double fLogLikelihood = state.robustlyCalcPosterior(posterior);
                 if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
                     reportLogLikelihoods(posterior, "");
                     System.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + oldLogLikelihood + " != " + fLogLikelihood
@@ -418,6 +420,13 @@ public class MCMC extends Runnable {
                 operator.optimize(logAlpha);
             }
             callUserFunction(sampleNr);
+
+            // make sure we always save just before exiting
+            if ( storeEvery > 0 && (sampleNr+1) % storeEvery == 0 || sampleNr == chainLength) {
+                /*final double fLogLikelihood = */ state.robustlyCalcPosterior(posterior);
+                state.storeToFile(sampleNr);
+            	operatorSchedule.storeToFile();
+            }
         }
         if (corrections > 0) {
         	System.err.println("\n\nNB: " + corrections +" posterior calculation corrections were required. This analysis may not be valid!\n\n");
@@ -428,16 +437,16 @@ public class MCMC extends Runnable {
      * report posterior and subcomponents recursively, for debugging
      * incorrectly recalculated posteriors *
      */
-    protected void reportLogLikelihoods(Distribution distr, String tabString) {
+    protected void reportLogLikelihoods(final Distribution distr, final String tabString) {
         System.err.println(tabString + "P(" + distr.getID() + ") = " + distr.logP + " (was " + distr.storedLogP + ")");
         if (distr instanceof CompoundDistribution) {
-            for (Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
+            for (final Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
                 reportLogLikelihoods(distr2, tabString + "\t");
             }
         }
     }
 
-    protected void callUserFunction(int iSample) {
+    protected void callUserFunction(final int iSample) {
     }
 
 
@@ -445,16 +454,18 @@ public class MCMC extends Runnable {
      * Calculate posterior by setting all StateNodes and CalculationNodes dirty.
      * Clean everything afterwards.
      */
-    public double robustlyCalcPosterior(Distribution posterior) throws Exception {
-        state.store(-1);
-        state.setEverythingDirty(true);
-        //state.storeCalculationNodes();
-        state.checkCalculationNodesDirtiness();
-        double fLogLikelihood = posterior.calculateLogP();
-        state.setEverythingDirty(false);
-        state.acceptCalculationNodes();
-        return fLogLikelihood;
-    }
+   public double robustlyCalcPosterior(final Distribution posterior) throws Exception {
+        return state.robustlyCalcPosterior(posterior);
+   }
+//        state.store(-1);
+//        state.setEverythingDirty(true);
+//        //state.storeCalculationNodes();
+//        state.checkCalculationNodesDirtiness();
+//        double fLogLikelihood = posterior.calculateLogP();
+//        state.setEverythingDirty(false);
+//        state.acceptCalculationNodes();
+//        return fLogLikelihood;
+//    }
 
 } // class MCMC
 
