@@ -566,7 +566,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             while (t != null && (nClusterID[t.m_iCluster1].size() != t.m_nClusterSize1 || nClusterID[t.m_iCluster2].size() != t.m_nClusterSize2));
             iMin1 = t.m_iCluster1;
             iMin2 = t.m_iCluster2;
-            merge(iMin1, iMin2, t.m_fDist, t.m_fDist, nClusterID, clusterNodes);
+            merge(iMin1, iMin2, t.m_fDist/2.0, t.m_fDist/2.0, nClusterID, clusterNodes);
             // merge  clusters
 
             // update distances & queue
