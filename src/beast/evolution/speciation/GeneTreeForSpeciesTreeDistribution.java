@@ -18,13 +18,14 @@ import beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
+import beast.evolution.tree.TreeInterface;
 
 
 
 @Description("Calculates probability of gene tree conditioned on a species tree (as in *BEAST)")
 public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
-    public Input<Tree> speciesTreeInput =
-            new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
+    public Input<TreeInterface> speciesTreeInput =
+            new Input<TreeInterface>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
 //    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
     
@@ -159,7 +160,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
         Arrays.fill(nrOfLineages, 0);
 
-        final Tree stree = speciesTreeInput.get();
+        final TreeInterface stree = speciesTreeInput.get();
         final Node[] speciesNodes = stree.getNodesAsArray();
 
         traverseLineageTree(speciesNodes, treeInput.get().getRoot());
