@@ -105,6 +105,7 @@ public class Uniform extends ParametricDistribution {
     @Override
     public double density(final double x) {
         if (x >= _lower && x <= _upper) {
+            // (BUG)?? why does this not return this.density??? (JH)
             return 1;
         } else {
             return 0;

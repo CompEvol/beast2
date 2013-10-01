@@ -74,7 +74,7 @@ public class NodeReheight extends TreeOperator {
         m_nodes = tree.getNodesAsArray();
         final int nNodes = tree.getNodeCount();
         // randomly change left/right order
-        tree.startEditing(this);
+        tree.startEditing(this);  // we change the tree
         reorder(tree.getRoot());
         // collect heights
         final double[] fHeights = new double[nNodes];
@@ -91,9 +91,9 @@ public class NodeReheight extends TreeOperator {
         // reconstruct tree from heights
         final Node root = reconstructTree(fHeights, iReverseOrder, 0, fHeights.length, new boolean[fHeights.length]);
 
-        if (!checkConsistency(root, new boolean[fHeights.length])) {
-            System.err.println("Inconsisten tree");
-        }
+        assert checkConsistency(root, new boolean[fHeights.length]) ;
+//            System.err.println("Inconsisten tree");
+//        }
         root.setParent(null);
         tree.setRoot(root);
         return 0;
@@ -101,13 +101,14 @@ public class NodeReheight extends TreeOperator {
 
     private boolean checkConsistency(final Node node, final boolean[] bUsed) {
         if (bUsed[node.getNr()]) {
+            // used twice? tha's bad
             return false;
         }
         bUsed[node.getNr()] = true;
-        if (!node.isLeaf()) {
-            return checkConsistency(node.getLeft(), bUsed) && checkConsistency(node.getRight(), bUsed);
+        if ( node.isLeaf() ) {
+            return true;
         }
-        return true;
+        return checkConsistency(node.getLeft(), bUsed) && checkConsistency(node.getRight(), bUsed);
     }
 
     /**
@@ -265,9 +266,9 @@ public class NodeReheight extends TreeOperator {
 //        return iMax;
 //    }
 
-    /**
-     * gather height of each node, and order of the nodes *
-     */
+   /**
+      ** gather height of each node, and the node index associated with the height.*
+      **/
     private int collectHeights(final Node node, final double[] fHeights, final int[] iReverseOrder, int iCurrent) {
         if (node.isLeaf()) {
             fHeights[iCurrent] = node.getHeight();

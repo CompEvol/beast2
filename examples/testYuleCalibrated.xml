@@ -16,7 +16,8 @@
 
     <distribution id="posterior" ignore="false" spec="util.CompoundDistribution" useThreads="false">
         <distribution id="prior" ignore="false" spec="util.CompoundDistribution" useThreads="false">
-            <distribution birthRate="@birthRateY.t:alignment" id="CalibratedYuleModel.t:alignment" spec="beast.evolution.speciation.CalibratedYuleModel" tree="@Tree.t:alignment" type="all"/>
+            <distribution birthRate="@birthRateY.t:alignment" id="CalibratedYuleModel.t:alignment"
+                          spec="beast.evolution.speciation.CalibratedYuleModel" tree="@Tree.t:alignment" type="full"/>
             <distribution id="CalibratedYuleBirthRatePrior.t:alignment" spec="beast.math.distributions.Prior" x="@birthRateY.t:alignment">
                 <distr id="Uniform.0" lower="0.0" offset="0.0" spec="beast.math.distributions.Uniform" upper="1000.0"/>
             </distribution>

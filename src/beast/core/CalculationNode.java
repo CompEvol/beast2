@@ -1,10 +1,12 @@
 package beast.core;
 
 /**
- * A CalculationNode is a Plugin that perform calculations based on the State.
+ * A CalculationNode is a BEAST Object that perform calculations based on the State.
  * CalculationNodes differ from  StateNodes in that they
  * 1. Calculate something
- * 2. can not be changed by Operators
+ * 2. can not be changed by Operators.
+ *
+ * Calculations are functions,  StateNodes are variables.
  *
  * @author Andrew Rambaut
  */

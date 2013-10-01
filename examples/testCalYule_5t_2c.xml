@@ -11,7 +11,7 @@
 	<taxon spec='Taxon' id='e'/>
    </taxonset>
 
-  <input spec='CalibratedYuleModel' type="all" id="cyule">
+  <input spec='CalibratedYuleModel' type="full" id="cyule">
     <birthRate spec='parameter.RealParameter' value="2.0"/>
     <tree idref='tree'/>
 

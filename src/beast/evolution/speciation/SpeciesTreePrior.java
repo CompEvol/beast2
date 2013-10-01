@@ -21,10 +21,10 @@ import beast.math.distributions.Gamma;
 public class SpeciesTreePrior extends TreeDistribution {
     //public Input<Tree> m_speciesTree = new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
-    protected enum PopSizeFunction {constant, linear, linear_with_constant_root}
+    protected enum TreePopSizeFunction {constant, linear, linear_with_constant_root}
 
-    public final Input<PopSizeFunction> popFunctionInput = new Input<PopSizeFunction>("popFunction", "Population function. " +
-            "This can be " + Arrays.toString(PopSizeFunction.values()) + " (default 'constant')", PopSizeFunction.constant, PopSizeFunction.values());
+    public final Input<TreePopSizeFunction> popFunctionInput = new Input<TreePopSizeFunction>("popFunction", "Population function. " +
+            "This can be " + Arrays.toString(TreePopSizeFunction.values()) + " (default 'constant')", TreePopSizeFunction.constant, TreePopSizeFunction.values());
 
     public final Input<RealParameter> popSizesBottomInput = new Input<RealParameter>("bottomPopSize", "population size parameter for populations at the bottom of a branch. " +
             "For linear population function, this is the same at the top of the branch.", Validate.REQUIRED);
@@ -40,7 +40,7 @@ public class SpeciesTreePrior extends TreeDistribution {
     public Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "set of taxa mapping lineages to species", Validate.REQUIRED);
 
 
-    private PopSizeFunction popFunction;
+    private TreePopSizeFunction popFunction;
     private RealParameter popSizesBottom;
     private RealParameter popSizesTop;
 
@@ -86,7 +86,7 @@ public class SpeciesTreePrior extends TreeDistribution {
         gamma4Prior.alphaInput.setValue(parameter, gamma4Prior);
         gamma4Prior.betaInput.setValue(gammaParameterInput.get(), gamma4Prior);
 
-        if (popFunction != PopSizeFunction.constant && gamma4Prior == null) {
+        if (popFunction != TreePopSizeFunction.constant && gamma4Prior == null) {
             throw new Exception("Top prior must be specified when population function is not constant");
         }
         // make sure the m_taxonSet is a set of taxonsets

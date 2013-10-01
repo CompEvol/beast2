@@ -41,7 +41,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
         int pdim;
 
-        for (Parameter p : parametersInput.get()) {
+        for (final Parameter p : parametersInput.get()) {
 
             pdim = p.getDimension();
 
@@ -66,8 +66,8 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
         for (int i = 0; i < dim; i++) {
             final int index = i;
             vars[i] = new RPNexpressionCalculator.GetVariable() {
-                public double get(String name) {
-                    Object[] values = ((Object[]) variables.get(name));
+                public double get(final String name) {
+                    final Object[] values = ((Object[]) variables.get(name));
                     if (values[0] instanceof Boolean)
                         return ((Boolean) values[values.length > 1 ? index : 0] ? 1. : 0.);
                     if (values[0] instanceof Integer)
@@ -108,25 +108,25 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     }
 
     @Override
-    public double getArrayValue(int i) {
+    public double getArrayValue(final int i) {
         return getStatisticValue(i);
     }
 
-    public String getDimensionName(int dim) {
-        return names.get(dim);
-    }
+//    public String getDimensionName(final int dim) {
+//        return names.get(dim);
+//    }
 
     /**
      * @return the value of the expression
      */
-    public double getStatisticValue(int i) {
+    public double getStatisticValue(final int i) {
         updateValues();
         return expressions[i].evaluate(vars[i]);
     }
 
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(final PrintStream out) throws Exception {
         if (dim == 1)
             out.print(this.getID() + "\t");
         else
@@ -135,19 +135,19 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(final int nSample, final PrintStream out) {
         for (int i = 0; i < dim; i++)
             out.print(getStatisticValue(i) + "\t");
     }
 
     @Override
-    public void close(PrintStream out) {
+    public void close(final PrintStream out) {
         // nothing to do
     }
 
     public List<String> getArguments() {
-        List<String> arguments = new ArrayList<String>();
-        for (Parameter par : parametersInput.get()) {
+        final List<String> arguments = new ArrayList<String>();
+        for (final Parameter par : parametersInput.get()) {
             arguments.add(par.getID());
         }
         return arguments;

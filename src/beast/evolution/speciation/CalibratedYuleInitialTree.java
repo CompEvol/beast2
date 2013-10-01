@@ -71,9 +71,7 @@ public class CalibratedYuleInitialTree extends Tree implements StateNodeInitiali
     }
 
     @Override
-    public List<StateNode> getInitialisedStateNodes() {
-        final List<StateNode> stateNodes = new ArrayList<StateNode>();
+    public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
         stateNodes.add(m_initial.get());
-        return stateNodes;
     }
 }

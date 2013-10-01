@@ -14,7 +14,7 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
-import beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction;
+import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
@@ -22,7 +22,7 @@ import beast.evolution.tree.TreeInterface;
 
 
 
-@Description("Calculates probability of gene tree conditioned on a species tree (as in *BEAST)")
+@Description("Calculates probability of gene tree conditioned on a species tree (multi-species coalescent)")
 public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     public Input<TreeInterface> speciesTreeInput =
             new Input<TreeInterface>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
@@ -30,7 +30,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 //    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
     
     public Input<Double> ploidyInput =
-            new Input<Double>("ploidy", "ploidy for this gene, typically a whole number of half (default 2 for autosomal_nuclear)", 2.0);
+            new Input<Double>("ploidy", "ploidy (copy number) for this gene, typically a whole number or half (default 2 for autosomal_nuclear)", 2.0);
 //    public Input<PLOIDY> m_ploidy =
 //        new Input<PLOIDY>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
 
@@ -48,7 +48,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     // maps gene tree leaf nodes to species tree leaf nodes. Indexed by node number.
     protected int[] nrOfLineageToSpeciesMap;
 
-    beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction isConstantPopFunction;
+    beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction isConstantPopFunction;
     RealParameter popSizesBottom;
     RealParameter popSizesTop;
 
@@ -130,7 +130,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         popSizesBottom = popInfo.popSizesBottomInput.get();
         popSizesTop = popInfo.popSizesTopInput.get();
 
-        assert( ! (isConstantPopFunction == PopSizeFunction.linear && treeTopFinderInput.get() == null ) );
+        assert( ! (isConstantPopFunction == TreePopSizeFunction.linear && treeTopFinderInput.get() == null ) );
     }
 
     /**
@@ -200,7 +200,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         if (!node.isRoot()) {
             fTimes[k + 1] = node.getParent().getHeight();
         } else {
-            if (isConstantPopFunction == PopSizeFunction.linear) {
+            if (isConstantPopFunction == TreePopSizeFunction.linear) {
                 fTimes[k + 1] = treeTopFinderInput.get().getHighestTreeHeight();
             } else {
                 fTimes[k + 1] = Math.max(node.getHeight(), treeInput.get().getRoot().getHeight());
@@ -221,14 +221,14 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
                 calcConstantPopSizeContribution(nLineagesBottom, popSizesBottom.getValue(iNode), fTimes, k);
                 break;
             case linear:
-                calcLinearPopSizeContribution(nLineagesBottom, iNode, fTimes, k, node);
+                logP += calcLinearPopSizeContributionJH(nLineagesBottom, iNode, fTimes, k, node);
                 break;
             case linear_with_constant_root:
                 if (node.isRoot()) {
                     final double fPopSize = getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr());
                     calcConstantPopSizeContribution(nLineagesBottom, fPopSize, fTimes, k);
                 } else {
-                    calcLinearPopSizeContribution(nLineagesBottom, iNode, fTimes, k, node);
+                    logP += calcLinearPopSizeContribution(nLineagesBottom, iNode, fTimes, k, node);
                 }
                 break;
         }
@@ -251,8 +251,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     /* the contribution of a branch in the species tree to
       * the log probability, for linear population function.
       */
-    private void calcLinearPopSizeContribution(final int nLineagesBottom, final int iNode, final double[] fTimes,
-                                               final int k, final Node node) {
+    private double calcLinearPopSizeContribution(final int nLineagesBottom, final int iNode, final double[] fTimes,
+                                                 final int k, final Node node) {
+        double lp = 0.0;
         final double fPopSizeBottom;
         if (node.isLeaf()) {
             fPopSizeBottom = popSizesBottom.getValue(iNode) * ploidy;
@@ -266,18 +267,66 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         for (int i = 0; i < k; i++) {
             //double fPopSize = fPopSizeBottom + (fPopSizeTop-fPopSizeBottom) * fTimes[i+1]/(fTimes[k]-fTimes[0]);
             final double fPopSize = a * (fTimes[i + 1] - fTimes[0]) + b;
-            logP += -Math.log(fPopSize);
+            lp += -Math.log(fPopSize);
         }
         for (int i = 0; i <= k; i++) {
             if (Math.abs(fPopSizeTop - fPopSizeBottom) < 1e-10) {
                 // slope = 0, so population function is constant
                 final double fPopSize = a * (fTimes[i + 1] - fTimes[0]) + b;
-                logP += -((nLineagesBottom - i) * (nLineagesBottom - i - 1.0) / 2.0) * (fTimes[i + 1] - fTimes[i]) / fPopSize;
+                lp += -((nLineagesBottom - i) * (nLineagesBottom - i - 1.0) / 2.0) * (fTimes[i + 1] - fTimes[i]) / fPopSize;
             } else {
                 final double f = (a * (fTimes[i + 1] - fTimes[0]) + b) / (a * (fTimes[i] - fTimes[0]) + b);
-                logP += -((nLineagesBottom - i) * (nLineagesBottom - i - 1.0) / 2.0) * Math.log(f) / a;
+                lp += -((nLineagesBottom - i) * (nLineagesBottom - i - 1.0) / 2.0) * Math.log(f) / a;
             }
         }
+        return lp;
+    }
+
+    private double calcLinearPopSizeContributionJH(final int nLineagesBottom, final int iNode, final double[] fTimes,
+                                                   final int k, final Node node) {
+        double lp = 0.0;
+        double fPopSizeBottom;
+        if (node.isLeaf()) {
+            fPopSizeBottom = popSizesBottom.getValue(iNode);
+        } else {
+            // use sum of left and right child branches for internal nodes
+            fPopSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr()));
+        }
+        fPopSizeBottom *= ploidy;
+
+        final double fPopSizeTop = getTopPopSize(iNode) * ploidy;
+        final double d5 = fPopSizeTop - fPopSizeBottom;
+        final double fTime0 = fTimes[0];
+        final double a = d5 / (fTimes[k + 1] - fTime0);
+        final double b = fPopSizeBottom;
+
+        if (Math.abs(d5) < 1e-10) {
+            // use approximation for small values to bypass numerical instability
+            for (int i = 0; i <= k; i++) {
+                final double fTimeip1 = fTimes[i + 1];
+                final double fPopSize = a * (fTimeip1 - fTime0) + b;
+                if( i < k ) {
+                  lp += -Math.log(fPopSize);
+                }
+                // slope = 0, so population function is constant
+
+                final int i1 = nLineagesBottom - i;
+                lp -= (i1 * (i1 - 1.0) / 2.0) * (fTimeip1 - fTimes[i]) / fPopSize;
+            }
+        } else {
+            final double vv = b - a * fTime0;
+            for (int i = 0; i <= k; i++) {
+                final double fPopSize = a * fTimes[i + 1] + vv;
+                if( i < k ) {
+                  lp += -Math.log(fPopSize);
+                }
+                final double f = fPopSize / (a * fTimes[i] + vv);
+
+                final int i1 = nLineagesBottom - i;
+                lp += -(i1 * (i1 - 1.0) / 2.0) * Math.log(f) / a;
+            }
+        }
+        return lp;
     }
 
     /**

@@ -25,26 +25,19 @@
 package beast.util;
 
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.PriorityQueue;
-import java.util.List;
-import java.util.ArrayList;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
-import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 
 
 
@@ -113,11 +106,11 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             left.setID(taxaNames.get(0));
             left.setHeight(0);
             for (int i = 1; i < taxaNames.size(); i++) {
-                Node right = newNode();
+                final Node right = newNode();
                 right.setNr(i);
                 right.setID(taxaNames.get(i));
                 right.setHeight(0);
-                Node parent = newNode();
+                final Node parent = newNode();
                 parent.setNr(taxaNames.size() + i - 1);
                 parent.setHeight(i);
                 left.setParent(parent);
@@ -145,7 +138,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         	((Distance.Base) distance).setPatterns(dataInput.get());
         }
 
-        String sType = clusterTypeInput.get().toLowerCase();
+        final String sType = clusterTypeInput.get().toLowerCase();
         if (sType.equals(M_SINGLE)) {
             m_nLinkType = SINGLE;
         } else if (sType.equals(M_COMPLETE)) {
@@ -172,13 +165,13 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             System.out.println("Warning: unrecognized cluster type. Using Average/UPGMA.");
             m_nLinkType = AVERAGE;
         }
-        Node root = buildClusterer();
+        final Node root = buildClusterer();
         setRoot(root);
         root.labelInternalNodes((getNodeCount() + 1) / 2);
         super.initAndValidate();
         if (m_nLinkType == NEIGHBOR_JOINING2) {
             // set tip dates to zero
-            Node[] nodes = getNodesAsArray();
+            final Node[] nodes = getNodesAsArray();
             for (int i = 0; i < getLeafNodeCount(); i++) {
                 nodes[i].setHeight(0);
             }
@@ -193,8 +186,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         		getNode(i).setHeight(0);
         	}
         }
-
-        
+        // node distances need to be halved when converted to heights.
+        scale(0.5);
         initStateNodes();
     }
 
@@ -269,7 +262,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         }
 
         public String toString() {
-            DecimalFormat myFormatter = new DecimalFormat("#.#####", new DecimalFormatSymbols(Locale.US));
+            final DecimalFormat myFormatter = new DecimalFormat("#.#####", new DecimalFormatSymbols(Locale.US));
 
             if (m_left == null) {
                 if (m_right == null) {
@@ -290,7 +283,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         }
 
         Node toNode() throws Exception {
-            Node node = newNode();
+            final Node node = newNode();
             node.setHeight(m_fHeight);
             if (m_left == null) {
                 node.setLeft(newNode());
@@ -333,7 +326,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * used for priority queue for efficient retrieval of pair of clusters to merge*
      */
     class Tuple {
-        public Tuple(double d, int i, int j, int nSize1, int nSize2) {
+        public Tuple(final double d, final int i, final int j, final int nSize1, final int nSize2) {
             m_fDist = d;
             m_iCluster1 = i;
             m_iCluster2 = j;
@@ -352,7 +345,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * comparator used by priority queue*
      */
     class TupleComparator implements Comparator<Tuple> {
-        public int compare(Tuple o1, Tuple o2) {
+        public int compare(final Tuple o1, final Tuple o2) {
             if (o1.m_fDist < o2.m_fDist) {
                 return -1;
             } else if (o1.m_fDist == o2.m_fDist) {
@@ -363,12 +356,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     }
 
     // return distance according to distance metric
-    double distance(int iTaxon1, int iTaxon2) {
+    double distance(final int iTaxon1, final int iTaxon2) {
         return distance.pairwiseDistance(iTaxon1, iTaxon2);
     } // distance
 
     // 1-norm
-    double distance(double[] nPattern1, double[] nPattern2) {
+    double distance(final double[] nPattern1, final double[] nPattern2) {
         double fDist = 0;
         for (int i = 0; i < dataInput.get().getPatternCount(); i++) {
             fDist += dataInput.get().getPatternWeight(i) * Math.abs(nPattern1[i] - nPattern2[i]);
@@ -379,10 +372,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     @SuppressWarnings("unchecked")
     public Node buildClusterer() throws Exception {
-        int nTaxa = taxaNames.size();
+        final int nTaxa = taxaNames.size();
         if (nTaxa == 1) {
             // patalogical case
-            Node node = newNode();
+            final Node node = newNode();
             node.setHeight(1);
             node.setNr(0);
             return node;
@@ -391,16 +384,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
         // use array of integer vectors to store cluster indices,
         // starting with one cluster per instance
-        List<Integer>[] nClusterID = new ArrayList[nTaxa];
+        final List<Integer>[] nClusterID = new ArrayList[nTaxa];
         for (int i = 0; i < nTaxa; i++) {
             nClusterID[i] = new ArrayList<Integer>();
             nClusterID[i].add(i);
         }
         // calculate distance matrix
-        int nClusters = nTaxa;
+        final int nClusters = nTaxa;
 
         // used for keeping track of hierarchy
-        NodeX[] clusterNodes = new NodeX[nTaxa];
+        final NodeX[] clusterNodes = new NodeX[nTaxa];
         if (m_nLinkType == NEIGHBOR_JOINING || m_nLinkType == NEIGHBOR_JOINING2) {
             neighborJoining(nClusters, nClusterID, clusterNodes);
         } else {
@@ -426,10 +419,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * @param nClusterID
      * @param clusterNodes
      */
-    void neighborJoining(int nClusters, List<Integer>[] nClusterID, NodeX[] clusterNodes) {
-        int n = taxaNames.size();
+    void neighborJoining(int nClusters, final List<Integer>[] nClusterID, final NodeX[] clusterNodes) {
+        final int n = taxaNames.size();
 
-        double[][] fDist = new double[nClusters][nClusters];
+        final double[][] fDist = new double[nClusters][nClusters];
         for (int i = 0; i < nClusters; i++) {
             fDist[i][i] = 0;
             for (int j = i + 1; j < nClusters; j++) {
@@ -438,9 +431,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             }
         }
 
-        double[] fSeparationSums = new double[n];
-        double[] fSeparations = new double[n];
-        int[] nNextActive = new int[n];
+        final double[] fSeparationSums = new double[n];
+        final double[] fSeparations = new double[n];
+        final int[] nNextActive = new int[n];
 
         //calculate initial separation rows
         for (int i = 0; i < n; i++) {
@@ -461,12 +454,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             {
                 int i = 0;
                 while (i < n) {
-                    double fSep1 = fSeparations[i];
-                    double[] fRow = fDist[i];
+                    final double fSep1 = fSeparations[i];
+                    final double[] fRow = fDist[i];
                     int j = nNextActive[i];
                     while (j < n) {
-                        double fSep2 = fSeparations[j];
-                        double fVal = fRow[j] - fSep1 - fSep2;
+                        final double fSep2 = fSeparations[j];
+                        final double fVal = fRow[j] - fSep1 - fSep2;
                         if (fVal < fMin) {
                             // new minimum
                             iMin1 = i;
@@ -479,25 +472,25 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 }
             }
             // record distance
-            double fMinDistance = fDist[iMin1][iMin2];
+            final double fMinDistance = fDist[iMin1][iMin2];
             nClusters--;
-            double fSep1 = fSeparations[iMin1];
-            double fSep2 = fSeparations[iMin2];
-            double fDist1 = (0.5 * fMinDistance) + (0.5 * (fSep1 - fSep2));
-            double fDist2 = (0.5 * fMinDistance) + (0.5 * (fSep2 - fSep1));
+            final double fSep1 = fSeparations[iMin1];
+            final double fSep2 = fSeparations[iMin2];
+            final double fDist1 = (0.5 * fMinDistance) + (0.5 * (fSep1 - fSep2));
+            final double fDist2 = (0.5 * fMinDistance) + (0.5 * (fSep2 - fSep1));
             if (nClusters > 2) {
                 // update separations  & distance
                 double fNewSeparationSum = 0;
-                double fMutualDistance = fDist[iMin1][iMin2];
-                double[] fRow1 = fDist[iMin1];
-                double[] fRow2 = fDist[iMin2];
+                final double fMutualDistance = fDist[iMin1][iMin2];
+                final double[] fRow1 = fDist[iMin1];
+                final double[] fRow2 = fDist[iMin2];
                 for (int i = 0; i < n; i++) {
                     if (i == iMin1 || i == iMin2 || nClusterID[i].size() == 0) {
                         fRow1[i] = 0;
                     } else {
-                        double fVal1 = fRow1[i];
-                        double fVal2 = fRow2[i];
-                        double fDistance = (fVal1 + fVal2 - fMutualDistance) / 2.0;
+                        final double fVal1 = fRow1[i];
+                        final double fVal2 = fRow2[i];
+                        final double fDistance = (fVal1 + fVal2 - fMutualDistance) / 2.0;
                         fNewSeparationSum += fDistance;
                         // update the separationsum of cluster i.
                         fSeparationSums[i] += (fDistance - fVal1 - fVal2);
@@ -526,7 +519,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             if (nClusterID[i].size() > 0) {
                 for (int j = i + 1; j < n; j++) {
                     if (nClusterID[j].size() > 0) {
-                        double fDist1 = fDist[i][j];
+                        final double fDist1 = fDist[i][j];
                         if (nClusterID[i].size() == 1) {
                             merge(i, j, fDist1, 0, nClusterID, clusterNodes);
                         } else if (nClusterID[j].size() == 1) {
@@ -549,10 +542,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * @param nClusterID
      * @param clusterNodes
      */
-    void doLinkClustering(int nClusters, List<Integer>[] nClusterID, NodeX[] clusterNodes) {
-        int nInstances = taxaNames.size();
-        PriorityQueue<Tuple> queue = new PriorityQueue<Tuple>(nClusters * nClusters / 2, new TupleComparator());
-        double[][] fDistance0 = new double[nClusters][nClusters];
+    void doLinkClustering(int nClusters, final List<Integer>[] nClusterID, final NodeX[] clusterNodes) {
+        final int nInstances = taxaNames.size();
+        final PriorityQueue<Tuple> queue = new PriorityQueue<Tuple>(nClusters * nClusters / 2, new TupleComparator());
+        final double[][] fDistance0 = new double[nClusters][nClusters];
         for (int i = 0; i < nClusters; i++) {
             fDistance0[i][i] = 0;
             for (int j = i + 1; j < nClusters; j++) {
@@ -578,9 +571,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             // update distances & queue
             for (int i = 0; i < nInstances; i++) {
                 if (i != iMin1 && nClusterID[i].size() != 0) {
-                    int i1 = Math.min(iMin1, i);
-                    int i2 = Math.max(iMin1, i);
-                    double fDistance = getDistance(fDistance0, nClusterID[i1], nClusterID[i2]);
+                    final int i1 = Math.min(iMin1, i);
+                    final int i2 = Math.max(iMin1, i);
+                    final double fDistance = getDistance(fDistance0, nClusterID[i1], nClusterID[i2]);
                     queue.add(new Tuple(fDistance, i1, i2, nClusterID[i1].size(), nClusterID[i2].size()));
                 }
             }
@@ -589,12 +582,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         }
     } // doLinkClustering
 
-    void merge(int iMin1, int iMin2, double fDist1, double fDist2, List<Integer>[] nClusterID, NodeX[] clusterNodes) {
+    void merge(int iMin1, int iMin2, double fDist1, double fDist2, final List<Integer>[] nClusterID, final NodeX[] clusterNodes) {
         if (iMin1 > iMin2) {
-            int h = iMin1;
+            final int h = iMin1;
             iMin1 = iMin2;
             iMin2 = h;
-            double f = fDist1;
+            final double f = fDist1;
             fDist1 = fDist2;
             fDist2 = f;
         }
@@ -603,7 +596,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         nClusterID[iMin2].removeAll(nClusterID[iMin2]);
 
         // track hierarchy
-        NodeX node = new NodeX();
+        final NodeX node = new NodeX();
         if (clusterNodes[iMin1] == null) {
             node.m_iLeftInstance = iMin1;
         } else {
@@ -627,7 +620,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     /**
      * calculate distance the first time when setting up the distance matrix *
      */
-    double getDistance0(List<Integer> cluster1, List<Integer> cluster2) {
+    double getDistance0(final List<Integer> cluster1, final List<Integer> cluster2) {
         double fBestDist = Double.MAX_VALUE;
         switch (m_nLinkType) {
             case SINGLE:
@@ -645,12 +638,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // finds the distance of the change in caused by merging the cluster.
                 // The information of a cluster is calculated as the error sum of squares of the
                 // centroids of the cluster and its members.
-                double ESS1 = calcESS(cluster1);
-                double ESS2 = calcESS(cluster2);
-                List<Integer> merged = new ArrayList<Integer>();
+                final double ESS1 = calcESS(cluster1);
+                final double ESS2 = calcESS(cluster2);
+                final List<Integer> merged = new ArrayList<Integer>();
                 merged.addAll(cluster1);
                 merged.addAll(cluster2);
-                double ESS = calcESS(merged);
+                final double ESS = calcESS(merged);
                 fBestDist = ESS * merged.size() - ESS1 * cluster1.size() - ESS2 * cluster2.size();
             }
             break;
@@ -665,7 +658,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * @param cluster2 dito for second cluster
      * @return distance between clusters based on link type
      */
-    double getDistance(double[][] fDistance, List<Integer> cluster1, List<Integer> cluster2) {
+    double getDistance(final double[][] fDistance, final List<Integer> cluster1, final List<Integer> cluster2) {
         double fBestDist = Double.MAX_VALUE;
         switch (m_nLinkType) {
             case SINGLE:
@@ -673,10 +666,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // any item in cluster1 and any item in cluster2
                 fBestDist = Double.MAX_VALUE;
                 for (int i = 0; i < cluster1.size(); i++) {
-                    int i1 = cluster1.get(i);
+                    final int i1 = cluster1.get(i);
                     for (int j = 0; j < cluster2.size(); j++) {
-                        int i2 = cluster2.get(j);
-                        double fDist = fDistance[i1][i2];
+                        final int i2 = cluster2.get(j);
+                        final double fDist = fDistance[i1][i2];
                         if (fBestDist > fDist) {
                             fBestDist = fDist;
                         }
@@ -689,10 +682,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // any item in cluster1 and any item in cluster2
                 fBestDist = 0;
                 for (int i = 0; i < cluster1.size(); i++) {
-                    int i1 = cluster1.get(i);
+                    final int i1 = cluster1.get(i);
                     for (int j = 0; j < cluster2.size(); j++) {
-                        int i2 = cluster2.get(j);
-                        double fDist = fDistance[i1][i2];
+                        final int i2 = cluster2.get(j);
+                        final double fDist = fDistance[i1][i2];
                         if (fBestDist < fDist) {
                             fBestDist = fDist;
                         }
@@ -704,20 +697,20 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // calculate adjustment, which is the largest within cluster distance
                 double fMaxDist = 0;
                 for (int i = 0; i < cluster1.size(); i++) {
-                    int i1 = cluster1.get(i);
+                    final int i1 = cluster1.get(i);
                     for (int j = i + 1; j < cluster1.size(); j++) {
-                        int i2 = cluster1.get(j);
-                        double fDist = fDistance[i1][i2];
+                        final int i2 = cluster1.get(j);
+                        final double fDist = fDistance[i1][i2];
                         if (fMaxDist < fDist) {
                             fMaxDist = fDist;
                         }
                     }
                 }
                 for (int i = 0; i < cluster2.size(); i++) {
-                    int i1 = cluster2.get(i);
+                    final int i1 = cluster2.get(i);
                     for (int j = i + 1; j < cluster2.size(); j++) {
-                        int i2 = cluster2.get(j);
-                        double fDist = fDistance[i1][i2];
+                        final int i2 = cluster2.get(j);
+                        final double fDist = fDistance[i1][i2];
                         if (fMaxDist < fDist) {
                             fMaxDist = fDist;
                         }
@@ -729,9 +722,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // finds average distance between the elements of the two clusters
                 fBestDist = 0;
                 for (int i = 0; i < cluster1.size(); i++) {
-                    int i1 = cluster1.get(i);
+                    final int i1 = cluster1.get(i);
                     for (int j = 0; j < cluster2.size(); j++) {
-                        int i2 = cluster2.get(j);
+                        final int i2 = cluster2.get(j);
                         fBestDist += fDistance[i1][i2];
                     }
                 }
@@ -739,34 +732,34 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 break;
             case MEAN: {
                 // calculates the mean distance of a merged cluster (akak Group-average agglomerative clustering)
-                List<Integer> merged = new ArrayList<Integer>();
+                final List<Integer> merged = new ArrayList<Integer>();
                 merged.addAll(cluster1);
                 merged.addAll(cluster2);
                 fBestDist = 0;
                 for (int i = 0; i < merged.size(); i++) {
-                    int i1 = merged.get(i);
+                    final int i1 = merged.get(i);
                     for (int j = i + 1; j < merged.size(); j++) {
-                        int i2 = merged.get(j);
+                        final int i2 = merged.get(j);
                         fBestDist += fDistance[i1][i2];
                     }
                 }
-                int n = merged.size();
+                final int n = merged.size();
                 fBestDist /= (n * (n - 1.0) / 2.0);
             }
             break;
             case CENTROID:
                 // finds the distance of the centroids of the clusters
-                int nPatterns = dataInput.get().getPatternCount();
-                double[] centroid1 = new double[nPatterns];
+                final int nPatterns = dataInput.get().getPatternCount();
+                final double[] centroid1 = new double[nPatterns];
                 for (int i = 0; i < cluster1.size(); i++) {
-                    int iTaxon = cluster1.get(i);
+                    final int iTaxon = cluster1.get(i);
                     for (int j = 0; j < nPatterns; j++) {
                         centroid1[j] += dataInput.get().getPattern(iTaxon, j);
                     }
                 }
-                double[] centroid2 = new double[nPatterns];
+                final double[] centroid2 = new double[nPatterns];
                 for (int i = 0; i < cluster2.size(); i++) {
-                    int iTaxon = cluster2.get(i);
+                    final int iTaxon = cluster2.get(i);
                     for (int j = 0; j < nPatterns; j++) {
                         centroid2[j] += dataInput.get().getPattern(iTaxon, j);
                     }
@@ -781,12 +774,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // finds the distance of the change in caused by merging the cluster.
                 // The information of a cluster is calculated as the error sum of squares of the
                 // centroids of the cluster and its members.
-                double ESS1 = calcESS(cluster1);
-                double ESS2 = calcESS(cluster2);
-                List<Integer> merged = new ArrayList<Integer>();
+                final double ESS1 = calcESS(cluster1);
+                final double ESS2 = calcESS(cluster2);
+                final List<Integer> merged = new ArrayList<Integer>();
                 merged.addAll(cluster1);
                 merged.addAll(cluster2);
-                double ESS = calcESS(merged);
+                final double ESS = calcESS(merged);
                 fBestDist = ESS * merged.size() - ESS1 * cluster1.size() - ESS2 * cluster2.size();
             }
             break;
@@ -798,11 +791,11 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     /**
      * calculated error sum-of-squares for instances wrt centroid *
      */
-    double calcESS(List<Integer> cluster) {
-        int nPatterns = dataInput.get().getPatternCount();
-        double[] centroid = new double[nPatterns];
+    double calcESS(final List<Integer> cluster) {
+        final int nPatterns = dataInput.get().getPatternCount();
+        final double[] centroid = new double[nPatterns];
         for (int i = 0; i < cluster.size(); i++) {
-            int iTaxon = cluster.get(i);
+            final int iTaxon = cluster.get(i);
             for (int j = 0; j < nPatterns; j++) {
                 centroid[j] += dataInput.get().getPattern(iTaxon, j);
             }
@@ -813,8 +806,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         // set up two instances for distance function
         double fESS = 0;
         for (int i = 0; i < cluster.size(); i++) {
-            double[] instance = new double[nPatterns];
-            int iTaxon = cluster.get(i);
+            final double[] instance = new double[nPatterns];
+            final int iTaxon = cluster.get(i);
             for (int j = 0; j < nPatterns; j++) {
                 instance[j] += dataInput.get().getPattern(iTaxon, j);
             }
@@ -831,12 +824,10 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     }
 
     @Override
-    public List<StateNode> getInitialisedStateNodes() {
-        List<StateNode> stateNodes = new ArrayList<StateNode>();
+    public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
         if (m_initial.get() != null) {
             stateNodes.add(m_initial.get());
         }
-        return stateNodes;
     }
 
 } // class ClusterTree

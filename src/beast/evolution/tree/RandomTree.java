@@ -315,10 +315,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	}
 
 	//@Override
-    public List<StateNode> getInitialisedStateNodes() {
-        final List<StateNode> stateNodes = new ArrayList<StateNode>();
+    public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
         stateNodes.add(m_initial.get());
-        return stateNodes;
     }
 
     /**

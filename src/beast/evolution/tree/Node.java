@@ -86,7 +86,7 @@ public class Node extends BEASTObject {
     public Node() {
     }
 
-    public Node(String id) throws Exception {
+    public Node(final String id) throws Exception {
         setID(id);
         initAndValidate();
     }
@@ -112,7 +112,7 @@ public class Node extends BEASTObject {
         return labelNr;
     }
 
-    public void setNr(int iLabel) {
+    public void setNr(final int iLabel) {
         labelNr = iLabel;
     }
 
@@ -124,7 +124,7 @@ public class Node extends BEASTObject {
         return m_tree.getDate(height);
     }
 
-    public void setHeight(double fHeight) {
+    public void setHeight(final double fHeight) {
         startEditing();
         height = fHeight;
         isDirty |= Tree.IS_DIRTY;
@@ -157,11 +157,11 @@ public class Node extends BEASTObject {
         return isDirty;
     }
 
-    public void makeDirty(int nDirty) {
+    public void makeDirty(final int nDirty) {
         isDirty |= nDirty;
     }
 
-    public void makeAllDirty(int nDirty) {
+    public void makeAllDirty(final int nDirty) {
         isDirty = nDirty;
         if (!isLeaf()) {
             getLeft().makeAllDirty(nDirty);
@@ -184,7 +184,7 @@ public class Node extends BEASTObject {
      *
      * @param parent the new parent to be set, must be called from within an operator.
      */
-    public void setParent(Node parent) {
+    public void setParent(final Node parent) {
         setParent(parent, true);
     }
 
@@ -194,7 +194,7 @@ public class Node extends BEASTObject {
      * @param parent     the node to become parent
      * @param inOperator if true, then startEditing() is called and setting the parent will make tree "filthy"
      */
-    void setParent(Node parent, boolean inOperator) {
+    void setParent(final Node parent, final boolean inOperator) {
         if (inOperator) startEditing();
         if (this.parent != parent) {
         	this.parent = parent;
@@ -207,7 +207,7 @@ public class Node extends BEASTObject {
      *         Note that changing the list does not affect the topology of the tree.
      */
     public List<Node> getChildren() {
-        List<Node> copyOfChildren = new ArrayList<Node>();
+        final List<Node> copyOfChildren = new ArrayList<Node>();
         copyOfChildren.addAll(children);
         return copyOfChildren;
     }
@@ -218,13 +218,13 @@ public class Node extends BEASTObject {
      * @return
      */
     public List<Node> getAllChildNodes() {
-        List<Node> childNodes = new ArrayList<Node>();
+        final List<Node> childNodes = new ArrayList<Node>();
         if (!this.isLeaf()) getAllChildNodes(childNodes);
         return childNodes;
     }
 
     // recursive
-    public void getAllChildNodes(List<Node> childNodes) {
+    public void getAllChildNodes(final List<Node> childNodes) {
         childNodes.add(this);
         if (!this.isLeaf()) {
             getRight().getAllChildNodes(childNodes);
@@ -238,13 +238,13 @@ public class Node extends BEASTObject {
      * @return
      */
     public List<Node> getAllLeafNodes() {
-        List<Node> leafNodes = new ArrayList<Node>();
+        final List<Node> leafNodes = new ArrayList<Node>();
         if (!this.isLeaf()) getAllLeafNodes(leafNodes);
         return leafNodes;
     }
 
     // recursive
-    public void getAllLeafNodes(List<Node> leafNodes) {
+    public void getAllLeafNodes(final List<Node> leafNodes) {
         if (this.isLeaf()) {
             leafNodes.add(this);
         } else {
@@ -268,7 +268,7 @@ public class Node extends BEASTObject {
         //return getLeft() == null && getRight() == null;
     }
 
-    public void removeChild(Node child) {
+    public void removeChild(final Node child) {
         startEditing();
         children.remove(child);
     }
@@ -279,12 +279,12 @@ public class Node extends BEASTObject {
      * @param inOperator if true then startEditing() is called. For operator uses, called removeAllChildren(true), otherwise
      *                   use set to false.
      */
-    public void removeAllChildren(boolean inOperator) {
+    public void removeAllChildren(final boolean inOperator) {
         if (inOperator) startEditing();
         children.clear();
     }
 
-    public void addChild(Node child) {
+    public void addChild(final Node child) {
         child.setParent(this);
         children.add(child);
     }
@@ -294,7 +294,7 @@ public class Node extends BEASTObject {
      */
     public int getNodeCount() {
         int nodes = 1;
-        for (Node child : children) {
+        for (final Node child : children) {
             nodes += child.getNodeCount();
         }
         return nodes;
@@ -305,7 +305,7 @@ public class Node extends BEASTObject {
             return 1;
         }
         int nodes = 0;
-        for (Node child : children) {
+        for (final Node child : children) {
             nodes += child.getLeafNodeCount();
         }
         return nodes;
@@ -316,7 +316,7 @@ public class Node extends BEASTObject {
             return 0;
         }
         int nodes = 1;
-        for (Node child : children) {
+        for (final Node child : children) {
             nodes += child.getInternalNodeCount();
         }
         return nodes;
@@ -331,8 +331,8 @@ public class Node extends BEASTObject {
      *         is set true. This is useful for example when storing a State to file
      *         so that it can be restored.
      */
-    public String toShortNewick(boolean bPrintInternalNodeNumbers) {
-        StringBuilder buf = new StringBuilder();
+    public String toShortNewick(final boolean bPrintInternalNodeNumbers) {
+        final StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
             buf.append(getLeft().toShortNewick(bPrintInternalNodeNumbers));
@@ -360,7 +360,7 @@ public class Node extends BEASTObject {
      * in a clade. Print node numbers (m_iLabel) incremented by 1
      * for leaves and internal nodes with non-null IDs.
      */
-    String toSortedNewick(int[] iMaxNodeInClade) {
+    String toSortedNewick(final int[] iMaxNodeInClade) {
         return toSortedNewick(iMaxNodeInClade, false);
     }
 
@@ -403,7 +403,7 @@ public class Node extends BEASTObject {
     }
 
     @Deprecated
-    public String toNewick(List<String> labels) {
+    public String toNewick(final List<String> labels) {
         throw new UnsupportedOperationException("Please use toNewick(). Labels will come from node.getId() or node.getNr().");
     }
 
@@ -414,7 +414,7 @@ public class Node extends BEASTObject {
          * If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
          */
     public String toNewick() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
             buf.append(getLeft().toNewick());
@@ -450,8 +450,8 @@ public class Node extends BEASTObject {
      * @return beast.tree in long Newick format, with all length and meta data
      *         information, but with leafs labelled with their names
      */
-    public String toString(List<String> sLabels) {
-        StringBuilder buf = new StringBuilder();
+    public String toString(final List<String> sLabels) {
+        final StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
             buf.append(getLeft().toString(sLabels));
@@ -487,17 +487,17 @@ public class Node extends BEASTObject {
             return labelNr;
         }
 
-        int childCount = getChildCount();
+        final int childCount = getChildCount();
 
         if (childCount == 1) return getChild(0).sort();
 
-        List<Integer> lowest = new ArrayList<Integer>();
-        int[] indices = new int[childCount];
+        final List<Integer> lowest = new ArrayList<Integer>();
+        final int[] indices = new int[childCount];
 
         // relies on this being a copy of children list
-        List<Node> children = getChildren();
+        final List<Node> children = getChildren();
 
-        for (Node child : children) {
+        for (final Node child : children) {
             lowest.add(child.sort());
         }
         HeapSort.sort(lowest, indices);
@@ -532,14 +532,14 @@ public class Node extends BEASTObject {
      * @return (deep) copy of node
      */
     public Node copy() {
-        Node node = new Node();
+        final Node node = new Node();
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
         node.parent = null;
         node.setID(ID);
 
-        for (Node child : getChildren()) {
+        for (final Node child : getChildren()) {
             node.addChild(child.copy());
         }
         return node;
@@ -548,8 +548,8 @@ public class Node extends BEASTObject {
     /**
      * assign values to a tree in array representation *
      */
-    public void assignTo(Node[] nodes) {
-        Node node = nodes[getNr()];
+    public void assignTo(final Node[] nodes) {
+        final Node node = nodes[getNr()];
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
@@ -570,7 +570,7 @@ public class Node extends BEASTObject {
     /**
      * assign values from a tree in array representation *
      */
-    public void assignFrom(Node[] nodes, Node node) {
+    public void assignFrom(final Node[] nodes, final Node node) {
         height = node.height;
         labelNr = node.labelNr;
         metaDataString = node.metaDataString;
@@ -593,7 +593,7 @@ public class Node extends BEASTObject {
      * Only heights are recognised, but derived classes could deal with
      * richer meta data pattersn.
      */
-    public void setMetaData(String sPattern, Object fValue) {
+    public void setMetaData(final String sPattern, final Object fValue) {
         startEditing();
         if (sPattern.equals(TraitSet.DATE_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
@@ -607,13 +607,13 @@ public class Node extends BEASTObject {
 
     }
 
-    public Object getMetaData(String sPattern) {
+    public Object getMetaData(final String sPattern) {
         if (sPattern.equals(TraitSet.DATE_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             return height;
         } else if (metaData != null) {
-            Object d = metaData.get(sPattern);
+            final Object d = metaData.get(sPattern);
             if (d != null) return d;
         }
         return 0;
@@ -632,7 +632,7 @@ public class Node extends BEASTObject {
      *
      * @param fScale scale factor
      */
-    public void scale(double fScale) throws Exception {
+    public void scale(final double fScale) throws Exception {
         startEditing();
         isDirty |= Tree.IS_DIRTY;
         if (!isLeaf()) {
@@ -660,11 +660,11 @@ public class Node extends BEASTObject {
         return children.size();
     }
 
-    public Node getChild(int iChild) {
+    public Node getChild(final int iChild) {
         return children.get(iChild);
     }
 
-    public void setChild(int iChild, Node node) {
+    public void setChild(final int iChild, final Node node) {
         while (children.size() < iChild) {
             children.add(null);
         }
@@ -672,7 +672,7 @@ public class Node extends BEASTObject {
     }
 
 
-    public void setLeft(Node m_left) {
+    public void setLeft(final Node m_left) {
         if (children.size() == 0) {
             children.add(m_left);
         } else {
@@ -687,7 +687,7 @@ public class Node extends BEASTObject {
         return children.get(0);
     }
 
-    public void setRight(Node m_right) {
+    public void setRight(final Node m_right) {
         switch (children.size()) {
             case 0:
                 children.add(null);
@@ -707,8 +707,8 @@ public class Node extends BEASTObject {
         return children.get(1);
     }
 
-    public static Node connect(Node left, Node right, double h) {
-        Node n = new Node();
+    public static Node connect(final Node left, final Node right, final double h) {
+        final Node n = new Node();
         n.setHeight(h);
         n.setLeft(left);
         n.setRight(right);

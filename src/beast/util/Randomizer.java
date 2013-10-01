@@ -49,6 +49,12 @@
 
 package beast.util;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /**
  * Handy utility functions which have some Mathematical relevance.
  *
@@ -70,7 +76,8 @@ public class Randomizer {
      * MersenneTwisterFast class for access to a single instance of the class, that
      * has synchronization.
      */
-    private static final MersenneTwisterFast random = MersenneTwisterFast.DEFAULT_INSTANCE;
+    //private static final MersenneTwisterFast random = MersenneTwisterFast.DEFAULT_INSTANCE;
+    private static MersenneTwisterFast random = MersenneTwisterFast.DEFAULT_INSTANCE;
 
     // Chooses one category if a cumulative probability distribution is given
     public static int randomChoice(double[] cf) {
@@ -422,4 +429,38 @@ public class Randomizer {
     static public int nextIDNr() {
         return m_nIDNr++;
     }
+
+//
+//    static public void storeToFile(String stateFile) {
+//        // serialize random
+//        try {
+//            FileOutputStream fos = new FileOutputStream(stateFile + ".rstate");
+//            ObjectOutputStream out = new ObjectOutputStream(fos);
+//            out.writeObject(random);
+//            out.close();
+//        }
+//        catch(IOException ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//    }
+//
+//    static public void restoreFromFile(String stateFile) {
+//        // unserialize random
+//        try {
+//            FileInputStream fis = new FileInputStream(stateFile + ".rstate");
+//            ObjectInputStream in = new ObjectInputStream(fis);
+//            random = (MersenneTwisterFast)in.readObject();
+//            in.close();
+//        }
+//        catch(IOException ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//        catch(ClassNotFoundException ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//    }
+
 }

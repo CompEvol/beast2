@@ -16,7 +16,7 @@ public class Taxon extends BEASTObject {
     // idref to refer to the single taxon.
 //	public Input<String> m_sLabel = new Input<String>("label", "name of the taxon", Validate.REQUIRED);
 
-    public Taxon(String id) throws Exception {
+    public Taxon(final String id) throws Exception {
         setID(id);
         initAndValidate();
     }
@@ -29,7 +29,7 @@ public class Taxon extends BEASTObject {
 
     }
 
-    protected String toString(String indent) {
+    protected String toString(final String indent) {
     	return indent + getID() + "\n";
     }
 
@@ -38,9 +38,9 @@ public class Taxon extends BEASTObject {
      * @param taxaNames a list of taxa names
      * @return a list of Taxon objects with corresponding names
      */
-    public static List<Taxon> createTaxonList(List<String> taxaNames) throws Exception {
-        List<Taxon> taxa = new ArrayList<Taxon>();
-        for (String taxaName : taxaNames) {
+    public static List<Taxon> createTaxonList(final List<String> taxaNames) throws Exception {
+        final List<Taxon> taxa = new ArrayList<Taxon>();
+        for (final String taxaName : taxaNames) {
             taxa.add(new Taxon(taxaName));
         }
         return taxa;

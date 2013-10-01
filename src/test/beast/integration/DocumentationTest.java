@@ -22,17 +22,17 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testDescriptions() {
-        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
-        List<String> sUndocumentedPlugins = new ArrayList<String>();
-        for (String sPlugin : sPluginNames) {
+        final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        final List<String> sUndocumentedPlugins = new ArrayList<String>();
+        for (final String sPlugin : sPluginNames) {
             try {
-                Class<?> pluginClass = Class.forName(sPlugin);
-                Annotation[] classAnnotations = pluginClass.getAnnotations();
+                final Class<?> pluginClass = Class.forName(sPlugin);
+                final Annotation[] classAnnotations = pluginClass.getAnnotations();
                 boolean hasSatisfactoryDescription = false;
-                for (Annotation annotation : classAnnotations) {
+                for (final Annotation annotation : classAnnotations) {
                     if (annotation instanceof Description) {
-                        Description description = (Description) annotation;
-                        String sDescription = description.value();
+                        final Description description = (Description) annotation;
+                        final String sDescription = description.value();
                         if (isProperDocString(sDescription)) {
                             hasSatisfactoryDescription = true;
                         }
@@ -53,15 +53,15 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testInputTipText() {
-        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
-        List<String> sUndocumentedInputs = new ArrayList<String>();
-        for (String sPlugin : sPluginNames) {
+        final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        final List<String> sUndocumentedInputs = new ArrayList<String>();
+        for (final String sPlugin : sPluginNames) {
             try {
-                BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
-                List<Input<?>> inputs = plugin.listInputs();
-                for (Input<?> input : inputs) {
+                final BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
+                final List<Input<?>> inputs = plugin.listInputs();
+                for (final Input<?> input : inputs) {
                     boolean hasSatisfactoryDescription = false;
-                    String sTipText = input.getTipText();
+                    final String sTipText = input.getTipText();
                     if (isProperDocString(sTipText)) {
                         hasSatisfactoryDescription = true;
                     }
@@ -103,13 +103,13 @@ public class DocumentationTest extends TestCase {
 
     // description of at least 15 chars and at least 4 words is satisfactory?!?
     // TODO: needs a bit more smarts to prevent as df a hsf jasd;fajasdf
-    boolean isProperDocString(String sStr) {
+    boolean isProperDocString(final String sStr) {
         // check length
         if (sStr.length() < N_CHARS) {
             return false;
         }
         // count nr of words
-        String[] sWords = sStr.split("\\s+");
+        final String[] sWords = sStr.split("\\s+");
         if (sWords.length < N_WORDS) {
             return false;
         }

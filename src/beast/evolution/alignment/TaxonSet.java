@@ -92,10 +92,10 @@ public class TaxonSet extends Taxon {
 
     @Override
 	protected String toString(String indent) {
-		StringBuffer buf = new StringBuffer();
+		final StringBuilder buf = new StringBuilder();
 		buf.append(indent).append(getID()).append("\n");
 		indent += "\t";
-		for (Taxon taxon : taxonsetInput.get()) {
+		for (final Taxon taxon : taxonsetInput.get()) {
 			buf.append(taxon.toString(indent));
 		}
 		return buf.toString();

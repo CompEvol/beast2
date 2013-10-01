@@ -43,7 +43,7 @@ abstract public class TreeOperator extends Operator {
      * @param child  the child that you want the sister of
      * @return the other child of the given parent.
      */
-    protected Node getOtherChild(Node parent, Node child) {
+    protected Node getOtherChild(final Node parent, final Node child) {
         if (parent.getLeft().getNr() == child.getNr()) {
             return parent.getRight();
         } else {
@@ -58,7 +58,7 @@ abstract public class TreeOperator extends Operator {
      * @param child
      * @param replacement
      */
-    public void replace(Node node, Node child, Node replacement) {
+    public void replace(final Node node, final Node child, final Node replacement) {
     	node.removeChild(child);
     	node.addChild(replacement);
         node.makeDirty(Tree.IS_FILTHY);

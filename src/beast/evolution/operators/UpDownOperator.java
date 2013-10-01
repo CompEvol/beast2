@@ -29,7 +29,11 @@ public class UpDownOperator extends Operator {
     public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
     public Input<Boolean> elementWiseInput = new Input<Boolean>("elementWise", "flag to indicate that the scaling is applied to a random index in multivariate parameters (default false)", false);
 
+    public Input<Double> scaleUpperLimit = new Input<Double>("upper", "Upper Limit of scale factor", 1.0);
+    public Input<Double> scaleLowerLimit = new Input<Double>("lower", "Lower limit of scale factor", 0.0);
+
     double scaleFactor;
+    private double upper,lower;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -41,6 +45,8 @@ public class UpDownOperator extends Operator {
         if (upInput.get().size() == 0 || downInput.get().size() == 0) {
             System.err.println("WARNING: no " + (upInput.get().size() == 0 ? "up" : "down") + " item specified in UpDownOperator");
         }
+        upper = scaleUpperLimit.get();
+        lower = scaleLowerLimit.get();
     }
 
     /**
@@ -142,7 +148,7 @@ public class UpDownOperator extends Operator {
         if (optimiseInput.get()) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(1.0 / scaleFactor - 1.0);
-            scaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+            setCoercableParameterValue(1.0 / (Math.exp(fDelta) + 1.0) );
         }
     }
 
@@ -153,7 +159,7 @@ public class UpDownOperator extends Operator {
 
     @Override
     public void setCoercableParameterValue(final double fValue) {
-        scaleFactor = fValue;
+        scaleFactor = Math.max(Math.min(fValue,upper),lower);
     }
 
     @Override

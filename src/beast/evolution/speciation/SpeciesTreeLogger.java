@@ -9,13 +9,13 @@ import beast.core.Loggable;
 import beast.core.StateNode;
 import beast.core.BEASTObject;
 import beast.core.Input.Validate;
-import beast.evolution.speciation.SpeciesTreePrior.PopSizeFunction;
+import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
 
 
-@Description("Logs tree annotated with metadata in starBeast format")
+@Description("Logs tree annotated with metadata in StarBeast format")
 public class SpeciesTreeLogger extends BEASTObject implements Loggable {
     public Input<Tree> treeInput = new Input<Tree>("tree", "tree to be logged", Validate.REQUIRED);
     public Input<Function> parameterInput = new Input<Function>("popSize", "population size parameter associated with tree nodes", Validate.REQUIRED);
@@ -23,7 +23,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
     public Input<SpeciesTreePrior> speciesTreePriorInput = new Input<SpeciesTreePrior>("speciesTreePrior", "species tree prior, used to find which Population Size Function is used. If not specified, assumes 'constant'");
     public Input<TreeTopFinder> treeTopFinderInput = new Input<TreeTopFinder>("treetop", "calculates height of species tree", Validate.REQUIRED);
 
-    PopSizeFunction popSizeFunction;
+    TreePopSizeFunction popSizeFunction;
     String metaDataLabel;
 
     static final String dmv = "dmv";
@@ -35,7 +35,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
         if (speciesTreePriorInput.get() != null) {
             popSizeFunction = speciesTreePriorInput.get().popFunctionInput.get();
         } else {
-            popSizeFunction = PopSizeFunction.constant;
+            popSizeFunction = TreePopSizeFunction.constant;
         }
     }
 
@@ -108,7 +108,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
                 buf.append(popStart);
 
                 final double popEnd;
-                if (node.isRoot() && popSizeFunction == PopSizeFunction.linear_with_constant_root) {
+                if (node.isRoot() && popSizeFunction == TreePopSizeFunction.linear_with_constant_root) {
                     popEnd = popStart;
                 } else {
                   popEnd = getMetaDataTopValue(node, metadataTop);

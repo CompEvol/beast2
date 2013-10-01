@@ -57,7 +57,7 @@ public class Tree extends StateNode implements TreeInterface {
     @Override
     public void initAndValidate() throws Exception {
         if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
-            Tree other = m_initial.get();
+            final Tree other = m_initial.get();
             root = other.root.copy();
             nodeCount = other.nodeCount;
             internalNodeCount = other.internalNodeCount;
@@ -67,7 +67,7 @@ public class Tree extends StateNode implements TreeInterface {
         if (nodeCount < 0) {
             if (m_taxonset.get() != null) {
                 // make a caterpillar
-                List<String> sTaxa = m_taxonset.get().asStringList();
+                final List<String> sTaxa = m_taxonset.get().asStringList();
                 Node left = newNode();
                 left.labelNr = 0;
                 left.height = 0;
@@ -125,7 +125,7 @@ public class Tree extends StateNode implements TreeInterface {
         m_nodes = new Node[nodeCount];
         listNodes(root, m_nodes);
         m_storedNodes = new Node[nodeCount];
-        Node copy = root.copy();
+        final Node copy = root.copy();
         listNodes(copy, m_storedNodes);
     }
 
@@ -133,7 +133,7 @@ public class Tree extends StateNode implements TreeInterface {
     public Tree() {
     }
 
-    public Tree(Node rootNode) {
+    public Tree(final Node rootNode) {
         setRoot(rootNode);
         initArrays();
     }
@@ -141,7 +141,7 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * Construct a tree from newick string -- will not automatically adjust tips to zero.
      */
-    public Tree(String sNewick) throws Exception {
+    public Tree(final String sNewick) throws Exception {
         this(new TreeParser(sNewick).getRoot());
     }
 
@@ -152,11 +152,11 @@ public class Tree extends StateNode implements TreeInterface {
      */
     final static double EPSILON = 0.0000001;
 
-    protected void adjustTreeToNodeHeights(Node node, TraitSet trait) {
+    protected void adjustTreeToNodeHeights(final Node node, final TraitSet trait) {
         if (node.isLeaf()) {
             node.setMetaData(trait.getTraitName(), trait.getValue(node.getNr()));
         } else {
-            for (Node child : node.getChildren()) {
+            for (final Node child : node.getChildren()) {
                 adjustTreeToNodeHeights(child, trait);
             }
             for (Node child : node.getChildren()) {
@@ -201,9 +201,9 @@ public class Tree extends StateNode implements TreeInterface {
      * @return a list of external (leaf) nodes contained in this tree
      */
     public List<Node> getExternalNodes() {
-        ArrayList<Node> externalNodes = new ArrayList<Node>();
+        final ArrayList<Node> externalNodes = new ArrayList<Node>();
         for (int i = 0; i < getNodeCount(); i++) {
-            Node node = getNode(i);
+            final Node node = getNode(i);
             if (node.isLeaf()) externalNodes.add(node);
         }
         return externalNodes;
@@ -213,9 +213,9 @@ public class Tree extends StateNode implements TreeInterface {
      * @return a list of internal (ancestral) nodes contained in this tree, including the root node
      */
     public List<Node> getInternalNodes() {
-        ArrayList<Node> internalNodes = new ArrayList<Node>();
+        final ArrayList<Node> internalNodes = new ArrayList<Node>();
         for (int i = 0; i < getNodeCount(); i++) {
-            Node node = getNode(i);
+            final Node node = getNode(i);
             if (!node.isLeaf()) internalNodes.add(node);
         }
         return internalNodes;
@@ -225,7 +225,7 @@ public class Tree extends StateNode implements TreeInterface {
         return root;
     }
 
-    public void setRoot(Node root) {
+    public void setRoot(final Node root) {
         this.root = root;
         nodeCount = this.root.getNodeCount();
         // ensure root is the last node
@@ -245,13 +245,13 @@ public class Tree extends StateNode implements TreeInterface {
      *
      * @param root the new root node
      */
-    public void setRootOnly(Node root) {
+    public void setRootOnly(final Node root) {
         //TODO should we flag this with startEditing since it is an operator call?
 
         this.root = root;
     }
 
-    public Node getNode(int iNodeNr) {
+    public Node getNode(final int iNodeNr) {
         return m_nodes[iNodeNr];
         //return getNode(iNodeNr, root);
     }
@@ -259,8 +259,10 @@ public class Tree extends StateNode implements TreeInterface {
     @Deprecated
     public String[] getTaxaNames() {
         if (m_sTaxaNames == null) {
-            if (m_taxonset.get() != null) {
-                m_sTaxaNames = m_taxonset.get().asStringList().toArray(new String[0]);
+            final TaxonSet taxonSet = m_taxonset.get();
+            if (taxonSet != null) {
+                final List<String> txs = taxonSet.asStringList();
+                m_sTaxaNames = txs.toArray(new String[txs.size()]);
             } else {
                 m_sTaxaNames = new String[getLeafNodeCount()];
                 collectTaxaNames(getRoot());
@@ -273,7 +275,7 @@ public class Tree extends StateNode implements TreeInterface {
         return m_sTaxaNames;
     }
 
-    void collectTaxaNames(Node node) {
+    void collectTaxaNames(final Node node) {
         if (node.isLeaf()) {
             m_sTaxaNames[node.getNr()] = node.getID();
         } else {
@@ -290,7 +292,7 @@ public class Tree extends StateNode implements TreeInterface {
      * @param fT       the double array to be filled with meta data
      * @param sPattern the name of the meta data
      */
-    public void getMetaData(Node node, Double[] fT, String sPattern) {
+    public void getMetaData(final Node node, final Double[] fT, final String sPattern) {
         fT[Math.abs(node.getNr())] = (Double) node.getMetaData(sPattern);
         if (!node.isLeaf()) {
             getMetaData(node.getLeft(), fT, sPattern);
@@ -307,7 +309,7 @@ public class Tree extends StateNode implements TreeInterface {
      * @param fT       the integer array to be filled with meta data
      * @param sPattern the name of the meta data
      */
-    public void getMetaData(Node node, Integer[] fT, String sPattern) {
+    public void getMetaData(final Node node, final Integer[] fT, final String sPattern) {
         fT[Math.abs(node.getNr())] = (Integer) node.getMetaData(sPattern);
         if (!node.isLeaf()) {
             getMetaData(node.getLeft(), fT, sPattern);
@@ -324,7 +326,7 @@ public class Tree extends StateNode implements TreeInterface {
      * This only has an effect when setMetadata() in a subclass
      * of Node know how to process such value.
      */
-    public void setMetaData(Node node, Double[] fT, String sPattern) {
+    public void setMetaData(final Node node, final Double[] fT, final String sPattern) {
         node.setMetaData(sPattern, fT[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
             setMetaData(node.getLeft(), fT, sPattern);
@@ -338,13 +340,43 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * convert tree to array representation *
      */
-    void listNodes(Node node, Node[] nodes) {
+    void listNodes(final Node node, final Node[] nodes) {
         nodes[node.getNr()] = node;
-        node.m_tree = this;
+        node.m_tree = this;  //(JH) I don't understand this code
 
-        for (Node child : node.getChildren()) {
+        // (JH) why not  node.children, we don't keep it around??
+        for (final Node child : node.getChildren()) {
             listNodes(child, nodes);
         }
+    }
+
+    private int
+    getNodesPostOrder(final Node node, final Node[] nodes, int pos)
+    {
+        node.m_tree = this;
+        for (final Node child : node.children) {
+            pos =  getNodesPostOrder(child, nodes, pos);
+        }
+        nodes[pos] = node;
+        return pos + 1;
+    }
+
+    /**
+     *
+     * @param node   top of tree/sub tree (null defaults to whole tree)
+     * @param nodes  array to fill (null will result in creating a new one)
+     * @return  tree nodes in post-order, children before parents
+     */
+    public Node[] listNodesPostOrder(Node node, Node[] nodes) {
+        if( node == null ) {
+            node = root;
+        }
+        if( nodes == null ) {
+            final int n = ( node == root ) ? nodeCount : node.getNodeCount();
+            nodes = new Node[n];
+        }
+        getNodesPostOrder(node, nodes, 0);
+        return nodes;
     }
 
     /**
@@ -376,9 +408,9 @@ public class Tree extends StateNode implements TreeInterface {
      * copy of all values into existing tree *
      */
     @Override
-    public void assignTo(StateNode other) {
-        Tree tree = (Tree) other;
-        Node[] nodes = new Node[nodeCount];
+    public void assignTo(final StateNode other) {
+        final Tree tree = (Tree) other;
+        final Node[] nodes = new Node[nodeCount];
         listNodes(tree.root, nodes);
         tree.ID = ID;
         //tree.index = index;
@@ -393,9 +425,9 @@ public class Tree extends StateNode implements TreeInterface {
      * copy of all values from existing tree *
      */
     @Override
-    public void assignFrom(StateNode other) {
-        Tree tree = (Tree) other;
-        Node[] nodes = new Node[tree.getNodeCount()];//tree.getNodesAsArray();
+    public void assignFrom(final StateNode other) {
+        final Tree tree = (Tree) other;
+        final Node[] nodes = new Node[tree.getNodeCount()];//tree.getNodesAsArray();
         for (int i = 0; i < tree.getNodeCount(); i++) {
             nodes[i] = newNode();
         }
@@ -414,14 +446,14 @@ public class Tree extends StateNode implements TreeInterface {
      * as assignFrom, but only copy tree structure *
      */
     @Override
-    public void assignFromFragile(StateNode other) {
-        Tree tree = (Tree) other;
+    public void assignFromFragile(final StateNode other) {
+        final Tree tree = (Tree) other;
         if (m_nodes == null) {
             initArrays();
         }
         root = m_nodes[tree.root.getNr()];
-        Node[] otherNodes = tree.m_nodes;
-        int iRoot = root.getNr();
+        final Node[] otherNodes = tree.m_nodes;
+        final int iRoot = root.getNr();
         assignFrom(0, iRoot, otherNodes);
         root.height = otherNodes[iRoot].height;
         root.parent = null;
@@ -441,7 +473,7 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * helper to assignFromFragile *
      */
-    private void assignFrom(int iStart, int iEnd, Node[] otherNodes) {
+    private void assignFrom(final int iStart, final int iEnd, final Node[] otherNodes) {
         for (int i = iStart; i < iEnd; i++) {
             Node sink = m_nodes[i];
             Node src = otherNodes[i];
@@ -468,7 +500,7 @@ public class Tree extends StateNode implements TreeInterface {
      * StateNode implementation
      */
     @Override
-    public void setEverythingDirty(boolean bDirty) {
+    public void setEverythingDirty(final boolean bDirty) {
         setSomethingIsDirty(bDirty);
         if (!bDirty) {
             root.makeAllDirty(IS_CLEAN);
@@ -478,7 +510,7 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-    public int scale(double fScale) throws Exception {
+    public int scale(final double fScale) throws Exception {
         root.scale(fScale);
         return getInternalNodeCount();
     }
@@ -488,11 +520,11 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * print translate block for NEXUS beast.tree file
      */
-    public static void printTranslate(Node node, PrintStream out, int nNodeCount) {
-        List<String> translateLines = new ArrayList<String>();
+    public static void printTranslate(final Node node, final PrintStream out, final int nNodeCount) {
+        final List<String> translateLines = new ArrayList<String>();
         printTranslate(node, translateLines, nNodeCount);
         Collections.sort(translateLines);
-        for (String sLine : translateLines) {
+        for (final String sLine : translateLines) {
             out.println(sLine);
         }
     }
@@ -504,7 +536,7 @@ public class Tree extends StateNode implements TreeInterface {
      */
     static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
         if (node.isLeaf()) {
-            String sNr = (node.getNr() + taxaTranslationOffset) + "";
+            final String sNr = (node.getNr() + taxaTranslationOffset) + "";
             String sLine = "\t\t" + "    ".substring(sNr.length()) + sNr + " " + node.getID();
             if (node.getNr() < nNodeCount) {
                 sLine += ",";
@@ -518,8 +550,8 @@ public class Tree extends StateNode implements TreeInterface {
         }
     }
 
-    public static void printTaxa(Node node, PrintStream out, int nNodeCount) {
-        List<String> translateLines = new ArrayList<String>();
+    public static void printTaxa(final Node node, final PrintStream out, final int nNodeCount) {
+        final List<String> translateLines = new ArrayList<String>();
         printTranslate(node, translateLines, nNodeCount);
         Collections.sort(translateLines);
         for (String sLine : translateLines) {
@@ -549,8 +581,8 @@ public class Tree extends StateNode implements TreeInterface {
         out.print("tree STATE_" + nSample + " = ");
         // Don't sort, this can confuse CalculationNodes relying on the tree
         //tree.getRoot().sort();
-        int[] dummy = new int[1];
-        String sNewick = tree.getRoot().toSortedNewick(dummy);
+        final int[] dummy = new int[1];
+        final String sNewick = tree.getRoot().toSortedNewick(dummy);
         out.print(sNewick);
         out.print(";");
     }
@@ -566,9 +598,9 @@ public class Tree extends StateNode implements TreeInterface {
      * reconstruct tree from XML fragment in the form of a DOM node *
      */
     @Override
-    public void fromXML(org.w3c.dom.Node node) {
-        String sNewick = node.getTextContent();
-        TreeParser parser = new TreeParser();
+    public void fromXML(final org.w3c.dom.Node node) {
+        final String sNewick = node.getTextContent();
+        final TreeParser parser = new TreeParser();
         try {
             parser.thresholdInput.setValue(1e-10, parser);
         } catch (Exception e1) {
@@ -592,11 +624,11 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     public double getArrayValue() {
-        return (double) root.height;
+        return root.height;
     }
 
     public double getArrayValue(int iValue) {
-        return (double) m_nodes[iValue].height;
+        return m_nodes[iValue].height;
     }
 
     /**
@@ -607,10 +639,8 @@ public class Tree extends StateNode implements TreeInterface {
 
         // this condition can only be true for sampled ancestor trees
         if (m_storedNodes.length != nodeCount) {
-            Node[] tmp = new Node[nodeCount];
-            for (int i = 0; i < m_storedNodes.length - 1; i++) {
-                tmp[i] = m_storedNodes[i];
-            }
+            final Node[] tmp = new Node[nodeCount];
+            System.arraycopy(m_storedNodes, 0, tmp, 0, m_storedNodes.length - 1);
             if (nodeCount > m_storedNodes.length) {
                 tmp[m_storedNodes.length - 1] = m_storedNodes[m_storedNodes.length - 1];
                 tmp[nodeCount - 1] = newNode();
@@ -632,7 +662,7 @@ public class Tree extends StateNode implements TreeInterface {
      * @param iStart the first index to be stored
      * @param iEnd   nodes are stored up to but not including this index
      */
-    private void storeNodes(int iStart, int iEnd) {
+    private void storeNodes(final int iStart, final int iEnd) {
         for (int i = iStart; i < iEnd; i++) {
             Node sink = m_storedNodes[i];
             Node src = m_nodes[i];
@@ -647,7 +677,7 @@ public class Tree extends StateNode implements TreeInterface {
             }
 
             sink.removeAllChildren(false);
-            for (Node srcChild : src.getChildren()) {
+            for (final Node srcChild : src.getChildren()) {
                 sink.addChild(m_storedNodes[srcChild.getNr()]);
             }
         }
@@ -659,7 +689,7 @@ public class Tree extends StateNode implements TreeInterface {
         // necessary for sampled ancestor trees
         nodeCount = m_storedNodes.length;
 
-        Node[] tmp = m_storedNodes;
+        final Node[] tmp = m_storedNodes;
         m_storedNodes = m_nodes;
         m_nodes = tmp;
         root = m_nodes[storedRoot.getNr()];
@@ -670,7 +700,7 @@ public class Tree extends StateNode implements TreeInterface {
         hasStartedEditing = false;
     }
 
-    public double getDate(double fHeight) {
+    public double getDate(final double fHeight) {
         if (m_trait.get() == null) {
             return fHeight;
         }
@@ -683,7 +713,7 @@ public class Tree extends StateNode implements TreeInterface {
      * @param node
      * @return the name of the given node, or null if the node is unlabelled
      */
-    public String getTaxonId(Node node) {
+    public String getTaxonId(final Node node) {
         //TODO should be implemented to avoid using deprecated methods
         return getTaxaNames()[node.getNr()];  //To change body of created methods use File | Settings | File Templates.
     }
@@ -695,11 +725,9 @@ public class Tree extends StateNode implements TreeInterface {
      *
      * @param i the index of the node to be removed.
      */
-    public void removeNode(int i) {
-        Node[] tmp = new Node[nodeCount - 1];
-        for (int j = 0; j < i; j++) {
-            tmp[j] = m_nodes[j];
-        }
+    public void removeNode(final int i) {
+        final Node[] tmp = new Node[nodeCount - 1];
+        System.arraycopy(m_nodes, 0, tmp, 0, i);
         for (int j = i; j < nodeCount - 1; j++) {
             tmp[j] = m_nodes[j + 1];
             tmp[j].setNr(j);
@@ -713,11 +741,9 @@ public class Tree extends StateNode implements TreeInterface {
      * Adds a node to the end of the node array. nodeCount and leafNodeCount are recalculated.
      * Use with care!
      */
-    public void addNode(Node newNode) {
-        Node[] tmp = new Node[nodeCount + 1];
-        for (int j = 0; j < nodeCount; j++) {
-            tmp[j] = m_nodes[j];
-        }
+    public void addNode(final Node newNode) {
+        final Node[] tmp = new Node[nodeCount + 1];
+        System.arraycopy(m_nodes, 0, tmp, 0, nodeCount);
         tmp[nodeCount] = newNode;
         newNode.setNr(nodeCount);
         m_nodes = tmp;

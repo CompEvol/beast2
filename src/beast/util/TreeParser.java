@@ -590,12 +590,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
     }
 
-    public List<StateNode> getInitialisedStateNodes() {
-        List<StateNode> stateNodes = new ArrayList<StateNode>();
+    public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
         if (m_initial.get() != null) {
             stateNodes.add(m_initial.get());
         }
-        return stateNodes;
     }
 
     private void labelNonLabeledNodes(Node node, int[] lastLabel) {

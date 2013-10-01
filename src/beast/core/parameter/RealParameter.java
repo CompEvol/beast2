@@ -20,14 +20,14 @@ public class RealParameter extends Parameter.Base<Double> {
     public RealParameter() {
     }
 
-    public RealParameter(Double[] fValues) throws Exception {
+    public RealParameter(final Double[] fValues) throws Exception {
         super(fValues);
     }
 
     /**
      * Constructor used by Input.setValue(String) *
      */
-    public RealParameter(String sValue) throws Exception {
+    public RealParameter(final String sValue) throws Exception {
         init(0.0, 0.0, sValue, 1);
     }
 //    public RealParameter(double [] fValues) throws Exception {
@@ -87,7 +87,7 @@ public class RealParameter extends Parameter.Base<Double> {
     }
 
     @Override
-    public double getArrayValue(int iValue) {
+    public double getArrayValue(final int iValue) {
         return values[iValue];
     }
 
@@ -95,9 +95,9 @@ public class RealParameter extends Parameter.Base<Double> {
      * Loggable implementation *
      */
     @Override
-    public void log(int nSample, PrintStream out) {
-        RealParameter var = (RealParameter) getCurrent();
-        int nValues = var.getDimension();
+    public void log(final int nSample, final PrintStream out) {
+        final RealParameter var = (RealParameter) getCurrent();
+        final int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
             out.print(var.getValue(iValue) + "\t");
         }
@@ -107,7 +107,7 @@ public class RealParameter extends Parameter.Base<Double> {
      * StateNode methods *
      */
     @Override
-    public int scale(double fScale) throws Exception {
+    public int scale(final double fScale) throws Exception {
         for (int i = 0; i < values.length; i++) {
             values[i] *= fScale;
             if (values[i] < m_fLower || values[i] > m_fUpper) {
@@ -119,7 +119,7 @@ public class RealParameter extends Parameter.Base<Double> {
 
 
     @Override
-    void fromXML(int nDimension, String sLower, String sUpper, String[] sValues) {
+    void fromXML(final int nDimension, final String sLower, final String sUpper, final String[] sValues) {
         setLower(Double.parseDouble(sLower));
         setUpper(Double.parseDouble(sUpper));
         values = new Double[nDimension];

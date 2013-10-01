@@ -32,8 +32,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     static enum Type {
         NONE("none"),
-        OVER_ALL_TOPOS("all"),
-        OVER_RANKED_COUNTS("counts");
+        OVER_ALL_TOPOS("full"),
+        OVER_RANKED_COUNTS("restricted");
 
         Type(final String name) {
             this.ename = name;
@@ -53,8 +53,10 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public Input<List<CalibrationPoint>> calibrationsInput =
             new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>());//,Input.Validate.REQUIRED);
 
-    public Input<Type> correctionTypeInput = new Input<Type>("type", "Type of correction (default all). However, 'all'" +
-            " is possible only in a few special cases (a single clade or two nested clades).",
+    public Input<Type> correctionTypeInput = new Input<Type>("type", "Type of correction: none for no correction " +
+            "(same as BEAST1), full for Yule-like over calibrated times, and restricted for Yule-like over calibrated" +
+            " times and ranked topology (default 'full'). However, 'full'" +
+            " is generally slow except for in a few special cases, such as a single clade or two nested clades.",
             Type.OVER_ALL_TOPOS, Type.values());
 
     public Input<RPNcalculator> userMarInput = new Input<RPNcalculator>("logMarginal",
@@ -105,12 +107,12 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         } else {
             // find calibration points from prior
-            for (BEASTObject plugin : outputs) {
+            for (final BEASTObject plugin : outputs) {
                 if (plugin instanceof CompoundDistribution) {
-                    CompoundDistribution prior = (CompoundDistribution) plugin;
-                    for (Distribution distr : prior.pDistributions.get()) {
+                    final CompoundDistribution prior = (CompoundDistribution) plugin;
+                    for (final Distribution distr : prior.pDistributions.get()) {
                         if (distr instanceof MRCAPrior) {
-                            MRCAPrior _MRCAPrior = (MRCAPrior) distr;
+                            final MRCAPrior _MRCAPrior = (MRCAPrior) distr;
                             // make sure MRCAPrior is monophyletic
                             if (_MRCAPrior.distInput.get() != null) {
                                 // make sure MRCAPrior is monophyletic
@@ -118,7 +120,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                                     throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
                                 }
                                 // create CalibrationPoint from MRCAPrior
-                                CalibrationPoint cal = new CalibrationPoint();
+                                final CalibrationPoint cal = new CalibrationPoint();
                                 cal.distInput.setValue(_MRCAPrior.distInput.get(), cal);
                                 cal.taxonsetInput.setValue(_MRCAPrior.taxonsetInput.get(), cal);
                                 cal.initAndValidate();
@@ -255,9 +257,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             }
         }
 
-        List<Node> leafs = tree.getExternalNodes();
-        double height = leafs.get(0).getHeight();
-        for (Node leaf : leafs) {
+        final List<Node> leafs = tree.getExternalNodes();
+        final double height = leafs.get(0).getHeight();
+        for (final Node leaf : leafs) {
         	if (Math.abs(leaf.getHeight() - height) > 1e-8) {
         		System.err.println("WARNING: Calibrated Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
         		break;
