@@ -187,7 +187,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         	}
         }
         // node distances need to be halved when converted to heights.
-        scale(0.5);
+        // Need to scale when building :(
+        //scale(0.5);
         initStateNodes();
     }
 
