@@ -76,7 +76,7 @@ public class OperatorListInputEditor extends ListInputEditor {
 
         itemBox.add(Box.createHorizontalGlue());
         JTextField weightEntry = new JTextField();
-        weightEntry.setToolTipText(operator.m_pWeight.getTipText());
+        weightEntry.setToolTipText(operator.m_pWeight.getHTMLTipText());
         weightEntry.setText(operator.m_pWeight.get() + "");
         weightEntry.getDocument().addDocumentListener(new OperatorDocumentListener(operator, weightEntry));
         Dimension size = new Dimension(50, 25);

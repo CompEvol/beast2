@@ -256,6 +256,10 @@ public class Input<T> {
     public String getTipText() {
         return tipText;
     }
+
+    public String getHTMLTipText() {
+        return "<html>" + tipText.replaceAll("\n","<br>") + "</html>";
+    }
     
 	public String getValueTipText() {
 		if (theClass == Boolean.class) {

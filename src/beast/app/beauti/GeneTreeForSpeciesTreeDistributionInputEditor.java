@@ -82,7 +82,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	                    }
 	                }
 	            });
-	            m_selectPluginBox.setToolTipText(input.getTipText());
+	            m_selectPluginBox.setToolTipText(input.getHTMLTipText());
 	            add(m_selectPluginBox);
 	            add(Box.createGlue());
 			}

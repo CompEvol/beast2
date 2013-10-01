@@ -40,7 +40,7 @@ public class BooleanInputEditor extends InputEditor.Base {
         if (input.get() != null) {
             m_entry.setSelected((Boolean) input.get());
         }
-        m_entry.setToolTipText(input.getTipText());
+        m_entry.setToolTipText(input.getHTMLTipText());
         m_entry.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

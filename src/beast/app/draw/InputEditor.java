@@ -233,7 +233,7 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
         m_entry.setPreferredSize(PREFERRED_SIZE);
         m_entry.setSize(PREFERRED_SIZE);
         initEntry();
-        m_entry.setToolTipText(m_input.getTipText());
+        m_entry.setToolTipText(m_input.getHTMLTipText());
         m_entry.setMaximumSize(MAX_SIZE);
 
         m_entry.getDocument().addDocumentListener(new DocumentListener() {
@@ -301,7 +301,7 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
     protected void addInputLabel() {
         if (m_bAddButtons) {
             String sName = formatName(m_input.getName());
-            addInputLabel(sName, m_input.getTipText());
+            addInputLabel(sName, m_input.getHTMLTipText());
         }
     }
 

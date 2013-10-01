@@ -335,7 +335,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
             );
 //            }
 //            });
-            m_selectPluginBox.setToolTipText(input.getTipText());
+            m_selectPluginBox.setToolTipText(input.getHTMLTipText());
             m_selectPluginBox.setMaximumSize(new Dimension(1024, 200));
             box.add(m_selectPluginBox);
         }

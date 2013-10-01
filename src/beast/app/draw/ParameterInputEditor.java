@@ -154,7 +154,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             if (input.get() != null) {
                 m_isEstimatedBox.setSelected(parameter.isEstimatedInput.get());
             }
-            m_isEstimatedBox.setToolTipText(parameter.isEstimatedInput.getTipText());
+            m_isEstimatedBox.setToolTipText(parameter.isEstimatedInput.getHTMLTipText());
 
             boolean bIsClockRate = false;
             for (BEASTObject output : parameter.outputs) {
