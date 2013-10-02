@@ -43,7 +43,7 @@ public abstract class Operator extends BEASTObject {
      */
     OperatorSchedule operatorSchedule;
 
-    protected void setOperatorSchedule(OperatorSchedule operatorSchedule) {
+    public void setOperatorSchedule(OperatorSchedule operatorSchedule) {
         this.operatorSchedule = operatorSchedule;
     }
 
