@@ -341,18 +341,10 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                     candidates.add(node);
                 }
 
-                if (m_traitList.get() != null) {
-                    // set tip dates
-                    for (final Node node : candidates) {
-                        node.setMetaData(m_traitList.get().getTraitName(), m_traitList.get().getValue(node.getNr()));
-                    }
-                } else if (m_initial.get() != null && m_initial.get().m_traitList.get() != null) {
-                    // set tip dates
-                    final TraitSet trait = m_initial.get().m_traitList.get();
-                    for (final Node node : candidates) {
-                        node.setMetaData(trait.getTraitName(), trait.getValue(node.getNr()));
-                    }
-                }
+                if (m_initial.get() != null)
+                    processCandidateTraits(candidates, m_initial.get().m_traitList.get());
+                else
+                    processCandidateTraits(candidates, m_traitList.get());
 
                 // TODO: deal with dated taxa
                 double fMostRecent = 0;
@@ -408,6 +400,18 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             } catch (ConstraintViolatedException e) {
                 // need to generate another tree
             }
+        }
+    }
+    
+    /**
+     * Apply traits to a set of nodes.
+     * @param candidates List of nodes
+     * @param traitSets List of TraitSets to apply
+     */
+    private void processCandidateTraits(List<Node> candidates, List<TraitSet> traitSets) {
+        for (TraitSet traitSet : traitSets) {
+            for (Node node : candidates)
+                node.setMetaData(traitSet.getTraitName(), traitSet.getValue(node.getNr()));
         }
     }
 

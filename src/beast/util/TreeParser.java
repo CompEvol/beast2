@@ -54,39 +54,52 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * labels of leafs *
      */
     List<String> labels = null;
+    
     /**
      * for memory saving, set to true *
      */
     boolean surpressMetadata = false;
 
     /**
-     * if there is no translate block. This solves issues where the taxa labels are numbers e.g. in generated beast.tree data *
+     * This solves issues where the taxa labels are numbers (in generated
+     * beast.tree data for example).
      */
-    public Input<Boolean> isLabelledNewickInput = new Input<Boolean>("IsLabelledNewick", "Is the newick tree labelled? Default=false.", false);
-
-    public Input<Alignment> dataInput = new Input<Alignment>("taxa", "Specifies the list of taxa represented by leaves in the beast.tree");
-    public Input<String> newickInput = new Input<String>("newick", "initial beast.tree represented in newick format");// not required, Beauti may need this for example
-    public Input<Integer> offsetInput = new Input<Integer>("offset", "offset if numbers are used for taxa (offset=the lowest taxa number) default=1", 1);
-    public Input<Double> thresholdInput = new Input<Double>("threshold", "threshold under which node heights (derived from lengths) are set to zero. Default=0.", 0.0);
-    public Input<Boolean> allowSingleChildInput = new Input<Boolean>("singlechild", "flag to indicate that single child nodes are allowed. Default=true.", true);
-    public Input<Boolean> adjustTipHeightsWhenMissingDateTraitsInput = new Input<Boolean>("adjustTipHeights", "flag to indicate if tipHeights shall be adjusted when date traits missing. Default=true.", true);
-    public Input<Double> scaleInput = new Input<Double>("scale", "scale used to multiply internal node heights during parsing." +
-            "Useful for importing starting from external programs, for instance, RaxML tree rooted using Path-o-gen.", 1.0);
+    public Input<Boolean> isLabelledNewickInput = new Input<Boolean>(
+            "IsLabelledNewick",
+            "Is the newick tree labelled? Default=false.", false);
+    
+    public Input<Alignment> dataInput = new Input<Alignment>("taxa",
+            "Specifies the list of taxa represented by leaves in the beast.tree");
+    public Input<String> newickInput = new Input<String>("newick",
+            "initial beast.tree represented in newick format");// not required, Beauti may need this for example
+    public Input<Integer> offsetInput = new Input<Integer>("offset",
+            "offset if numbers are used for taxa (offset=the lowest taxa "
+            + "number) default=1", 1);
+    public Input<Double> thresholdInput = new Input<Double>("threshold",
+            "threshold under which node heights (derived from lengths) "
+            + "are set to zero. Default=0.", 0.0);
+    public Input<Boolean> allowSingleChildInput = new Input<Boolean>(
+            "singlechild",
+            "flag to indicate that single child nodes are allowed. "
+            + "Default=true.", true);
+    public Input<Boolean> adjustTipHeightsInput = new Input<Boolean>(
+            "adjustTipHeights",
+            "flag to indicate if tipHeights shall be adjusted when date "
+            + "traits missing. Default=true.", true);
+    public Input<Double> scaleInput = new Input<Double>("scale",
+            "scale used to multiply internal node heights during parsing." +
+            "Useful for importing starting from external programs, for "
+            + "instance, RaxML tree rooted using Path-o-gen.", 1.0);
 
 
     boolean createUnrecognizedTaxa = false;
 
-    // if true and no date traits available then tips heights will be adjusted to zero.
-    private boolean adjustTipHeightsWhenMissingDateTraits; // = true;
 
     /**
-     * op
-     * assure the class behaves properly, even when inputs are not specified *
+     * Ensure the class behaves properly, even when inputs are not specified.
      */
     @Override
     public void initAndValidate() throws Exception {
-
-        adjustTipHeightsWhenMissingDateTraits = adjustTipHeightsWhenMissingDateTraitsInput.get();
 
         if (dataInput.get() != null) {
             labels = dataInput.get().getTaxaNames();
@@ -121,9 +134,14 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
 
         super.initAndValidate();
-        if (m_initial.get() != null && m_initial.get().m_traitList.get() != null) {
-            adjustTreeToNodeHeights(root, m_initial.get().m_traitList.get());
-        } else if (m_traitList.get() == null && adjustTipHeightsWhenMissingDateTraits) {
+        if (m_initial.get() != null)
+            processTraits(m_initial.get().m_traitList.get());
+        else
+            processTraits(m_traitList.get());
+        
+        if (timeTraitSet != null)
+            adjustTreeNodeHeights(root);
+        else if (adjustTipHeightsInput.get()) {
             // all nodes should be at zero height if no date-trait is available
             for (int i = 0; i < getLeafNodeCount(); i++) {
                 getNode(i).setHeight(0);
@@ -170,7 +188,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
         newickInput.setValue(newick, this);
         offsetInput.setValue(offset, this);
-        adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeightsWhenMissingDateTraits, this);
+        adjustTipHeightsInput.setValue(adjustTipHeightsWhenMissingDateTraits, this);
         initAndValidate();
     }
 
@@ -224,7 +242,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
         newickInput.setValue(newick, this);
         isLabelledNewickInput.setValue(isLabeled, this);
-        adjustTipHeightsWhenMissingDateTraitsInput.setValue(adjustTipHeights, this);
+        adjustTipHeightsInput.setValue(adjustTipHeights, this);
         allowSingleChildInput.setValue(allowSingleChildNodes, this);
 
         offsetInput.setValue(offset, this);

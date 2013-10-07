@@ -1212,8 +1212,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 						// TODO: this might not be a valid type conversion from TreeInterface to Tree 
 						Tree tree = (Tree) treeLikelihood.treeInput.get();
 						// check whether there are tip dates
-						TraitSet trait = tree.m_traitList.get();
-						if (trait != null) {
+						if (tree.hasDateTrait()) {
 							bNeedsEstimation = true;
 						}
 						// check whether there is a calibration

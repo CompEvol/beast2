@@ -113,13 +113,7 @@ public class Tree extends StateNode implements TreeInterface {
             }
         }
         
-        // Process trait sets.
-        for (TraitSet traitSet : m_traitList.get()) {
-            for (Node node : getExternalNodes())
-                node.setMetaData(traitSet.getTraitName(), traitSet.getValue(node.getNr()));
-            if (traitSet.isDateTrait())
-                timeTraitSet = traitSet;
-        }
+        processTraits(m_traitList.get());
         
         // Ensure tree is compatible with traits.
         if (timeTraitSet != null)
@@ -129,7 +123,25 @@ public class Tree extends StateNode implements TreeInterface {
             initArrays();
         }
     }
+    
+    /**
+     * Process trait sets.
+     * @param traitList List of trait sets.
+     */
+    protected void processTraits(List<TraitSet> traitList) {
+        for (TraitSet traitSet : traitList) {
+            for (Node node : getExternalNodes())
+                node.setMetaData(traitSet.getTraitName(), traitSet.getValue(node.getNr()));
+            if (traitSet.isDateTrait())
+                timeTraitSet = traitSet;
+        }
+    }
 
+    /**
+     * Construct new node object of the specific type defined by nodeTypeInput.
+     * 
+     * @return new node object.
+     */
     protected Node newNode() {
     	try {
     		return (Node) Class.forName(nodeTypeInput.get()).newInstance();
@@ -715,18 +727,31 @@ public class Tree extends StateNode implements TreeInterface {
 
         hasStartedEditing = false;
     }
+    
+    /**
+     * Determine whether tree has a date/time trait set associated with it.
+     * 
+     * @return true if so
+     */
+    public boolean hasDateTrait() {
+        if (timeTraitSet == null)
+            return false;
+        else
+            return true;
+    }
 
     /**
      * Convert age/height to the date time scale given by a trait set,
      * if one exists.  Otherwise just return the unconverted height.
+     * 
      * @param fHeight
      * @return date specified by height
      */
     public double getDate(final double fHeight) {
-        if (timeTraitSet == null) {
+        if (hasDateTrait()) {
+            return timeTraitSet.getDate(fHeight);
+        } else 
             return fHeight;
-        }
-        return timeTraitSet.getDate(fHeight);
     }
 
     /**
