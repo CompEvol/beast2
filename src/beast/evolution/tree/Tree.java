@@ -113,15 +113,17 @@ public class Tree extends StateNode implements TreeInterface {
             }
         }
         
-        processTraits(m_traitList.get());
-        
-        // Ensure tree is compatible with traits.
-        if (timeTraitSet != null)
-            adjustTreeNodeHeights(root);
-
         if (nodeCount >= 0) {
             initArrays();
         }
+        
+        processTraits(m_traitList.get());
+        
+        // Ensure tree is compatible with time trait.
+        if (timeTraitSet != null)
+            adjustTreeNodeHeights(root);
+
+
     }
     
     /**
@@ -138,7 +140,8 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     /**
-     * Construct new node object of the specific type defined by nodeTypeInput.
+     * Overridable method to construct new node object of the specific type
+     * defined by nodeTypeInput.
      * 
      * @return new node object.
      */
@@ -146,7 +149,8 @@ public class Tree extends StateNode implements TreeInterface {
     	try {
     		return (Node) Class.forName(nodeTypeInput.get()).newInstance();
     	} catch (Exception e) {
-    		throw new RuntimeException("Cannot create node of tyep " + nodeTypeInput.get() + ": " + e.getMessage());
+    		throw new RuntimeException("Cannot create node of type "
+                        + nodeTypeInput.get() + ": " + e.getMessage());
     	}
         //return new NodeData();
     }
