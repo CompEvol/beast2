@@ -142,8 +142,8 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 	    if (tree == null) {
 	    	tree = distr.treeIntervalsInput.get().treeInput.get();
 	    }
-        if (tree.m_trait.get() != null) {
-        	String traitName = tree.m_trait.get().traitNameInput.get();
+        if (tree.m_traitList.get() != null) {
+        	String traitName = tree.m_traitList.get().traitNameInput.get();
         	if (traitName.equals(TraitSet.DATE_TRAIT) ||
         		traitName.equals(TraitSet.DATE_BACKWARD_TRAIT) ||
         		traitName.equals(TraitSet.DATE_FORWARD_TRAIT)) {

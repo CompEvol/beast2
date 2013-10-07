@@ -900,7 +900,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 					try {
 						// TODO: this might not be a valid type conversion from TreeInterface to Tree 
 						Tree tree = (Tree) ((GenericTreeLikelihood) d).treeInput.get();
-						tree.m_trait.setValue(trait, tree);
+						tree.m_traitList.setValue(trait, tree);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1212,7 +1212,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 						// TODO: this might not be a valid type conversion from TreeInterface to Tree 
 						Tree tree = (Tree) treeLikelihood.treeInput.get();
 						// check whether there are tip dates
-						TraitSet trait = tree.m_trait.get();
+						TraitSet trait = tree.m_traitList.get();
 						if (trait != null) {
 							bNeedsEstimation = true;
 						}

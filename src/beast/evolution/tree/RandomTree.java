@@ -341,14 +341,14 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                     candidates.add(node);
                 }
 
-                if (m_trait.get() != null) {
+                if (m_traitList.get() != null) {
                     // set tip dates
                     for (final Node node : candidates) {
-                        node.setMetaData(m_trait.get().getTraitName(), m_trait.get().getValue(node.getNr()));
+                        node.setMetaData(m_traitList.get().getTraitName(), m_traitList.get().getValue(node.getNr()));
                     }
-                } else if (m_initial.get() != null && m_initial.get().m_trait.get() != null) {
+                } else if (m_initial.get() != null && m_initial.get().m_traitList.get() != null) {
                     // set tip dates
-                    final TraitSet trait = m_initial.get().m_trait.get();
+                    final TraitSet trait = m_initial.get().m_traitList.get();
                     for (final Node node : candidates) {
                         node.setMetaData(trait.getTraitName(), trait.getValue(node.getNr()));
                     }

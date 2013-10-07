@@ -184,5 +184,15 @@ public class TraitSet extends BEASTObject {
         }
         return fHeight;
     }
+    
+    /**
+     * Determines whether trait is recognised as specifying taxa dates.
+     * @return true if this is a date trait.
+     */
+    public boolean isDateTrait() {
+        return traitNameInput.get().equals(DATE_TRAIT)
+                || traitNameInput.get().equals(DATE_FORWARD_TRAIT)
+                || traitNameInput.get().equals(DATE_BACKWARD_TRAIT);
+    }
 
 } // class TraitSet

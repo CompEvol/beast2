@@ -13,13 +13,18 @@ import beast.evolution.alignment.TaxonSet;
 import beast.util.TreeParser;
 
 
-@Description("Tree (the T in BEAST) representing gene beast.tree, species beast.tree, language history, or " +
-        "other time-beast.tree relationships among sequence data.")
+@Description("Tree (the T in BEAST) representing gene beast.tree, species"
+        + " beast.tree, language history, or other time-beast.tree"
+        + " relationships among sequence data.")
 public class Tree extends StateNode implements TreeInterface {
     public Input<Tree> m_initial = new Input<Tree>("initial", "tree to start with");
-    public Input<TraitSet> m_trait = new Input<TraitSet>("trait", "trait information for initializing traits (like node dates) in the tree");
-    public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset", "set of taxa that correspond to the leafs in the tree");
-    public Input<String> nodeTypeInput = new Input<String>("nodetype", "type of the nodes in the beast.tree", Node.class.getName());
+    public Input<List<TraitSet>> m_traitList = new Input<List<TraitSet>>("trait",
+            "trait information for initializing traits (like node dates) in the tree",
+            new ArrayList<TraitSet>());
+    public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset",
+            "set of taxa that correspond to the leafs in the tree");
+    public Input<String> nodeTypeInput = new Input<String>("nodetype",
+            "type of the nodes in the beast.tree", Node.class.getName());
 
     /**
      * state of dirtiness of a node in the tree
@@ -52,6 +57,11 @@ public class Tree extends StateNode implements TreeInterface {
      * such that m_sTaxaNames[node.getNr()] == node.getID()*
      */
     String[] m_sTaxaNames = null;
+    
+    /**
+     * Trait set which specifies leaf node times.
+     */
+    protected TraitSet timeTraitSet = null;
 
 
     @Override
@@ -102,9 +112,18 @@ public class Tree extends StateNode implements TreeInterface {
                 leafNodeCount = 1;
             }
         }
-        if (m_trait.get() != null) {
-            adjustTreeToNodeHeights(root, m_trait.get());
+        
+        // Process trait sets.
+        for (TraitSet traitSet : m_traitList.get()) {
+            for (Node node : getExternalNodes())
+                node.setMetaData(traitSet.getTraitName(), traitSet.getValue(node.getNr()));
+            if (traitSet.isDateTrait())
+                timeTraitSet = traitSet;
         }
+        
+        // Ensure tree is compatible with traits.
+        if (timeTraitSet != null)
+            adjustTreeNodeHeights(root);
 
         if (nodeCount >= 0) {
             initArrays();
@@ -146,18 +165,15 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     /**
-     * process m_nodeDates, moving taxon heights to match the m_nodeHeights if necessary.
-     * If this leads to internal branch lengths becoming negative, the internal nodes are
-     * moved as well.
+     * Ensure no negative branch lengths exist in tree.  This can occur if
+     * leaf heights given as a trait are incompatible with the existing tree.
      */
     final static double EPSILON = 0.0000001;
 
-    protected void adjustTreeToNodeHeights(final Node node, final TraitSet trait) {
-        if (node.isLeaf()) {
-            node.setMetaData(trait.getTraitName(), trait.getValue(node.getNr()));
-        } else {
+    protected void adjustTreeNodeHeights(final Node node) {
+        if (!node.isLeaf()) {
             for (final Node child : node.getChildren()) {
-                adjustTreeToNodeHeights(child, trait);
+                adjustTreeNodeHeights(child);
             }
             for (Node child : node.getChildren()) {
                 if (node.height < child.getHeight() + EPSILON) {
@@ -700,11 +716,17 @@ public class Tree extends StateNode implements TreeInterface {
         hasStartedEditing = false;
     }
 
+    /**
+     * Convert age/height to the date time scale given by a trait set,
+     * if one exists.  Otherwise just return the unconverted height.
+     * @param fHeight
+     * @return date specified by height
+     */
     public double getDate(final double fHeight) {
-        if (m_trait.get() == null) {
+        if (timeTraitSet == null) {
             return fHeight;
         }
-        return m_trait.get().getDate(fHeight);
+        return timeTraitSet.getDate(fHeight);
     }
 
     /**
