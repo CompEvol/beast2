@@ -159,10 +159,10 @@ public class Input<T> {
      */
     public Input(String sName, String sTipText, T startValue, Validate rule) {
         this(sName, sTipText, startValue);
-        if (rule != Validate.REQUIRED) {
+        /*if (rule != Validate.REQUIRED) {
             System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + sName + ")");
-        }
+        }*/
         this.rule = rule;
     } // c'tor
 
