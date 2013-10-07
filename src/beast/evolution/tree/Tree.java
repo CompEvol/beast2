@@ -760,6 +760,23 @@ public class Tree extends StateNode implements TreeInterface {
         else
             return false;
     }
+    
+    /**
+     * Specifically set the date trait set for this tree. A null value simply
+     * removes the existing trait set.
+     * 
+     * @param traitSet 
+     */
+    public void setDateTrait(TraitSet traitSet) {
+        if (hasDateTrait()) {
+            m_traitList.get().remove(timeTraitSet);
+        }
+        
+        if (traitSet != null)
+            m_traitList.get().add(traitSet);
+        
+        timeTraitSet = traitSet;
+    }
 
     /**
      * Convert age/height to the date time scale given by a trait set,

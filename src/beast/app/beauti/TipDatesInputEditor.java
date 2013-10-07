@@ -73,7 +73,6 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 e1.printStackTrace();
             }
             m_plugin = (BEASTObject) tree;
-            //traitSet = (TraitSet) m_input.get();
             traitSet = tree.getDateTrait();
 
             Box box = Box.createVerticalBox();
@@ -92,10 +91,11 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                                         "value", "");
                                 traitSet.setID("dateTrait.t:" + BeautiDoc.parsePartition(tree.getID()));
                             }
-                            m_input.setValue(traitSet, m_plugin);
+                            tree.setDateTrait(traitSet);
                         } else {
-                            m_input.setValue(null, m_plugin);
+                            tree.setDateTrait(null);
                         }
+
                         refreshPanel();
                     } catch (Exception ex) {
                         ex.printStackTrace();
