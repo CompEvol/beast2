@@ -62,6 +62,11 @@ public class Tree extends StateNode implements TreeInterface {
      * Trait set which specifies leaf node times.
      */
     protected TraitSet timeTraitSet = null;
+    
+    /*
+     * Whether or not TraitSets have been processed.
+     */
+    protected boolean traitsProcessed = false;
 
 
     @Override
@@ -128,6 +133,7 @@ public class Tree extends StateNode implements TreeInterface {
     
     /**
      * Process trait sets.
+     * 
      * @param traitList List of trait sets.
      */
     protected void processTraits(List<TraitSet> traitList) {
@@ -137,6 +143,7 @@ public class Tree extends StateNode implements TreeInterface {
             if (traitSet.isDateTrait())
                 timeTraitSet = traitSet;
         }
+        traitsProcessed = true;
     }
 
     /**
@@ -733,15 +740,25 @@ public class Tree extends StateNode implements TreeInterface {
     }
     
     /**
+     * @return Date trait set if available, null otherwise.
+     */
+    public TraitSet getDateTrait() {
+        if (!traitsProcessed)
+            processTraits(m_traitList.get());
+        
+        return timeTraitSet;
+    }
+    
+    /**
      * Determine whether tree has a date/time trait set associated with it.
      * 
      * @return true if so
      */
-    public boolean hasDateTrait() {
-        if (timeTraitSet == null)
-            return false;
-        else
+    public boolean hasDateTrait() {       
+        if (getDateTrait() != null)
             return true;
+        else
+            return false;
     }
 
     /**

@@ -1,8 +1,5 @@
 package beast.app.beauti;
 
-
-
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -37,22 +34,17 @@ import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 
-
-
 public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
-	public TipDatesInputEditor(BeautiDoc doc) {
-		super(doc);
-	}
-
-	private static final long serialVersionUID = 1L;
-
+    public TipDatesInputEditor(BeautiDoc doc) {
+        super(doc);
+    }
+    private static final long serialVersionUID = 1L;
 
     @Override
     public Class<?> type() {
         return Tree.class;
     }
-
     Tree tree;
     TraitSet traitSet;
     JComboBox unitsComboBox;
@@ -64,31 +56,30 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     JScrollPane scrollPane;
     List<Taxon> taxonsets;
 
-
     @Override
     public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
-		this.itemNr = itemNr;
-		if (itemNr >= 0) {
-	        tree = (Tree) ((List<?>)input.get()).get(itemNr);
-		} else {
-	        tree = (Tree) input.get();			
-		}
+        this.itemNr = itemNr;
+        if (itemNr >= 0) {
+            tree = (Tree) ((List<?>) input.get()).get(itemNr);
+        } else {
+            tree = (Tree) input.get();
+        }
         if (tree != null) {
             try {
-				m_input = ((BEASTObject) tree).getInput("trait");
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+                m_input = ((BEASTObject) tree).getInput("trait");
+            } catch (Exception e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
             m_plugin = (BEASTObject) tree;
-            traitSet = (TraitSet) m_input.get();
+            //traitSet = (TraitSet) m_input.get();
+            traitSet = tree.getDateTrait();
 
             Box box = Box.createVerticalBox();
 
             JCheckBox useTipDates = new JCheckBox("Use tip dates", traitSet != null);
             useTipDates.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JCheckBox checkBox = (JCheckBox) e.getSource();
@@ -125,7 +116,6 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             add(box);
         }
     } // init
-
     final static int NO_TIP_SAMPLING = 0;
     final static int SAMPLE_TIPS_SAME_PRIOR = 1;
     final static int SAMPLE_TIPS_MULTIPLE_PRIOR = 2;
@@ -139,9 +129,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         // determine mode
         m_iMode = NO_TIP_SAMPLING;
         // count nr of TipDateScalers with weight > 0
-    	String treeID = tree.getID();
-    	String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":")+1);
-    	TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
+        String treeID = tree.getID();
+        String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":") + 1);
+        TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
         if (operator.m_pWeight.get() > 0) {
             m_iMode = SAMPLE_TIPS_SAME_PRIOR;
         }
@@ -155,7 +145,6 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             }
         });
         samplingBox.add(comboBox);
-
 
         taxonsets = new ArrayList<Taxon>();
         Taxon allTaxa = new Taxon();
@@ -174,12 +163,11 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         // find TipDatesSampler and set TaxonSet input
         Taxon set = operator.m_taxonsetInput.get();
         if (set != null) {
-        	int i = taxonSetIDs.indexOf(set.getID());
+            int i = taxonSetIDs.indexOf(set.getID());
             comboBox2.setSelectedIndex(i);
         }
 
         comboBox2.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectTaxonSet(e);
@@ -192,29 +180,29 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
     private void selectTaxonSet(ActionEvent e) {
         JComboBox comboBox = (JComboBox) e.getSource();
-        String taxonSetID = (String) comboBox.getSelectedItem(); 
+        String taxonSetID = (String) comboBox.getSelectedItem();
         Taxon taxonset = null;;
-        for (Taxon taxon: taxonsets) {
-        	if (taxon.getID().equals(taxonSetID)) {
-        		taxonset = taxon;
-        		break;
-        	}
+        for (Taxon taxon : taxonsets) {
+            if (taxon.getID().equals(taxonSetID)) {
+                taxonset = taxon;
+                break;
+            }
         }
-        
+
         if (taxonset.getID().equals(ALL_TAXA)) {
             taxonset = null;
         }
         try {
             // find TipDatesSampler and set TaxonSet input
-        	
-        	String treeID = tree.getID();
-        	String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":")+1);
-        	TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
-            System.err.println("treeID = " + treeID);        
-            System.err.println("operatorID = " + operatorID);        
-            System.err.println("operator = " + operator);        
+
+            String treeID = tree.getID();
+            String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":") + 1);
+            TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
+            System.err.println("treeID = " + treeID);
+            System.err.println("operatorID = " + operatorID);
+            System.err.println("operator = " + operator);
             operator.m_taxonsetInput.setValue(taxonset, operator);
-        	
+
 //            for (Plugin plugin : traitSet.outputs) {
 //                if (plugin instanceof Tree) {
 //                    for (Plugin plugin2 : plugin.outputs) {
@@ -241,7 +229,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 //            }
         } catch (Exception ex) {
             // TODO: handle exception
-        	ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
@@ -254,7 +242,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 if (plugin instanceof Tree) {
                     for (BEASTObject plugin2 : plugin.outputs) {
                         if (plugin2 instanceof TipDatesRandomWalker) {
-                        	TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
+                            TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
                             switch (m_iMode) {
                                 case NO_TIP_SAMPLING:
                                     operator.m_pWeight.setValue(0.0, operator);
@@ -314,8 +302,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         // and only the Date column is editable.
         table.setDefaultEditor(Object.class, new TableCellEditor() {
             JTextField m_textField = new JTextField();
-            int m_iRow
-                    ,
+            int m_iRow,
                     m_iCol;
 
             @Override
@@ -341,7 +328,6 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             public boolean isCellEditable(EventObject anEvent) {
                 return table.getSelectedColumn() == 1;
             }
-
 
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int iRow, int iCol) {
@@ -375,50 +361,45 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             @Override
             public void addCellEditorListener(CellEditorListener l) {
             }
-
         });
         table.setRowHeight(24);
         scrollPane = new JScrollPane(table);
         scrollPane.addComponentListener(new ComponentListener() {
-			
-			@Override
-			public void componentShown(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void componentResized(ComponentEvent e) {
-				Component c = (Component) e.getSource();
-				while (c.getParent() != null && !(c.getParent() instanceof JSplitPane)) {
-					c = c.getParent();
-				}
-				if (c.getParent() != null) {
-					Dimension preferredSize = c.getSize();
-					preferredSize.height = Math.max(preferredSize.height - 170, 0);
-					preferredSize.width = Math.max(preferredSize.width - 25, 0);
-					scrollPane.setPreferredSize(preferredSize);					
-				} else if (doc.getFrame() != null) {
-					Dimension preferredSize = doc.getFrame().getSize();
-					preferredSize.height = Math.max(preferredSize.height - 170, 0);
-					preferredSize.width = Math.max(preferredSize.width - 25, 0);
-					scrollPane.setPreferredSize(preferredSize);
-				}				
-			}
-			
-			@Override
-			public void componentMoved(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void componentHidden(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-        
+            @Override
+            public void componentShown(ComponentEvent e) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Component c = (Component) e.getSource();
+                while (c.getParent() != null && !(c.getParent() instanceof JSplitPane)) {
+                    c = c.getParent();
+                }
+                if (c.getParent() != null) {
+                    Dimension preferredSize = c.getSize();
+                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
+                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
+                    scrollPane.setPreferredSize(preferredSize);
+                } else if (doc.getFrame() != null) {
+                    Dimension preferredSize = doc.getFrame().getSize();
+                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
+                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
+                    scrollPane.setPreferredSize(preferredSize);
+                }
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                // TODO Auto-generated method stub
+            }
+        });
+
         return scrollPane;
     } // createListBox
 
@@ -443,10 +424,10 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 //                throw new Exception("Trait (" + sTaxonID + ") is not a known taxon. Spelling error perhaps?");
 //            }
             if (iTaxon >= 0) {
-	            tableData[iTaxon][1] = normalize(sStrs[1]);
-	            tableData[iTaxon][0] = sTaxonID;
+                tableData[iTaxon][1] = normalize(sStrs[1]);
+                tableData[iTaxon][0] = sTaxonID;
             } else {
-            	System.err.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
+                System.err.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
             }
         }
         if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
@@ -481,15 +462,15 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             return Double.parseDouble(sStr);
         } catch (NumberFormatException e) {
             // does not look like a number, try parsing it as a date
-        	try {
-        		if (sStr.matches(".*[a-zA-Z].*")) {
-        			sStr = sStr.replace('/', '-');
-        		}
-        		long date = Date.parse(sStr);
-        		return 1970.0 + date / (60.0*60*24*365*1000);
-        	} catch (Exception e2) {
-        		// does not look like a date, give up
-			}
+            try {
+                if (sStr.matches(".*[a-zA-Z].*")) {
+                    sStr = sStr.replace('/', '-');
+                }
+                long date = Date.parse(sStr);
+                return 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
+            } catch (Exception e2) {
+                // does not look like a date, give up
+            }
 
         }
         return 0;
@@ -551,9 +532,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
         relativeToComboBox = new JComboBox(new String[]{"Since some time in the past", "Before the present"});
         if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
-        	relativeToComboBox.setSelectedIndex(1);
+            relativeToComboBox.setSelectedIndex(1);
         } else {
-        	relativeToComboBox.setSelectedIndex(0);
+            relativeToComboBox.setSelectedIndex(0);
         }
         relativeToComboBox.addActionListener(new ActionListener() {
             @Override
@@ -582,25 +563,26 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             public void actionPerformed(ActionEvent e) {
                 GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
                 dlg.allowAddingValues();
-            	String sTrait = "";
+                String sTrait = "";
                 switch (dlg.showDialog("Guess dates")) {
-                case canceled: return;
-                case trait:
-                	sTrait = dlg.getTrait();
-                	break;
-                case pattern: 
-                    for (String sTaxon : sTaxa) {
-                    	String sMatch = dlg.match(sTaxon);
-                    	if (sMatch == null) {
-                    		return;
-                    	}
-                        double nDate = parseDate(sMatch);
-                        if (sTrait.length() > 0) {
-                            sTrait += ",";
+                    case canceled:
+                        return;
+                    case trait:
+                        sTrait = dlg.getTrait();
+                        break;
+                    case pattern:
+                        for (String sTaxon : sTaxa) {
+                            String sMatch = dlg.match(sTaxon);
+                            if (sMatch == null) {
+                                return;
+                            }
+                            double nDate = parseDate(sMatch);
+                            if (sTrait.length() > 0) {
+                                sTrait += ",";
+                            }
+                            sTrait += sTaxon + "=" + nDate;
                         }
-                        sTrait += sTaxon + "=" + nDate;
-                    }
-                	break;
+                        break;
                 }
                 try {
                     traitSet.traitsInput.setValue(sTrait, traitSet);
