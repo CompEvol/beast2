@@ -134,7 +134,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         taxonSetIDs = new ArrayList<String>();
         isMonophyletic = 0;
 
-        List<String> sTaxa;
+        final List<String> sTaxa;
         if (taxaInput.get() != null) {
             sTaxa = taxaInput.get().getTaxaNames();
         } else {

@@ -21,9 +21,12 @@ import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
 
+/**
+* @author Joseph Heled
+ */
 
 
-@Description("Yule with calibrated monophyletic clades. With this prior, the marginal distribution of the" +
+@Description("Yule prior with calibrated monophyletic clades. With this prior, the marginal distribution of the" +
         " calibrated nodes (the MRCA of clades) is identical to the specified calibration, but the Yule is not preserved over" +
         " the whole tree space, only among sub-spaces.")
 @Citation(value = "Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time Estimation. " +
@@ -51,7 +54,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             new Input<RealParameter>("birthRate", "birth rate of splitting a linage into two", Validate.REQUIRED);
 
     public Input<List<CalibrationPoint>> calibrationsInput =
-            new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>());//,Input.Validate.REQUIRED);
+            new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>());
 
     public Input<Type> correctionTypeInput = new Input<Type>("type", "Type of correction: none for no correction " +
             "(same as BEAST1), full for Yule-like over calibrated times, and restricted for Yule-like over calibrated" +
@@ -93,7 +96,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         final TreeInterface tree = treeInput.get();
 
-        // shallow copy. we will be changing cals later
+        // shallow copy. we shall change cals later
         final List<CalibrationPoint> cals = new ArrayList<CalibrationPoint>(calibrationsInput.get());
         int nCals = cals.size();
         final List<TaxonSet> taxaSets = new ArrayList<TaxonSet>(nCals);
@@ -145,7 +148,6 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             return;
         }
 
-
         for (int k = 0; k < nCals; ++k) {
             final TaxonSet tk = taxaSets.get(k);
             for (int i = k + 1; i < nCals; ++i) {
@@ -157,6 +159,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 }
             }
         }
+
         orderedCalibrations = new CalibrationPoint[nCals];
 
         {

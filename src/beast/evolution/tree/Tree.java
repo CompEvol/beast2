@@ -81,31 +81,7 @@ public class Tree extends StateNode implements TreeInterface {
 
         if (nodeCount < 0) {
             if (m_taxonset.get() != null) {
-                // make a caterpillar
-                final List<String> sTaxa = m_taxonset.get().asStringList();
-                Node left = newNode();
-                left.labelNr = 0;
-                left.height = 0;
-                left.setID(sTaxa.get(0));
-                for (int i = 1; i < sTaxa.size(); i++) {
-                    Node right = newNode();
-                    right.labelNr = i;
-                    right.height = 0;
-                    right.setID(sTaxa.get(i));
-                    Node parent = newNode();
-                    parent.labelNr = sTaxa.size() + i - 1;
-                    parent.height = i;
-                    left.parent = parent;
-                    parent.setLeft(left);
-                    right.parent = parent;
-                    parent.setRight(right);
-                    left = parent;
-                }
-                root = left;
-                leafNodeCount = sTaxa.size();
-                nodeCount = leafNodeCount * 2 - 1;
-                internalNodeCount = leafNodeCount - 1;
-
+                makeCaterpillar(0,1,false);
             } else {
                 // make dummy tree with a single root node
                 root = newNode();
@@ -127,10 +103,39 @@ public class Tree extends StateNode implements TreeInterface {
         // Ensure tree is compatible with time trait.
         if (timeTraitSet != null)
             adjustTreeNodeHeights(root);
-
-
     }
-    
+
+    public void makeCaterpillar(final double minInternalHeight, final double step, final boolean finalize) {
+        // make a caterpillar
+        final List<String> sTaxa = m_taxonset.get().asStringList();
+        Node left = newNode();
+        left.labelNr = 0;
+        left.height = 0;
+        left.setID(sTaxa.get(0));
+        for (int i = 1; i < sTaxa.size(); i++) {
+            final Node right = newNode();
+            right.labelNr = i;
+            right.height = 0;
+            right.setID(sTaxa.get(i));
+            final Node parent = newNode();
+            parent.labelNr = sTaxa.size() + i - 1;
+            parent.height = minInternalHeight + i * step;
+            left.parent = parent;
+            parent.setLeft(left);
+            right.parent = parent;
+            parent.setRight(right);
+            left = parent;
+        }
+        root = left;
+        leafNodeCount = sTaxa.size();
+        nodeCount = leafNodeCount * 2 - 1;
+        internalNodeCount = leafNodeCount - 1;
+
+        if( finalize ) {
+           initArrays();
+        }
+    }
+
     /**
      * Process trait sets.
      * 
@@ -198,9 +203,10 @@ public class Tree extends StateNode implements TreeInterface {
             for (final Node child : node.getChildren()) {
                 adjustTreeNodeHeights(child);
             }
-            for (Node child : node.getChildren()) {
-                if (node.height < child.getHeight() + EPSILON) {
-                    node.height = child.getHeight() + EPSILON;
+            for (final Node child : node.getChildren()) {
+                final double minHeight = child.getHeight() + EPSILON;
+                if (node.height < minHeight) {
+                    node.height = minHeight;
                 }
             }
         }

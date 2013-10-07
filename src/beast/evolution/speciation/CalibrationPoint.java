@@ -6,6 +6,9 @@ import beast.core.BEASTObject;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.ParametricDistribution;
 
+/**
+* @author Joseph Heled
+ */
 
 @Description("Specification of a single calibration point of the calibrated Yule.")
 public class CalibrationPoint extends BEASTObject {

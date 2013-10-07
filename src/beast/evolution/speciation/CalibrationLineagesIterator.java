@@ -1,6 +1,10 @@
 package beast.evolution.speciation;
 
 // Arguably the most complex iterator I have ever written.
+/**
+* @author Joseph Heled
+ */
+
 
 public class CalibrationLineagesIterator {
     // taxaPartialOrder[i] contains clades immediately contained in the i'th clade as indices (so, strictly smaller than i)
