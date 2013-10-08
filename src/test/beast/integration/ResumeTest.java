@@ -21,7 +21,7 @@ public class ResumeTest extends TestCase {
     final static String XML_FILE = "testHKY.xml";
 
     @Test
-    public void test_ThatXmlExamplesRun() throws Exception {
+    public void test_ThatXmlExampleResumes() throws Exception {
         Randomizer.setSeed(127);
         Logger.FILE_MODE = Logger.LogFileMode.overwrite;
         String dir = System.getProperty("user.dir") + "/examples";
@@ -51,6 +51,6 @@ public class ResumeTest extends TestCase {
             mcmc.run();
         }
         System.out.println("Done " + fileName);
-    } // test_ThatXmlExamplesRun
+    } // test_ThatXmlExampleResumes
 
 } // class ResumeTest

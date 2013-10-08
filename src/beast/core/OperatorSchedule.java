@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import beast.core.util.Log;
 import beast.util.Randomizer;
 
 
@@ -113,13 +118,17 @@ public class OperatorSchedule extends BEASTObject {
         // appends state of operator set to state file
         File aFile = new File(stateFileName);
         PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(aFile, true)));
-        out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
-        for (int i = 0; i < operators.size(); i++) {
-            Operator operator = operators.get(i);
-            out.println(operator.getID() + " " + cumulativeProbs[i] + " " + operator.getCoercableParameterValue() + " "
-                    + operator.m_nNrAccepted + " " + operator.m_nNrRejected + " " + operator.m_nNrAcceptedForCorrection
-                    + " " + operator.m_nNrRejectedForCorrection);
+        //out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
+        out.println("<!--");
+        out.println("{operators:[");
+        int k = 0;
+        for (Operator operator: operators) {
+            operator.storeToFile(out);
+            if (k++ < operators.size() - 1) {
+            	out.println(",");
+            }
         }
+        out.println("\n]}");
         out.println("-->");
         out.close();
     }
@@ -135,26 +144,56 @@ public class OperatorSchedule extends BEASTObject {
             sXML += fin.readLine() + "\n";
         }
         fin.close();
-        sXML = sXML.substring(sXML.indexOf("</itsabeastystatewerein>") + 25);
-        String[] sStrs = sXML.split("\n");
-        for (int i = 0; i < operators.size() && i + 2 < sStrs.length; i++) {
-            String[] sStrs2 = sStrs[i + 2].split(" ");
-            Operator operator = operators.get(i);
-            autoOptimizeDelayCount = 0;
-            if ((operator.getID() == null && sStrs2[0].equals("null")) || operator.getID().equals(sStrs2[0])) {
-                cumulativeProbs[i] = Double.parseDouble(sStrs2[1]);
-                if (!sStrs2[2].equals("NaN")) {
-                    operator.setCoercableParameterValue(Double.parseDouble(sStrs2[2]));
-                }
-                operator.m_nNrAccepted = Integer.parseInt(sStrs2[3]);
-                operator.m_nNrRejected = Integer.parseInt(sStrs2[4]);
-                autoOptimizeDelayCount += operator.m_nNrAccepted + operator.m_nNrRejected;
-                operator.m_nNrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
-                operator.m_nNrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
-            } else {
-                throw new Exception("Cannot resume: operator order or set changed from previous run");
-            }
-        }
+        sXML = sXML.substring(sXML.indexOf("</itsabeastystatewerein>") + 25 + 5, sXML.length() - 4);
+        try {
+	        JSONObject o = new JSONObject(sXML);
+	        JSONArray operatorlist = o.getJSONArray("operators");
+	        autoOptimizeDelayCount = 0;
+	        for (int i = 0; i < operatorlist.length(); i++) {
+	            JSONObject item = operatorlist.getJSONObject(i);
+	            String id = item.getString("id");
+	    		boolean found = false;
+	            if (!id.equals("null")) {
+	            	for (Operator operator: operators) {
+	            		if (id.equals(operator.getID())) {
+	                    	operator.restoreFromFile(item);
+	                        autoOptimizeDelayCount += operator.m_nRrAccepted + operator.m_nNrRejected;
+	                        found = true;
+	            			break;
+	            		}
+	            	}
+	            }
+	        	if (!found) {
+	        		Log.warning.println("Operator (" + id + ") found in state file that is not in operator list any more");
+	        	}
+	        }
+	    	for (Operator operator: operators) {
+	    		if (operator.getID() == null) {
+	        		Log.warning.println("Operator (" + operator.getClass() + ") found in BEAST file that could not be restored because it has not ID");
+	    		}
+	    	}    
+        } catch (JSONException e) {
+        	// it is not a JSON file -- probably a version 2.0.X state file
+	        String[] sStrs = sXML.split("\n");
+	        for (int i = 0; i < operators.size() && i + 2 < sStrs.length; i++) {
+	            String[] sStrs2 = sStrs[i + 2].split(" ");
+	            Operator operator = operators.get(i);
+	            autoOptimizeDelayCount = 0;
+	            if ((operator.getID() == null && sStrs2[0].equals("null")) || operator.getID().equals(sStrs2[0])) {
+	                cumulativeProbs[i] = Double.parseDouble(sStrs2[1]);
+	                if (!sStrs2[2].equals("NaN")) {
+	                    operator.setCoercableParameterValue(Double.parseDouble(sStrs2[2]));
+	                }
+	                operator.m_nRrAccepted = Integer.parseInt(sStrs2[3]);
+	                operator.m_nNrRejected = Integer.parseInt(sStrs2[4]);
+	                autoOptimizeDelayCount += operator.m_nRrAccepted + operator.m_nNrRejected;
+	                operator.m_nRrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
+	                operator.m_nRrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
+	            } else {
+	                throw new Exception("Cannot resume: operator order or set changed from previous run");
+	            }
+	        }
+	    }
         showOperatorRates(System.err);
     }
 
@@ -174,7 +213,7 @@ public class OperatorSchedule extends BEASTObject {
         }
         final double target = operator.getTargetAcceptanceProbability();
 
-        double count = (operator.m_nNrRejectedForCorrection + operator.m_nNrAcceptedForCorrection + 1.0);
+        double count = (operator.m_nRrRejectedForCorrection + operator.m_nRrAcceptedForCorrection + 1.0);
         switch (transform) {
             case log:
                 count = Math.log(count + 1.0);

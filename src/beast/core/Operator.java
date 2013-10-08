@@ -25,9 +25,12 @@
 package beast.core;
 
 
+import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import beast.core.Input.Validate;
 import beast.core.util.Evaluator;
@@ -110,21 +113,21 @@ public abstract class Operator extends BEASTObject {
      * keep statistics of how often this operator was used, accepted or rejected *
      */
     protected int m_nNrRejected = 0;
-    protected int m_nNrAccepted = 0;
-    protected int m_nNrRejectedForCorrection = 0;
-    protected int m_nNrAcceptedForCorrection = 0;
+    protected int m_nRrAccepted = 0;
+    protected int m_nRrRejectedForCorrection = 0;
+    protected int m_nRrAcceptedForCorrection = 0;
 
     public void accept() {
-        m_nNrAccepted++;
+        m_nRrAccepted++;
         if (operatorSchedule.autoOptimizeDelayCount >= operatorSchedule.autoOptimizeDelay) {
-            m_nNrAcceptedForCorrection++;
+            m_nRrAcceptedForCorrection++;
         }
     }
 
     public void reject() {
         m_nNrRejected++;
         if (operatorSchedule.autoOptimizeDelayCount >= operatorSchedule.autoOptimizeDelay) {
-            m_nNrRejectedForCorrection++;
+            m_nRrRejectedForCorrection++;
         }
     }
 
@@ -206,10 +209,32 @@ public abstract class Operator extends BEASTObject {
             sName += "     ";
         }
         sName += " ";
-        return sName + "\t" + m_nNrAccepted + "\t" + m_nNrRejected + "\t" +
-                (m_nNrAccepted + m_nNrRejected) + "\t" +
-                format.format(((m_nNrAccepted + 0.0) / (m_nNrAccepted + m_nNrRejected))) +
+        return sName + "\t" + m_nRrAccepted + "\t" + m_nNrRejected + "\t" +
+                (m_nRrAccepted + m_nNrRejected) + "\t" +
+                format.format(((m_nRrAccepted + 0.0) / (m_nRrAccepted + m_nNrRejected))) +
                 " " + getPerformanceSuggestion();
     }
+
+    /** store to state file, so on resume the parameter tuning is restored **/
+	public void storeToFile(PrintStream out) {
+        out.print("{id:\"" + getID() + '"' +
+        		", p:" + getCoercableParameterValue() +
+        		", accept:" + m_nRrAccepted + 
+        		", reject:" + m_nNrRejected + 
+        		", acceptFC:" + m_nRrAcceptedForCorrection +  
+        		", rejectFC:" + m_nRrRejectedForCorrection +  
+        		"}"
+                );
+	}
+
+	public void restoreFromFile(JSONObject o) {
+        if (!Double.isNaN(o.getDouble("p"))) {
+            setCoercableParameterValue(o.getDouble("p"));
+        }
+        m_nRrAccepted = o.getInt("accept");
+        m_nNrRejected = o.getInt("reject");
+        m_nRrAcceptedForCorrection = o.getInt("acceptFC");
+        m_nRrRejectedForCorrection = o.getInt("rejectFC");
+	}
 
 } // class Operator
