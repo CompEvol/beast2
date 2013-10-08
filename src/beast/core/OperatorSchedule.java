@@ -157,7 +157,7 @@ public class OperatorSchedule extends BEASTObject {
 	            	for (Operator operator: operators) {
 	            		if (id.equals(operator.getID())) {
 	                    	operator.restoreFromFile(item);
-	                        autoOptimizeDelayCount += operator.m_nRrAccepted + operator.m_nNrRejected;
+	                        autoOptimizeDelayCount += operator.m_nNrAccepted + operator.m_nNrRejected;
 	                        found = true;
 	            			break;
 	            		}
@@ -184,11 +184,11 @@ public class OperatorSchedule extends BEASTObject {
 	                if (!sStrs2[2].equals("NaN")) {
 	                    operator.setCoercableParameterValue(Double.parseDouble(sStrs2[2]));
 	                }
-	                operator.m_nRrAccepted = Integer.parseInt(sStrs2[3]);
+	                operator.m_nNrAccepted = Integer.parseInt(sStrs2[3]);
 	                operator.m_nNrRejected = Integer.parseInt(sStrs2[4]);
-	                autoOptimizeDelayCount += operator.m_nRrAccepted + operator.m_nNrRejected;
-	                operator.m_nRrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
-	                operator.m_nRrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
+	                autoOptimizeDelayCount += operator.m_nNrAccepted + operator.m_nNrRejected;
+	                operator.m_nNrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
+	                operator.m_nNrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
 	            } else {
 	                throw new Exception("Cannot resume: operator order or set changed from previous run");
 	            }
@@ -213,7 +213,7 @@ public class OperatorSchedule extends BEASTObject {
         }
         final double target = operator.getTargetAcceptanceProbability();
 
-        double count = (operator.m_nRrRejectedForCorrection + operator.m_nRrAcceptedForCorrection + 1.0);
+        double count = (operator.m_nNrRejectedForCorrection + operator.m_nNrAcceptedForCorrection + 1.0);
         switch (transform) {
             case log:
                 count = Math.log(count + 1.0);
