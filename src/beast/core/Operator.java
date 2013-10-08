@@ -215,7 +215,22 @@ public abstract class Operator extends BEASTObject {
                 " " + getPerformanceSuggestion();
     }
 
-    /** store to state file, so on resume the parameter tuning is restored **/
+    /** Store to state file, so on resume the parameter tuning is restored.
+     * By default, it stores information in JSON for example
+     * 
+     * {id:"kappaScaler", p:0.5, accept:39, reject:35, acceptFC:0, rejectFC:0}
+     * 
+     * Meta-operators (operators that have one or more operators as inputs)
+     * need to override this method to store the tuning information associated
+     * with their sub-operators by genering nested JSON, for example
+     * 
+     * {id:"metaoperator", p:0.5, accept:396, reject:355, acceptFC:50, rejectFC:45,
+     *  operators [
+     *  {id:"kappaScaler1", p:0.5, accept:39, reject:35, acceptFC:0, rejectFC:0}
+     *  {id:"kappaScaler2", p:0.5, accept:39, reject:35, acceptFC:0, rejectFC:0}
+     *  ]
+     * }
+     *  **/
 	public void storeToFile(PrintStream out) {
         out.print("{id:\"" + getID() + '"' +
         		", p:" + getCoercableParameterValue() +
@@ -227,6 +242,9 @@ public abstract class Operator extends BEASTObject {
                 );
 	}
 
+	/** Restore tuning information from file
+	 * Override this method fo meta-operators (see also storeToFile). 
+	 */
 	public void restoreFromFile(JSONObject o) {
         if (!Double.isNaN(o.getDouble("p"))) {
             setCoercableParameterValue(o.getDouble("p"));

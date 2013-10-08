@@ -118,7 +118,18 @@ public class OperatorSchedule extends BEASTObject {
         // appends state of operator set to state file
         File aFile = new File(stateFileName);
         PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(aFile, true)));
-        //out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
+
+//       Depracateded style of storing operator information: 
+//        out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
+//        int i = 0;
+//        for (Operator operator: operators) {
+//        out.println(operator.getID() + " " + cumulativeProbs[i++] + " " + operator.getCoercableParameterValue() + " "
+//        		+ operator.m_nNrAccepted + " " + operator.m_nNrRejected + " " + operator.m_nNrAcceptedForCorrection
+//        		+ " " + operator.m_nNrRejectedForCorrection);
+//        }
+//        out.println("-->");
+//        out.close();
+        
         out.println("<!--");
         out.println("{operators:[");
         int k = 0;
@@ -175,10 +186,10 @@ public class OperatorSchedule extends BEASTObject {
         } catch (JSONException e) {
         	// it is not a JSON file -- probably a version 2.0.X state file
 	        String[] sStrs = sXML.split("\n");
+            autoOptimizeDelayCount = 0;
 	        for (int i = 0; i < operators.size() && i + 2 < sStrs.length; i++) {
-	            String[] sStrs2 = sStrs[i + 2].split(" ");
+	            String[] sStrs2 = sStrs[i + 1].split(" ");
 	            Operator operator = operators.get(i);
-	            autoOptimizeDelayCount = 0;
 	            if ((operator.getID() == null && sStrs2[0].equals("null")) || operator.getID().equals(sStrs2[0])) {
 	                cumulativeProbs[i] = Double.parseDouble(sStrs2[1]);
 	                if (!sStrs2[2].equals("NaN")) {
