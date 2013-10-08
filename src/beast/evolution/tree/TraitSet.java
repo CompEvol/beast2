@@ -44,6 +44,7 @@ public class TraitSet extends BEASTObject {
      * String values of taxa in order of taxons in alignment*
      */
     String[] taxonValues;
+    
     /**
      * double representation of taxa value *
      */
@@ -51,6 +52,11 @@ public class TraitSet extends BEASTObject {
     double minValue;
     double maxValue;
 
+    /**
+     * Whether or not values are ALL numeric.
+     */
+    boolean numeric = true;
+    
     @Override
     public void initAndValidate() throws Exception {
         if (traitsInput.get().matches("^\\s*$")) {
@@ -77,6 +83,9 @@ public class TraitSet extends BEASTObject {
             }
             taxonValues[taxonNr] = normalize(sStrs[1]);
             values[taxonNr] = parseDouble(taxonValues[taxonNr]);
+            
+            if (Double.isNaN(values[taxonNr]))
+                numeric = false;
         }
 
         // sanity check: did we cover all taxa?
@@ -158,7 +167,8 @@ public class TraitSet extends BEASTObject {
     			}
             }
         }
-        return 0;
+        //return 0;
+        return Double.NaN;
     } // parseStrings
 
     /**
@@ -194,5 +204,13 @@ public class TraitSet extends BEASTObject {
                 || traitNameInput.get().equals(DATE_FORWARD_TRAIT)
                 || traitNameInput.get().equals(DATE_BACKWARD_TRAIT);
     }
+    
 
+    /**
+     * @return true if trait values are (all) numeric.
+     */
+    public boolean isNumeric() {
+        return numeric;
+    }
+    
 } // class TraitSet
