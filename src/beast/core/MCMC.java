@@ -366,7 +366,7 @@ public class MCMC extends Runnable {
                 } else {
                     // reject
                     if (sampleNr >= 0) {
-                        operator.reject();
+                        operator.reject(newLogLikelihood == Double.NEGATIVE_INFINITY ? -1 : 0);
                     }
                     state.restore();
                     state.restoreCalculationNodes();
@@ -376,7 +376,7 @@ public class MCMC extends Runnable {
             } else {
                 // operation failed
                 if (sampleNr >= 0) {
-                    operator.reject();
+                    operator.reject(-2);
                 }
                 state.restore();
                 //System.out.print(" direct reject");

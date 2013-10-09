@@ -46,7 +46,7 @@ public abstract class Operator extends BEASTObject {
      */
     OperatorSchedule operatorSchedule;
 
-    public void setOperatorSchedule(OperatorSchedule operatorSchedule) {
+    public void setOperatorSchedule(final OperatorSchedule operatorSchedule) {
         this.operatorSchedule = operatorSchedule;
     }
 
@@ -117,6 +117,12 @@ public abstract class Operator extends BEASTObject {
     protected int m_nNrRejectedForCorrection = 0;
     protected int m_nNrAcceptedForCorrection = 0;
 
+    private final boolean detailedRejection = false;
+    // rejected because likelihood is infinite
+    protected int m_nNrRejectedInvalid = 0;
+    // rejected because operator failed (sub-group of above)
+    protected int m_nNrRejectedOperator = 0;
+
     public void accept() {
         m_nNrAccepted++;
         if (operatorSchedule.autoOptimizeDelayCount >= operatorSchedule.autoOptimizeDelay) {
@@ -125,7 +131,18 @@ public abstract class Operator extends BEASTObject {
     }
 
     public void reject() {
+        reject(0); // silly hack
+    }
+
+    // 0 like finite  -1 like -inf -2 operator failed
+    public void reject(final int reason) {
         m_nNrRejected++;
+        if( reason < 0 ) {
+            ++m_nNrRejectedInvalid;
+            if( reason == -2 ) {
+               ++m_nNrRejectedOperator;
+            }
+        }
         if (operatorSchedule.autoOptimizeDelayCount >= operatorSchedule.autoOptimizeDelay) {
             m_nNrRejectedForCorrection++;
         }
@@ -138,7 +155,7 @@ public abstract class Operator extends BEASTObject {
      *
      * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
      */
-    public void optimize(double logAlpha) {
+    public void optimize(final double logAlpha) {
         // must be overridden by operator implementation to have an effect
     }
 
@@ -146,7 +163,7 @@ public abstract class Operator extends BEASTObject {
      * @param logAlpha difference in posterior between previous state & proposed state + hasting ratio
      * @return change of value of a parameter for MCMC chain optimisation
      */
-    protected double calcDelta(double logAlpha) {
+    protected double calcDelta(final double logAlpha) {
         return operatorSchedule.calcDelta(this, logAlpha);
     } // calcDelta
 
@@ -166,12 +183,14 @@ public abstract class Operator extends BEASTObject {
 
     /**
      * set value that changed through automatic operator optimisation
+     * @param fValue
      */
-    public void setCoercableParameterValue(double fValue) {
+    public void setCoercableParameterValue(final double fValue) {
     }
 
     /**
      * return directions on how to set operator parameters, if any *
+     * @return
      */
     public String getPerformanceSuggestion() {
         return "";
@@ -184,10 +203,10 @@ public abstract class Operator extends BEASTObject {
      */
     public List<StateNode> listStateNodes() throws Exception {
         // pick up all inputs that are stateNodes that are estimated
-        List<StateNode> list = new ArrayList<StateNode>();
+        final List<StateNode> list = new ArrayList<StateNode>();
         for (BEASTObject o : listActivePlugins()) {
             if (o instanceof StateNode) {
-                StateNode stateNode = (StateNode) o;
+                final StateNode stateNode = (StateNode) o;
                 if (stateNode.isEstimatedInput.get()) {
                     list.add(stateNode);
                 }
@@ -201,9 +220,9 @@ public abstract class Operator extends BEASTObject {
         if (sName.length() < 70) {
             sName += "                                                                      ".substring(sName.length(), 70);
         }
-        DecimalFormat format = new DecimalFormat("#.###");
+        final DecimalFormat format = new DecimalFormat("#.###");
         if (!Double.isNaN(getCoercableParameterValue())) {
-            String sStr = getCoercableParameterValue() + "";
+            final String sStr = getCoercableParameterValue() + "";
             sName += sStr.substring(0, Math.min(sStr.length(), 5));
         } else {
             sName += "     ";
@@ -212,7 +231,10 @@ public abstract class Operator extends BEASTObject {
         return sName + "\t" + m_nNrAccepted + "\t" + m_nNrRejected + "\t" +
                 (m_nNrAccepted + m_nNrRejected) + "\t" +
                 format.format(((m_nNrAccepted + 0.0) / (m_nNrAccepted + m_nNrRejected))) +
-                " " + getPerformanceSuggestion();
+                (detailedRejection ? (
+                " (" + format.format(((m_nNrRejectedInvalid + 0.0) / (m_nNrRejected))) +
+                " , " + format.format(((m_nNrRejectedOperator + 0.0) / (m_nNrRejected))) + ") " ) : "")
+                + " " + getPerformanceSuggestion();
     }
 
     /** Store to state file, so on resume the parameter tuning is restored.
@@ -222,7 +244,7 @@ public abstract class Operator extends BEASTObject {
      * 
      * Meta-operators (operators that have one or more operators as inputs)
      * need to override this method to store the tuning information associated
-     * with their sub-operators by genering nested JSON, for example
+     * with their sub-operators by generating nested JSON, for example
      * 
      * {id:"metaoperator", p:0.5, accept:396, reject:355, acceptFC:50, rejectFC:45,
      *  operators [
@@ -231,13 +253,15 @@ public abstract class Operator extends BEASTObject {
      *  ]
      * }
      *  **/
-	public void storeToFile(PrintStream out) {
+	public void storeToFile(final PrintStream out) {
         out.print("{id:\"" + getID() + '"' +
         		", p:" + getCoercableParameterValue() +
         		", accept:" + m_nNrAccepted + 
         		", reject:" + m_nNrRejected + 
         		", acceptFC:" + m_nNrAcceptedForCorrection +  
-        		", rejectFC:" + m_nNrRejectedForCorrection +  
+        		", rejectFC:" + m_nNrRejectedForCorrection +
+                ", rejectIv:" + m_nNrRejectedInvalid +
+                 ", rejectOp:" + m_nNrRejectedOperator +
         		"}"
                 );
 	}
@@ -253,6 +277,9 @@ public abstract class Operator extends BEASTObject {
         m_nNrRejected = o.getInt("reject");
         m_nNrAcceptedForCorrection = o.getInt("acceptFC");
         m_nNrRejectedForCorrection = o.getInt("rejectFC");
+
+        m_nNrRejectedInvalid =  o.has("rejectIv") ?  o.getInt("rejectIv") : 0;
+        m_nNrRejectedOperator  = o.has("rejectOp") ? o.getInt("rejectOp") : 0;
 	}
 
 } // class Operator
