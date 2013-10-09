@@ -71,13 +71,13 @@ public class Tree extends StateNode implements TreeInterface {
 
     @Override
     public void initAndValidate() throws Exception {
-        if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
-            final Tree other = m_initial.get();
-            root = other.root.copy();
-            nodeCount = other.nodeCount;
-            internalNodeCount = other.internalNodeCount;
-            leafNodeCount = other.leafNodeCount;
-        }
+//        if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
+//            final Tree other = m_initial.get();
+//            root = other.root.copy();
+//            nodeCount = other.nodeCount;
+//            internalNodeCount = other.internalNodeCount;
+//            leafNodeCount = other.leafNodeCount;
+//        }
 
         if (nodeCount < 0) {
             if (m_taxonset.get() != null) {

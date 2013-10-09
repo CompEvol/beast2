@@ -64,15 +64,16 @@
 
     
 <run chainLength="10000000" id="mcmc" preBurnin="0" spec="MCMC" storeEvery="-1">
+    <init estimate="false" id="firstAndSecondSites.RandomTree" initial="@tree" spec="beast.evolution.tree.RandomTree">
+        <data idref="firstAndSecondSites" name="taxa"/>
+        <populationModel id="firstAndSecondSites.ConstantPopulation" spec="ConstantPopulation">
+            <parameter dimension="1" estimate="false" id="firstAndSecondSites.popSize" name="popSize" value="1.0"/>
+        </populationModel>
+    </init>
+
+
     <state id="State0" storeEvery="100000">
-        <tree estimate="true" id="tree" name="stateNode">
-            <tree estimate="false" id="firstAndSecondSites.RandomTree" name="initial" spec="beast.evolution.tree.RandomTree">
-                <data idref="firstAndSecondSites" name="taxa"/>
-                <populationModel id="firstAndSecondSites.ConstantPopulation" spec="ConstantPopulation">
-                    <parameter dimension="1" estimate="false" id="firstAndSecondSites.popSize" name="popSize" value="1.0"/>
-                </populationModel>
-            </tree>
-        </tree>
+        <tree estimate="true" id="tree" name="stateNode"/>
         <parameter dimension="4" estimate="true" id="thirdSites.freqParameter" name="stateNode" value="0.25"/>
         <parameter dimension="1" estimate="true" id="thirdSites.hky.kappa" lower="0.0" name="stateNode" value="1.0"/>
         <parameter dimension="1" estimate="true" id="firstAndSecondSites.hky.kappa" lower="0.0" name="stateNode" value="1.0"/>

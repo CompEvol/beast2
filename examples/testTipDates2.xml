@@ -53,15 +53,17 @@
 
     
 <run chainLength="10000000" id="mcmc" preBurnin="0" spec="MCMC" storeEvery="-1">
+
+    <init estimate="false" id="RandomTree" initial="@tree" spec="beast.evolution.tree.RandomTree">
+        <data idref="Primates" name="taxa"/>
+        <populationModel id="ConstantPopulation" spec="ConstantPopulation">
+            <parameter dimension="1" estimate="false" id="popSize" name="popSize" value="1.0"/>
+        </populationModel>
+    </init>
+
     <state id="State0" storeEvery="100000">
         <parameter dimension="4" estimate="true" id="freqParameter" name="stateNode" value="0.25"/>
         <tree estimate="true" id="tree" name="stateNode">
-            <tree estimate="false" id="RandomTree" name="initial" spec="beast.evolution.tree.RandomTree">
-                <data idref="Primates" name="taxa"/>
-                <populationModel id="ConstantPopulation" spec="ConstantPopulation">
-                    <parameter dimension="1" estimate="false" id="popSize" name="popSize" value="1.0"/>
-                </populationModel>
-            </tree>
                 <trait id="datetrait" spec="beast.evolution.tree.TraitSet" traitname="date" units="year">
 Lemur_catta=1,
 M_fascicularis=1
