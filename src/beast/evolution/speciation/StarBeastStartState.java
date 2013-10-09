@@ -10,6 +10,7 @@ import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 import beast.util.ClusterTree;
 
 import java.util.*;
@@ -22,6 +23,7 @@ import static java.lang.Math.*;
 
 @Description("Set a starting point for a *BEAST analysis from gene alignment data.")
 public class StarBeastStartState extends Tree implements StateNodeInitialiser {
+
     static enum Method {
         POINT("point-estimate"),
         ALL_RANDOM("random");
@@ -40,11 +42,13 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             "state or a point estimate based on alignments data (default point-estimate)",
             Method.POINT, Method.values());
 
-    public Input<Tree> speciesTreeInput = new Input<Tree>("speciesTree", "The species tree to initialize",
-            Validate.REQUIRED);
+    public Input<Tree> speciesTreeInput = new Input<Tree>("speciesTree", "The species tree to initialize");
 
     public Input<List<Tree>> genes = new Input<List<Tree>>("gene", "Gene trees to initialize", new ArrayList<Tree>(),
             Validate.REQUIRED);
+
+    public Input<CalibratedYuleModel> calibratedYule = new Input<CalibratedYuleModel>("calibratedYule",
+            "The species tree (with calibrations) to initialize", Validate.XOR, speciesTreeInput);
 
     public Input<RealParameter> popMean = new Input<RealParameter>("popMean",
             "Population mean hyper prior to initialse");
@@ -59,24 +63,31 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             "Main clock rate used to scale trees (default 1).");
 
 
+    private boolean hasCalibrations;
 
     @Override
     public void initAndValidate() throws Exception {
         // what does this do and is it dangerous to call it or not to call it at the start or at the end??????
         super.initAndValidate();
+        hasCalibrations = calibratedYule.get() != null;
     }
 
     @Override
     public void initStateNodes() throws Exception {
-       final Method method = initMethod.get();
 
-        switch( method ) {
-            case POINT:
-                fullInit();
-                break;
-            case ALL_RANDOM:
-                randomInit();
-                break;
+        if( hasCalibrations ) {
+            initWithCalibrations();
+        } else {
+            final Method method = initMethod.get();
+
+            switch( method ) {
+                case POINT:
+                    fullInit();
+                    break;
+                case ALL_RANDOM:
+                    randomInit();
+                    break;
+            }
         }
     }
 
@@ -288,6 +299,13 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         }
     }
 
+    private void randomInitGeneTrees(double speciesTreeHeight) {
+      final List<Tree> geneTrees = genes.get();
+        for (final Tree gtree : geneTrees) {
+            gtree.makeCaterpillar(speciesTreeHeight, speciesTreeHeight/gtree.getInternalNodeCount(), true);
+        }
+    }
+
     private void randomInit() throws Exception {
         double lam = 1;
         final RealParameter lambda = birthRate.get();
@@ -303,17 +321,45 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         }
         final double rootHeight = (1/lam) * s;
         stree.scale(rootHeight/stree.getRoot().getHeight());
-
-        final List<Tree> geneTrees = genes.get();
-        for (final Tree gtree : geneTrees) {
-            gtree.makeCaterpillar(rootHeight, rootHeight/gtree.getInternalNodeCount(), true);
-        }
+        randomInitGeneTrees(rootHeight);
+//        final List<Tree> geneTrees = genes.get();
+//        for (final Tree gtree : geneTrees) {
+//            gtree.makeCaterpillar(rootHeight, rootHeight/gtree.getInternalNodeCount(), true);
+//        }
     }
 
+    private void initWithCalibrations() throws Exception {
+        final CalibratedYuleModel cYule = calibratedYule.get();
+        final Tree spTree = (Tree) cYule.treeInput.get();
+
+        final List<CalibrationPoint> cals = cYule.calibrationsInput.get();
+
+        final CalibratedYuleModel cym = new CalibratedYuleModel();
+        for( final CalibrationPoint cal : cals ) {
+          cym.setInputValue("calibrations", cal);
+        }
+        cym.setInputValue("tree", spTree);
+        cym.setInputValue("type", CalibratedYuleModel.Type.NONE);
+        cym.initAndValidate();
+
+        final Tree t = cym.compatibleInitialTree();
+
+        spTree.assignFromWithoutID(t);
+
+//        final CalibratedYuleInitialTree ct = new CalibratedYuleInitialTree();
+//        ct.initByName("initial", spTree, "calibrations", cYule.calibrationsInput.get());
+//        ct.initStateNodes();
+        final double rootHeight = spTree.getRoot().getHeight();
+        randomInitGeneTrees(rootHeight);
+    }
 
     @Override
     public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
-        stateNodes.add(speciesTreeInput.get());
+        if( hasCalibrations ) {
+            stateNodes.add((Tree) calibratedYule.get().treeInput.get());
+        } else {
+          stateNodes.add(speciesTreeInput.get());
+        }
 
         for( final Tree g : genes.get() ) {
             stateNodes.add(g);

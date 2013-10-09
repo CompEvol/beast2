@@ -712,6 +712,8 @@ public class Node extends BEASTObject {
         n.setHeight(h);
         n.setLeft(left);
         n.setRight(right);
+        left.parent = n;
+        right.parent = n;
         return n;
     }
 
