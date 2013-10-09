@@ -393,7 +393,7 @@ public class MCMC extends Runnable {
                             + " Operator: " + operator.getClass().getName());
                 }
                 if (sampleNr > NR_OF_DEBUG_SAMPLES * 3) {
-                    // switch of debug mode once a sufficient large sample is checked
+                    // switch off debug mode once a sufficient large sample is checked
                     debugFlag = false;
                     if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
                     	// incorrect calculation outside debug period.

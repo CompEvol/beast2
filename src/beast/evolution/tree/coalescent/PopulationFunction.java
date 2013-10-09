@@ -112,7 +112,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
 
     @Description("An implementation of a population size function plugin." +
             "Also note that if you are dealing with a diploid population " +
-            "N0 will be the number of aleles, not the number of individuals.")
+            "N0 will be the number of alleles, not the number of individuals.")
     public abstract class Abstract extends CalculationNode implements PopulationFunction {
 
         RombergIntegrator numericalIntegrator = new RombergIntegrator();

@@ -55,7 +55,7 @@ public class ScaleOperator extends Operator {
                     "a different factor, otherwise a single factor is used", false);
 
     public Input<Integer> degreesOfFreedomInput = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used when " +
-            "scaleAllIndependently=false and scaleAll=true to override default in calcualation of Hasting ratio. " +
+            "scaleAllIndependently=false and scaleAll=true to override default in calculation of Hasting ratio. " +
             "Ignored when less than 1, default 0.", 0);
     public Input<BooleanParameter> indicatorInput = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
             "of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
@@ -117,16 +117,25 @@ public class ScaleOperator extends Operator {
      */
     @Override
     public double proposal() {
+
+        Integer degreesOfFreedom = degreesOfFreedomInput.get();
         try {
 
             double hastingsRatio;
             final double scale = getScaler();
 
             if (m_bIsTreeScaler) {
-                final Tree tree = treeInput.get(this);
+
+                if (degreesOfFreedom != null) {
+                    throw new RuntimeException("Degrees of freedom input should not be set for tree scaling operator");
+                }
+
+
+                    final Tree tree = treeInput.get(this);
                 if (rootOnlyInput.get()) {
                     final Node root = tree.getRoot();
                     final double fNewHeight = root.getHeight() * scale;
+
                     if (fNewHeight < Math.max(root.getLeft().getHeight(), root.getRight().getHeight())) {
                         return Double.NEGATIVE_INFINITY;
                     }

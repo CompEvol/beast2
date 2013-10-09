@@ -217,7 +217,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 //    }
 
     /**
-     * Returns the number coalescent events in an interval
+     * Returns the number of coalescent events in an interval
      */
     public int getCoalescentEvents(int i) {
         if (!intervalsKnown) {
@@ -363,7 +363,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
             do {
                 final int childIndex = indices[nodeNo];
                 final int childCount = childCounts[childIndex];
-                // dont use nodeNo from here on in do loop
+                // don't use nodeNo from here on in do loop
                 nodeNo += 1;
                 if (childCount == 0) {
                     addLineage(intervalCount, tree.getNode(childIndex));

@@ -102,7 +102,7 @@ public class CalculationNode extends BEASTObject {
 
     /**
      * @return true if the node became dirty - that is needs to recalculate due to
-     *         changes in the inputes.
+     *         changes in the inputs.
      *         <p/>
      *         CalcalationNodes typically know whether an input is a CalculationNode or StateNode
      *         and also know whether the input is Validate.REQUIRED, hence cannot be null.
