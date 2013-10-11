@@ -1162,7 +1162,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 					FilteredAlignment f = new FilteredAlignment();
 					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.dataTypeInput.get());
 					f.setID(alignment.getID() + ids[j]);
-					getDoc().addAlignmentWithSubnet(f);
+					getDoc().addAlignmentWithSubnet(f, getDoc().beautiConfig.partitionTemplate.get());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

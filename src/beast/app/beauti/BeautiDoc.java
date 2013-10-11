@@ -47,6 +47,7 @@ import beast.core.MCMC;
 import beast.core.StateNode;
 import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
@@ -55,6 +56,7 @@ import beast.evolution.alignment.Taxon;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
@@ -367,10 +369,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		parser.parseFile(file);
 		if (parser.filteredAlignments.size() > 0) {
 			for (Alignment data : parser.filteredAlignments) {
-				addAlignmentWithSubnet(data);
+				addAlignmentWithSubnet(data, beautiConfig.partitionTemplate.get());
 			}
 		} else {
-			addAlignmentWithSubnet(parser.m_alignment);
+			addAlignmentWithSubnet(parser.m_alignment, beautiConfig.partitionTemplate.get());
 		}
 		connectModel();
 		addTraitSet(parser.traitSet);
@@ -380,7 +382,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	public void importXMLAlignment(File file) throws Exception {
 		Alignment data = (Alignment) BeautiAlignmentProvider.getXMLData(file);
 		data.initAndValidate();
-		addAlignmentWithSubnet(data);
+		addAlignmentWithSubnet(data, beautiConfig.partitionTemplate.get());
 		connectModel();
 		fireDocHasChanged();
 	}
@@ -1355,9 +1357,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		}
 	}
 
-	public void addAlignmentWithSubnet(Alignment data) {
+	public void addAlignmentWithSubnet(Alignment data, BeautiSubTemplate template) {
 		alignments.add(data);
-		beautiConfig.partitionTemplate.get().createSubNet(data, this, true);
+		template.createSubNet(data, this, true);
 		// re-determine partitions
 		determinePartitions();
 	}
@@ -2019,10 +2021,32 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 					}
 				}
 			}
+			// add parameters that have more than 1 outputs into susbtitution models
+			if (plugin instanceof Parameter<?>) {
+				for (BEASTObject output : plugin.outputs) {
+					if (posteriorPredecessors.contains(output)) {
+						if (output instanceof SubstitutionModel) {
+							int nrOfSubstModelsInOutput = 0;
+							try {
+								for (Input<?> input : output.listInputs()) {
+									if (input.get() != null && input.get().equals(plugin)) {
+										nrOfSubstModelsInOutput++;
+									}
+								}
+							} catch (Exception e) {
+								// ignore
+							}
+							if (nrOfSubstModelsInOutput > 1) {
+								addLink(plugin, output);
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		bHasLinkedAtLeastOnce = false;
-		for(Input input : linked) {
+		for(Input<?> input : linked) {
 			if (input.getType().isAssignableFrom(RealParameter.class)) {
 				bHasLinkedAtLeastOnce = true;
 				break;
@@ -2069,20 +2093,50 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		return linked.contains(input);
 	}
 	
+	/** return all RealParameters that have 
+	 * the same ID in another partition, or
+	 * the same partition with the same substitution model as output
+	 * @param plugin
+	 * @return
+	 */
 	public List<BEASTObject> suggestedLinks(BEASTObject plugin) {
 		String sID = plugin.getID();
 		List<BEASTObject> list = new ArrayList<BEASTObject>();
+		String partitionID = null; 
 		if (sID.indexOf('.') >= 0) {
-			sID = sID.substring(0, sID.indexOf('.'));	
+			partitionID = sID.substring(sID.indexOf('.') + 1);
+			sID = sID.substring(0, sID.indexOf('.'));
 		} else {
 			return list;
 		}
 		for (BEASTObject candidate : posteriorPredecessors) {
 			String sID2 = candidate.getID();
 			if (sID2.indexOf('.') >= 0) {
+				String partitionID2 = sID2.substring(sID2.indexOf('.') + 1);
 				sID2 = sID2.substring(0, sID2.indexOf('.'));
 				if (sID2.equals(sID)) {
 					list.add(candidate);
+				}
+				if (plugin instanceof Parameter<?> && 
+						partitionID2.equals(partitionID) && 
+						candidate.getClass().equals(plugin.getClass())) {
+					boolean dimensionMatches = true;
+					if (((Parameter<?>)plugin).getDimension() != ((Parameter<?>)candidate).getDimension()) {
+						dimensionMatches = false;
+					}
+					// ensure they share an output
+					boolean foundCommonOutput = false;
+					for (BEASTObject out1 : plugin.outputs) {
+						for (BEASTObject out2 : candidate.outputs) {
+							if (out1 == out2 && out1 instanceof SubstitutionModel) {
+								foundCommonOutput = true;
+								break;
+							}
+						}
+					}
+					if (dimensionMatches && foundCommonOutput) {
+						list.add(candidate);
+					}
 				}
 			}
 		}

@@ -67,7 +67,16 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
         // PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
 
         List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin,
-                null, doc);
+                null, doc); 
+        // make sure we are dealing with a TreeDistribution
+        for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
+        	BeautiSubTemplate t = sAvailablePlugins.get(i);
+        	Class<?> c = t._class;
+        	if (!(TreeDistribution.class.isAssignableFrom(c))) {
+        		sAvailablePlugins.remove(i);
+        	}
+        }
+        
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName("TreeDistribution");
 

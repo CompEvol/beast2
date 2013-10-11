@@ -123,7 +123,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				}
 			}
 			for (BEASTObject plugin : selectedPlugins) {
-				doc.addAlignmentWithSubnet((Alignment) plugin);
+				doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
 			}
 			return selectedPlugins;
 		}
