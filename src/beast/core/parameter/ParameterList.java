@@ -29,7 +29,10 @@ import org.w3c.dom.Node;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("ParameterList state node.")
+@Description("State node representing a list of parameter objects, used for "
+        + "model selection problems. The parameters involved are not instances "
+        + "of Parameter.Base, but are instead instances of a local class "
+        + "QuietParameter which is not itself a StateNode.")
 public class ParameterList<T> extends StateNode {
     
     public Input<List<Parameter.Base>> initialParamsInput = new Input<List<Parameter.Base>>(
