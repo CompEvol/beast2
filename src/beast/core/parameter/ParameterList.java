@@ -240,6 +240,9 @@ public class ParameterList<T> extends StateNode {
 
     @Override
     protected void store() {
+        
+        // TODO: Modify this so that only dirty params are stored
+        
         pListStored.clear();
         for (QuietParameter param : pList)
             pListStored.add(param.copy());
@@ -247,6 +250,9 @@ public class ParameterList<T> extends StateNode {
 
     @Override
     public void restore() {
+        
+        // TODO: Modify this so that only dirty params are restored
+        
         pList.clear();
         for (QuietParameter param: pListStored)
             pList.add(param.copy());
@@ -265,6 +271,12 @@ public class ParameterList<T> extends StateNode {
     @Override
     public void close(PrintStream out) { }
 
+    /*
+     * The following methods are here because all StateNodes are Functions.
+     * They don't seem to make sense for ParameterLists though, so at the
+     * moment these methods just probe the ParameterList's size.
+     */
+    
     @Override
     public int getDimension() {
         return 1;
@@ -272,13 +284,11 @@ public class ParameterList<T> extends StateNode {
 
     @Override
     public double getArrayValue() {
-        // TODO: How does this make sense?
         return pList.size();
     }
 
     @Override
     public double getArrayValue(int i) {
-        // TODO: How does this make sense?
         if (i==0)
             return pList.size();
         else
@@ -334,13 +344,13 @@ public class ParameterList<T> extends StateNode {
 
         @Override
         public void setValue(int i, T value) {
-            startEditing(null);
+            startEditing(null); // ParameterList's startEditing()
             values[i] = value;
         }
         
         @Override
         public void setValue(T value) {
-            startEditing(null);
+            startEditing(null); // ParameterList's startEditing()
             values[0] = value;
         }
 
@@ -371,8 +381,9 @@ public class ParameterList<T> extends StateNode {
 
         @Override
         public String getID() {
-            // TODO
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            // TODO: Jessie needs unique IDs for each parameter.  Need to
+            // talk about this.
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
