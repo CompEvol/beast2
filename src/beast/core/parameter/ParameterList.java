@@ -19,6 +19,7 @@
 package beast.core.parameter;
 
 import beast.core.Description;
+import beast.core.Input;
 import beast.core.StateNode;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -28,12 +29,26 @@ import org.w3c.dom.Node;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("ParameterList state node.  Work in progress!")
+@Description("ParameterList state node.")
 public class ParameterList<T> extends StateNode {
     
+    public Input<List<Parameter.Base>> initialParamsInput = new Input<List<Parameter.Base>>(
+            "initialParam",
+            "Parameter whose value will initially be in parameter list.",
+            new ArrayList<Parameter.Base>());
+    
+    public Input<Integer> dimensionInput = new Input<Integer>("dimension",
+            "Dimension of individual parameters in list.  Default 1.", 1);
+    
+    public Input<Integer> minorDimensionInput = new Input<Integer>("minordimension",
+            "Minor dimension of individual parameters in list. Default 1.", 1);
+    
     List<QuietParameter> pList, pListStored;
-
+    
+    int dimension, minorDimension;
+    
     protected boolean dirty;
+    
 
     public ParameterList() { };
     
@@ -42,6 +57,95 @@ public class ParameterList<T> extends StateNode {
         pList = new ArrayList<QuietParameter>();
         pListStored = new ArrayList<QuietParameter>();
         dirty = true;
+        
+        dimension = dimensionInput.get();
+        minorDimension = minorDimensionInput.get();
+        
+        for (Parameter param : initialParamsInput.get()) {
+            if (param.getDimension() != dimension)
+                throw new IllegalArgumentException("Parameter dimension does not equal"
+                        + " dimension specified in enclosing ParameterList.");
+            
+            pList.add(new QuietParameter(param));
+        }
+
+    }
+   
+    /**
+     * Retrieve parameter from list.
+     * @param index index of parameter to retrieve
+     * @return parameter
+     */
+    public QuietParameter get(int index) {
+        return pList.get(index);
+    }
+    
+    /**
+     * Assign parameter to position in list.
+     * 
+     * @param index
+     * @param param 
+     */
+    public void set(int index, QuietParameter param) {
+        pList.set(index, param);
+    }
+    
+    /**
+     * Append parameter to end of list.
+     * 
+     * @param param 
+     */
+    public void add(QuietParameter param) {
+        pList.add(param);
+    }
+    
+    /**
+     * Insert parameter at position index in list, incrementing the index of
+     * all parameters already at and to the right of that position.
+     * 
+     * @param index
+     * @param param 
+     */
+    public void add(int index, QuietParameter param) {
+        pList.add(index, param);
+    }
+    
+    /**
+     * Remove parameter from list.
+     * 
+     * @param param 
+     */
+    public void remove(QuietParameter param) {
+        pList.remove(param);
+    }
+    
+    /**
+     * Remove parameter at index from list.
+     * 
+     * @param index 
+     */
+    public void remove(int index) {
+        pList.remove(index);
+    }
+    
+    /**
+     * Create new parameter and append to list.
+     * 
+     * @return New parameter.
+     */
+    public QuietParameter addNewParam() {
+        QuietParameter param = new QuietParameter();
+        pList.add(param);
+        return param;
+    }
+    
+    /**
+     * Create new parameter.
+     * 
+     * @return New parameter.
+     */
+    public QuietParameter createNewParam() {
+        return new QuietParameter();
     }
     
     @Override
@@ -52,7 +156,9 @@ public class ParameterList<T> extends StateNode {
     @Override
     public StateNode copy() {
         ParameterList<T> copy = new ParameterList<T>();
+        
         copy.initAndValidate();
+        
         for (QuietParameter param : pList) {
             QuietParameter paramCopy = param.copy();
             copy.pList.add(paramCopy);
@@ -97,6 +203,15 @@ public class ParameterList<T> extends StateNode {
     }
 
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        // TODO
+        
+        return sb.toString();
+    }
+    
+    @Override
     public void fromXML(Node node) {
         // TODO
         throw new UnsupportedOperationException("Not supported yet."); 
@@ -123,38 +238,37 @@ public class ParameterList<T> extends StateNode {
 
     @Override
     public void init(PrintStream out) throws Exception {
-        // TODO.
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        out.print(getID() + ".size\t");
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
-        // TODO.  Need to figure out how to log variable-dimension quantities...
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        out.print(pList.size() + "\t");
     }
 
     @Override
-    public void close(PrintStream out) {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public void close(PrintStream out) { }
 
     @Override
     public int getDimension() {
-        return pList.size();
+        return 1;
     }
 
     @Override
     public double getArrayValue() {
         // TODO: How does this make sense?
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return pList.size();
     }
 
     @Override
-    public double getArrayValue(int iDim) {
+    public double getArrayValue(int i) {
         // TODO: How does this make sense?
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (i==0)
+            return pList.size();
+        else
+            return Double.NaN;
     }
+    
 
     /**
      * Jessie's QuietParameter.  Objects of this class make sense
@@ -163,27 +277,53 @@ public class ParameterList<T> extends StateNode {
      */
     public class QuietParameter implements Parameter<T> {
 
-        List<T> values;
+        Object[] values;
         T lower, upper;
-        int dimMinor;
         
+        /**
+         * Construct a new QuietParameter.
+         */
         QuietParameter() {
-            values = new ArrayList<T>();
+            values = new Object[dimension];
+        }
+
+        /**
+         * Create new QuietParameter from existing parameter.
+         * 
+         * @param param 
+         */
+        QuietParameter(Parameter param) {
+            if (param.getDimension() != dimension)
+                throw new IllegalArgumentException("Cannot construct "
+                        + "ParameterList parameter with a dimension not equal "
+                        + "to that specified in the enclosing list.");
+            
+            values = new Object[dimension];
+            for (int i=0; i<param.getValues().length; i++) {
+                values[i] = param.getValue(i);
+            }
+            lower = (T)param.getLower();
+            upper = (T)param.getUpper();
         }
         
         @Override
         public T getValue(int i) {
-            return values.get(i);
+            return (T)values[i];
         }
 
         @Override
         public T getValue() {
-            return values.get(0);
+            return (T)values[0];
         }
 
         @Override
         public void setValue(int i, T value) {
-            values.set(i, value);
+            values[i] = value;
+        }
+        
+        @Override
+        public void setValue(T value) {
+            values[0] = value;
         }
 
         @Override
@@ -208,7 +348,7 @@ public class ParameterList<T> extends StateNode {
 
         @Override
         public T[] getValues() {
-            return (T[])values.toArray();
+            return (T[])values;
         }
 
         @Override
@@ -219,54 +359,49 @@ public class ParameterList<T> extends StateNode {
 
         @Override
         public int getMinorDimension1() {
-            return dimMinor;
+            return minorDimension;
         }
         
         @Override
         public int getMinorDimension2() {
-            return values.size()/dimMinor;
+            return dimension/minorDimension;
         }
-
+        
+        
         @Override
         public T getMatrixValue(int i, int j) {
-            return values.get(i*dimMinor+j);
+            return (T)values[i*minorDimension+j];
         }
 
         @Override
         public void swap(int i, int j) {
-            T tmp = values.get(i);
-            values.set(i, values.get(j));
-            values.set(j, tmp);
+            Object tmp = values[i];
+            values[i] = values[j];
+            values[j] = tmp;
         }
 
         @Override
         public int getDimension() {
-            return values.size();
+            return values.length;
         }
 
         @Override
         public double getArrayValue() {
-            return (Double)values.get(0);
+            return (Double)values[0];
         }
 
         @Override
         public double getArrayValue(int i) {
-            return (Double)values.get(i);
+            return (Double)values[0];
         }
         
         /**
          * @return deep copy of parameter.
          */
         public QuietParameter copy() {
-            QuietParameter paramCopy = new QuietParameter();
-            
-            paramCopy.values.addAll(values);
-            paramCopy.lower = lower;
-            paramCopy.upper = upper;
-            paramCopy.dimMinor = dimMinor;
-            
-            return paramCopy;
+            return new QuietParameter(this);
         }
+
     }
     
 }
