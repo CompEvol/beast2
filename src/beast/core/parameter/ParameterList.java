@@ -72,7 +72,17 @@ public class ParameterList<T> extends StateNode {
     }
    
     /**
+     * Retrieve number of parameters in parameter list.
+     * 
+     * @return size of parameter list.
+     */
+    public int size() {
+        return pList.size();
+    }
+    
+    /**
      * Retrieve parameter from list.
+     * 
      * @param index index of parameter to retrieve
      * @return parameter
      */
@@ -87,6 +97,7 @@ public class ParameterList<T> extends StateNode {
      * @param param 
      */
     public void set(int index, QuietParameter param) {
+        startEditing(null);
         pList.set(index, param);
     }
     
@@ -96,6 +107,7 @@ public class ParameterList<T> extends StateNode {
      * @param param 
      */
     public void add(QuietParameter param) {
+        startEditing(null);
         pList.add(param);
     }
     
@@ -107,6 +119,7 @@ public class ParameterList<T> extends StateNode {
      * @param param 
      */
     public void add(int index, QuietParameter param) {
+        startEditing(null);
         pList.add(index, param);
     }
     
@@ -116,6 +129,7 @@ public class ParameterList<T> extends StateNode {
      * @param param 
      */
     public void remove(QuietParameter param) {
+        startEditing(null);
         pList.remove(param);
     }
     
@@ -125,6 +139,7 @@ public class ParameterList<T> extends StateNode {
      * @param index 
      */
     public void remove(int index) {
+        startEditing(null);
         pList.remove(index);
     }
     
@@ -134,6 +149,7 @@ public class ParameterList<T> extends StateNode {
      * @return New parameter.
      */
     public QuietParameter addNewParam() {
+        startEditing(null);
         QuietParameter param = new QuietParameter();
         pList.add(param);
         return param;
@@ -318,11 +334,13 @@ public class ParameterList<T> extends StateNode {
 
         @Override
         public void setValue(int i, T value) {
+            startEditing(null);
             values[i] = value;
         }
         
         @Override
         public void setValue(T value) {
+            startEditing(null);
             values[0] = value;
         }
 
@@ -375,6 +393,7 @@ public class ParameterList<T> extends StateNode {
 
         @Override
         public void swap(int i, int j) {
+            startEditing(null);
             Object tmp = values[i];
             values[i] = values[j];
             values[j] = tmp;
