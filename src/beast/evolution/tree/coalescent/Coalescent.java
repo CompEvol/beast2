@@ -21,7 +21,7 @@ import beast.math.Binomial;
 @Description("Calculates the probability of a beast.tree conditional on a population size function. " +
         "Note that this does not take the number of possible tree interval/tree topology combinations " +
         "in account, in other words, the constant required for making this a proper distribution that integrates " +
-        "to unity is not calculated (partly, because we don't know how for sequentially samples data).")
+        "to unity is not calculated (partly, because we don't know how for sequentially sampled data).")
 public class Coalescent extends TreeDistribution {
     public Input<PopulationFunction> popSizeInput = new Input<PopulationFunction>("populationModel", "A population size model", Validate.REQUIRED);
 
@@ -61,6 +61,7 @@ public class Coalescent extends TreeDistribution {
     /**
      * @return a list of unique ids for the state nodes that form the argument
      */
+    @Override
     public List<String> getArguments() {
         return Collections.singletonList(treeIntervalsInput.get().getID());
     }
@@ -68,6 +69,7 @@ public class Coalescent extends TreeDistribution {
     /**
      * @return a list of unique ids for the state nodes that make up the conditions
      */
+    @Override
     public List<String> getConditions() {
         return popSizeInput.get().getParameterIds();
     }
