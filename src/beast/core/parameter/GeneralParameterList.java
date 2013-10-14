@@ -24,6 +24,7 @@ import beast.core.StateNode;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import org.w3c.dom.Node;
 
 /**
@@ -46,9 +47,11 @@ public class GeneralParameterList<T> extends StateNode {
     public Input<Integer> minorDimensionInput = new Input<Integer>("minordimension",
             "Minor dimension of individual parameters in list. Default 1.", 1);
     
-    List<QuietParameter> pList, pListStored;
+    protected List<QuietParameter> pList, pListStored;
+    protected TreeSet<Integer> deallocatedKeys;
+    protected int nextUnallocatedKey;
     
-    int dimension, minorDimension;
+    protected int dimension, minorDimension;
     
 
     public GeneralParameterList() { };
@@ -57,6 +60,8 @@ public class GeneralParameterList<T> extends StateNode {
     public void initAndValidate() {
         pList = new ArrayList<QuietParameter>();
         pListStored = new ArrayList<QuietParameter>();
+        deallocatedKeys = new TreeSet<Integer>();
+        nextUnallocatedKey = 0;
         
         dimension = dimensionInput.get();
         minorDimension = minorDimensionInput.get();
@@ -65,8 +70,9 @@ public class GeneralParameterList<T> extends StateNode {
             if (param.getDimension() != dimension)
                 throw new IllegalArgumentException("Parameter dimension does not equal"
                         + " dimension specified in enclosing ParameterList.");
-            
-            pList.add(new QuietParameter(param));
+            QuietParameter qParam = new QuietParameter(param);
+            allocateKey(qParam);
+            pList.add(qParam);
         }
 
         store();
@@ -132,6 +138,7 @@ public class GeneralParameterList<T> extends StateNode {
      */
     public void remove(QuietParameter param) {
         startEditing(null);
+        deallocatedKeys.add(param.key);
         pList.remove(param);
     }
     
@@ -142,9 +149,38 @@ public class GeneralParameterList<T> extends StateNode {
      */
     public void remove(int index) {
         startEditing(null);
+        deallocatedKeys.add(pList.get(index).key);
         pList.remove(index);
     }
     
+    /**
+     * Create new parameter, without appending it to the list.  This only
+     * makes sense if the parameter is eventually added to the list.  This
+     * call does not itself affect the ParameterList's dirty status (it
+     * will be marked as dirty when/if add() is called).
+     * 
+     * @return New parameter.
+     */
+    public QuietParameter createNewParam() {
+        QuietParameter param = new QuietParameter();
+        allocateKey(param);
+        return param;
+    }
+    
+    /**
+     * Create new parameter from existing Parameter, without appending it to
+     * the list.  This only makes sense if the parameter is eventually added
+     * to the list.  This call does not itself affect the ParameterList's
+     * dirty status (it will be marked as dirty when/if add() is called).
+     * 
+     * @return New parameter.
+     */
+    public QuietParameter createNewParam(Parameter otherParam) {
+        QuietParameter param = new QuietParameter(otherParam);
+        allocateKey(param);
+        return param;
+    }
+
     /**
      * Create new parameter and append to list.
      * 
@@ -153,19 +189,38 @@ public class GeneralParameterList<T> extends StateNode {
     public QuietParameter addNewParam() {
         startEditing(null);
         QuietParameter param = new QuietParameter();
+        allocateKey(param);
         pList.add(param);
         return param;
     }
     
     /**
-     * Create new parameter.
+     * Create new parameter from existing Parameter and append to list.
      * 
      * @return New parameter.
      */
-    public QuietParameter createNewParam() {
-        return new QuietParameter();
+    public QuietParameter addNewParam(Parameter otherParam) {
+        startEditing(null);
+        QuietParameter param = new QuietParameter(otherParam);
+        allocateKey(param);
+        pList.add(param);
+        return param;
     }
-
+    
+    /**
+     * Assign unique ID to this parameter.
+     * @param param 
+     */
+    private void allocateKey(QuietParameter param) {
+        if (deallocatedKeys.size()>0) {
+            param.key = deallocatedKeys.first();
+            deallocatedKeys.remove(param.key);
+        } else {
+            param.key = nextUnallocatedKey;
+            nextUnallocatedKey += 1;
+        }
+    }
+    
     @Override
     public StateNode copy() {
         GeneralParameterList<T> copy = new GeneralParameterList<T>();
@@ -191,6 +246,11 @@ public class GeneralParameterList<T> extends StateNode {
         otherParamList.pList.clear();
         for (QuietParameter param : pList)
             otherParamList.pList.add(param.copy());
+        
+        otherParamList.dimension = dimension;
+        otherParamList.minorDimension = minorDimension;
+        otherParamList.deallocatedKeys = new TreeSet<Integer>(deallocatedKeys);
+        otherParamList.nextUnallocatedKey = nextUnallocatedKey;
     }
 
     @Override
@@ -204,6 +264,11 @@ public class GeneralParameterList<T> extends StateNode {
         pList.clear();
         for (Object paramObj : otherParamList.pList)
             pList.add((QuietParameter)paramObj);
+        
+        dimension = otherParamList.dimension;
+        minorDimension = otherParamList.minorDimension;
+        deallocatedKeys = new TreeSet<Integer>(otherParamList.deallocatedKeys);
+        nextUnallocatedKey = otherParamList.nextUnallocatedKey;
     }
 
     @Override
@@ -301,6 +366,7 @@ public class GeneralParameterList<T> extends StateNode {
 
         Object[] values;
         T lower, upper;
+        int key = -1;
         
         /**
          * Construct a new QuietParameter.
@@ -326,6 +392,10 @@ public class GeneralParameterList<T> extends StateNode {
             }
             lower = (T)param.getLower();
             upper = (T)param.getUpper();
+        }
+        
+        public int getKey() {
+            return key;
         }
         
         @Override
@@ -377,8 +447,6 @@ public class GeneralParameterList<T> extends StateNode {
 
         @Override
         public String getID() {
-            // TODO: Jessie needs unique IDs for each parameter.  Need to
-            // talk about this.
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
@@ -425,7 +493,9 @@ public class GeneralParameterList<T> extends StateNode {
          * @return deep copy of parameter.
          */
         public QuietParameter copy() {
-            return new QuietParameter(this);
+            QuietParameter copy = new QuietParameter(this);
+            copy.key = this.key;
+            return copy;
         }
 
     }
