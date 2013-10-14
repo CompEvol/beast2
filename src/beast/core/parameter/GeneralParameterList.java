@@ -50,8 +50,6 @@ public class GeneralParameterList<T> extends StateNode {
     
     int dimension, minorDimension;
     
-    protected boolean dirty;
-    
 
     public GeneralParameterList() { };
     
@@ -59,7 +57,6 @@ public class GeneralParameterList<T> extends StateNode {
     public void initAndValidate() {
         pList = new ArrayList<QuietParameter>();
         pListStored = new ArrayList<QuietParameter>();
-        dirty = true;
         
         dimension = dimensionInput.get();
         minorDimension = minorDimensionInput.get();
@@ -72,6 +69,8 @@ public class GeneralParameterList<T> extends StateNode {
             pList.add(new QuietParameter(param));
         }
 
+        store();
+        setSomethingIsDirty(false);
     }
    
     /**
@@ -166,11 +165,6 @@ public class GeneralParameterList<T> extends StateNode {
     public QuietParameter createNewParam() {
         return new QuietParameter();
     }
-    
-    @Override
-    public void setEverythingDirty(boolean isDirty) {
-        dirty = isDirty;
-    }
 
     @Override
     public StateNode copy() {
@@ -197,8 +191,6 @@ public class GeneralParameterList<T> extends StateNode {
         otherParamList.pList.clear();
         for (QuietParameter param : pList)
             otherParamList.pList.add(param.copy());
-        
-        otherParamList.dirty = true;
     }
 
     @Override
@@ -212,8 +204,6 @@ public class GeneralParameterList<T> extends StateNode {
         pList.clear();
         for (Object paramObj : otherParamList.pList)
             pList.add((QuietParameter)paramObj);
-
-        dirty = true;
     }
 
     @Override
@@ -243,9 +233,6 @@ public class GeneralParameterList<T> extends StateNode {
 
     @Override
     protected void store() {
-        
-        // TODO: Modify this so that only dirty params are stored
-        
         pListStored.clear();
         for (QuietParameter param : pList)
             pListStored.add(param.copy());
@@ -253,12 +240,17 @@ public class GeneralParameterList<T> extends StateNode {
 
     @Override
     public void restore() {
-        
-        // TODO: Modify this so that only dirty params are restored
-        
         pList.clear();
         for (QuietParameter param: pListStored)
             pList.add(param.copy());
+        
+        hasStartedEditing = false;
+    }
+    
+    
+    @Override
+    public void setEverythingDirty(boolean isDirty) {
+        setSomethingIsDirty(isDirty);
     }
 
     @Override
@@ -297,6 +289,7 @@ public class GeneralParameterList<T> extends StateNode {
         else
             return Double.NaN;
     }
+
     
 
     /**
