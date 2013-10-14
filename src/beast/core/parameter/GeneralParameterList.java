@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
         + "model selection problems. The parameters involved are not instances "
         + "of Parameter.Base, but are instead instances of a local class "
         + "QuietParameter which is not itself a StateNode.")
-public class ParameterList<T> extends StateNode {
+public class GeneralParameterList<T> extends StateNode {
     
     public Input<List<Parameter.Base>> initialParamsInput = new Input<List<Parameter.Base>>(
             "initialParam",
@@ -53,7 +53,7 @@ public class ParameterList<T> extends StateNode {
     protected boolean dirty;
     
 
-    public ParameterList() { };
+    public GeneralParameterList() { };
     
     @Override
     public void initAndValidate() {
@@ -174,7 +174,7 @@ public class ParameterList<T> extends StateNode {
 
     @Override
     public StateNode copy() {
-        ParameterList<T> copy = new ParameterList<T>();
+        GeneralParameterList<T> copy = new GeneralParameterList<T>();
         
         copy.initAndValidate();
         
@@ -188,11 +188,11 @@ public class ParameterList<T> extends StateNode {
 
     @Override
     public void assignTo(StateNode other) {
-        if (!(other instanceof ParameterList))
+        if (!(other instanceof GeneralParameterList))
             throw new RuntimeException("Incompatible statenodes in assignTo "
                     + "call.");
         
-        ParameterList otherParamList = (ParameterList)other;
+        GeneralParameterList otherParamList = (GeneralParameterList)other;
         
         otherParamList.pList.clear();
         for (QuietParameter param : pList)
@@ -203,11 +203,11 @@ public class ParameterList<T> extends StateNode {
 
     @Override
     public void assignFrom(StateNode other) {
-        if (!(other instanceof ParameterList))
+        if (!(other instanceof GeneralParameterList))
             throw new RuntimeException("Incompatible statenodes in assignFrom "
                     + "call.");
         
-        ParameterList otherParamList = (ParameterList)other;
+        GeneralParameterList otherParamList = (GeneralParameterList)other;
         
         pList.clear();
         for (Object paramObj : otherParamList.pList)

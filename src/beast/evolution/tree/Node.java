@@ -137,7 +137,7 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @return length of branch in the beast.tree *
+     * @return length of branch between this node and its parent in the beast.tree
      */
     public final double getLength() {
         if (isRoot()) {

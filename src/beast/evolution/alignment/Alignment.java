@@ -256,34 +256,59 @@ public class Alignment extends Map<String> {
         return taxaNames.indexOf(sID);
     }
 
+    /**
+     * @return Number of unique character patterns in alignment.
+     */
     public int getPatternCount() {
         return sitePatterns.length;
     }
 
-    public int[] getPattern(int id) {
-        return sitePatterns[id];
+    public int[] getPattern(int iPattern) {
+        return sitePatterns[iPattern];
     }
 
-    public int getPattern(int iTaxon, int id) {
-        return sitePatterns[id][iTaxon];
+    public int getPattern(int iTaxon, int iPattern) {
+        return sitePatterns[iPattern][iTaxon];
     }
 
-    public int getPatternWeight(int id) {
-        return patternWeight[id];
+    /**
+     * Retrieve the "weight" of a particular pattern: the number of sites
+     * having that pattern.
+     * 
+     * @param iPattern Index into pattern array.
+     * @return pattern weight
+     */
+    public int getPatternWeight(int iPattern) {
+        return patternWeight[iPattern];
     }
 
     public int getMaxStateCount() {
         return maxStateCount;
     }
 
+    /**
+     * Retrieve index of pattern corresponding to a particular site.
+     * 
+     * @param iSite Index of site.
+     * @return Index of pattern.
+     */
     public int getPatternIndex(int iSite) {
         return patternIndex[iSite];
     }
 
+    /**
+     * @return Total number of sites in alignment.
+     */
     public int getSiteCount() {
         return patternIndex.length;
     }
 
+    /**
+     * Retrieve an array containing the number of times each character pattern
+     * occurs in the alignment.
+     * 
+     * @return Pattern weight array.
+     */
     public int[] getWeights() {
         return patternWeight;
     }

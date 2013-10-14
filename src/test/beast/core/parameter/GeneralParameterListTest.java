@@ -3,7 +3,7 @@ package test.beast.core.parameter;
 import beast.core.Operator;
 import beast.core.State;
 import beast.core.parameter.Parameter;
-import beast.core.parameter.ParameterList;
+import beast.core.parameter.GeneralParameterList;
 import beast.core.parameter.RealParameter;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -13,9 +13,9 @@ import static org.junit.Assert.*;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ParameterListTest extends Operator {
+public class GeneralParameterListTest extends Operator {
     
-    public ParameterListTest() { }
+    public GeneralParameterListTest() { }
 
     /**
      * Tests
@@ -23,7 +23,7 @@ public class ParameterListTest extends Operator {
     @Test
     public void test1() throws Exception {
 
-        ParameterList<Double> parameterList = new ParameterList<Double>();
+        GeneralParameterList<Double> parameterList = new GeneralParameterList<Double>();
         
         // Parameters with which to initialise list
         RealParameter param1 = new RealParameter();
