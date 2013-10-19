@@ -1,6 +1,7 @@
 package beast.core.parameter;
 
 import beast.core.Description;
+import beast.core.Input;
 import java.util.List;
 
 /**
@@ -11,13 +12,10 @@ public class BooleanParameterList extends GeneralParameterList<Boolean> {
     
     @Override
     public void initAndValidate() {
+        lowerBound = false;
+        upperBound = true;
+        
         super.initAndValidate();
-        
-        if (lowerBound == null)
-            lowerBound = false;
-        
-        if (upperBound == null)
-            upperBound = true;
     }
 
     @Override

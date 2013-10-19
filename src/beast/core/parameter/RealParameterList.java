@@ -1,6 +1,7 @@
 package beast.core.parameter;
 
 import beast.core.Description;
+import beast.core.Input;
 import java.util.List;
 
 /**
@@ -9,15 +10,17 @@ import java.util.List;
 @Description("State node describing a list of real-valued parameters.")
 public class RealParameterList extends GeneralParameterList<Double> {
     
+    public Input<Double> lowerBoundInput = new Input<Double>("lower",
+            "Lower bound on parameter values.", Double.NEGATIVE_INFINITY);
+    public Input<Double> upperBoundInput = new Input<Double>("upper",
+            "Upper bound on parameter values.", Double.POSITIVE_INFINITY);
+    
     @Override
     public void initAndValidate() {
+        lowerBound = lowerBoundInput.get();
+        upperBound = upperBoundInput.get();
+        
         super.initAndValidate();
-        
-        if (lowerBound == null)
-            lowerBound = Double.NEGATIVE_INFINITY;
-        
-        if (upperBound == null)
-            upperBound = Double.POSITIVE_INFINITY;
     }
 
     @Override

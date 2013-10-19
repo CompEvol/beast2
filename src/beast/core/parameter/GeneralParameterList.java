@@ -53,10 +53,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
     public Input<Integer> minorDimensionInput = new Input<Integer>("minordimension",
             "Minor dimension of individual parameters in list. Default 1.", 1);
     
-    public Input<T> lowerBoundInput = new Input<T>("lower",
-            "Lower bound on parameter values.");
-    public Input<T> upperBoundInput = new Input<T>("upper",
-            "Upper bound on parameter values.");
+
     
     protected List<QuietParameter> pList, pListStored;
     
@@ -79,9 +76,6 @@ public abstract class GeneralParameterList<T> extends StateNode {
         
         dimension = dimensionInput.get();
         minorDimension = minorDimensionInput.get();
-        
-        lowerBound = lowerBoundInput.get();
-        upperBound = upperBoundInput.get();
         
         for (Parameter param : initialParamsInput.get()) {
             if (param.getDimension() != dimension)
@@ -535,8 +529,6 @@ public abstract class GeneralParameterList<T> extends StateNode {
             for (int i=0; i<param.getValues().length; i++) {
                 values[i] = param.getValue(i);
             }
-            lowerBound = (T)param.getLower();
-            upperBound = (T)param.getUpper();
             
         }
         
