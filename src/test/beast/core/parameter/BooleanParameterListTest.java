@@ -22,7 +22,7 @@ public class BooleanParameterListTest extends Operator {
     public BooleanParameterListTest() { }
 
     @Test
-    public static void test1() throws Exception {
+    public void test1() throws Exception {
 
         BooleanParameterList parameterList = new BooleanParameterList();
         
@@ -101,16 +101,19 @@ public class BooleanParameterListTest extends Operator {
         assertTrue(parameterList.get(1).getKey()==1);
         assertTrue(parameterList.size()==2);
         
+
         
         // Test serialization
+        parameterList.addNewParam(newParam);
+        
         String xmlStr = parameterList.toXML();
         assertEquals(xmlStr,"<statenode id='null'>"
                 + "Dimension: [3, 1], "
                 + "Bounds: [false,true], "
                 + "AvailableKeys: [], "
                 + "NextKey: 3, "
-                + "Parameters: [[true,false,true],[false,true,false]], "
-                + "ParameterKeys: [0,1]"
+                + "Parameters: [[true,false,true],[false,true,false],[false,false,false]], "
+                + "ParameterKeys: [0,1,2]"
                 + "</statenode>\n");
         
         // Test deserialization
@@ -132,7 +135,11 @@ public class BooleanParameterListTest extends Operator {
         assertTrue(newParameterList.get(1).getValue(1)==true);
         assertTrue(newParameterList.get(1).getValue(2)==false);
         assertTrue(newParameterList.get(1).getKey()==1);
-        assertTrue(newParameterList.size()==2);
+        assertTrue(newParameterList.get(2).getValue(0)==false);
+        assertTrue(newParameterList.get(2).getValue(1)==false);
+        assertTrue(newParameterList.get(2).getValue(2)==false);
+        assertTrue(newParameterList.get(2).getKey()==2);
+        assertTrue(newParameterList.size()==3);
         
     }
     
@@ -140,9 +147,4 @@ public class BooleanParameterListTest extends Operator {
     public double proposal() {
         return 0.0;
     }
-    
-    public static void main (String [] args) throws Exception {
-        BooleanParameterListTest.test1();
-    }
-
 }

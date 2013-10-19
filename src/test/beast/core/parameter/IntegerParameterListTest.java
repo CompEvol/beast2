@@ -22,7 +22,7 @@ public class IntegerParameterListTest extends Operator {
     public IntegerParameterListTest() { }
 
     @Test
-    public static void test1() throws Exception {
+    public void test1() throws Exception {
 
         IntegerParameterList parameterList = new IntegerParameterList();
         
@@ -87,7 +87,7 @@ public class IntegerParameterListTest extends Operator {
                 + "Dimension: [1, 1], "
                 + "Bounds: [-2147483647,2147483646], "
                 + "AvailableKeys: [], "
-                + "NextKey: 3, "
+                + "NextKey: 2, "
                 + "Parameters: [[2],[3]], "
                 + "ParameterKeys: [0,1]"
                 + "</statenode>\n");
@@ -115,9 +115,4 @@ public class IntegerParameterListTest extends Operator {
     public double proposal() {
         return 0.0;
     }
-    
-    public static void main (String [] args) throws Exception {
-        IntegerParameterListTest.test1();
-    }
-
 }

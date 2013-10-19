@@ -60,8 +60,8 @@ public abstract class GeneralParameterList<T> extends StateNode {
     
     protected List<QuietParameter> pList, pListStored;
     
-    protected TreeSet<Integer> deallocatedKeys;
-    protected int nextUnallocatedKey;
+    protected TreeSet<Integer> deallocatedKeys, deallocatedKeysStored;
+    protected int nextUnallocatedKey, nextUnallocatedKeyStored;
     
     protected int dimension, minorDimension;
     protected T lowerBound, upperBound;
@@ -73,7 +73,9 @@ public abstract class GeneralParameterList<T> extends StateNode {
         pList = new ArrayList<QuietParameter>();
         pListStored = new ArrayList<QuietParameter>();
         deallocatedKeys = new TreeSet<Integer>();
+        deallocatedKeysStored = new TreeSet<Integer>();
         nextUnallocatedKey = 0;
+        nextUnallocatedKeyStored = 0;
         
         dimension = dimensionInput.get();
         minorDimension = minorDimensionInput.get();
@@ -390,15 +392,16 @@ public abstract class GeneralParameterList<T> extends StateNode {
         // Prepare bounds and parameter value strings for parsing by methods in
         // non-abstract classes (where type T is known).
         String [] boundsStr = matcher.group(2).split(",");
+        
         List<String[]> parameterValueStrings = new ArrayList<String[]>();
-        pattern = Pattern.compile(" *\\[([^]]*)] *");
-        for (String parameterString : matcher.group(5).split(",")) {
-            Matcher paramMatcher = pattern.matcher(parameterString);
-            if (!paramMatcher.find())
-                throw new RuntimeException("Error parsing ParameterList state string.");
-            parameterValueStrings.add(paramMatcher.group(1).split(","));
-        }
-
+        String parameterListString = matcher.group(5).trim();
+        
+        pattern = Pattern.compile("\\[([^]]*)]");
+        Matcher parameterMatcher = pattern.matcher(parameterListString);
+        
+        while(parameterMatcher.find())
+            parameterValueStrings.add(parameterMatcher.group(1).split(","));
+        
         // Parse key strings:
         List<Integer> keys = new ArrayList<Integer>();
         for (String keyString : matcher.group(6).split(","))
@@ -430,6 +433,10 @@ public abstract class GeneralParameterList<T> extends StateNode {
         pListStored.clear();
         for (QuietParameter param : pList)
             pListStored.add(param.copy());
+
+        deallocatedKeysStored.clear();
+        deallocatedKeysStored.addAll(deallocatedKeys);
+        nextUnallocatedKeyStored = nextUnallocatedKey;
     }
 
     @Override
@@ -437,6 +444,10 @@ public abstract class GeneralParameterList<T> extends StateNode {
         pList.clear();
         for (QuietParameter param: pListStored)
             pList.add(param.copy());
+        
+        deallocatedKeys.clear();
+        deallocatedKeys.addAll(deallocatedKeysStored);
+        nextUnallocatedKey = nextUnallocatedKeyStored;
         
         hasStartedEditing = false;
     }

@@ -23,7 +23,7 @@ public class RealParameterListTest extends Operator {
     public RealParameterListTest() { }
 
     @Test
-    public static void test1() throws Exception {
+    public void test1() throws Exception {
 
         RealParameterList parameterList = new RealParameterList();
         
@@ -87,7 +87,7 @@ public class RealParameterListTest extends Operator {
         assertEquals(xmlStr,"<statenode id='null'>"
                 + "Dimension: [1, 1], "
                 + "Bounds: [-Infinity,Infinity], "
-                + "AvailableKeys: [], NextKey: 3, "
+                + "AvailableKeys: [], NextKey: 2, "
                 + "Parameters: [[2.0],[3.0]], "
                 + "ParameterKeys: [0,1]"
                 + "</statenode>\n");
@@ -115,9 +115,4 @@ public class RealParameterListTest extends Operator {
     public double proposal() {
         return 0.0;
     }
-    
-    public static void main (String [] args) throws Exception {
-        RealParameterListTest.test1();
-    }
-
 }
