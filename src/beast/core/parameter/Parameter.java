@@ -389,7 +389,7 @@ public interface Parameter<T> extends Function {
          * Restore a saved parameter from string representation. This cannot be
          * a template method since it requires creation of an array of T...
          *
-         * @param nDimension parameter dimention
+         * @param nDimension parameter dimension
          * @param sLower lower bound
          * @param sUpper upper bound
          * @param sValues values

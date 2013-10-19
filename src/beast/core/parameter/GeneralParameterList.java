@@ -25,16 +25,22 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.w3c.dom.Node;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
+ * @param <T> Type of parameters in list.
  */
 @Description("State node representing a list of parameter objects, used for "
         + "model selection problems. The parameters involved are not instances "
         + "of Parameter.Base, but are instead instances of a local class "
-        + "QuietParameter which is not itself a StateNode.")
-public class GeneralParameterList<T> extends StateNode {
+        + "QuietParameter which is not itself a StateNode.  All constituent "
+        + "parameters must have identical dimensions and bounds.")
+public abstract class GeneralParameterList<T> extends StateNode {
     
     public Input<List<Parameter.Base>> initialParamsInput = new Input<List<Parameter.Base>>(
             "initialParam",
@@ -47,12 +53,18 @@ public class GeneralParameterList<T> extends StateNode {
     public Input<Integer> minorDimensionInput = new Input<Integer>("minordimension",
             "Minor dimension of individual parameters in list. Default 1.", 1);
     
+    public Input<T> lowerBoundInput = new Input<T>("lower",
+            "Lower bound on parameter values.");
+    public Input<T> upperBoundInput = new Input<T>("upper",
+            "Upper bound on parameter values.");
+    
     protected List<QuietParameter> pList, pListStored;
+    
     protected TreeSet<Integer> deallocatedKeys;
     protected int nextUnallocatedKey;
     
     protected int dimension, minorDimension;
-    
+    protected T lowerBound, upperBound;
 
     public GeneralParameterList() { };
     
@@ -65,6 +77,9 @@ public class GeneralParameterList<T> extends StateNode {
         
         dimension = dimensionInput.get();
         minorDimension = minorDimensionInput.get();
+        
+        lowerBound = lowerBoundInput.get();
+        upperBound = upperBoundInput.get();
         
         for (Parameter param : initialParamsInput.get()) {
             if (param.getDimension() != dimension)
@@ -173,6 +188,7 @@ public class GeneralParameterList<T> extends StateNode {
      * to the list.  This call does not itself affect the ParameterList's
      * dirty status (it will be marked as dirty when/if add() is called).
      * 
+     * @param otherParam
      * @return New parameter.
      */
     public QuietParameter createNewParam(Parameter otherParam) {
@@ -197,6 +213,7 @@ public class GeneralParameterList<T> extends StateNode {
     /**
      * Create new parameter from existing Parameter and append to list.
      * 
+     * @param otherParam
      * @return New parameter.
      */
     public QuietParameter addNewParam(Parameter otherParam) {
@@ -223,16 +240,31 @@ public class GeneralParameterList<T> extends StateNode {
     
     @Override
     public StateNode copy() {
-        GeneralParameterList<T> copy = new GeneralParameterList<T>();
+
+        try {
+            GeneralParameterList<T> copy = (GeneralParameterList<T>) this.clone();
+            copy.initAndValidate();
+                    
+            copy.pList.clear();
+            for (QuietParameter param : pList) {
+                QuietParameter paramCopy = param.copy();
+                copy.pList.add(paramCopy);
+            }
         
-        copy.initAndValidate();
+            copy.dimension = dimension;
+            copy.minorDimension = minorDimension;
+            copy.lowerBound = lowerBound;
+            copy.upperBound = upperBound;
+            copy.deallocatedKeys.addAll(deallocatedKeys);
+            copy.nextUnallocatedKey = nextUnallocatedKey;
+            
+            return copy;
         
-        for (QuietParameter param : pList) {
-            QuietParameter paramCopy = param.copy();
-            copy.pList.add(paramCopy);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(GeneralParameterList.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return copy;
+        return null;
     }
 
     @Override
@@ -249,6 +281,8 @@ public class GeneralParameterList<T> extends StateNode {
         
         otherParamList.dimension = dimension;
         otherParamList.minorDimension = minorDimension;
+        otherParamList.lowerBound = lowerBound;
+        otherParamList.upperBound = upperBound;
         otherParamList.deallocatedKeys = new TreeSet<Integer>(deallocatedKeys);
         otherParamList.nextUnallocatedKey = nextUnallocatedKey;
     }
@@ -259,7 +293,7 @@ public class GeneralParameterList<T> extends StateNode {
             throw new RuntimeException("Incompatible statenodes in assignFrom "
                     + "call.");
         
-        GeneralParameterList otherParamList = (GeneralParameterList)other;
+        GeneralParameterList<T> otherParamList = (GeneralParameterList<T>)other;
         
         pList.clear();
         for (Object paramObj : otherParamList.pList)
@@ -267,6 +301,8 @@ public class GeneralParameterList<T> extends StateNode {
         
         dimension = otherParamList.dimension;
         minorDimension = otherParamList.minorDimension;
+        lowerBound = otherParamList.lowerBound;
+        upperBound = otherParamList.upperBound;
         deallocatedKeys = new TreeSet<Integer>(otherParamList.deallocatedKeys);
         nextUnallocatedKey = otherParamList.nextUnallocatedKey;
     }
@@ -280,16 +316,109 @@ public class GeneralParameterList<T> extends StateNode {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
-        // TODO
+        sb.append(String.format("Dimension: [%d, %d], Bounds: [%s,%s], ",
+                dimension,
+                minorDimension,
+                String.valueOf(lowerBound),
+                String.valueOf(upperBound)));
+        
+        sb.append("AvailableKeys: [");
+        boolean first = true;
+        for (int key : deallocatedKeys) {
+            if (!first)
+                sb.append(",");
+            else
+                first = false;
+            
+            sb.append(key);
+        }
+        sb.append("], ");
+        
+        sb.append("NextKey: ").append(nextUnallocatedKey).append(", ");
+        
+        sb.append("Parameters: [");
+        for (int i=0; i<pList.size(); i++) {
+            if (i>0)
+                sb.append(",");
+            sb.append(pList.get(i));
+        }
+        sb.append("], ");
+        
+        sb.append("ParameterKeys: [");
+        for (int i=0; i<pList.size(); i++) {
+            if (i>0)
+                sb.append(",");
+            sb.append(pList.get(i).key);
+        }
+        sb.append("]");
         
         return sb.toString();
     }
     
+    
     @Override
     public void fromXML(Node node) {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet."); 
+        String str = node.getTextContent();
+        
+        Pattern pattern = Pattern.compile("^"
+                + " *Dimension: *\\[([^]]*)] *,"
+                + " *Bounds: *\\[([^]]*)] *,"
+                + " *AvailableKeys: *\\[([^]]*)] *,"
+                + " *NextKey: *([^, ]*) *,"
+                + " *Parameters: *\\[(.*)] *,"
+                + " *ParameterKeys: *\\[(.*)] *$");
+        Matcher matcher = pattern.matcher(str);
+        
+        if (!matcher.find())
+            throw new RuntimeException("Error parsing ParameterList state string.");
+        
+        // Parse dimension strings
+        String [] dimStr = matcher.group(1).split(",");
+        dimension = Integer.parseInt(dimStr[0].trim());
+        minorDimension = Integer.parseInt(dimStr[1].trim());
+        
+        // Parse dealocated key strings
+        deallocatedKeys.clear();
+        for (String keyStr : matcher.group(3).trim().split(",") ) {
+            if (keyStr.trim().length()>0)
+                deallocatedKeys.add(Integer.parseInt(keyStr));
+        }
+        
+        // Parse next allocated key string
+        nextUnallocatedKey = Integer.parseInt(matcher.group(4));
+        
+        // Prepare bounds and parameter value strings for parsing by methods in
+        // non-abstract classes (where type T is known).
+        String [] boundsStr = matcher.group(2).split(",");
+        List<String[]> parameterValueStrings = new ArrayList<String[]>();
+        pattern = Pattern.compile(" *\\[([^]]*)] *");
+        for (String parameterString : matcher.group(5).split(",")) {
+            Matcher paramMatcher = pattern.matcher(parameterString);
+            if (!paramMatcher.find())
+                throw new RuntimeException("Error parsing ParameterList state string.");
+            parameterValueStrings.add(paramMatcher.group(1).split(","));
+        }
+
+        // Parse key strings:
+        List<Integer> keys = new ArrayList<Integer>();
+        for (String keyString : matcher.group(6).split(","))
+            keys.add(Integer.parseInt(keyString.trim()));
+        
+        readStateFromString(boundsStr, parameterValueStrings, keys);
     }
+    
+    /**
+     * Reads upper and lower parameter element bounds and parameter values from
+     * strings and uses these to populate the corresponding GeneralParameterList
+     * fields.
+     * 
+     * @param boundsStrings Two-element array containing lower and upper bounds.
+     * @param parameterValueStrings List of arrays of reps of parameter values
+     * @param keys List of keys to assign to parameters
+     */
+    protected abstract void readStateFromString(String [] boundsStrings,
+            List<String[]> parameterValueStrings,
+            List<Integer> keys);
 
     @Override
     public int scale(double fScale) throws Exception {
@@ -318,6 +447,12 @@ public class GeneralParameterList<T> extends StateNode {
         setSomethingIsDirty(isDirty);
     }
 
+    /*
+    * The following methods are here because Functions are Loggable.  This
+    * doesn't seem to make sense for ParameterLists though, so at the moment
+    * these methods just log the ParameterLists's size.
+    */
+    
     @Override
     public void init(PrintStream out) throws Exception {
         out.print(getID() + ".size\t");
@@ -365,7 +500,6 @@ public class GeneralParameterList<T> extends StateNode {
     public class QuietParameter implements Parameter<T> {
 
         Object[] values;
-        T lower, upper;
         int key = -1;
         
         /**
@@ -390,8 +524,9 @@ public class GeneralParameterList<T> extends StateNode {
             for (int i=0; i<param.getValues().length; i++) {
                 values[i] = param.getValue(i);
             }
-            lower = (T)param.getLower();
-            upper = (T)param.getUpper();
+            lowerBound = (T)param.getLower();
+            upperBound = (T)param.getUpper();
+            
         }
         
         public int getKey() {
@@ -422,22 +557,22 @@ public class GeneralParameterList<T> extends StateNode {
 
         @Override
         public T getLower() {
-            return lower;
+            return lowerBound;
         }
 
         @Override
         public void setLower(T lower) {
-            this.lower = lower;
+            lowerBound = lower;
         }
 
         @Override
         public T getUpper() {
-            return upper;
+            return upperBound;
         }
 
         @Override
         public void setUpper(T upper) {
-            this.upper = upper;
+            upperBound = upper;
         }
 
         @Override
@@ -487,6 +622,19 @@ public class GeneralParameterList<T> extends StateNode {
         @Override
         public double getArrayValue(int i) {
             return (Double)values[0];
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("[");
+            for (int i=0; i<values.length; i++) {
+                if (i>0)
+                    sb.append(",");
+                sb.append(values[i]);
+            }            
+            sb.append("]");
+            
+            return sb.toString();
         }
         
         /**
