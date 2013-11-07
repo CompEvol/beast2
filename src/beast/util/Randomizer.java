@@ -49,12 +49,6 @@
 
 package beast.util;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 /**
  * Handy utility functions which have some Mathematical relevance.
  *
@@ -234,10 +228,11 @@ public class Randomizer {
     }
     
     /**
-     * Access a default instance of this class, access is synchronized.
+     * Draw sample from a Poissonian distribution of mean lambda. Accesses
+     * a default instance of this class, access is synchronized.
      * 
-     * @param lambda
-     * @return sample from a Poissonian distribution of mean lambda.
+     * @param lambda mean of Poissonian distribution
+     * @return sample
      */
     public static double nextPoisson(double lambda) {
         synchronized (random) {
@@ -264,7 +259,11 @@ public class Randomizer {
     }
 
     /**
-     * Access a default instance of this class, access is synchronized
+     * Draw from an exponential distribution.  Accesses a default instance of
+     * this class, access is synchronized.
+     * 
+     * @param lambda scale parameter (not mean) for the exponential
+     * @return number drawn from distribution
      */
     public static double nextExponential(double lambda) {
         synchronized (random) {
