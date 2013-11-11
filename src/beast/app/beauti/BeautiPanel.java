@@ -169,7 +169,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         listOfPartitions.addListSelectionListener(this);
         updateList();
         listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
-        partitionComponent.add(listOfPartitions, BorderLayout.CENTER);
+        JScrollPane listPane = new JScrollPane(listOfPartitions);
+        partitionComponent.add(listPane, BorderLayout.CENTER);
         partitionComponent.setBorder(new EtchedBorder());
         return partitionComponent;
     }
