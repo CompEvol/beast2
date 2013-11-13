@@ -314,7 +314,7 @@ public class MCMC extends Runnable {
 //            }
 
             final Operator operator = operatorSchedule.selectOperator();
-            //System.out.print("\n" + iSample + " " + operator.getName()+ ":");
+            //System.out.print("\n" + sampleNr + " " + operator.getName()+ ":");
 
             final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
             Evaluator evaluator = null;
@@ -353,7 +353,7 @@ public class MCMC extends Runnable {
                 newLogLikelihood = posterior.calculateLogP();
 
                 logAlpha = newLogLikelihood - oldLogLikelihood + logHastingsRatio; //CHECK HASTINGS
-                //System.out.println(logAlpha + " " + fNewLogLikelihood + " " + fOldLogLikelihood);
+                //System.out.println(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     oldLogLikelihood = newLogLikelihood;
