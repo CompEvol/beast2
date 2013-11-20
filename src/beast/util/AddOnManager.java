@@ -47,6 +47,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.channels.Channels;
@@ -85,11 +86,13 @@ public class AddOnManager {
     /**
      * return URLs containing list of downloadable add-ons *
      */
-    public static String[] getAddOnURL() {
+    public static String[] getAddOnURL() throws MalformedURLException {
+        File localAddons=new File("./templates/Add-ons.html");
+        URL localAddonsUrl = localAddons.toURI().toURL();
         return new String[]{
-        		"http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2"
-        //"http://localhost/todo/Add-ons2.0.2"		
-        };        
+                "http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2",
+                localAddonsUrl.toString()
+        };
     }
 
     /**
@@ -119,52 +122,67 @@ public class AddOnManager {
             is.close();
             String sText = buf.toString();
             // parse WIKI xml for add-ons
-            sText = sText.substring(sText.indexOf("<!-- bodytext -->") + 18);
+            String startMark = "<!-- bodytext -->";
+            sText = sText.substring(sText.indexOf(startMark) + startMark.length());
             String[] sStrs = sText.split("</p>");
             for (int i = 0; i < sStrs.length - 1; i++) {
-                List<String> addOn = new ArrayList<String>();
                 sText = sStrs[i];
                 sText = sText.replaceAll("<p>", "");
                 String[] sStr2 = sText.split("<");
+
+
+                List<String> addOn = new ArrayList<String>();
                 addOn.add(sStr2[0]);
                 sStr2 = sStr2[1].split("\"");
                 addOn.add(sStr2[1]);
                 String sAddOnName = URL2AddOnName(sStr2[1]);
                 addOn.add(sAddOnName);
                 addOn.add("not installed");
-                for (String sDir : sBeastDirs) {
-                    File f = new File(sDir + "/" + sAddOnName);
-                    if (f.exists()) {
-                        addOn.set(3, "installed");
-                    }
-                    f = new File(sDir + "/" + sAddOnName + "/version.xml");
-                    if (f.exists()) {
-                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                        Document doc = factory.newDocumentBuilder().parse(f);
-                        doc.normalize();
-                        // get name and version of add-on
-                        Element addon = doc.getDocumentElement();
-                        String sAddonVersion = addon.getAttribute("version");
-                        addOn.add(sAddonVersion);
-                        NodeList nodes = doc.getElementsByTagName("depends");
-                        String dependencies = "";
-                        for (int j = 0; j < nodes.getLength(); j++) {
-                            Element dependson = (Element) nodes.item(j);
-                            String s = dependson.getAttribute("on");
-                            if (!s.equals("beast2")) {
-                            	dependencies +=  s + ", ";
+
+                if (!containsAddOn(addOn.get(2), addOns)) {
+                    for (String sDir : sBeastDirs) {
+                        File f = new File(sDir + "/" + sAddOnName);
+                        if (f.exists()) {
+                            addOn.set(3, "installed");
+                        }
+                        f = new File(sDir + "/" + sAddOnName + "/version.xml");
+                        if (f.exists()) {
+                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                            Document doc = factory.newDocumentBuilder().parse(f);
+                            doc.normalize();
+                            // get name and version of add-on
+                            Element addon = doc.getDocumentElement();
+                            String sAddonVersion = addon.getAttribute("version");
+                            addOn.add(sAddonVersion);
+                            NodeList nodes = doc.getElementsByTagName("depends");
+                            String dependencies = "";
+                            for (int j = 0; j < nodes.getLength(); j++) {
+                                Element dependson = (Element) nodes.item(j);
+                                String s = dependson.getAttribute("on");
+                                if (!s.equals("beast2")) {
+                                    dependencies +=  s + ", ";
+                                }
                             }
+                            if (dependencies.length() > 2) {
+                                dependencies = dependencies.substring(0, dependencies.length() - 2);
+                            }
+                            addOn.add(dependencies);
                         }
-                        if (dependencies.length() > 2) {
-                        	dependencies = dependencies.substring(0, dependencies.length() - 2);
-                        }
-                        addOn.add(dependencies);
                     }
+
+                    addOns.add(addOn);
                 }
-                addOns.add(addOn);
             }
         }
         return addOns;
+    }
+
+    public static boolean containsAddOn(String sAddOnName, List<List<String>> addOns) throws Exception {
+        for (List<String> addOn : addOns) {
+            if (sAddOnName.equalsIgnoreCase(addOn.get(2)))
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -187,7 +205,7 @@ public class AddOnManager {
         ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
         String sDir = (useAppDir ? getAddOnAppDir() : getAddOnUserDir()) + "/" + sName;
         if (customDir != null) {
-        	sDir = customDir + "/" + sName;
+            sDir = customDir + "/" + sName;
         }
         File dir = new File(sDir);
         if (!dir.exists()) {
@@ -214,25 +232,25 @@ public class AddOnManager {
         String sName = URL2AddOnName(sURL);
         String sDir = (useAppDir ? getAddOnAppDir() : getAddOnUserDir()) + "/" + sName;
         if (customDir != null) {
-        	sDir = customDir + "/" + sName;
+            sDir = customDir + "/" + sName;
         }
         File dir = new File(sDir);
         List<File> deleteFailed = new ArrayList<File>();
         deleteRecursively(dir, deleteFailed);
-        
+
         // write deleteFailed to file
         if (deleteFailed.size() > 0) {
-        	File toDeleteList = getToDeleteListFile();
-    		FileWriter outfile= new FileWriter(toDeleteList, true);
-        	for (File file : deleteFailed) {
-        		outfile.write(file.getAbsolutePath() + "\n");
-        	}
-        	outfile.close();
+            File toDeleteList = getToDeleteListFile();
+            FileWriter outfile= new FileWriter(toDeleteList, true);
+            for (File file : deleteFailed) {
+                outfile.write(file.getAbsolutePath() + "\n");
+            }
+            outfile.close();
         }
         return sDir;
     }
 
-	private static void deleteRecursively(File file, List<File> deleteFailed) {
+    private static void deleteRecursively(File file, List<File> deleteFailed) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File f : files) {
@@ -240,7 +258,7 @@ public class AddOnManager {
             }
         }
         if (!file.delete()) {
-        	deleteFailed.add(file);
+            deleteFailed.add(file);
         }
     }
 
@@ -344,8 +362,8 @@ public class AddOnManager {
      * on windows, which locks jar files loaded by java.
      */
     public static File getToDeleteListFile() {
-    	return new File(getAddOnUserDir() + "/" + TO_DELETE_LIST_FILE);
-	}
+        return new File(getAddOnUserDir() + "/" + TO_DELETE_LIST_FILE);
+    }
 
     /**
      * return list of directories that may contain add-ons *
@@ -365,7 +383,7 @@ public class AddOnManager {
                 sDirs.add(sDir);
             }
         }
-        
+
         // add user directory
         sDirs.add(System.getProperty("user.dir"));
         // add user add-on directory
@@ -377,15 +395,15 @@ public class AddOnManager {
         String strClassPath = System.getProperty("java.class.path");
         String [] paths = strClassPath.split(":");
         for (String path : paths) {
-        	if (!path.endsWith(".jar")) {
-        		path = path.replaceAll("\\\\","/");
-        		if (path.indexOf("/") >= 0) {
-	        		path = path.substring(0, path.lastIndexOf("/"));
-	        		if (!sDirs.contains(path)) {
-	        			sDirs.add(path);
-	        		}
-        		}
-        	}
+            if (!path.endsWith(".jar")) {
+                path = path.replaceAll("\\\\","/");
+                if (path.indexOf("/") >= 0) {
+                    path = path.substring(0, path.lastIndexOf("/"));
+                    if (!sDirs.contains(path)) {
+                        sDirs.add(path);
+                    }
+                }
+            }
         }
 
 
@@ -405,7 +423,7 @@ public class AddOnManager {
                                 if (file2.isDirectory()) {
                                     String sFile = file2.getAbsolutePath().toLowerCase();
                                     if (sFile.endsWith("/lib") || sFile.endsWith("/templates") ||
-                                    		sFile.endsWith("\\lib") || sFile.endsWith("\\templates")) {
+                                            sFile.endsWith("\\lib") || sFile.endsWith("\\templates")) {
                                         sSubDirs.add(file.getAbsolutePath());
                                         break;
                                     }
@@ -428,19 +446,19 @@ public class AddOnManager {
      * load external jars in beast directories *
      */
     public static void loadExternalJars() throws Exception {
-    	processDeleteList();
-    	
+        processDeleteList();
+
         List<String> sDirs = getBeastDirectories();
         checkDependencies(sDirs);
         for (String sJarDir : sDirs) {
             File jarDir = new File(sJarDir + "/lib");
             if (!jarDir.exists()) {
-            	jarDir = new File(sJarDir + "\\lib");
+                jarDir = new File(sJarDir + "\\lib");
             }
             if (jarDir.exists() && jarDir.isDirectory()) {
                 for (String sFile : jarDir.list()) {
                     if (sFile.endsWith(".jar")) {
-                    	Log.debug.print("Probing: " + sFile + " ");
+                        Log.debug.print("Probing: " + sFile + " ");
                         // check that we are not reload existing classes
                         String loadedClass = null;
                         try {
@@ -487,24 +505,24 @@ public class AddOnManager {
 
     /** try to delete files that could not be deleted earlier **/
     private static void processDeleteList() {
-    	File toDeleteLisFile = getToDeleteListFile();
-    	if (toDeleteLisFile.exists()) {
-    		try {
-	    		BufferedReader fin = new BufferedReader(new FileReader(toDeleteLisFile));
-	    		while (fin.ready()) {
-	    			String sStr = fin.readLine();
-	    			File file = new File(sStr);
-	    			file.delete();
-	    		}
-	    		fin.close();
-	    		toDeleteLisFile.delete();
-    		} catch (Exception e) {
-				e.printStackTrace();
-			}
-    	}
-	}
+        File toDeleteLisFile = getToDeleteListFile();
+        if (toDeleteLisFile.exists()) {
+            try {
+                BufferedReader fin = new BufferedReader(new FileReader(toDeleteLisFile));
+                while (fin.ready()) {
+                    String sStr = fin.readLine();
+                    File file = new File(sStr);
+                    file.delete();
+                }
+                fin.close();
+                toDeleteLisFile.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	/** Parse version string, assume it is of the form 1.2.3
+    /** Parse version string, assume it is of the form 1.2.3
      * returns version where each sub-version is divided by 100,
      * so 2.0 -> return 2
      * 2.1 return 2.01
@@ -514,38 +532,38 @@ public class AddOnManager {
      * 2.x.1 -> 2.0001
      * @return
      */
-	public static double parseVersion(String sVersion) { 
-		// is of the form 1.2.3
-		String [] strs = sVersion.split("\\.");
-		double version = 0;
-		double divider = 1.0;
-		for (int i = 0; i < strs.length; i++) {
-			try {
-				version += Double.parseDouble(strs[i]) / divider;
-				divider = divider * 100.0;
-			} catch (NumberFormatException e) {
-				// ignore
-			}
-		}
-		return version;
-	}
+    public static double parseVersion(String sVersion) {
+        // is of the form 1.2.3
+        String [] strs = sVersion.split("\\.");
+        double version = 0;
+        double divider = 1.0;
+        for (int i = 0; i < strs.length; i++) {
+            try {
+                version += Double.parseDouble(strs[i]) / divider;
+                divider = divider * 100.0;
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        return version;
+    }
 
-	/** inverse of parseVersion **/
-	public static String formatVersion(double version) {
-		if (Double.isInfinite(version)) {
-			return " any number";
-		}
-		String str = "" + (int) (version + 0.000001);
-		version = version - (int) (version + 0.000001);
-		while (version > 0.00001) {
-			version *= 100;
-			str += "." + (int) (version + 0.00001);
-			version = version - (int) (version + 0.00001);
-		}
-		return str;
-	}
-	
-	/**
+    /** inverse of parseVersion **/
+    public static String formatVersion(double version) {
+        if (Double.isInfinite(version)) {
+            return " any number";
+        }
+        String str = "" + (int) (version + 0.000001);
+        version = version - (int) (version + 0.000001);
+        while (version > 0.00001) {
+            version *= 100;
+            str += "." + (int) (version + 0.00001);
+            version = version - (int) (version + 0.00001);
+        }
+        return str;
+    }
+
+    /**
      * go through list of directories collecting version and dependency information for
      * all add-ons. Version and dependency info is stored in a file
      *
@@ -557,21 +575,21 @@ public class AddOnManager {
             String dependson;
             Double atLeast;
             Double atMost;
-            
-			public void setAtLest(String sAtLeast) {
-				if (sAtLeast == null || sAtLeast.length() == 0) {
-					atLeast = 0.0;
-				} else {
-					atLeast = parseVersion(sAtLeast);
-				}
-			}
-			public void setAtMost(String sAtMost) {
-				if (sAtMost == null || sAtMost.length() == 0) {
-					atMost = Double.POSITIVE_INFINITY;
-				} else {
-					atMost = parseVersion(sAtMost);
-				}
-			}			
+
+            public void setAtLest(String sAtLeast) {
+                if (sAtLeast == null || sAtLeast.length() == 0) {
+                    atLeast = 0.0;
+                } else {
+                    atLeast = parseVersion(sAtLeast);
+                }
+            }
+            public void setAtMost(String sAtMost) {
+                if (sAtMost == null || sAtMost.length() == 0) {
+                    atMost = Double.POSITIVE_INFINITY;
+                } else {
+                    atMost = parseVersion(sAtMost);
+                }
+            }
         }
 
         HashMap<String, Double> addonVersion = new HashMap<String, Double>();
@@ -620,23 +638,23 @@ public class AddOnManager {
                 warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") which is not installed.\n" +
                         "Either uninstall " + dep.addon + " or install the " + dep.dependson + " add on.");
             } else if (version > dep.atMost || version < dep.atLeast) {
-            	warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
-            			formatVersion(dep.atLeast) + " to " + formatVersion(dep.atMost) + " but " + dep.dependson + " has version " + formatVersion(version) + "\n" +
+                warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
+                        formatVersion(dep.atLeast) + " to " + formatVersion(dep.atMost) + " but " + dep.dependson + " has version " + formatVersion(version) + "\n" +
                         "Either uninstall " + dep.addon + " or install the correct version of " + dep.dependson + ".");
             }
         }
     }
 
     private static void warning(String string) {
-		System.out.println(string);
-		System.out.println("Unexpected behavior may follow!");
+        System.out.println(string);
+        System.out.println("Unexpected behavior may follow!");
         if (!java.awt.GraphicsEnvironment.isHeadless()) {
-        	JOptionPane.showMessageDialog(null, string +
-        			"\nUnexpected behavior may follow!");
+            JOptionPane.showMessageDialog(null, string +
+                    "\nUnexpected behavior may follow!");
         }
-	}
+    }
 
-	/**
+    /**
      * Add URL to CLASSPATH
      *
      * @param u URL
@@ -689,7 +707,7 @@ public class AddOnManager {
         String classpath = System.getProperty("java.class.path");
 
         for (String path : classpath.split(pathSep)) {
-        	//Log.debug.println("loadallclasses " + path);
+            //Log.debug.println("loadallclasses " + path);
             File filepath = new File(path);
 
             if (filepath.isDirectory()) {
@@ -720,7 +738,7 @@ public class AddOnManager {
 
         String fileSep = System.getProperty("file.separator");
         if (fileSep.equals("\\")) {
-        	fileSep = "\\\\";
+            fileSep = "\\\\";
         }
         for (int i = 0; i < all_classes.size(); i++) {
             String sStr = all_classes.get(i);
@@ -911,7 +929,7 @@ public class AddOnManager {
             String sClass = all_classes.get(i);
             sClass = sClass.replaceAll("/", ".");
             //Log.debug.println(sClass + " " + pkgname);
-            
+
             // must match package
             if (sClass.startsWith(pkgname)) {
                 //Log.debug.println(sClass);
@@ -959,22 +977,22 @@ public class AddOnManager {
 
     /** pretty format add-on information in list of string form as produced by getAddOns() **/
     public static String formatAddOnInfo(List<String> addOn) {
-    	StringBuffer buf = new StringBuffer();
-    	buf.append(addOn.get(2));
-    	if (addOn.get(2).length() < 12) {
-        	buf.append("             ".substring(addOn.get(2).length()));
-    	}
-    	buf.append(" (");
+        StringBuffer buf = new StringBuffer();
+        buf.append(addOn.get(2));
+        if (addOn.get(2).length() < 12) {
+            buf.append("             ".substring(addOn.get(2).length()));
+        }
+        buf.append(" (");
         if (addOn.size() > 4) {
-        	buf.append("v" + addOn.get(4) + " " + addOn.get(3));
-        	buf.append((addOn.get(5).length() > 0 ? " depends on " + addOn.get(5) : ""));
+            buf.append("v" + addOn.get(4) + " " + addOn.get(3));
+            buf.append((addOn.get(5).length() > 0 ? " depends on " + addOn.get(5) : ""));
         } else {
-        	buf.append(addOn.get(3));
+            buf.append(addOn.get(3));
         }
         buf.append(")" + ": " + addOn.get(0).trim());
         return buf.toString();
     }
-    
+
     public static void main(String[] args) {
         try {
             Arguments arguments = new Arguments(
@@ -1002,8 +1020,8 @@ public class AddOnManager {
             boolean useAppDir = arguments.hasOption("useAppDir");
             String customDir = arguments.getStringOption("dir");
             if (customDir != null) {
-            	String path = System.getProperty("BEAST_ADDON_PATH");
-            	System.setProperty("BEAST_ADDON_PATH", (path != null ? path + ":" : "") +customDir);
+                String path = System.getProperty("BEAST_ADDON_PATH");
+                System.setProperty("BEAST_ADDON_PATH", (path != null ? path + ":" : "") +customDir);
             }
 
             Log.debug.print("Getting list of add-ons ...");
