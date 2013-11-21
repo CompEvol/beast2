@@ -102,7 +102,8 @@ public class AddOnManager {
                 //load a properties file
                 prop.load(new FileInputStream(beastProps));
 
-                //get the property value and print it out
+                //# url
+                //addons.url=http://...
                 url = prop.getProperty("addons.url");
 
             } catch (IOException ex) {
