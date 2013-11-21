@@ -527,9 +527,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
 //        updateRestrictedNodePartials = true;
         super.restore();
-        double[] tmp = m_branchLengths;
-        m_branchLengths = storedBranchLengths;
-        storedBranchLengths = tmp;
+        //double[] tmp = m_branchLengths;
+        //m_branchLengths = storedBranchLengths;
+        //storedBranchLengths = tmp;
     }
 
     // **************************************************************
