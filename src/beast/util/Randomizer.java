@@ -271,6 +271,22 @@ public class Randomizer {
         }
     }
 
+    /**
+     * Draw from a geometric distribution with trial success probability p.
+     * This method uses the form of the geometric distribution in which
+     * the random variable represents the number of failures before success,
+     * i.e. P(n) = (1-p)^n * p
+     * Access a default instance of this class, access is synchronized.
+     * 
+     * @param p success probability of each Bernoulli trial
+     * @return number drawn from distribution
+     */
+    public static long nextGeometric(double p) {
+        synchronized (random) {
+            double lambda = -Math.log(1.0-p);
+            return Math.round(Math.floor(nextExponential(lambda)));
+        }
+    }
 
     /**
      * Access a default instance of this class, access is synchronized
