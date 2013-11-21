@@ -93,7 +93,7 @@ public class AddOnManager {
 
         String url = ADD_ONS_URL;
 
-        File beastProps = new File(getAddOnUserDir() + "/beast.properties");
+        File beastProps = new File(getAddOnUserDir() + "/beauti.properties");
         // check beast.properties file exists in addon directory
         if (beastProps.exists()) {
             Properties prop = new Properties();
