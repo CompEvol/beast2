@@ -35,7 +35,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
 
     /**
      * @param t time
-     * @return value of demographic intensity function at time t (= integral 1/N(s) ds from 0 to t).
+     * @return value of demographic intensity function at time t (x = integral 1/N(s) ds from 0 to t).
      */
     double getIntensity(double t);
 
@@ -47,7 +47,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
     double getInverseIntensity(double x);
 
     /**
-     * Calculates the integral 1/N(x) dx between start and finish.
+     * Calculates the integral 1/N(t) dt between start and finish.
      *
      * @param start  point
      * @param finish point
@@ -133,7 +133,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
         }
 
         /**
-         * Calculates the integral 1/N(x) dx between start and finish.
+         * Calculates the integral 1/N(t) dt between start and finish.
          */
         public double getIntegral(double start, double finish) {
             return getIntensity(finish) - getIntensity(start);
@@ -142,7 +142,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
         /**
          * @param start  the start time of the definite integral
          * @param finish the end time of the definite integral
-         * @return the integral of 1/N(x) between start and finish, calling either the getAnalyticalIntegral or
+         * @return the integral of 1/N(t) between start and finish, calling either the getAnalyticalIntegral or
          *         getNumericalIntegral function as appropriate.
          */
         public double getNumericalIntegral(double start, double finish) {
@@ -182,11 +182,11 @@ public interface PopulationFunction extends UnivariateRealFunction {
         /**
          * Return the intensity at a given time for numerical integration
          *
-         * @param x the time
+         * @param t the time
          * @return the intensity
          */
-        public double value(double x) {
-            return 1.0 / getPopSize(x);
+        public double value(double t) {
+            return 1.0 / getPopSize(t);
         }
 
         /**
