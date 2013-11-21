@@ -35,7 +35,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
 
     /**
      * @param t time
-     * @return value of demographic intensity function at time t (= integral 1/N(x) dx from 0 to t).
+     * @return value of demographic intensity function at time t (= integral 1/N(s) ds from 0 to t).
      */
     double getIntensity(double t);
 
