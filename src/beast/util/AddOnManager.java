@@ -71,6 +71,7 @@ import java.util.zip.ZipFile;
 public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
+    public final static String ADD_ONS_URL = "http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2";
 
     /**
      * flag indicating add ons have been loaded at least once *
@@ -87,11 +88,35 @@ public class AddOnManager {
      * return URLs containing list of downloadable add-ons *
      */
     public static String[] getAddOnURL() throws MalformedURLException {
-        File localAddons=new File("./templates/Add-ons.html");
-        URL localAddonsUrl = localAddons.toURI().toURL();
+//        File localAddons = new File(getAddOnUserDir() + "/add-ons.html");
+//        URL localAddonsUrl = localAddons.toURI().toURL();
+
+        String url = ADD_ONS_URL;
+
+        File beastProps = new File(getAddOnUserDir() + "/beast.properties");
+        // check beast.properties file exists in addon directory
+        if (beastProps.exists()) {
+            Properties prop = new Properties();
+
+            try {
+                //load a properties file
+                prop.load(new FileInputStream(beastProps));
+
+                //get the property value and print it out
+                url = prop.getProperty("addons.url");
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+            // if no addons.url, assign url back to default
+            if (url == null)
+                url = ADD_ONS_URL;
+        }
+
         return new String[]{
-                "http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2",
-                localAddonsUrl.toString()
+                url,
+//                localAddonsUrl.toString()
         };
     }
 
@@ -172,7 +197,8 @@ public class AddOnManager {
 
                     addOns.add(addOn);
                 }
-            }
+            } // end for i
+//            write addon html page, if received from internet
         }
         return addOns;
     }
@@ -1024,6 +1050,10 @@ public class AddOnManager {
                 System.setProperty("BEAST_ADDON_PATH", (path != null ? path + ":" : "") +customDir);
             }
 
+            String[] sURLs = getAddOnURL();
+            for (String sURL : sURLs) {
+                Log.debug.println("Access URL : " + sURL);
+            }
             Log.debug.print("Getting list of add-ons ...");
             List<List<String>> addOns = AddOnManager.getAddOns();
             Log.debug.println("Done!\n");
