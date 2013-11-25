@@ -242,7 +242,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         if (instanceDetails != null) {
             resourceDetails = BeagleFactory.getResourceDetails(instanceDetails.getResourceNumber());
             if (resourceDetails != null) {
-                StringBuilder sb = new StringBuilder("  Using BEAGLE resource ");
+                StringBuilder sb = new StringBuilder("  Using BEAGLE version: " + BeagleInfo.getVersion()
+                		+ " resource ");
                 sb.append(resourceDetails.getNumber()).append(": ");
                 sb.append(resourceDetails.getName()).append("\n");
                 if (resourceDetails.getDescription() != null) {
