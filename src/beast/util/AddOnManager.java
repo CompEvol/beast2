@@ -71,7 +71,7 @@ import java.util.zip.ZipFile;
 public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
-    public final static String ADD_ONS_URL = "http://beast2.cs.auckland.ac.nz/index.php/Add-ons2.0.2";
+    public final static String ADD_ONS_URL = "http://www.beast2.org/wiki/index.php/Add-ons2.1.0";
 
     /**
      * flag indicating add ons have been loaded at least once *
