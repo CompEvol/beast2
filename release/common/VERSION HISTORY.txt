@@ -1,11 +1,34 @@
-                    BEAST v2.0.2 2013
+                    BEAST v2.1.0 2013
                  Beast 2 development team 2011-2013
 Version History
-Last updated: February 2013
+Last updated: December 2013
 
 All issues can be viewed at http://code.google.com/p/beast2/issues/list
 
 ================================================================================
+
+Version 2.1.0 December 2013
+
+	Support for many more packages, including 
+		o CladeAge for fossil calibrations
+		o Sampled Ancestor Trees
+		o Multi Type Trees for structured coalescent
+		o Birth-Death SIR model
+    If not already available these will be so soon.
+
+	Support for JSON file format
+
+	Beagle update issue resolved -- no more incorrectly calculated likelihoods
+
+	Core refactored, for ease of developing packages
+
+	*BEAST start state for getting faster through burn-in
+
+	BEAUti many small fixes supporting more packages
+
+	DensiTree and TreeAnnotator updated
+
+
 
 Version 2.0.2 February 2013
 

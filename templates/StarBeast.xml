@@ -190,12 +190,13 @@
             <plugin spec='beast.evolution.tree.Tree' id='Tree.t:$(n)' taxonset='@TaxonSet.$(n)'/>
 
             <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.t:$(n)'-->
+<!--
 			<tree spec='RandomGeneTree' id='RandomGeneTree.t:$(n)' initial='@Tree.t:$(n)' speciesTree='@Tree.t:Species' taxa='@$(n)'>
 				<populationModel id='RGTPopulationModel.t:$(n)' spec='ConstantPopulation'>
 					<popSize id='RGTPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
 				</populationModel>
 			</tree>
-
+-->
             <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
 
             <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="5000" fileName="$(tree).$(seed).trees" mode='tree'>
@@ -230,7 +231,9 @@
             <connect srcID='treeLikelihood.$(n)'         targetID='likelihood' inputName='distribution' if="isInitializing"/>
 
             <connect srcID='treelog.t:$(n)'              targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+<!--
             <connect srcID='RandomGeneTree.t:$(n)'       targetID='mcmc' inputName='init' if='inposterior(Tree.t:$(n))'/>
+-->
 
             <connect srcID='treePrior.t:$(n)'            targetID='speciescoalescent' inputName='distribution' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 <!-- trick to ensure that treePrior.$(n) is always deleted from prior, since it is already part of speciescoalescent -->
@@ -239,11 +242,6 @@
             <connect srcID='ClockPrior.c:$(n)'           targetID='prior' inputName='distribution' if='inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 <!-- when FixMeanMutationRatesOperator, the prior is uniform due to the operator -->
             <connect srcID='MutationRatePrior.s:$(n)'    targetID='prior' inputName='distribution' if='nooperator(FixMeanMutationRatesOperator) and inposterior(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
-
-<!-- RRB: where is the popMean?
-            <connect srcID='popMean.prior'               targetID='prior' inputName='distribution' if='popMean/estimate=true'/>
-            <connect srcID='popMeanScale'                targetID='mcmc' inputName='operator' if='popMean/estimate=true'/>
--->
 
             <connect srcID='Tree.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='proportionInvariant.s:$(n)'  targetID='state' inputName='stateNode' if='inposterior(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
@@ -297,6 +295,12 @@
             <connect srcID='Tree.t:Species'     targetID='treeTopFinder' inputName='tree' if='Tree.t:$(n)/estimate=XXX'/>
 
 			<connect srcID='birthRate.t:Species' targetID='updown.all' inputName='up' if='inposterior(birthRate.t:Species)'/>
+	
+			<!-- gene tree initialiser by SBI -->
+            <connect srcID='Tree.t:$(n)'                   targetID='SBI' inputName='gene' if='inposterior(Tree.t:$(n))'/>
+			<!-- we don't want Tree.t:Species to be treated as gene, so the condition is guaranteed false -->
+            <connect srcID='Tree.t:Species'                targetID='SBI' inputName='gene' if='popSize/value=-1'/>
+			<connect srcID="CalibratedYuleModel.t:Species" targetID='SBI' inputName='calibratedYule' if='inposterior(CalibratedYuleModel.t:Species)'/>
 
 			<mergepoint id='aux-partitiontemplate'/>
         </partitiontemplate>
@@ -401,12 +405,21 @@
         </logger>
 
 
+<!-- deprecated starting species tree
         <init spec='beast.evolution.tree.RandomTree' id='RandomTree.t:Species' estimate='false' initial='@Tree.t:Species' taxonset='@taxonsuperset'>
             <populationModel id='ConstantPopulation0.Species' spec='ConstantPopulation'>
         		<popSize id='randomPopSize.Species' spec='parameter.RealParameter' value='1'/>
             </populationModel>
         </init>
+-->
 
+		<init id="SBI"  spec="beast.evolution.speciation.StarBeastStartState"
+		  speciesTree="@Tree.t:Species"
+		  speciesTreePrior="@SpeciesTreePopSize.Species"
+		  popMean="@popMean"
+		  birthRate="@birthRate.t:Species">
+		  <!--baseRate idref="clockRate.sb_l0_example03"/-->
+		</init>
     </run>
 
 </beast>

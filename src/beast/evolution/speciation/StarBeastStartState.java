@@ -8,6 +8,7 @@ import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
+import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
@@ -44,8 +45,8 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 
     public Input<Tree> speciesTreeInput = new Input<Tree>("speciesTree", "The species tree to initialize");
 
-    public Input<List<Tree>> genes = new Input<List<Tree>>("gene", "Gene trees to initialize", new ArrayList<Tree>(),
-            Validate.REQUIRED);
+    public Input<List<Tree>> genes = new Input<List<Tree>>("gene", "Gene trees to initialize", new ArrayList<Tree>());
+            //Validate.REQUIRED); to make BEAUti template run
 
     public Input<CalibratedYuleModel> calibratedYule = new Input<CalibratedYuleModel>("calibratedYule",
             "The species tree (with calibrations) to initialize", Validate.XOR, speciesTreeInput);
@@ -67,6 +68,11 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 
     @Override
     public void initAndValidate() throws Exception {
+    	if (genes.get().size() == 0) {
+    		// assume we are in BEAUti
+    		// TODO: a more elegant solution to detect we are in BEAUti
+    		return;
+    	}
         // what does this do and is it dangerous to call it or not to call it at the start or at the end??????
         super.initAndValidate();
         hasCalibrations = calibratedYule.get() != null;
@@ -290,7 +296,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                     }
                 }
                 final RealParameter popt = speciesTreePrior.popSizesTopInput.get();
-                if( popt != null ) {
+                if( popt != null && !speciesTreePrior.popFunctionInput.get().equals(TreePopSizeFunction.constant)) {
                     for(int i = 0; i < popt.getDimension(); ++i) {
                         popt.setValue(i, totBranches);
                     }
