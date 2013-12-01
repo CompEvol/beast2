@@ -585,11 +585,13 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		}
 		templateName = nameFromFile(sFileName);
 
-		Writer out = new OutputStreamWriter(new FileOutputStream("/tmp/beast.xml"));
-		try {
-			out.write(sTemplateXML);
-		} finally {
-			out.close();
+		if (Boolean.valueOf(System.getProperty("beast.debug"))) {
+			Writer out = new OutputStreamWriter(new FileOutputStream("/tmp/beast.xml"));
+			try {
+				out.write(sTemplateXML);
+			} finally {
+				out.close();
+			}
 		}
 
 		return sTemplateXML;
