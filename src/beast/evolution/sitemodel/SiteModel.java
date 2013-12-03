@@ -106,7 +106,9 @@ public class SiteModel extends SiteModelInterface.Base {
         if (shapeParameter != null) {
             categoryCount = gammaCategoryCount.get();
             if (categoryCount < 1) {
-                System.out.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
+            	if (categoryCount < 0) {
+            		System.out.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
+            	}
                 categoryCount = 1;
             }
         } else {

@@ -1047,7 +1047,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	// return null;
 	// }
 
-	public void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {		
+	synchronized public void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {		
 		try {
 			if (bAutoSetClockRate) {
 				setClockRate();

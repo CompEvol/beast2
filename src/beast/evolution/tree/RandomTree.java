@@ -142,7 +142,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
 
         // pick up constraints from outputs, m_inititial input tree and output tree, if any
-        final List<MRCAPrior> calibrations = calibrationsInput.get();
+        List<MRCAPrior> calibrations = new ArrayList<MRCAPrior>();
+        calibrations.addAll(calibrationsInput.get());
 //    	for (Plugin plugin : outputs) {
 //    	// pick up constraints in outputs
 //		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
