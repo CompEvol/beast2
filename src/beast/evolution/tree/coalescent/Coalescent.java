@@ -137,6 +137,7 @@ public class Coalescent extends TreeDistribution {
             }
             startTime = finishTime;
         }
+
         return logL;
     }
 
