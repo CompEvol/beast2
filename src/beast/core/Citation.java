@@ -50,7 +50,7 @@ public @interface Citation {
 
     String DOI() default "";
 
-    String year() default "";
+    int year() default 0;
     
     String firstAuthorSurname() default "";
 }
