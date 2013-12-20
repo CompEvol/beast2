@@ -51,7 +51,7 @@
         </populationModel>
     </tree>
 
-    <run spec="MCMC" id="mcmc" chainLength="5000000">
+    <run spec="MCMC" id="mcmc" chainLength="10000000">
 
         <init idref='coalescentSimulator'/>
         <distribution spec='CompoundDistribution' id='posterior'>
@@ -63,17 +63,17 @@
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
 
         <operator spec='Uniform' weight="10" tree="@tree"/>
-        <operator spec='SubtreeSlide' optimise="false" weight="5" gaussian="true" size="1.0" tree="@tree"/>
+        <operator spec='SubtreeSlide' optimise="true" weight="5" gaussian="true" size="1.0" tree="@tree"/>
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
         <operator spec='WilsonBalding' weight="1" tree="@tree"/>
 
-        <logger logEvery="5000" fileName="test.$(seed).log">
+        <logger logEvery="1000" fileName="test.$(seed).log">
             <model idref='likelihood'/>
             <log idref="likelihood"/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
-        <logger logEvery="5000" fileName="test.$(seed).trees">
+        <logger logEvery="1000" fileName="test.$(seed).trees">
             <log idref="tree"/>
         </logger>
         <logger logEvery="20000">
