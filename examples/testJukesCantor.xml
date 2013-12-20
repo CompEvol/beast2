@@ -47,11 +47,11 @@
     </tree>
     <tree spec='beast.evolution.tree.RandomTree' id='coalescentSimulator' initial='@tree' taxa='@alignment'>
         <populationModel spec='ConstantPopulation'>
-            <popSize spec='parameter.RealParameter' value='1'/>
+            <popSize spec='parameter.RealParameter' value='0.05'/>
         </populationModel>
     </tree>
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <run spec="MCMC" id="mcmc" chainLength="5000000" preBurnin="50000">
 
         <init idref='coalescentSimulator'/>
         <distribution spec='CompoundDistribution' id='posterior'>
