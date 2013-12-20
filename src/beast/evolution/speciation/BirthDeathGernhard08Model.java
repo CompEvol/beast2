@@ -26,17 +26,14 @@
 package beast.evolution.speciation;
 
 
-
-import java.util.Arrays;
-
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 
+import java.util.Arrays;
 
 import static org.apache.commons.math.special.Gamma.logGamma;
 
@@ -53,7 +50,9 @@ import static org.apache.commons.math.special.Gamma.logGamma;
 
 @Citation(value = "Gernhard 2008. The conditioned reconstructed process. Journal of Theoretical Biology Volume 253, " +
         "Issue 4, 21 August 2008, Pages 769-778",
-        DOI = "doi:10.1016/j.jtbi.2008.04.005")// (http://dx.doi.org/10.1016/j.jtbi.2008.04.005)
+        DOI = "doi:10.1016/j.jtbi.2008.04.005", // (http://dx.doi.org/10.1016/j.jtbi.2008.04.005)
+        year = 2008,
+        firstAuthorSurname = "gernhard")
 
 public class BirthDeathGernhard08Model extends YuleModel {
 
