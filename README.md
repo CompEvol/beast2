@@ -17,6 +17,9 @@ therefore of interest primarily to BEAST 2 developers.  For binary
 releases, user tutorials and other information you should visit the
 project website at www.beast2.org.
 
+License
+-------
+
 BEAST 2 is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published
 by the Free Software Foundation; either version 2.1 of the License, or
@@ -27,8 +30,3 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License contained in the file COPYING for more
 details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this software; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301 USA
