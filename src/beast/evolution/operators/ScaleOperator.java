@@ -117,7 +117,6 @@ public class ScaleOperator extends Operator {
     @Override
     public double proposal() {
 
-        Integer degreesOfFreedom = degreesOfFreedomInput.get();
         try {
 
             double hastingsRatio;
