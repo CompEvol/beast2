@@ -1,8 +1,8 @@
 language: java
 
 notifications:
-	email:
-		- tgvaughan@gmail.com
+  email:
+    - tgvaughan@gmail.com
 
 before_script: ant clean
 
