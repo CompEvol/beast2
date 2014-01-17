@@ -25,14 +25,12 @@
 package beast.core;
 
 
+import beast.core.parameter.RealParameter;
+
 import java.io.File;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
-
-import beast.core.parameter.RealParameter;
-
-
 
 
 /**
@@ -258,38 +256,38 @@ public class Input<T> {
     }
 
     public String getHTMLTipText() {
-        return "<html>" + tipText.replaceAll("\n","<br>") + "</html>";
+        return "<html>" + tipText.replaceAll("\n", "<br>") + "</html>";
     }
-    
-	public String getValueTipText() {
-		if (theClass == Boolean.class) {
-			return ("[true|false]");
-		}
-		if (theClass == Integer.class) {
-			return ("<integer>");
-		}
-		if (theClass == Long.class) {
-			return ("<long>");
-		}
-		if (theClass == Double.class) {
-			return ("<double>");
-		}
-		if (theClass == String.class) {
-			return "<string>";
-		}
-		if (theClass == File.class) {
-			return "<filename>";
-		}
-		if (theClass.isEnum()) {
-			return Arrays.toString(possibleValues).replaceAll(",","|");
-		}
-		return "";
-	}
-    
+
+    public String getValueTipText() {
+        if (theClass == Boolean.class) {
+            return ("[true|false]");
+        }
+        if (theClass == Integer.class) {
+            return ("<integer>");
+        }
+        if (theClass == Long.class) {
+            return ("<long>");
+        }
+        if (theClass == Double.class) {
+            return ("<double>");
+        }
+        if (theClass == String.class) {
+            return "<string>";
+        }
+        if (theClass == File.class) {
+            return "<filename>";
+        }
+        if (theClass.isEnum()) {
+            return Arrays.toString(possibleValues).replaceAll(",", "|");
+        }
+        return "";
+    }
+
     public Class<?> getType() {
         return theClass;
     }
-    
+
     public void setType(Class<?> theClass) {
         this.theClass = theClass;
     }
@@ -384,7 +382,7 @@ public class Input<T> {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void setValue(final Object value, final BEASTObject plugin) throws Exception {
+    public void setValue(final Object value, final BEASTObject plugin) {
         if (value == null) {
             if (this.value != null) {
                 if (this.value instanceof BEASTObject) {
@@ -395,10 +393,20 @@ public class Input<T> {
             return;
         }
         if (theClass == null) {
-            determineClass(plugin);
+            try {
+                determineClass(plugin);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to determine class of beastobject id=" + plugin.getID());
+            }
         }
         if (value instanceof String) {
-            setStringValue((String) value, plugin);
+            try {
+                setStringValue((String) value, plugin);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
+            }
         } else if (this.value != null && this.value instanceof List<?>) {
             if (theClass.isAssignableFrom(value.getClass())) {
                 @SuppressWarnings("rawtypes") final
@@ -416,22 +424,19 @@ public class Input<T> {
                 if (value instanceof BEASTObject) {
                     ((BEASTObject) value).outputs.add(plugin);
                 }
-            }
-
-            else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>)value).get(0).getClass())) {
+            } else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>) value).get(0).getClass())) {
                 // add all elements in given list to input list.
                 @SuppressWarnings("rawtypes")
-				final List<Object> vector = (List) this.value;
-                for (Object v : ((List<?>)value)) {
+                final List<Object> vector = (List) this.value;
+                for (Object v : ((List<?>) value)) {
                     vector.add(v);
                     if (v instanceof BEASTObject) {
                         ((BEASTObject) v).outputs.add(plugin);
                     }
                 }
-            }
-            else {
-                throw new Exception("Input 101: type mismatch for input " + getName() +
-                        ". " + theClass.getName() +".isAssignableFrom(" + value.getClass() + ")=false");
+            } else {
+                throw new RuntimeException("Input 101: type mismatch for input " + getName() +
+                        ". " + theClass.getName() + ".isAssignableFrom(" + value.getClass() + ")=false");
             }
 
         } else {
@@ -444,7 +449,7 @@ public class Input<T> {
                 }
                 this.value = (T) value;
             } else {
-                throw new Exception("Input 102: type mismatch for input " + getName());
+                throw new RuntimeException("Input 102: type mismatch for input " + getName());
             }
         }
     }
@@ -458,7 +463,7 @@ public class Input<T> {
      * It is best for Beauti to throw an Exception from canSetName() with some
      * diagnostic info when the value cannot be set.
      */
-    public boolean canSetValue(Object value, BEASTObject plugin) throws Exception {
+    public boolean canSetValue(Object value, BEASTObject plugin) {
         String inputName = new String(name.charAt(0) + "").toUpperCase() + name.substring(1);
         try {
             Method method = plugin.getClass().getMethod("canSet" + inputName, Object.class);
@@ -468,12 +473,15 @@ public class Input<T> {
         } catch (java.lang.NoSuchMethodException e) {
             return true;
         } catch (java.lang.reflect.InvocationTargetException e) {
-        	System.err.println(plugin.getClass().getName() + "." + getName() + ": " + e.getCause());
-        	
+            System.err.println(plugin.getClass().getName() + "." + getName() + ": " + e.getCause());
+
             if (e.getCause() != null) {
-                throw new Exception(e.getCause().getMessage());
+                throw new RuntimeException(e.getCause().getMessage());
             }
             return false;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Illegal method access attempted on beastobject id=" + plugin.getID());
         }
     }
 
@@ -503,20 +511,20 @@ public class Input<T> {
                         if (value != null && value instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
                             theClass = (Class<?>) genericTypes2[0];
-                        // gettting type of map is not possible?!?
-                        //} else if (value != null && value instanceof Map<?,?>) {
-                        //    Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
-                        //    theClass = (Class<?>) genericTypes2[0];
+                            // gettting type of map is not possible?!?
+                            //} else if (value != null && value instanceof Map<?,?>) {
+                            //    Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
+                            //    theClass = (Class<?>) genericTypes2[0];
                         } else {
                             // it is not a list (or if it is, this will fail)
                             try {
                                 theClass = (Class<?>) genericTypes[0];
                             } catch (Exception e) {
-                            	// resolve ID
-                            	String id = "";
+                                // resolve ID
+                                String id = "";
                                 Method method = plugin.getClass().getMethod("getID");
                                 if (method != null) {
-                                	id = method.invoke(plugin).toString();
+                                    id = method.invoke(plugin).toString();
                                 }
                                 // assemble error message
                                 System.err.println(plugin.getClass().getName() + " " + id + " failed. " +
@@ -547,31 +555,28 @@ public class Input<T> {
     private void setStringValue(final String sValue, final BEASTObject plugin) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (value instanceof List<?>) {
-        	List list = (List) value;
-        	list.clear();
-			// remove start and end spaces
-			String sValue2 = sValue.replaceAll("^\\s+", "");
-			sValue2 = sValue2.replaceAll("\\s+$", "");
-			// split into space-separated bits
-			String[] sValues = sValue2.split("\\s+");
-			for (int i = 0; i < sValues.length; i++) {
-	            if (theClass.equals(Integer.class)) {
-	            	list.add(new Integer(sValues[i % sValues.length]));
-	            }
-	            else if (theClass.equals(Double.class)) {
-	            	list.add(new Double(sValues[i % sValues.length]));
-	            }
-	            else if (theClass.equals(Boolean.class)) {
-	            	String str = sValues[i % sValues.length].toLowerCase();
-	            	list.add(str.equals("1") || str.equals("true") || str.equals("yes"));
-	            }
-	            else if (theClass.equals(String.class)) {
-	            	list.add(new String(sValues[i % sValues.length]));
-	            }
-			}
-			return;
+            List list = (List) value;
+            list.clear();
+            // remove start and end spaces
+            String sValue2 = sValue.replaceAll("^\\s+", "");
+            sValue2 = sValue2.replaceAll("\\s+$", "");
+            // split into space-separated bits
+            String[] sValues = sValue2.split("\\s+");
+            for (int i = 0; i < sValues.length; i++) {
+                if (theClass.equals(Integer.class)) {
+                    list.add(new Integer(sValues[i % sValues.length]));
+                } else if (theClass.equals(Double.class)) {
+                    list.add(new Double(sValues[i % sValues.length]));
+                } else if (theClass.equals(Boolean.class)) {
+                    String str = sValues[i % sValues.length].toLowerCase();
+                    list.add(str.equals("1") || str.equals("true") || str.equals("yes"));
+                } else if (theClass.equals(String.class)) {
+                    list.add(new String(sValues[i % sValues.length]));
+                }
+            }
+            return;
         }
-    	
+
         if (theClass.equals(Integer.class)) {
             value = (T) new Integer(sValue);
             return;

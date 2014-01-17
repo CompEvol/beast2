@@ -24,7 +24,6 @@
 package beast.core;
 
 
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -87,17 +86,22 @@ abstract public class BEASTObject {
       */
     public void initByName(final Object... objects) throws Exception {
         if (objects.length % 2 == 1) {
-            throw new Exception("Expected even number of arguments, name-value pairs");
+            throw new RuntimeException("Expected even number of arguments, name-value pairs");
         }
         for (int i = 0; i < objects.length; i += 2) {
             if (objects[i] instanceof String) {
                 final String sName = (String) objects[i];
                 setInputValue(sName, objects[i + 1]);
             } else {
-                throw new Exception("Expected a String in " + i + "th argument ");
+                throw new RuntimeException("Expected a String in " + i + "th argument ");
             }
         }
-        initAndValidate();
+        try {
+            initAndValidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("initAndValidate() failed!");
+        }
     } // initByName
 
     // identifiable
@@ -147,16 +151,16 @@ abstract public class BEASTObject {
     }
 
     private String getCitations(final HashSet<String> citations, final HashSet<String> IDs) {
-    	if (getID() != null) {
-    		if (IDs.contains(getID())) {
-    			return "";
-    		}
-    		IDs.add(getID());
-    	}
+        if (getID() != null) {
+            if (IDs.contains(getID())) {
+                return "";
+            }
+            IDs.add(getID());
+        }
         final StringBuilder buf = new StringBuilder();
         if (getCitation() != null) {
-           // only add citation if it is not already processed
-           if (!citations.contains(getCitation().value())) {
+            // only add citation if it is not already processed
+            if (!citations.contains(getCitation().value())) {
                 // and there is actually a citation to add
                 buf.append(getCitation().value());
                 buf.append("\n\n");
@@ -254,7 +258,7 @@ abstract public class BEASTObject {
         }
 
         assert inputType != null;
-        for( final Class c : new Class[]{Integer.class, Double.class, Boolean.class, String.class} ) {
+        for (final Class c : new Class[]{Integer.class, Double.class, Boolean.class, String.class}) {
             if (inputType.isAssignableFrom(c)) {
                 return true;
             }
@@ -288,7 +292,7 @@ abstract public class BEASTObject {
     public void setInputValue(final String name, final Object value) throws Exception {
         final Input<?> input = getInput(name);
         if (!input.canSetValue(value, this)) {
-            throw new Exception("Cannot set input value of " + name);
+            throw new RuntimeException("Cannot set input value of " + name);
         }
         input.setValue(value, this);
     } // setInputValue
@@ -346,28 +350,28 @@ abstract public class BEASTObject {
     /**
      * Collect all predecessors in the graph where inputs
      * represent incoming edges and plug-ins nodes.
-     *  
+     *
      * @param predecessors in partial order such that if
-     * x is after y in the list then x is not an ancestor of y
-     * (but x need not necessarily be a predecesor of y)
+     *                     x is after y in the list then x is not an ancestor of y
+     *                     (but x need not necessarily be a predecesor of y)
      */
 
     public void getPredecessors(final List<BEASTObject> predecessors) {
-		predecessors.add(this);
-		try {
-			for (final BEASTObject plugin2 : listActivePlugins()) {
-				if (!predecessors.contains(plugin2)) {
-					plugin2.getPredecessors(predecessors);
-				}
-			}
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public String toString() {
+        predecessors.add(this);
+        try {
+            for (final BEASTObject plugin2 : listActivePlugins()) {
+                if (!predecessors.contains(plugin2)) {
+                    plugin2.getPredecessors(predecessors);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String toString() {
         return getID();
     } // toString
 
