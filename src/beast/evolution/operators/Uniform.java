@@ -59,6 +59,19 @@ import beast.util.Randomizer;
         "restricted by the nodes parent and children.")
 public class Uniform extends TreeOperator {
 
+    // empty constructor to facilitate construction by XML + initAndValidate
+    public Uniform() {
+    }
+
+    public Uniform(Tree tree) {
+        try {
+            initByName(treeInput.getName(), tree);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException("Failed to construct Uniform Tree Operator.");
+        }
+    }
+
     @Override
     public void initAndValidate() {
     }

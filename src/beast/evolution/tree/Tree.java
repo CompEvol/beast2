@@ -1,16 +1,15 @@
 package beast.evolution.tree;
 
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.StateNode;
+import beast.evolution.alignment.TaxonSet;
+import beast.util.TreeParser;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
-import beast.evolution.alignment.TaxonSet;
-import beast.util.TreeParser;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species"
@@ -57,17 +56,16 @@ public class Tree extends StateNode implements TreeInterface {
      * such that m_sTaxaNames[node.getNr()] == node.getID()*
      */
     String[] m_sTaxaNames = null;
-    
+
     /**
      * Trait set which specifies leaf node times.
      */
     protected TraitSet timeTraitSet = null;
-    
+
     /*
      * Whether or not TraitSets have been processed.
      */
     protected boolean traitsProcessed = false;
-
 
     @Override
     public void initAndValidate() throws Exception {
@@ -81,7 +79,7 @@ public class Tree extends StateNode implements TreeInterface {
 
         if (nodeCount < 0) {
             if (m_taxonset.get() != null) {
-                makeCaterpillar(0,1,false);
+                makeCaterpillar(0, 1, false);
             } else {
                 // make dummy tree with a single root node
                 root = newNode();
@@ -93,13 +91,13 @@ public class Tree extends StateNode implements TreeInterface {
                 leafNodeCount = 1;
             }
         }
-        
+
         if (nodeCount >= 0) {
             initArrays();
         }
-        
+
         processTraits(m_traitList.get());
-        
+
         // Ensure tree is compatible with time trait.
         if (timeTraitSet != null)
             adjustTreeNodeHeights(root);
@@ -131,14 +129,14 @@ public class Tree extends StateNode implements TreeInterface {
         nodeCount = leafNodeCount * 2 - 1;
         internalNodeCount = leafNodeCount - 1;
 
-        if( finalize ) {
-           initArrays();
+        if (finalize) {
+            initArrays();
         }
     }
 
     /**
      * Process trait sets.
-     * 
+     *
      * @param traitList List of trait sets.
      */
     protected void processTraits(List<TraitSet> traitList) {
@@ -154,16 +152,16 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * Overridable method to construct new node object of the specific type
      * defined by nodeTypeInput.
-     * 
+     *
      * @return new node object.
      */
     protected Node newNode() {
-    	try {
-    		return (Node) Class.forName(nodeTypeInput.get()).newInstance();
-    	} catch (Exception e) {
-    		throw new RuntimeException("Cannot create node of type "
-                        + nodeTypeInput.get() + ": " + e.getMessage());
-    	}
+        try {
+            return (Node) Class.forName(nodeTypeInput.get()).newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot create node of type "
+                    + nodeTypeInput.get() + ": " + e.getMessage());
+        }
         //return new NodeData();
     }
 
@@ -396,28 +394,26 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     private int
-    getNodesPostOrder(final Node node, final Node[] nodes, int pos)
-    {
+    getNodesPostOrder(final Node node, final Node[] nodes, int pos) {
         node.m_tree = this;
         for (final Node child : node.children) {
-            pos =  getNodesPostOrder(child, nodes, pos);
+            pos = getNodesPostOrder(child, nodes, pos);
         }
         nodes[pos] = node;
         return pos + 1;
     }
 
     /**
-     *
-     * @param node   top of tree/sub tree (null defaults to whole tree)
-     * @param nodes  array to fill (null will result in creating a new one)
-     * @return  tree nodes in post-order, children before parents
+     * @param node  top of tree/sub tree (null defaults to whole tree)
+     * @param nodes array to fill (null will result in creating a new one)
+     * @return tree nodes in post-order, children before parents
      */
     public Node[] listNodesPostOrder(Node node, Node[] nodes) {
-        if( node == null ) {
+        if (node == null) {
             node = root;
         }
-        if( nodes == null ) {
-            final int n = ( node == root ) ? nodeCount : node.getNodeCount();
+        if (nodes == null) {
+            final int n = (node == root) ? nodeCount : node.getNodeCount();
             nodes = new Node[n];
         }
         getNodesPostOrder(node, nodes, 0);
@@ -744,57 +740,57 @@ public class Tree extends StateNode implements TreeInterface {
 
         hasStartedEditing = false;
     }
-    
+
     /**
      * @return Date trait set if available, null otherwise.
      */
     public TraitSet getDateTrait() {
         if (!traitsProcessed)
             processTraits(m_traitList.get());
-        
+
         return timeTraitSet;
     }
-    
+
     /**
      * Determine whether tree has a date/time trait set associated with it.
-     * 
+     *
      * @return true if so
      */
-    public boolean hasDateTrait() {       
+    public boolean hasDateTrait() {
         if (getDateTrait() != null)
             return true;
         else
             return false;
     }
-    
+
     /**
      * Specifically set the date trait set for this tree. A null value simply
      * removes the existing trait set.
-     * 
-     * @param traitSet 
+     *
+     * @param traitSet
      */
     public void setDateTrait(TraitSet traitSet) {
         if (hasDateTrait()) {
             m_traitList.get().remove(timeTraitSet);
         }
-        
+
         if (traitSet != null)
             m_traitList.get().add(traitSet);
-        
+
         timeTraitSet = traitSet;
     }
 
     /**
      * Convert age/height to the date time scale given by a trait set,
      * if one exists.  Otherwise just return the unconverted height.
-     * 
+     *
      * @param fHeight
      * @return date specified by height
      */
     public double getDate(final double fHeight) {
         if (hasDateTrait()) {
             return timeTraitSet.getDate(fHeight);
-        } else 
+        } else
             return fHeight;
     }
 
@@ -843,18 +839,18 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     public int getDirectAncestorNodeCount() {
-		int directAncestorNodeCount = 0;
-		for (int i = 0; i < leafNodeCount; i++) {
-			if (this.getNode(i).isDirectAncestor()) {
-				directAncestorNodeCount += 1;
-			}
-		}
-		return directAncestorNodeCount;
-	}
+        int directAncestorNodeCount = 0;
+        for (int i = 0; i < leafNodeCount; i++) {
+            if (this.getNode(i).isDirectAncestor()) {
+                directAncestorNodeCount += 1;
+            }
+        }
+        return directAncestorNodeCount;
+    }
 
 
-	@Override
-	public TaxonSet getTaxonset() {
-    	return m_taxonset.get();
-	}
+    @Override
+    public TaxonSet getTaxonset() {
+        return m_taxonset.get();
+    }
 } // class Tree

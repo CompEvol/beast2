@@ -8,7 +8,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andrew Rambaut
@@ -113,9 +114,9 @@ public class Utils {
         try {
 
             if (!lafLoaded) {
-            	if (isMac()) {
-            		UIManager.setLookAndFeel("javax.swing.plaf.metal");
-            	} else {
+                if (isMac()) {
+                    UIManager.setLookAndFeel("javax.swing.plaf.metal");
+                } else {
                     try {
                         for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                             if ("Nimbus".equals(info.getName())) {
@@ -126,8 +127,8 @@ public class Utils {
                     } catch (Exception e) {
                         // If Nimbus is not available, you can set the GUI to another look and feel.
                         UIManager.setLookAndFeel("javax.swing.plaf.metal");
-                    } 
-            	}
+                    }
+                }
                 //UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
@@ -210,7 +211,7 @@ public class Utils {
             //        chooser.show();
             chooser.setVisible(true);
             if (chooser.getFile() == null) return null;
-            java.io.File file = new java.io.File(chooser.getDirectory(), chooser.getFile());
+            File file = new java.io.File(chooser.getDirectory(), chooser.getFile());
             chooser.dispose();
             frame.dispose();
             return new File[]{file};
