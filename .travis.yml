@@ -4,4 +4,8 @@ notifications:
   email:
     - tgvaughan@gmail.com
 
+before_install:
+  - "export DISPLAY=:0.0"
+  - "sh -e /etc/init.d/xvfb start"
+
 script: ant clean compile-all junit junitb
