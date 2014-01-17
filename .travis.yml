@@ -4,8 +4,4 @@ notifications:
   email:
     - tgvaughan@gmail.com
 
-before_script: ant clean
-
-script: ant compile-all
-script: ant junit
-script: ant junitb
+script: ant clean compile-all junit junitb
