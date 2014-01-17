@@ -15,6 +15,11 @@ public class Poisson extends ParametricDistribution {
 
     static org.apache.commons.math.distribution.PoissonDistribution dist = new PoissonDistributionImpl(1);
 
+
+    // Must provide empty constructor for construction by XML. Note that this constructor DOES NOT call initAndValidate();
+    public Poisson() {
+    }
+
     public Poisson(RealParameter lambda) {
 
         try {
