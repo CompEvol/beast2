@@ -838,15 +838,15 @@ public class Tree extends StateNode implements TreeInterface {
         leafNodeCount++;
     }
 
-//    public int getDirectAncestorNodeCount() {
-//        int directAncestorNodeCount = 0;
-//        for (int i = 0; i < leafNodeCount; i++) {
-//            if (this.getNode(i).isDirectAncestor()) {
-//                directAncestorNodeCount += 1;
-//            }
-//        }
-//        return directAncestorNodeCount;
-//    }
+    public int getDirectAncestorNodeCount() {
+        int directAncestorNodeCount = 0;
+        for (int i = 0; i < leafNodeCount; i++) {
+            if (this.getNode(i).isDirectAncestor()) {
+                directAncestorNodeCount += 1;
+            }
+        }
+        return directAncestorNodeCount;
+    }
 
 
     @Override
