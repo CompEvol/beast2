@@ -2,6 +2,6 @@ language: java
 
 notifications:
   email:
-	- tvaughan@gmail.com
+    - tvaughan@gmail.com
 
 script: ant travis
