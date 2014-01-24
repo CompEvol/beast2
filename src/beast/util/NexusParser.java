@@ -369,7 +369,8 @@ public class NexusParser {
         } while (!sStr.toLowerCase().contains("matrix"));
 
         // read character data
-        final Map<String, String> seqMap = new HashMap<String, String>();
+        // Use string builder for efficiency
+        final Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();
         final List<String> sTaxa = new ArrayList<String>();
         String sPrevTaxon = null;
         while (true) {
@@ -408,8 +409,9 @@ public class NexusParser {
                 }
             }
             sPrevTaxon = sTaxon;
-            String sData = sStr.substring(iEnd);
-            sData = sData.replaceAll("\\s", "");
+            final String sData = sStr.substring(iEnd);
+            // Do this once outside loop- save on multiple regex compilations
+            //sData = sData.replaceAll("\\s", "");
 
 //			String [] sStrs = sStr.split("\\s+");
 //			String sTaxon = sStrs[0];
@@ -421,9 +423,9 @@ public class NexusParser {
 //			String sData = sStrs[sStrs.length - 1];
 
             if (seqMap.containsKey(sTaxon)) {
-                seqMap.put(sTaxon, seqMap.get(sTaxon) + sData);
+                seqMap.put(sTaxon, seqMap.get(sTaxon).append(sData));
             } else {
-                seqMap.put(sTaxon, sData);
+                seqMap.put(sTaxon, new StringBuilder(sData));
                 sTaxa.add(sTaxon);
             }
         }
@@ -431,7 +433,10 @@ public class NexusParser {
             throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
         }
         for (final String sTaxon : sTaxa) {
-            String sData = seqMap.get(sTaxon);
+            final StringBuilder bsData = seqMap.get(sTaxon);
+            String sData = bsData.toString();
+            sData = sData.replaceAll("\\s", "");
+            seqMap.put(sTaxon, new StringBuilder(sData));
 
             if (sData.length() != nChar) {
                 throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
@@ -443,7 +448,7 @@ public class NexusParser {
             // resolve matching char, if any
             if (sMatchChar != null && sData.contains(sMatchChar)) {
                 final char cMatchChar = sMatchChar.charAt(0);
-                final String sBaseData = seqMap.get(sTaxa.get(0));
+                final String sBaseData = seqMap.get(sTaxa.get(0)).toString();
                 for (int i = 0; i < sData.length(); i++) {
                     if (sData.charAt(i) == cMatchChar) {
                         final char cReplaceChar = sBaseData.charAt(i);
