@@ -6,6 +6,7 @@ import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 
 
@@ -16,6 +17,7 @@ import beast.core.parameter.RealParameter;
 public class Normal extends ParametricDistribution {
     public Input<RealParameter> meanInput = new Input<RealParameter>("mean", "mean of the normal distribution, defaults to 0");
     public Input<RealParameter> sigmaInput = new Input<RealParameter>("sigma", "variance of the normal distribution, defaults to 1");
+    public Input<RealParameter> tauInput = new Input<RealParameter>("tau", "precission of the normal distribution, defaults to 1", Validate.XOR, sigmaInput);
 
     static org.apache.commons.math.distribution.NormalDistribution dist = new NormalDistributionImpl(0, 1);
 
@@ -36,7 +38,11 @@ public class Normal extends ParametricDistribution {
             fMean = meanInput.get().getValue();
         }
         if (sigmaInput.get() == null) {
-            fSigma = 1;
+        	if (tauInput.get() == null) {
+        		fSigma = 1;
+        	} else {
+                fSigma = Math.sqrt(1.0/tauInput.get().getValue());
+        	}
         } else {
             fSigma = sigmaInput.get().getValue();
         }

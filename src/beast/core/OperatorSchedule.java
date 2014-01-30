@@ -155,6 +155,10 @@ public class OperatorSchedule extends BEASTObject {
             sXML += fin.readLine() + "\n";
         }
         fin.close();
+        int start = sXML.indexOf("</itsabeastystatewerein>") + 25 + 5;
+        if (start >= sXML.length() - 4) {
+        	return;
+        }
         sXML = sXML.substring(sXML.indexOf("</itsabeastystatewerein>") + 25 + 5, sXML.length() - 4);
         try {
 	        JSONObject o = new JSONObject(sXML);

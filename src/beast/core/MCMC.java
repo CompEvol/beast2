@@ -41,7 +41,7 @@ import beast.util.Randomizer;
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
 @Citation("Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
-        "BEAST 2: A software platform for Bayesian evolutionary analysis. In preparation. 2013")
+        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology (accepted 2014)")
 public class MCMC extends Runnable {
 
     public Input<Integer> chainLengthInput =

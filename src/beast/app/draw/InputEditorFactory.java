@@ -18,6 +18,7 @@ import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.util.Log;
 import beast.util.AddOnManager;
 
 
@@ -150,7 +151,7 @@ public class InputEditorFactory {
         	}
         }
 
-System.err.print(inputClass.getName() + " => ");        
+        //Log.trace.print(inputClass.getName() + " => ");        
         InputEditor inputEditor;
 
         // check whether the super.editor has a custom method for creating an Editor
@@ -162,7 +163,7 @@ System.err.print(inputClass.getName() + " => ");
                 Class<?> _class = editor.getClass();
                 Method method = _class.getMethod(sName);
                 inputEditor = (InputEditor) method.invoke(editor);
-System.err.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");        
+                //Log.trace.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");        
                 return inputEditor;
             } catch (Exception e) {
                 // ignore
@@ -248,7 +249,7 @@ System.err.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");
         inputEditor.init(input, plugin, listItemNr, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
         inputEditor.getComponent().setVisible(true);
-System.err.println(inputEditor.getClass().getName());        
+        //Log.trace.println(inputEditor.getClass().getName());        
         return inputEditor;
     } // createInputEditor
 

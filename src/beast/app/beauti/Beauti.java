@@ -1,34 +1,29 @@
 package beast.app.beauti;
 
 
+import beast.app.BEASTVersion;
+import beast.app.beauti.BeautiDoc.ActionOnExit;
+import beast.app.beauti.BeautiDoc.DOC_STATUS;
+import beast.app.draw.BEASTObjectPanel;
+import beast.app.draw.HelpBrowser;
+import beast.app.draw.ModelBuilder;
+import beast.app.draw.MyAction;
+import beast.app.util.Utils;
+import beast.util.AddOnManager;
 import jam.framework.DocumentFrame;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import beast.app.BEASTVersion;
-import beast.app.beauti.BeautiDoc.ActionOnExit;
-import beast.app.beauti.BeautiDoc.DOC_STATUS;
-import beast.app.draw.*;
-import beast.app.util.Utils;
-import beast.util.AddOnManager;
-
-
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -52,7 +47,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      */
     static public final String FILE_EXT = ".xml";
     static public final String FILE_EXT2 = ".json";
-
+    static final String fileSep = System.getProperty("file.separator");
+    
     /**
      * document in document-view pattern. BTW this class is the view
      */
@@ -219,7 +215,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             doc.setFileName(file.getAbsolutePath());// fc.getSelectedFile().toString();
             String fileSep = System.getProperty("file.separator");
             if (fileSep.equals("\\")) {
-            	fileSep = "\\\\";
+                fileSep = "\\\\";
             }
             if (doc.getFileName().lastIndexOf(fileSep) > 0) {
                 g_sDir = doc.getFileName().substring(0,
@@ -268,12 +264,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         public ActionLoad() {
             super("Load", "Load Beast File", "open", KeyEvent.VK_O);
-        } // c'tor
+        }
 
         public ActionLoad(String sName, String sToolTipText, String sIcon,
                           int acceleratorKey) {
             super(sName, sToolTipText, sIcon, acceleratorKey);
-        } // c'tor
+        }
 
         public void actionPerformed(ActionEvent ae) {
             File file = beast.app.util.Utils.getLoadFile("Load Beast XML File",
@@ -290,7 +286,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 doc.setFileName(file.getAbsolutePath());
                 String fileSep = System.getProperty("file.separator");
                 if (fileSep.equals("\\")) {
-                	fileSep = "\\\\";
+                    fileSep = "\\\\";
                 }
                 if (doc.getFileName().lastIndexOf(fileSep) > 0) {
                     g_sDir = doc.getFileName().substring(0,
@@ -376,23 +372,15 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         public ActionImport() {
             super("Import Alignment", "Import Alignment File", "import",
                     KeyEvent.VK_I);
-        } // c'tor
+        }
 
         public ActionImport(String sName, String sToolTipText, String sIcon,
                             int acceleratorKey) {
             super(sName, sToolTipText, sIcon, acceleratorKey);
-        } // c'tor
+        }
 
         public void actionPerformed(ActionEvent ae) {
 
-            // JFileChooser fileChooser = new JFileChooser(g_sDir);
-            // fileChooser.addChoosableFileFilter(ef1);
-            // fileChooser.addChoosableFileFilter(ef0);
-            // fileChooser.setMultiSelectionEnabled(true);
-            // fileChooser.setDialogTitle("Import alignment File");
-            //
-            // if (fileChooser.showOpenDialog(null) ==
-            // JFileChooser.APPROVE_OPTION) {
             try {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 File[] files = Utils.getLoadFiles("Import alignment File",
@@ -405,7 +393,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 for (File file : files) {
                     String fileSep = System.getProperty("file.separator");
                     if (fileSep.equals("\\")) {
-                    	fileSep = "\\\\";
+                        fileSep = "\\\\";
                     }
                     if (file.getAbsolutePath().lastIndexOf(fileSep) > 0) {
                         g_sDir = file.getAbsolutePath().substring(0,
@@ -427,6 +415,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                         doc.importXMLAlignment(file);
                     }
                 }
+                doc.connectModel();
+                doc.fireDocHasChanged();
                 a_save.setEnabled(true);
                 a_saveas.setEnabled(true);
             } catch (Exception e) {
@@ -659,8 +649,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
     }
 
-    
-    
+
     public JMenuBar makeMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -771,7 +760,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             m_sFileName = file.getAbsolutePath();
             String fileSep = System.getProperty("file.separator");
             if (fileSep.equals("\\")) {
-            	fileSep = "\\";
+                fileSep = "\\";
             }
             int i = m_sFileName.lastIndexOf(fileSep) + 1;
             String sName = m_sFileName.substring(
@@ -837,7 +826,18 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                             String sXML2 = BeautiDoc.load(template
                                     .getAbsolutePath());
                             if (sXML2.contains("templateinfo=")) {
-                                actions.add(new TemplateAction(template));
+//                            	String sFileName = template.getName();
+//                                sFileName = sFileName.substring(0, sFileName.length() - 4);
+//                                boolean duplicate = false;
+//                            	for (AbstractAction action : actions) {
+//                            		String name = action.getValue(Action.NAME).toString(); 
+//                            		if (name.equals(sFileName)) {
+//                            			duplicate = true;
+//                            		}
+//                            	}
+//                            	if (!duplicate) {
+                            		actions.add(new TemplateAction(template));
+//                            	}
                             }
                         } catch (Exception e) {
                             System.err.println(e.getMessage());
@@ -914,7 +914,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         isInitialising = false;
     }
 
-    /** record number of frames. If the last frame is closed, exit the app. **/
+    /**
+     * record number of frames. If the last frame is closed, exit the app. *
+     */
     static int BEAUtiIntances = 0;
 
     public static Beauti main2(String[] args) {
@@ -933,51 +935,51 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             if (Utils.isMac()) {
                 // set up application about-menu for Mac
                 // Mac-only stuff
-            	try {
-                URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beauti.png");
-                Icon icon = null;
-                if (url != null) {
-                    icon = new ImageIcon(url);
-                } else {
-                    System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
-                }
-                jam.framework.Application application = new jam.framework.MultiDocApplication(null, "BEAUti", "about" , icon) {
-
-                    @Override
-                    protected JFrame getDefaultFrame() {
-                        return null;
-                    }
-
-                    @Override
-                    public void doQuit() {
-                        beauti.a_quit.actionPerformed(null);
-                    }
-
-                    @Override
-                    public void doAbout() {
-                        beauti.a_about.actionPerformed(null);
-                    }
-
-                    @Override
-                    public DocumentFrame doOpenFile(File file) {
-                        return null;
-                    }
-
-                    @Override
-                    public DocumentFrame doNew() {
-                        return null;
-                    }
-                };
-                jam.mac.Utils.macOSXRegistration(application);
-            	} catch (Exception e) {
-            		// ignore
-            	}
                 try {
-                	Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
+                    URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beauti.png");
+                    Icon icon = null;
+                    if (url != null) {
+                        icon = new ImageIcon(url);
+                    } else {
+                        System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
+                    }
+                    jam.framework.Application application = new jam.framework.MultiDocApplication(null, "BEAUti", "about", icon) {
+
+                        @Override
+                        protected JFrame getDefaultFrame() {
+                            return null;
+                        }
+
+                        @Override
+                        public void doQuit() {
+                            beauti.a_quit.actionPerformed(null);
+                        }
+
+                        @Override
+                        public void doAbout() {
+                            beauti.a_about.actionPerformed(null);
+                        }
+
+                        @Override
+                        public DocumentFrame doOpenFile(File file) {
+                            return null;
+                        }
+
+                        @Override
+                        public DocumentFrame doNew() {
+                            return null;
+                        }
+                    };
+                    jam.mac.Utils.macOSXRegistration(application);
+                } catch (Exception e) {
+                    // ignore
+                }
+                try {
+                    Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
                     Method method = class_.getMethod("enablePrefs", boolean.class);
                     method.invoke(null, false);
                 } catch (java.lang.NoSuchMethodException e) {
-                	// ignore
+                    // ignore
                 }
             }
             beauti.setUpPanels();

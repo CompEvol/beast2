@@ -374,20 +374,20 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		} else {
 			addAlignmentWithSubnet(parser.m_alignment, beautiConfig.partitionTemplate.get());
 		}
-		connectModel();
+//		connectModel();
 		addTraitSet(parser.traitSet);
-		fireDocHasChanged();
+//		fireDocHasChanged();
 	}
 
 	public void importXMLAlignment(File file) throws Exception {
 		Alignment data = (Alignment) BeautiAlignmentProvider.getXMLData(file);
 		data.initAndValidate();
 		addAlignmentWithSubnet(data, beautiConfig.partitionTemplate.get());
-		connectModel();
-		fireDocHasChanged();
+//		connectModel();
+//		fireDocHasChanged();
 	}
 
-	private void fireDocHasChanged() throws Exception {
+	void fireDocHasChanged() throws Exception {
 		for (BeautiDocListener listener : listeners) {
 			listener.docHasChanged();
 		}
@@ -395,7 +395,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
 	void initialize(ActionOnExit endState, String sXML, String sTemplate, String sFileName) throws Exception {
 		// beautiConfig.clear();
-		switch (endState) {
+	switch (endState) {
 		case UNKNOWN:
 		case SHOW_DETAILS_USE_TEMPLATE: {
 			mergeSequences(sTemplate);
@@ -657,7 +657,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	}
 
 	public DOC_STATUS validateModel() {
-		if (mcmc == null || sPartitionNames.size() == 0) {
+		if (mcmc == null || (mcmc.get() instanceof MCMC && sPartitionNames.size() == 0)) {
 			return DOC_STATUS.NO_DOCUMENT;
 		}
 		try {
@@ -1047,7 +1047,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	// return null;
 	// }
 
-	public void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {		
+	synchronized public void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {		
 		try {
 			if (bAutoSetClockRate) {
 				setClockRate();
@@ -1156,11 +1156,49 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	}
 
 	public static String translatePartitionNames(String sStr, PartitionContext partition) {
-		sStr = sStr.replaceAll(".s:\\$\\(n\\)", ".s:" + partition.siteModel);
-		sStr = sStr.replaceAll(".c:\\$\\(n\\)", ".c:" + partition.clockModel);
-		sStr = sStr.replaceAll(".t:\\$\\(n\\)", ".t:" + partition.tree);
-		sStr = sStr.replaceAll("\\$\\(n\\)", partition.partition);
-		return sStr;
+		StringBuilder sb = new StringBuilder();
+		int len = sStr.length();
+		for (int i = 0; i < len; i++) {
+			char c = sStr.charAt(i);
+			if (c == '.' && i < len - 6) {
+				if (sStr.charAt(i + 2) == ':' && sStr.charAt(i + 3) == '$' && 
+						sStr.charAt(i + 4) == '(' && sStr.charAt(i + 5) == 'n' && sStr.charAt(i + 6) == ')') {
+					switch (sStr.charAt(i+1)) {
+					case 's': // .s:$(n)
+						sb.append(".s:").append(partition.siteModel);
+						i += 6;
+						break;
+					case 'c': 
+						sb.append(".c:").append(partition.clockModel);
+						i += 6;
+						break;
+					case 't': 
+						sb.append(".t:").append(partition.tree);
+						i += 6;
+						break;
+					default:
+						sb.append('.');
+					}
+				} else {
+					sb.append('.');
+				}
+			} else if (c == '$' && i < len - 3) {
+				if (sStr.charAt(i + 1) == '(' && sStr.charAt(i + 2) == 'n' && sStr.charAt(i + 3) == ')') {
+					sb.append(partition.partition);
+					i+= 3;
+				} else {
+					sb.append(c);
+				}
+			} else {
+				sb.append(c);
+			}
+		}
+		
+//		sStr = sStr.replaceAll(".s:\\$\\(n\\)", ".s:" + partition.siteModel);
+//		sStr = sStr.replaceAll(".c:\\$\\(n\\)", ".c:" + partition.clockModel);
+//		sStr = sStr.replaceAll(".t:\\$\\(n\\)", ".t:" + partition.tree);
+//		sStr = sStr.replaceAll("\\$\\(n\\)", partition.partition);
+		return sb.toString();
 	}
 	
 	void applyBeautiRules(List<BeautiSubTemplate> templates, boolean bInitial, PartitionContext context) throws Exception {
