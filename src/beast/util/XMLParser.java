@@ -590,6 +590,7 @@ public class XMLParser {
         m_sNameSpaces = new String[sNameSpaces.length + 1];
         int i = 0;
         for (String sNameSpace : sNameSpaces) {
+            sNameSpace = sNameSpace.trim();
             if (sNameSpace.length() > 0) {
                 if (sNameSpace.charAt(sNameSpace.length() - 1) != '.') {
                     sNameSpace += '.';
