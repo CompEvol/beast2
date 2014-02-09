@@ -1,7 +1,0 @@
-language: java
-
-script: ant travis
-
-branches:
-  only:
-    - master

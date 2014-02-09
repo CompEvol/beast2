@@ -17,6 +17,13 @@ therefore of interest primarily to BEAST 2 developers.  For binary
 releases, user tutorials and other information you should visit the
 project website at www.beast2.org.
 
+Development Rules and Philosophy
+--------------------------------
+
+Aspects relating to BEAST 2 development such as coding style, version
+numbering and design philosophy are discussed on the BEAST 2 wiki at
+http://www.beast2.org/wiki/index.php/Core_Development.
+
 License
 -------
 
