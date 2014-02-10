@@ -45,10 +45,9 @@ import beast.util.Randomizer;
 
 
 
-
 @Description("This class provides the basic engine for coalescent simulation of a given demographic model over a given time period. ")
 public class RandomTree extends Tree implements StateNodeInitialiser {
-    public Input<Alignment> taxaInput = new Input<Alignment>("taxa", "set of taxa to initialise tree with specified by alignment");
+    public Input<Alignment> taxaInput = new Input<Alignment>("taxa", "set of taxa to initialise tree specified by alignment");
     //public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset","set of taxa to initialise tree with specified by a taxonset", Validate.XOR, m_taxa);
     public Input<PopulationFunction> populationFunctionInput = new Input<PopulationFunction>("populationModel", "population function for generating coalescent???", Validate.REQUIRED);
     public Input<List<MRCAPrior>> calibrationsInput = new Input<List<MRCAPrior>>("constraint", "specifies (monophyletic or height distribution) constraints on internal nodes", new ArrayList<MRCAPrior>());
@@ -142,7 +141,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
 
         // pick up constraints from outputs, m_inititial input tree and output tree, if any
-        final List<MRCAPrior> calibrations = calibrationsInput.get();
+        List<MRCAPrior> calibrations = new ArrayList<MRCAPrior>();
+        calibrations.addAll(calibrationsInput.get());
 //    	for (Plugin plugin : outputs) {
 //    	// pick up constraints in outputs
 //		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
@@ -561,7 +561,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     }
 
     /**
-     * @return the numver of active nodes (equate to lineages)
+     * @return the number of active nodes (equate to lineages)
      */
     private int getActiveNodeCount() {
         return activeNodeCount;

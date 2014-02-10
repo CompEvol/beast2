@@ -58,7 +58,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     /**
      * for memory saving, set to true *
      */
-    final boolean surpressMetadata = false;
+    final boolean suppressMetadata = false;
 
     /**
      * This solves issues where the taxa labels are numbers (in generated
@@ -566,7 +566,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                             sampleSize[0]--;
                             labelNonLabeledNodes(tree, sampleSize);
                         }
-                        if (!surpressMetadata) {
+                        if (!suppressMetadata) {
                             processMetadata(tree);
                         }
                         return stack.lastElement();
@@ -585,7 +585,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 sampleSize[0]--;
                 labelNonLabeledNodes(tree, sampleSize);
             }
-            if (!surpressMetadata) {
+            if (!suppressMetadata) {
                 processMetadata(tree);
             }
             return tree;

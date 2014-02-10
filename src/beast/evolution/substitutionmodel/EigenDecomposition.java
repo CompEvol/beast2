@@ -7,8 +7,7 @@ package beast.evolution.substitutionmodel;
  *
  * @author Andrew Rambaut
  * @author Alexei Drummond
- * @version $Id$
- * @Author Marc A. Suchard
+ * @author Marc A. Suchard
  */
 public class EigenDecomposition {
 

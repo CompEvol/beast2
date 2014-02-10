@@ -1,18 +1,11 @@
 package beast.evolution.branchratemodel;
 
 
-
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.substitutionmodel.JukesCantor;
-import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.ParametricDistribution;
@@ -22,7 +15,7 @@ import beast.math.distributions.ParametricDistribution;
  */
 
 @Description("Defines an uncorrelated relaxed molecular clock.")
-@Citation(value = "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088")
+@Citation(value = "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088", year = 2006, firstAuthorSurname = "drummond")
 public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.REQUIRED);
@@ -65,15 +58,15 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         if (meanRate == null) {
             meanRate = new RealParameter("1.0");
         }
-        
+
         try {
-        	double mean = rateDistInput.get().getMean();
-        	if (Math.abs(mean-1.0) > 1e-6) {
-        		System.out.println("WARNING: mean of distribution for relaxed clock model is not 1.0.");
-        	}
+            double mean = rateDistInput.get().getMean();
+            if (Math.abs(mean - 1.0) > 1e-6) {
+                System.out.println("WARNING: mean of distribution for relaxed clock model is not 1.0.");
+            }
         } catch (RuntimeException e) {
-			// ignore
-		}
+            // ignore
+        }
 //        initialise = initialiseInput.get();
     }
 
@@ -166,7 +159,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         //if (normalize) computeFactor();
     }
 
-    /** initialise rate categories by matching rates to tree using JC69 **/
+    /**
+     * initialise rate categories by matching rates to tree using JC69 *
+     */
 //    private void initialise() {
 //    	try {
 //			for (BEASTObject output : outputs) {
@@ -264,9 +259,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //    	}
 //    	
 //    }
-
-
-	@Override
+    @Override
     protected boolean requiresRecalculation() {
         recompute = false;
         renormalize = true;

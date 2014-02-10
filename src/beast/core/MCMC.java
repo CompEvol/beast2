@@ -25,23 +25,20 @@
 package beast.core;
 
 
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import beast.core.util.CompoundDistribution;
 import beast.core.util.Evaluator;
 import beast.core.util.Log;
 import beast.util.Randomizer;
 
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
 @Citation("Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
-        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology (accepted 2014)")
+        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology (accepted 2014)", year = 2014, firstAuthorSurname = "bouckaert")
 public class MCMC extends Runnable {
 
     public Input<Integer> chainLengthInput =
@@ -51,7 +48,7 @@ public class MCMC extends Runnable {
     public Input<State> startStateInput =
             new Input<State>("state", "elements of the state space");
 
-    public Input<List<StateNodeInitialiser>> initilisersInput =
+    public Input<List<StateNodeInitialiser>> initialisersInput =
             new Input<List<StateNodeInitialiser>>("init", "one or more state node initilisers used for determining " +
                     "the start state of the chain",
                     new ArrayList<StateNodeInitialiser>());
@@ -110,6 +107,52 @@ public class MCMC extends Runnable {
      */
     protected int storeEvery;
 
+    public MCMC() {
+    }
+
+    /**
+     * Constructor for MCMC chain.
+     *
+     * @param chainLength
+     * @param state
+     * @param storeEvery
+     * @param preBurnin
+     * @param posterior
+     * @param operators
+     * @param loggers
+     * @throws Exception
+     */
+    public MCMC(
+            @Param(name = "chainLength", description = "Length of the MCMC chain i.e. number of samples taken in main loop") int chainLength,
+            @Param(name = "state", description = "elements of the state space") State state,
+            @Param(name = "initialisers", description = "one or more state node initilisers used for determining the start state of the chain") List<StateNodeInitialiser> initialisers,
+            @Param(name = "storeEvery", description = "store the state to disk every X number of samples so that we can resume computation later on if the process failed half-way.") int storeEvery,
+            @Param(name = "preBurnin", description = "Number of burn in samples taken before entering the main loop", defaultValue = "0") int preBurnin,
+            @Param(name = "posterior", description = "probability distribution to sample over (e.g. a posterior)") Distribution posterior,
+            @Param(name = "operators", description = "operator for generating proposals in MCMC state space") List<Operator> operators,
+            @Param(name = "loggers", description = "loggers for reporting progress of MCMC chain") List<Logger> loggers,
+            @Param(name = "sampleFromPrior", description = "whether to ignore the likelihood when sampling (default false). The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", defaultValue = "false") boolean sampleFromPrior,
+            @Param(name = "operatorSchedule", description = "specify operator selection and optimisation schedule", optional = true) OperatorSchedule operatorSchedule) {
+
+        try {
+            initByName(
+                    "chainLength", chainLength,
+                    "state", state,
+                    "initialisers", initialisers,
+                    "storeEvery", storeEvery,
+                    "preBurnin", preBurnin,
+                    "distribution", posterior,
+                    "operator", operators,
+                    "logger", loggers,
+                    "sampleFromPrior", sampleFromPrior,
+                    "operatorSchedule", operatorSchedule
+            );
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException();
+        }
+    }
+
     @Override
     public void initAndValidate() throws Exception {
         Log.info.println("======================================================");
@@ -141,7 +184,7 @@ public class MCMC extends Runnable {
                             "not an input to posterior.");
                 }
             } else {
-                throw new Exception("Don't know how to cample from prior since posterior is not a compound distribution. " +
+                throw new Exception("Don't know how to sample from prior since posterior is not a compound distribution. " +
                         "Suggestion: set sampleFromPrior flag to false.");
             }
         }
@@ -150,7 +193,7 @@ public class MCMC extends Runnable {
         // StateNode initialisation, only required when the state is not read from file
         if (restoreFromFile) {
             final HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
-            for (final StateNodeInitialiser initialiser : initilisersInput.get()) {
+            for (final StateNodeInitialiser initialiser : initialisersInput.get()) {
                 // make sure that the initialiser does not re-initialises a StateNode
                 final List<StateNode> list = new ArrayList<StateNode>(1);
                 initialiser.getInitialisedStateNodes(list);
@@ -189,11 +232,11 @@ public class MCMC extends Runnable {
 
         // grab the interval for storing the state to file
         if (storeEveryInput.get() > 0) {
-        	storeEvery = storeEveryInput.get();
+            storeEvery = storeEveryInput.get();
         } else {
-        	storeEvery = state.m_storeEvery.get();
+            storeEvery = state.m_storeEvery.get();
         }
-        
+
         this.state.initialise();
         this.state.setPosterior(posteriorInput.get());
 
@@ -201,9 +244,9 @@ public class MCMC extends Runnable {
         final List<StateNode> stateNodes = this.state.stateNodeInput.get();
         for (final Operator op : operatorsInput.get()) {
             for (final StateNode stateNode : op.listStateNodes()) {
-	            if (!stateNodes.contains(stateNode)) {
-	                throw new Exception("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
-	            }
+                if (!stateNodes.contains(stateNode)) {
+                    throw new Exception("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
+                }
             }
         }
         // sanity check: all state nodes should be operated on
@@ -257,7 +300,7 @@ public class MCMC extends Runnable {
             oldLogLikelihood = state.robustlyCalcPosterior(posterior);
         } else {
             do {
-                for (final StateNodeInitialiser initialiser : initilisersInput.get()) {
+                for (final StateNodeInitialiser initialiser : initialisersInput.get()) {
                     initialiser.initStateNodes();
                 }
                 oldLogLikelihood = state.robustlyCalcPosterior(posterior);
@@ -303,7 +346,7 @@ public class MCMC extends Runnable {
      * main MCMC loop *
      */
     protected void doLoop() throws Exception {
-    	int corrections = 0;
+        int corrections = 0;
         for (int sampleNr = -burnIn; sampleNr <= chainLength; sampleNr++) {
             final int currentState = sampleNr;
 
@@ -396,24 +439,24 @@ public class MCMC extends Runnable {
                     // switch off debug mode once a sufficient large sample is checked
                     debugFlag = false;
                     if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
-                    	// incorrect calculation outside debug period.
-                    	// This happens infrequently enough that it should repair itself after a robust posterior calculation
+                        // incorrect calculation outside debug period.
+                        // This happens infrequently enough that it should repair itself after a robust posterior calculation
                         corrections++;
                         if (corrections > 100) {
-                        	// after 100 repairs, there must be something seriously wrong with the implementation
-                        	System.err.println("Too many corrections. There is something seriously wrong that cannot be corrected");
-                        	state.storeToFile(sampleNr);
-                        	operatorSchedule.storeToFile();
-                        	System.exit(0);
+                            // after 100 repairs, there must be something seriously wrong with the implementation
+                            System.err.println("Too many corrections. There is something seriously wrong that cannot be corrected");
+                            state.storeToFile(sampleNr);
+                            operatorSchedule.storeToFile();
+                            System.exit(0);
                         }
-                    	oldLogLikelihood = fLogLikelihood;
+                        oldLogLikelihood = fLogLikelihood;
                     }
                 } else {
                     if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
-                    	// halt due to incorrect posterior during intial debug period
-                    	state.storeToFile(sampleNr);
-                    	operatorSchedule.storeToFile();
-                    	System.exit(0);
+                        // halt due to incorrect posterior during intial debug period
+                        state.storeToFile(sampleNr);
+                        operatorSchedule.storeToFile();
+                        System.exit(0);
                     }
                 }
             } else {
@@ -422,14 +465,15 @@ public class MCMC extends Runnable {
             callUserFunction(sampleNr);
 
             // make sure we always save just before exiting
-            if ( storeEvery > 0 && (sampleNr+1) % storeEvery == 0 || sampleNr == chainLength) {
-                /*final double fLogLikelihood = */ state.robustlyCalcPosterior(posterior);
+            if (storeEvery > 0 && (sampleNr + 1) % storeEvery == 0 || sampleNr == chainLength) {
+                /*final double fLogLikelihood = */
+                state.robustlyCalcPosterior(posterior);
                 state.storeToFile(sampleNr);
-            	operatorSchedule.storeToFile();
+                operatorSchedule.storeToFile();
             }
         }
         if (corrections > 0) {
-        	System.err.println("\n\nNB: " + corrections +" posterior calculation corrections were required. This analysis may not be valid!\n\n");
+            System.err.println("\n\nNB: " + corrections + " posterior calculation corrections were required. This analysis may not be valid!\n\n");
         }
     }
 
@@ -454,9 +498,9 @@ public class MCMC extends Runnable {
      * Calculate posterior by setting all StateNodes and CalculationNodes dirty.
      * Clean everything afterwards.
      */
-   public double robustlyCalcPosterior(final Distribution posterior) throws Exception {
+    public double robustlyCalcPosterior(final Distribution posterior) throws Exception {
         return state.robustlyCalcPosterior(posterior);
-   }
+    }
 //        state.store(-1);
 //        state.setEverythingDirty(true);
 //        //state.storeCalculationNodes();

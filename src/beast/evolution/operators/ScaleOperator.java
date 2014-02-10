@@ -25,8 +25,6 @@
 package beast.evolution.operators;
 
 
-import java.text.DecimalFormat;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
@@ -36,12 +34,13 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
+import java.text.DecimalFormat;
 
 
 @Description("Scales a parameter or a complete beast.tree (depending on which of the two is specified.")
 public class ScaleOperator extends Operator {
 
-    public final Input<Tree> treeInput = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
+    public final Input<Tree> treeInput = new Input<Tree>("tree", "if specified, all beast.tree divergence times are scaled");
 
     public final Input<RealParameter> parameterInput = new Input<RealParameter>("parameter", "if specified, this parameter is scaled",
             Input.Validate.XOR, treeInput);
@@ -63,15 +62,15 @@ public class ScaleOperator extends Operator {
     public Input<Boolean> rootOnlyInput = new Input<Boolean>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
     public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
-    public Input<Double> scaleUpperLimit = new Input<Double>("upper", "Upper Limit of scale factor", 1.0);
-    public Input<Double> scaleLowerLimit = new Input<Double>("lower", "Lower limit of scale factor", 0.0);
+    public Input<Double> scaleUpperLimit = new Input<Double>("upper", "Upper Limit of scale factor", 1.0 - 1e-8);
+    public Input<Double> scaleLowerLimit = new Input<Double>("lower", "Lower limit of scale factor", 1e-8);
 
     /**
      * shadows input *
      */
     private double m_fScaleFactor;
 
-    private double upper,lower;
+    private double upper, lower;
     /**
      * flag to indicate this scales trees as opposed to scaling a parameter *
      */
@@ -106,7 +105,7 @@ public class ScaleOperator extends Operator {
         //return (l != null && value < l || h != null && value > h);
     }
 
-    protected  double getScaler() {
+    protected double getScaler() {
         return (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
     }
 
@@ -118,7 +117,6 @@ public class ScaleOperator extends Operator {
     @Override
     public double proposal() {
 
-        Integer degreesOfFreedom = degreesOfFreedomInput.get();
         try {
 
             double hastingsRatio;
@@ -126,12 +124,7 @@ public class ScaleOperator extends Operator {
 
             if (m_bIsTreeScaler) {
 
-                if (degreesOfFreedom != null) {
-                    throw new RuntimeException("Degrees of freedom input should not be set for tree scaling operator");
-                }
-
-
-                    final Tree tree = treeInput.get(this);
+                final Tree tree = treeInput.get(this);
                 if (rootOnlyInput.get()) {
                     final Node root = tree.getRoot();
                     final double fNewHeight = root.getHeight() * scale;
@@ -276,7 +269,7 @@ public class ScaleOperator extends Operator {
 
     @Override
     public void setCoercableParameterValue(final double fValue) {
-        m_fScaleFactor = Math.max(Math.min(fValue,upper),lower);
+        m_fScaleFactor = Math.max(Math.min(fValue, upper), lower);
     }
 
     @Override

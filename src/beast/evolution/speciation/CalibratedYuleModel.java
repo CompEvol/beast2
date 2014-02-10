@@ -1,16 +1,7 @@
 package beast.evolution.speciation;
 
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.BEASTObject;
+import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
@@ -21,8 +12,13 @@ import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
 
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
-* @author Joseph Heled
+ * @author Joseph Heled
  */
 
 
@@ -30,7 +26,7 @@ import beast.math.statistic.RPNcalculator;
         " calibrated nodes (the MRCA of clades) is identical to the specified calibration, but the Yule is not preserved over" +
         " the whole tree space, only among sub-spaces.")
 @Citation(value = "Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time Estimation. " +
-        "Syst Biol (2012) 61 (1): 138-149.", DOI = "10.1093/sysbio/syr087")
+        "Syst Biol (2012) 61 (1): 138-149.", DOI = "10.1093/sysbio/syr087", year = 2012, firstAuthorSurname = "heled")
 public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     static enum Type {
@@ -263,10 +259,10 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         final List<Node> leafs = tree.getExternalNodes();
         final double height = leafs.get(0).getHeight();
         for (final Node leaf : leafs) {
-        	if (Math.abs(leaf.getHeight() - height) > 1e-8) {
-        		System.err.println("WARNING: Calibrated Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
-        		break;
-        	}
+            if (Math.abs(leaf.getHeight() - height) > 1e-8) {
+                System.err.println("WARNING: Calibrated Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
+                break;
+            }
         }
     }
 
@@ -347,11 +343,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         Node finalTree = subTree[nCals - 1];
         double h = cladeHeight[nCals - 1];
 
-        for(int k = 0; k < nCals-1; ++k) {
-          final Node s = subTree[k];
-          h = Math.max(h, cladeHeight[k]) + 1;
-          finalTree = Node.connect(finalTree, s, h);
-          finalTree.setNr(++curInternal);
+        for (int k = 0; k < nCals - 1; ++k) {
+            final Node s = subTree[k];
+            h = Math.max(h, cladeHeight[k]) + 1;
+            finalTree = Node.connect(finalTree, s, h);
+            finalTree.setNr(++curInternal);
         }
 
         for (int k = 0; k < used.length; ++k) {
@@ -474,11 +470,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                         final int[] ranks = new int[hs.length];
                         for (int k = 0; k < hs.length; ++k) {
                             int r = 0;
-                            for(int j = 0; j < k; ++j) {
-                              r += (hs[j] <= hs[k]) ? 1 : 0;
+                            for (int j = 0; j < k; ++j) {
+                                r += (hs[j] <= hs[k]) ? 1 : 0;
                             }
-                            for(int j = k+1; j < hs.length; ++j) {
-                              r += (hs[j] < hs[k]) ? 1 : 0;
+                            for (int j = k + 1; j < hs.length; ++j) {
+                                r += (hs[j] < hs[k]) ? 1 : 0;
                             }
 //                            for (final double h : hs) {
 //                                r += (h < hs[k]) ? 1 : 0;
@@ -871,11 +867,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     protected boolean requiresRecalculation() {
         return super.requiresRecalculation() || birthRateInput.get().somethingIsDirty();
     }
-    
+
     @Override
     public boolean canHandleTipDates() {
-		return false;
-	}
+        return false;
+    }
 
 
 }

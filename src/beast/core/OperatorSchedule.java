@@ -24,10 +24,8 @@ public class OperatorSchedule extends BEASTObject {
 
     enum OptimisationTransform {none, log, sqrt}
 
-    ;
-
     public Input<OptimisationTransform> transformInput = new Input<OperatorSchedule.OptimisationTransform>("transform",
-            "transform optimisation schedeul (default none) This can be "
+            "transform optimisation schedule (default none) This can be "
                     + Arrays.toString(OptimisationTransform.values()) + " (default 'none')",
             OptimisationTransform.none, OptimisationTransform.values());
     public Input<Boolean> autoOptimiseInput = new Input<Boolean>("autoOptimize", "whether to automatically optimise operator settings", true);
@@ -36,7 +34,8 @@ public class OperatorSchedule extends BEASTObject {
     /**
      * list of operators in the schedule *
      */
-    List<Operator> operators = new ArrayList<Operator>();
+    // temporary for play
+    public List<Operator> operators = new ArrayList<Operator>();
 
     /**
      * sum of weight of operators *
@@ -74,14 +73,15 @@ public class OperatorSchedule extends BEASTObject {
         autoOptimizeDelay = autoOptimizeDelayInput.get();
     }
 
-    public void setStateFileName(String name) {
+    public void setStateFileName(final String name) {
         this.stateFileName = name;
     }
 
     /**
      * add operator to the schedule *
+     * @param p
      */
-    public void addOperator(Operator p) {
+    public void addOperator(final Operator p) {
         operators.add(p);
         p.setOperatorSchedule(this);
         totalWeight += p.getWeight();
@@ -95,24 +95,27 @@ public class OperatorSchedule extends BEASTObject {
     /**
      * randomly select an operator with probability proportional to the weight
      * of the operator
+     * @return
      */
     public Operator selectOperator() {
-        int iOperator = Randomizer.randomChoice(cumulativeProbs);
+        final int iOperator = Randomizer.randomChoice(cumulativeProbs);
         return operators.get(iOperator);
     }
 
     /**
      * report operator statistics *
+     * @param out
      */
-    public void showOperatorRates(PrintStream out) {
+    public void showOperatorRates(final PrintStream out) {
         out.println("Operator                                                              Tuning\t#accept\t#reject\t#total\tacceptance rate");
-        for (int i = 0; i < operators.size(); i++) {
-            out.println(operators.get(i));
+        for (final Operator operator : operators) {
+            out.println(operator);
         }
     }
 
     /**
      * store operator optimisation specific information to file *
+     * @throws Exception
      */
     public void storeToFile() throws Exception {
         // appends state of operator set to state file
@@ -146,11 +149,12 @@ public class OperatorSchedule extends BEASTObject {
 
     /**
      * restore operator optimisation specific information from file *
+     * @throws Exception
      */
     public void restoreFromFile() throws Exception {
         // reads state of operator set from state file
         String sXML = "";
-        BufferedReader fin = new BufferedReader(new FileReader(stateFileName));
+        final BufferedReader fin = new BufferedReader(new FileReader(stateFileName));
         while (fin.ready()) {
             sXML += fin.readLine() + "\n";
         }
@@ -216,11 +220,12 @@ public class OperatorSchedule extends BEASTObject {
      * Calculate change of coerceable parameter for operators that allow
      * optimisation
      *
+     * @param operator
      * @param logAlpha difference in posterior between previous state & proposed
      *                 state + hasting ratio
      * @return change of value of a parameter for MCMC chain optimisation
      */
-    public double calcDelta(Operator operator, double logAlpha) {
+    public double calcDelta(final Operator operator, final double logAlpha) {
         // do no optimisation for the first N optimisable operations
         if (autoOptimizeDelayCount < autoOptimizeDelay || !autoOptimise) {
             autoOptimizeDelayCount++;

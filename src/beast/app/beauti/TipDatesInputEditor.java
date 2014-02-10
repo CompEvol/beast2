@@ -132,7 +132,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         String treeID = tree.getID();
         String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":") + 1);
         TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
-        if (operator.m_pWeight.get() > 0) {
+        if (operator != null && operator.m_pWeight.get() > 0) {
             m_iMode = SAMPLE_TIPS_SAME_PRIOR;
         }
 
@@ -159,20 +159,25 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             }
         }
         JComboBox comboBox2 = new JComboBox(taxonSetIDs.toArray());
-
-        // find TipDatesSampler and set TaxonSet input
-        Taxon set = operator.m_taxonsetInput.get();
-        if (set != null) {
-            int i = taxonSetIDs.indexOf(set.getID());
-            comboBox2.setSelectedIndex(i);
+        
+        if (operator == null) {
+        	comboBox.setEnabled(false);
+        	comboBox2.setEnabled(false);
+        } else {
+	        // find TipDatesSampler and set TaxonSet input
+	        Taxon set = operator.m_taxonsetInput.get();
+	        if (set != null) {
+	            int i = taxonSetIDs.indexOf(set.getID());
+	            comboBox2.setSelectedIndex(i);
+	        }
+	
+	        comboBox2.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	                selectTaxonSet(e);
+	            }
+	        });
         }
-
-        comboBox2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectTaxonSet(e);
-            }
-        });
         samplingBox.add(comboBox2);
 
         return samplingBox;

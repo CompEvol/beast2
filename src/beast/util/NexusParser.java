@@ -1,14 +1,14 @@
 package beast.util;
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -31,6 +31,8 @@ public class NexusParser {
     public List<Tree> trees;
 
     static Set<String> g_sequenceIDs;
+
+    public Map<String, String> translationMap = null;
 
     static {
         g_sequenceIDs = new HashSet<String>();
@@ -107,7 +109,6 @@ public class NexusParser {
 
         int origin = -1;
 
-        Map<String,String> translationMap = null;
         // if first non-empty line is "translate" then parse translate block
         if (sStr.toLowerCase().contains("translate")) {
             translationMap = parseTranslateBlock(fin);
@@ -156,14 +157,14 @@ public class NexusParser {
         }
     }
 
-    private  List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
+    private List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
 
         System.out.println("translation map size = " + translationMap.size());
 
         final String[] taxa = new String[translationMap.size()];
 
         for (final String key : translationMap.keySet()) {
-            taxa[Integer.parseInt(key)-origin] = translationMap.get(key);
+            taxa[Integer.parseInt(key) - origin] = translationMap.get(key);
         }
         return Arrays.asList(taxa);
     }
@@ -191,12 +192,12 @@ public class NexusParser {
     /**
      * @param reader a reader
      * @return a map of taxa translations, keys are generally integer node number starting from 1
-     * whereas values are generally descriptive strings.
+     *         whereas values are generally descriptive strings.
      * @throws IOException
      */
     private Map<String, String> parseTranslateBlock(final BufferedReader reader) throws IOException {
 
-        final Map<String,String> translationMap = new HashMap<String, String>();
+        final Map<String, String> translationMap = new HashMap<String, String>();
 
         String line = reader.readLine();
         final StringBuilder translateBlock = new StringBuilder();
@@ -208,7 +209,7 @@ public class NexusParser {
         for (final String taxaTranslation : taxaTranslations) {
             final String[] translation = taxaTranslation.split("[\t ]+");
             if (translation.length == 2) {
-                translationMap.put(translation[0],translation[1]);
+                translationMap.put(translation[0], translation[1]);
 //                System.out.println(translation[0] + " -> " + translation[1]);
             } else {
                 System.err.println("Ignoring translation:" + Arrays.toString(translation));
@@ -368,6 +369,7 @@ public class NexusParser {
         } while (!sStr.toLowerCase().contains("matrix"));
 
         // read character data
+        // Use string builder for efficiency
         final Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();
         final List<String> sTaxa = new ArrayList<String>();
         String sPrevTaxon = null;
@@ -407,8 +409,9 @@ public class NexusParser {
                 }
             }
             sPrevTaxon = sTaxon;
-            String sData = sStr.substring(iEnd);
-//            sData = sData.replaceAll("\\s", "");
+            final String sData = sStr.substring(iEnd);
+            // Do this once outside loop- save on multiple regex compilations
+            //sData = sData.replaceAll("\\s", "");
 
 //			String [] sStrs = sStr.split("\\s+");
 //			String sTaxon = sStrs[0];
@@ -430,11 +433,11 @@ public class NexusParser {
             throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
         }
         for (final String sTaxon : sTaxa) {
-        	StringBuilder bsData = seqMap.get(sTaxon);
-        	String sData = bsData.toString();
-        	sData = sData.replaceAll("\\s", "");
-        	seqMap.put(sTaxon, new StringBuilder(sData));
-        	
+            final StringBuilder bsData = seqMap.get(sTaxon);
+            String sData = bsData.toString();
+            sData = sData.replaceAll("\\s", "");
+            seqMap.put(sTaxon, new StringBuilder(sData));
+
             if (sData.length() != nChar) {
                 throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
             }

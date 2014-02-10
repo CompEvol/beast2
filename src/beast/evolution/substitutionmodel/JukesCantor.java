@@ -1,20 +1,27 @@
 package beast.evolution.substitutionmodel;
 
-import java.util.Arrays;
-
 import beast.core.Description;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.tree.Node;
 
-
+import java.util.Arrays;
 
 @Description("Jukes Cantor substitution model: all rates equal and " + "uniformly distributed frequencies")
 public class JukesCantor extends SubstitutionModel.Base {
 
     public JukesCantor() {
+        // this is added to avoid a parsing error inherited from superclass because frequencies are not provided.
         frequenciesInput.setRule(Validate.OPTIONAL);
+        try {
+            // this call will be made twice when constructed from XML
+            // but this ensures that the object is validly constructed for testing purposes.
+            initAndValidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("initAndValidate() call failed when constructing JukesCantor()");
+        }
     }
 
     double[] frequencies;

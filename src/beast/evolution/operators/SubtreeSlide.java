@@ -50,16 +50,15 @@
 package beast.evolution.operators;
 
 
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -67,20 +66,20 @@ import beast.util.Randomizer;
  */
 @Description("Moves the height of an internal node along the branch. " +
         "If it moves up, it can exceed the root and become a new root. " +
-        "If it moves down, it may need to make a choise which branch to " +
+        "If it moves down, it may need to make a choice which branch to " +
         "slide down into.")
 public class SubtreeSlide extends TreeOperator {
 
     public Input<Double> sizeInput = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
     public Input<Boolean> gaussianInput = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
-    public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
+    public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
-    // shadows m_size
-    double m_fSize;
+    // shadows size
+    double fSize;
 
     @Override
     public void initAndValidate() {
-        m_fSize = sizeInput.get();
+        fSize = sizeInput.get();
     }
 
     /**
@@ -208,9 +207,9 @@ public class SubtreeSlide extends TreeOperator {
 
     private double getDelta() {
         if (!gaussianInput.get()) {
-            return (Randomizer.nextDouble() * m_fSize) - (m_fSize / 2.0);
+            return (Randomizer.nextDouble() * fSize) - (fSize / 2.0);
         } else {
-            return Randomizer.nextGaussian() * m_fSize;
+            return Randomizer.nextGaussian() * fSize;
         }
     }
 
@@ -241,19 +240,19 @@ public class SubtreeSlide extends TreeOperator {
     public void optimize(final double logAlpha) {
         if (optimiseInput.get()) {
             double fDelta = calcDelta(logAlpha);
-            fDelta += Math.log(m_fSize);
-            m_fSize = Math.exp(fDelta);
+            fDelta += Math.log(fSize);
+            fSize = Math.exp(fDelta);
         }
     }
 
     @Override
     public double getCoercableParameterValue() {
-        return m_fSize;
+        return fSize;
     }
 
     @Override
     public void setCoercableParameterValue(final double fValue) {
-        m_fSize = fValue;
+        fSize = fValue;
     }
 
     @Override
@@ -266,7 +265,7 @@ public class SubtreeSlide extends TreeOperator {
         if (ratio > 2.0) ratio = 2.0;
         if (ratio < 0.5) ratio = 0.5;
 
-        final double newDelta = m_fSize * ratio;
+        final double newDelta = fSize * ratio;
 
         final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {

@@ -26,21 +26,12 @@
         </sequence>
     </data>
 
-    <!-- The HKY substitution model (Hasegawa, Kishino & Yano, 1985)             -->
-    <input spec='HKY' id='hky'>
-        <kappa idref='hky.kappa'/>
-        <frequencies id='freqs' spec='Frequencies'>
-            <data idref='alignment'/>
-        </frequencies>
-    </input>
+    <!-- The Jukes-Cantor substitution model (Jukes & Cantor, 1969)             -->
+    <input spec='JukesCantor' id='jc69'/>
 
     <!-- site model                                                              -->
     <input spec='SiteModel' id="siteModel" gammaCategoryCount='1'>
-        <!--
-            <parameter name='shape' id='shape' value='0.5'/>
-            <parameter name='proportionInvariant' id='propInvar' value='0.2'/>
-        -->
-        <substModel idref='hky'/>
+        <substModel idref='jc69'/>
     </input>
 
     <input spec='TreeLikelihood' id="treeLikelihood">
@@ -49,8 +40,6 @@
         <siteModel idref="siteModel"/>
     </input>
 
-    <parameter id="hky.kappa" value="1.0" lower="0.0"/>
-
     <tree id='tree'/>
 
     <tree spec='beast.util.ClusterTree' id='upgmatree' clusterType='upgma' initial='@tree'>
@@ -58,22 +47,17 @@
     </tree>
     <tree spec='beast.evolution.tree.RandomTree' id='coalescentSimulator' initial='@tree' taxa='@alignment'>
         <populationModel spec='ConstantPopulation'>
-            <popSize spec='parameter.RealParameter' value='1'/>
+            <popSize spec='parameter.RealParameter' value='0.05'/>
         </populationModel>
     </tree>
-
 
     <run spec="MCMC" id="mcmc" chainLength="5000000" preBurnin="50000">
 
         <init idref='coalescentSimulator'/>
         <distribution spec='CompoundDistribution' id='posterior'>
-            <distribution spec='beast.math.distributions.Prior' x='@hky.kappa'>
-                <distr spec='beast.math.distributions.OneOnX'/>
-            </distribution>
             <distribution id='likelihood' idref="treeLikelihood"/>
         </distribution>
 
-        <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
 
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
@@ -83,21 +67,18 @@
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
         <operator spec='WilsonBalding' weight="1" tree="@tree"/>
 
-        <logger logEvery="10000" fileName="test.$(seed).log">
+        <logger logEvery="1000" fileName="test.$(seed).log">
             <model idref='likelihood'/>
             <log idref="likelihood"/>
-            <log idref='hky.kappa'/>
             <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
-        <logger logEvery="10000" fileName="test.$(seed).trees">
+        <logger logEvery="1000" fileName="test.$(seed).trees">
             <log idref="tree"/>
         </logger>
-        <logger logEvery="10000">
+        <logger logEvery="20000">
             <model idref='likelihood'/>
             <log idref="likelihood"/>
             <ESS spec='ESS' name='log' arg="@likelihood"/>
-            <log idref='hky.kappa'/>
-            <ESS spec='ESS' name='log' arg="@hky.kappa"/>
         </logger>
     </run>
 

@@ -1,12 +1,10 @@
 package beast.math.distributions;
 
 
-import org.apache.commons.math.distribution.PoissonDistributionImpl;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-
+import org.apache.commons.math.distribution.PoissonDistributionImpl;
 
 
 @Description("Poisson distribution, used as prior  f(k; lambda)=\\frac{lambda^k e^{-lambda}}{k!}  " +
@@ -16,6 +14,21 @@ public class Poisson extends ParametricDistribution {
     public Input<RealParameter> lambdaInput = new Input<RealParameter>("lambda", "rate parameter, defaults to 1");
 
     static org.apache.commons.math.distribution.PoissonDistribution dist = new PoissonDistributionImpl(1);
+
+
+    // Must provide empty constructor for construction by XML. Note that this constructor DOES NOT call initAndValidate();
+    public Poisson() {
+    }
+
+    public Poisson(RealParameter lambda) {
+
+        try {
+            initByName("lambda", lambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initByName lambda parameter when constructing Poisson instance.");
+        }
+    }
 
     @Override
     public void initAndValidate() {
