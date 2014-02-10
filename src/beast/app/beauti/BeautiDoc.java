@@ -345,20 +345,20 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         } else {
             addAlignmentWithSubnet(parser.m_alignment, beautiConfig.partitionTemplate.get());
         }
-        connectModel();
+//      connectModel();
         addTraitSet(parser.traitSet);
-        fireDocHasChanged();
+//      fireDocHasChanged();
     }
 
     public void importXMLAlignment(File file) throws Exception {
         Alignment data = (Alignment) BeautiAlignmentProvider.getXMLData(file);
         data.initAndValidate();
         addAlignmentWithSubnet(data, beautiConfig.partitionTemplate.get());
-        connectModel();
-        fireDocHasChanged();
+//      connectModel();
+//      fireDocHasChanged();
     }
 
-    private void fireDocHasChanged() throws Exception {
+    void fireDocHasChanged() throws Exception {
         for (BeautiDocListener listener : listeners) {
             listener.docHasChanged();
         }
@@ -1126,10 +1126,48 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public static String translatePartitionNames(String sStr, PartitionContext partition) {
-        sStr = sStr.replaceAll(".s:\\$\\(n\\)", ".s:" + partition.siteModel);
-        sStr = sStr.replaceAll(".c:\\$\\(n\\)", ".c:" + partition.clockModel);
-        sStr = sStr.replaceAll(".t:\\$\\(n\\)", ".t:" + partition.tree);
-        sStr = sStr.replaceAll("\\$\\(n\\)", partition.partition);
+//        sStr = sStr.replaceAll(".s:\\$\\(n\\)", ".s:" + partition.siteModel);
+//        sStr = sStr.replaceAll(".c:\\$\\(n\\)", ".c:" + partition.clockModel);
+//        sStr = sStr.replaceAll(".t:\\$\\(n\\)", ".t:" + partition.tree);
+//        sStr = sStr.replaceAll("\\$\\(n\\)", partition.partition);
+        // optimised code, based on (probably incorrect) profiler output
+		StringBuilder sb = new StringBuilder();
+		int len = sStr.length();
+		for (int i = 0; i < len; i++) {
+			char c = sStr.charAt(i);
+			if (c == '.' && i < len - 6) {
+				if (sStr.charAt(i + 2) == ':' && sStr.charAt(i + 3) == '$' && 
+						sStr.charAt(i + 4) == '(' && sStr.charAt(i + 5) == 'n' && sStr.charAt(i + 6) == ')') {
+					switch (sStr.charAt(i+1)) {
+					case 's': // .s:$(n)
+						sb.append(".s:").append(partition.siteModel);
+						i += 6;
+						break;
+					case 'c': 
+						sb.append(".c:").append(partition.clockModel);
+						i += 6;
+						break;
+					case 't': 
+						sb.append(".t:").append(partition.tree);
+						i += 6;
+						break;
+					default:
+						sb.append('.');
+					}
+				} else {
+					sb.append('.');
+				}
+			} else if (c == '$' && i < len - 3) {
+				if (sStr.charAt(i + 1) == '(' && sStr.charAt(i + 2) == 'n' && sStr.charAt(i + 3) == ')') {
+					sb.append(partition.partition);
+					i+= 3;
+				} else {
+					sb.append(c);
+				}
+			} else {
+				sb.append(c);
+			}
+		}
         return sStr;
     }
 
@@ -1720,7 +1758,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             for (BEASTObject output : plugin2.outputs) {
                 if (tabu.contains(output) && output != parent) {
                     BEASTObject output2 = getCopyValue(output, copySet, partitionContext, doc);
-                    ;
                     for (Input<?> input : output.listInputs()) {
                         // do not add state node initialisers automatically
                         if (input.get() instanceof List &&

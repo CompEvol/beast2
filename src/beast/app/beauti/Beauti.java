@@ -47,7 +47,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      */
     static public final String FILE_EXT = ".xml";
     static public final String FILE_EXT2 = ".json";
-
+    static final String fileSep = System.getProperty("file.separator");
+    
     /**
      * document in document-view pattern. BTW this class is the view
      */
@@ -414,6 +415,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                         doc.importXMLAlignment(file);
                     }
                 }
+                doc.connectModel();
+                doc.fireDocHasChanged();
                 a_save.setEnabled(true);
                 a_saveas.setEnabled(true);
             } catch (Exception e) {
@@ -823,7 +826,18 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                             String sXML2 = BeautiDoc.load(template
                                     .getAbsolutePath());
                             if (sXML2.contains("templateinfo=")) {
-                                actions.add(new TemplateAction(template));
+//                            	String sFileName = template.getName();
+//                                sFileName = sFileName.substring(0, sFileName.length() - 4);
+//                                boolean duplicate = false;
+//                            	for (AbstractAction action : actions) {
+//                            		String name = action.getValue(Action.NAME).toString(); 
+//                            		if (name.equals(sFileName)) {
+//                            			duplicate = true;
+//                            		}
+//                            	}
+//                            	if (!duplicate) {
+                            		actions.add(new TemplateAction(template));
+//                            	}
                             }
                         } catch (Exception e) {
                             System.err.println(e.getMessage());

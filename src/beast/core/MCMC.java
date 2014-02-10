@@ -37,8 +37,8 @@ import java.util.List;
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
-@Citation(value = "Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond " +
-        "BEAST 2: A software platform for Bayesian evolutionary analysis. In preparation. 2013", year = 2013, firstAuthorSurname = "bouckaert")
+@Citation(value= "Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
+        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology (accepted 2014)", year = 2014, firstAuthorSurname = "bouckaert")
 public class MCMC extends Runnable {
 
     public Input<Integer> chainLengthInput =
