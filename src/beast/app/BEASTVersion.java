@@ -99,4 +99,54 @@ public class BEASTVersion extends Version {
     public String getBuildString() {
         return "r" + REVISION.split(" ")[1];
     }
+
+    /**
+     * such as 2.1
+     * @return
+     */
+    public String getMajorVersion() {
+        return VERSION.substring(0, VERSION.lastIndexOf("."));
+    }
+
+    /** Parse version string, assume it is of the form 1.2.3
+     * returns version where each sub-version is divided by 100,
+     * so 2.0 -> return 2
+     * 2.1 return 2.01
+     * 2.2.3 return 2.0103
+     * Letters are ignored, so
+     * 2.0.e -> 2.0
+     * 2.x.1 -> 2.0001
+     * @return
+     */
+    public double parseVersion(String sVersion) {
+        // is of the form 1.2.3
+        String [] strs = sVersion.split("\\.");
+        double version = 0;
+        double divider = 1.0;
+        for (int i = 0; i < strs.length; i++) {
+            try {
+                version += Double.parseDouble(strs[i]) / divider;
+                divider = divider * 100.0;
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        return version;
+    }
+
+    /** inverse of parseVersion **/
+    public String formatVersion(double version) {
+        if (Double.isInfinite(version)) {
+            return " any number";
+        }
+        String str = "" + (int) (version + 0.000001);
+        version = version - (int) (version + 0.000001);
+        while (version > 0.00001) {
+            version *= 100;
+            str += "." + (int) (version + 0.00001);
+            version = version - (int) (version + 0.00001);
+        }
+        return str;
+    }
+
 }

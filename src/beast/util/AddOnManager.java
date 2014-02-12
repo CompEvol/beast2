@@ -73,6 +73,8 @@ public class AddOnManager {
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
     public final static String ADD_ONS_URL = "http://www.beast2.org/wiki/index.php/Add-ons2.1.0";
 
+    static final BEASTVersion beastVersion = new BEASTVersion();
+
     /**
      * flag indicating add ons have been loaded at least once *
      */
@@ -361,13 +363,13 @@ public class AddOnManager {
 //            if (System.getenv("APPDATA") != null) {
 //                return System.getenv("APPDATA") + "\\BEAST";
 //            }
-            return System.getProperty("user.home") + "\\BEAST";
+            return System.getProperty("user.home") + "\\BEAST\\" + beastVersion.getMajorVersion();
         }
         if (Utils.isMac()) {
-            return System.getProperty("user.home") + "/Library/Application Support/BEAST";
+            return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + beastVersion.getMajorVersion();
         }
         // Linux and unices
-        return System.getProperty("user.home") + "/.beast";
+        return System.getProperty("user.home") + "/.beast/" + beastVersion.getMajorVersion();
     }
 
     /**
@@ -375,12 +377,12 @@ public class AddOnManager {
      */
     public static String getAddOnAppDir() {
         if (Utils.isWindows()) {
-            return "\\Program Files\\BEAST";
+            return "\\Program Files\\BEAST\\" + beastVersion.getMajorVersion();
         }
         if (Utils.isMac()) {
-            return "/Library/Application Support/BEAST";
+            return "/Library/Application Support/BEAST/" + beastVersion.getMajorVersion();
         }
-        return "/usr/local/share/beast";
+        return "/usr/local/share/beast/" + beastVersion.getMajorVersion();
     }
 
     /**
@@ -549,47 +551,6 @@ public class AddOnManager {
         }
     }
 
-    /** Parse version string, assume it is of the form 1.2.3
-     * returns version where each sub-version is divided by 100,
-     * so 2.0 -> return 2
-     * 2.1 return 2.01
-     * 2.2.3 return 2.0103
-     * Letters are ignored, so 
-     * 2.0.e -> 2.0
-     * 2.x.1 -> 2.0001
-     * @return
-     */
-    public static double parseVersion(String sVersion) {
-        // is of the form 1.2.3
-        String [] strs = sVersion.split("\\.");
-        double version = 0;
-        double divider = 1.0;
-        for (int i = 0; i < strs.length; i++) {
-            try {
-                version += Double.parseDouble(strs[i]) / divider;
-                divider = divider * 100.0;
-            } catch (NumberFormatException e) {
-                // ignore
-            }
-        }
-        return version;
-    }
-
-    /** inverse of parseVersion **/
-    public static String formatVersion(double version) {
-        if (Double.isInfinite(version)) {
-            return " any number";
-        }
-        String str = "" + (int) (version + 0.000001);
-        version = version - (int) (version + 0.000001);
-        while (version > 0.00001) {
-            version *= 100;
-            str += "." + (int) (version + 0.00001);
-            version = version - (int) (version + 0.00001);
-        }
-        return str;
-    }
-
     /**
      * go through list of directories collecting version and dependency information for
      * all add-ons. Version and dependency info is stored in a file
@@ -607,21 +568,20 @@ public class AddOnManager {
                 if (sAtLeast == null || sAtLeast.length() == 0) {
                     atLeast = 0.0;
                 } else {
-                    atLeast = parseVersion(sAtLeast);
+                    atLeast = beastVersion.parseVersion(sAtLeast);
                 }
             }
             public void setAtMost(String sAtMost) {
                 if (sAtMost == null || sAtMost.length() == 0) {
                     atMost = Double.POSITIVE_INFINITY;
                 } else {
-                    atMost = parseVersion(sAtMost);
+                    atMost = beastVersion.parseVersion(sAtMost);
                 }
             }
         }
 
         HashMap<String, Double> addonVersion = new HashMap<String, Double>();
-        BEASTVersion beastVersion = new BEASTVersion();
-        addonVersion.put("beast2", parseVersion(beastVersion.getVersion()));
+        addonVersion.put("beast2", beastVersion.parseVersion(beastVersion.getVersion()));
         List<AddonDependency> dependencies = new ArrayList<AddonDependency>();
 
         // gather version and dependency info for all add-ons
@@ -636,7 +596,7 @@ public class AddOnManager {
                     Element addon = doc.getDocumentElement();
                     String sAddon = addon.getAttribute("name");
                     String sAddonVersion = addon.getAttribute("version");
-                    addonVersion.put(sAddon, parseVersion(sAddonVersion));
+                    addonVersion.put(sAddon, beastVersion.parseVersion(sAddonVersion));
 
                     // get dependencies of add-n
                     NodeList nodes = doc.getElementsByTagName("depends");
@@ -666,7 +626,7 @@ public class AddOnManager {
                         "Either uninstall " + dep.addon + " or install the " + dep.dependson + " add on.");
             } else if (version > dep.atMost || version < dep.atLeast) {
                 warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
-                        formatVersion(dep.atLeast) + " to " + formatVersion(dep.atMost) + " but " + dep.dependson + " has version " + formatVersion(version) + "\n" +
+                        beastVersion.formatVersion(dep.atLeast) + " to " + beastVersion.formatVersion(dep.atMost) + " but " + dep.dependson + " has version " + beastVersion.formatVersion(version) + "\n" +
                         "Either uninstall " + dep.addon + " or install the correct version of " + dep.dependson + ".");
             }
         }
@@ -1052,6 +1012,7 @@ public class AddOnManager {
             }
 
             String[] sURLs = getAddOnURL();
+            Log.debug.println("Add-ons user path : " + getAddOnUserDir());
             for (String sURL : sURLs) {
                 Log.debug.println("Access URL : " + sURL);
             }
