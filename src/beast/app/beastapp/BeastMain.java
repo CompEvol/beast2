@@ -2,6 +2,7 @@ package beast.app.beastapp;
 
 import beagle.BeagleFlag;
 import beagle.BeagleInfo;
+import beast.app.BEASTVersion;
 import beast.app.BeastMCMC;
 import beast.app.util.Arguments;
 import beast.app.util.ErrorLogHandler;
@@ -24,7 +25,7 @@ import java.util.logging.*;
 
 public class BeastMain {
 
-    private final static Version version = new BeastVersion();
+    private final static Version version = new BEASTVersion();
 
     static class BeastConsoleApp extends jam.console.ConsoleApplication {
 

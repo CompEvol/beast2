@@ -58,7 +58,6 @@ import javax.swing.filechooser.FileFilter;
 import beagle.BeagleFlag;
 import beast.app.beastapp.BeastDialog;
 import beast.app.beastapp.BeastMain;
-import beast.app.beastapp.BeastVersion;
 import beast.app.beauti.Beauti;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.util.Version;
@@ -167,7 +166,7 @@ public class BeastMCMC {
             // Not resuming so get starting options...
 
             List<String> MCMCargs = new ArrayList<String>();
-            Version version = new BeastVersion();
+            Version version = new BEASTVersion();
             String titleString = "<html><center><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
                     "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
             javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");
