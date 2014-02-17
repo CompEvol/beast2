@@ -11,24 +11,15 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.Box;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -38,6 +29,7 @@ import javax.swing.table.TableColumn;
 
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallButton;
+import beast.app.util.FileDrop;
 import beast.app.util.Utils;
 import beast.core.Input;
 import beast.core.MCMC;
@@ -137,6 +129,14 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(createListBox());
 		panel.add(box, BorderLayout.NORTH);
 
+        Color focusColor = UIManager.getColor("Focus.color");
+        Border focusBorder = BorderFactory.createMatteBorder(2, 2, 2, 2, focusColor);
+        new FileDrop(null, scrollPane, focusBorder, new FileDrop.Listener() {
+            public void filesDropped(java.io.File[] files) {
+                addFiles(files);
+            }   // end filesDropped
+        }); // end FileDrop.Listener
+
 		Box buttonBox = Box.createHorizontalBox();
 
 		m_addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
@@ -192,7 +192,32 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		box.add(Box.createHorizontalGlue());
 		return box;
 	}
-	
+
+    private void addFiles(File[] fileArray) {
+        List<BEASTObject> plugins = null;
+
+        List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
+        BeautiAlignmentProvider selectedProvider = null;
+        if (providers.size() == 1) {
+            selectedProvider = providers.get(0);
+        } else {
+            selectedProvider = (BeautiAlignmentProvider) JOptionPane.showInputDialog(this, "Select what to add",
+                    "Add partition",
+                    JOptionPane.QUESTION_MESSAGE, null, providers.toArray(),
+                    providers.get(0));
+            if (selectedProvider == null) {
+                return;
+            }
+        }
+
+        plugins = selectedProvider.getAlignments(doc, fileArray);
+
+        // Component c = this;
+        if (plugins != null) {
+            refreshPanel();
+        }
+    }
+
 	private void addLinkUnlinkPair(Box box, String sLabel) {
 		JButton linkSModelButton = new JButton("Link " + sLabel);
 		linkSModelButton.setName("Link " + sLabel);

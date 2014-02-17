@@ -50,7 +50,6 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	 * return new alignment, return null if not successfull 
 	 * **/
 	List<BEASTObject> getAlignments(BeautiDoc doc) {
-		List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
 		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
@@ -64,73 +63,85 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		if (rval == JFileChooser.APPROVE_OPTION) {
 
 			File[] files = fileChooser.getSelectedFiles();
-			for (File file : files) {
-				String fileName = file.getName();
-				// if (sFileName.lastIndexOf('/') > 0) {
-				// Beauti.g_sDir = sFileName.substring(0,
-				// sFileName.lastIndexOf('/'));
-				// }
-				if (fileName.toLowerCase().endsWith(".nex") || fileName.toLowerCase().endsWith(".nxs")
-						|| fileName.toLowerCase().endsWith(".nexus")) {
-					NexusParser parser = new NexusParser();
-					try {
-						parser.parseFile(file);
-						if (parser.filteredAlignments.size() > 0) {
-							/**
-							 * sanity check: make sure the filters do not
-							 * overlap
-							 **/
-							int[] used = new int[parser.m_alignment.getSiteCount()];
-							Set<Integer> overlap = new HashSet<Integer>();
-							int partitionNr = 1;
-							for (Alignment data : parser.filteredAlignments) {
-								int[] indices = ((FilteredAlignment) data).indices();
-								for (int i : indices) {
-									if (used[i] > 0) {
-										overlap.add(used[i] * 10000 + partitionNr);
-									} else {
-										used[i] = partitionNr;
-									}
-								}
-								partitionNr++;
-							}
-							if (overlap.size() > 0) {
-								String overlaps = "<html>Warning: The following partitions overlap:<br/>";
-								for (int i : overlap) {
-									overlaps += parser.filteredAlignments.get(i / 10000 - 1).getID()
-											+ " overlaps with "
-											+ parser.filteredAlignments.get(i % 10000 - 1).getID() + "<br/>";
-								}
-								overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
-								JOptionPane.showMessageDialog(null, overlaps);
-							}
-							/** add alignments **/
-							for (Alignment data : parser.filteredAlignments) {
-								selectedPlugins.add(data);
-							}
-						} else {
-							selectedPlugins.add(parser.m_alignment);
-						}
-					} catch (Exception ex) {
-						ex.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
-						return null;
-					}
-				}
-				if (file.getName().toLowerCase().endsWith(".xml")) {
-					BEASTObject alignment = getXMLData(file);
-					selectedPlugins.add(alignment);
-				}
-			}
-			for (BEASTObject plugin : selectedPlugins) {
-				doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
-			}
-			return selectedPlugins;
+
+            return getAlignments(doc, files);
 		}
 		return null;
 	}
 
-	/** provide GUI for manipulating the alignment **/
+    /**
+     * return new alignment given files
+     * @param doc
+     * @param files
+     * @return
+     */
+    public List<BEASTObject> getAlignments(BeautiDoc doc, File[] files) {
+        List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
+        for (File file : files) {
+            String fileName = file.getName();
+            // if (sFileName.lastIndexOf('/') > 0) {
+            // Beauti.g_sDir = sFileName.substring(0,
+            // sFileName.lastIndexOf('/'));
+            // }
+            if (fileName.toLowerCase().endsWith(".nex") || fileName.toLowerCase().endsWith(".nxs")
+                    || fileName.toLowerCase().endsWith(".nexus")) {
+                NexusParser parser = new NexusParser();
+                try {
+                    parser.parseFile(file);
+                    if (parser.filteredAlignments.size() > 0) {
+                        /**
+                         * sanity check: make sure the filters do not
+                         * overlap
+                         **/
+                        int[] used = new int[parser.m_alignment.getSiteCount()];
+                        Set<Integer> overlap = new HashSet<Integer>();
+                        int partitionNr = 1;
+                        for (Alignment data : parser.filteredAlignments) {
+                            int[] indices = ((FilteredAlignment) data).indices();
+                            for (int i : indices) {
+                                if (used[i] > 0) {
+                                    overlap.add(used[i] * 10000 + partitionNr);
+                                } else {
+                                    used[i] = partitionNr;
+                                }
+                            }
+                            partitionNr++;
+                        }
+                        if (overlap.size() > 0) {
+                            String overlaps = "<html>Warning: The following partitions overlap:<br/>";
+                            for (int i : overlap) {
+                                overlaps += parser.filteredAlignments.get(i / 10000 - 1).getID()
+                                        + " overlaps with "
+                                        + parser.filteredAlignments.get(i % 10000 - 1).getID() + "<br/>";
+                            }
+                            overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
+                            JOptionPane.showMessageDialog(null, overlaps);
+                        }
+                        /** add alignments **/
+                        for (Alignment data : parser.filteredAlignments) {
+                            selectedPlugins.add(data);
+                        }
+                    } else {
+                        selectedPlugins.add(parser.m_alignment);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
+                    return null;
+                }
+            }
+            if (file.getName().toLowerCase().endsWith(".xml")) {
+                BEASTObject alignment = getXMLData(file);
+                selectedPlugins.add(alignment);
+            }
+        }
+        for (BEASTObject plugin : selectedPlugins) {
+            doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
+        }
+        return selectedPlugins;
+    }
+
+    /** provide GUI for manipulating the alignment **/
 	void editAlignment(Alignment alignment, BeautiDoc doc) {
 		try {
 			AlignmentViewer viewer = new AlignmentViewer(alignment);
