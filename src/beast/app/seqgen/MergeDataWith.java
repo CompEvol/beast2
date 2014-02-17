@@ -11,7 +11,7 @@ import beast.core.Input.*;
 import beast.evolution.alignment.*;
 import beast.util.*;
 
-@Description("Helper for SequenceSimulator")
+@Description("Helper for Sequence Simulator, allows specifying template input file and destination output file")
 public class MergeDataWith extends BEASTObject {
 	public Input<String> templateFileInput = new Input<String>("template","name of template file. " +
 			"The template file should be a valid beast2 XML file with a single (possibly empty) alignment. " +
