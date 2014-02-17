@@ -823,21 +823,20 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 for (File template : files) {
                     if (template.getName().toLowerCase().endsWith(".xml")) {
                         try {
-                            String sXML2 = BeautiDoc.load(template
-                                    .getAbsolutePath());
+                            String sXML2 = BeautiDoc.load(template.getAbsolutePath());
                             if (sXML2.contains("templateinfo=")) {
-//                            	String sFileName = template.getName();
-//                                sFileName = sFileName.substring(0, sFileName.length() - 4);
-//                                boolean duplicate = false;
-//                            	for (AbstractAction action : actions) {
-//                            		String name = action.getValue(Action.NAME).toString(); 
-//                            		if (name.equals(sFileName)) {
-//                            			duplicate = true;
-//                            		}
-//                            	}
-//                            	if (!duplicate) {
+                            	String sFileName = template.getName();
+                                sFileName = sFileName.substring(0, sFileName.length() - 4);
+                                boolean duplicate = false;
+                            	for (AbstractAction action : actions) {
+                            		String name = action.getValue(Action.NAME).toString(); 
+                            		if (name.equals(sFileName)) {
+                            			duplicate = true;
+                            		}
+                            	}
+                            	if (!duplicate) {
                             		actions.add(new TemplateAction(template));
-//                            	}
+                            	}
                             }
                         } catch (Exception e) {
                             System.err.println(e.getMessage());
