@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import beast.core.Description;
@@ -41,7 +42,9 @@ public class SequenceSimulator extends beast.core.Runnable {
             "If provided, simulated alignment is written to this file rather "
             + "than to standard out.");
 
-
+    public Input<List<MergeDataWith>> mergeListInput = new Input<List<MergeDataWith>>("merge", "specifies template used to merge the generated alignment with", new ArrayList<MergeDataWith>());
+    public Input<Integer> iterationsInput = new Input<Integer>("iterations","number of times the data is generated", 1);
+    
     /**
      * nr of samples to generate *
      */
@@ -91,15 +94,20 @@ public class SequenceSimulator extends beast.core.Runnable {
 
     @Override
     public void run() throws Exception {
-        Alignment alignment = simulate();
-        
-        // Write output to stdout or file
-        PrintStream pstream;
-        if (m_outputFileName == null)
-            pstream = System.out;
-        else
-            pstream = new PrintStream(m_outputFileName);
-        pstream.println(new XMLProducer().toRawXML(alignment));
+    	for (int i = 0; i < iterationsInput.get(); i++) {
+	        Alignment alignment = simulate();
+	        
+	        // Write output to stdout or file
+	        PrintStream pstream;
+	        if (m_outputFileName == null)
+	            pstream = System.out;
+	        else
+	            pstream = new PrintStream(m_outputFileName);
+	        pstream.println(new XMLProducer().toRawXML(alignment));
+	        for (MergeDataWith merge : mergeListInput.get()) {
+	        	merge.process(alignment, i);
+	        }
+    	}
     }
 
     /**
