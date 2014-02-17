@@ -1168,7 +1168,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 				sb.append(c);
 			}
 		}
-        return sStr;
+        return sb.toString();
     }
 
     void applyBeautiRules(List<BeautiSubTemplate> templates, boolean bInitial, PartitionContext context) throws Exception {
