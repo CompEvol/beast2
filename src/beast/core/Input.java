@@ -26,6 +26,7 @@ package beast.core;
 
 
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 
 import java.io.File;
 import java.lang.reflect.*;
@@ -404,7 +405,8 @@ public class Input<T> {
             try {
                 setStringValue((String) value, plugin);
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+            	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
                 throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
             }
         } else if (this.value != null && this.value instanceof List<?>) {
