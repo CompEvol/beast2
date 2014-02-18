@@ -175,7 +175,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				sXML += fin.readLine() + "\n";
 			}
 			fin.close();
-			BEASTObject runnable = parser.parseFragment(sXML, false);
+			BEASTObject runnable = parser.parseBareFragment(sXML, false);
 			return getAlignment(runnable);
 		} catch (Exception ex) {
 			// attempt to parse as BEAST 1 xml

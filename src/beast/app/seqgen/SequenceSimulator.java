@@ -163,7 +163,8 @@ public class SequenceSimulator extends beast.core.Runnable {
 
 
         Alignment alignment = new Alignment();
-        //alignment.setDataType(m_siteModel.getFrequencyModel().getDataType());
+        alignment.userDataTypeInput.setValue(m_data.get().getDataType(), alignment);
+        alignment.setID("SequenceSimulator");
 
         traverse(root, seq, category, alignment);
 
