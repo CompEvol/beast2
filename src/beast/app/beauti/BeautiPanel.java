@@ -1,20 +1,19 @@
 package beast.app.beauti;
 
 
-import java.awt.*;
-import java.net.URL;
+import beast.app.beauti.BeautiPanelConfig.Partition;
+import beast.app.draw.InputEditor;
+import beast.app.draw.InputEditor.ExpandOption;
+import beast.core.BEASTObject;
+import beast.core.Input;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import beast.app.beauti.BeautiPanelConfig.Partition;
-import beast.app.draw.InputEditor;
-import beast.app.draw.InputEditor.ExpandOption;
-import beast.core.Input;
-import beast.core.BEASTObject;
+import java.awt.*;
+import java.net.URL;
 
 
 
@@ -98,12 +97,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         setLayout(new BorderLayout());
 
         this.config = config;
-        if (this.config.hasPartition() != Partition.none && 
-        		doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
-        	splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        	add(splitPane,BorderLayout.CENTER);
+        if (this.config.hasPartition() != Partition.none &&
+                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+            add(splitPane,BorderLayout.CENTER);
         } else {
-        	splitPane = null;
+            splitPane = null;
         }
 
 //        PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
@@ -134,7 +133,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         if (splitPane != null && bHasPartition != Partition.none) {
             box.add(createList());
         } else {
-        	return;
+            return;
         }
         box.add(Box.createVerticalGlue());
         box.add(new JLabel(getIcon(iPanel, config)));
@@ -157,7 +156,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         partitionComponent.add(partitionLabel, BorderLayout.NORTH);
         listModel = new DefaultListModel();
         listOfPartitions = new JList(listModel);
-        listOfPartitions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listOfPartitions.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         Dimension size = new Dimension(partitionListPreferredWidth, 300);
         //listOfPartitions.setFixedCellWidth(120);
@@ -181,8 +180,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
         listModel.clear();
         if (listModel.size() > 0) {
-        	// this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
-        	return;
+            // this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
+            return;
         }
         for (BEASTObject partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
             String sPartition = partition.getID();
@@ -200,7 +199,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
         return getIcon(sIconLocation);
     }
-    
+
     public static ImageIcon getIcon(String sIconLocation) {
         try {
             URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
@@ -228,25 +227,25 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         doc.scrubAll(true, false);
 
         // toggle splitpane
-        if (splitPane == null && config.hasPartition() != Partition.none && 
-        		doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {        	
-        	splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        	add(splitPane,BorderLayout.CENTER);
-        	addPartitionPanel(config.hasPartition(), iPanel);
+        if (splitPane == null && config.hasPartition() != Partition.none &&
+                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+            add(splitPane,BorderLayout.CENTER);
+            addPartitionPanel(config.hasPartition(), iPanel);
         }
-        if (splitPane != null && (config.hasPartition() == Partition.none || 
-            		doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() <= 1)) {
-        	remove(splitPane);
-        	splitPane = null;
+        if (splitPane != null && (config.hasPartition() == Partition.none ||
+                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() <= 1)) {
+            remove(splitPane);
+            splitPane = null;
         }
 
         refreshInputPanel();
         if (partitionComponent != null && config.getType() != null) {
             partitionComponent.setVisible(doc.getPartitions(config.getType()).size() > 1);
         }
-        
 
-        
+
+
 //		g_currentPanel = this;
     }
 
@@ -257,7 +256,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         if (input != null && input.get() != null && input.getType() != null) {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
             InputEditor inputEditor = doc.getInpuEditorFactory().createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
-            
+
             //Box box = Box.createVerticalBox();
             //box.add(inputEditor.getComponent());
             // RRB: is there a better way than just pooring in glue at the bottom?
@@ -268,25 +267,28 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             //JScrollPane scroller = new JScrollPane(box);
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
-            p.add(inputEditor.getComponent(), BorderLayout.NORTH);
-            //p.add(Box.createVerticalStrut(1024 - inputEditor.getComponent().getPreferredSize().height), BorderLayout.SOUTH);
+            if (isToClone()) {
+                p.add(new JLabel("Clone from"), BorderLayout.NORTH); // TODO
+            } else {
+                p.add(inputEditor.getComponent(), BorderLayout.NORTH);
+                //p.add(Box.createVerticalStrut(1024 - inputEditor.getComponent().getPreferredSize().height), BorderLayout.SOUTH);
+                //p.setPreferredSize(new Dimension(1024,1024));
+            }
 
-            
-            //p.setPreferredSize(new Dimension(1024,1024));
             JScrollPane scroller = new JScrollPane(p);
             centralComponent = scroller;
         } else {
             centralComponent = new JLabel("Nothing to be specified");
         }
         if (splitPane != null) {
-        	splitPane.add(centralComponent, JSplitPane.RIGHT);
+            splitPane.add(centralComponent, JSplitPane.RIGHT);
         } else {
-        	add(centralComponent);
+            add(centralComponent);
         }
     }
 
     void refreshInputPanel() throws Exception {
-    	doc.currentInputEditors.clear();
+        doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
         BEASTObject plugin = config;
         Input<?> input = config.resolveInput(doc, iPartition);
@@ -296,6 +298,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
     }
 
+
+    private boolean isToClone() {
+        return listOfPartitions != null && listOfPartitions.getSelectedIndices().length > 1;
+    }
 
 //    public static boolean soundIsPlaying = false;
 //
