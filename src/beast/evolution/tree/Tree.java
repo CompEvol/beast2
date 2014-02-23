@@ -3,6 +3,7 @@ package beast.evolution.tree;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
+import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.TaxonSet;
 import beast.util.TreeParser;
 
@@ -69,13 +70,14 @@ public class Tree extends StateNode implements TreeInterface {
 
     @Override
     public void initAndValidate() throws Exception {
-//        if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
+        if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
+        	throw new RuntimeException("initial-input should be specified for tree that is not a StateNodeInitialiser");
 //            final Tree other = m_initial.get();
 //            root = other.root.copy();
 //            nodeCount = other.nodeCount;
 //            internalNodeCount = other.internalNodeCount;
 //            leafNodeCount = other.leafNodeCount;
-//        }
+        }
 
         if (nodeCount < 0) {
             if (m_taxonset.get() != null) {
