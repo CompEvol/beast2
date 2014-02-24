@@ -8,8 +8,6 @@ import org.junit.Test;
 
 import beast.evolution.operators.DeltaExchangeOperator;
 
-
-
 /** test how the FixedMeanRate flag interact with link/unlink **/
 public class FixedMeanRateTest extends BeautiBase {
 	
@@ -39,7 +37,7 @@ public class FixedMeanRateTest extends BeautiBase {
 		DeltaExchangeOperator operator = (DeltaExchangeOperator) beauti.doc.pluginmap.get("FixMeanMutationRatesOperator");
 		int nrOfParameters = operator.parameterInput.get().size();
 		if(nrOfParameters != 2) {
-			throw new Exception("Expected 2 parameters for deltaExchangeOpeartor, not " + nrOfParameters);
+			throw new Exception("Expected 2 parameters for deltaExchangeOperator, not " + nrOfParameters);
 		}
 	}
 	
