@@ -399,28 +399,33 @@ public class Logger extends BEASTObject {
                         } else {
                             // it is a tree logger, we may need to get rid of the last line!
                             final BufferedReader fin = new BufferedReader(new FileReader(sFileName));
-                            final StringBuilder buf = new StringBuilder();
+
+                            // back up file in case something goes wrong (e.g. an out of memory error occurs)
+                            final File treeFileBackup = new File(sFileName);
+                            final boolean ok = treeFileBackup.renameTo(new File(sFileName + ".bu"));    assert ok;
+                            // open the file and write back all but the last line
+                            final FileOutputStream out2 = new FileOutputStream(sFileName);
+                            m_out = new PrintStream(out2);
+
+                            //final StringBuilder buf = new StringBuilder();
                             String sStrLast = null;
                             //String sStr = fin.readLine();
                             boolean endSeen = false;
                             while (fin.ready()) {
                                 if( endSeen ) {
-                                    buf.append("End;\n");
+                                    m_out.println("End;");
                                     endSeen = false;
                                 }
                                 final String sStr = fin.readLine();
                                 if (!sStr.equals("End;")) {
-                                    buf.append(sStr);
-                                    buf.append('\n');
+                                	m_out.println(sStr);
                                     sStrLast = sStr;
                                 } else {
                                     endSeen = true;
                                 }
                             }
                             fin.close();
-                            // back up file in case something goes wrong (e.g. an out of memory error occurs)
-                            final File treeFileBackup = new File(sFileName);
-                            final boolean ok = treeFileBackup.renameTo(new File(sFileName + ".bu"));    assert ok;
+
                             // determine number of the last sample
                             if( sStrLast == null ) {
                                 // empty log file?
@@ -433,10 +438,6 @@ public class Logger extends BEASTObject {
                                 throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
                             }
                             sampleOffset = nSampleOffset;
-                            // open the file and write back all but the last line
-                            final FileOutputStream out2 = new FileOutputStream(sFileName);
-                            m_out = new PrintStream(out2);
-                            m_out.print(buf.toString());
                             // it is safe to remove the backup file now
                             new File(sFileName + ".bu").delete();
                         }
