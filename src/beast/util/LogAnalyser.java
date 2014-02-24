@@ -370,7 +370,18 @@ public class LogAnalyser {
      */
     final static String SPACE = " ";
     public void print(PrintStream out) {
+    	// set up header for prefix, if any is specified
     	String prefix = System.getProperty("prefix");
+    	String prefixHead = (prefix == null ? "" : "prefix ");
+    	if (prefix != null) {
+	    	String [] p = prefix.trim().split("\\s+");
+	    	if (p.length > 1) {
+	    		prefixHead = "";
+	    		for (int i = 0; i < p.length; i++) {
+	    			prefixHead += "prefix" + i + " ";
+	    		}
+	    	}
+    	}
     	
         try {
             // delay so that stars can be flushed from stderr
@@ -384,7 +395,7 @@ public class LogAnalyser {
         for (int i = 0; i < nMax; i++)
             sSpace += " ";
 
-        out.println("item" + sSpace.substring(4) + " " + (prefix == null ?  "" : "prefix ") +
+        out.println("item" + sSpace.substring(4) + " " + prefixHead +
         		format("mean") + format("stderr")  + format("stddev")  + format("median")  + format("95%HPDlo")  + format("95%HPDup")  + format("ACT")  + format("ESS")  + format("geometric-mean"));
         for (int i = 1; i < m_sLabels.length; i++) {
             out.println(m_sLabels[i] + sSpace.substring(m_sLabels[i].length()) + SPACE + (prefix == null ? "" : prefix + SPACE) +
