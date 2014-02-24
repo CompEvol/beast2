@@ -268,7 +268,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
             if (isToClone()) {
-                p.add(new JLabel("Clone from"), BorderLayout.NORTH); // TODO
+                ClonePartitionPanel clonePartitionPanel = new ClonePartitionPanel(this);
+                p.add(clonePartitionPanel, BorderLayout.NORTH);
             } else {
                 p.add(inputEditor.getComponent(), BorderLayout.NORTH);
                 //p.add(Box.createVerticalStrut(1024 - inputEditor.getComponent().getPreferredSize().height), BorderLayout.SOUTH);
@@ -298,6 +299,13 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
     }
 
+    public void cloneFrom(String sourceId, String targetId) {
+         // TODO
+        doc.getPartitionNr(config);
+
+
+         throw new UnsupportedOperationException("developing");
+    }
 
     private boolean isToClone() {
         return listOfPartitions != null && listOfPartitions.getSelectedIndices().length > 1;
