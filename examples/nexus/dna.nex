@@ -1,4 +1,6 @@
 #nexus 
+# source: http://wiki.christophchamp.com/index.php/NEXUS_file_format
+
 begin data;
 dimensions ntax=10 nchar=705;
 format datatype=dna interleave=yes gap=- missing=?;

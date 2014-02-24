@@ -1,4 +1,5 @@
 #NEXUS 
+# source: http://wiki.christophchamp.com/index.php/NEXUS_file_format
 
 Begin data;
 Dimensions ntax=10 nchar=234;

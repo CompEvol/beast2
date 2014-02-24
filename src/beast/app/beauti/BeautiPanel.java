@@ -6,6 +6,7 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.BEASTObject;
 import beast.core.Input;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -183,9 +184,20 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             // this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
             return;
         }
-        for (BEASTObject partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
+        String type = config.bHasPartitionsInput.get().toString();
+        for (BEASTObject partition : doc.getPartitions(type)) {
+        	if (type.equals("SiteModel")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).siteModelInput.get();
+        	} else if (type.equals("ClockModel")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
+        	} else if (type.equals("Tree")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).treeInput.get();
+        	}
             String sPartition = partition.getID();
             sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
+            if (sPartition.length() > 1 && sPartition.charAt(1) == ':') {
+            	sPartition = sPartition.substring(2);
+            }
             listModel.addElement(sPartition);
         }
         if (iPartition >= 0 && listModel.size() > 0)
