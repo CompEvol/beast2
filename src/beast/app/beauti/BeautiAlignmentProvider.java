@@ -1,12 +1,15 @@
 package beast.app.beauti;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
@@ -17,6 +20,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.sun.xml.internal.bind.v2.util.FatalAdapter;
+
 import beast.app.draw.ExtensionFileFilter;
 import beast.core.Description;
 import beast.core.Input;
@@ -25,6 +30,8 @@ import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.datatype.Aminoacid;
+import beast.evolution.datatype.DataType;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 
@@ -55,6 +62,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
 		String[] exts = { ".nex", ".nxs", ".nexus" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
+		String[] extsf = { ".fas", ".fasta" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
 
 		fileChooser.setDialogTitle("Load Sequence");
 		fileChooser.setMultiSelectionEnabled(true);
@@ -84,7 +93,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
             // sFileName.lastIndexOf('/'));
             // }
             if (fileName.toLowerCase().endsWith(".nex") || fileName.toLowerCase().endsWith(".nxs")
-                    || fileName.toLowerCase().endsWith(".nexus")) {
+                || fileName.toLowerCase().endsWith(".nexus")) {
                 NexusParser parser = new NexusParser();
                 try {
                     parser.parseFile(file);
@@ -134,6 +143,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
                 BEASTObject alignment = getXMLData(file);
                 selectedPlugins.add(alignment);
             }
+            if (file.getName().toLowerCase().endsWith(".fas") || file.getName().toLowerCase().endsWith(".fasta")) {
+                BEASTObject alignment = getFASTAData(file);
+                selectedPlugins.add(alignment);
+            }
         }
         for (BEASTObject plugin : selectedPlugins) {
             doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
@@ -141,7 +154,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
         return selectedPlugins;
     }
 
-    /** provide GUI for manipulating the alignment **/
+	/** provide GUI for manipulating the alignment **/
 	void editAlignment(Alignment alignment, BeautiDoc doc) {
 		try {
 			AlignmentViewer viewer = new AlignmentViewer(alignment);
@@ -192,6 +205,83 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			}
 			return null;
 		}
+	}
+	
+    private BEASTObject getFASTAData(File file) {
+    	try {
+    		// grab alignment data
+        	Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();
+        	List<String> sTaxa = new ArrayList<String>();
+        	String currentTaxon = null;
+			BufferedReader fin = new BufferedReader(new FileReader(file));
+	        String sMissing = "?";
+	        String sGap = "-";
+	        int nTotalCount = 4;
+	        String datatype = "nucleotide";
+			while (fin.ready()) {
+				String line = fin.readLine();
+				if (line.startsWith(";")) {
+					// it is a comment, ignore
+				} else 	if (line.startsWith(">")) {
+					// it is a taxon
+					currentTaxon = line.substring(1).trim();
+					// only up to first space
+					currentTaxon = currentTaxon.replaceAll("\\s.*$", "");
+				} else {
+					// it is a data line
+					if (currentTaxon == null) {
+						throw new RuntimeException("Expected taxon defined on first line");
+					}
+					if (seqMap.containsKey(currentTaxon)) {
+						StringBuilder sb = seqMap.get(currentTaxon);
+						sb.append(line);
+					} else {
+						StringBuilder sb = new StringBuilder();
+						seqMap.put(currentTaxon, sb);
+						sb.append(line);
+						sTaxa.add(currentTaxon);
+					}
+				}
+			}
+			fin.close();
+			
+			int nChar = -1;
+			Alignment alignment = new Alignment();
+	        for (final String sTaxon : sTaxa) {
+	            final StringBuilder bsData = seqMap.get(sTaxon);
+	            String sData = bsData.toString();
+	            sData = sData.replaceAll("\\s", "");
+	            seqMap.put(sTaxon, new StringBuilder(sData));
+
+	            if (nChar < 0) {nChar = sData.length();}
+	            if (sData.length() != nChar) {
+	                throw new Exception("Expected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
+	            }
+	            // map to standard missing and gap chars
+	            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
+	            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
+
+	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTacgt?_]+")) {
+	            	datatype = "aminoacid";
+	            	nTotalCount = 20;
+	            }
+	            
+	            final Sequence sequence = new Sequence();
+	            sequence.init(nTotalCount, sTaxon, sData);
+	            sequence.setID(NexusParser.generateSequenceID(sTaxon));
+	            alignment.sequenceInput.setValue(sequence, alignment);
+	        }
+	        String ID = file.getName();
+	        ID = ID.substring(0, ID.indexOf('.'));
+	        alignment.setID(ID);
+			alignment.dataTypeInput.setValue(datatype, alignment);
+	        alignment.initAndValidate();
+	        return alignment;
+    	} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
+    	}
+		return null;
 	}
 
 	private static BEASTObject parseBeast1XML(String sXML) throws Exception {
