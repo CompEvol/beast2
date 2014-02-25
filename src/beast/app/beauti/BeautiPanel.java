@@ -22,6 +22,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ import java.util.List;
 /**
  * panel making up each of the tabs in Beauti *
  */
-public class BeautiPanel extends JPanel implements ListSelectionListener {
+public class BeautiPanel extends JPanel implements ListSelectionListener{
     private static final long serialVersionUID = 1L;
     public final static String ICONPATH = "beast/app/beauti/";
 
@@ -76,6 +78,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
      */
     DefaultListModel listModel;
 
+    JScrollPane scroller;
 
     /**
      * component containing main input editor *
@@ -270,7 +273,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
 //		g_currentPanel = this;
     }
-
+    
     void refreshInputPanel(BEASTObject plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
         if (centralComponent != null) {
             remove(centralComponent);
@@ -298,7 +301,24 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
                 //p.setPreferredSize(new Dimension(1024,1024));
             }
 
-            JScrollPane scroller = new JScrollPane(p);
+            Rectangle bounds = new Rectangle(0,0);
+            if (scroller != null) {
+            	// get lastPaintPosition from viewport
+            	// HACK access it through its string representation
+	            JViewport v = scroller.getViewport();
+	            String vs = v.toString();
+	            int i = vs.indexOf("lastPaintPosition=java.awt.Point[x=");
+	            if (i > -1) {
+	            	i = vs.indexOf("y=", i);
+	            	vs = vs.substring(i+2, vs.indexOf("]", i));
+	            	i = Integer.parseInt(vs);
+	            } else {
+	            	i = 0;
+	            }
+	            bounds.y = -i;
+            }
+            scroller = new JScrollPane(p);
+            scroller.getViewport().scrollRectToVisible(bounds);
             centralComponent = scroller;
         } else {
             centralComponent = new JLabel("Nothing to be specified");
@@ -334,7 +354,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
     	String type = config.bHasPartitionsInput.get().toString();
     	java.util.List<BEASTObject> list = doc.getPartitions(type);
-    	int iTarget = -1;
+    	int iSource = -1, iTarget = -1;
         for (int i = 0; i < list.size(); i++) {
         	BEASTObject partition = list.get(i);
         	if (type.equals("SiteModel")) {
@@ -349,6 +369,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             if (sPartition.length() > 1 && sPartition.charAt(1) == ':') {
             	sPartition = sPartition.substring(2);
             }
+            if (sPartition.equals(sourceID)) {
+            	iSource = i;
+            }
             if (sPartition.equals(targetID)) {
             	iTarget = i;
             }
@@ -360,8 +383,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
 		GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(iTarget);
 		PartitionContext context = doc.getContextFor(likelihood);
+		config._input.setValue(null, config);
 
-    	if (type.equals("SiteModel")) {
+    	if (type.equals("SiteModel")) {		
 			SiteModelInterface siteModelSource = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sourceID);
 			SiteModelInterface  siteModel = null;
 			try {
@@ -510,5 +534,5 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             ex.printStackTrace();
         }
     }
-
+    
 } // class BeautiPanel
