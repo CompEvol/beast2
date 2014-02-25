@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -20,8 +21,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.sun.xml.internal.bind.v2.util.FatalAdapter;
-
 import beast.app.draw.ExtensionFileFilter;
 import beast.core.Description;
 import beast.core.Input;
@@ -30,7 +29,6 @@ import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.datatype.Aminoacid;
 import beast.evolution.datatype.DataType;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
