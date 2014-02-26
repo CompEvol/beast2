@@ -218,20 +218,24 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         instanceCount++;
 
-        beagle = BeagleFactory.loadBeagleInstance(
-                tipCount,
-                partialBufferHelper.getBufferCount(),
-                compactPartialsCount,
-                m_nStateCount,
-                patternCount,
-                eigenBufferHelper.getBufferCount(),            // eigenBufferCount
-                matrixBufferHelper.getBufferCount(),
-                categoryCount,
-                scaleBufferHelper.getBufferCount(), // Always allocate; they may become necessary
-                resourceList,
-                preferenceFlags,
-                requirementFlags
-        );
+        try {
+	        beagle = BeagleFactory.loadBeagleInstance(
+	                tipCount,
+	                partialBufferHelper.getBufferCount(),
+	                compactPartialsCount,
+	                m_nStateCount,
+	                patternCount,
+	                eigenBufferHelper.getBufferCount(),            // eigenBufferCount
+	                matrixBufferHelper.getBufferCount(),
+	                categoryCount,
+	                scaleBufferHelper.getBufferCount(), // Always allocate; they may become necessary
+	                resourceList,
+	                preferenceFlags,
+	                requirementFlags
+	        );
+        } catch (Exception e) {
+        	beagle = null;
+        }
         if (beagle == null) {
             return false;
         }

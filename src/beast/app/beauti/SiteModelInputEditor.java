@@ -1,7 +1,5 @@
 package beast.app.beauti;
 
-
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,10 +31,6 @@ import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 
-
-
-
-
 public class SiteModelInputEditor extends BEASTObjectInputEditor {
     private static final long serialVersionUID = 1L;
 
@@ -62,7 +56,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     @Override
     public void init(Input<?> input, BEASTObject plugin, int itemNr,
     		ExpandOption bExpandOption, boolean bAddButtons) {
-    	fixMeanRatesCheckBox = new JCheckBox("Fix mean mutation rate");
+    	fixMeanRatesCheckBox = new JCheckBox("Fix mean substitution rate");
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	
@@ -94,7 +88,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     		try {
     			operator.setID("FixMeanMutationRatesOperator");
 				operator.initByName("weight", 2.0, "delta", 0.75);
-			} catch (Exception e1) {
+			} catch (Throwable e1) {
 				// ignore initAndValidate exception
 			}
     		doc.addPlugin(operator);
@@ -205,11 +199,12 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         return inVarEditor;
     }
 
-
-    
     public static void customConnector(BeautiDoc doc) {
  		try {
  	        DeltaExchangeOperator operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
+ 	        if (operator == null) {
+ 	        	return;
+ 	        }
 
  	       	List<RealParameter> parameters = operator.parameterInput.get();
  	    	parameters.clear();
@@ -237,9 +232,15 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 		    		}
 	    		}
 	    	}
-
-	    	IntegerParameter weightParameter = new IntegerParameter(weights);
-			weightParameter.setID("weightparameter");
+			
+			IntegerParameter weightParameter;
+			if (weights.equals("")) {
+		    	weightParameter = new IntegerParameter();
+			} else {
+		    	weightParameter = new IntegerParameter(weights);
+				weightParameter.setID("weightparameter");
+				
+			}
 			weightParameter.isEstimatedInput.setValue(false, weightParameter);
 	    	operator.parameterWeightsInput.setValue(weightParameter, operator);
 		} catch (Exception e) {

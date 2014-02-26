@@ -9,6 +9,7 @@ import beast.core.Input.Validate;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Taxon;
@@ -24,6 +25,7 @@ import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLParser.RequiredInputProvider;
 import beast.util.XMLProducer;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,6 +39,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import java.io.*;
 import java.util.*;
 
@@ -1168,7 +1171,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 				sb.append(c);
 			}
 		}
-        return sStr;
+        return sb.toString();
     }
 
     void applyBeautiRules(List<BeautiSubTemplate> templates, boolean bInitial, PartitionContext context) throws Exception {
@@ -1306,6 +1309,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public void connect(BEASTObject srcPlugin, String sTargetID, String sInputName) {
         try {
             BEASTObject target = pluginmap.get(sTargetID);
+            if (target == null) {
+            	Log.trace.println("BeautiDoc: Could not find object " + sTargetID);
+            	return;
+            }
             // prevent duplication inserts in list
             Object o = target.getInputValue(sInputName);
             if (o instanceof List) {
@@ -1356,7 +1363,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             } else {
                 if (input.get() != null && input.get() instanceof BEASTObject &&
-                        ((BEASTObject) input.get()).getID().equals(sTargetID)) {
+                		input.get() == srcPlugin) {
+                        //((BEASTObject) input.get()).getID().equals(sTargetID)) {
                     input.setValue(null, target);
                 }
             }

@@ -1,27 +1,39 @@
 package beast.app.beauti;
 
 
-import java.awt.*;
-import java.net.URL;
+import beast.app.beauti.BeautiPanelConfig.Partition;
+import beast.app.draw.InputEditor;
+import beast.app.draw.InputEditor.ExpandOption;
+import beast.core.BEASTObject;
+import beast.core.Input;
+import beast.core.MCMC;
+import beast.core.Input.Validate;
+import beast.core.util.CompoundDistribution;
+import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.likelihood.GenericTreeLikelihood;
+import beast.evolution.operators.JointOperator;
+import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModelInterface;
+import beast.evolution.tree.TreeInterface;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import beast.app.beauti.BeautiPanelConfig.Partition;
-import beast.app.draw.InputEditor;
-import beast.app.draw.InputEditor.ExpandOption;
-import beast.core.Input;
-import beast.core.BEASTObject;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
 /**
  * panel making up each of the tabs in Beauti *
  */
-public class BeautiPanel extends JPanel implements ListSelectionListener {
+public class BeautiPanel extends JPanel implements ListSelectionListener{
     private static final long serialVersionUID = 1L;
     public final static String ICONPATH = "beast/app/beauti/";
 
@@ -66,6 +78,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
      */
     DefaultListModel listModel;
 
+    JScrollPane scroller;
 
     /**
      * component containing main input editor *
@@ -98,12 +111,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         setLayout(new BorderLayout());
 
         this.config = config;
-        if (this.config.hasPartition() != Partition.none && 
-        		doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
-        	splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        	add(splitPane,BorderLayout.CENTER);
+        if (this.config.hasPartition() != Partition.none &&
+                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+            add(splitPane,BorderLayout.CENTER);
         } else {
-        	splitPane = null;
+            splitPane = null;
         }
 
 //        PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
@@ -134,7 +147,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         if (splitPane != null && bHasPartition != Partition.none) {
             box.add(createList());
         } else {
-        	return;
+            return;
         }
         box.add(Box.createVerticalGlue());
         box.add(new JLabel(getIcon(iPanel, config)));
@@ -157,7 +170,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         partitionComponent.add(partitionLabel, BorderLayout.NORTH);
         listModel = new DefaultListModel();
         listOfPartitions = new JList(listModel);
-        listOfPartitions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listOfPartitions.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         Dimension size = new Dimension(partitionListPreferredWidth, 300);
         //listOfPartitions.setFixedCellWidth(120);
@@ -181,12 +194,23 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
         listModel.clear();
         if (listModel.size() > 0) {
-        	// this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
-        	return;
+            // this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
+            return;
         }
-        for (BEASTObject partition : doc.getPartitions(config.bHasPartitionsInput.get().toString())) {
+        String type = config.bHasPartitionsInput.get().toString();
+        for (BEASTObject partition : doc.getPartitions(type)) {
+        	if (type.equals("SiteModel")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).siteModelInput.get();
+        	} else if (type.equals("ClockModel")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
+        	} else if (type.equals("Tree")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).treeInput.get();
+        	}
             String sPartition = partition.getID();
             sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
+            if (sPartition.length() > 1 && sPartition.charAt(1) == ':') {
+            	sPartition = sPartition.substring(2);
+            }
             listModel.addElement(sPartition);
         }
         if (iPartition >= 0 && listModel.size() > 0)
@@ -200,7 +224,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
         return getIcon(sIconLocation);
     }
-    
+
     public static ImageIcon getIcon(String sIconLocation) {
         try {
             URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
@@ -228,28 +252,28 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         doc.scrubAll(true, false);
 
         // toggle splitpane
-        if (splitPane == null && config.hasPartition() != Partition.none && 
-        		doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {        	
-        	splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        	add(splitPane,BorderLayout.CENTER);
-        	addPartitionPanel(config.hasPartition(), iPanel);
+        if (splitPane == null && config.hasPartition() != Partition.none &&
+                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+            add(splitPane,BorderLayout.CENTER);
+            addPartitionPanel(config.hasPartition(), iPanel);
         }
-        if (splitPane != null && (config.hasPartition() == Partition.none || 
-            		doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() <= 1)) {
-        	remove(splitPane);
-        	splitPane = null;
+        if (splitPane != null && (config.hasPartition() == Partition.none ||
+                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() <= 1)) {
+            remove(splitPane);
+            splitPane = null;
         }
 
         refreshInputPanel();
         if (partitionComponent != null && config.getType() != null) {
             partitionComponent.setVisible(doc.getPartitions(config.getType()).size() > 1);
         }
-        
 
-        
+
+
 //		g_currentPanel = this;
     }
-
+    
     void refreshInputPanel(BEASTObject plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
         if (centralComponent != null) {
             remove(centralComponent);
@@ -257,7 +281,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         if (input != null && input.get() != null && input.getType() != null) {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
             InputEditor inputEditor = doc.getInpuEditorFactory().createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
-            
+
             //Box box = Box.createVerticalBox();
             //box.add(inputEditor.getComponent());
             // RRB: is there a better way than just pooring in glue at the bottom?
@@ -268,25 +292,46 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             //JScrollPane scroller = new JScrollPane(box);
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
-            p.add(inputEditor.getComponent(), BorderLayout.NORTH);
-            //p.add(Box.createVerticalStrut(1024 - inputEditor.getComponent().getPreferredSize().height), BorderLayout.SOUTH);
+            if (isToClone()) {
+                ClonePartitionPanel clonePartitionPanel = new ClonePartitionPanel(this);
+                p.add(clonePartitionPanel, BorderLayout.NORTH);
+            } else {
+                p.add(inputEditor.getComponent(), BorderLayout.NORTH);
+                //p.add(Box.createVerticalStrut(1024 - inputEditor.getComponent().getPreferredSize().height), BorderLayout.SOUTH);
+                //p.setPreferredSize(new Dimension(1024,1024));
+            }
 
-            
-            //p.setPreferredSize(new Dimension(1024,1024));
-            JScrollPane scroller = new JScrollPane(p);
+            Rectangle bounds = new Rectangle(0,0);
+            if (scroller != null) {
+            	// get lastPaintPosition from viewport
+            	// HACK access it through its string representation
+	            JViewport v = scroller.getViewport();
+	            String vs = v.toString();
+	            int i = vs.indexOf("lastPaintPosition=java.awt.Point[x=");
+	            if (i > -1) {
+	            	i = vs.indexOf("y=", i);
+	            	vs = vs.substring(i+2, vs.indexOf("]", i));
+	            	i = Integer.parseInt(vs);
+	            } else {
+	            	i = 0;
+	            }
+	            bounds.y = -i;
+            }
+            scroller = new JScrollPane(p);
+            scroller.getViewport().scrollRectToVisible(bounds);
             centralComponent = scroller;
         } else {
             centralComponent = new JLabel("Nothing to be specified");
         }
         if (splitPane != null) {
-        	splitPane.add(centralComponent, JSplitPane.RIGHT);
+            splitPane.add(centralComponent, JSplitPane.RIGHT);
         } else {
-        	add(centralComponent);
+            add(centralComponent);
         }
     }
 
     void refreshInputPanel() throws Exception {
-    	doc.currentInputEditors.clear();
+        doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
         BEASTObject plugin = config;
         Input<?> input = config.resolveInput(doc, iPartition);
@@ -296,6 +341,135 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
     }
 
+    /** 
+     * Clones partition identified by sourceID to targetID and type (Site/Clock/Tree model)
+     * as stored in config.
+     * @param sourceID
+     * @param targetID
+     */
+    public void cloneFrom(String sourceID, String targetID) {
+    	if (sourceID.equals(targetID)) {
+    		return;
+    	}
+
+    	String type = config.bHasPartitionsInput.get().toString();
+    	java.util.List<BEASTObject> list = doc.getPartitions(type);
+    	int iSource = -1, iTarget = -1;
+        for (int i = 0; i < list.size(); i++) {
+        	BEASTObject partition = list.get(i);
+        	if (type.equals("SiteModel")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).siteModelInput.get();
+        	} else if (type.equals("ClockModel")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
+        	} else if (type.equals("Tree")) {
+        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).treeInput.get();
+        	}
+            String sPartition = partition.getID();
+            sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
+            if (sPartition.length() > 1 && sPartition.charAt(1) == ':') {
+            	sPartition = sPartition.substring(2);
+            }
+            if (sPartition.equals(sourceID)) {
+            	iSource = i;
+            }
+            if (sPartition.equals(targetID)) {
+            	iTarget = i;
+            }
+        } 
+    	if (iTarget == -1) {
+    		throw new RuntimeException("Programmer error: sourceID and targetID should be in list");
+    	}
+    	
+		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
+		GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(iTarget);
+		PartitionContext context = doc.getContextFor(likelihood);
+		config._input.setValue(null, config);
+
+    	if (type.equals("SiteModel")) {		
+			SiteModelInterface siteModelSource = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sourceID);
+			SiteModelInterface  siteModel = null;
+			try {
+				siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTObject) siteModelSource,
+					likelihood, (MCMC) doc.mcmc.get(), context, doc, null);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
+				return;
+			}
+			likelihood.siteModelInput.setValue(siteModel, likelihood);
+			return;
+    	} else if (type.equals("ClockModel")) {
+    		BranchRateModel clockModelSource = getDoc().getClockModel(sourceID);
+    		BranchRateModel clockModel = null;
+			try {
+				clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin((BEASTObject) clockModelSource,
+						likelihood, (MCMC) doc.mcmc.get(), context, doc, null);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
+				return;
+			}
+			// make sure that *if* the clock model has a tree as input, it is
+			// the same as for the likelihood
+			TreeInterface tree = null;
+			try {
+				for (Input<?> input : ((BEASTObject) clockModel).listInputs()) {
+					if (input.getName().equals("tree")) {
+						tree = (TreeInterface) input.get();
+					}
+
+				}
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (tree != null && tree != likelihood.treeInput.get()) {
+				throw new RuntimeException("Cannot link clock model with different trees");
+			}
+
+			likelihood.branchRateModelInput.setValue(clockModel, likelihood);
+			return;
+    	} else if (type.equals("Tree")) {
+			TreeInterface tree = null;
+			TreeInterface treeSource = (TreeInterface) doc.pluginmap.get("Tree.t:" + sourceID);
+			try {
+			tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTObject) treeSource, likelihood,
+							(MCMC) doc.mcmc.get(), context, doc, null);
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
+					return;
+			}
+			// sanity check: make sure taxon sets are compatible
+			List<String> taxa = tree.getTaxonset().asStringList();
+			List<String> taxa2 = likelihood.dataInput.get().getTaxaNames();
+			if (taxa.size() != taxa2.size()) {
+				throw new RuntimeException("Cannot link trees: incompatible taxon sets");
+			}
+			for (String taxon : taxa) {
+				boolean found = false;
+				for (String taxon2 : taxa2) {
+					if (taxon.equals(taxon2)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					throw new RuntimeException("Cannot link trees: taxon" + taxon + "is not in alignment");
+				}
+			}
+
+			likelihood.treeInput.setValue(tree, likelihood);
+			return;
+
+    	} else {
+    		throw new RuntimeException("Programmer error calling cloneFrom: Should only clone Site/Clock/Tree model");
+    	}
+    } // cloneFrom
+
+    private boolean isToClone() {
+        return listOfPartitions != null && listOfPartitions.getSelectedIndices().length > 1;
+    }
 
 //    public static boolean soundIsPlaying = false;
 //
@@ -360,5 +534,5 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             ex.printStackTrace();
         }
     }
-
+    
 } // class BeautiPanel

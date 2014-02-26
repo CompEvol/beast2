@@ -369,7 +369,7 @@ public class LogCombiner extends LogAnalyser {
                 "-log <file>      specify the name of the log file, each log file must be specified with separate -log option\n" +
                 "-o <output.log>  specify log file to write into (default output is stdout)\n" +
                 "-b <burnin>      specify the number PERCANTAGE of lines in the log file considered to be burnin (default 10)\n" +
-                "-dir <directory> specify particle directory, if defined only one log must be specified and the -n option\n" +
+                "-dir <directory> specify particle directory -- used for particle filtering in BEASTii only -- if defined only one log must be specified and the -n option specified\n" +
                 "-n <int>         specify the number of particles, ignored if -dir is not defined\n" +
                 "-help            print this message\n";
     }

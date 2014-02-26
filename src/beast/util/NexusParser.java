@@ -533,7 +533,7 @@ public class NexusParser {
         } while (!sStr.toLowerCase().contains("end;"));
     }
 
-    private String generateSequenceID(final String sTaxon) {
+    public static String generateSequenceID(final String sTaxon) {
         String sID = "seq_" + sTaxon;
         int i = 0;
         while (g_sequenceIDs.contains(sID + (i > 0 ? i : ""))) {

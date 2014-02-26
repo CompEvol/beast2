@@ -60,7 +60,12 @@ public class DeltaExchangeOperator extends Operator {
 
         if (compoundParameter == null) { // one parameter case
             if (parameterInput.get().isEmpty()) {
-                parameterWeights = new int[intparameterInput.get().get(0).getDimension()];
+            	if (intparameterInput.get().size() > 0) {
+            		parameterWeights = new int[intparameterInput.get().get(0).getDimension()];
+            	} else {
+            		// happens when BEAUti is setting things up
+            		parameterWeights = new int[0];
+            	}
             } else {
                 parameterWeights = new int[parameterInput.get().get(0).getDimension()];
             }

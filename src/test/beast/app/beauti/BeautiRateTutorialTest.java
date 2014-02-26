@@ -42,6 +42,9 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		beauti.frame.setSize(1024, 640);
 		
 		File dir = new File(PREFIX.substring(0, PREFIX.lastIndexOf('/')));
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
 		for (File file : dir.listFiles()) {
 			file.delete();
 		}
