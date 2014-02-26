@@ -434,8 +434,7 @@ public class NexusParser {
         }
         for (final String sTaxon : sTaxa) {
             final StringBuilder bsData = seqMap.get(sTaxon);
-            String sData = bsData.toString();
-            sData = sData.replaceAll("\\s", "");
+            String sData = bsData.toString().replaceAll("\\s", "");
             seqMap.put(sTaxon, new StringBuilder(sData));
 
             if (sData.length() != nChar) {
