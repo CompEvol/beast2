@@ -59,7 +59,7 @@ public class ClonePartitionPanel extends JPanel {
     protected void clonePartitions() {
         String sourceId = cloneFromComboBox.getSelectedItem().toString();
 
-        for (Object targetId : cloneFromComboBox.getSelectedObjects()) {
+        for (Object targetId : beautiPanel.listOfPartitions.getSelectedValues()) {
              beautiPanel.cloneFrom(sourceId, targetId.toString());
         }
     }

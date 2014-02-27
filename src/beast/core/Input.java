@@ -690,7 +690,7 @@ public class Input<T> {
                     if (((List<?>) get()).size() > 0) {
                         throw new Exception("No input of name '" + getName() + "' must be specified.");
                     }
-                } else if (get() == null) {
+                } else if (get() != null) {
                     throw new Exception("Input '" + getName() + "' must not be specified.");
                 }
                 break;
