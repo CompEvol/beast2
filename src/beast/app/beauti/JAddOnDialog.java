@@ -98,7 +98,7 @@ public class JAddOnDialog extends JDialog {
     private Box createButtonBox() {
         Box box = Box.createHorizontalBox();
         box.add(Box.createGlue());
-        JButton installButton = new JButton("Install");
+        JButton installButton = new JButton("Install/Upgrade");
         installButton.addActionListener(new ActionListener() {
 
             @Override
