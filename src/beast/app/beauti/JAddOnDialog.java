@@ -1,30 +1,12 @@
 package beast.app.beauti;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Point;
+import beast.util.AddOnManager;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
-import javax.swing.Box;
-import javax.swing.DefaultListModel;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import beast.util.AddOnManager;
-
-
-
 import java.util.List;
 
 /**
@@ -69,7 +51,7 @@ public class JAddOnDialog extends JDialog {
 
         AddOn(List<String> list) {
             sAddOnDescription = list.get(0);
-            sAddOnDescription = AddOnManager.formatAddOnInfo(list);            
+            sAddOnDescription = AddOnManager.formatAddOnInfo(list);
             sAddOnURL = list.get(1);
             bIsInstalled = false;
             List<String> sBeastDirs = AddOnManager.getBeastDirectories();
@@ -91,7 +73,7 @@ public class JAddOnDialog extends JDialog {
         Box box = Box.createVerticalBox();
         box.add(new JLabel("List of available Add-ons"));
         list = new JList(model);
-        list.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        list.setSelectionMode(DefaultListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         resetList();
 
         JScrollPane pane = new JScrollPane(list);
@@ -103,7 +85,7 @@ public class JAddOnDialog extends JDialog {
         model.clear();
         try {
             List<List<String>> addOns = AddOnManager.getAddOns();
-            for (List<String> addOn : addOns) {            	
+            for (List<String> addOn : addOns) {
                 AddOn addOnObject = new AddOn(addOn);
                 model.addElement(addOnObject);
             }
@@ -116,41 +98,77 @@ public class JAddOnDialog extends JDialog {
     private Box createButtonBox() {
         Box box = Box.createHorizontalBox();
         box.add(Box.createGlue());
-        JButton installButton = new JButton("Install/Uninstall");
+        JButton installButton = new JButton("Install/Upgrade");
         installButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                AddOn addOn = (AddOn) list.getSelectedValue();
-                if (addOn != null) {
-                    try {
-                        if (addOn.bIsInstalled) {
-                            if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " + AddOnManager.URL2AddOnName(addOn.sAddOnURL) + "?", "Uninstall Add On", JOptionPane.YES_NO_OPTION) ==
-                                    JOptionPane.YES_OPTION) {
+                Object[] addOns = list.getSelectedValues();
+                for (Object addOnObject : addOns) {
+                    if (addOnObject != null) {
+                        AddOn addOn = (AddOn) addOnObject;
+                        try {
+                            if (addOn.bIsInstalled) {
+                                //TODO upgrade version
+                            } else {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                                AddOnManager.uninstallAddOn(addOn.sAddOnURL, false, null);
+                                AddOnManager.installAddOn(addOn.sAddOnURL, false, null);
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                                
-                                File toDeleteFile = AddOnManager.getToDeleteListFile();
-                                if (toDeleteFile.exists()) {
-                                	JOptionPane.showMessageDialog(null, "<html>To complete uninstalling the addon, BEAUti need to be restarted<br><br>Exiting now.</html>");
-                                	System.exit(0);
-                                }
                             }
-                        } else {
-                            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                            AddOnManager.installAddOn(addOn.sAddOnURL, false, null);
+                            resetList();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Install failed because: " + ex.getMessage());
                             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                         }
-                        resetList();
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, "Install/uninstall failed because: " + ex.getMessage());
-                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     }
                 }
             }
         });
         box.add(installButton);
+
+        JButton uninstallButton = new JButton("Uninstall");
+        uninstallButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object[] addOns = list.getSelectedValues();
+
+                boolean toDeleteFileExists = false;
+                for (Object addOnObject : addOns) {
+                    if (addOnObject != null) {
+                        AddOn addOn = (AddOn) addOnObject;
+                        try {
+                            if (addOn.bIsInstalled) {
+//                            if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " + AddOnManager.URL2AddOnName(addOn.sAddOnURL) + "?", "Uninstall Add On", JOptionPane.YES_NO_OPTION) ==
+//                                    JOptionPane.YES_OPTION) {
+                                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                                AddOnManager.uninstallAddOn(addOn.sAddOnURL, false, null);
+                                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+                                File toDeleteFile = AddOnManager.getToDeleteListFile();
+                                if (toDeleteFile.exists()) {
+                                    toDeleteFileExists = true;
+                                }
+//                            }
+                            } else {
+                                //TODO ?
+                            }
+                            resetList();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Uninstall failed because: " + ex.getMessage());
+                            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                        }
+                    }
+                }
+
+                if (toDeleteFileExists) {
+                    JOptionPane.showMessageDialog(null, "<html>To complete uninstalling the addon, BEAUti need to be restarted<br><br>Exiting now.</html>");
+                    System.exit(0);
+                }
+
+            }
+        });
+        box.add(uninstallButton);
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
@@ -163,18 +181,18 @@ public class JAddOnDialog extends JDialog {
         box.add(Box.createGlue());
         box.add(closeButton);
         box.add(Box.createGlue());
-        
+
         JButton button = new JButton("?");
         button.setToolTipText(AddOnManager.getAddOnUserDir() + " " + AddOnManager.getAddOnAppDir());
         button.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		JOptionPane.showMessageDialog(panel, "<html>Add-on are installed in <br><br><em>" + AddOnManager.getAddOnUserDir() + 
-        				"</em><br><br> by you, and are available to you,<br>the user, only.<br>" +
-        				"System wide add-ons are installed in <br><br><em>" + AddOnManager.getAddOnAppDir() + 
-        				"</em><br><br>and are available to all users." +
-        				"<br>(just move the add-on there manually" +
-        				"<br>to make it system wide available).</html>");
-        	}
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(panel, "<html>Add-on are installed in <br><br><em>" + AddOnManager.getAddOnUserDir() +
+                        "</em><br><br> by you, and are available to you,<br>the user, only.<br>" +
+                        "System wide add-ons are installed in <br><br><em>" + AddOnManager.getAddOnAppDir() +
+                        "</em><br><br>and are available to all users." +
+                        "<br>(just move the add-on there manually" +
+                        "<br>to make it system wide available).</html>");
+            }
         });
         box.add(button);
         return box;

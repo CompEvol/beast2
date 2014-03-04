@@ -77,6 +77,11 @@ public class MCMC extends Runnable {
 
     public Input<OperatorSchedule> operatorScheduleInput = new Input<OperatorSchedule>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule());
 
+    public Input<Boolean> noLikelihoodCheckInput = new Input<Boolean>(
+            "noLikelihoodCheck",
+            "Turn off likelihood consistency checks. (WARNING: Only set to true if you know what you're doing!)",
+            false);
+
     /**
      * Alternative representation of operatorsInput that allows random selection
      * of operators and calculation of statistics.
@@ -426,7 +431,7 @@ public class MCMC extends Runnable {
             }
             log(sampleNr);
 
-            if (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0) {
+            if (!noLikelihoodCheckInput.get() && (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0)) {
                 // check that the posterior is correctly calculated at every third
                 // sample, as long as we are in debug mode
                 final double fLogLikelihood = state.robustlyCalcPosterior(posterior);
