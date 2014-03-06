@@ -70,7 +70,7 @@ abstract public class SpeciesTreeDistribution extends TreeDistribution {
      * @param tree
      * @return log-likelihood of density
      */
-    abstract double calculateTreeLogLikelihood(TreeInterface tree);
+    public abstract double calculateTreeLogLikelihood(TreeInterface tree);
 
     // ****************************************************************
     // Private and protected stuff
