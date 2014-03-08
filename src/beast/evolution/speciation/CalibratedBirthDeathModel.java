@@ -245,6 +245,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
 
         userPDF = userMarInput.get();
         if (userPDF == null) {
+            boolean needTables = false;
 
             if (type == Type.OVER_ALL_TOPOS) {
                 if (nCals == 1 && isYule ) {
@@ -263,14 +264,19 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
                             nCals == 2 && orderedCalibrations[1].taxa().containsAll(orderedCalibrations[0].taxa())) {
                         // closed form formulas
                     } else {
-                        setUpTables(tree.getLeafNodeCount() + 1);
-                        linsIter = new CalibrationLineagesIterator(this.xclades, this.taxaPartialOrder, maximal,
-                                tree.getLeafNodeCount());
+                        needTables = true;
                         lastHeights = new double[nCals];
                     }
                 }
             } else if (type == Type.OVER_RANKED_COUNTS) {
+                //setUpTables(tree.getLeafNodeCount() + 1);
+                needTables = true;
+            }
+
+            if( needTables ) {
                 setUpTables(tree.getLeafNodeCount() + 1);
+                linsIter = new CalibrationLineagesIterator(this.xclades, this.taxaPartialOrder, maximal,
+                        tree.getLeafNodeCount());
             }
         }
 
@@ -549,6 +555,20 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
                 }
 
                 case OVER_RANKED_COUNTS: {
+                    final int[] ranks = new int[hs.length];
+                    for (int k = 0; k < hs.length; ++k) {
+                        int r = 0;
+                        for(int j = 0; j < k; ++j) {
+                            r += (hs[j] <= hs[k]) ? 1 : 0;
+                        }
+                        for(int j = k+1; j < hs.length; ++j) {
+                            r += (hs[j] < hs[k]) ? 1 : 0;
+                        }
+                        ranks[k] = r + 1;
+                    }
+                    final double nt = countTrees(ranks, linsIter);
+                    logL -= nt;
+
                     Arrays.sort(hs);
                     final int[] cs = new int[nCals + 1];
                     for (final Node n : tree.getInternalNodes()) {
@@ -583,6 +603,8 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
                         logL -= ll;
                     } else {
                         assert( a < 1 );
+                        // We try to minimize the effects of numerical unstability,
+                        // so the evaluations look different than the nice equations in the MS.
 
                         final double r = lam;
 
@@ -598,10 +620,13 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
                             final double mrh1 = (i>0) ? -r * hs[i-1] : 0;
 
                             ll -= lfactorials[c];
-                            double xx =  1 - Math.exp(mrh - mrh1);
-                            double xx1 = rho + ira*Math.exp(mrh);
-                            double xx2 = rho + ira*Math.exp(mrh1);
-                            ll += c * (mrh1 + Math.log(v*xx/(xx1*xx2)));
+                            //double xx =  Math.log(1 - Math.exp(mrh - mrh1));
+                            // can we have accurate  log(1+e^x) ??
+                            final double xxo = Math.log1p(-Math.exp(mrh - mrh1));
+
+                            final double xx1 = rho + ira*Math.exp(mrh);
+                            final double xx2 = rho + ira*Math.exp(mrh1);
+                            ll += c * (mrh1 + xxo + Math.log(v/(xx1*xx2)));
 
                             // contribution of  calibration point
 
@@ -609,7 +634,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
                             ll += 2 * z + mrh;
                         }
 
-                        // last to root contribution
+                        // from last calibration to oo contribution
                         final double xu = ia/(rho + ira * Math.exp(-r*hs[nCals - 1]));
                         final int n2 = cs[nCals];                 assert n2 > 0;  // fixme
 
@@ -708,7 +733,8 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
         }
 
         // assert maxRank == len(sit)
-        final boolean noRoot = ni == lehs.length;
+        //final boolean noRoot = ni == lehs.length;
+        final boolean noRoot = ! cli.isRootCalibrated();
 
         final int nLevels = nHeights + (noRoot ? 1 : 0);
 
@@ -778,7 +804,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
         }
 
         if (!noRoot) {
-            // we dont have an iterator for 0 free lineages
+            // we don't have an iterator for 0 free lineages
             logc2 += 1 * lehs[nHeights];
         }
 
@@ -787,6 +813,41 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
 
         val += logc0 + logc1 + logc2;
 
+        return val;
+    }
+
+    // should cache those for (say) up to 6 (6!=720) values. need rank permutation to index function
+    //
+    private double countTrees(final int[] ranks, final CalibrationLineagesIterator cli) {
+        final int ni = cli.setup(ranks);
+        final boolean noRoot = ! cli.isRootCalibrated();
+
+        final int[] linsAtLevel = new int[ni];
+
+        final int[][] joiners = cli.allJoiners();
+
+        double val = 0;
+        boolean first = true;
+        int[][] linsInLevels;
+
+        while ((linsInLevels = cli.next()) != null) {
+            double v = countRankedTrees(ni, linsInLevels, joiners, linsAtLevel);
+            // 1 for root formula, 1 for kludge in iterator which sets root as 2 lineages
+            if (noRoot) {
+                final int ll = linsAtLevel[ni - 1] + 2;
+                v -= lc2[ll] + lg2;
+            }
+            if (first) {
+                val = v;
+                first = false;
+            } else {
+                if (val > v) {
+                    val += Math.log1p(Math.exp(v - val));
+                } else {
+                    val = v + Math.log1p(Math.exp(val - v));
+                }
+            }
+        }
         return val;
     }
 
@@ -912,7 +973,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
     /**
      * Count number of leaves in subtree whose root is node.
      *
-     * @param node
+     * @param node   subtree root
      * @return the number of leaves under this node.
      */
     public static int getLeafCount(final Node node) {

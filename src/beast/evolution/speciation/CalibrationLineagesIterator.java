@@ -13,6 +13,8 @@ public class CalibrationLineagesIterator {
     // Per calibration point, the number of taxa which is not below any other point.
     final int[] cladesFreeLins;
 
+    private final boolean rootCalibrated;
+
     // Use iterators 0 to nCurIters-1 (i.e. iters[0:nCurIters])
     private int nCurIters;
 
@@ -62,7 +64,14 @@ public class CalibrationLineagesIterator {
             }
         }
 
+        rootCalibrated = ( nMax == 1 && clades[maximalClades[0]].length == leafCount );
+
+        assert ! (rootCalibrated &&  nFreeLineages > 0);
         assert nFreeLineages >= 0;
+    }
+
+    boolean isRootCalibrated() {
+        return rootCalibrated;
     }
 
     // Prepare to iterate: ranks[i] gives the rank of the i'th clade. ranks is a permutation of (1,2,...,#points)
@@ -76,7 +85,7 @@ public class CalibrationLineagesIterator {
             setOneIterator(ranks, taxaPartialOrder[k], cladesFreeLins[k], ranks[k]);
         }
 
-        if( nFreeLineages > 0 ) {
+        if( ! rootCalibrated ) {
           setOneIterator(ranks, maximalClades, nFreeLineages, n+1);
         }
         
