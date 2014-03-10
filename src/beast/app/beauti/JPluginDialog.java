@@ -60,7 +60,7 @@ public class JPluginDialog extends JDialog {
 
     private Component createTable() {
         Box box = Box.createVerticalBox();
-        box.add(new JLabel("List of available Plugins"));
+        box.add(new JLabel("List of available plugins for BEAST v" + beastVersion.getMajorVersion() + ".* in alphabetic order"));
 
         DataTableModel dataTableModel = new DataTableModel();
         dataTable = new JTable(dataTableModel);
@@ -84,15 +84,12 @@ public class JPluginDialog extends JDialog {
     private void resetPlugins() {
         plugins.clear();
         try {
-            List<List<String>> addOns = getAddOns();
-            for (List<String> addOn : addOns) {
-                Plugin pluginObject = new Plugin(addOn);
-                plugins.add(pluginObject);
-            }
+            plugins = getPlugins();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        dataTable.setRowSelectionInterval(0, 0);
+        if (dataTable.getRowCount() > 0)
+            dataTable.setRowSelectionInterval(0, 0);
     }
 
     private Plugin getSelectedPlugin(int selectedRow) {
@@ -151,7 +148,7 @@ public class JPluginDialog extends JDialog {
                     Plugin selPlugin = getSelectedPlugin(selRow);
                     if (selPlugin != null) {
                         try {
-                            if (selPlugin.isInstalled) {
+                            if (selPlugin.isInstalled()) {
                                 //TODO upgrade version
                             } else {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -181,7 +178,7 @@ public class JPluginDialog extends JDialog {
                     Plugin selPlugin = getSelectedPlugin(selRow);
                     if (selPlugin != null) {
                         try {
-                            if (selPlugin.isInstalled) {
+                            if (selPlugin.isInstalled()) {
 //                            if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " +
 //                            AddOnManager.URL2AddOnName(plugin.pluginURL) + "?", "Uninstall Add On",
 //                                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -227,10 +224,10 @@ public class JPluginDialog extends JDialog {
         box.add(Box.createGlue());
 
         JButton button = new JButton("?");
-        button.setToolTipText(getAddOnUserDir() + " " + getAddOnAppDir());
+        button.setToolTipText(getPluginUserDir() + " " + getAddOnAppDir());
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(panel, "<html>Plugin are installed in <br><br><em>" + getAddOnUserDir() +
+                JOptionPane.showMessageDialog(panel, "<html>Plugin are installed in <br><br><em>" + getPluginUserDir() +
                         "</em><br><br> by you, and are available to you,<br>the user, only.<br>" +
                         "System wide plugins are installed in <br><br><em>" + getAddOnAppDir() +
                         "</em><br><br>and are available to all users." +
@@ -243,7 +240,7 @@ public class JPluginDialog extends JDialog {
     }
 
     class DataTableModel extends AbstractTableModel {
-        String[] columnNames = {"Name", "Status/Version", "Latest", "Detail"};
+        String[] columnNames = {"Name", "Status/Version", "Latest", "Dependencies", "Detail"};
 
         public int getColumnCount() {
             return columnNames.length;
@@ -263,6 +260,8 @@ public class JPluginDialog extends JDialog {
                 case 2:
                     return plugin.getLatestVersion();
                 case 3:
+                    return plugin.getDependencies();
+                case 4:
                     return plugin.pluginDescription;
                 default:
                     throw new IllegalArgumentException("unknown column, " + col);

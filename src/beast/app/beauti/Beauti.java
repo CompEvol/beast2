@@ -348,7 +348,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionAddOn() {
-            super("Manage Add-ons", "Manage Add-ons", "addon", -1);
+            super("Manage Plugins", "Manage Plugins", "plugin", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
