@@ -31,16 +31,14 @@
 package beast.util;
 
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import beast.app.BEASTVersion;
 import beast.app.util.Arguments;
 import beast.app.util.Utils;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -74,6 +72,14 @@ public class AddOnManager {
     public final static String ADD_ONS_URL = "http://www.beast2.org/wiki/index.php/Add-ons2.1.0";
 
     static final BEASTVersion beastVersion = new BEASTVersion();
+    public static final String INSTALLED = "installed";
+    public static final String NOT_INSTALLED = "un-installed";
+    public static final int PLUGIN_INTRO_INDEX = 0;
+    public static final int PLUGIN_URL_INDEX = 1;
+    public static final int PLUGIN_NAME_INDEX = 2;
+    public static final int PLUGIN_STATUS_INDEX = 3;
+    public static final int PLUGIN_VERSION_INDEX = 4;
+    public static final int PLUGIN_DEPENDENCIES_INDEX = 5;
 
     /**
      * flag indicating add ons have been loaded at least once *
@@ -87,7 +93,7 @@ public class AddOnManager {
     private static List<String> all_classes;
 
     /**
-     * return URLs containing list of downloadable add-ons *
+     * return URLs containing list of downloadable plugins *
      */
     public static String[] getAddOnURL() throws MalformedURLException {
 //        File localAddons = new File(getAddOnUserDir() + "/add-ons.html");
@@ -96,7 +102,7 @@ public class AddOnManager {
         String url = ADD_ONS_URL;
 
         File beastProps = new File(getAddOnUserDir() + "/beauti.properties");
-        // check beast.properties file exists in addon directory
+        // check beast.properties file exists in plugin directory
         if (beastProps.exists()) {
             Properties prop = new Properties();
 
@@ -149,7 +155,7 @@ public class AddOnManager {
             }
             is.close();
             String sText = buf.toString();
-            // parse WIKI xml for add-ons
+            // parse WIKI xml for plugins
             String startMark = "<!-- bodytext -->";
             sText = sText.substring(sText.indexOf(startMark) + startMark.length());
             String[] sStrs = sText.split("</p>");
@@ -160,25 +166,25 @@ public class AddOnManager {
 
 
                 List<String> addOn = new ArrayList<String>();
-                addOn.add(sStr2[0]);
-                sStr2 = sStr2[1].split("\"");
-                addOn.add(sStr2[1]);
-                String sAddOnName = URL2AddOnName(sStr2[1]);
+                addOn.add(sStr2[PLUGIN_INTRO_INDEX]);
+                sStr2 = sStr2[PLUGIN_URL_INDEX].split("\"");
+                addOn.add(sStr2[PLUGIN_URL_INDEX]);
+                String sAddOnName = Plugin.URL2AddOnName(sStr2[PLUGIN_URL_INDEX]);
                 addOn.add(sAddOnName);
-                addOn.add("not installed");
+                addOn.add(NOT_INSTALLED);
 
-                if (!containsAddOn(addOn.get(2), addOns)) {
+                if (!containsAddOn(addOn.get(PLUGIN_NAME_INDEX), addOns)) {
                     for (String sDir : sBeastDirs) {
                         File f = new File(sDir + "/" + sAddOnName);
                         if (f.exists()) {
-                            addOn.set(3, "installed");
+                            addOn.set(PLUGIN_STATUS_INDEX, INSTALLED);
                         }
                         f = new File(sDir + "/" + sAddOnName + "/version.xml");
                         if (f.exists()) {
                             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                             Document doc = factory.newDocumentBuilder().parse(f);
                             doc.normalize();
-                            // get name and version of add-on
+                            // get name and version of plugin
                             Element addon = doc.getDocumentElement();
                             String sAddonVersion = addon.getAttribute("version");
                             addOn.add(sAddonVersion);
@@ -201,21 +207,21 @@ public class AddOnManager {
                     addOns.add(addOn);
                 }
             } // end for i
-//            write addon html page, if received from internet
+//            write plugin html page, if received from internet
         }
         return addOns;
     }
 
     public static boolean containsAddOn(String sAddOnName, List<List<String>> addOns) throws Exception {
         for (List<String> addOn : addOns) {
-            if (sAddOnName.equalsIgnoreCase(addOn.get(2)))
+            if (sAddOnName.equalsIgnoreCase(addOn.get(PLUGIN_NAME_INDEX)))
                 return true;
         }
         return false;
     }
 
     /**
-     * download and unzip add-on from URL provided It is assumed the add-on
+     * download and unzip plugin from URL provided It is assumed the plugin
      * consists of a zip file containing directories /lib with jars used by the
      * add on /templates with beauti XML templates
      *
@@ -225,9 +231,9 @@ public class AddOnManager {
      */
     public static String installAddOn(String sURL, boolean useAppDir, String customDir) throws Exception {
         if (!sURL.toLowerCase().endsWith(".zip")) {
-            throw new Exception("Add-on should be packaged in a zip file");
+            throw new Exception("Plugin should be packaged in a zip file");
         }
-        String sName = URL2AddOnName(sURL);
+        String sName = Plugin.URL2AddOnName(sURL);
 
         // create directory
         URL templateURL = new URL(sURL);
@@ -256,9 +262,9 @@ public class AddOnManager {
 
     public static String uninstallAddOn(String sURL, boolean useAppDir, String customDir) throws Exception {
         if (!sURL.toLowerCase().endsWith(".zip")) {
-            throw new Exception("Add-on should be packaged in a zip file");
+            throw new Exception("Plugin should be packaged in a zip file");
         }
-        String sName = URL2AddOnName(sURL);
+        String sName = Plugin.URL2AddOnName(sURL);
         String sDir = (useAppDir ? getAddOnAppDir() : getAddOnUserDir()) + "/" + sName;
         if (customDir != null) {
             sDir = customDir + "/" + sName;
@@ -291,13 +297,6 @@ public class AddOnManager {
         }
     }
 
-    public static String URL2AddOnName(String sURL) {
-        String sName = sURL.substring(sURL.lastIndexOf("/") + 1);
-        if (sName.contains(".")) {
-            sName = sName.substring(0, sName.indexOf("."));
-        }
-        return sName;
-    }
 
     /**
      * unzip zip archive *
@@ -356,7 +355,7 @@ public class AddOnManager {
     }
 
     /**
-     * return directory where to install add-ons for users *
+     * return directory where to install plugins for users *
      */
     public static String getAddOnUserDir() {
         if (Utils.isWindows()) {
@@ -373,7 +372,7 @@ public class AddOnManager {
     }
 
     /**
-     * return directory where system wide add-ons reside *
+     * return directory where system wide plugins reside *
      */
     public static String getAddOnAppDir() {
         if (Utils.isWindows()) {
@@ -387,7 +386,7 @@ public class AddOnManager {
 
     /**
      * @return file containing list of files that need to be deleted
-     * but could not be deleted. This can happen when uninstalling add-ons
+     * but could not be deleted. This can happen when uninstalling plugins
      * on windows, which locks jar files loaded by java.
      */
     public static File getToDeleteListFile() {
@@ -395,7 +394,7 @@ public class AddOnManager {
     }
 
     /**
-     * return list of directories that may contain add-ons *
+     * return list of directories that may contain plugins *
      */
     public static List<String> getBeastDirectories() {
         List<String> sDirs = new ArrayList<String>();
@@ -415,9 +414,9 @@ public class AddOnManager {
 
         // add user directory
         sDirs.add(System.getProperty("user.dir"));
-        // add user add-on directory
+        // add user plugin directory
         sDirs.add(getAddOnUserDir());
-        // add application add-on directory
+        // add application plugin directory
         sDirs.add(getAddOnAppDir());
 
         // pick up directories in class path, useful when running in an IDE
@@ -437,7 +436,7 @@ public class AddOnManager {
         }
 
 
-        // subdirectories that look like they may contain an add-on
+        // subdirectories that look like they may contain an plugin
         // this is detected by checking the subdirectory contains a lib or
         // templates directory
         List<String> sSubDirs = new ArrayList<String>();
@@ -554,38 +553,16 @@ public class AddOnManager {
 
     /**
      * go through list of directories collecting version and dependency information for
-     * all add-ons. Version and dependency info is stored in a file
+     * all plugins. Version and dependency info is stored in a file
      *
      * @param sDirs
      */
     private static void checkDependencies(List<String> sDirs) {
-        class AddonDependency {
-            String addon;
-            String dependson;
-            Double atLeast;
-            Double atMost;
-
-            public void setAtLest(String sAtLeast) {
-                if (sAtLeast == null || sAtLeast.length() == 0) {
-                    atLeast = 0.0;
-                } else {
-                    atLeast = beastVersion.parseVersion(sAtLeast);
-                }
-            }
-            public void setAtMost(String sAtMost) {
-                if (sAtMost == null || sAtMost.length() == 0) {
-                    atMost = Double.POSITIVE_INFINITY;
-                } else {
-                    atMost = beastVersion.parseVersion(sAtMost);
-                }
-            }
-        }
-
         HashMap<String, Double> addonVersion = new HashMap<String, Double>();
         addonVersion.put("beast2", beastVersion.parseVersion(beastVersion.getVersion()));
-        List<AddonDependency> dependencies = new ArrayList<AddonDependency>();
+        List<PluginDependency> dependencies = new ArrayList<PluginDependency>();
 
-        // gather version and dependency info for all add-ons
+        // gather version and dependency info for all plugins
         for (String sDir : sDirs) {
             File version = new File(sDir + "/version.xml");
             if (version.exists()) {
@@ -593,7 +570,7 @@ public class AddOnManager {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     Document doc = factory.newDocumentBuilder().parse(version);
                     doc.normalize();
-                    // get name and version of add-on
+                    // get name and version of plugin
                     Element addon = doc.getDocumentElement();
                     String sAddon = addon.getAttribute("name");
                     String sAddonVersion = addon.getAttribute("version");
@@ -603,8 +580,8 @@ public class AddOnManager {
                     NodeList nodes = doc.getElementsByTagName("depends");
                     for (int i = 0; i < nodes.getLength(); i++) {
                         Element dependson = (Element) nodes.item(i);
-                        AddonDependency dep = new AddonDependency();
-                        dep.addon = sAddon;
+                        PluginDependency dep = new PluginDependency();
+                        dep.plugin = sAddon;
                         dep.dependson = dependson.getAttribute("on");
                         String sAtLeast = dependson.getAttribute("atleast");
                         dep.setAtLest(sAtLeast);
@@ -620,15 +597,15 @@ public class AddOnManager {
         }
 
         // check dependencies
-        for (AddonDependency dep : dependencies) {
+        for (PluginDependency dep : dependencies) {
             Double version = addonVersion.get(dep.dependson);
             if (version == null) {
-                warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") which is not installed.\n" +
-                        "Either uninstall " + dep.addon + " or install the " + dep.dependson + " add on.");
+                warning("Plugin " + dep.plugin + " requires another plugin (" + dep.dependson + ") which is not installed.\n" +
+                        "Either uninstall " + dep.plugin + " or install the " + dep.dependson + " add on.");
             } else if (version > dep.atMost || version < dep.atLeast) {
-                warning("Add-on " + dep.addon + " requires another add-on (" + dep.dependson + ") with version in range " +
+                warning("Plugin " + dep.plugin + " requires another plugin (" + dep.dependson + ") with version in range " +
                         beastVersion.formatVersion(dep.atLeast) + " to " + beastVersion.formatVersion(dep.atMost) + " but " + dep.dependson + " has version " + beastVersion.formatVersion(version) + "\n" +
-                        "Either uninstall " + dep.addon + " or install the correct version of " + dep.dependson + ".");
+                        "Either uninstall " + dep.plugin + " or install the correct version of " + dep.dependson + ".");
             }
         }
     }
@@ -963,33 +940,15 @@ public class AddOnManager {
         System.exit(0);
     }
 
-    /** pretty format add-on information in list of string form as produced by getAddOns() **/
-    public static String formatAddOnInfo(List<String> addOn) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(addOn.get(2));
-        if (addOn.get(2).length() < 12) {
-            buf.append("             ".substring(addOn.get(2).length()));
-        }
-        buf.append(" (");
-        if (addOn.size() > 4) {
-            buf.append("v" + addOn.get(4) + " " + addOn.get(3));
-            buf.append((addOn.get(5).length() > 0 ? " depends on " + addOn.get(5) : ""));
-        } else {
-            buf.append(addOn.get(3));
-        }
-        buf.append(")" + ": " + addOn.get(0).trim());
-        return buf.toString();
-    }
-
     public static void main(String[] args) {
         try {
             Arguments arguments = new Arguments(
                     new Arguments.Option[]{
-                            new Arguments.Option("list", "List available add-ons"),
-                            new Arguments.StringOption("add", "NAME", "Install the <NAME> add-on "),
-                            new Arguments.StringOption("del", "NAME", "Uninstall the <NAME> add-on "),
+                            new Arguments.Option("list", "List available plugins"),
+                            new Arguments.StringOption("add", "NAME", "Install the <NAME> plugin "),
+                            new Arguments.StringOption("del", "NAME", "Uninstall the <NAME> plugin "),
                             new Arguments.Option("useAppDir", "Use application (system wide) installation directory. Note this requires writing rights to the application directory. If not specified, the user's BEAST directory will be used."),
-                            new Arguments.StringOption("dir", "DIR", "Install/uninstall add-on in directory <DIR>. This overrides the useAppDir option"),
+                            new Arguments.StringOption("dir", "DIR", "Install/uninstall plugin in directory <DIR>. This overrides the useAppDir option"),
                             new Arguments.Option("help", "Show help"),
                     });
             try {
@@ -1013,18 +972,18 @@ public class AddOnManager {
             }
 
             String[] sURLs = getAddOnURL();
-            Log.debug.println("Add-ons user path : " + getAddOnUserDir());
+            Log.debug.println("Plugins user path : " + getAddOnUserDir());
             for (String sURL : sURLs) {
                 Log.debug.println("Access URL : " + sURL);
             }
-            Log.debug.print("Getting list of add-ons ...");
+            Log.debug.print("Getting list of plugins ...");
             List<List<String>> addOns = AddOnManager.getAddOns();
             Log.debug.println("Done!\n");
 
             if (arguments.hasOption("list")) {
                 System.out.println("Name : status : Description ");
                 for (List<String> addOn : addOns) {
-                    System.out.println(formatAddOnInfo(addOn));
+                    System.out.println(Plugin.formatPluginInfo(addOn));
                 }
             }
 
@@ -1032,12 +991,12 @@ public class AddOnManager {
                 String name = arguments.getStringOption("add");
                 boolean processed = false;
                 for (List<String> addOn : addOns) {
-                    if (addOn.get(2).equals(name)) {
+                    if (addOn.get(PLUGIN_NAME_INDEX).equals(name)) {
                         processed = true;
-                        if (!addOn.get(3).equals("installed")) {
+                        if (!addOn.get(PLUGIN_STATUS_INDEX).equals("installed")) {
                             Log.debug.println("Start installation");
-                            String dir = installAddOn(addOn.get(1), useAppDir, customDir);
-                            System.out.println("Add-on " + name + " is installed in " + dir + ".");
+                            String dir = installAddOn(addOn.get(PLUGIN_URL_INDEX), useAppDir, customDir);
+                            System.out.println("Plugin " + name + " is installed in " + dir + ".");
                         } else {
                             System.out.println("Installation aborted: " + name + " is already installed.");
                             System.exit(0);
@@ -1045,7 +1004,7 @@ public class AddOnManager {
                     }
                 }
                 if (!processed) {
-                    System.out.println("Could not find add-on '" + name + "' (typo perhaps?)");
+                    System.out.println("Could not find plugin '" + name + "' (typo perhaps?)");
                 }
             }
 
@@ -1053,12 +1012,12 @@ public class AddOnManager {
                 String name = arguments.getStringOption("del");
                 boolean processed = false;
                 for (List<String> addOn : addOns) {
-                    if (addOn.get(2).equals(name)) {
+                    if (addOn.get(PLUGIN_NAME_INDEX).equals(name)) {
                         processed = true;
-                        if (!addOn.get(3).equals("not installed")) {
+                        if (!addOn.get(PLUGIN_STATUS_INDEX).equals("not installed")) {
                             Log.debug.println("Start un-installation");
-                            String dir = uninstallAddOn(addOn.get(1), useAppDir, customDir);
-                            System.out.println("Add-on " + name + " is uninstalled from " + dir + ".");
+                            String dir = uninstallAddOn(addOn.get(PLUGIN_URL_INDEX), useAppDir, customDir);
+                            System.out.println("Plugin " + name + " is uninstalled from " + dir + ".");
                         } else {
                             System.out.println("Un-installation aborted: " + name + " is not installed yet.");
                             System.exit(0);
@@ -1066,7 +1025,7 @@ public class AddOnManager {
                     }
                 }
                 if (!processed) {
-                    System.out.println("Could not find add-on '" + name + "' (typo perhaps?)");
+                    System.out.println("Could not find plugin '" + name + "' (typo perhaps?)");
                 }
             }
         } catch (Exception e) {
