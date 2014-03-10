@@ -368,7 +368,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     }
 
     @Override
-    double calculateTreeLogLikelihood(final TreeInterface tree) {
+    public double calculateTreeLogLikelihood(final TreeInterface tree) {
         final double lam = birthRateInput.get().getArrayValue();
 
         double logL = calculateYuleLikelihood(tree, lam);
