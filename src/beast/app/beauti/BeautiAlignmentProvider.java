@@ -331,8 +331,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
 
 			}
 		}
-		// alignment.initAndValidate();
 		alignment.setID("beast1");
+		alignment.initAndValidate();
 		return alignment;
 	} // parseBeast1XML
 

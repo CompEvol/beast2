@@ -347,7 +347,7 @@ public class NexusParser {
                 } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
                     alignment.dataTypeInput.setValue("aminoacid", alignment);
                     nTotalCount = 20;
-                } else if (sDataType.toLowerCase().equals("standard") && sSymbols.equals("01")) {
+                } else if (sDataType.toLowerCase().equals("standard") && (sSymbols == null || sSymbols.equals("01"))) {
                     alignment.dataTypeInput.setValue("binary", alignment);
                     nTotalCount = 2;
                 } else {
