@@ -7,11 +7,9 @@ import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.BEASTObject;
 import beast.core.Input;
 import beast.core.MCMC;
-import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
-import beast.evolution.operators.JointOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TreeInterface;
@@ -22,10 +20,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -175,8 +170,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
         Dimension size = new Dimension(partitionListPreferredWidth, 300);
         //listOfPartitions.setFixedCellWidth(120);
 //    	m_listOfPartitions.setSize(size);
-        listOfPartitions.setPreferredSize(size);
-//    	m_listOfPartitions.setMinimumSize(size);
+        //listOfPartitions.setPreferredSize(size);
+    	listOfPartitions.setMinimumSize(size);
 //    	m_listOfPartitions.setBounds(0, 0, 100, 100);
 
         listOfPartitions.addListSelectionListener(this);
