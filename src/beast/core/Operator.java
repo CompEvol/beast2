@@ -282,4 +282,15 @@ public abstract class Operator extends BEASTObject {
         m_nNrRejectedOperator  = o.has("rejectOp") ? o.getInt("rejectOp") : 0;
 	}
 
+
+	/** indicates that the state needs to be initialises so that 
+	 * BEASTObjects can be identified that need updating. This
+	 * almost always needs to happen, except for cases where the
+	 * operator already initialised the state, e.g. for delayed
+	 * acceptance operators.
+	 */
+	public boolean requiresStateInitialisation() {
+		return true;
+	}
+
 } // class Operator

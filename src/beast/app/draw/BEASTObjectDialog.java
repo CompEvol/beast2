@@ -89,9 +89,13 @@ public class BEASTObjectDialog extends JDialog {
     public void accept(BEASTObject plugin, BeautiDoc doc) {
         try {
             for (Input<?> input : m_panel.m_plugin.listInputs()) {
-            	if (!input.getName().equals("value")) {
-            		plugin.setInputValue(input.getName(), input.get());
+            	if (input.get() != null && (input.get() instanceof List)) {
+                    // setInpuValue (below) on lists does not lead to expected result
+            		// it appends values to the list instead, so we have to clear it first
+                    List list = (List)plugin.getInput(input.getName()).get();
+                    list.clear();
             	}
+            	plugin.setInputValue(input.getName(), input.get());
             }
             plugin.setID(m_panel.m_plugin.getID());
             if (doc != null) {
