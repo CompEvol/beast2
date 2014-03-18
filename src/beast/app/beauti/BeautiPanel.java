@@ -165,6 +165,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
         partitionComponent.add(partitionLabel, BorderLayout.NORTH);
         listModel = new DefaultListModel();
         listOfPartitions = new JList(listModel);
+        listOfPartitions.setName("listOfPartitions");
         listOfPartitions.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         Dimension size = new Dimension(partitionListPreferredWidth, 300);
