@@ -614,6 +614,8 @@
                      if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='birthRate.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
+
+			<connect srcID='birthRate.t:Species' targetID='SBI' inputName='birthRate' if='inposterior(YuleModel.t:Species) and inposterior(birthRate.t:Species)'/>
         </subtemplate>
 
         <!-- Calibrated Yule -->
@@ -649,6 +651,9 @@
                      if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='birthRateY.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRateY.t:$(n)/estimate=true'/>
+
+			<connect srcID="CalibratedYuleModel.t:Species" targetID='SBI' inputName='calibratedYule' if='inposterior(CalibratedYuleModel.t:Species)'/>
+			<connect srcID='birthRateY.t:Species' targetID='SBI' inputName='birthRate' if='inposterior(YuleModel.t:Species) and inposterior(birthRateY.t:Species)'/>
         </subtemplate>
 
         <!-- Birth Death model according to Gernhard'08 -->
@@ -699,6 +704,8 @@
                      if='inposterior(BirthDeath.t:$(n)) and inposterior(birthRate2.t:$(n)) and birthRate2/estimate=true'/>
             <connect srcID='relativeDeathRate2.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(BirthDeath.t:$(n)) and inposterior(relativeDeathRate2.t:$(n)) and relativeDeathRate22.t:$(n)/estimate=true'/>
+
+			<connect srcID='birthRate2.t:Species' targetID='SBI' inputName='birthRate' if='inposterior(BirthDeath.t:Species) and inposterior(birthRate2.t:Species)'/>
         </subtemplate>
 
 
