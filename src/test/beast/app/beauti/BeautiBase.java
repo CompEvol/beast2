@@ -8,6 +8,7 @@ import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
 
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -295,6 +296,8 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 			JFileChooserFixture fileChooser = findFileChooser().using(robot());
 			fileChooser.setCurrentDirectory(new File(dir));
 			fileChooser.selectFiles(files).approve();
+			// close down any popup message
+			robot().pressKey(KeyEvent.VK_ESCAPE);
 		} else {
 			this._dir = dir;
 			for (File file : files) {
