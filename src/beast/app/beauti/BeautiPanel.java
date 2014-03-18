@@ -7,11 +7,9 @@ import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.BEASTObject;
 import beast.core.Input;
 import beast.core.MCMC;
-import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
-import beast.evolution.operators.JointOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TreeInterface;
@@ -22,10 +20,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -170,13 +165,14 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
         partitionComponent.add(partitionLabel, BorderLayout.NORTH);
         listModel = new DefaultListModel();
         listOfPartitions = new JList(listModel);
+        listOfPartitions.setName("listOfPartitions");
         listOfPartitions.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         Dimension size = new Dimension(partitionListPreferredWidth, 300);
         //listOfPartitions.setFixedCellWidth(120);
 //    	m_listOfPartitions.setSize(size);
-        listOfPartitions.setPreferredSize(size);
-//    	m_listOfPartitions.setMinimumSize(size);
+        //listOfPartitions.setPreferredSize(size);
+    	listOfPartitions.setMinimumSize(size);
 //    	m_listOfPartitions.setBounds(0, 0, 100, 100);
 
         listOfPartitions.addListSelectionListener(this);
@@ -381,12 +377,15 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
     	}
     	
 		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
+		
+		GenericTreeLikelihood likelihoodSource = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(iSource);
 		GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(iTarget);
 		PartitionContext context = doc.getContextFor(likelihood);
+		// this ensures the config.sync does not set any input value
 		config._input.setValue(null, config);
 
     	if (type.equals("SiteModel")) {		
-			SiteModelInterface siteModelSource = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sourceID);
+			SiteModelInterface siteModelSource = likelihoodSource.siteModelInput.get();
 			SiteModelInterface  siteModel = null;
 			try {
 				siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTObject) siteModelSource,
@@ -398,7 +397,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 			likelihood.siteModelInput.setValue(siteModel, likelihood);
 			return;
     	} else if (type.equals("ClockModel")) {
-    		BranchRateModel clockModelSource = getDoc().getClockModel(sourceID);
+    		BranchRateModel clockModelSource = likelihoodSource.branchRateModelInput.get();
     		BranchRateModel clockModel = null;
 			try {
 				clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin((BEASTObject) clockModelSource,
@@ -424,15 +423,16 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (tree != null && tree != likelihood.treeInput.get()) {
-				throw new RuntimeException("Cannot link clock model with different trees");
-			}
+			//if (tree != null && tree != likelihood.treeInput.get()) {
+				likelihood.treeInput.setValue(tree, likelihood);
+				//throw new RuntimeException("Cannot link clock model with different trees");
+			//}
 
 			likelihood.branchRateModelInput.setValue(clockModel, likelihood);
 			return;
     	} else if (type.equals("Tree")) {
 			TreeInterface tree = null;
-			TreeInterface treeSource = (TreeInterface) doc.pluginmap.get("Tree.t:" + sourceID);
+			TreeInterface treeSource = likelihoodSource.treeInput.get();
 			try {
 			tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTObject) treeSource, likelihood,
 							(MCMC) doc.mcmc.get(), context, doc, null);

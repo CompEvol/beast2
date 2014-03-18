@@ -23,7 +23,7 @@ import beast.evolution.tree.TreeInterface;
 public class YuleModel extends SpeciesTreeDistribution {
     public Input<RealParameter> birthDiffRateParameterInput =
             new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
-    public Input<Boolean> conditionlOnRootInput =
+    public Input<Boolean> conditionalOnRootInput =
             new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
 
     protected boolean conditionalOnRoot;
@@ -31,7 +31,7 @@ public class YuleModel extends SpeciesTreeDistribution {
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-        conditionalOnRoot = conditionlOnRootInput.get();
+        conditionalOnRoot = conditionalOnRootInput.get();
 
         // make sure that all tips are at the same height,
         // otherwise this Yule Model is not appropriate

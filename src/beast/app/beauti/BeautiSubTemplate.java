@@ -16,6 +16,7 @@ import beast.core.Input;
 import beast.core.Logger;
 import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.likelihood.GenericTreeLikelihood;
@@ -198,9 +199,15 @@ public class BeautiSubTemplate extends BEASTObject {
                 if (init && connector.atInitialisationOnly()) {// ||
                     doc.connect(connector, context);
                 }
+                //System.out.println(connector.sSourceID + " == " + connector.sTargetID);
+                if (connector.sTargetID != null && connector.sTargetID.equals("prior")) {
+                	Log.warning.println(">>> No description for connector " + connector.sSourceID + " == " + connector.sTargetID);
+                }
                 if (connector.getTipText() != null) {
-                    doc.tipTextMap.put(BeautiDoc.translatePartitionNames(connector.sSourceID, context), //.replaceAll("\\$\\(n\\)", sPartition),
-                    		BeautiDoc.translatePartitionNames(connector.getTipText(), context)); //.replaceAll("\\$\\(n\\)", sPartition));
+                	String ID = BeautiDoc.translatePartitionNames(connector.sSourceID, context);
+                	String tipText = BeautiDoc.translatePartitionNames(connector.getTipText(), context).trim().replaceAll("\\s+", " ");
+                	//System.out.println(ID + " -> " + tipText);
+                    doc.tipTextMap.put(ID, tipText);
                 }
             }
             if (suppressedInputs.get() != null) {

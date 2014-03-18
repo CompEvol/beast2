@@ -45,6 +45,7 @@ public class ClonePartitionPanel extends JPanel {
         add(Box.createVerticalGlue());
         add(Box.createVerticalStrut(5));
 
+        okButton.setName("ok");
         okButton.setToolTipText("Click to clone configuration from the above selected partition " +
                 "into all selected partitions on the left.");
         okButton.addActionListener(new ActionListener() {

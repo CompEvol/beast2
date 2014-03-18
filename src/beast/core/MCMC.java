@@ -395,8 +395,10 @@ public class MCMC extends Runnable {
 
             if (logHastingsRatio != Double.NEGATIVE_INFINITY) {
 
-                state.storeCalculationNodes();
-                state.checkCalculationNodesDirtiness();
+            	if (operator.requiresStateInitialisation()) {
+            		state.storeCalculationNodes();
+            		state.checkCalculationNodesDirtiness();
+            	}
 
                 newLogLikelihood = posterior.calculateLogP();
 
@@ -427,6 +429,10 @@ public class MCMC extends Runnable {
                     operator.reject(-2);
                 }
                 state.restore();
+				if (!operator.requiresStateInitialisation()) {
+                    state.setEverythingDirty(false);
+                    state.restoreCalculationNodes();
+				}
                 //System.out.print(" direct reject");
             }
             log(sampleNr);

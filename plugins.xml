@@ -1,0 +1,41 @@
+<plugins>
+    <!--names in alphabetic order-->
+
+    <addon name='BDSKY' version='1.1.0'
+           url="http://bdssm-beast2.googlecode.com/files/BDSKY.addon.v1.1.0.zip"
+           description="birth death skyline -- handles serially sampled tips">
+        <depends on='beast2' atleast='2.1.0'/>
+    </addon>
+
+    <addon name='BEASTii' version='1.1.0'
+           url="http://beastii.googlecode.com/files/BEASTii.addon.v1.1.0.zip"
+           description="BEAST utilities, such as multi threaded treeliklihood">
+        <depends on='beast2' atleast='2.1.0'/>
+    </addon>
+
+    <addon name='BEAST_CLASSIC' version='1.1.2'
+           url="http://www.cs.auckland.ac.nz/~remco/BEASTBook/BEAST_CLASSIC.addon.v1.1.2.zip"
+           description="BEAST classes ported from BEAST 1 in wrappers" >
+        <depends on='beast2' atleast='2.1.0'/>
+        <depends on='BEASTii' atleast='1.1.0'/>
+    </addon>
+
+    <addon name='RBS' version='1.1.0'
+           url="http://rb-beast.googlecode.com/files/RBS.addon.v1.1.0.zip"
+           description="Reversible-jump Based substitution model" >
+        <depends on='beast2' atleast='2.1.0'/>
+    </addon>
+
+    <addon name='SNAPP' version='1.1.4'
+           url="http://www.cs.auckland.ac.nz/~remco/BEASTBook/SNAPP.addon.v1.1.4.zip"
+           description="SNP and AFLP Phylogenies" >
+        <depends on='beast2' atleast='2.1.0'/>
+    </addon>
+
+    <addon name='SubstBMA' version='1.1.0'
+           url="http://www.cs.auckland.ac.nz/~remco/BEASTBook/SubstBMA.addon.v1.1.0.zip"
+           description="Substitution Bayesian Model Averaging" >
+        <depends on='beast2' atleast='2.1.0'/>
+    </addon>
+
+</plugins>

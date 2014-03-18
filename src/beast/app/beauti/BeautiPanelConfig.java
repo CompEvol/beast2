@@ -282,7 +282,7 @@ public class BeautiPanelConfig extends BEASTObject {
 
     @SuppressWarnings("unchecked")
     public void sync(int iPartition) {
-        if (parentInputs.size() > 0) {
+        if (parentInputs.size() > 0 && _input.get() != null) {
             Input<?> input = parentInputs.get(iPartition);
             if (bIsList) {
                 List<Object> list = (List<Object>) _input.get();
