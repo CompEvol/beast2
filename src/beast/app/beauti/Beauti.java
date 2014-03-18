@@ -383,38 +383,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             try {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                File[] files = Utils.getLoadFiles("Import alignment File",
-                        new File(g_sDir), "alignment files", "nex", "nxs",
-                        "nexus", "xml");
-                if (files == null) {
-                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                    return;
-                }
-                for (File file : files) {
-                    String fileSep = System.getProperty("file.separator");
-                    if (fileSep.equals("\\")) {
-                        fileSep = "\\\\";
-                    }
-                    if (file.getAbsolutePath().lastIndexOf(fileSep) > 0) {
-                        g_sDir = file.getAbsolutePath().substring(0,
-                                file.getAbsolutePath().lastIndexOf(fileSep));
-                    }
-                    String sFileName = file.getAbsolutePath();
-                    // AR - this looks very UNIX specific path (i.e., '/' not a
-                    // System dependent separator char).
-                    // if (sFileName.lastIndexOf('/') > 0) {
-                    // Beauti.g_sDir = sFileName.substring(0,
-                    // sFileName.lastIndexOf('/'));
-                    // }
-                    if (sFileName.toLowerCase().endsWith(".nex")
-                            || sFileName.toLowerCase().endsWith(".nxs")
-                            || sFileName.toLowerCase().endsWith(".nexus")) {
-                        doc.importNexus(file);
-                    }
-                    if (sFileName.toLowerCase().endsWith(".xml")) {
-                        doc.importXMLAlignment(file);
-                    }
-                }
+                BeautiAlignmentProvider provider = new BeautiAlignmentProvider();
+                provider.template.setValue(doc.beautiConfig.partitionTemplate.get(), provider);
+                provider.getAlignments(doc);
+                
                 doc.connectModel();
                 doc.fireDocHasChanged();
                 a_save.setEnabled(true);
@@ -422,7 +394,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             } catch (Exception e) {
                 e.printStackTrace();
 
-                String text = "Something went wrong importing the alignment: \n";
+                String text = "Something went wrong importing the alignment:\n";
                 JTextArea textArea = new JTextArea(text);
                 textArea.setColumns(30);
                 textArea.setLineWrap(true);
