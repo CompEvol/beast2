@@ -424,7 +424,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 				e.printStackTrace();
 			}
 			//if (tree != null && tree != likelihood.treeInput.get()) {
-				//likelihood.treeInput.setValue(tree, likelihood);
+				likelihood.treeInput.setValue(tree, likelihood);
 				//throw new RuntimeException("Cannot link clock model with different trees");
 			//}
 
