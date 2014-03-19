@@ -23,7 +23,10 @@ public class LogNormalDistributionModelTest extends TestCase {
             double M = Math.random() * 10.0 - 5.0;
             double S = Math.random() * 10;
 
-            double x = Math.log(Math.random() * 10);
+            double x = -1;
+            while( x < 0 ) {
+                x = Math.log(Math.random() * 10);
+            }
 
             logNormal.MParameterInput.setValue(M + "", logNormal);
             logNormal.SParameterInput.setValue(S + "", logNormal);

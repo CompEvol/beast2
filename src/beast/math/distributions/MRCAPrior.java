@@ -138,7 +138,7 @@ public class MRCAPrior extends Distribution {
             return Double.NEGATIVE_INFINITY;
         }
         if (dist != null) {
-            logP = dist.logDensity(MRCATime - dist.offsetInput.get());
+            logP = dist.logDensity(MRCATime); // - dist.offsetInput.get());
         }
         return logP;
     }

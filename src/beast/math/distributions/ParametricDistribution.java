@@ -66,9 +66,9 @@ public abstract class ParametricDistribution extends CalculationNode implements 
         final double fOffset = offsetInput.get();
         double fLogP = 0;
         for (int i = 0; i < x.getDimension(); i++) {
-            final double fX = x.getArrayValue(i) - fOffset;
+            final double fX = x.getArrayValue(i);
             //fLogP += Math.log(density(fX));
-            fLogP += logDensity(fX);
+            fLogP += logDensity(fX, fOffset);
         }
         return fLogP;
     }
@@ -128,9 +128,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
         return 0.0;
     }
 
-    //@Override
-    public double logDensity(double x) {
-        final double offset = getOffset();
+    private double logDensity(double x, double offset) {
         if( x >= offset ) {
             x -= offset;
             final org.apache.commons.math.distribution.Distribution dist = getDistribution();
@@ -141,6 +139,11 @@ public abstract class ParametricDistribution extends CalculationNode implements 
             }
         }
         return Double.NEGATIVE_INFINITY;
+    }
+
+    //@Override
+    public double logDensity(double x) {
+        return logDensity(x, getOffset());
     }
 
     /**
