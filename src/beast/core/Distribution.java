@@ -137,5 +137,16 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         if (iDim == 0) return getArrayValue();
         return 0;
     }
+    
+    /**
+     * Intended to be overridden by stochastically estimated distributions.
+     * Used to disable target distribution consistency checks implemented in
+     * the MCMC class which do not apply to stochastic distributions.
+     * 
+     * @return true if stochastic.
+     */
+    public boolean isStochastic() {
+        return false;
+    }
 
 } // class ProbabilityDistribution
