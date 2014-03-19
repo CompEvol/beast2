@@ -306,17 +306,11 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         Set<String> taxonIDs = new HashSet<String>();
         for (Alignment alignment : getDoc().alignments) {
         	for (String sID : alignment.getTaxaNames()) {
-        		boolean found = false;
-        		for (Taxon t : taxa) {
-        			if (t.getID().equals(sID)) {
-        				found = true;
-        				break;
-        			}
-        		}
-        		if (!found) {
+                if (!taxonIDs.contains(sID)) {
 	                Taxon taxon = new Taxon();
 	                taxon.setID(sID);
 	                taxa.add(taxon);
+	                taxonIDs.add(sID);
         		}
         	}
             for (Sequence sequence : alignment.sequenceInput.get()) {
