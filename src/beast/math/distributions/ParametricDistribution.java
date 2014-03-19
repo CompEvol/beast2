@@ -37,10 +37,13 @@ import beast.core.Function;
 import beast.core.Input;
 import beast.util.Randomizer;
 
+import java.sql.Types;
 
 
 /**
  * A class that describes a parametric distribution
+ *
+ * * (FIXME) cumulative functions disregard offset. Serious bug if they are used.
  *
  * @author Alexei Drummond
  * @version $Id: ParametricDistributionModel.java,v 1.4 2005/05/24 20:25:59 rambaut Exp $
@@ -111,26 +114,33 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @return The pdf at point x.
      */
     //@Override
-    public double density(final double x) {
-        final org.apache.commons.math.distribution.Distribution dist = getDistribution();
-        if (dist instanceof ContinuousDistribution) {
-            return ((ContinuousDistribution) dist).density(x);
-        } else if (dist instanceof IntegerDistribution) {
-            return ((IntegerDistribution) dist).probability(x);
+    public double density(double x) {
+        final double offset = getOffset();
+        if( x >= offset ) {
+            x -= offset;
+            final org.apache.commons.math.distribution.Distribution dist = getDistribution();
+            if (dist instanceof ContinuousDistribution) {
+                return ((ContinuousDistribution) dist).density(x);
+            } else if (dist instanceof IntegerDistribution) {
+                return ((IntegerDistribution) dist).probability(x);
+            }
         }
         return 0.0;
     }
 
     //@Override
-    /** NB logDensity does not take offset in account **/
-    public double logDensity(final double x) {
-        final org.apache.commons.math.distribution.Distribution dist = getDistribution();
-        if (dist instanceof ContinuousDistribution) {
-            return ((ContinuousDistribution) dist).logDensity(x);
-        } else if (dist instanceof IntegerDistribution) {
-            return Math.log(((IntegerDistribution) dist).probability(x));
+    public double logDensity(double x) {
+        final double offset = getOffset();
+        if( x >= offset ) {
+            x -= offset;
+            final org.apache.commons.math.distribution.Distribution dist = getDistribution();
+            if (dist instanceof ContinuousDistribution) {
+                return ((ContinuousDistribution) dist).logDensity(x);
+            } else if (dist instanceof IntegerDistribution) {
+                return Math.log(((IntegerDistribution) dist).probability(x));
+            }
         }
-        return 0.0;
+        return Double.NEGATIVE_INFINITY;
     }
 
     /**
@@ -167,7 +177,14 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     public double cumulativeProbability(final double x0, final double x1) throws MathException {
         return getDistribution().cumulativeProbability(x0, x1);
     }
-    
+
+    /**
+     * @return  offset of distribution.
+     */
+    public double getOffset() {
+        return offsetInput.get();
+    }
+
     /** returns mean of distribution, if implemented **/
     public double getMean() {
     	throw new RuntimeException("Not implemented yet");
