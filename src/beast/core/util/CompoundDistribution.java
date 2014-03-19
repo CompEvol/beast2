@@ -193,5 +193,14 @@ public class CompoundDistribution extends Distribution {
     		return super.listActivePlugins();
     	}
     }
-    
+
+    @Override
+    public boolean isStochastic() {
+        for (Distribution distribution : pDistributions.get()) {
+            if (distribution.isStochastic())
+                return true;
+        }
+        
+        return false;
+    }
 } // class CompoundProbabilityDistribution
