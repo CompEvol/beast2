@@ -336,6 +336,8 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         final List<CalibrationPoint> cals = cYule.calibrationsInput.get();
 
         final CalibratedYuleModel cym = new CalibratedYuleModel();
+        cym.outputs = cYule.outputs;
+
         for( final CalibrationPoint cal : cals ) {
           cym.setInputValue("calibrations", cal);
         }
