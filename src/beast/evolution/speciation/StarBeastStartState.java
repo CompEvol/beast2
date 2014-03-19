@@ -346,6 +346,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         cym.initAndValidate();
 
         final Tree t = cym.compatibleInitialTree();
+        assert spTree.getLeafNodeCount() == t.getLeafNodeCount();
 
         spTree.assignFromWithoutID(t);
 
@@ -354,6 +355,8 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 //        ct.initStateNodes();
         final double rootHeight = spTree.getRoot().getHeight();
         randomInitGeneTrees(rootHeight);
+
+        cYule.initAndValidate();
     }
 
     @Override

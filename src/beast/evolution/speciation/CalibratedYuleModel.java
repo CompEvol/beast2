@@ -10,6 +10,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.ParametricDistribution;
 import beast.math.statistic.RPNcalculator;
 
 import java.io.PrintStream;
@@ -274,7 +275,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         // get lower  bound: max(lower bound of dist , bounds of nested clades)
         for (int k = 0; k < nCals; ++k) {
             final CalibrationPoint cal = orderedCalibrations[k];
-            lowBound[k] = cal.dist().inverseCumulativeProbability(0);
+            final ParametricDistribution dist = cal.dist();
+            final double offset = dist.getOffset();
+            lowBound[k] = dist.inverseCumulativeProbability(0) + offset;
             // those are node heights
             if (lowBound[k] < 0) {
                 lowBound[k] = 0;
@@ -282,7 +285,10 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             for (final int i : taxaPartialOrder[k]) {
                 lowBound[k] = Math.max(lowBound[k], lowBound[i]);
             }
-            cladeHeight[k] = cal.dist().inverseCumulativeProbability(1);
+            cladeHeight[k] = dist.inverseCumulativeProbability(1);
+            if (! Double.isInfinite(cladeHeight[k])) {
+              cladeHeight[k] += offset;
+            }
         }
 
         for (int k = nCals - 1; k >= 0; --k) {
@@ -328,6 +334,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             }
             for (final int i : taxaPartialOrder[k]) {
                 sbs.add(subTree[i]);
+                subTree[i] = null;
             }
             final double base = sbs.get(sbs.size() - 1).getHeight();
             final double step = (cladeHeight[k] - base) / (sbs.size() - 1);
@@ -345,9 +352,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         for (int k = 0; k < nCals - 1; ++k) {
             final Node s = subTree[k];
-            h = Math.max(h, cladeHeight[k]) + 1;
-            finalTree = Node.connect(finalTree, s, h);
-            finalTree.setNr(++curInternal);
+            if( s != null ) {
+                h = Math.max(h, cladeHeight[k]) + 1;
+                finalTree = Node.connect(finalTree, s, h);
+                finalTree.setNr(++curInternal);
+            }
         }
 
         for (int k = 0; k < used.length; ++k) {
