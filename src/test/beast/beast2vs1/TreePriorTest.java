@@ -185,6 +185,7 @@ public class TreePriorTest extends TestFramework {
                 addExpIntoList(expList, "hky.frequencies3", 0.1553, 4.3071E-4);
                 addExpIntoList(expList, "hky.frequencies4", 0.2614, 6.1733E-4);
                 addExpIntoList(expList, "treeLikelihood", -1816.7497, 5.4764E-2);
+                // this is clearly bunk (negative value for a positive parameter)
                 addExpIntoList(expList, "populationMean", -3.4472, 0.1802);
                 break;
 

@@ -117,7 +117,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     //@Override
     public double density(double x) {
         final double offset = getOffset();
-        if( x >= offset ) {
+ //       if( x >= offset ) {
             x -= offset;
             final org.apache.commons.math.distribution.Distribution dist = getDistribution();
             if (dist instanceof ContinuousDistribution) {
@@ -125,12 +125,12 @@ public abstract class ParametricDistribution extends CalculationNode implements 
             } else if (dist instanceof IntegerDistribution) {
                 return ((IntegerDistribution) dist).probability(x);
             }
-        }
+   //     }
         return 0.0;
     }
 
-    private double logDensity(double x, double offset) {
-        if( x >= offset ) {
+    private double logDensity(double x, final double offset) {
+   //     if( x >= offset ) {
             x -= offset;
             final org.apache.commons.math.distribution.Distribution dist = getDistribution();
             if (dist instanceof ContinuousDistribution) {
@@ -138,12 +138,12 @@ public abstract class ParametricDistribution extends CalculationNode implements 
             } else if (dist instanceof IntegerDistribution) {
                 return Math.log(((IntegerDistribution) dist).probability(x));
             }
-        }
+  //      }
         return Double.NEGATIVE_INFINITY;
     }
 
     //@Override
-    public double logDensity(double x) {
+    public double logDensity(final double x) {
         return logDensity(x, getOffset());
     }
 

@@ -106,11 +106,17 @@ public class LogNormalDistributionModel extends ParametricDistribution {
 
         @Override
         public double density(double fX) {
+            if( fX <= 0 ) {
+                return 0;
+            }
             return m_normal.density(Math.log(fX)) / fX;
         }
 
         @Override
         public double logDensity(double fX) {
+            if( fX <= 0 ) {
+                return  Double.NEGATIVE_INFINITY;
+            }
             return m_normal.logDensity(Math.log(fX)) - Math.log(fX);
         }
     } // class LogNormalImpl
