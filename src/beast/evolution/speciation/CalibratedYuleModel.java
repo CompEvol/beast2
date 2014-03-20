@@ -276,8 +276,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         for (int k = 0; k < nCals; ++k) {
             final CalibrationPoint cal = orderedCalibrations[k];
             final ParametricDistribution dist = cal.dist();
-            final double offset = dist.getOffset();
-            lowBound[k] = dist.inverseCumulativeProbability(0) + offset;
+            //final double offset = dist.getOffset();
+            lowBound[k] = dist.inverseCumulativeProbability(0);
             // those are node heights
             if (lowBound[k] < 0) {
                 lowBound[k] = 0;
@@ -286,9 +286,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 lowBound[k] = Math.max(lowBound[k], lowBound[i]);
             }
             cladeHeight[k] = dist.inverseCumulativeProbability(1);
-            if (! Double.isInfinite(cladeHeight[k])) {
-              cladeHeight[k] += offset;
-            }
+//            if (! Double.isInfinite(cladeHeight[k])) {
+//              cladeHeight[k] += offset;
+//            }
         }
 
         for (int k = nCals - 1; k >= 0; --k) {

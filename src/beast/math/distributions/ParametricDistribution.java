@@ -98,10 +98,11 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     //@Override
     public double inverseCumulativeProbability(final double p) throws MathException {
         final org.apache.commons.math.distribution.Distribution dist = getDistribution();
+        double offset = getOffset();
         if (dist instanceof ContinuousDistribution) {
-            return ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
+            return offset + ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
         } else if (dist instanceof IntegerDistribution) {
-            return dist.cumulativeProbability(p);
+            return offset + dist.cumulativeProbability(p);
         }
         return 0.0;
     }
@@ -184,7 +185,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     /**
      * @return  offset of distribution.
      */
-    public double getOffset() {
+    private double getOffset() {
         return offsetInput.get();
     }
 
