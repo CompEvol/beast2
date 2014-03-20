@@ -124,6 +124,14 @@ public class Package {
         return latestVersion;
     }
 
+    public boolean dependsOn(String packageName) {
+        for (PackageDependency packageDependency : dependencies) {
+            if (packageDependency.compareTo(packageName) == 0)
+                return true;
+        }
+        return false;
+    }
+
     public String getDependenciesString() {
         String depString = "";
         for (PackageDependency packageDependency : dependencies) {

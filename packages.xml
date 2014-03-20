@@ -22,7 +22,7 @@
 
     <package name='CA' version='1.0.0'
            url="http://beastii.googlecode.com/files/CA.addon.v1.0.0.zip"
-           description="CladeAge aPackage for fossil calibrations">
+           description="CladeAge package for fossil calibrations">
         <depends on='beast2' atleast='2.1.0'/>
     </package>
 

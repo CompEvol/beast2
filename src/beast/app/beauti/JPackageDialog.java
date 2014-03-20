@@ -4,6 +4,7 @@ import beast.core.Description;
 import beast.util.Package;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,8 +26,8 @@ import static beast.util.AddOnManager.*;
 @Description("BEAUti package manager")
 public class JPackageDialog extends JDialog {
     private static final long serialVersionUID = 1L;
-    JPanel panel;
-    JCheckBox installAllDepCheckBox = new JCheckBox("install dependent packages", null, true);
+    JScrollPane scrollPane;
+    JCheckBox allDepCheckBox = new JCheckBox("install/uninstall all dependencies", null, true);
     final JFrame frame;
     JTable dataTable = null;
 
@@ -37,19 +38,22 @@ public class JPackageDialog extends JDialog {
         this.frame = frame;
         frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         setModal(true);
-
-        panel = new JPanel();
-        getContentPane().add(BorderLayout.CENTER, panel);
         setTitle("BEAST 2 Package Manager");
 
-        Component packageListBox = createTable();
-        panel.add(packageListBox);
+        JLabel jLabel = new JLabel("List of available packages for BEAST v" + beastVersion.getMajorVersion() + ".* in alphabetic order");
+        getContentPane().add(BorderLayout.NORTH, jLabel);
+
+        createTable();
+        scrollPane = new JScrollPane(dataTable);
+        getContentPane().add(BorderLayout.CENTER, scrollPane);
+
         Box buttonBox = createButtonBox();
         getContentPane().add(buttonBox, BorderLayout.SOUTH);
 
-        Dimension dim = panel.getPreferredSize();
+        scrollPane.setPreferredSize(new Dimension(660, 400));
+        Dimension dim = scrollPane.getPreferredSize();
         Dimension dim2 = buttonBox.getPreferredSize();
-        setSize(dim.width + 20, dim.height + dim2.height + 30);
+        setSize(dim.width + 30, dim.height + dim2.height + 30);
         Point frameLocation = frame.getLocation();
         Dimension frameSize = frame.getSize();
         setLocation(frameLocation.x + frameSize.width / 2 - dim.width / 2, frameLocation.y + frameSize.height / 2 - dim.height / 2);
@@ -57,10 +61,7 @@ public class JPackageDialog extends JDialog {
     }
 
 
-    private Component createTable() {
-        Box box = Box.createVerticalBox();
-        box.add(new JLabel("List of available packages for BEAST v" + beastVersion.getMajorVersion() + ".* in alphabetic order"));
-
+    private void createTable() {
         DataTableModel dataTableModel = new DataTableModel();
         dataTable = new JTable(dataTableModel);
         dataTable.setSelectionMode(DefaultListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -74,10 +75,6 @@ public class JPackageDialog extends JDialog {
         });
 
         resetPackages();
-
-        JScrollPane pane = new JScrollPane(dataTable);
-        box.add(pane);
-        return box;
     }
 
     private void resetPackages() {
@@ -87,8 +84,12 @@ public class JPackageDialog extends JDialog {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        dataTable.tableChanged(new TableModelEvent(dataTable.getModel()));
+
         if (dataTable.getRowCount() > 0)
             dataTable.setRowSelectionInterval(0, 0);
+
     }
 
     private Package getSelectedPackage(int selectedRow) {
@@ -107,13 +108,8 @@ public class JPackageDialog extends JDialog {
     }
 
     private Box createButtonBox() {
-//        Box allBox = Box.createVerticalBox();
-//        JPanel p = new JPanel();
-//        p.add(BorderLayout.WEST, installAllDepCheckBox);
-//        allBox.add(p);
-
         Box box = Box.createHorizontalBox();
-        box.add(installAllDepCheckBox);
+        box.add(allDepCheckBox);
         box.add(Box.createGlue());
         JButton installButton = new JButton("Install/Upgrade");
         installButton.addActionListener(new ActionListener() {
@@ -129,7 +125,7 @@ public class JPackageDialog extends JDialog {
                                 //TODO upgrade version
                             } else {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                                if (installAllDepCheckBox.isSelected()) {
+                                if (allDepCheckBox.isSelected()) {
                                     installPackage(selPackage, false, null, packages);
                                 } else {
                                     installPackage(selPackage, false, null, null);
@@ -164,13 +160,14 @@ public class JPackageDialog extends JDialog {
 //                            AddOnManager.URL2PackageName(package.url) + "?", "Uninstall Add On",
 //                                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                                uninstallPackage(selPackage, false, null);
+                                uninstallPackage(selPackage, false, null, packages, allDepCheckBox.isSelected());
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
                                 File toDeleteFile = getToDeleteListFile();
                                 if (toDeleteFile.exists()) {
                                     toDeleteFileExists = true;
                                 }
+
 //                            }
                             } else {
                                 //TODO ?
@@ -208,7 +205,7 @@ public class JPackageDialog extends JDialog {
         button.setToolTipText(getPackageUserDir() + " " + getPackageAppDir());
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(panel, "<html>Package are installed in <br><br><em>" + getPackageUserDir() +
+                JOptionPane.showMessageDialog(scrollPane, "<html>Package are installed in <br><br><em>" + getPackageUserDir() +
                         "</em><br><br> by you, and are available to you,<br>the user, only.<br>" +
                         "System wide packages are installed in <br><br><em>" + getPackageAppDir() +
                         "</em><br><br>and are available to all users." +
@@ -217,7 +214,6 @@ public class JPackageDialog extends JDialog {
             }
         });
         box.add(button);
-//        allBox.add(box);
         return box;
     }
 

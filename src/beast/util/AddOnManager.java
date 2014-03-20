@@ -359,12 +359,28 @@ public class AddOnManager {
         return sDir;
     }
 
-    public static String uninstallPackage(Package aPackage, boolean useAppDir, String customDir) throws Exception {
+    public static String uninstallPackage(Package aPackage, boolean useAppDir, String customDir, List<Package> packages, boolean autoUninstall) throws Exception {
         if (!aPackage.url.toLowerCase().endsWith(".zip")) {
             throw new Exception("Package should be packaged in a zip file");
         }
 //        String sName = URL2PackageName(sURL);
         String sName = aPackage.packageName;
+
+        // uninstall all dependent packages
+        if (customDir == null && packages != null) {
+            for (Package p : packages) {
+                if (p.dependsOn(aPackage.packageName) && p.isInstalled()) {
+                    if (autoUninstall) {
+                        uninstallPackage(p, useAppDir, null, packages, true);
+                    } else {
+                        warning("Installed package (" + p.packageName + ") depends on the package (" + aPackage.packageName + "),\n" +
+                                "which will not work if " + aPackage.packageName + "is uninstalled.");
+                        return null;
+                    }
+                }
+            }
+        }
+
         String sDir = (useAppDir ? getPackageAppDir() : getPackageUserDir()) + "/" + sName;
         if (customDir != null) {
             sDir = customDir + "/" + sName;
@@ -1156,7 +1172,7 @@ public class AddOnManager {
                         processed = true;
                         if (aPackage.isInstalled()) {
                             Log.debug.println("Start un-installation");
-                            String dir = uninstallPackage(aPackage, useAppDir, customDir);
+                            String dir = uninstallPackage(aPackage, useAppDir, customDir, null, false);
                             System.out.println("Package " + name + " is uninstalled from " + dir + ".");
                         } else {
                             System.out.println("Un-installation aborted: " + name + " is not installed yet.");
