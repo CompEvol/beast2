@@ -1,7 +1,7 @@
 package beast.util;
 
 /*
- * File PluginDependency.java
+ * File PackageDependency.java
  *
  * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
  *
@@ -30,13 +30,16 @@ package beast.util;
  *
  */
 
+import beast.core.Description;
+
 import static beast.util.AddOnManager.beastVersion;
 
 /**
  * modified by Walter Xie
  */
-public class PluginDependency {
-    String plugin;
+@Description("BEAUti plugin dependency class")
+public class PackageDependency implements Comparable {
+    String packageName;
     String dependson;
     Double atLeast;
     Double atMost;
@@ -57,4 +60,12 @@ public class PluginDependency {
         }
     }
 
+    @Override
+    public int compareTo(Object o) {
+        return dependson.toUpperCase().compareTo(o.toString().toUpperCase());
+    }
+
+    public String toString() {
+        return dependson;
+    }
 }

@@ -348,11 +348,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1;
 
         public ActionAddOn() {
-            super("Manage Plugins", "Manage Plugins", "plugin", -1);
+            super("Manage Packages", "Manage Packages", "package", -1);
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            JPluginDialog dlg = new JPluginDialog(frame);
+            JPackageDialog dlg = new JPackageDialog(frame);
             dlg.setVisible(true);
             // refresh template menu item
             templateMenu.removeAll();

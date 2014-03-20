@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
-import beast.util.Plugin;
+import beast.core.Description;
+import beast.util.Package;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -16,23 +17,22 @@ import java.util.List;
 import static beast.util.AddOnManager.*;
 
 /**
- * dialog for managing Plugins.
- * List, install and uninstall Plugins
+ * dialog for managing Package.
+ * List, install and uninstall Package
  *
  * modified by Walter Xie
  */
-public class JPluginDialog extends JDialog {
+@Description("BEAUti package manager")
+public class JPackageDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     JPanel panel;
-//    DefaultListModel model = new DefaultListModel();
-//    JList list;
-
+    JCheckBox installAllDepCheckBox = new JCheckBox("install dependent packages", null, true);
     final JFrame frame;
     JTable dataTable = null;
 
-    List<Plugin> plugins = new ArrayList<Plugin>();
+    List<Package> packages = new ArrayList<Package>();
 
-    public JPluginDialog(JFrame frame) {
+    public JPackageDialog(JFrame frame) {
         super(frame);
         this.frame = frame;
         frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -40,17 +40,16 @@ public class JPluginDialog extends JDialog {
 
         panel = new JPanel();
         getContentPane().add(BorderLayout.CENTER, panel);
-        setTitle("BEAST 2 Plugin Manager");
+        setTitle("BEAST 2 Package Manager");
 
-
-        Component pluginListBox = createTable();
-        panel.add(pluginListBox);
+        Component packageListBox = createTable();
+        panel.add(packageListBox);
         Box buttonBox = createButtonBox();
         getContentPane().add(buttonBox, BorderLayout.SOUTH);
 
         Dimension dim = panel.getPreferredSize();
         Dimension dim2 = buttonBox.getPreferredSize();
-        setSize(dim.width + 10, dim.height + dim2.height + 30);
+        setSize(dim.width + 20, dim.height + dim2.height + 30);
         Point frameLocation = frame.getLocation();
         Dimension frameSize = frame.getSize();
         setLocation(frameLocation.x + frameSize.width / 2 - dim.width / 2, frameLocation.y + frameSize.height / 2 - dim.height / 2);
@@ -60,7 +59,7 @@ public class JPluginDialog extends JDialog {
 
     private Component createTable() {
         Box box = Box.createVerticalBox();
-        box.add(new JLabel("List of available plugins for BEAST v" + beastVersion.getMajorVersion() + ".* in alphabetic order"));
+        box.add(new JLabel("List of available packages for BEAST v" + beastVersion.getMajorVersion() + ".* in alphabetic order"));
 
         DataTableModel dataTableModel = new DataTableModel();
         dataTable = new JTable(dataTableModel);
@@ -68,23 +67,23 @@ public class JPluginDialog extends JDialog {
         dataTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    Plugin selPlugin = getSelectedPlugin(dataTable.getSelectedRow());
-                    showDetail(selPlugin);
+                    Package selPackage = getSelectedPackage(dataTable.getSelectedRow());
+                    showDetail(selPackage);
                 }
             }
         });
 
-        resetPlugins();
+        resetPackages();
 
         JScrollPane pane = new JScrollPane(dataTable);
         box.add(pane);
         return box;
     }
 
-    private void resetPlugins() {
-        plugins.clear();
+    private void resetPackages() {
+        packages.clear();
         try {
-            plugins = getPlugins();
+            packages = getPackages();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,51 +91,29 @@ public class JPluginDialog extends JDialog {
             dataTable.setRowSelectionInterval(0, 0);
     }
 
-    private Plugin getSelectedPlugin(int selectedRow) {
-        if (plugins.size() <= selectedRow)
+    private Package getSelectedPackage(int selectedRow) {
+        if (packages.size() <= selectedRow)
             throw new IllegalArgumentException("Incorrect row " + selectedRow +
-                    " is selected from plugin list, size = " + plugins.size());
-        return plugins.get(selectedRow);
+                    " is selected from package list, size = " + packages.size());
+        return packages.get(selectedRow);
     }
 
-    private void showDetail(Plugin plugin) {
+    private void showDetail(Package aPackage) {
         //custom title, no icon
         JOptionPane.showMessageDialog(frame,
                 "Eggs are not supposed to be green.",
-                plugin.pluginURL,
+                aPackage.packageName,
                 JOptionPane.PLAIN_MESSAGE);
     }
 
-//    @Deprecated
-//    private Component createList() {
-//        Box box = Box.createVerticalBox();
-//        box.add(new JLabel("List of available Plugins"));
-//        list = new JList(model);
-//        list.setSelectionMode(DefaultListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-//        resetList();
-//
-//        JScrollPane pane = new JScrollPane(list);
-//        box.add(pane);
-//        return box;
-//    }
-//
-//    @Deprecated
-//    private void resetList() {
-//        model.clear();
-//        try {
-//            List<List<String>> addOns = getAddOns();
-//            for (List<String> addOn : addOns) {
-//                Plugin pluginObject = new Plugin(addOn);
-//                model.addElement(pluginObject);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        list.setSelectedIndex(0);
-//    }
-
     private Box createButtonBox() {
+//        Box allBox = Box.createVerticalBox();
+//        JPanel p = new JPanel();
+//        p.add(BorderLayout.WEST, installAllDepCheckBox);
+//        allBox.add(p);
+
         Box box = Box.createHorizontalBox();
+        box.add(installAllDepCheckBox);
         box.add(Box.createGlue());
         JButton installButton = new JButton("Install/Upgrade");
         installButton.addActionListener(new ActionListener() {
@@ -145,17 +122,21 @@ public class JPluginDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = dataTable.getSelectedRows();
                 for (int selRow : selectedRows) {
-                    Plugin selPlugin = getSelectedPlugin(selRow);
-                    if (selPlugin != null) {
+                    Package selPackage = getSelectedPackage(selRow);
+                    if (selPackage != null) {
                         try {
-                            if (selPlugin.isInstalled()) {
+                            if (selPackage.isInstalled()) {
                                 //TODO upgrade version
                             } else {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                                installAddOn(selPlugin.pluginURL, false, null);
+                                if (installAllDepCheckBox.isSelected()) {
+                                    installPackage(selPackage, false, null, packages);
+                                } else {
+                                    installPackage(selPackage, false, null, null);
+                                }
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                             }
-                            resetPlugins();
+                            resetPackages();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(null, "Install failed because: " + ex.getMessage());
                             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -175,15 +156,15 @@ public class JPluginDialog extends JDialog {
 
                 boolean toDeleteFileExists = false;
                 for (int selRow : selectedRows) {
-                    Plugin selPlugin = getSelectedPlugin(selRow);
-                    if (selPlugin != null) {
+                    Package selPackage = getSelectedPackage(selRow);
+                    if (selPackage != null) {
                         try {
-                            if (selPlugin.isInstalled()) {
+                            if (selPackage.isInstalled()) {
 //                            if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " +
-//                            AddOnManager.URL2AddOnName(plugin.pluginURL) + "?", "Uninstall Add On",
+//                            AddOnManager.URL2PackageName(package.url) + "?", "Uninstall Add On",
 //                                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                                uninstallAddOn(selPlugin.pluginURL, false, null);
+                                uninstallPackage(selPackage, false, null);
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
                                 File toDeleteFile = getToDeleteListFile();
@@ -194,7 +175,7 @@ public class JPluginDialog extends JDialog {
                             } else {
                                 //TODO ?
                             }
-                            resetPlugins();
+                            resetPackages();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(null, "Uninstall failed because: " + ex.getMessage());
                             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -203,7 +184,7 @@ public class JPluginDialog extends JDialog {
                 }
 
                 if (toDeleteFileExists) {
-                    JOptionPane.showMessageDialog(null, "<html>To complete uninstalling the plugin, BEAUti need to be restarted<br><br>Exiting now.</html>");
+                    JOptionPane.showMessageDialog(null, "<html>To complete uninstalling the package, BEAUti need to be restarted<br><br>Exiting now.</html>");
                     System.exit(0);
                 }
 
@@ -224,18 +205,19 @@ public class JPluginDialog extends JDialog {
         box.add(Box.createGlue());
 
         JButton button = new JButton("?");
-        button.setToolTipText(getPluginUserDir() + " " + getAddOnAppDir());
+        button.setToolTipText(getPackageUserDir() + " " + getPackageAppDir());
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(panel, "<html>Plugin are installed in <br><br><em>" + getPluginUserDir() +
+                JOptionPane.showMessageDialog(panel, "<html>Package are installed in <br><br><em>" + getPackageUserDir() +
                         "</em><br><br> by you, and are available to you,<br>the user, only.<br>" +
-                        "System wide plugins are installed in <br><br><em>" + getAddOnAppDir() +
+                        "System wide packages are installed in <br><br><em>" + getPackageAppDir() +
                         "</em><br><br>and are available to all users." +
-                        "<br>(just move the plugin there manually" +
+                        "<br>(just move the package there manually" +
                         "<br>to make it system wide available).</html>");
             }
         });
         box.add(button);
+//        allBox.add(box);
         return box;
     }
 
@@ -247,22 +229,22 @@ public class JPluginDialog extends JDialog {
         }
 
         public int getRowCount() {
-            return plugins.size();
+            return packages.size();
         }
 
         public Object getValueAt(int row, int col) {
-            Plugin plugin = plugins.get(row);
+            Package aPackage = packages.get(row);
             switch (col) {
                 case 0:
-                    return plugin.pluginName;
+                    return aPackage.packageName;
                 case 1:
-                    return plugin.getStatus();
+                    return aPackage.getStatus();
                 case 2:
-                    return plugin.getLatestVersion();
+                    return aPackage.getLatestVersion();
                 case 3:
-                    return plugin.getDependencies();
+                    return aPackage.getDependenciesString();
                 case 4:
-                    return plugin.pluginDescription;
+                    return aPackage.description;
                 default:
                     throw new IllegalArgumentException("unknown column, " + col);
             }
