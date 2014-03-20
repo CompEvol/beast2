@@ -30,7 +30,7 @@ import org.junit.Test;
 public class ExpCalculatorTest {
     
     @Test
-    public void hello() throws Exception {
+    public void test() throws Exception {
         RealParameter iparam = new RealParameter("1.0 2.0 3.0");
         iparam.setID("I");
 
