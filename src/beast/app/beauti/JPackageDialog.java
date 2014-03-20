@@ -102,7 +102,7 @@ public class JPackageDialog extends JDialog {
     private void showDetail(Package aPackage) {
         //custom title, no icon
         JOptionPane.showMessageDialog(frame,
-                "Eggs are not supposed to be green.",
+                aPackage.toHTML(),
                 aPackage.packageName,
                 JOptionPane.PLAIN_MESSAGE);
     }
