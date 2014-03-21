@@ -404,6 +404,7 @@ public class Alignment extends Map<String> {
         if (stripInvariantSitesInput.get()) {
             // don't add patterns that are invariant, e.g. all gaps
             System.err.print("Stripping invariant sites");
+            int removedSites = 0;
             for (int i = 0; i < nPatterns; i++) {
                 int[] nPattern = sitePatterns[i];
                 int iValue = nPattern[0];
@@ -415,11 +416,12 @@ public class Alignment extends Map<String> {
                     }
                 }
                 if (bIsInvariant) {
+                	removedSites += patternWeight[i]; 
                     patternWeight[i] = 0;
                     System.err.print(" <" + iValue + "> ");
                 }
             }
-            System.err.println();
+            System.err.println(" removed " + removedSites + " sites ");
         }
 
 

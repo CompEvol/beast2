@@ -78,8 +78,20 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
         try {
             String sValue = m_entry.getText();
             RealParameter parameter = (RealParameter) m_input.get();
+        	String oldValue = "";
+    		for (Double d : parameter.valuesInput.get()) {
+    			oldValue += d + " ";
+    		}
+            int oldDim = parameter.getDimension();
             parameter.valuesInput.setValue(sValue, parameter);
             parameter.initAndValidate();
+            int newDim = parameter.getDimension();
+            if (oldDim != newDim) {
+            	parameter.setDimension(oldDim);
+                parameter.valuesInput.setValue(oldValue, parameter);
+                parameter.initAndValidate();
+                throw new Exception("Entry caused change in dimension");
+            }
             validateInput();
         } catch (Exception ex) {
             m_validateLabel.setVisible(true);
