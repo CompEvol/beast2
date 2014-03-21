@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static beast.util.AddOnManager.*;
+import java.net.MalformedURLException;
+import java.util.Properties;
 
 /**
  * dialog for managing Package.
@@ -188,6 +190,18 @@ public class JPackageDialog extends JDialog {
             }
         });
         box.add(uninstallButton);
+        
+        JButton packageRepoButton = new JButton("Package repositories");
+        packageRepoButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JPackageRepositoryDialog dlg = new JPackageRepositoryDialog(frame);
+                dlg.setVisible(true);
+                resetPackages();
+            }
+        });
+        box.add(packageRepoButton);
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
