@@ -263,12 +263,13 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
 	            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
 
-	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTacgt?_]+")) {
+	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTXacgtx?_]+")) {
 	            	datatype = "aminoacid";
 	            	nTotalCount = 20;
 	            }
 	            
 	            final Sequence sequence = new Sequence();
+	            sData = sData.replaceAll("[Xx]", "?");
 	            sequence.init(nTotalCount, sTaxon, sData);
 	            sequence.setID(NexusParser.generateSequenceID(sTaxon));
 	            alignment.sequenceInput.setValue(sequence, alignment);

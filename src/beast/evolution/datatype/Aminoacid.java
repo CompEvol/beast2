@@ -9,9 +9,9 @@ public class Aminoacid extends Base {
     public Aminoacid() {
         stateCount = 20;
         codeLength = 1;
-        codeMap = "ACDEFGHIKLMNPQRSTVWY" + GAP_CHAR + MISSING_CHAR;
+        codeMap = "ACDEFGHIKLMNPQRSTVWY" + "X" + GAP_CHAR + MISSING_CHAR;
 
-        mapCodeToStateSet = new int[22][];
+        mapCodeToStateSet = new int[23][];
         for (int i = 0; i < 20; i++) {
             mapCodeToStateSet[i] = new int[1];
             mapCodeToStateSet[i][0] = i;
@@ -22,6 +22,7 @@ public class Aminoacid extends Base {
         }
         mapCodeToStateSet[20] = all;
         mapCodeToStateSet[21] = all;
+        mapCodeToStateSet[22] = all;
     }
 
     @Override

@@ -22,6 +22,7 @@ public class Nucleotide extends Base {
             {0, 1, 3}, // H
             {0, 1, 2}, // V
             {0, 1, 2, 3}, // N
+            {0, 1, 2, 3}, // X
             {0, 1, 2, 3}, // -
             {0, 1, 2, 3}, // ?
     };
@@ -30,7 +31,7 @@ public class Nucleotide extends Base {
         stateCount = 4;
         mapCodeToStateSet = x;
         codeLength = 1;
-        codeMap = "ACGTURYMWSKBDHVN" + GAP_CHAR + MISSING_CHAR;
+        codeMap = "ACGTURYMWSKBDHVNX" + GAP_CHAR + MISSING_CHAR;
     }
 
     @Override
