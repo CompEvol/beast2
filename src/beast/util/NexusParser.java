@@ -52,9 +52,9 @@ public class NexusParser {
      * @param file the file to parse.
      */
     public void parseFile(final File file) throws Exception {
-        final String fileName = file.getName().replaceAll(".*[\\/\\\\]", "").replaceAll("\\..*", "");
+        final String id = file.getName().replaceAll(".*[\\/\\\\]", "");
 
-        parseFile(fileName, new FileReader(file));
+        parseFile(id, new FileReader(file));
     }
 
     /**
@@ -63,8 +63,10 @@ public class NexusParser {
      * @param id     a name to give to the parsed results
      * @param reader a reader to parse from
      */
-    public void parseFile(final String id, final Reader reader) throws Exception {
+    public void parseFile(String id, final Reader reader) throws Exception {
         lineNr = 0;
+        // dots in alignment IDs are inconvenient for determining the partition it is in
+        id = id.replaceAll("\\..*", "");
         final BufferedReader fin;
         if (reader instanceof BufferedReader) {
             fin = (BufferedReader) reader;

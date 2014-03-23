@@ -193,9 +193,11 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		} catch (Exception ex) {
 			// attempt to parse as BEAST 1 xml
 			try {
-				BEASTObject alignment = parseBeast1XML(sXML);
+				String ID = file.getName();
+				ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
+				BEASTObject alignment = parseBeast1XML(ID, sXML);
 				if (alignment != null) {
-					alignment.setID(file.getName().substring(0, file.getName().length() - 4));
+					alignment.setID(file.getName().substring(0, file.getName().length() - 4).replaceAll("\\..*", ""));
 				}
 				return alignment;
 			} catch (Exception ex2) {
@@ -272,7 +274,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	            alignment.sequenceInput.setValue(sequence, alignment);
 	        }
 	        String ID = file.getName();
-	        ID = ID.substring(0, ID.indexOf('.'));
+	        ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
 	        alignment.setID(ID);
 			alignment.dataTypeInput.setValue(datatype, alignment);
 	        alignment.initAndValidate();
@@ -284,7 +286,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		return null;
 	}
 
-	private static BEASTObject parseBeast1XML(String sXML) throws Exception {
+	private static BEASTObject parseBeast1XML(String ID, String sXML) throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
 		doc.normalize();
@@ -331,7 +333,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 
 			}
 		}
-		alignment.setID("beast1");
+		alignment.setID(ID);
 		alignment.initAndValidate();
 		return alignment;
 	} // parseBeast1XML

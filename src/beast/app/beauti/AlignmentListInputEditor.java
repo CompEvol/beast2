@@ -938,6 +938,12 @@ System.err.println("needsRePartition = " + needsRePartition);
 		System.err.println(table.getSelectedColumn() + " " + table.getSelectedRow());
 		String oldName = tableData[table.getSelectedRow()][table.getSelectedColumn()].toString();
 		String newName = nameEditor.getText();
+		if (!oldName.equals(newName) && newName.indexOf(".") >= 0) {
+			// prevent full stops to be used in IDs
+			newName = newName.replaceAll("\\.", "");
+			table.setValueAt(newName, table.getSelectedRow(), table.getSelectedColumn());
+			table.repaint();
+		}
 		if (!oldName.equals(newName)) {
 			try {
 				int partitionID = -2;
