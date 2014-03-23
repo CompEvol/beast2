@@ -69,6 +69,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      */
 
     public boolean bAutoSetClockRate = true;
+        
+    public boolean bAutoUpdateOperatorWeights = true;
     /**
      * flags for whether parameters can be linked.
      * Once a parameter is linked, (un)linking in the alignment editor should be disabled
@@ -678,14 +680,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         Set<BEASTObject> plugins = new HashSet<BEASTObject>();
         String json = new JSONProducer().toJSON(mcmc.get(), plugins);
 
-        String beautiStatus = "";
-        if (!bAutoSetClockRate) {
-            beautiStatus = "noAutoSetClockRate";
-        }
-        if (bAllowLinking) {
-            beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";
-        }
-        json = json.replaceFirst("\\{", "{ beautitemplate:\"" + templateName + "\", beautistatus:\"" + beautiStatus + "\", ");
+        json = json.replaceFirst("\\{", "{ beautitemplate:\"" + templateName + "\", beautistatus:\"" + getBeautiStatus() + "\", ");
         return json + "\n";
     }
 
@@ -699,15 +694,23 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //		}
         String sXML = new XMLProducer().toXML(mcmc.get(), plugins);
 
-        String beautiStatus = "";
-        if (!bAutoSetClockRate) {
-            beautiStatus = "noAutoSetClockRate";
-        }
-        if (bAllowLinking) {
-            beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";
-        }
-        sXML = sXML.replaceFirst("<beast ", "<beast beautitemplate='" + templateName + "' beautistatus='" + beautiStatus + "' ");
+        sXML = sXML.replaceFirst("<beast ", "<beast beautitemplate='" + templateName + "' beautistatus='" + getBeautiStatus() + "' ");
         return sXML + "\n";
+    }
+
+    /** get status of mode-flags in BEAUti, so these can be restored when reloading an XML file **/
+    String getBeautiStatus() {
+	    String beautiStatus = "";
+	    if (!bAutoSetClockRate) {
+	        beautiStatus = "noAutoSetClockRate";
+	    }
+	    if (bAllowLinking) {
+	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";
+	    }
+	    if (!bAutoUpdateOperatorWeights) {
+	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateOperatorWeights";
+	    }
+	    return beautiStatus;
     }
 
     void extractSequences(String sXML) throws Exception {
@@ -743,6 +746,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         beauti.autoSetClockRate.setSelected(bAutoSetClockRate);
         bAllowLinking = beautiStatus.contains("allowLinking");
         beauti.allowLinking.setSelected(bAllowLinking);
+        bAutoUpdateOperatorWeights = !beautiStatus.contains("noAutoUpdateOperatorWeights");
+        beauti.autoUpdateOperatorWeights.setSelected(bAutoUpdateOperatorWeights);
 
         // parse file
         XMLParser parser = new XMLParser();
@@ -1117,6 +1122,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+        
+        if (bAutoUpdateOperatorWeights) {
+        	reweightSpeciesPartitionOperators();
+        }
     } // scrubAll
 
     protected void setUpActivePlugins() {
@@ -1381,7 +1390,40 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         determinePartitions();
     }
 
-    public BEASTObject addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template) throws Exception {
+    /**
+      * Reweight total weight of operators that work on the Species partition to 20% 
+      * of total operator weights. This helps *BEAST analyses in convergence. For non
+      * *BEAST analyses, this bit of code has no effect. 
+      */
+    private void reweightSpeciesPartitionOperators() {
+    	if (!(mcmc.get() instanceof MCMC)) {
+    		return;
+    	}
+    	List<Operator> speciesOperators = new ArrayList<Operator>(); 
+    	double totalWeight = 0;
+    	double speciesWeight = 0;
+    	for (Operator operator : ((MCMC)mcmc.get()).operatorsInput.get()) {
+			if (operator.getID().endsWith("Species")) {
+				speciesOperators.add(operator);
+				speciesWeight += operator.getWeight();
+			}
+			totalWeight += operator.getWeight();
+    	}
+    	
+    	if (speciesWeight > 0 && speciesWeight < totalWeight) {
+    		// we have a Species-related operator AND an alignment
+    		// rescale weights so that 20% of operator weights is dedicated to Species operators
+    		final double fraction = 0.2;
+    		//double scale = fraction/(1.0 - fraction) / (speciesWeight / (totalWeight - speciesWeight));
+    		double scale = fraction /(1-fraction) * ((totalWeight-speciesWeight) / speciesWeight);
+    		for (Operator operator : speciesOperators) {
+    			operator.m_pWeight.setValue(scale * operator.getWeight(), operator);
+    		}
+    	}
+		
+	}
+
+	public BEASTObject addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template) throws Exception {
         BEASTObject data = template.createSubNet(context, true);
         alignments.add((Alignment) data);
         // re-determine partitions

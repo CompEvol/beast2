@@ -275,12 +275,12 @@
             <connect srcID='PropInvariantPrior.s:$(n)'   targetID='prior' inputName='distribution' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
             <connect srcID='Tree.t:$(n)'        targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
 
-	        <connect srcID='Tree.t:$(n)'        targetID='updown.all' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all' inputName='up' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+	        <connect srcID='Tree.t:$(n)'        targetID='updown.all.Species' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all.Species' inputName='up' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 
-	        <connect srcID='popSizeTop' targetID='updown.all' inputName='down' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+	        <connect srcID='popSizeTop' targetID='updown.all.Species' inputName='down' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
 
-            <connect srcID='popSizeTopScaler' targetID='mcmc'  inputName='operator' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+            <connect srcID='popSizeTopScaler.t:Species' targetID='mcmc'  inputName='operator' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='popSizeTop'       targetID='state' inputName='stateNode' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='popSizeTop'       targetID='SpeciesTreePopSize.Species' inputName='topPopSize' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='popSizeTop'       targetID='SpeciesTreeLoggerX' inputName='popSizeTop' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
@@ -294,7 +294,7 @@
             <connect srcID='Tree.t:Species'     targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
             <connect srcID='Tree.t:Species'     targetID='treeTopFinder' inputName='tree' if='Tree.t:$(n)/estimate=XXX'/>
 
-			<connect srcID='birthRate.t:Species' targetID='updown.all' inputName='up' if='inposterior(birthRate.t:Species)'/>
+			<connect srcID='birthRate.t:Species' targetID='updown.all.Species' inputName='up' if='inposterior(birthRate.t:Species)'/>
 	
 			<!-- gene tree initialiser by SBI -->
             <connect srcID='Tree.t:$(n)'                   targetID='SBI' inputName='gene' if='inposterior(Tree.t:$(n))'/>
@@ -365,21 +365,20 @@
             </distribution>
         </distribution>
 
-	<operator id="Reheight" spec="NodeReheight" tree="@Tree.t:Species" weight="94" taxonset='@taxonsuperset'/>
-	<operator degreesOfFreedom="1" id="popSizeScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
-	<operator degreesOfFreedom="1" id="popSizeTopScaler" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSizeTop" weight="5.0"/>
+	    <operator id="Reheight.t:Species" spec="NodeReheight" tree="@Tree.t:Species" weight="94" taxonset='@taxonsuperset'/>
+	    <operator degreesOfFreedom="1" id="popSizeBottomScaler.t:Species" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSize" weight="5.0"/>
+	    <operator degreesOfFreedom="1" id="popSizeTopScaler.t:Species" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" spec="ScaleOperator" parameter="@popSizeTop" weight="5.0"/>
+	    <operator id='popMeanScale.t:Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popMean"/>
 
-	<operator id="updown.all" spec='UpDownOperator' scaleFactor="0.75" weight="20">
-	  <up idref="birthRate.t:Species"/>
-	  <down idref="popMean"/>
-	  <down idref="popSize"/>
+	    <operator id="updown.all.Species" spec='UpDownOperator' scaleFactor="0.75" weight="20">
+	      <up idref="birthRate.t:Species"/>
+	      <down idref="popMean"/>
+	      <down idref="popSize"/>
 
-	  <down idref="Tree.t:Species"/>
-	</operator>
+	      <down idref="Tree.t:Species"/>
+	    </operator>
 	
-	<operator id='YuleBirthRateScaler.t:Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:Species"/>
-
-	<operator id='popMeanScale' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popMean"/>
+	    <operator id='YuleBirthRateScaler.t:Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:Species"/>
 
         <logger id='tracelog' logEvery="5000" fileName="beast_$(seed).log" sort="smart">
 	        <model idref='posterior'/>

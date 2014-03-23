@@ -74,6 +74,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     JCheckBoxMenuItem autoSetClockRate;
     JCheckBoxMenuItem allowLinking;
+    JCheckBoxMenuItem autoUpdateOperatorWeights;
 
     /**
      * flag indicating beauti is in the process of being set up and panels
@@ -673,6 +674,16 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
         });
         modeMenu.add(allowLinking);
+
+        autoUpdateOperatorWeights = new JCheckBoxMenuItem(
+                "Automatic change operator weights for *BEAST analyses", this.doc.bAutoUpdateOperatorWeights);
+        autoUpdateOperatorWeights.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                doc.bAutoUpdateOperatorWeights = autoUpdateOperatorWeights.getState();
+                refreshPanel();
+            }
+        });
+        modeMenu.add(autoUpdateOperatorWeights);
 
         // final JCheckBoxMenuItem muteSound = new
         // JCheckBoxMenuItem("Mute sound", false);
