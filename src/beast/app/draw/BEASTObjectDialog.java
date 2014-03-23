@@ -3,7 +3,6 @@ package beast.app.draw;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
@@ -13,8 +12,6 @@ import beast.util.XMLProducer;
 
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
