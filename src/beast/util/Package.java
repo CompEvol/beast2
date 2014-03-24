@@ -151,7 +151,12 @@ public class Package {
     }
 
     public String toHTML() {
-        String html = "TODO";
+        String html = "<html>";
+        html += "<h1>" + packageName + "</h1>";
+        html += "<p>Installed version: " + (isInstalled() ? installedVersion : "not installed") + "</p>";
+        html += "<p>Latestversion: " + latestVersion + "</p>";
+        html += "<p>" + description +"</p>";
+        html += "</html>";
         return html;
     }
 }

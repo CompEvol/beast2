@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class JPackageDialog extends JDialog {
         setModal(true);
         setTitle("BEAST 2 Package Manager");
 
-        JLabel jLabel = new JLabel("List of available packages for BEAST v" + beastVersion.getMajorVersion() + ".* in alphabetic order");
+        JLabel jLabel = new JLabel("List of available packages for BEAST v" + beastVersion.getMajorVersion() + ".*");
         getContentPane().add(BorderLayout.NORTH, jLabel);
 
         createTable();
@@ -66,6 +67,11 @@ public class JPackageDialog extends JDialog {
     private void createTable() {
         DataTableModel dataTableModel = new DataTableModel();
         dataTable = new JTable(dataTableModel);
+        // TODO:
+        // The following would work ...
+        //dataTable.setAutoCreateRowSorter(true);
+        // ...if all processing was done based on the data in the table, 
+        // instead of the row number alone.
         dataTable.setSelectionMode(DefaultListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         dataTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -75,7 +81,6 @@ public class JPackageDialog extends JDialog {
                 }
             }
         });
-
         resetPackages();
     }
 
