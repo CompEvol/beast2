@@ -19,11 +19,11 @@ public class BEASTVersion extends Version {
     /**
      * Version string: assumed to be in format x.x.x
      */
-    private static final String VERSION = "2.1.1";
+    private static final String VERSION = "2.1.2";
 
     private static final String DATE_STRING = "2002-2014";
 
-    private static final boolean IS_PRERELEASE = false;
+    private static final boolean IS_PRERELEASE = true;
 
     private static final String REVISION = "$Rev: $";
 
