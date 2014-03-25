@@ -58,10 +58,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-		String[] exts = { ".nex", ".nxs", ".nexus" };
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
 		String[] extsf = { ".fas", ".fasta" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
+		String[] exts = { ".nex", ".nxs", ".nexus" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
 
 		fileChooser.setDialogTitle("Load Sequence");
 		fileChooser.setMultiSelectionEnabled(true);
