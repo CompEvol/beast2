@@ -71,9 +71,14 @@ public class Randomizer {
      * has synchronization.
      */
     //private static final MersenneTwisterFast random = MersenneTwisterFast.DEFAULT_INSTANCE;
-    private static MersenneTwisterFast random = MersenneTwisterFast.DEFAULT_INSTANCE;
+    final private static MersenneTwisterFast random = MersenneTwisterFast.DEFAULT_INSTANCE;
 
-    // Chooses one category if a cumulative probability distribution is given
+    /**
+     * Chooses one category if a cumulative probability distribution is given
+     * 
+     * @param cf
+     * @return 
+     */
     public static int randomChoice(double[] cf) {
 
         double U = random.nextDouble();
@@ -157,6 +162,7 @@ public class Randomizer {
 
     /**
      * Access a default instance of this class, access is synchronized
+     * @return 
      */
     public static long getSeed() {
         synchronized (random) {
@@ -210,7 +216,10 @@ public class Randomizer {
     }
 
     /**
-     * Access a default instance of this class, access is synchronized
+     * Sample a double from a Gaussian distribution with zero mean
+     * and unit variance.
+     * 
+     * @return sample
      */
     public static double nextGaussian() {
         synchronized (random) {
@@ -218,9 +227,15 @@ public class Randomizer {
         }
     }
 
-    //Mean = alpha / lambda
-    //Variance = alpha / (lambda*lambda)
-
+    /**
+     * Sample a double from a Gamma distribution with a mean of
+     * alpha/lambda and a variance of alpha/lambda^2.
+     * Access a default instance of this class, access is synchronized.
+     *
+     * @param alpha
+     * @param lambda
+     * @return sample
+     */
     public static double nextGamma(double alpha, double lambda) {
         synchronized (random) {
             return random.nextGamma(alpha, lambda);
@@ -289,7 +304,10 @@ public class Randomizer {
     }
 
     /**
-     * Access a default instance of this class, access is synchronized
+     * Samples a float uniformly from [0,1). Access a default
+     * instance of this class, access is synchronized
+     * 
+     * @return sample
      */
     public static float nextFloat() {
         synchronized (random) {
@@ -298,7 +316,11 @@ public class Randomizer {
     }
 
     /**
+     * Samples a long int uniformly from between Long.MIN_VALUE
+     * and Long.MAX_VALUE.
      * Access a default instance of this class, access is synchronized
+     * 
+     * @return sample
      */
     public static long nextLong() {
         synchronized (random) {
@@ -306,8 +328,13 @@ public class Randomizer {
         }
     }
 
+    
     /**
+     * Samples a short int uniformly from between Short.MIN_VALUE
+     * and Short.MAX_VALUE.
      * Access a default instance of this class, access is synchronized
+     * 
+     * @return sample
      */
     public static short nextShort() {
         synchronized (random) {
@@ -316,7 +343,11 @@ public class Randomizer {
     }
 
     /**
+     * Samples an int uniformly from between Integer.MIN_VALUE
+     * and Integer.MAX_VALUE.
      * Access a default instance of this class, access is synchronized
+     * 
+     * @return sample
      */
     public static int nextInt() {
         synchronized (random) {
@@ -325,7 +356,11 @@ public class Randomizer {
     }
 
     /**
+     * Samples an int uniformly from between 0 and n-1.
      * Access a default instance of this class, access is synchronized
+     * 
+     * @param n
+     * @return sample
      */
     public static int nextInt(int n) {
         synchronized (random) {
@@ -334,16 +369,19 @@ public class Randomizer {
     }
 
     /**
+     * Samples a double uniformly from between low and high.
+     * 
      * @param low
      * @param high
-     * @return uniform between low and high
+     * @return sample
      */
     public static double uniform(double low, double high) {
         return low + nextDouble() * (high - low);
     }
 
     /**
-     * Shuffles an array.
+     * Shuffles an array in place.
+     * @param array
      */
     public static void shuffle(int[] array) {
         synchronized (random) {
@@ -352,7 +390,9 @@ public class Randomizer {
     }
 
     /**
-     * Shuffles an array. Shuffles numberOfShuffles times
+     * Shuffles an array in place. Shuffles numberOfShuffles times
+     * @param array
+     * @param numberOfShuffles
      */
     public static void shuffle(int[] array, int numberOfShuffles) {
         synchronized (random) {
@@ -364,6 +404,7 @@ public class Randomizer {
      * Returns an array of shuffled indices of length l.
      *
      * @param l length of the array required.
+     * @return array
      */
     public static int[] shuffled(int l) {
         synchronized (random) {
@@ -372,17 +413,26 @@ public class Randomizer {
     }
 
 
-    public static int[] sampleIndicesWithReplacement(int length) {
+    /**
+     * Returns an array of l ints sampled uniformly (with replacement)
+     * from between 0 and l-1.
+     * 
+     * @param l length of array required
+     * @return array
+     */
+    public static int[] sampleIndicesWithReplacement(int l) {
         synchronized (random) {
-            int[] result = new int[length];
-            for (int i = 0; i < length; i++)
-                result[i] = random.nextInt(length);
+            int[] result = new int[l];
+            for (int i = 0; i < l; i++)
+                result[i] = random.nextInt(l);
             return result;
         }
     }
 
     /**
-     * Permutes an array.
+     * Permutes the elements of array in place.
+     * 
+     * @param array
      */
     public static void permute(int[] array) {
         synchronized (random) {
@@ -394,50 +444,13 @@ public class Randomizer {
      * Returns a uniform random permutation of 0,...,l-1
      *
      * @param l length of the array required.
+     * @return array containing permuted indices
      */
     public static int[] permuted(int l) {
         synchronized (random) {
             return random.permuted(l);
         }
     }
-
-
-//    public static double logHyperSphereVolume(int dimension, double radius) {
-//        return dimension * (0.5723649429247001 + Math.log(radius)) +
-//                -GammaFunction.lnGamma(dimension / 2.0 + 1.0);
-//    }
-//
-///**
-// * Returns sqrt(a^2 + b^2) without under/overflow.
-// */
-//    public static double hypot(double a, double b) {
-//	double r;
-//	if (Math.abs(a) > Math.abs(b)) {
-//		r = b/a;
-//		r = Math.abs(a)*Math.sqrt(1+r*r);
-//	} else if (b != 0) {
-//		r = a/b;
-//		r = Math.abs(b)*Math.sqrt(1+r*r);
-//	} else {
-//		r = 0.0;
-//	}
-//	return r;
-//    }
-//
-//    /**
-//     * return double *.????
-//     * @param value
-//     * @param sf
-//     * @return
-//     */
-//    public static double round(double value, int sf) {
-//        NumberFormatter formatter = new NumberFormatter(sf);
-//        try {
-//            return NumberFormat.getInstance().parse(formatter.format(value)).doubleValue();
-//        } catch (ParseException e) {
-//            return value;
-//        }
-//    }
 
     static int m_nIDNr = 0;
 
