@@ -112,7 +112,8 @@ public class AddOnManager {
     private static List<String> all_classes;
 
     /**
-     * return URLs containing list of downloadable packages *
+     * @return URLs containing list of downloadable packages.
+     * @throws java.net.MalformedURLException
      */
     public static List<String> getPackagesURL() throws MalformedURLException {
 //        File localPackages = new File(getPackageUserDir() + "/packages.html");
@@ -201,7 +202,9 @@ public class AddOnManager {
      * parsed.
      *
      * @return list of packages, encoded as pairs of description, urls.
-     * @throws Exception
+     * @throws java.io.IOException
+     * @throws javax.xml.parsers.ParserConfigurationException
+     * @throws org.xml.sax.SAXException
      */
     public static List<Package> getPackages() throws IOException, ParserConfigurationException, SAXException {
 
@@ -214,9 +217,7 @@ public class AddOnManager {
 
             if (sURL.endsWith(".xml")) {
                 addPackages(is, packages);
-            } else {
-                //TODO from package.url?
-            }
+            } 
 
             is.close();
 
@@ -228,7 +229,7 @@ public class AddOnManager {
 
             @Override
             public int compare(Package p1, Package p2) {
-                return p1.packageName.compareTo(p2.packageName);
+                return p1.packageName.toLowerCase().compareTo(p2.packageName.toLowerCase());
             }
         });
         
