@@ -81,24 +81,10 @@ public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
     //configuration file
-    public final static String PACKAGES_XML = "http://www.beast2.org/packages" + beastVersion.getMajorVersion() + ".xml";
-    @Deprecated
-    public final static String PACKAGES_URL = "http://www.beast2.org/wiki/index.php/Add-ons2.1.0";
+    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages" + beastVersion.getMajorVersion() + ".xml";
 
     public static final String INSTALLED = "installed";
     public static final String NOT_INSTALLED = "un-installed";
-    @Deprecated
-    public static final int PACKAGE_INTRO_INDEX = 0;
-    @Deprecated
-    public static final int PACKAGE_URL_INDEX = 1;
-    @Deprecated
-    public static final int PACKAGE_NAME_INDEX = 2;
-    @Deprecated
-    public static final int PACKAGE_STATUS_INDEX = 3;
-    @Deprecated
-    public static final int PACKAGE_VERSION_INDEX = 4;
-    @Deprecated
-    public static final int PACKAGE_DEPENDENCIES_INDEX = 5;
 
     /**
      * flag indicating add ons have been loaded at least once *
@@ -116,8 +102,9 @@ public class AddOnManager {
      * @throws java.net.MalformedURLException
      */
     public static List<String> getPackagesURL() throws MalformedURLException {
-//        File localPackages = new File(getPackageUserDir() + "/packages.html");
-//        URL localPackagesUrl = localPackages.toURI().toURL();
+        // Java 7 introduced SNI support which is enabled by default.
+        // http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
+        System.setProperty("jsse.enableSNIExtension", "false");
 
         List<String> URLs = new ArrayList<String>();
         URLs.add(PACKAGES_XML);
@@ -281,98 +268,6 @@ public class AddOnManager {
     }
 
     /**
-     * create list of addons. The list is downloaded from a beast2 wiki page and
-     * parsed.
-     *
-     * @return list of addons, encoded as pairs of description, urls.
-     * @throws Exception
-     */
-    @Deprecated
-    public static List<List<String>> getAddOns() throws Exception {
-
-        List<List<String>> addOns = new ArrayList<List<String>>();
-        List<String> sURLs = getPackagesURL();
-        List<String> sBeastDirs = AddOnManager.getBeastDirectories();
-
-        for (String sURL : sURLs) {
-            URL url = new URL(sURL);
-            InputStream is = url.openStream(); // throws an IOException
-
-            StringBuffer buf = new StringBuffer();
-            BufferedReader d = new BufferedReader(new InputStreamReader(is));
-
-            String sLine = "";
-            while ((sLine = d.readLine()) != null) {
-                buf.append(sLine);
-            }
-            is.close();
-            String sText = buf.toString();
-            // parse WIKI xml for packages
-            String startMark = "<!-- bodytext -->";
-            sText = sText.substring(sText.indexOf(startMark) + startMark.length());
-            String[] sStrs = sText.split("</p>");
-            for (int i = 0; i < sStrs.length - 1; i++) {
-                sText = sStrs[i];
-                sText = sText.replaceAll("<p>", "");
-                String[] sStr2 = sText.split("<");
-
-
-                List<String> addOn = new ArrayList<String>();
-                addOn.add(sStr2[PACKAGE_INTRO_INDEX]);
-                sStr2 = sStr2[PACKAGE_URL_INDEX].split("\"");
-                addOn.add(sStr2[PACKAGE_URL_INDEX]);
-                String sAddOnName = URL2PackageName(sStr2[PACKAGE_URL_INDEX]);
-                addOn.add(sAddOnName);
-                addOn.add(NOT_INSTALLED);
-
-                if (!containsAddOn(addOn.get(PACKAGE_NAME_INDEX), addOns)) {
-                    for (String sDir : sBeastDirs) {
-                        File f = new File(sDir + "/" + sAddOnName);
-                        if (f.exists()) {
-                            addOn.set(PACKAGE_STATUS_INDEX, INSTALLED);
-                        }
-                        f = new File(sDir + "/" + sAddOnName + "/version.xml");
-                        if (f.exists()) {
-                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                            Document doc = factory.newDocumentBuilder().parse(f);
-                            doc.normalize();
-                            // get name and version of package
-                            Element addon = doc.getDocumentElement();
-                            String sAddonVersion = addon.getAttribute("version");
-                            addOn.add(sAddonVersion);
-                            NodeList nodes = doc.getElementsByTagName("depends");
-                            String dependencies = "";
-                            for (int j = 0; j < nodes.getLength(); j++) {
-                                Element dependson = (Element) nodes.item(j);
-                                String s = dependson.getAttribute("on");
-                                if (!s.equals("beast2")) {
-                                    dependencies +=  s + ", ";
-                                }
-                            }
-                            if (dependencies.length() > 2) {
-                                dependencies = dependencies.substring(0, dependencies.length() - 2);
-                            }
-                            addOn.add(dependencies);
-                        }
-                    }
-
-                    addOns.add(addOn);
-                }
-            } // end for i
-//            write package html page, if received from internet
-        }
-        return addOns;
-    }
-    @Deprecated
-    public static boolean containsAddOn(String sAddOnName, List<List<String>> addOns) throws Exception {
-        for (List<String> addOn : addOns) {
-            if (sAddOnName.equalsIgnoreCase(addOn.get(PACKAGE_NAME_INDEX)))
-                return true;
-        }
-        return false;
-    }
-
-    /**
      * download and unzip package from URL provided It is assumed the package
      * consists of a zip file containing directories /lib with jars used by the
      * add on /templates with beauti XML templates
@@ -467,16 +362,6 @@ public class AddOnManager {
             outfile.close();
         }
         return sDir;
-    }
-
-    // nit safe to use
-    @Deprecated
-    public static String URL2PackageName(String sURL) {
-        String sName = sURL.substring(sURL.lastIndexOf("/") + 1);
-        if (sName.contains(".")) {
-            sName = sName.substring(0, sName.indexOf("."));
-        }
-        return sName;
     }
 
     public static boolean checkIsInstalled(String packageName) {
