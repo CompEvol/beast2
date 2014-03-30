@@ -346,53 +346,6 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 else
                     processCandidateTraits(candidates, m_traitList.get());
 
-                // TODO: deal with dated taxa
-                double fMostRecent = 0;
-                for (final Node node : candidates) {
-                    fMostRecent = Math.max(fMostRecent, node.getHeight());
-                }
-                // dr.evolution.util.Date mostRecent = null;
-                // boolean usingDates = false;
-                //
-                // for (int i = 0; i < taxa.size(); i++) {
-                // if (TaxonList.Utils.hasAttribute(taxa, i,
-                // dr.evolution.util.Date.DATE)) {
-                // usingDates = true;
-                // dr.evolution.util.Date date =
-                // (dr.evolution.util.Date)taxa.getTaxonAttribute(i,
-                // dr.evolution.util.Date.DATE);
-                // if ((date != null) && (mostRecent == null || date.after(mostRecent)))
-                // {
-                // mostRecent = date;
-                // }
-                // } else {
-                // // assume contemporaneous tips
-                // candidates.get(i).setHeight(0.0);
-                // }
-                // }
-                //
-                // if (usingDates && mostRecent != null ) {
-                // TimeScale timeScale = new TimeScale(mostRecent.getUnits(), true,
-                // mostRecent.getAbsoluteTimeValue());
-                //
-                // for (int i =0; i < taxa.size(); i++) {
-                // dr.evolution.util.Date date =
-                // (dr.evolution.util.Date)taxa.getTaxonAttribute(i,
-                // dr.evolution.util.Date.DATE);
-                // if (date == null) {
-                // throw new IllegalArgumentException("Taxon, " + taxa.get(i) +
-                // ", is missing its date");
-                // }
-                //
-                // candidates.get(i).setHeight(timeScale.convertTime(date.getTimeValue(),
-                // date));
-                // }
-                // if (demoFunction.getUnits() != mostRecent.getUnits()) {
-                // //throw new
-                // IllegalArgumentException("The units of the demographic model and the most recent date must match!");
-                // }
-                // }
-
                 final List<Node> allCandidates = new ArrayList<Node>();
                 allCandidates.addAll(candidates);
                 root = simulateCoalescent(isMonophyletic, allCandidates, candidates, demoFunction);

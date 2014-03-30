@@ -41,7 +41,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	}
 	
 	static final int OTHER = 3;
-	String [] sValues = new String[]{"autosomal_nuclear", "X", "Y or mitrochondrial", "other"};
+	String [] sValues = new String[]{"autosomal_nuclear", "X", "Y or mitochondrial", "other"};
 	Double [] fValues = new Double[]{2.0, 1.5, 0.5, -1.0};
 	JComboBox m_selectPluginBox;
 	
