@@ -1,11 +1,30 @@
-                    BEAST v2.1.0 2013
-                 Beast 2 development team 2011-2013
+                    BEAST v2.1.2 2014
+                 Beast 2 development team 2011-2014
 Version History
-Last updated: December 2013
+Last updated: April 2014
 
-All issues can be viewed at http://code.google.com/p/beast2/issues/list
+All issues can be viewed at https://github.com/CompEvol/beast2/issues
 
 ================================================================================
+Version 2.1.2 April 2014
+
+	Patch release
+
+	BEAUti handles multiple partitions more conveniently
+
+	improved package management
+
+	fix bug in *BEAST template
+	
+	many small fixes (FASTA support, stochastic distributions, *BEAST operator weighting, etc.)
+
+
+
+Version 2.1.1 January 2014
+	
+	Patch release speeding up BEAUti to handle large Nexus files and handle multiple files.
+
+
 
 Version 2.1.0 December 2013
 
