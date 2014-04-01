@@ -239,11 +239,16 @@ public class XMLParser {
         doc.normalize();
         processPlates();
 
+        // Substitute occurrences of "$(filebase)" with name of file 
+        int pointIdx = file.getName().lastIndexOf('.');
+        String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
+        replace(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
+        
         IDMap = new HashMap<String, BEASTObject>();
         likelihoodMap = new HashMap<String, Integer[]>();
         IDNodeMap = new HashMap<String, Node>();
 
-
+        
         parse();
         //assert m_runnable == null || m_runnable instanceof Runnable;
         if (m_runnable != null)
