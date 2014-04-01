@@ -137,6 +137,13 @@ public class JPackageDialog extends JDialog {
                                 } else {
                                     installPackage(selPackage, false, null, null);
                                 }
+
+                                JOptionPane.showMessageDialog(null, "Package '"
+                                        + selPackage.packageName + "' installed. "
+                                        + "Note that any changes to the BEAUti "
+                                        + "interface will\n not appear until a "
+                                        + "new document is created or BEAUti is "
+                                        + "restarted.");
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                             }
                             resetPackages();
