@@ -124,6 +124,9 @@ public class JPackageDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = dataTable.getSelectedRows();
+                
+                StringBuilder installedPackageNames = new StringBuilder();
+                
                 for (int selRow : selectedRows) {
                     Package selPackage = getSelectedPackage(selRow);
                     if (selPackage != null) {
@@ -137,13 +140,12 @@ public class JPackageDialog extends JDialog {
                                 } else {
                                     installPackage(selPackage, false, null, null);
                                 }
-
-                                JOptionPane.showMessageDialog(null, "Package '"
-                                        + selPackage.packageName + "' installed. "
-                                        + "Note that any changes to the BEAUti "
-                                        + "interface will\n not appear until a "
-                                        + "new document is created or BEAUti is "
-                                        + "restarted.");
+                                if (installedPackageNames.length()>0)
+                                    installedPackageNames.append(", ");
+                                installedPackageNames.append("'")
+                                        .append(selPackage.packageName)
+                                        .append("'");
+                                
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                             }
                             resetPackages();
@@ -153,6 +155,14 @@ public class JPackageDialog extends JDialog {
                         }
                     }
                 }
+                
+                if (installedPackageNames.length()>0)
+                    JOptionPane.showMessageDialog(null, "Package(s) "
+                            + installedPackageNames.toString() + " installed. "
+                            + "Note that any changes to the BEAUti "
+                            + "interface will\n not appear until a "
+                            + "new document is created or BEAUti is "
+                            + "restarted.");
             }
         });
         box.add(installButton);
@@ -164,6 +174,8 @@ public class JPackageDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = dataTable.getSelectedRows();
 
+                StringBuilder removedPackageNames = new StringBuilder();
+                
                 boolean toDeleteFileExists = false;
                 for (int selRow : selectedRows) {
                     Package selPackage = getSelectedPackage(selRow);
@@ -182,6 +194,11 @@ public class JPackageDialog extends JDialog {
                                     toDeleteFileExists = true;
                                 }
 
+                                if (removedPackageNames.length()>0)
+                                    removedPackageNames.append(", ");
+                                removedPackageNames.append("'")
+                                        .append(selPackage.packageName)
+                                        .append("'");
 //                            }
                             } else {
                                 //TODO ?
@@ -199,6 +216,13 @@ public class JPackageDialog extends JDialog {
                     System.exit(0);
                 }
 
+                if (removedPackageNames.length()>0)
+                    JOptionPane.showMessageDialog(null, "Package(s) "
+                            + removedPackageNames.toString() + " removed. "
+                            + "Note that any changes to the BEAUti "
+                            + "interface will\n not appear until a "
+                            + "new document is created or BEAUti is "
+                            + "restarted.");
             }
         });
         box.add(uninstallButton);
