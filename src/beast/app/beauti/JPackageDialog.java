@@ -255,12 +255,11 @@ public class JPackageDialog extends JDialog {
         button.setToolTipText(getPackageUserDir() + " " + getPackageAppDir());
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(scrollPane, "<html>Package are installed in <br><br><em>" + getPackageUserDir() +
-                        "</em><br><br> by you, and are available to you,<br>the user, only.<br>" +
-                        "System wide packages are installed in <br><br><em>" + getPackageAppDir() +
-                        "</em><br><br>and are available to all users." +
-                        "<br>(just move the package there manually" +
-                        "<br>to make it system wide available).</html>");
+                JOptionPane.showMessageDialog(scrollPane, "<html>By default, packages are installed in <br><br><em>" + getPackageUserDir() +
+                        "</em><br><br>and are available only to you.<br>" +
+                        "<br>Packages can also be moved manually to <br><br><em>" + getPackageAppDir() +
+                        "</em><br><br>which makes them available to all users<br>"
+                        + "on your system.</html>");
             }
         });
         box.add(button);
