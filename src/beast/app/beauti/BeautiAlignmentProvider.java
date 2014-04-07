@@ -147,6 +147,14 @@ public class BeautiAlignmentProvider extends BEASTObject {
             }
         }
         for (BEASTObject plugin : selectedPlugins) {
+        	// ensure ID of alignment is unique
+        	int k = 0;
+        	String id = plugin.getID();
+        	while (doc.pluginmap.containsKey(id)) {
+        		k++;
+        		id = plugin.getID() + k;
+        	}
+        	plugin.setID(id);
             doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
         }
         return selectedPlugins;
