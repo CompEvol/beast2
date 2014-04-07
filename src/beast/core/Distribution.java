@@ -149,4 +149,24 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         return false;
     }
 
-} // class ProbabilityDistribution
+    
+    /** 
+     * Return non-stochastic part of a distribution recalculate, if required. 
+     * This can be used for debugging purposes to verify that the non-stochastic 
+     * part of a distribution is calculated correctly e.g. inside the MCMC loop
+     * 
+     * @return logP if not stochastic, zero otherwise
+     */
+	public double getNonStochasticLogP() throws Exception {
+		if (isStochastic()) {
+			return 0;
+		} else {
+            if (isDirtyCalculation()) {
+            	return calculateLogP();
+            } else {
+            	return getCurrentLogP();
+            }
+		}
+	}
+
+} // class Distribution

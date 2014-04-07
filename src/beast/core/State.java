@@ -617,4 +617,15 @@ public class State extends BEASTObject {
         acceptCalculationNodes();
         return fLogLikelihood;
     }
+
+	public double robustlyCalcNonStochasticPosterior(Distribution posterior) throws Exception {
+        store(-1);
+        setEverythingDirty(true);
+        //state.storeCalculationNodes();
+        checkCalculationNodesDirtiness();
+        final double fLogLikelihood = posterior.getNonStochasticLogP();
+        setEverythingDirty(false);
+        acceptCalculationNodes();
+        return fLogLikelihood;
+	}
 } // class State

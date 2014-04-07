@@ -203,4 +203,23 @@ public class CompoundDistribution extends Distribution {
         
         return false;
     }
-} // class CompoundProbabilityDistribution
+    
+    @Override
+    public double getNonStochasticLogP() throws Exception {
+        logP = 0;
+        if (ignore) {
+        	return logP;
+        }
+        // The loop could gain a little bit from being multithreaded
+        // though getNonStochasticLogP is called for debugging purposes only
+        // so efficiency is not an immediate issue.
+        for (Distribution dists : pDistributions.get()) {
+            logP += dists.getNonStochasticLogP();
+            if (Double.isInfinite(logP) || Double.isNaN(logP)) {
+                return logP;
+            }
+        }
+        return logP;
+    }
+    
+} // class CompoundDistribution

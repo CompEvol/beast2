@@ -38,7 +38,7 @@ import java.util.List;
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
 @Citation(value= "Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
-        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology (accepted 2014)", year = 2014, firstAuthorSurname = "bouckaert")
+        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology (in press 2014)", year = 2014, firstAuthorSurname = "bouckaert")
 public class MCMC extends Runnable {
 
     public Input<Integer> chainLengthInput =
@@ -432,19 +432,20 @@ public class MCMC extends Runnable {
             }
             log(sampleNr);
 
-            if (!posterior.isStochastic() && (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0)) {
+            if (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0) {
                 // check that the posterior is correctly calculated at every third
                 // sample, as long as we are in debug mode
-                final double fLogLikelihood = state.robustlyCalcPosterior(posterior);
-                if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
+            	final double fNonStochasticLogP = posterior.getNonStochasticLogP();
+                final double fLogLikelihood = state.robustlyCalcNonStochasticPosterior(posterior);
+                if (Math.abs(fLogLikelihood - fNonStochasticLogP) > 1e-6) {
                     reportLogLikelihoods(posterior, "");
-                    System.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + oldLogLikelihood + " != " + fLogLikelihood
+                    System.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + fNonStochasticLogP + " != " + fLogLikelihood
                             + " Operator: " + operator.getClass().getName());
                 }
                 if (sampleNr > NR_OF_DEBUG_SAMPLES * 3) {
                     // switch off debug mode once a sufficient large sample is checked
                     debugFlag = false;
-                    if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
+                    if (Math.abs(fLogLikelihood - fNonStochasticLogP) > 1e-6) {
                         // incorrect calculation outside debug period.
                         // This happens infrequently enough that it should repair itself after a robust posterior calculation
                         corrections++;
@@ -455,7 +456,7 @@ public class MCMC extends Runnable {
                             operatorSchedule.storeToFile();
                             System.exit(0);
                         }
-                        oldLogLikelihood = fLogLikelihood;
+                        oldLogLikelihood = state.robustlyCalcPosterior(posterior);;
                     }
                 } else {
                     if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
@@ -507,7 +508,16 @@ public class MCMC extends Runnable {
     public double robustlyCalcPosterior(final Distribution posterior) throws Exception {
         return state.robustlyCalcPosterior(posterior);
     }
-//        state.store(-1);
+
+    
+    /**
+     * Calculate posterior by setting all StateNodes and CalculationNodes dirty.
+     * Clean everything afterwards.
+     */
+    public double robustlyCalcNonStochasticPosterior(final Distribution posterior) throws Exception {
+        return state.robustlyCalcNonStochasticPosterior(posterior);
+    }
+    //        state.store(-1);
 //        state.setEverythingDirty(true);
 //        //state.storeCalculationNodes();
 //        state.checkCalculationNodesDirtiness();
