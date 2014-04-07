@@ -396,6 +396,7 @@ public class NexusParser {
                     iEnd++;
                 }
                 sTaxon = sStr.substring(iStart, iEnd);
+                seqLen = 0;
                 iEnd++;
             } else {
                 iEnd = iStart;
