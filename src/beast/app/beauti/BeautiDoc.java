@@ -633,7 +633,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public DOC_STATUS validateModel() {
-        if (mcmc == null || sPartitionNames.size() == 0) {
+        if (mcmc == null || (mcmc.get().hasPartitions() && sPartitionNames.size() == 0)) {
             return DOC_STATUS.NO_DOCUMENT;
         }
         try {

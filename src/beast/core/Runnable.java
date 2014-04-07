@@ -37,4 +37,9 @@ public abstract class Runnable extends BEASTObject {
      * name of the file store the state in *
      */
     protected String stateFileName = "state.backup.xml";
+    
+    /** 
+     * indicate whether this runnable distinguishes partitions, like MCMC, or not 
+     * **/
+    public boolean hasPartitions() {return true;}
 }
