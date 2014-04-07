@@ -5,6 +5,8 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
+import test.beast.integration.ExampleXmlParsingTest;
+
 import beast.app.beauti.Beauti;
 import beast.app.beauti.BeautiDoc;
 
@@ -13,8 +15,12 @@ import beast.app.beauti.BeautiDoc;
 import junit.framework.TestCase;
 
 public class BeautiTest extends TestCase {
-    String sFile = "tmp123x666.xml";
-    String sTemplateFile = "template123x666.xml";
+	{
+		ExampleXmlParsingTest.setUpTestDir();
+	}
+	
+    String sFile = "test/tmp123x666.xml";
+    String sTemplateFile = "test/template123x666.xml";
 
     @Test
     // test that beauti can merge an alignment with a template and write out a file

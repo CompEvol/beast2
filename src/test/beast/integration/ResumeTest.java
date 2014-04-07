@@ -19,7 +19,11 @@ import java.io.File;
 public class ResumeTest extends TestCase {
 
     final static String XML_FILE = "testHKY.xml";
+	{
+		ExampleXmlParsingTest.setUpTestDir();
+	}
 
+    
     @Test
     public void test_ThatXmlExampleResumes() throws Exception {
         Randomizer.setSeed(127);

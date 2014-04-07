@@ -20,7 +20,10 @@ import junit.framework.TestCase;
  * check whether all example files parse *
  */
 public class ExampleJSONParsingTest extends TestCase {
-
+	{
+		ExampleXmlParsingTest.setUpTestDir();
+	}
+	
     @Test
     public void test_ThatXmlExamplesParse() {
         String dir = System.getProperty("user.dir") + "/examples";

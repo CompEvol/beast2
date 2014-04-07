@@ -20,6 +20,18 @@ import junit.framework.TestCase;
  * check whether all example files parse *
  */
 public class ExampleXmlParsingTest extends TestCase {
+	public static void setUpTestDir() {
+		// make sure output goes to test directory
+		File testDir = 	new File("./test");
+		if (!testDir.exists()) {
+			testDir.mkdir();
+		}
+		System.setProperty("file.name.prefix","test/");
+	}
+	
+	{
+		setUpTestDir();
+	}
 
     @Test
     public void test_ThatXmlExamplesParse() {
@@ -120,5 +132,6 @@ public class ExampleXmlParsingTest extends TestCase {
     public static void main(String args[]) {
         org.junit.runner.JUnitCore.main("test.beast.integration.ExampleXmlParsingTest");
     }
+
 
 } // ExampleXmlParsingTest
