@@ -244,7 +244,8 @@ public class NexusParser {
             }
         } while (!sStr.toLowerCase().equals("end"));
         if (nTaxaExpected >= 0 && taxa.size() != nTaxaExpected) {
-            throw new Exception("Taxa block: # taxa is not equal to dimension");
+            throw new Exception("Number of taxa (" + taxa.size() + ") is not equal to 'dimension' " +
+            		"field (" + nTaxaExpected + ") specified in 'taxa' block");
         }
     }
 
