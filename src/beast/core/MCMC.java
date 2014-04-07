@@ -38,7 +38,7 @@ import java.util.List;
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
 @Citation(value= "Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
-        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology (in press 2014)", year = 2014, firstAuthorSurname = "bouckaert")
+        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology 10(4): e1003537, 2014", year = 2014, firstAuthorSurname = "bouckaert")
 public class MCMC extends Runnable {
 
     public Input<Integer> chainLengthInput =

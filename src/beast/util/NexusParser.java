@@ -376,6 +376,7 @@ public class NexusParser {
         final Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();
         final List<String> sTaxa = new ArrayList<String>();
         String sPrevTaxon = null;
+        int seqLen = 0;
         while (true) {
             sStr = nextLine(fin);
             if (sStr.contains(";")) {
@@ -403,6 +404,10 @@ public class NexusParser {
                 }
                 if (iEnd < sStr.length()) {
                     sTaxon = sStr.substring(iStart, iEnd);
+                    seqLen = 0;
+                } else if ((sPrevTaxon == null || seqLen == nChar) && iEnd == sStr.length()) {
+                    sTaxon = sStr.substring(iStart, iEnd);
+                    seqLen = 0;
                 } else {
                     sTaxon = sPrevTaxon;
                     if (sTaxon == null) {
@@ -413,6 +418,11 @@ public class NexusParser {
             }
             sPrevTaxon = sTaxon;
             final String sData = sStr.substring(iEnd);
+            for (int k = 0; k < sData.length(); k++) {
+            	if (!Character.isWhitespace(sData.charAt(k))) {
+            		seqLen++;
+            	}
+            }
             // Do this once outside loop- save on multiple regex compilations
             //sData = sData.replaceAll("\\s", "");
 

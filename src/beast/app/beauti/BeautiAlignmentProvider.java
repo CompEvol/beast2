@@ -58,7 +58,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-		String[] extsf = { ".fas", ".fasta" };
+		String[] extsf = { ".fas", ".fst", ".fasta" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
 		String[] exts = { ".nex", ".nxs", ".nexus" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
@@ -141,7 +141,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
                 BEASTObject alignment = getXMLData(file);
                 selectedPlugins.add(alignment);
             }
-            if (file.getName().toLowerCase().endsWith(".fas") || file.getName().toLowerCase().endsWith(".fasta")) {
+            if (file.getName().toLowerCase().endsWith(".fas") || file.getName().toLowerCase().endsWith(".fasta") ||
+            		file.getName().toLowerCase().endsWith(".fst")) {
                 BEASTObject alignment = getFASTAData(file);
                 selectedPlugins.add(alignment);
             }
@@ -271,9 +272,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
 	            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
 
-	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTXacgtx?_]+")) {
+	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTXNacgtxn?_-]+")) {
 	            	datatype = "aminoacid";
 	            	nTotalCount = 20;
+	            	for (Sequence seq : alignment.sequenceInput.get()) {
+	            		seq.totalCountInput.setValue(nTotalCount, seq);
+	            	}
 	            }
 	            
 	            final Sequence sequence = new Sequence();
