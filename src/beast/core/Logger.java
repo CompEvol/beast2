@@ -91,7 +91,7 @@ public class Logger extends BEASTObject {
     /**
      * offset for the sample number, which is non-zero when a chain is resumed *
      */
-    static int sampleOffset = 0;
+    static int sampleOffset = -1;
 
     /**
      * number of samples between logs *
@@ -464,7 +464,7 @@ public class Logger extends BEASTObject {
         if ((nSample < 0) || (nSample % every > 0)) {
             return;
         }
-        if (sampleOffset > 0) {
+        if (sampleOffset >= 0) {
             if (nSample == 0) {
                 // don't need to duplicate the last line in the log
                 return;
@@ -582,7 +582,7 @@ public class Logger extends BEASTObject {
 
 
     public static int getSampleOffset() {
-        return sampleOffset;
+        return sampleOffset < 0 ? 0 : sampleOffset;
     }
 
 } // class Logger
