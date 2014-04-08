@@ -63,6 +63,11 @@ public class FilteredAlignment extends Alignment {
         counts = data.counts;
         taxaNames = data.taxaNames;
         stateCounts = data.stateCounts;
+        if (convertDataType && m_dataType.getStateCount() > 0) {
+        	for (int i = 0; i < stateCounts.size(); i++) {
+                stateCounts.set(i, m_dataType.getStateCount());
+        	}
+        }
 
         calcPatterns();
     }
