@@ -1,5 +1,6 @@
 package beast.util;
 
+import beast.core.util.Log;
 import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.TraitSet;
@@ -52,9 +53,9 @@ public class NexusParser {
      * @param file the file to parse.
      */
     public void parseFile(final File file) throws Exception {
-        final String id = file.getName().replaceAll(".*[\\/\\\\]", "");
+        final String fileName = file.getName().replaceAll(".*[\\/\\\\]", "").replaceAll("\\..*", "");
 
-        parseFile(id, new FileReader(file));
+        parseFile(fileName, new FileReader(file));
     }
 
     /**
@@ -63,10 +64,8 @@ public class NexusParser {
      * @param id     a name to give to the parsed results
      * @param reader a reader to parse from
      */
-    public void parseFile(String id, final Reader reader) throws Exception {
+    public void parseFile(final String id, final Reader reader) throws Exception {
         lineNr = 0;
-        // dots in alignment IDs are inconvenient for determining the partition it is in
-        id = id.replaceAll("\\..*", "");
         final BufferedReader fin;
         if (reader instanceof BufferedReader) {
             fin = (BufferedReader) reader;
@@ -344,6 +343,9 @@ public class NexusParser {
                 if (sDataType == null) {
                     System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
                     alignment.dataTypeInput.setValue("integer", alignment);
+                    if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
+                        nTotalCount = sSymbols.length();
+                    }
                 } else if (sDataType.toLowerCase().equals("rna") || sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
                     alignment.dataTypeInput.setValue("nucleotide", alignment);
                     nTotalCount = 4;
@@ -491,6 +493,11 @@ public class NexusParser {
      * charset secondhalf = 450-898;
      * charset third = 1-457\3 662-896\3;
      * end;
+     * 
+     * begin assumptions;
+     * wtset MySoapWeights (VECTOR) = 13 13 13 50 50 88 8
+     * end;
+     * 
      */
     void parseAssumptionsBlock(final BufferedReader fin) throws Exception {
         String sStr;
@@ -512,7 +519,34 @@ public class NexusParser {
                 alignment.filterInput.setValue(sRange, alignment);
                 alignment.initAndValidate();
                 filteredAlignments.add(alignment);
+            } else if (sStr.toLowerCase().matches("\\s*wtset\\s.*")) {
+            	String [] strs = sStr.split("=");
+            	if (strs.length > 1) {
+            		sStr = strs[strs.length - 1].trim();
+            		strs = sStr.split("\\s+");
+            		int [] weights = new int[strs.length];
+            		for (int i = 0; i< strs.length; i++) {
+            			weights[i] = Integer.parseInt(strs[i]);
+            		}
+            		if (m_alignment != null) {
+            			if (weights.length != m_alignment.getSiteCount()) {
+            				throw new RuntimeException("Number of weights (" + weights.length+ ") " +
+            						"does not match number of sites in alignment(" + m_alignment.getSiteCount()+ ")");
+            			}
+            			StringBuilder weightStr = new StringBuilder();
+            			for (String str : strs) {
+            				weightStr.append(str);
+            				weightStr.append(',');
+            			}
+            			weightStr.delete(weightStr.length() - 1, weightStr.length());
+            			m_alignment.siteWeightsInput.setValue(weightStr.toString(), m_alignment);
+            			m_alignment.initAndValidate();
+            		} else {
+            			Log.warning.println("WTSET was specified before alignment. WTSET is ignored.");
+            		}
+            	}
             }
+
         } while (!sStr.toLowerCase().contains("end;"));
     }
 

@@ -90,7 +90,8 @@ public class Alignment extends Map<String> {
     public Input<String> dataTypeInput = new Input<String>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
     public Input<DataType.Base> userDataTypeInput= new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
     public Input<Boolean> stripInvariantSitesInput = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
-
+    public Input<String> siteWeightsInput = new Input<String>("weights","comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
+    
     /**
      * list of taxa names defined through the sequences in the alignment *
      */
@@ -120,17 +121,22 @@ public class Alignment extends Map<String> {
     /**
      * weight over the columns of a matrix *
      */
-    protected int[] patternWeight;
+    protected int [] patternWeight;
 
+    /**
+     * weights of sites -- assumed 1 for each site if not specified
+     */
+    protected int [] siteWeights = null;
+    
     /**
      * pattern state encodings *
      */
-    protected int[][] sitePatterns; // #patters x #taxa
+    protected int [][] sitePatterns; // #patters x #taxa
 
     /**
      * maps site nr to pattern nr *
      */
-    protected int[] patternIndex;
+    protected int [] patternIndex;
 
 
     public Alignment() {
@@ -160,6 +166,17 @@ public class Alignment extends Map<String> {
     	if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
     		throw new Exception("Either a sequence input must be specified, or a map of strings must be specified");
     	}
+    	
+    	if (siteWeightsInput.get() != null) {
+    		String sStr = siteWeightsInput.get().trim();
+    		String [] strs = sStr.split(",");
+    		siteWeights = new int[strs.length];
+    		for (int i = 0; i< strs.length; i++) {
+    			siteWeights[i] = Integer.parseInt(strs[i]);
+    		}    		
+    	}
+    	
+
     	
         // determine data type, either user defined or one of the standard ones
         if (userDataTypeInput.get() != null) {
@@ -354,6 +371,7 @@ public class Alignment extends Map<String> {
         Arrays.sort(nData, comparator);
 
         // count patterns in sorted data
+        // if (siteWeights != null) the weights are recalculated below
         int nPatterns = 1;
         int[] weights = new int[nSites];
         weights[0] = 1;
@@ -382,6 +400,13 @@ public class Alignment extends Map<String> {
             }
             patternIndex[i] = Arrays.binarySearch(sitePatterns, sites, comparator);
         }
+        
+        if (siteWeights != null) {
+        	Arrays.fill(patternWeight, 0);
+            for (int i = 0; i < nSites; i++) {
+            	patternWeight[patternIndex[i]] += siteWeights[i];
+            }        	
+        }
 
         // determine maximum state count
         // Usually, the state count is equal for all sites,
@@ -396,10 +421,6 @@ public class Alignment extends Map<String> {
 	            System.err.println(taxaNames.get(i) + ": " + counts.get(i).size() + " " + stateCounts.get(i));
 	        }
         }
-        System.out.println(getNrTaxa() + " taxa");
-        System.out.println(getSiteCount() + " sites");
-        System.out.println(getPatternCount() + " patterns");
-
 
         if (stripInvariantSitesInput.get()) {
             // don't add patterns that are invariant, e.g. all gaps
@@ -424,6 +445,14 @@ public class Alignment extends Map<String> {
             System.err.println(" removed " + removedSites + " sites ");
         }
 
+        int totalWeight = 0;
+        for (int weight : patternWeight) {
+        	totalWeight += weight;
+        }
+        
+        System.out.println(getNrTaxa() + " taxa");
+        System.out.println(getSiteCount() + " sites" + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight));
+        System.out.println(getPatternCount() + " patterns");
 
     } // calcPatterns
 
