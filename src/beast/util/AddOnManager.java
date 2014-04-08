@@ -300,7 +300,7 @@ public class AddOnManager {
         // create directory
         URL templateURL = new URL(aPackage.url);
         ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
-        String sDir = (useAppDir ? getPackageAppDir() : getPackageUserDir()) + "/" + sName;
+        String sDir = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + sName;
         if (customDir != null) {
             sDir = customDir + "/" + sName;
         }
@@ -344,7 +344,7 @@ public class AddOnManager {
             }
         }
 
-        String sDir = (useAppDir ? getPackageAppDir() : getPackageUserDir()) + "/" + sName;
+        String sDir = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + sName;
         if (customDir != null) {
             sDir = customDir + "/" + sName;
         }
@@ -464,13 +464,14 @@ public class AddOnManager {
     }
 
     /**
-     * return directory where to install packages for users *
+     * @return directory where to install packages for users *
      */
     public static String getPackageUserDir() {
+        
+        if (System.getProperty("beast.user.package.dir") != null)
+            return System.getProperty("beast.user.package.dir");
+        
         if (Utils.isWindows()) {
-//            if (System.getenv("APPDATA") != null) {
-//                return System.getenv("APPDATA") + "\\BEAST";
-//            }
             return System.getProperty("user.home") + "\\BEAST\\" + beastVersion.getMajorVersion();
         }
         if (Utils.isMac()) {
@@ -481,9 +482,13 @@ public class AddOnManager {
     }
 
     /**
-     * return directory where system wide packages reside *
+     * @return directory where system wide packages reside *
      */
-    public static String getPackageAppDir() {
+    public static String getPackageSystemDir() {
+        
+        if (System.getProperty("beast.system.package.dir") != null)
+            return System.getProperty("beast.system.package.dir");
+        
         if (Utils.isWindows()) {
             return "\\Program Files\\BEAST\\" + beastVersion.getMajorVersion();
         }
@@ -526,7 +531,7 @@ public class AddOnManager {
         // add user package directory
         sDirs.add(getPackageUserDir());
         // add application package directory
-        sDirs.add(getPackageAppDir());
+        sDirs.add(getPackageSystemDir());
 
         // pick up directories in class path, useful when running in an IDE
         String strClassPath = System.getProperty("java.class.path");
