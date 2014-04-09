@@ -272,7 +272,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
 	            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
 
-	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTXNacgtxn?_-]+")) {
+	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTUXNacgtuxn?_-]+")) {
 	            	datatype = "aminoacid";
 	            	nTotalCount = 20;
 	            	for (Sequence seq : alignment.sequenceInput.get()) {

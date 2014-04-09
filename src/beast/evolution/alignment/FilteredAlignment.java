@@ -1,5 +1,6 @@
 package beast.evolution.alignment;
 
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class FilteredAlignment extends Alignment {
 
     public FilteredAlignment() {
         sequenceInput.setRule(Validate.OPTIONAL);
+        // it does not make sense to set weights on sites, since they can be scrambled by the filter
+        siteWeightsInput.setRule(Validate.FORBIDDEN);
     }
 
     @Override
@@ -67,6 +70,15 @@ public class FilteredAlignment extends Alignment {
         	for (int i = 0; i < stateCounts.size(); i++) {
                 stateCounts.set(i, m_dataType.getStateCount());
         	}
+        }
+
+        if (alignmentInput.get().siteWeightsInput.get() != null) {
+    		String sStr = alignmentInput.get().siteWeightsInput.get().trim();
+    		String [] strs = sStr.split(",");
+    		siteWeights = new int[strs.length];
+    		for (int i = 0; i< strs.length; i++) {
+    			siteWeights[i] = Integer.parseInt(strs[i].trim());
+    		}    		
         }
 
         calcPatterns();
@@ -204,6 +216,30 @@ public class FilteredAlignment extends Alignment {
             nrOfPatterns = 0;
         }
         
+        // addjust weight of invariant sites, if stripInvariantSitesInput i sspecified
+        if (stripInvariantSitesInput.get()) {
+            // don't add patterns that are invariant, e.g. all gaps
+            System.err.print("Stripping invariant sites");
+            int removedSites = 0;
+            
+        	for (int i = 0; i < nrOfPatterns; i++) {
+        		boolean isContant = true;
+        		for (int j = 1; j < nrOfTaxa; j++) {
+        			if (data[i][j] != data[i][0]) {
+        				isContant = false;
+        				break;
+        			}
+        		}
+        		// if this is a constant site, and it is not an ambiguous site
+        		if (isContant) {
+                    System.err.print(" <" + data[i][0] + "> ");
+                   	removedSites += weights[i]; 
+            		weights[i] = 0;
+        		}
+        	}
+            System.err.println(" removed " + removedSites + " sites ");
+        }
+        
         // addjust weight of constant sites, if specified
         if (constantSiteWeightsInput.get() != null) {
         	Integer [] constantWeights = constantSiteWeightsInput.get().getValues(); 
@@ -219,7 +255,8 @@ public class FilteredAlignment extends Alignment {
         		if (isContant && data[i][0] >= 0 && data[i][0] < constantWeights.length) {
         			// take weights in data in account as well
         			// by adding constant patterns, we added a weight of 1, which now gets corrected
-            		weights[i] = weights[i] - 1 + constantWeights[data[i][0]];
+        			// but if filtered by stripping constant sites, that weight is already set to zero
+            		weights[i] = (stripInvariantSitesInput.get() ? 0 : weights[i] - 1) + constantWeights[data[i][0]];
         		}
         	}
         	
@@ -250,6 +287,11 @@ public class FilteredAlignment extends Alignment {
                 }
             }
             patternIndex[i] = Arrays.binarySearch(sitePatterns, sites, comparator);
+        }
+
+        if (siteWeights != null) {
+        	// TODO: fill in weights with siteweights.
+        	throw new RuntimeException("Cannot handle site weights in FilteredAlignment. Remove \"weights\" from data input.");
         }
 
         // determine maximum state count

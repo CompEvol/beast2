@@ -172,11 +172,9 @@ public class Alignment extends Map<String> {
     		String [] strs = sStr.split(",");
     		siteWeights = new int[strs.length];
     		for (int i = 0; i< strs.length; i++) {
-    			siteWeights[i] = Integer.parseInt(strs[i]);
+    			siteWeights[i] = Integer.parseInt(strs[i].trim());
     		}    		
     	}
-    	
-
     	
         // determine data type, either user defined or one of the standard ones
         if (userDataTypeInput.get() != null) {
@@ -232,6 +230,9 @@ public class Alignment extends Map<String> {
             if (seq.size() != nLength) {
                 throw new Exception("Two sequences with different length found: " + nLength + " != " + seq.size());
             }
+        }
+        if (siteWeights != null && siteWeights.length != nLength) {
+        	throw new RuntimeException("Number of weights (" + siteWeights.length + ") does not match sequence length (" + nLength +")");
         }
 
         calcPatterns();

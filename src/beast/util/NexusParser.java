@@ -235,9 +235,21 @@ public class NexusParser {
                     sStr = sStr.replaceAll(";", "");
                     sStr = sStr.trim();
                     if (sStr.length() > 0 && !sStr.toLowerCase().equals("end")) {
-                        for (final String taxon : sStr.split("\\s+")) {
+                    	String [] sStrs = sStr.split("\\s+");
+                    	for (int i = 0; i < sStrs.length; i++) {
+                        	String taxon = sStrs[i];
+                            if (taxon.charAt(0) == '\'' || taxon.charAt(0) == '\"') {
+                            	while (i < sStrs.length && taxon.charAt(0) != taxon.charAt(taxon.length() - 1)) {
+                            		i++;
+                            		if (i == sStrs.length) {
+                            			throw new Exception("Unclosed quote starting with " + taxon);
+                            		}
+                            		taxon += " " + sStrs[i];
+                            	}
+                            	taxon = taxon.substring(1, taxon.length() - 1);
+                            }
                             taxa.add(taxon);
-                        }
+                    	}
                     }
                 } while (!sStr.toLowerCase().equals("end"));
             }

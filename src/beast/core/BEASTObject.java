@@ -100,7 +100,7 @@ abstract public class BEASTObject {
             initAndValidate();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("initAndValidate() failed!");
+            throw new RuntimeException("initAndValidate() failed! " + e.getMessage());
         }
     } // initByName
 
