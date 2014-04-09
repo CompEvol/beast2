@@ -254,7 +254,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             Alignment data = dataInput.get();
             int i;
             int[] states = new int[patternCount];
-            int iTaxon = data.getTaxonIndex(node.getID());
+            int iTaxon = getTaxonNr(node, data);
             for (i = 0; i < patternCount; i++) {
                 int code = data.getPattern(iTaxon, i);
                 int[] statesForCode = data.getDataType().getStatesForCode(code);
@@ -271,7 +271,20 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
     }
 
-    /**
+    private int getTaxonNr(Node node, Alignment data) {
+        int iTaxon = data.getTaxonIndex(node.getID());
+        if (iTaxon == -1) {
+        	if (node.getID().startsWith("'") || node.getID().startsWith("\"")) {
+        		iTaxon = data.getTaxonIndex(node.getID().substring(1,node.getID().length()-1));
+        	}
+            if (iTaxon == -1) {
+            	throw new RuntimeException("Could not find sequence " + node.getID() + " in the alignment");
+            }
+        }
+        return iTaxon;
+	}
+
+	/**
      * set leaf partials in likelihood core *
      */
     void setPartials(Node node, int patternCount) {
@@ -281,7 +294,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             double[] partials = new double[patternCount * nStates];
 
             int k = 0;
-            int iTaxon = dataInput.get().getTaxonIndex(node.getID());
+            int iTaxon = getTaxonNr(node, data);
             for (int iPattern = 0; iPattern < patternCount; iPattern++) {
                 int nState = data.getPattern(iTaxon, iPattern);
                 boolean[] stateSet = data.getStateSet(nState);
