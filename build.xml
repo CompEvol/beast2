@@ -13,6 +13,7 @@
 	<property name="lib" location="../beast2/lib" />
 	<property name="doc" location="../beast2/doc" />
 	<property name="dist" location="../beast2/build/dist" />
+	<property name="testTemp" location="../beast2/test" />
 
 	<property name="main_class_BEAST" value="beast.app.beastapp.BeastMain" />
 	<property name="report" value="build/junitreport" />
@@ -37,6 +38,7 @@
 
 	<target name="clean">
 		<delete dir="${build}" />
+		<delete dir="${testTemp}" />
 	</target>
 
 	<!-- clean previous build, and then compile Java source code, and Juint test -->
