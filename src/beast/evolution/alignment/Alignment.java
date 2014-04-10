@@ -90,6 +90,19 @@ public class Alignment extends Map<String> {
             }
         }
     }
+    
+    /**
+     * Obtain data type object corresponding to data type description.
+     * 
+     * @param dataTypeDesc description string (e.g. "nucleotide")
+     * @return DataType instance or null if no corresponding instance found
+     */
+    public static DataType getDataTypeFromDesc(String dataTypeDesc) {
+        if (dataTypeMap.containsKey(dataTypeDesc))
+            return dataTypeMap.get(dataTypeDesc);
+        else
+            return null;
+    }
 
     public Input<List<Sequence>> sequenceInput =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.OPTIONAL);
