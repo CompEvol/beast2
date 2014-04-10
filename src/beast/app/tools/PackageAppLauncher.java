@@ -1,5 +1,13 @@
 package beast.app.tools;
 
+import beast.app.beauti.BeautiPanel;
+import beast.util.AddOnManager;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,21 +20,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import beast.app.beauti.BeautiPanel;
-import beast.util.AddOnManager;
-
 
 
 /**
  * launch applications specific to add-ons installed, for example utilities for
  * post-processing add-on specific data.
+ *
+ * @author  Remco Bouckaert
+ * @author  Walter Xie
  */
 public class PackageAppLauncher extends JDialog {
     private static final long serialVersionUID = 1L;
@@ -105,6 +106,8 @@ public class PackageAppLauncher extends JDialog {
                 JLabel label = (JLabel) super
                         .getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 label.setIcon(((PackageApp) value).icon);
+                label.setHorizontalTextPosition(JLabel.CENTER);
+                label.setVerticalTextPosition(JLabel.BOTTOM);
                 return label;
             }
         });
@@ -202,6 +205,7 @@ public class PackageAppLauncher extends JDialog {
                         Element addOnAppElement = (Element) nodes.item(j);
                         PackageApp packageApp = new PackageApp();
                         packageApp.packageName = addon.getAttribute("name");
+                        packageApp.jarDir = sJarDir;
                         packageApp.className = addOnAppElement.getAttribute("class");
                         packageApp.description = addOnAppElement.getAttribute("description");
                         packageApp.defaultArguments = addOnAppElement.getAttribute("args");
@@ -228,6 +232,7 @@ public class PackageAppLauncher extends JDialog {
      **/
     class PackageApp {
         String packageName;
+        String jarDir;
         String description;
         String className;
         String defaultArguments;
@@ -250,10 +255,10 @@ public class PackageAppLauncher extends JDialog {
         @Override
         public void run() {
             try {
-                String command = "java -cp " + System.getProperty("java.class.path") +
-                        " beast.app.tools.PackageAppLauncher " +
-                        packageApp.className + " " +
-                        packageApp.defaultArguments;
+                String command = "java -classpath " +  //TODO
+                        System.getProperty("java.class.path") +
+//                        " " + packageApp.jarDir + File.separator + "lib" + File.separator + packageApp.packageName + ".addon.jar" +
+                        " " + packageApp.className + " " + packageApp.defaultArguments;
                 System.out.println(command);
                 Process p = Runtime.getRuntime().exec(command);
                 BufferedReader pout = new BufferedReader((new InputStreamReader(p.getInputStream())));

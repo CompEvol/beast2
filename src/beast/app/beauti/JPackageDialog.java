@@ -11,20 +11,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import static beast.util.AddOnManager.*;
-import java.net.MalformedURLException;
-import java.util.Properties;
 
 /**
  * dialog for managing Package.
  * List, install and uninstall Package
  *
- * modified by Walter Xie
+ * @author  Remco Bouckaert
+ * @author  Walter Xie
  */
 @Description("BEAUti package manager")
 public class JPackageDialog extends JDialog {
