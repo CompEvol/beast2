@@ -354,21 +354,21 @@ public class NexusParser {
                 final String sSymbols = getAttValue("symbols", sStr);
                 if (sDataType == null) {
                     System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
-                    alignment.dataTypeInput.setValue("integer", alignment);
+                    alignment.dataTypeDescInput.setValue("integer", alignment);
                     if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
                         nTotalCount = sSymbols.length();
                     }
                 } else if (sDataType.toLowerCase().equals("rna") || sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
-                    alignment.dataTypeInput.setValue("nucleotide", alignment);
+                    alignment.dataTypeDescInput.setValue("nucleotide", alignment);
                     nTotalCount = 4;
                 } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
-                    alignment.dataTypeInput.setValue("aminoacid", alignment);
+                    alignment.dataTypeDescInput.setValue("aminoacid", alignment);
                     nTotalCount = 20;
                 } else if (sDataType.toLowerCase().equals("standard") && (sSymbols == null || sSymbols.equals("01"))) {
-                    alignment.dataTypeInput.setValue("binary", alignment);
+                    alignment.dataTypeDescInput.setValue("binary", alignment);
                     nTotalCount = 2;
                 } else {
-                    alignment.dataTypeInput.setValue("integer", alignment);
+                    alignment.dataTypeDescInput.setValue("integer", alignment);
                     if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
                         nTotalCount = sSymbols.length();
                     }

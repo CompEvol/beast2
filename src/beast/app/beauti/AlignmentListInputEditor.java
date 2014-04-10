@@ -1191,7 +1191,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			try {
 				for (int j = 0; j < filters.length; j++) {
 					FilteredAlignment f = new FilteredAlignment();
-					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.dataTypeInput.get());
+					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.dataTypeDescInput.get());
 					f.setID(alignment.getID() + ids[j]);
 					getDoc().addAlignmentWithSubnet(f, getDoc().beautiConfig.partitionTemplate.get());
 				}

@@ -289,7 +289,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	        String ID = file.getName();
 	        ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
 	        alignment.setID(ID);
-			alignment.dataTypeInput.setValue(datatype, alignment);
+			alignment.dataTypeDescInput.setValue(datatype, alignment);
 	        alignment.initAndValidate();
 	        return alignment;
     	} catch (Exception e) {
@@ -306,7 +306,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 
 		NodeList alignments = doc.getElementsByTagName("alignment");
 		Alignment alignment = new Alignment();
-		alignment.dataTypeInput.setValue("nucleotide", alignment);
+		alignment.dataTypeDescInput.setValue("nucleotide", alignment);
 
 		// parse first alignment
 		org.w3c.dom.Node node = alignments.item(0);
@@ -314,15 +314,15 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		String sDataType = node.getAttributes().getNamedItem("dataType").getNodeValue();
 		int nTotalCount = 4;
 		if (sDataType == null) {
-			alignment.dataTypeInput.setValue("integer", alignment);
+			alignment.dataTypeDescInput.setValue("integer", alignment);
 		} else if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
-			alignment.dataTypeInput.setValue("nucleotide", alignment);
+			alignment.dataTypeDescInput.setValue("nucleotide", alignment);
 			nTotalCount = 4;
 		} else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
-			alignment.dataTypeInput.setValue("aminoacid", alignment);
+			alignment.dataTypeDescInput.setValue("aminoacid", alignment);
 			nTotalCount = 20;
 		} else {
-			alignment.dataTypeInput.setValue("integer", alignment);
+			alignment.dataTypeDescInput.setValue("integer", alignment);
 		}
 
 		NodeList children = node.getChildNodes();
