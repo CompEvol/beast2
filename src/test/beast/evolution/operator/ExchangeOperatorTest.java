@@ -85,7 +85,7 @@ public class ExchangeOperatorTest extends TestCase {
         double match = 0;
         for (int i = 0; i < runs; i++) {
             TreeParser tree = new TreeParser();
-            tree.initByName("taxa", data, "newick", sourceTree);
+            tree.initByName("taxa", data, "newick", sourceTree, "IsLabelledNewick", true);
     		State state = new State();
     		state.initByName("stateNode", tree);
     		state.initialise();
@@ -107,7 +107,7 @@ public class ExchangeOperatorTest extends TestCase {
         double match2 = 0;
         for (int i = 0; i < runs; i++) {
             TreeParser tree = new TreeParser();
-            tree.initByName("taxa", data, "newick", targetTree);
+            tree.initByName("taxa", data, "newick", targetTree, "IsLabelledNewick", true);
     		State state = new State();
     		state.initByName("stateNode", tree);
     		state.initialise();

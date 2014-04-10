@@ -29,7 +29,8 @@ public class BEASTTestCase extends TestCase {
     static public Tree getTree(Alignment data, String tree) throws Exception {
         TreeParser t = new TreeParser();
         t.initByName("taxa", data,
-                "newick", tree);
+                "newick", tree,
+                "IsLabelledNewick", true);
         return t;
     }
 
@@ -123,14 +124,16 @@ public class BEASTTestCase extends TestCase {
     static public Tree getTree(Alignment data) throws Exception {
         TreeParser tree = new TreeParser();
         tree.initByName("taxa", data,
-                "newick", "((((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035,gorilla:0.036038):0.033087000000000005,orangutan:0.069125):0.030456999999999998,siamang:0.099582);");
+                "newick", "((((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035,gorilla:0.036038):0.033087000000000005,orangutan:0.069125):0.030456999999999998,siamang:0.099582);",
+                "IsLabelledNewick", true);
         return tree;
     }
 
     static public Tree getAminoAcidTree(Alignment data) throws Exception {
         TreeParser tree = new TreeParser();
         tree.initByName("taxa", data,
-                "newick", "(Struthio_camelus:0.09413496891819266,(Rhea_americana:0.03667415617018579,Pterocnemia_pennata:0.03667415617018579):0.05746081274800687);");
+                "newick", "(Struthio_camelus:0.09413496891819266,(Rhea_americana:0.03667415617018579,Pterocnemia_pennata:0.03667415617018579):0.05746081274800687);",
+                "IsLabelledNewick", true);
         return tree;
     }
 }
