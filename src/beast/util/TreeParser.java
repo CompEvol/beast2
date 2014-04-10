@@ -66,7 +66,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      */
     public final Input<Boolean> isLabelledNewickInput = new Input<Boolean>(
             "IsLabelledNewick",
-            "Is the newick tree labelled? Default=false.", false);
+            "Is the newick tree labelled (alternatively contains node numbers)? Default=false.", false);
     
     public final Input<Alignment> dataInput = new Input<Alignment>("taxa",
             "Specifies the list of taxa represented by leaves in the beast.tree");
@@ -337,7 +337,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * If that does not work, look in list of labels to see whether it is there.
      */
     private int getLabelIndex(final String sStr) throws Exception {
-        if (!isLabelledNewickInput.get() && labels == null) {
+        if (!isLabelledNewickInput.get()) {// && labels == null) {
             try {
                 final int nIndex = Integer.parseInt(sStr) - offsetInput.get();
                 checkTaxaIsAvailable(sStr, nIndex);
@@ -346,6 +346,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 System.out.println(e.getClass().getName() + " " + e.getMessage() + ". Perhaps taxa or taxonset is not specified?");
             }
         }
+
         // look it up in list of taxa
         for (int nIndex = 0; nIndex < labels.size(); nIndex++) {
             if (sStr.equals(labels.get(nIndex))) {
@@ -363,14 +364,14 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             return nIndex;
         }
 
-        // finally, check if its an integer number indicating the taxon id
-        try {
-            final int nIndex = Integer.parseInt(sStr) - offsetInput.get();
-            checkTaxaIsAvailable(sStr, nIndex);
-            return nIndex;
-        } catch (NumberFormatException e) {
-            // apparently not a number
-        }
+//        // finally, check if its an integer number indicating the taxon id
+//        try {
+//            final int nIndex = Integer.parseInt(sStr) - offsetInput.get();
+//            checkTaxaIsAvailable(sStr, nIndex);
+//            return nIndex;
+//        } catch (NumberFormatException e) {
+//            // apparently not a number
+//        }
         throw new Exception("Label '" + sStr + "' in Newick beast.tree could not be identified. Perhaps taxa or taxonset is not specified?");
     }
 

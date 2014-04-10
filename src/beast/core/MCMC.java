@@ -459,7 +459,7 @@ public class MCMC extends Runnable {
                         oldLogLikelihood = state.robustlyCalcPosterior(posterior);;
                     }
                 } else {
-                    if (Math.abs(fLogLikelihood - oldLogLikelihood) > 1e-6) {
+                    if (Math.abs(fLogLikelihood - fNonStochasticLogP) > 1e-6) {
                         // halt due to incorrect posterior during intial debug period
                         state.storeToFile(sampleNr);
                         operatorSchedule.storeToFile();

@@ -1,10 +1,10 @@
 package test.beast.util;
 
 import junit.framework.TestCase;
+
 import org.junit.Test;
 
 import beast.util.NexusParser;
-
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -103,6 +103,50 @@ public class NexusParserTest extends TestCase {
     }
 
 
+    
+    @Test
+    public void testTranslateBlock2() {
+
+        String nexusTreeWithTranslateBlock  = "#NEXUS\n" +
+                "\n" +
+                "Begin trees;\n" +
+                "\tTranslate\n" +
+                "\t\t1 2,\n" +
+                "\t\t2 0,\n" +
+                "\t\t3 1\n" +
+                "\t\t;\n" +
+                "tree TREE1  = [&R] (1:10,(3:30,2:20):10);\n" +
+                "End;\n";
+
+
+        NexusParser parser = new NexusParser();
+        try {
+
+            List<String> taxa = new ArrayList<String>();
+            taxa.add("2");
+            taxa.add("0");
+            taxa.add("1");
+
+            parser.parseFile("testTranslateBlock", new StringReader(nexusTreeWithTranslateBlock));
+
+            assertEquals(1, parser.trees.size());
+
+            assertNotNull(parser.trees.get(0));
+            
+            String t = parser.trees.get(0).getRoot().toNewick();
+            System.out.println(t);
+            assertEquals(t, "(0:10.0,(0:20.0,2:30.0):10.0):0.0");
+            
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            assertTrue(false);
+        }
+    }
+    
+    
     @Test
     public void testAssumptionsParse() {
         try {
