@@ -225,7 +225,10 @@ public class MRCAPrior extends Distribution {
                 out.print("height(" + tree.getTaxaNames()[i] + ")\t");
             }
         } else {
-            if (dist != null || isMonophyleticInput.get()) {
+        	if (!isMonophyleticInput.get()) {
+        		out.print("monophyletic(" + taxonsetInput.get().getID() + ")");
+        	}
+            if (dist != null) {
                 out.print("logP(mrca(" + taxonsetInput.get().getID() + "))\t");
             }
             out.print("mrcatime(" + taxonsetInput.get().getID() + ")\t");
@@ -242,7 +245,10 @@ public class MRCAPrior extends Distribution {
                 out.print(tree.getNode(i).getDate() + "\t");
             }
         } else {
-            if (dist != null || isMonophyleticInput.get()) {
+        	if (!isMonophyleticInput.get()) {
+        		out.print((isMonophyletic ? 1 : 0) + "\t");
+        	}
+            if (dist != null) {
                 out.print(getCurrentLogP() + "\t");
             } else {
                 calcMRCAtime(tree.getRoot(), new int[1]);
