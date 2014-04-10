@@ -20,7 +20,8 @@ public class MRCAPriorTest extends TestCase {
         TreeParser tree = new TreeParser();
         tree.initByName("taxa", data,
                 "newick", "((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035," +
-                "(gorilla:0.024003,(orangutan:0.010772,siamang:0.010772):0.013231):0.012035);");
+                "(gorilla:0.024003,(orangutan:0.010772,siamang:0.010772):0.013231):0.012035);",
+                "IsLabelledNewick", true);
 
         Taxon human = new Taxon();
         human.setID("human");
@@ -72,7 +73,8 @@ public class MRCAPriorTest extends TestCase {
         TreeParser tree = new TreeParser();
         tree.initByName("taxa", data,
                 "newick", "((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035," +
-                "(gorilla:0.024003,(orangutan:0.010772,siamang:0.010772):0.013231):0.012035);");
+                "(gorilla:0.024003,(orangutan:0.010772,siamang:0.010772):0.013231):0.012035);",
+                "IsLabelledNewick", true);
 
         Taxon human = new Taxon();
         human.setID("human");
