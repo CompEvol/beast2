@@ -112,7 +112,7 @@ public class BEASTTestCase extends TestCase {
             data.sequenceInput.setValue(sequence, data);
         }
         //data.m_nStateCount.setValue(4, data);
-        data.dataTypeDescInput.setValue("nucleotide", data);
+        data.dataTypeInput.setValue("nucleotide", data);
         data.excludefromInput.setValue(0, data);
         data.excludetoInput.setValue(4, data);
         data.excludeeveryInput.setValue(1, data);

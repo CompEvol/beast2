@@ -38,8 +38,6 @@ import beast.core.Input.Validate;
 import beast.core.parameter.Map;
 import beast.evolution.datatype.DataType;
 import beast.util.AddOnManager;
-import java.util.Collection;
-import java.util.HashMap;
 
 
 
@@ -58,19 +56,14 @@ public class Alignment extends Map<String> {
     final static String[] IMPLEMENTATION_DIR = {"beast.evolution.datatype"};
 
     /**
-     * Mapping from DataType descriptions to representative objects.
+     * list of data type descriptions, obtained from DataType classes *
      */
-    static java.util.Map<String, DataType> dataTypeMap = new HashMap<String, DataType>();
+    static List<String> types = new ArrayList<String>();
 
     static {
     	findDataTypes();
     }
     
-    /**
-     * Collate available data types and store the result in a static field.
-     * 
-     * Called by AddOnManager when the external jars are done loading.
-     */
     static public void findDataTypes() {
         // build up list of data types
         List<String> m_sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
@@ -79,36 +72,22 @@ public class Alignment extends Map<String> {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
                 if (dataType.isStandard()) {
                     String sDescription = dataType.getDescription();
-                    dataTypeMap.put(sDescription, dataType);
+                    if (!types.contains(sDescription)) {
+                    	types.add(sDescription);
+                    }
                 }
-            } catch (ClassNotFoundException e) {
-                // TODO: handle exception
-            } catch (IllegalAccessException e) {
-                // TODO: handle exception
-            } catch (InstantiationException e) {
+            } catch (Exception e) {
                 // TODO: handle exception
             }
         }
     }
-    
-    /**
-     * Obtain data type object corresponding to data type description.
-     * 
-     * @param dataTypeDesc description string (e.g. "nucleotide")
-     * @return DataType instance or null if no corresponding instance found
-     */
-    public static DataType getDataTypeFromDesc(String dataTypeDesc) {
-        if (dataTypeMap.containsKey(dataTypeDesc))
-            return dataTypeMap.get(dataTypeDesc);
-        else
-            return null;
-    }
+
 
     public Input<List<Sequence>> sequenceInput =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.OPTIONAL);
     public Input<Integer> stateCountInput = new Input<Integer>("statecount", "maximum number of states in all sequences");
-
-    public Input<String> dataTypeDescInput = new Input<String>("dataType", "data type, one of " + dataTypeMap.keySet(), NUCLEOTIDE, dataTypeMap.keySet().toArray(new String[0]));
+    //public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
+    public Input<String> dataTypeInput = new Input<String>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
     public Input<DataType.Base> userDataTypeInput= new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
     public Input<Boolean> stripInvariantSitesInput = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
     public Input<String> siteWeightsInput = new Input<String>("weights","comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
@@ -177,7 +156,7 @@ public class Alignment extends Map<String> {
             sequenceInput.setValue(sequence, this);
         }
         //m_nStateCount.setValue(stateCount, this);
-        dataTypeDescInput.setValue(dataType, this);
+        dataTypeInput.setValue(dataType, this);
         initAndValidate();
     }
 
@@ -201,11 +180,18 @@ public class Alignment extends Map<String> {
         if (userDataTypeInput.get() != null) {
             m_dataType = userDataTypeInput.get();
         } else {
-            if (!dataTypeMap.containsKey(dataTypeDescInput.get())) {
-                throw new Exception("data type + '" + dataTypeDescInput.get() + "' cannot be found. " +
-                        "Choose one of " + Arrays.toString(dataTypeMap.keySet().toArray(new String[0])));
+            if (types.indexOf(dataTypeInput.get()) < 0) {
+                throw new Exception("data type + '" + dataTypeInput.get() + "' cannot be found. " +
+                        "Choose one of " + Arrays.toString(types.toArray(new String[0])));
             }
-            m_dataType = dataTypeMap.get(dataTypeDescInput.get());
+            List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+            for (String sDataType : sDataTypes) {
+                DataType dataType = (DataType) Class.forName(sDataType).newInstance();
+                if (dataTypeInput.get().equals(dataType.getDescription())) {
+                    m_dataType = dataType;
+                    break;
+                }
+            }
         }
         
         // grab data from child sequences

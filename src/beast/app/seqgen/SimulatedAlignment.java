@@ -13,7 +13,6 @@ import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.util.NexusWriter;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
 
@@ -32,9 +31,7 @@ public class SimulatedAlignment extends Alignment {
     public Input<Integer> m_sequenceLengthInput = new Input<Integer>("sequencelength", "nr of samples to generate (default 1000).", 1000);
     public Input<String> m_outputFileNameInput = new Input<String>(
             "outputFileName",
-            "If provided, simulated alignment is additionally written to this file.");
-    public Input<Boolean> m_useNexusInput = new Input<Boolean>("useNexus",
-            "Write sequence alignment in Nexus format.", false);
+            "If provided, simulated alignment is additionally written to this file.");    
 
     /**
      * nr of samples to generate *
@@ -92,16 +89,13 @@ public class SimulatedAlignment extends Alignment {
         
         simulate();        
         
-        super.initAndValidate();
-        
         // Write simulated alignment to disk if requested:
         if (m_outputFileName != null) {
             PrintStream pstream = new PrintStream(m_outputFileName);
-            if (m_useNexusInput.get())
-                NexusWriter.write(this, null, pstream);
-            else
-                pstream.println(new XMLProducer().toRawXML(this));
+            pstream.println(new XMLProducer().toRawXML(this));
         }
+        
+        super.initAndValidate();
     }
 
     /**
