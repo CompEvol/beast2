@@ -15,10 +15,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 
 /**
@@ -242,7 +240,7 @@ public class PackageAppLauncher extends JDialog {
                         packageApp.jarDir = sJarDir;
                         packageApp.className = addOnAppElement.getAttribute("class");
                         packageApp.description = addOnAppElement.getAttribute("description");
-                        packageApp.defaultArguments = addOnAppElement.getAttribute("args");
+                        packageApp.argumentsString = addOnAppElement.getAttribute("args");
 
                         String iconLocation = addOnAppElement.getAttribute("icon");
                         packageApp.icon = BeautiPanel.getIcon(iconLocation);
@@ -269,15 +267,16 @@ public class PackageAppLauncher extends JDialog {
         String jarDir;
         String description;
         String className;
-        String defaultArguments;
+        String argumentsString;
         ImageIcon icon;
 
-        public String[] getDefaultArguments() {
-            if (defaultArguments == null || defaultArguments.trim().isEmpty()) {
+        public String[] getArgs() {
+            if (argumentsString == null || argumentsString.trim().isEmpty()) {
                 return new String[]{};
             } else {
-                //TODO difficult to parse by space
-                return new String[]{defaultArguments};
+                String[] args = argumentsString.split(" ", -1);
+                System.out.println("package = " + packageName + ", class = " + className + ", args = " + Arrays.toString(args));
+                return args;
             }
         }
 
@@ -298,11 +297,11 @@ public class PackageAppLauncher extends JDialog {
         @Override
         public void run() {
             // invoke package application
-            PackageAppLauncher.runAppFromJar(packageApp.className, packageApp.getDefaultArguments());
+            PackageAppLauncher.runAppFromJar(packageApp.className, packageApp.getArgs());
         }
     }
 
-    public static void runAppFromJar(String className, String[] defaultArguments) {
+    public static void runAppFromJar(String className, String[] args) {
         try {
             AddOnManager.loadExternalJars();
 
@@ -311,17 +310,17 @@ public class PackageAppLauncher extends JDialog {
             Class<?> c = Class.forName(className);
             Class<?>[] argTypes = new Class[] { String[].class };
             Method main = c.getDeclaredMethod("main", argTypes);
-            main.invoke(null, (Object) defaultArguments);
+            main.invoke(null, (Object) args);
         } catch (Exception err) {
             err.printStackTrace();
         }
     }
 
-    public static void runAppFromCMD(String className, String defaultArguments) {
+    public static void runAppFromCMD(String className, String[] args) {
 //            try {
 //                String command = "java -cp " + System.getProperty("java.class.path") +
 //                        " beast.app.tools.PackageAppLauncher " +
-//                        " " + className + " " + defaultArguments;
+//                        " " + className + " " + argumentsString;
 //                System.out.println(command);
 //                Process p = Runtime.getRuntime().exec(command);
 //                BufferedReader pout = new BufferedReader((new InputStreamReader(p.getInputStream())));
