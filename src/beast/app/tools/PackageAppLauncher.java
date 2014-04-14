@@ -13,13 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -33,9 +32,10 @@ public class PackageAppLauncher extends JDialog {
     private static final long serialVersionUID = 1L;
     public static final String DEFAULT_ICON = "beast/app/tools/images/utility.png";
 
-    JComboBox packageComboBox = new JComboBox(new String[]{"-all-"});
+    private final String ALL = "-all-";
+    JComboBox packageComboBox;
     DefaultListModel model = new DefaultListModel();
-    JList list;
+    JList listApps;
     JButton launchButton = new JButton("Launch");
 
     public PackageAppLauncher() {
@@ -47,7 +47,17 @@ public class PackageAppLauncher extends JDialog {
         setTitle("BEAST 2 Package Application Launcher");
 
         Box top = Box.createHorizontalBox();
-        JLabel label = new JLabel("Select a package:");
+        JLabel label = new JLabel("Show application of the installed package(s):");
+        packageComboBox = new JComboBox(new String[]{ALL});
+        packageComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox cb = (JComboBox)e.getSource();
+                if (cb.getSelectedItem() != null) {
+                    resetAppList(cb.getSelectedItem().toString());
+                }
+            }
+        });
         label.setLabelFor(packageComboBox);
         top.add(label);
         top.add(packageComboBox);
@@ -69,7 +79,7 @@ public class PackageAppLauncher extends JDialog {
         Box box = Box.createVerticalBox();
         box.add(Box.createGlue());
 
-        list = new JList(model) {
+        listApps = new JList(model) {
             //Subclass JList to workaround bug 4832765, which can cause the
             //scroll pane to not let the user easily scroll up to the beginning
             //of the list.  An alternative would be to set the unitIncrement
@@ -98,8 +108,8 @@ public class PackageAppLauncher extends JDialog {
                         visibleRect, orientation, direction);
             }
         };
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setCellRenderer(new DefaultListCellRenderer() {
+        listApps.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listApps.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                                                           boolean cellHasFocus) {
@@ -111,9 +121,9 @@ public class PackageAppLauncher extends JDialog {
                 return label;
             }
         });
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setVisibleRowCount(-1);
-        list.addMouseListener(new MouseAdapter() {
+        listApps.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        listApps.setVisibleRowCount(-1);
+        listApps.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     launchButton.doClick();
@@ -122,17 +132,17 @@ public class PackageAppLauncher extends JDialog {
         });
 
 //        if (model.getSize() > 0) { // TODO not working
-//            list.setPrototypeCellValue(model.firstElement()); //get extra space
+//            listApps.setPrototypeCellValue(model.firstElement()); //get extra space
 //        }
 
-        resetList();
+        resetAppList();
 
-        JScrollPane listScroller = new JScrollPane(list);
+        JScrollPane listScroller = new JScrollPane(listApps);
         listScroller.setPreferredSize(new Dimension(660, 400));
         listScroller.setAlignmentX(LEFT_ALIGNMENT);
 
         JLabel label = new JLabel("List of available package applications");
-        label.setLabelFor(list);
+        label.setLabelFor(listApps);
 
         box.add(label);
         box.add(listScroller);
@@ -140,18 +150,42 @@ public class PackageAppLauncher extends JDialog {
         return box;
     }
 
-    private void resetList() {
+    private void resetAppList() {
+        Set<String> packages = new TreeSet<String>();
         model.clear();
         try {
             List<PackageApp> packageApps = getPackageApps();
             for (PackageApp packageApp : packageApps) {
                 model.addElement(packageApp);
+                packages.add(packageApp.packageName);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        list.setSelectedIndex(0);
+        listApps.setSelectedIndex(0);
+
+        packageComboBox.removeAllItems();
+        packageComboBox.addItem(ALL);
+        for (String p : packages) {
+            packageComboBox.addItem(p);
+        }
     }
+
+
+    private void resetAppList(String packageName) {
+        model.clear();
+        try {
+            List<PackageApp> packageApps = getPackageApps();
+            for (PackageApp packageApp : packageApps) {
+                if (packageName.equals(ALL) || packageName.equalsIgnoreCase(packageApp.packageName))
+                    model.addElement(packageApp);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        listApps.setSelectedIndex(0);
+    }
+
 
     private Box createButtonBox() {
         Box box = Box.createHorizontalBox();
@@ -160,7 +194,7 @@ public class PackageAppLauncher extends JDialog {
         launchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PackageApp packageApp = (PackageApp) list.getSelectedValue();
+                PackageApp packageApp = (PackageApp) listApps.getSelectedValue();
                 if (packageApp != null) {
                     try {
                         new PackageAppThread(packageApp).start();
@@ -227,7 +261,7 @@ public class PackageAppLauncher extends JDialog {
     }
 
     /**
-     * add on application information reguired for launching the app and
+     * package application information required for launching the app and
      * displaying in list box
      **/
     class PackageApp {
@@ -237,6 +271,15 @@ public class PackageAppLauncher extends JDialog {
         String className;
         String defaultArguments;
         ImageIcon icon;
+
+        public String[] getDefaultArguments() {
+            if (defaultArguments == null || defaultArguments.trim().isEmpty()) {
+                return new String[]{};
+            } else {
+                //TODO difficult to parse by space
+                return new String[]{defaultArguments};
+            }
+        }
 
         @Override
         public String toString() {
@@ -254,29 +297,49 @@ public class PackageAppLauncher extends JDialog {
 
         @Override
         public void run() {
-            try {
-                String command = "java -classpath " +  //TODO
-                        System.getProperty("java.class.path") +
-//                        " " + packageApp.jarDir + File.separator + "lib" + File.separator + packageApp.packageName + ".addon.jar" +
-                        " " + packageApp.className + " " + packageApp.defaultArguments;
-                System.out.println(command);
-                Process p = Runtime.getRuntime().exec(command);
-                BufferedReader pout = new BufferedReader((new InputStreamReader(p.getInputStream())));
-                BufferedReader perr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-                String line;
-                while ((line = pout.readLine()) != null) {
-                    System.out.println(line);
-                }
-                pout.close();
-                while ((line = perr.readLine()) != null) {
-                    System.err.println(line);
-                }
-                perr.close();
-                p.waitFor();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // invoke package application
+            PackageAppLauncher.runAppFromJar(packageApp.className, packageApp.getDefaultArguments());
         }
+    }
+
+    public static void runAppFromJar(String className, String[] defaultArguments) {
+        try {
+            AddOnManager.loadExternalJars();
+
+            // call main method through reflection
+            // with default arguments
+            Class<?> c = Class.forName(className);
+            Class<?>[] argTypes = new Class[] { String[].class };
+            Method main = c.getDeclaredMethod("main", argTypes);
+            main.invoke(null, (Object) defaultArguments);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    public static void runAppFromCMD(String className, String defaultArguments) {
+//            try {
+//                String command = "java -cp " + System.getProperty("java.class.path") +
+//                        " beast.app.tools.PackageAppLauncher " +
+//                        " " + className + " " + defaultArguments;
+//                System.out.println(command);
+//                Process p = Runtime.getRuntime().exec(command);
+//                BufferedReader pout = new BufferedReader((new InputStreamReader(p.getInputStream())));
+//                BufferedReader perr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+//                String line;
+//                while ((line = pout.readLine()) != null) {
+//                    System.out.println(line);
+//                }
+//                pout.close();
+//                while ((line = perr.readLine()) != null) {
+//                    System.err.println(line);
+//                }
+//                perr.close();
+//                p.waitFor();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
     }
 
     public static void main(String[] args) {
@@ -284,25 +347,13 @@ public class PackageAppLauncher extends JDialog {
             PackageAppLauncher dlg = new PackageAppLauncher();
             dlg.setVisible(true);
         } else {
-            // invoke add on application
-            try {
-                AddOnManager.loadExternalJars();
-
-                // call main method through reflection
-                // with default arguments
-                String className = args[0];
-                Class<?> c = Class.forName(className);
-                Class<?>[] argTypes = new Class[] { String[].class };
-                Method main = c.getDeclaredMethod("main", argTypes);
-                String[] args2 = new String[args.length-1];
-                for (int i = 1; i < args.length; i++) {
-                    args2[i-1] = args[i];
-                }
-                main.invoke(null, (Object) args2);
-            } catch (Exception err) {
-                err.printStackTrace();
+            String className = args[0];
+            String[] args2 = new String[args.length-1];
+            for (int i = 1; i < args.length; i++) {
+                args2[i-1] = args[i];
             }
 
+            PackageAppLauncher.runAppFromJar(className, args2);
         }
     }
 }
