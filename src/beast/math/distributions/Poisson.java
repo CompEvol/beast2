@@ -4,6 +4,7 @@ package beast.math.distributions;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import org.apache.commons.math.distribution.IntegerDistribution;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 
 
@@ -56,5 +57,5 @@ public class Poisson extends ParametricDistribution {
         refresh();
         return dist;
     }
-
+    
 } // class Poisson

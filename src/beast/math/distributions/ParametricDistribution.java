@@ -102,7 +102,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
         if (dist instanceof ContinuousDistribution) {
             return offset + ((ContinuousDistribution) dist).inverseCumulativeProbability(p);
         } else if (dist instanceof IntegerDistribution) {
-            return offset + dist.cumulativeProbability(p);
+            return offset + ((IntegerDistribution)dist).inverseCumulativeProbability(p);
         }
         return 0.0;
     }
@@ -128,7 +128,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
    //     }
         return 0.0;
     }
-
+    
     private double logDensity(double x, final double offset) {
    //     if( x >= offset ) {
             x -= offset;
@@ -192,5 +192,12 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     /** returns mean of distribution, if implemented **/
     public double getMean() {
     	throw new RuntimeException("Not implemented yet");
+    }
+    
+    /**
+     * @return true if the distribution is an integer distribution
+     */
+    public boolean isIntegerDistribution() {
+        return getDistribution() instanceof IntegerDistribution;
     }
 }

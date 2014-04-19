@@ -211,6 +211,10 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
             pm = checkedCumulativeProbability(x0);
         }
 
+        // ensure x0 lies within domain bounds
+        x0 = x0>=getDomainLowerBound(p) ? x0 : getDomainLowerBound(p);
+        x0 = x0<=getDomainUpperBound(p) ? x0 : getDomainUpperBound(p);
+        
         return x0;
     }
 
