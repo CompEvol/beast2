@@ -130,9 +130,9 @@ public class BeautiStarBeastTest extends BeautiBase {
 		runner.analyse(0);
 	}
 
-	//@Test
-	private void runXML() throws Exception {
-		System.setProperty("file.name.prefix", org.fest.util.Files.temporaryFolder().getAbsolutePath());
+	@Test
+	public void runXML() throws Exception {
+		//System.setProperty("file.name.prefix", org.fest.util.Files.temporaryFolder().getAbsolutePath());
 		StarBEASTRunner runner = new StarBEASTRunner(org.fest.util.Files.temporaryFolder());
 		runner.analyse(0);
 		
@@ -144,7 +144,8 @@ public class BeautiStarBeastTest extends BeautiBase {
 			super();
 			setUp(new String[]{"/x.xml"});
 			sDir = file.getPath();
-			testFile = "/beast_";
+			sLogDir = "";
+			testFile = "beast_";
 		}
 
 		@Override
