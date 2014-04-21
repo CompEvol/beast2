@@ -273,7 +273,7 @@
 
             <connect srcID='GammaShapePrior.s:$(n)'      targetID='prior' inputName='distribution' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
             <connect srcID='PropInvariantPrior.s:$(n)'   targetID='prior' inputName='distribution' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)'        targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
+            <connect srcID='Tree.t:$(n)'        targetID='Reheight.t:Species' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
 
 	        <connect srcID='Tree.t:$(n)'        targetID='updown.all.Species' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all.Species' inputName='up' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
@@ -291,7 +291,7 @@
 			Since 'Species' is treated as a separate partition, we need the following
 			hack to get rid of undesirable Tree.t:Species connections 
 			-->
-            <connect srcID='Tree.t:Species'     targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
+            <connect srcID='Tree.t:Species'     targetID='Reheight.t:Species' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
             <connect srcID='Tree.t:Species'     targetID='treeTopFinder' inputName='tree' if='Tree.t:$(n)/estimate=XXX'/>
 
 			<connect srcID='birthRate.t:Species' targetID='updown.all.Species' inputName='up' if='inposterior(birthRate.t:Species)'/>
