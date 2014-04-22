@@ -248,6 +248,8 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		f = f.selectTab("MCMC");
 		beautiFrame.textBox("chainLength").selectAll().setText("2000000");
 
+		saveFile(""+org.fest.util.Files.temporaryFolder(), "divtutorial.xml");
+
 		makeSureXMLParses();
 
 		DivergenceDatingRunner runner = new DivergenceDatingRunner(org.fest.util.Files.temporaryFolder());

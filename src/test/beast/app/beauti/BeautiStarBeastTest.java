@@ -148,27 +148,27 @@ public class BeautiStarBeastTest extends BeautiBase {
 		@Override
 		protected List<Expectation> giveExpectations(int index_XML) throws Exception {
 	        List<Expectation> expList = new ArrayList<Expectation>();
-			addExpIntoList(expList,"posterior", -3816.95,1.506915);
-			addExpIntoList(expList,"likelihood", -4296.4,0.366696);
-			addExpIntoList(expList,"prior", 21.8217,0.098022);
-			addExpIntoList(expList,"speciescoalescent", 457.6353,1.706259);
-			addExpIntoList(expList,"birthRate.t:Species", 143.67,2.445228);
-			addExpIntoList(expList,"YuleModel.t:Species", 27.22955,0.090013);
-			addExpIntoList(expList,"TreeHeight.Species", 0.014625,0.000221);
-			addExpIntoList(expList,"TreeHeight.t:26", 0.026645,0.000141);
-			addExpIntoList(expList,"TreeHeight.t:29", 0.02436,0.000319);
-			addExpIntoList(expList,"TreeHeight.t:47", 0.018144,0.000225);
-			addExpIntoList(expList,"treeLikelihood.26", -1270.83,0.295451);
-			addExpIntoList(expList,"treeLikelihood.29", -1247.08,0.223219);
-			addExpIntoList(expList,"treeLikelihood.47", -1778.49,0.152477);
-			addExpIntoList(expList,"treePrior.t:26", 107.7301,0.304715);
-			addExpIntoList(expList,"treePrior.t:29", 113.0524,0.468035);
-			addExpIntoList(expList,"treePrior.t:47", 116.6492,0.52622);
-			addExpIntoList(expList,"clockRate.c:29", 0.941779,0.011786);
-			addExpIntoList(expList,"clockRate.c:47", 1.60083,0.019211);
-			addExpIntoList(expList,"kappa.s:26", 4.583857,0.085145);
-			addExpIntoList(expList,"kappa.s:29", 4.148848,0.117264);
-			addExpIntoList(expList,"kappa.s:47", 3.580174,0.048106);
+			addExpIntoList(expList,"posterior", -3820.43, 1.405193);
+			addExpIntoList(expList,"likelihood", -4297.21, 0.387458);
+			addExpIntoList(expList,"prior", 21.82193, 0.088263);
+			addExpIntoList(expList,"speciescoalescent", 454.9617, 1.470592);
+			addExpIntoList(expList,"birthRate.t:Species", 147.594, 3.45043);
+			addExpIntoList(expList,"YuleModel.t:Species", 27.19939, 0.091772);
+			addExpIntoList(expList,"TreeHeight.Species", 0.014721, 0.000223);
+			addExpIntoList(expList,"TreeHeight.t:47", 0.018463, 0.000238);
+			addExpIntoList(expList,"TreeHeight.t:26", 0.026735, 0.000143);
+			addExpIntoList(expList,"TreeHeight.t:29", 0.024885, 0.000294);
+			addExpIntoList(expList,"treeLikelihood.47", -1779.19, 0.198595);
+			addExpIntoList(expList,"treeLikelihood.26", -1270.7, 0.239457);
+			addExpIntoList(expList,"treeLikelihood.29", -1247.32, 0.283277);
+			addExpIntoList(expList,"treePrior.t:47", 115.79, 0.432574);
+			addExpIntoList(expList,"treePrior.t:26", 107.3072, 0.263393);
+			addExpIntoList(expList,"treePrior.t:29", 112.1106, 0.439123);
+			addExpIntoList(expList,"clockRate.c:47", 1.57111, 0.021326);
+			addExpIntoList(expList,"clockRate.c:29", 0.930268, 0.01279);
+			addExpIntoList(expList,"kappa.s:26", 4.494062, 0.099191);
+			addExpIntoList(expList,"kappa.s:29", 3.985931, 0.077119);
+			addExpIntoList(expList,"kappa.s:47", 3.628151, 0.063317);
 			return expList;
 		}
 		
