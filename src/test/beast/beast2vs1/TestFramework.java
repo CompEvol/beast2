@@ -21,9 +21,11 @@ public abstract class TestFramework extends TestCase {
     public String sDir;
     public String sLogDir;
     public String testFile = "/test.";
+    public boolean useSeed = true;
+    
     public TestFramework() {
     	sDir = System.getProperty("user.dir") + "/examples/beast2vs1/";
-    	sLogDir = sDir;
+    	sLogDir = System.getProperty("user.dir");
     }
     
     protected void setUp(String[] xmls) { // throws Exception {
@@ -50,7 +52,7 @@ public abstract class TestFramework extends TestCase {
 //		   runable.setInputValue("chainLength", 1000);
         runable.run();
 
-        String logFile = sLogDir + testFile + SEED + ".log";
+        String logFile = sLogDir + testFile + (useSeed ? SEED : "") + ".log";
         System.out.println("\nAnalysing log " + logFile);
         LogAnalyser logAnalyser = new LogAnalyser(logFile, giveExpectations(index_XML)); // burnIn = 0.1 * maxState
 

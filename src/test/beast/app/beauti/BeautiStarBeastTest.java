@@ -7,13 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
 
-import org.fest.swing.core.matcher.JButtonMatcher;
-import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JButtonFixture;
-import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
 import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
@@ -130,13 +124,15 @@ public class BeautiStarBeastTest extends BeautiBase {
 		runner.analyse(0);
 	}
 
-	@Test
-	public void runXML() throws Exception {
-		//System.setProperty("file.name.prefix", org.fest.util.Files.temporaryFolder().getAbsolutePath());
-		StarBEASTRunner runner = new StarBEASTRunner(org.fest.util.Files.temporaryFolder());
-		runner.analyse(0);
-		
-	}
+// This is for debugging the test only
+//	StarBEASTRunner should be run from simpleStarBeastTest()
+//	@Test
+//	public void runXML() throws Exception {
+//		//System.setProperty("file.name.prefix", org.fest.util.Files.temporaryFolder().getAbsolutePath());
+//		StarBEASTRunner runner = new StarBEASTRunner(org.fest.util.Files.temporaryFolder());
+//		runner.analyse(0);
+//		
+//	}
 	
 	class StarBEASTRunner extends TestFramework {
 		

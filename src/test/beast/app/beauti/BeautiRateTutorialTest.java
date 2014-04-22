@@ -8,7 +8,9 @@ import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
 
 import java.awt.Component;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JComboBox;
 
@@ -26,6 +28,9 @@ import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.image.ScreenshotTaker;
 import org.junit.Test;
 
+import test.beast.beast2vs1.TestFramework;
+import test.beast.beast2vs1.trace.Expectation;
+
 import beast.app.util.Utils;
 
 
@@ -36,7 +41,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 	final static String PREFIX = "doc/tutorials/MEPs/figures/generated/BEAUti_";
 
 	@Test
-	public void MEPTutorial() throws InterruptedException {
+	public void MEPTutorial() throws Exception {
 		long t0 = System.currentTimeMillis();
 		ScreenshotTaker screenshotTaker = new ScreenshotTaker();
 		beauti.frame.setSize(1024, 640);
@@ -64,7 +69,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		
 		f = f.selectTab("Partitions");
 		JTableFixture t = beautiFrame.table();
-		t.selectCell(TableCell.row(0).column(0));
+		t.selectCell(TableCell.row(0).column(2));
 		
 		//0. Split partition... 
 		warning("0. Split partition...");
@@ -90,7 +95,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("1a. Link trees...");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
-		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
+		t.selectCells(TableCell.row(0).column(2), TableCell.row(1).column(2), TableCell.row(2).column(2));
 		JButtonFixture linkTreesButton = beautiFrame.button("Link Trees");
 		linkTreesButton.click();
 		printBeautiState(f);
@@ -116,7 +121,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("2a. Link clocks");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
-		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
+		t.selectCells(TableCell.row(0).column(2), TableCell.row(1).column(2), TableCell.row(2).column(2));
 		JButtonFixture linkClocksButton = beautiFrame.button("Link Clock Models");
 		linkClocksButton.click();
 
@@ -140,7 +145,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("3a. link site models");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
-		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
+		t.selectCells(TableCell.row(0).column(2), TableCell.row(1).column(2), TableCell.row(2).column(2));
 		JButtonFixture linkSiteModelsButton = beautiFrame.button("Link Site Models");
 		linkSiteModelsButton.click();
 		
@@ -160,7 +165,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("3c. unlink site models");
 		f.selectTab("Partitions");
 		t = beautiFrame.table();
-		t.selectCells(TableCell.row(0).column(0), TableCell.row(1).column(0), TableCell.row(2).column(0));
+		t.selectCells(TableCell.row(0).column(2), TableCell.row(1).column(2), TableCell.row(2).column(2));
 		JButtonFixture unlinkSiteModelsButton = beautiFrame.button("Unlink Site Models");
 		unlinkSiteModelsButton.click();
 		printBeautiState(f);
@@ -230,12 +235,60 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("7. Run MCMC and look at results in Tracer, TreeAnnotator->FigTree");
 		makeSureXMLParses();
 		
+ 		MEPRunner runner = new MEPRunner(org.fest.util.Files.temporaryFolder());
+ 		runner.analyse(0);
+		
 		long t1 = System.currentTimeMillis();
 		System.err.println("total time: " + (t1 - t0)/1000 + " seconds");
 		
 	}
 	
 	
+	 // This is for debugging the test only
+// 	MEPRunner should be run from MEPTutorial()
+// 	@Test
+// 	public void runXML() throws Exception {
+// 		//System.setProperty("file.name.prefix", org.fest.util.Files.temporaryFolder().getAbsolutePath());
+// 		MEPRunner runner = new MEPRunner(org.fest.util.Files.temporaryFolder());
+// 		runner.analyse(0);
+// 		
+// 	}
+    
+	class MEPRunner extends TestFramework {
+		
+		MEPRunner(File file) {
+			super();
+			setUp(new String[]{"/x.xml"});
+			sDir = file.getPath();
+			sLogDir = "/tmp/";
+			useSeed = false;
+			testFile = "RSV2";
+		}
+
+		@Override
+		protected List<Expectation> giveExpectations(int index_XML) throws Exception {
+	        List<Expectation> expList = new ArrayList<Expectation>();
+	        addExpIntoList(expList,"posterior", -6131.89, 0.922052);
+	        addExpIntoList(expList,"likelihood", -5496.28, 0.401133);
+	        //addExpIntoList(expList,"prior", -635.603, 1.215535);
+	        addExpIntoList(expList,"treeLikelihood.1", -1440.16, 0.197223);
+	        addExpIntoList(expList,"treeLikelihood.3", -2271.52, 0.300608);
+	        addExpIntoList(expList,"treeLikelihood.2", -1784.59, 0.29738);
+	        addExpIntoList(expList,"TreeHeight", 56.06136, 0.125308);
+	        addExpIntoList(expList,"kappa.1", 7.727761, 0.069897);
+	        addExpIntoList(expList,"kappa.2", 10.41839, 0.093578);
+	        addExpIntoList(expList,"kappa.3", 11.97769, 0.090429);
+	        addExpIntoList(expList,"mutationRate.1", 0.698603, 0.000868);
+	        addExpIntoList(expList,"mutationRate.2", 0.960092, 0.00099);
+	        addExpIntoList(expList,"mutationRate.3", 1.33987, 0.001132);
+	        addExpIntoList(expList,"clockRate", 0.002179, 1.16E-5);
+	        addExpIntoList(expList,"popSize", 37.44745, 0.368656);
+	        //addExpIntoList(expList,"CoalescentConstant", -590.862, 1.164024);
+			return expList;
+		}
+		
+	}
+    
 
 
 	@Test
