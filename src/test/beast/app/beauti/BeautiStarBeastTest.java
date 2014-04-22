@@ -142,6 +142,7 @@ public class BeautiStarBeastTest extends BeautiBase {
 			sDir = file.getPath();
 			sLogDir = "";
 			testFile = "beast_";
+			checkESS = false;
 		}
 
 		@Override

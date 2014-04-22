@@ -260,8 +260,9 @@ public class BeautiRateTutorialTest extends BeautiBase {
 			super();
 			setUp(new String[]{"/x.xml"});
 			sDir = file.getPath();
-			sLogDir = "/tmp/";
+			sLogDir = "";
 			useSeed = false;
+	        checkESS = false;
 			testFile = "RSV2";
 		}
 
@@ -270,7 +271,8 @@ public class BeautiRateTutorialTest extends BeautiBase {
 	        List<Expectation> expList = new ArrayList<Expectation>();
 	        addExpIntoList(expList,"posterior", -6131.89, 0.922052);
 	        addExpIntoList(expList,"likelihood", -5496.28, 0.401133);
-	        //addExpIntoList(expList,"prior", -635.603, 1.215535);
+	        // low ESS for seed=128
+	        addExpIntoList(expList,"prior", -635.603, 1.215535);
 	        addExpIntoList(expList,"treeLikelihood.1", -1440.16, 0.197223);
 	        addExpIntoList(expList,"treeLikelihood.3", -2271.52, 0.300608);
 	        addExpIntoList(expList,"treeLikelihood.2", -1784.59, 0.29738);
@@ -283,7 +285,8 @@ public class BeautiRateTutorialTest extends BeautiBase {
 	        addExpIntoList(expList,"mutationRate.3", 1.33987, 0.001132);
 	        addExpIntoList(expList,"clockRate", 0.002179, 1.16E-5);
 	        addExpIntoList(expList,"popSize", 37.44745, 0.368656);
-	        //addExpIntoList(expList,"CoalescentConstant", -590.862, 1.164024);
+	        // low ESS for seed=128
+	        addExpIntoList(expList,"CoalescentConstant", -590.862, 1.164024);
 			return expList;
 		}
 		

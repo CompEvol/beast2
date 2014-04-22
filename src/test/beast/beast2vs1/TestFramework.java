@@ -22,6 +22,7 @@ public abstract class TestFramework extends TestCase {
     public String sLogDir;
     public String testFile = "/test.";
     public boolean useSeed = true;
+    public boolean checkESS = true;
     
     public TestFramework() {
     	sDir = System.getProperty("user.dir") + "/examples/beast2vs1/";
@@ -62,7 +63,8 @@ public abstract class TestFramework extends TestCase {
                     + " <= delta stdErr: 2*(" + expectation.getStdError() + " + "
                     + expectation.getTraceStatistics().getStdErrorOfMean() + ")", expectation.isPassed());
 
-            TestCase.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
+            if (checkESS)
+            	TestCase.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
                     + expectation.getTraceStatistics().getESS(), expectation.isValid());
         }
 
