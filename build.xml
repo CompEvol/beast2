@@ -190,6 +190,7 @@
 	<property name="TreeAnnotator_name" value="TreeAnnotator" />
 	<property name="LogCombiner_name" value="LogCombiner" />
 	<property name="LogAnalyser_name" value="LogAnalyser" />
+    <property name="AppStore_name" value="AppStore" />
 
 	<property name="common_dir" value="${release_dir}/common" />
 	<property name="Mac_dir" value="${release_dir}/Mac" />
@@ -303,6 +304,14 @@
 		          txtFileVersion="2.0.0.0"
 		          productVersion="2.0.0.0"
 		          txtProductVersion="2.0.0.0" />
+
+        <launch4j configFile="${Windows_dir}/AppStore_launch4j.xml"
+                  jar="${tools_dir}/appstore.jar"
+                  outfile="${Windows_package_dir}/AppStore.exe"
+                  fileVersion="${version_number}.0"
+                  txtFileVersion="${version}"
+                  productVersion="${version_number}.0"
+                  txtProductVersion="${version}"/>
 
 		<copy todir="${Windows_package_dir}/templates/">
 			<fileset dir="templates/" />
@@ -540,7 +549,25 @@
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
 		</jarbundler>
 
-		<copy todir="${Mac_package_dir}/templates/">
+        <jarbundler dir="${Mac_package_dir}"
+                    name="${AppStore_name}"
+                    mainclass="beast.app.tools.AppStore"
+                    icon="${beast1_dir}/utility.icns"
+                    jvmversion="1.6+"
+                    vmoptions="-Xmx1024M"
+                    arguments=""
+                    version="${version}"
+                    infostring="${AppStore_name}, ${copyright}"
+                    bundleid="beast.app.tools.appstore">
+            <jarfileset dir="${tools_dir}">
+                <include name="**/appstore.jar" />
+            </jarfileset>
+            <javaproperty name="apple.laf.useScreenMenuBar" value="true" />
+            <javaproperty name="java.library.path" value="$JAVAROOT/lib" />
+        </jarbundler>
+
+
+        <copy todir="${Mac_package_dir}/templates/">
 			<fileset dir="templates/" />
 		</copy>
 

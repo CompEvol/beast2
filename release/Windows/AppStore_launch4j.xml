@@ -1,0 +1,21 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <icon>../common/icons/utility.ico</icon>
+  <classPath>
+  	<mainClass>beast.app.tools.AppStore</mainClass>
+  	<cp>./lib/beast.jar</cp>
+  </classPath>
+  <cmdLine></cmdLine>
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>    
+  <versionInfo>
+    <fileDescription>AppStore</fileDescription>
+    <copyright>Beast 2 development team 2014</copyright>
+    <productName>AppStore</productName>
+    <internalName>AppStore</internalName>
+    <originalFilename>AppStore.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>

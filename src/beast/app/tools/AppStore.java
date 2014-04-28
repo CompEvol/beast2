@@ -15,8 +15,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -26,7 +28,7 @@ import java.util.List;
  * @author  Remco Bouckaert
  * @author  Walter Xie
  */
-public class PackageAppLauncher extends JDialog {
+public class AppStore extends JDialog {
     private static final long serialVersionUID = 1L;
     public static final String DEFAULT_ICON = "beast/app/tools/images/utility.png";
 
@@ -36,7 +38,7 @@ public class PackageAppLauncher extends JDialog {
     JList listApps;
     JButton launchButton = new JButton("Launch");
 
-    public PackageAppLauncher() {
+    public AppStore() {
         try {
             AddOnManager.loadExternalJars();
         } catch (Exception e) {
@@ -275,7 +277,7 @@ public class PackageAppLauncher extends JDialog {
                 return new String[]{};
             } else {
                 String[] args = argumentsString.split(" ", -1);
-                System.out.println("package = " + packageName + ", class = " + className + ", args = " + Arrays.toString(args));
+//                System.out.println("package = " + packageName + ", class = " + className + ", args = " + Arrays.toString(args));
                 return args;
             }
         }
@@ -297,7 +299,8 @@ public class PackageAppLauncher extends JDialog {
         @Override
         public void run() {
             // invoke package application
-            PackageAppLauncher.runAppFromJar(packageApp.className, packageApp.getArgs());
+//            AppStore.runAppFromJar(packageApp.className, packageApp.getArgs());
+            AppStore.runAppFromCMD(packageApp);
         }
     }
 
@@ -311,17 +314,48 @@ public class PackageAppLauncher extends JDialog {
             Class<?>[] argTypes = new Class[] { String[].class };
             Method main = c.getDeclaredMethod("main", argTypes);
             main.invoke(null, (Object) args);
+
         } catch (Exception err) {
             err.printStackTrace();
         }
     }
 
-    public static void runAppFromCMD(String className, String[] args) {
-//            try {
+    public static void runAppFromCMD(PackageApp packageApp) {
+        try {
+//                AddOnManager.loadExternalJars();
+
+//                String jarPath = this.get
 //                String command = "java -cp " + System.getProperty("java.class.path") +
-//                        " beast.app.tools.PackageAppLauncher " +
-//                        " " + className + " " + argumentsString;
+//                        " beast.app.tools.AppStore " +
+//                        " " + className + " " + Arrays.toString(args);
+//                System.out.println(command);   "-Xms256m", "-Xmx1024m",
+//                final String strClassPath = "\"" + System.getProperty("java.class.path") + ":/Users/dxie004/Workspace/BEAST2/build/dist/beast.jar\"";
+            final String strClassPath = "\"" + packageApp.jarDir + "/lib/*:/Users/dxie004/Workspace/BEAST2/build/dist/beast.jar\"";
+
+            String args = "";
+            for (String arg : packageApp.getArgs()) {
+                args += " " + arg;
+            }
+            String command = "java -cp " + strClassPath + " " + packageApp.className + args;
+
+            final ProcessBuilder pb = new ProcessBuilder("java", "-cp", strClassPath, packageApp.className, args);
+
+            System.out.println(pb.command());
+
+
+            // Start the process and wait for it to finish.
+            final Process process = pb.start();
+
+            final int exitStatus = process.waitFor();
+
+            if (exitStatus != 0) {
+                System.err.println(process.getErrorStream());
+            } else {
+                System.out.println(process.getOutputStream());
+            }
+
 //                System.out.println(command);
+
 //                Process p = Runtime.getRuntime().exec(command);
 //                BufferedReader pout = new BufferedReader((new InputStreamReader(p.getInputStream())));
 //                BufferedReader perr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -335,15 +369,15 @@ public class PackageAppLauncher extends JDialog {
 //                }
 //                perr.close();
 //                p.waitFor();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            PackageAppLauncher dlg = new PackageAppLauncher();
+            AppStore dlg = new AppStore();
             dlg.setVisible(true);
         } else {
             String className = args[0];
@@ -352,7 +386,7 @@ public class PackageAppLauncher extends JDialog {
                 args2[i-1] = args[i];
             }
 
-            PackageAppLauncher.runAppFromJar(className, args2);
+            AppStore.runAppFromJar(className, args2);
         }
     }
 }
