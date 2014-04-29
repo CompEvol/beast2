@@ -1,6 +1,7 @@
 package beast.app.tools;
 
 import beast.app.beauti.BeautiPanel;
+import beast.app.util.Utils;
 import beast.util.AddOnManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -330,15 +331,19 @@ public class AppStore extends JDialog {
 //                        " " + className + " " + Arrays.toString(args);
 //                System.out.println(command);   "-Xms256m", "-Xmx1024m",
 //                final String strClassPath = "\"" + System.getProperty("java.class.path") + ":/Users/dxie004/Workspace/BEAST2/build/dist/beast.jar\"";
-            final String strClassPath = "\"" + packageApp.jarDir + "/lib/*:/Users/dxie004/Workspace/BEAST2/build/dist/beast.jar\"";
+            List<String> cmd = new ArrayList<String>();
+            cmd.add("java");
+            cmd.add("-cp");
+            final String strClassPath = packageApp.jarDir + "/lib/*:/Users/dxie004/Workspace/BEAST2/build/dist/beast.jar";
+            cmd.add(strClassPath);
+            cmd.add(packageApp.className);
 
-            String args = "";
             for (String arg : packageApp.getArgs()) {
-                args += " " + arg;
+                cmd.add(arg);
             }
-            String command = "java -cp " + strClassPath + " " + packageApp.className + args;
+//            String command = "java -cp " + strClassPath.replaceAll(" ", "\\\\ ") + " " + packageApp.className + args;
 
-            final ProcessBuilder pb = new ProcessBuilder("java", "-cp", strClassPath, packageApp.className, args);
+            final ProcessBuilder pb = new ProcessBuilder(cmd);
 
             System.out.println(pb.command());
 
@@ -349,9 +354,9 @@ public class AppStore extends JDialog {
             final int exitStatus = process.waitFor();
 
             if (exitStatus != 0) {
-                System.err.println(process.getErrorStream());
+                System.err.println(Utils.toString(process.getErrorStream()));
             } else {
-                System.out.println(process.getOutputStream());
+                System.out.println(Utils.toString(process.getInputStream()));
             }
 
 //                System.out.println(command);

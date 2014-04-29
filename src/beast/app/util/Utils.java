@@ -5,8 +5,7 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -257,5 +256,14 @@ public class Utils {
         return null;
     }
 
-
+    public static String toString(InputStream in) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder out = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            out.append(line);
+        }
+        reader.close();
+        return out.toString();
+    }
 }
