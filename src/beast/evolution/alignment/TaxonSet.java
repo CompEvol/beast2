@@ -24,6 +24,11 @@ public class TaxonSet extends Taxon {
         taxonsetInput.setValue(taxa, this);
         initAndValidate();
     }
+    
+    public TaxonSet(final Alignment alignment) throws Exception {
+        alignmentInput.setValue(alignment, this);
+        initAndValidate();
+    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -46,7 +51,7 @@ public class TaxonSet extends Taxon {
     public List<String> asStringList() {
         return taxaNames;
     }
-
+    
     //  convenience methods
 
     public boolean containsAny(final Collection<String> taxa) {
@@ -83,6 +88,13 @@ public class TaxonSet extends Taxon {
      */
     public boolean containsAll(final TaxonSet taxa) {
         return containsAll(taxa.asStringList());
+    }
+    
+    /**
+     * @return number of taxa in this taxon set
+     */
+    public int getNrTaxa() {
+        return asStringList().size();
     }
     
     @Override
