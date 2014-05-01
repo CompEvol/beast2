@@ -93,8 +93,18 @@ public class TaxonSet extends Taxon {
     /**
      * @return number of taxa in this taxon set
      */
-    public int getNrTaxa() {
+    public int getTaxonCount() {
         return asStringList().size();
+    }
+    
+    /**
+     * @return number of taxa in this taxon set
+     * @deprecated Exists only for consistency with method in Alignment. Use
+     * getTaxonCount() instead.
+     */
+    @Deprecated
+    public int getNrTaxa() {
+        return getTaxonCount();
     }
     
     @Override

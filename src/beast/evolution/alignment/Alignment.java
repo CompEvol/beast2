@@ -275,8 +275,20 @@ public class Alignment extends Map<String> {
         return m_dataType;
     }
 
+    /**
+     * @return number of taxa in Alignment.
+     */
+    public int getTaxonCount() {
+       return taxaNames.size();
+    }
+    
+    /**
+     * @return number of taxa in Alignment.
+     * @deprecated Use getTaxonCount() instead.
+     */
+    @Deprecated
     public int getNrTaxa() {
-        return taxaNames.size();
+        return getTaxonCount();
     }
 
     public int getTaxonIndex(String sID) {
