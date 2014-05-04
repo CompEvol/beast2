@@ -966,7 +966,7 @@
         </subtemplate>
 
         <!-- Normal -->
-        <subtemplate id='Normal' class='beast.math.distributions.Normal' mainid='[top]'>
+        <subtemplate id='Normal' class='beast.math.distributions.Normal' mainid='[top]' suppressInputs='beast.math.distributions.Normal.tau'>
             <![CDATA[
     <distr offset="0.0" spec="beast.math.distributions.Normal">
         <parameter name='mean' value='0' estimate='false'/>

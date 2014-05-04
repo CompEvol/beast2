@@ -300,6 +300,7 @@
             <connect srcID='Tree.t:$(n)'                   targetID='SBI' inputName='gene' if='inposterior(Tree.t:$(n))'/>
 			<!-- we don't want Tree.t:Species to be treated as gene, so the condition is guaranteed false -->
             <connect srcID='Tree.t:Species'                targetID='SBI' inputName='gene' if='popSize/value=-1'/>
+            <connect srcID='Tree.t:Species'                targetID='SBI' inputName='speciesTree' if='inposterior(Tree.t:Species) and nooperator(CalibratedYuleBirthRateScaler.t:$(n))'/>
 			<connect srcID="CalibratedYuleModel.t:Species" targetID='SBI' inputName='calibratedYule' if='inposterior(CalibratedYuleModel.t:Species)'/>
 
 			<mergepoint id='aux-partitiontemplate'/>
