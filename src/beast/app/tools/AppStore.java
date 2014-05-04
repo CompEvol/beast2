@@ -1,14 +1,17 @@
 package beast.app.tools;
 
+
 import beast.app.beauti.BeautiPanel;
 import beast.app.util.Utils;
 import beast.util.AddOnManager;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,8 +51,9 @@ public class AppStore extends JDialog {
         setTitle("BEAST 2 Package Application Launcher");
 
         Box top = Box.createHorizontalBox();
-        JLabel label = new JLabel("Show application of the installed package(s):");
+        JLabel label = new JLabel("Filter: ");
         packageComboBox = new JComboBox(new String[]{ALL});
+        packageComboBox.setToolTipText("Show application of the installed package(s)");
         packageComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -62,16 +66,16 @@ public class AppStore extends JDialog {
         label.setLabelFor(packageComboBox);
         top.add(label);
         top.add(packageComboBox);
-        add(BorderLayout.NORTH, top);
+        getContentPane().add(BorderLayout.NORTH, top);
 
         Component pluginListBox = createList();
-        add(BorderLayout.CENTER, pluginListBox);
+        getContentPane().add(BorderLayout.CENTER, pluginListBox);
 
         Box buttonBox = createButtonBox();
-        add(buttonBox, BorderLayout.SOUTH);
+        getContentPane().add(buttonBox, BorderLayout.SOUTH);
 
-//        Dimension dim = panel.getPreferredSize();
-//        Dimension dim2 = buttonBox.getPreferredSize();
+//      Dimension dim = panel.getPreferredSize();
+//      Dimension dim2 = buttonBox.getPreferredSize();
 //		setSize(dim.width + 10, dim.height + dim2.height + 30);
         setSize(new Dimension(660, 400));
     }
@@ -323,30 +327,24 @@ public class AppStore extends JDialog {
 
     public static void runAppFromCMD(PackageApp packageApp) {
         try {
-//                AddOnManager.loadExternalJars();
-
-//                String jarPath = this.get
-//                String command = "java -cp " + System.getProperty("java.class.path") +
-//                        " beast.app.tools.AppStore " +
-//                        " " + className + " " + Arrays.toString(args);
-//                System.out.println(command);   "-Xms256m", "-Xmx1024m",
-//                final String strClassPath = "\"" + System.getProperty("java.class.path") + ":/Users/dxie004/Workspace/BEAST2/build/dist/beast.jar\"";
             List<String> cmd = new ArrayList<String>();
             cmd.add("java");
+            // TODO: deal with java directives like -Xmx -Xms here
+            if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
+            	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
+            }
             cmd.add("-cp");
-            final String strClassPath = packageApp.jarDir + "/lib/*:/Users/dxie004/Workspace/BEAST2/build/dist/beast.jar";
+            final String strClassPath = sanitise(System.getProperty("java.class.path"));
             cmd.add(strClassPath);
             cmd.add(packageApp.className);
 
             for (String arg : packageApp.getArgs()) {
                 cmd.add(arg);
             }
-//            String command = "java -cp " + strClassPath.replaceAll(" ", "\\\\ ") + " " + packageApp.className + args;
 
             final ProcessBuilder pb = new ProcessBuilder(cmd);
 
-            System.out.println(pb.command());
-
+            System.err.println(pb.command());
 
             // Start the process and wait for it to finish.
             final Process process = pb.start();
@@ -359,26 +357,22 @@ public class AppStore extends JDialog {
                 System.out.println(Utils.toString(process.getInputStream()));
             }
 
-//                System.out.println(command);
-
-//                Process p = Runtime.getRuntime().exec(command);
-//                BufferedReader pout = new BufferedReader((new InputStreamReader(p.getInputStream())));
-//                BufferedReader perr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-//                String line;
-//                while ((line = pout.readLine()) != null) {
-//                    System.out.println(line);
-//                }
-//                pout.close();
-//                while ((line = perr.readLine()) != null) {
-//                    System.err.println(line);
-//                }
-//                perr.close();
-//                p.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+    
+	private static String sanitise(String property) {
+		// sanitise for windows
+		if (beast.app.util.Utils.isWindows()) {
+			String cwd = System.getProperty("user.dir");
+			cwd = cwd.replace("\\", "/");
+			property = property.replaceAll(";\\.", ";" +  cwd + ".");
+			property = property.replace("\\", "/");
+		}
+		return property;
+	}
 
     public static void main(String[] args) {
         if (args.length == 0) {
