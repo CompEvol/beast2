@@ -215,7 +215,7 @@
 		<!-- Create the release directory -->
 		<mkdir dir="${Windows_package_dir}" />
 
-		<property name="launch4j.dir" location="${Windows_dir}/launch4j" />
+		<property name="launch4j.dir" location="../../launch4j" />
 		<taskdef name="launch4j"
 		         classname="net.sf.launch4j.ant.Launch4jTask"
 		         classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
@@ -308,7 +308,7 @@
 		          txtProductVersion="2.0.0.0" />
 
         <launch4j configFile="${Windows_dir}/AppStore_launch4j.xml"
-                  jar="${tools_dir}/appstore.jar"
+                  jar="${dist}/beast.jar"
                   outfile="${Windows_package_dir}/AppStore.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
@@ -561,9 +561,9 @@
                     version="${version}"
                     infostring="${AppStore_name}, ${copyright}"
                     bundleid="beast.app.tools.appstore">
-            <jarfileset dir="${tools_dir}">
-                <include name="**/appstore.jar" />
-            </jarfileset>
+			<jarfileset dir="${Mac_package_dir}/lib">
+				<include name="**/beast.jar" />
+			</jarfileset>
             <javaproperty name="apple.laf.useScreenMenuBar" value="true" />
             <javaproperty name="java.library.path" value="$JAVAROOT/lib" />
         </jarbundler>
