@@ -257,7 +257,7 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 
 		makeSureXMLParses();
 
-		DivergenceDatingRunner runner = new DivergenceDatingRunner(org.fest.util.Files.temporaryFolder());
+		DivergenceDatingRunner runner = new DivergenceDatingRunner(org.fest.util.Files.temporaryFolder());		
  		runner.analyse(0);
 
         long t1 = System.currentTimeMillis();
@@ -291,12 +291,13 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 			useSeed = false;
 			checkESS = false;
 			testFile = "primate-mtDNA";
+			SEED = 126;
 		}
 
 		@Override
 		protected List<Expectation> giveExpectations(int index_XML) throws Exception {
 	        List<Expectation> expList = new ArrayList<Expectation>();
-	        addExpIntoList(expList,"posterior", -5509.79, 0.277076);
+	        addExpIntoList(expList,"posterior", -5508.64, 0.277076);
 	        addExpIntoList(expList,"likelihood", -5442.24, 0.314717);
 	        addExpIntoList(expList,"prior", -67.5441, 0.197599);
 	        addExpIntoList(expList,"treeLikelihood.1stpos", -1382.86, 0.163746);
