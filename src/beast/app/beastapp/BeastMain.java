@@ -233,7 +233,6 @@ public class BeastMain {
 
     //Main method
     public static void main(final String[] args) throws java.io.IOException {
-
         //Splash
         final SplashScreen splash = SplashScreen.getSplashScreen();
         if (splash == null) {
