@@ -13,6 +13,7 @@
 	<property name="lib" location="../beast2/lib" />
 	<property name="doc" location="../beast2/doc" />
 	<property name="dist" location="../beast2/build/dist" />
+	<property name="test" location="../beast2/test" />
 
 	<property name="main_class_BEAST" value="beast.app.beastapp.BeastMain" />
 	<property name="report" value="build/junitreport" />
@@ -37,6 +38,7 @@
 
 	<target name="clean">
 		<delete dir="${build}" />
+		<delete dir="${test}" />
 	</target>
 
 	<!-- clean previous build, and then compile Java source code, and Juint test -->
@@ -180,8 +182,8 @@
 
 
 	<!-- Release -->
-	<property name="version" value="2.1.2" />
-	<property name="version_number" value="2.1.2" />
+	<property name="version" value="2.1.3" />
+	<property name="version_number" value="2.1.3" />
 	<property name="release_dir" value="release" />
 	<property name="copyright" value="Beast 2 development team 2011-2014" />
 
@@ -190,6 +192,7 @@
 	<property name="TreeAnnotator_name" value="TreeAnnotator" />
 	<property name="LogCombiner_name" value="LogCombiner" />
 	<property name="LogAnalyser_name" value="LogAnalyser" />
+    <property name="AppStore_name" value="AppStore" />
 
 	<property name="common_dir" value="${release_dir}/common" />
 	<property name="Mac_dir" value="${release_dir}/Mac" />
@@ -212,7 +215,7 @@
 		<!-- Create the release directory -->
 		<mkdir dir="${Windows_package_dir}" />
 
-		<property name="launch4j.dir" location="${Windows_dir}/launch4j" />
+		<property name="launch4j.dir" location="../../launch4j" />
 		<taskdef name="launch4j"
 		         classname="net.sf.launch4j.ant.Launch4jTask"
 		         classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
@@ -303,6 +306,14 @@
 		          txtFileVersion="2.0.0.0"
 		          productVersion="2.0.0.0"
 		          txtProductVersion="2.0.0.0" />
+
+        <launch4j configFile="${Windows_dir}/AppStore_launch4j.xml"
+                  jar="${dist}/beast.jar"
+                  outfile="${Windows_package_dir}/AppStore.exe"
+                  fileVersion="${version_number}.0"
+                  txtFileVersion="${version}"
+                  productVersion="${version_number}.0"
+                  txtProductVersion="${version}"/>
 
 		<copy todir="${Windows_package_dir}/templates/">
 			<fileset dir="templates/" />
@@ -540,7 +551,25 @@
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
 		</jarbundler>
 
-		<copy todir="${Mac_package_dir}/templates/">
+        <jarbundler dir="${Mac_package_dir}"
+                    name="${AppStore_name}"
+                    mainclass="beast.app.tools.AppStore"
+                    icon="${beast1_dir}/utility.icns"
+                    jvmversion="1.6+"
+                    vmoptions="-Xmx1024M"
+                    arguments=""
+                    version="${version}"
+                    infostring="${AppStore_name}, ${copyright}"
+                    bundleid="beast.app.tools.appstore">
+			<jarfileset dir="${Mac_package_dir}/lib">
+				<include name="**/beast.jar" />
+			</jarfileset>
+            <javaproperty name="apple.laf.useScreenMenuBar" value="true" />
+            <javaproperty name="java.library.path" value="$JAVAROOT/lib" />
+        </jarbundler>
+
+
+        <copy todir="${Mac_package_dir}/templates/">
 			<fileset dir="templates/" />
 		</copy>
 

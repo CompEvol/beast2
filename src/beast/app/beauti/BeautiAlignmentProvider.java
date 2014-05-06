@@ -58,7 +58,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-		String[] extsf = { ".fas", ".fst", ".fasta" };
+		String[] extsf = { ".fas", ".fst", ".fasta", ".fna", ".ffn", ".faa", ".frn" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
 		String[] exts = { ".nex", ".nxs", ".nexus" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
@@ -142,7 +142,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
                 selectedPlugins.add(alignment);
             }
             if (file.getName().toLowerCase().endsWith(".fas") || file.getName().toLowerCase().endsWith(".fasta") ||
-            		file.getName().toLowerCase().endsWith(".fst")) {
+            		file.getName().toLowerCase().endsWith(".fst") || 
+            		file.getName().toLowerCase().endsWith(".fna") || file.getName().toLowerCase().endsWith(".ffn") || 
+            		file.getName().toLowerCase().endsWith(".faa") || file.getName().toLowerCase().endsWith(".frn") 
+            		) {
                 BEASTObject alignment = getFASTAData(file);
                 selectedPlugins.add(alignment);
             }
@@ -229,6 +232,13 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	        String sGap = "-";
 	        int nTotalCount = 4;
 	        String datatype = "nucleotide";
+	        // According to http://en.wikipedia.org/wiki/FASTA_format lists file formats and their data content
+			// .fna = nucleic acid
+			// .ffn = nucleotide coding regions
+			// .frn = non-coding RNA
+			// .ffa = amino acid
+    		boolean mayBeAminoacid = !(file.getName().toLowerCase().endsWith(".fna") || file.getName().toLowerCase().endsWith(".ffn") || file.getName().toLowerCase().endsWith(".frn"));
+    		
 			while (fin.ready()) {
 				String line = fin.readLine();
 				if (line.startsWith(";")) {
@@ -272,7 +282,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
 	            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
 
-	            if (datatype.equals("nucleotide") && !sData.matches("[ACGTUXNacgtuxn?_-]+")) {
+	            if (mayBeAminoacid && datatype.equals("nucleotide") && !sData.matches("[ACGTUXNacgtuxn?_-]+")) {
 	            	datatype = "aminoacid";
 	            	nTotalCount = 20;
 	            	for (Sequence seq : alignment.sequenceInput.get()) {

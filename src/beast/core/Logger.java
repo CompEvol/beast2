@@ -80,14 +80,14 @@ public class Logger extends BEASTObject {
     public enum LogFileMode {
     	only_new, overwrite, resume, only_new_or_exit
     }
-    //public final static int FILE_ONLY_NEW = 0, FILE_OVERWRITE = 1, FILE_APPEND = 2, FILE_ONLY_NEW_OR_EXIT = 3;
     public static LogFileMode FILE_MODE = LogFileMode.only_new;
+    
     /**
      * Compound loggers get a sample number printed at the beginning of the line,
      * while tree loggers don't.
      */
-    public final static int COMPOUND_LOGGER = 0, TREE_LOGGER = 2;
-    public int mode = COMPOUND_LOGGER;
+    public LOGMODE mode = LOGMODE.compound;
+    
     /**
      * offset for the sample number, which is non-zero when a chain is resumed *
      */
@@ -126,14 +126,14 @@ public class Logger extends BEASTObject {
         // determine logging mode
         final LOGMODE sMode = modeInput.get();
         if (sMode.equals(LOGMODE.autodetect)) {
-            mode = COMPOUND_LOGGER;
+            mode = LOGMODE.compound;
             if (nLoggers == 1 && loggerList.get(0) instanceof Tree) {
-                mode = TREE_LOGGER;
+                mode = LOGMODE.tree;
             }
         } else if (sMode.equals(LOGMODE.tree)) {
-            mode = TREE_LOGGER;
+            mode = LOGMODE.tree;
         } else if (sMode.equals(LOGMODE.compound)) {
-            mode = COMPOUND_LOGGER;
+            mode = LOGMODE.compound;
         } else {
             throw new Exception("Mode '" + sMode + "' is not supported. Choose one of " + LOGMODE.values());
         }
@@ -142,7 +142,7 @@ public class Logger extends BEASTObject {
             every = everyInput.get();
         }
         
-        if (mode == COMPOUND_LOGGER) {
+        if (mode == LOGMODE.compound) {
         	switch (sortModeInput.get()) {
         	case none:
         		// nothing to do
@@ -217,7 +217,7 @@ public class Logger extends BEASTObject {
             }
             final ByteArrayOutputStream rawbaos = new ByteArrayOutputStream();
             final PrintStream out = new PrintStream(rawbaos);
-            if (mode == COMPOUND_LOGGER) {
+            if (mode == LOGMODE.compound) {
                 out.print("Sample\t");
             }
             for (final Loggable m_logger : loggerList) {
@@ -379,7 +379,7 @@ public class Logger extends BEASTObject {
                 {
                     final File file = new File(sFileName);
                     if (file.exists()) {
-                        if (mode == COMPOUND_LOGGER) {
+                        if (mode == LOGMODE.compound) {
                             // first find the sample nr offset
                             final BufferedReader fin = new BufferedReader(new FileReader(sFileName));
                             String sStr = null;
@@ -478,7 +478,7 @@ public class Logger extends BEASTObject {
             baos = new ByteArrayOutputStream();
             m_out = new PrintStream(baos);
         }
-        if (mode == COMPOUND_LOGGER) {
+        if (mode == LOGMODE.compound) {
             m_out.print((nSample) + "\t");
         }
         for (final Loggable m_logger : loggerList) {

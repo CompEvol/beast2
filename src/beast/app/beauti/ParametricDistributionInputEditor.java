@@ -1,5 +1,11 @@
 package beast.app.beauti;
 
+import beast.app.draw.BEASTObjectInputEditor;
+import beast.core.BEASTObject;
+import beast.core.Input;
+import beast.evolution.tree.TreeDistribution;
+import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.ParametricDistribution;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -15,15 +21,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-
 import org.apache.commons.math.MathException;
-
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.evolution.tree.TreeDistribution;
-import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.ParametricDistribution;
+import org.apache.commons.math.distribution.IntegerDistribution;
 
 
 
@@ -109,10 +108,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             } catch (Exception e1) {
                 // ignore
             }
-            int nPoints = 100;
-            int[] xPoints = new int[nPoints];
-            int[] yPoints = new int[nPoints];
-            double[] fyPoints = new double[nPoints];
+
             Font font = g.getFont();
             double fMinValue = 0.1;
             double fMaxValue = 1;
@@ -157,11 +153,19 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
             fMinValue = f2; //fXRange = fAdjXRange;
 
+            int nPoints;
+            if (!m_distr.isIntegerDistribution())
+                nPoints = 100;
+            else
+                nPoints = (int)(fXRange);
+            int[] xPoints = new int[nPoints];
+            int[] yPoints = new int[nPoints];
+            double[] fyPoints = new double[nPoints];
             double fYMax = 0;
             for (int i = 0; i < nPoints; i++) {
                 xPoints[i] = graphoffset + nGraphWidth * i / nPoints;
                 try {
-                    fyPoints[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints);
+                    fyPoints[i] = getDensityForPlot(m_distr, fMinValue + (fXRange * i) / nPoints);
                 } catch (Exception e) {
                     fyPoints[i] = 0;
                 }
@@ -178,12 +182,20 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             for (int i = 0; i < nPoints; i++) {
                 yPoints[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
             }
-            g.drawPolyline(xPoints, yPoints, nPoints);
+            if (!m_distr.isIntegerDistribution()) {
+                g.drawPolyline(xPoints, yPoints, nPoints);
+            } else {
+                int y0 = 1 + graphoffset + nGraphHeight;
+                int dotDiameter = nGraphHeight/20;
+                for (int i=0; i<nPoints; i++) {
+                    g.drawLine(xPoints[i], y0, xPoints[i], yPoints[i]);
+                    g.fillOval(xPoints[i]-dotDiameter/2, yPoints[i]-dotDiameter/2, dotDiameter, dotDiameter);
+                }
+            }
 
             // draw ticks on edge
             Font smallFont = new Font(font.getName(), font.getStyle(), 8);
             g.setFont(smallFont);
-            fMinValue += m_distr.offsetInput.get();
             for (int i = 0; i <= NR_OF_TICKS_X; i++) {
                 int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;
                 g.drawLine(x, graphoffset + nGraphHeight, x, graphoffset + nGraphHeight + 5);
@@ -202,9 +214,9 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 Double[] fQuantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
                 for (k = 0; k < 5; k++) {
                 	try {
-                		g.drawString(format(m_distr.offsetInput.get() +  m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                        g.drawString(format(m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
                     } catch (MathException e) {
-                    	g.drawString("not available", nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                        g.drawString("not available", nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
                     }
                     g.drawString(sStrs[k], nGraphWidth / 2 - fontMetrics.stringWidth(sStrs[k]), graphoffset + nGraphHeight + 20 + k * 10);
                 }
@@ -244,6 +256,23 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             }
             return fY;
         }
+    }
+    
+    /**
+     * Returns the density of pDistr at x when pDistr is a density of a
+     * continuous variable, but returns the probability of the closest
+     * integer when pDistr is a probability distribution over an integer-valued
+     * parameter.
+     * 
+     * @param pDistr
+     * @param x
+     * @return density at x or probability of closest integer to x
+     */
+    private double getDensityForPlot(ParametricDistribution pDistr, double x) {
+        if (pDistr.isIntegerDistribution())
+            return pDistr.density((int)Math.round(x));
+        else
+            return pDistr.density(x);
     }
 
     private Component createGraph() {

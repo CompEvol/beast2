@@ -121,17 +121,20 @@ public class JPackageDialog extends JDialog {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+            	// first get rid of existing packages
+            	StringBuilder removedPackageNames = new StringBuilder();
+            	doUninstall(removedPackageNames);
+            	
                 int[] selectedRows = dataTable.getSelectedRows();
-                
                 StringBuilder installedPackageNames = new StringBuilder();
-                
+                                
                 for (int selRow : selectedRows) {
                     Package selPackage = getSelectedPackage(selRow);
                     if (selPackage != null) {
                         try {
-                            if (selPackage.isInstalled()) {
-                                //TODO upgrade version
-                            } else {
+//                            if (selPackage.isInstalled()) {
+//                                //TODO upgrade version
+//                            } else {
                                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
                                 if (allDepCheckBox.isSelected()) {
                                     installPackage(selPackage, false, null, packages);
@@ -145,7 +148,7 @@ public class JPackageDialog extends JDialog {
                                         .append("'");
                                 
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                            }
+//                            }
                             resetPackages();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(null, "Install failed because: " + ex.getMessage());
@@ -170,44 +173,9 @@ public class JPackageDialog extends JDialog {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = dataTable.getSelectedRows();
-
-                StringBuilder removedPackageNames = new StringBuilder();
-                
-                boolean toDeleteFileExists = false;
-                for (int selRow : selectedRows) {
-                    Package selPackage = getSelectedPackage(selRow);
-                    if (selPackage != null) {
-                        try {
-                            if (selPackage.isInstalled()) {
-//                            if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " +
-//                            AddOnManager.URL2PackageName(package.url) + "?", "Uninstall Add On",
-//                                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                                uninstallPackage(selPackage, false, null, packages, allDepCheckBox.isSelected());
-                                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-                                File toDeleteFile = getToDeleteListFile();
-                                if (toDeleteFile.exists()) {
-                                    toDeleteFileExists = true;
-                                }
-
-                                if (removedPackageNames.length()>0)
-                                    removedPackageNames.append(", ");
-                                removedPackageNames.append("'")
-                                        .append(selPackage.packageName)
-                                        .append("'");
-//                            }
-                            } else {
-                                //TODO ?
-                            }
-                            resetPackages();
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null, "Uninstall failed because: " + ex.getMessage());
-                            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                        }
-                    }
-                }
+            	StringBuilder removedPackageNames = new StringBuilder();
+            	boolean toDeleteFileExists = doUninstall(removedPackageNames);
+                resetPackages();
 
                 if (toDeleteFileExists) {
                     JOptionPane.showMessageDialog(null, "<html>To complete uninstalling the package, BEAUti need to be restarted<br><br>Exiting now.</html>");
@@ -264,7 +232,46 @@ public class JPackageDialog extends JDialog {
         return box;
     }
 
-    class DataTableModel extends AbstractTableModel {
+    protected boolean doUninstall(StringBuilder removedPackageNames) {
+        int[] selectedRows = dataTable.getSelectedRows();
+        
+        boolean toDeleteFileExists = false;
+        for (int selRow : selectedRows) {
+            Package selPackage = getSelectedPackage(selRow);
+            if (selPackage != null) {
+                try {
+                    if (selPackage.isInstalled()) {
+//                    if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " +
+//                    AddOnManager.URL2PackageName(package.url) + "?", "Uninstall Add On",
+//                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                        uninstallPackage(selPackage, false, null, packages, allDepCheckBox.isSelected());
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+                        File toDeleteFile = getToDeleteListFile();
+                        if (toDeleteFile.exists()) {
+                            toDeleteFileExists = true;
+                        }
+
+                        if (removedPackageNames.length()>0)
+                            removedPackageNames.append(", ");
+                        removedPackageNames.append("'")
+                                .append(selPackage.packageName)
+                                .append("'");
+//                    }
+                    } else {
+                        //TODO ?
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Uninstall failed because: " + ex.getMessage());
+                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
+            }
+        }	
+        return toDeleteFileExists;
+	}
+
+	class DataTableModel extends AbstractTableModel {
         String[] columnNames = {"Name", "Status/Version", "Latest", "Dependencies", "Detail"};
 
         public int getColumnCount() {

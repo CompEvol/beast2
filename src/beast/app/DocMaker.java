@@ -156,60 +156,88 @@ public class DocMaker {
     }
 
     String getCSS() {
-        return "table {\n" +
-                "	width: 550px;\n" +
-                "	border-collapse:collapse;\n" +
-                "	border:1px solid #2E2E2E;\n" +
-                "}\n" +
-                "caption {\n" +
-                "	font:  20pt Arial, Helvetica, sans-serif;\n" +
-                "	text-align: left;\n" +
-                "	text-indent: 10px;\n" +
-                "	height: 45px;\n" +
-                "	color: #243D02;\n" +
-                "	border-top: 1px solid #243D02;\n" +
-                "}\n" +
-                "thead {\n" +
-                "background: #AAAAAA;\n" +
-                "	color: #FFFFFF;\n" +
-                "	font-size: 0.8em;\n" +
-                "	font-weight: bold;\n" +
-                "	margin: 20px 0px 0px;\n" +
-                "	text-align: left;\n" +
-                "	border-right: 1px solid #8D8D8D;\n" +
-                "}\n" +
-                "tbody tr {\n" +
-                "}\n" +
-
-                "tbody th,td {\n" +
-                "	font-size: 0.8em;\n" +
-                "	line-height: 1.4em;\n" +
-                "	font-family: Arial, Helvetica, sans-serif;\n" +
-                "	color: #2E2E2E;\n" +
-                "	border-top: 1px solid #243D02;\n" +
-                "	border-right: 1px solid #8D8D8D;\n" +
-                "	text-align: left;\n" +
-                "}\n" +
-                "a {\n" +
-                "	color: #2E2E2E;\n" +
-                "	font-weight: bold;\n" +
-                "	text-decoration: underline;\n" +
-                "}\n" +
-                "a:hover {\n" +
-                "	color: #FFFF50;\n" +
-                "	text-decoration: underline;\n" +
-                "}\n" +
-                "tfoot th {\n" +
-                "	background: #243D02;\n" +
-                "	border-top: 1px solid #243D02;\n" +
-                "	color: #FFFFFF;\n" +
-                "	height: 30px;\n" +
-                "}\n" +
-                "tfoot td {\n" +
-                "	background: #243D02;\n" +
-                "	color: #FFFFFF;\n" +
-                "	height: 30px;\n" +
-                "}";
+    		return  "<!--\n" +
+    				 "a.summary-letter {text-decoration: none}\n" +
+    				 "blockquote.smallquotation {font-size: smaller}\n" +
+    				 "div.display {margin-left: 3.2em}\n" +
+    				 "div.example {margin-left: 3.2em}\n" +
+    				 "div.indentedblock {margin-left: 3.2em}\n" +
+    				 "div.lisp {margin-left: 3.2em}\n" +
+    				 "div.smalldisplay {margin-left: 3.2em}\n" +
+    				 "div.smallexample {margin-left: 3.2em}\n" +
+    				 "div.smallindentedblock {margin-left: 3.2em; font-size: smaller}\n" +
+    				 "div.smalllisp {margin-left: 3.2em}\n" +
+    				 "kbd {font-style:oblique}\n" +
+    				 "pre.display {font-family: inherit}\n" +
+    				 "pre.format {font-family: inherit}\n" +
+    				 "pre.menu-comment {font-family: serif}\n" +
+    				 "pre.menu-preformatted {font-family: serif}\n" +
+    				 "pre.smalldisplay {font-family: inherit; font-size: smaller}\n" +
+    				 "pre.smallexample {font-size: smaller}\n" +
+    				 "pre.smallformat {font-family: inherit; font-size: smaller}\n" +
+    				 "pre.smalllisp {font-size: smaller}\n" +
+    				 "span.nocodebreak {white-space:nowrap}\n" +
+    				 "span.nolinebreak {white-space:nowrap}\n" +
+    				 "span.roman {font-family:serif; font-weight:normal}\n" +
+    				 "span.sansserif {font-family:sans-serif; font-weight:normal}\n" +
+    				 "ul.no-bullet {list-style: none}\n" +
+    				 "body {margin-left: 5%; margin-right: 5%;}\n" +
+    				 "\n" +
+    				 "H1 {             \n" +
+    				 "    background: white;\n" +
+    				 "    color: rgb(25%, 25%, 25%);\n" +
+    				 "    font-family: monospace;\n" +
+    				 "    font-size: xx-large;\n" +
+    				 "    text-align: center\n" +
+    				 "}\n" +
+    				 "\n" +
+    				 "H2 {\n" +
+    				 "    background: white;\n" +
+    				 "    color: rgb(40%, 40%, 40%);\n" +
+    				 "    font-family: monospace;\n" +
+    				 "    font-size: x-large;\n" +
+    				 "    text-align: center\n" +
+    				 "}\n" +
+    				 "\n" +
+    				 "H3 {\n" +
+    				 "    background: white;\n" +
+    				 "    color: rgb(40%, 40%, 40%);\n" +
+    				 "    font-family: monospace;\n" +
+    				 "    font-size: large\n" +
+    				 "}\n" +
+    				 "\n" +
+    				 "H4 {\n" +
+    				 "    background: white;\n" +
+    				 "    color: rgb(40%, 40%, 40%);\n" +
+    				 "    font-family: monospace\n" +
+    				 "}\n" +
+    				 "\n" +
+    				 "span.samp{font-family: monospace}\n" +
+    				 "span.command{font-family: monospace}\n" +
+    				 "span.option{font-family: monospace}\n" +
+    				 "span.file{font-family: monospace}\n" +
+    				 "span.env{font-family: monospace}\n" +
+    				 "\n" +
+    				 "ul {\n" +
+    				 "    margin-top: 0.25ex;\n" +
+    				 "    margin-bottom: 0.25ex;\n" +
+    				 "}\n" +
+    				 "li {\n" +
+    				 "    margin-top: 0.25ex;\n" +
+    				 "    margin-bottom: 0.25ex;\n" +
+    				 "}\n" +
+    				 "p {\n" +
+    				 "    margin-top: 0.6ex;\n" +
+    				 "    margin-bottom: 1.2ex;\n" +
+    				 "}\n" +
+    				 "caption {\n" +
+	                 "	font:  20pt Arial, Helvetica, sans-serif;\n" +
+	                 "	text-align: left;\n" +
+	                 "	height: 45px;\n" +
+	                 "	color: #243D02;\n" +
+	                 "	border-top: 1px solid #243D02;\n" +
+	                 "}\n"
+    				 ;
     }
 
     /**
@@ -347,7 +375,7 @@ public class DocMaker {
         StringBuffer buf = new StringBuffer();
         buf.append("<html>\n<head>\n<title>BEAST " + version.getVersionString() + " Documentation: " + sPlugin + "</title>\n");
         if (bUseExternalStyleSheet) {
-            buf.append("<link rel='StyleSheet' href='doc.css' type='text/css'>\n");
+            buf.append("<link rel='StyleSheet' href='/tmp/styles.css' type='text/css'>\n");
         } else {
             buf.append("<style type='text/css'>\n");
             buf.append(getCSS());
@@ -389,7 +417,6 @@ public class DocMaker {
             }
         }
 
-
         // show if this is Loggable
         if (m_sLoggables.contains(sPlugin)) {
             buf.append("<p>Logable:");
@@ -399,14 +426,23 @@ public class DocMaker {
 //        	buf.append(" no, this cannot be used in a log.");
         }
 
-        // list its inputs
+        // show short list its inputs
         buf.append("<h2>Inputs:</h2>\n");
+        buf.append("<p>");
         List<Input<?>> inputs = plugin.listInputs();
+        for (Input<?> input : inputs) {
+        	buf.append("<a href='#" + input.getName()+"'>" + input.getName() + "</a>, ");
+        }
+        buf.delete(buf.length() - 3, buf.length()-1);
+        buf.append("</p>\n");
+        
+        // list its inputs
         if (inputs.size() == 0) {
             buf.append("&lt;none&gt;");
         }
         for (Input<?> input : inputs) {
-            buf.append("<table border='1px'>\n");
+        	buf.append("<p>&nbsp</p>");
+            buf.append("<table id='" + input.getName() + "' border='1px' width='90%'>\n");
             buf.append("<caption>" + input.getName() + "</caption>\n");
             buf.append("<thead><tr bgcolor='#AAAAAA'><td>type: " + getType(plugin, input.getName()) + "</td></tr></thead>\n");
             buf.append("<tr><td>" + input.getTipText() + "</td></tr>\n");

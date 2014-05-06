@@ -258,6 +258,15 @@ public class Alignment extends Map<String> {
         return stateCounts;
     }
 
+    /**
+     * Returns a List of Integer Lists where each Integer List represents
+     * the sequence corresponding to a taxon.  The taxon is identified by
+     * the position of the Integer List in the outer List, which corresponds
+     * to the nodeNr of the corresponding leaf node and the position of the
+     * taxon name in the taxaNames list.
+     * 
+     * @return integer representation of sequence alignment
+     */
     public List<List<Integer>> getCounts() {
         return counts;
     }
@@ -266,8 +275,20 @@ public class Alignment extends Map<String> {
         return m_dataType;
     }
 
+    /**
+     * @return number of taxa in Alignment.
+     */
+    public int getTaxonCount() {
+       return taxaNames.size();
+    }
+    
+    /**
+     * @return number of taxa in Alignment.
+     * @deprecated Use getTaxonCount() instead.
+     */
+    @Deprecated
     public int getNrTaxa() {
-        return taxaNames.size();
+        return getTaxonCount();
     }
 
     public int getTaxonIndex(String sID) {

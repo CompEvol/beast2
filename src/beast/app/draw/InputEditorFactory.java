@@ -56,28 +56,31 @@ public class InputEditorFactory {
     private void registerInputEditors(String[] sInputEditors) {
     	//BeautiDoc doc = new BeautiDoc();
         for (String sInputEditor : sInputEditors) {
-            try {
-                Class<?> _class = Class.forName(sInputEditor);
-                
-                
-                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
-                InputEditor editor = (InputEditor) con.newInstance(doc);
-                
-                //InputEditor editor = (InputEditor) _class.newInstance();
-                Class<?>[] types = editor.types();
-                for (Class<?> type : types) {
-                    inputEditorMap.put(type, sInputEditor);
-                    if (editor instanceof ListInputEditor) {
-                        Class<?> baseType = ((ListInputEditor) editor).baseType();
-                        listInputEditorMap.put(baseType, sInputEditor);
-                    }
-                }
-            } catch (java.lang.InstantiationException e) {
-                // ingore input editors that are inner classes
-            } catch (Exception e) {
-                // print message
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+        	// ignore inner classes, which are marked with $
+        	if (!sInputEditor.contains("$")) {
+	            try {
+	                Class<?> _class = Class.forName(sInputEditor);
+	                
+	                
+	                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
+	                InputEditor editor = (InputEditor) con.newInstance(doc);
+	                
+	                //InputEditor editor = (InputEditor) _class.newInstance();
+	                Class<?>[] types = editor.types();
+	                for (Class<?> type : types) {
+	                    inputEditorMap.put(type, sInputEditor);
+	                    if (editor instanceof ListInputEditor) {
+	                        Class<?> baseType = ((ListInputEditor) editor).baseType();
+	                        listInputEditorMap.put(baseType, sInputEditor);
+	                    }
+	                }
+	            } catch (java.lang.InstantiationException e) {
+	                // ingore input editors that are inner classes
+	            } catch (Exception e) {
+	                // print message
+	                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	            }
+        	}
         }
     }
 

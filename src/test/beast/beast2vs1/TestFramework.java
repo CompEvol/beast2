@@ -18,7 +18,18 @@ public abstract class TestFramework extends TestCase {
 
     protected abstract List<Expectation> giveExpectations(int index_XML) throws Exception;
 
-    protected void setUp(String[] xmls) throws Exception {
+    public String sDir;
+    public String sLogDir;
+    public String testFile = "/test.";
+    public boolean useSeed = true;
+    public boolean checkESS = true;
+    
+    public TestFramework() {
+    	sDir = System.getProperty("user.dir") + "/examples/beast2vs1/";
+    	sLogDir = System.getProperty("user.dir");
+    }
+    
+    protected void setUp(String[] xmls) { // throws Exception {
         this.xmls = new String[xmls.length];
         for (int i = 0; i < xmls.length; i++) {
             this.xmls[i] = xmls[i];
@@ -26,14 +37,13 @@ public abstract class TestFramework extends TestCase {
     }
 //    protected abstract void analyse() throws Exception;
 
-    protected void analyse(int index_XML) throws Exception {
+    public void analyse(int index_XML) throws Exception {
 //        for (int i = 0; i < xmls.length; i++) {
 //            if (giveExpectations(i).size() > 0) {
         Randomizer.setSeed(SEED);
         Logger.FILE_MODE = Logger.LogFileMode.overwrite;
-        String sDir = System.getProperty("user.dir");
 
-        String sFileName = sDir + "/examples/beast2vs1/" + xmls[index_XML];
+        String sFileName = sDir + xmls[index_XML];
 
         System.out.println("Processing " + sFileName);
         XMLParser parser = new XMLParser();
@@ -43,7 +53,7 @@ public abstract class TestFramework extends TestCase {
 //		   runable.setInputValue("chainLength", 1000);
         runable.run();
 
-        String logFile = sDir + "/test." + SEED + ".log";
+        String logFile = sLogDir + testFile + (useSeed ? SEED : "") + ".log";
         System.out.println("\nAnalysing log " + logFile);
         LogAnalyser logAnalyser = new LogAnalyser(logFile, giveExpectations(index_XML)); // burnIn = 0.1 * maxState
 
@@ -53,7 +63,8 @@ public abstract class TestFramework extends TestCase {
                     + " <= delta stdErr: 2*(" + expectation.getStdError() + " + "
                     + expectation.getTraceStatistics().getStdErrorOfMean() + ")", expectation.isPassed());
 
-            TestCase.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
+            if (checkESS)
+            	TestCase.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
                     + expectation.getTraceStatistics().getESS(), expectation.isValid());
         }
 

@@ -1,13 +1,17 @@
 package beast.app.tools;
 
+
 import beast.app.beauti.BeautiPanel;
+import beast.app.util.Utils;
 import beast.util.AddOnManager;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,8 +19,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -26,7 +32,7 @@ import java.util.List;
  * @author  Remco Bouckaert
  * @author  Walter Xie
  */
-public class PackageAppLauncher extends JDialog {
+public class AppStore extends JDialog {
     private static final long serialVersionUID = 1L;
     public static final String DEFAULT_ICON = "beast/app/tools/images/utility.png";
 
@@ -36,7 +42,7 @@ public class PackageAppLauncher extends JDialog {
     JList listApps;
     JButton launchButton = new JButton("Launch");
 
-    public PackageAppLauncher() {
+    public AppStore() {
         try {
             AddOnManager.loadExternalJars();
         } catch (Exception e) {
@@ -45,8 +51,9 @@ public class PackageAppLauncher extends JDialog {
         setTitle("BEAST 2 Package Application Launcher");
 
         Box top = Box.createHorizontalBox();
-        JLabel label = new JLabel("Show application of the installed package(s):");
+        JLabel label = new JLabel("Filter: ");
         packageComboBox = new JComboBox(new String[]{ALL});
+        packageComboBox.setToolTipText("Show application of the installed package(s)");
         packageComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,16 +66,16 @@ public class PackageAppLauncher extends JDialog {
         label.setLabelFor(packageComboBox);
         top.add(label);
         top.add(packageComboBox);
-        add(BorderLayout.NORTH, top);
+        getContentPane().add(BorderLayout.NORTH, top);
 
         Component pluginListBox = createList();
-        add(BorderLayout.CENTER, pluginListBox);
+        getContentPane().add(BorderLayout.CENTER, pluginListBox);
 
         Box buttonBox = createButtonBox();
-        add(buttonBox, BorderLayout.SOUTH);
+        getContentPane().add(buttonBox, BorderLayout.SOUTH);
 
-//        Dimension dim = panel.getPreferredSize();
-//        Dimension dim2 = buttonBox.getPreferredSize();
+//      Dimension dim = panel.getPreferredSize();
+//      Dimension dim2 = buttonBox.getPreferredSize();
 //		setSize(dim.width + 10, dim.height + dim2.height + 30);
         setSize(new Dimension(660, 400));
     }
@@ -275,7 +282,7 @@ public class PackageAppLauncher extends JDialog {
                 return new String[]{};
             } else {
                 String[] args = argumentsString.split(" ", -1);
-                System.out.println("package = " + packageName + ", class = " + className + ", args = " + Arrays.toString(args));
+//                System.out.println("package = " + packageName + ", class = " + className + ", args = " + Arrays.toString(args));
                 return args;
             }
         }
@@ -297,7 +304,8 @@ public class PackageAppLauncher extends JDialog {
         @Override
         public void run() {
             // invoke package application
-            PackageAppLauncher.runAppFromJar(packageApp.className, packageApp.getArgs());
+//            AppStore.runAppFromJar(packageApp.className, packageApp.getArgs());
+            AppStore.runAppFromCMD(packageApp);
         }
     }
 
@@ -311,39 +319,64 @@ public class PackageAppLauncher extends JDialog {
             Class<?>[] argTypes = new Class[] { String[].class };
             Method main = c.getDeclaredMethod("main", argTypes);
             main.invoke(null, (Object) args);
+
         } catch (Exception err) {
             err.printStackTrace();
         }
     }
 
-    public static void runAppFromCMD(String className, String[] args) {
-//            try {
-//                String command = "java -cp " + System.getProperty("java.class.path") +
-//                        " beast.app.tools.PackageAppLauncher " +
-//                        " " + className + " " + argumentsString;
-//                System.out.println(command);
-//                Process p = Runtime.getRuntime().exec(command);
-//                BufferedReader pout = new BufferedReader((new InputStreamReader(p.getInputStream())));
-//                BufferedReader perr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-//                String line;
-//                while ((line = pout.readLine()) != null) {
-//                    System.out.println(line);
-//                }
-//                pout.close();
-//                while ((line = perr.readLine()) != null) {
-//                    System.err.println(line);
-//                }
-//                perr.close();
-//                p.waitFor();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+    public static void runAppFromCMD(PackageApp packageApp) {
+        try {
+            List<String> cmd = new ArrayList<String>();
+            cmd.add("java");
+            // TODO: deal with java directives like -Xmx -Xms here
+            if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
+            	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
+            }
+            cmd.add("-cp");
+            final String strClassPath = sanitise(System.getProperty("java.class.path"));
+            cmd.add(strClassPath);
+            cmd.add(packageApp.className);
+
+            for (String arg : packageApp.getArgs()) {
+                cmd.add(arg);
+            }
+
+            final ProcessBuilder pb = new ProcessBuilder(cmd);
+
+            System.err.println(pb.command());
+
+            // Start the process and wait for it to finish.
+            final Process process = pb.start();
+
+            final int exitStatus = process.waitFor();
+
+            if (exitStatus != 0) {
+                System.err.println(Utils.toString(process.getErrorStream()));
+            } else {
+                System.out.println(Utils.toString(process.getInputStream()));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
+    
+	private static String sanitise(String property) {
+		// sanitise for windows
+		if (beast.app.util.Utils.isWindows()) {
+			String cwd = System.getProperty("user.dir");
+			cwd = cwd.replace("\\", "/");
+			property = property.replaceAll(";\\.", ";" +  cwd + ".");
+			property = property.replace("\\", "/");
+		}
+		return property;
+	}
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            PackageAppLauncher dlg = new PackageAppLauncher();
+            AppStore dlg = new AppStore();
             dlg.setVisible(true);
         } else {
             String className = args[0];
@@ -352,7 +385,7 @@ public class PackageAppLauncher extends JDialog {
                 args2[i-1] = args[i];
             }
 
-            PackageAppLauncher.runAppFromJar(className, args2);
+            AppStore.runAppFromJar(className, args2);
         }
     }
 }

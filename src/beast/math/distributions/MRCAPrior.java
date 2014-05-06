@@ -226,7 +226,7 @@ public class MRCAPrior extends Distribution {
             }
         } else {
         	if (!isMonophyleticInput.get()) {
-        		out.print("monophyletic(" + taxonsetInput.get().getID() + ")");
+        		out.print("monophyletic(" + taxonsetInput.get().getID() + ")\t");
         	}
             if (dist != null) {
                 out.print("logP(mrca(" + taxonsetInput.get().getID() + "))\t");

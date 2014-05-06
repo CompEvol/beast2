@@ -190,13 +190,12 @@
             <plugin spec='beast.evolution.tree.Tree' id='Tree.t:$(n)' taxonset='@TaxonSet.$(n)'/>
 
             <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.t:$(n)'-->
-<!--
 			<tree spec='RandomGeneTree' id='RandomGeneTree.t:$(n)' initial='@Tree.t:$(n)' speciesTree='@Tree.t:Species' taxa='@$(n)'>
 				<populationModel id='RGTPopulationModel.t:$(n)' spec='ConstantPopulation'>
 					<popSize id='RGTPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
 				</populationModel>
 			</tree>
--->
+
             <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
 
             <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="5000" fileName="$(tree).$(seed).trees" mode='tree'>
@@ -231,9 +230,6 @@
             <connect srcID='treeLikelihood.$(n)'         targetID='likelihood' inputName='distribution' if="isInitializing"/>
 
             <connect srcID='treelog.t:$(n)'              targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-<!--
-            <connect srcID='RandomGeneTree.t:$(n)'       targetID='mcmc' inputName='init' if='inposterior(Tree.t:$(n))'/>
--->
 
             <connect srcID='treePrior.t:$(n)'            targetID='speciescoalescent' inputName='distribution' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 <!-- trick to ensure that treePrior.$(n) is always deleted from prior, since it is already part of speciescoalescent -->
@@ -273,7 +269,7 @@
 
             <connect srcID='GammaShapePrior.s:$(n)'      targetID='prior' inputName='distribution' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
             <connect srcID='PropInvariantPrior.s:$(n)'   targetID='prior' inputName='distribution' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)'        targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
+            <connect srcID='Tree.t:$(n)'        targetID='Reheight.t:Species' inputName='genetree' if='Tree.t:$(n)/estimate=true'/>
 
 	        <connect srcID='Tree.t:$(n)'        targetID='updown.all.Species' inputName='down' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 	        <connect srcID='clockRate.c:$(n)'   targetID='updown.all.Species' inputName='up' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
@@ -291,16 +287,27 @@
 			Since 'Species' is treated as a separate partition, we need the following
 			hack to get rid of undesirable Tree.t:Species connections 
 			-->
-            <connect srcID='Tree.t:Species'     targetID='Reheight' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
+            <connect srcID='Tree.t:Species'     targetID='Reheight.t:Species' inputName='genetree' if='Tree.t:$(n)/estimate=XXX'/>
             <connect srcID='Tree.t:Species'     targetID='treeTopFinder' inputName='tree' if='Tree.t:$(n)/estimate=XXX'/>
 
 			<connect srcID='birthRate.t:Species' targetID='updown.all.Species' inputName='up' if='inposterior(birthRate.t:Species)'/>
 	
+
+            <!-- initialise species and gene trees: if CalibratedYuleModel is used, 
+                use the old initialisation, otherwise use the fancy new SBI -->
+			<connect srcID="SBI"                           targetID='mcmc' inputName='init' if='nooperator(CalibratedYuleBirthRateScaler.t:$(n))'/>
 			<!-- gene tree initialiser by SBI -->
             <connect srcID='Tree.t:$(n)'                   targetID='SBI' inputName='gene' if='inposterior(Tree.t:$(n))'/>
 			<!-- we don't want Tree.t:Species to be treated as gene, so the condition is guaranteed false -->
             <connect srcID='Tree.t:Species'                targetID='SBI' inputName='gene' if='popSize/value=-1'/>
+            <connect srcID='Tree.t:Species'                targetID='SBI' inputName='speciesTree' if='inposterior(Tree.t:Species) and nooperator(CalibratedYuleBirthRateScaler.t:$(n))'/>
 			<connect srcID="CalibratedYuleModel.t:Species" targetID='SBI' inputName='calibratedYule' if='inposterior(CalibratedYuleModel.t:Species)'/>
+
+
+			<connect srcID="RandomTree.t:Species"          targetID='mcmc' inputName='init' if='inposterior(CalibratedYuleModel.t:Species)'/>
+            <connect srcID='RandomGeneTree.t:$(n)'         targetID='mcmc' inputName='init' if='inposterior(Tree.t:$(n)) and inposterior(CalibratedYuleModel.t:Species)'/>
+
+
 
 			<mergepoint id='aux-partitiontemplate'/>
         </partitiontemplate>
@@ -404,14 +411,14 @@
         </logger>
 
 
-<!-- deprecated starting species tree
+<!-- use with calibrated yule-->
         <init spec='beast.evolution.tree.RandomTree' id='RandomTree.t:Species' estimate='false' initial='@Tree.t:Species' taxonset='@taxonsuperset'>
             <populationModel id='ConstantPopulation0.Species' spec='ConstantPopulation'>
         		<popSize id='randomPopSize.Species' spec='parameter.RealParameter' value='1'/>
             </populationModel>
         </init>
--->
 
+<!-- use without calibrated yule-->
 		<init id="SBI"  spec="beast.evolution.speciation.StarBeastStartState"
 		  speciesTree="@Tree.t:Species"
 		  speciesTreePrior="@SpeciesTreePopSize.Species"
