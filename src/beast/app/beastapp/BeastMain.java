@@ -16,11 +16,13 @@ import jam.util.IconUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.List;
 import java.util.logging.*;
 
 public class BeastMain {
@@ -231,6 +233,29 @@ public class BeastMain {
 
     //Main method
     public static void main(final String[] args) throws java.io.IOException {
+
+        //Splash
+        final SplashScreen splash = SplashScreen.getSplashScreen();
+        if (splash == null) {
+            System.out.println("SplashScreen.getSplashScreen() returned null");
+            return;
+        }
+        Graphics2D g = splash.createGraphics();
+        if (g == null) {
+            System.out.println("g is null");
+            return;
+        }
+        for(int i=0; i<100; i++) {
+            //renderSplashFrame(g, i);
+            splash.update();
+            try {
+                Thread.sleep(90);
+            }
+            catch(InterruptedException e) {
+            }
+        }
+        splash.close();
+
         final List<String> MCMCargs = new ArrayList<String>();
 //    	Utils.loadUIManager();
 
