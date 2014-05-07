@@ -1083,24 +1083,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     } // main2
 
     public static void main(String[] args) {
-        //Splash
-        /*
-        final SplashScreen splash = SplashScreen.getSplashScreen();
-
-        if (splash == null) {
-            System.out.println("Cannot locate Splash image");
-        }
-        Graphics2D g = splash.createGraphics();
-        if (g == null) {
-            System.out.println("g is null");
-        }  else {
-            for(int i=0; i<100; i++) {
-                //renderSplashFrame(g, i);
-                splash.update();
-            }
-            splash.close();
-        }
-         */
         main2(args);
     }
 

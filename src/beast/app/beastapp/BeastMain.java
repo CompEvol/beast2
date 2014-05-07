@@ -233,22 +233,6 @@ public class BeastMain {
 
     //Main method
     public static void main(final String[] args) throws java.io.IOException {
-        //Splash
-        /*final SplashScreen splash = SplashScreen.getSplashScreen();
-        if (splash == null) {
-            System.out.println("Cannot locate Splash image");
-        }
-        Graphics2D g = splash.createGraphics();
-        if (g == null) {
-            System.out.println("g is null");
-        }  else {
-            for(int i=0; i<100; i++) {
-                //renderSplashFrame(g, i);
-                splash.update();
-            }
-            splash.close();
-        }
-        */
 
         final List<String> MCMCargs = new ArrayList<String>();
 //    	Utils.loadUIManager();

@@ -1,6 +1,5 @@
 package beast.app.util;
 
-
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -15,6 +14,40 @@ import java.util.Set;
  * @author Alexei Drummond
  */
 public class Utils {
+
+    //Splash
+    static Window splashScreen;
+    /*
+        This could live in the desktop script.
+        However we'd like to get it on the screen as quickly as possible.
+    */
+    public static void startSplashScreen()
+    {
+        int width=325,height=148;
+        Window win=new Window( new Frame() );
+        win.pack();
+        BshCanvas can=new BshCanvas();
+        can.setSize( width, height ); // why is this necessary?
+        Toolkit tk=Toolkit.getDefaultToolkit();
+        Dimension dim=tk.getScreenSize();
+        win.setBounds(
+                dim.width/2-width/2, dim.height/2-height/2, width, height );
+        win.add("Center", can);
+        Image img=tk.getImage(
+                Utils.class.getResource("beast.png") ); //what
+        MediaTracker mt=new MediaTracker(can);
+        mt.addImage(img,0);
+        try { mt.waitForAll(); } catch ( Exception e ) { }
+        Graphics gr=can.getBufferedGraphics();
+        gr.drawImage(img, 0, 0, can);
+        win.setVisible(true);
+        win.toFront();
+        splashScreen = win;
+    }
+    public static void endSplashScreen() {
+        if ( splashScreen != null )
+            splashScreen.dispose();
+    }
 
     /**
      * This function takes a file name and an array of extensions (specified
