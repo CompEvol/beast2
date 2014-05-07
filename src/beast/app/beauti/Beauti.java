@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class Beauti extends JTabbedPane implements BeautiDocListener {
     private static final long serialVersionUID = 1L;
     static final String BEAUTI_ICON = "beast/app/draw/icons/beauti.png";
@@ -1083,27 +1084,23 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     public static void main(String[] args) {
         //Splash
+        /*
         final SplashScreen splash = SplashScreen.getSplashScreen();
+
         if (splash == null) {
-            System.out.println("SplashScreen.getSplashScreen() returned null");
-            //return;
+            System.out.println("Cannot locate Splash image");
         }
         Graphics2D g = splash.createGraphics();
         if (g == null) {
             System.out.println("g is null");
-            return;
         }  else {
-        for(int i=0; i<100; i++) {
-            //renderSplashFrame(g, i);
-            splash.update();
-            try {
-                Thread.sleep(90);
+            for(int i=0; i<100; i++) {
+                //renderSplashFrame(g, i);
+                splash.update();
             }
-            catch(InterruptedException e) {
-            }
+            splash.close();
         }
-        splash.close();
-        }
+         */
         main2(args);
     }
 
