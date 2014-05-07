@@ -237,23 +237,24 @@ public class BeastMain {
         final SplashScreen splash = SplashScreen.getSplashScreen();
         if (splash == null) {
             System.out.println("SplashScreen.getSplashScreen() returned null");
-            return;
+            //return;
         }
         Graphics2D g = splash.createGraphics();
         if (g == null) {
             System.out.println("g is null");
             return;
-        }
-        for(int i=0; i<100; i++) {
-            //renderSplashFrame(g, i);
-            splash.update();
-            try {
-                Thread.sleep(90);
+        }  else {
+            for(int i=0; i<100; i++) {
+                //renderSplashFrame(g, i);
+                splash.update();
+                try {
+                    Thread.sleep(90);
+                }
+                catch(InterruptedException e) {
+                }
             }
-            catch(InterruptedException e) {
-            }
+            splash.close();
         }
-        splash.close();
 
         final List<String> MCMCargs = new ArrayList<String>();
 //    	Utils.loadUIManager();
