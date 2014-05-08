@@ -1221,6 +1221,20 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     void setClockRate() throws Exception {
+    	boolean bNeedsEstimationBySPTree = false;
+        if (pluginmap.containsKey("Tree.t:Species")) {
+        	Tree sptree = (Tree) pluginmap.get("Tree.t:Species");
+	        // check whether there is a calibration
+	        for (BEASTObject plugin : sptree.outputs) {
+	            if (plugin instanceof MRCAPrior) {
+	                MRCAPrior prior = (MRCAPrior) plugin;
+	                if (prior.distInput.get() != null) {
+	                    bNeedsEstimationBySPTree = true;
+	                }
+	            }
+	        }
+        }
+    	
         BEASTObject likelihood = pluginmap.get("likelihood");
         if (likelihood instanceof CompoundDistribution) {
             int i = 0;
@@ -1228,7 +1242,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             for (Distribution distr : ((CompoundDistribution) likelihood).pDistributions.get()) {
                 if (distr instanceof GenericTreeLikelihood) {
                     GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
-                    boolean bNeedsEstimation = false;
+                    boolean bNeedsEstimation = bNeedsEstimationBySPTree;
                     if (i > 0) {
                         BranchRateModel.Base model = (BranchRateModel.Base) treeLikelihood.branchRateModelInput.get();
                         bNeedsEstimation = (model.meanRateInput.get() != firstClock) || firstClock.isEstimatedInput.get();
