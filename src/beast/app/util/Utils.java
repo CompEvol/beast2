@@ -15,6 +15,32 @@ import java.util.Set;
  */
 public class Utils {
 
+    public static class Canvas extends JComponent {
+        Image imageBuffer;
+        public Canvas() { }
+
+        public void paintComponent( Graphics g ) {
+            // copy buffered image
+            if ( imageBuffer != null )
+                g.drawImage(imageBuffer, 0,0, this);
+        }
+
+        /**
+         Get a buffered (persistent) image for drawing on this component
+         */
+        public Graphics getBufferedGraphics() {
+            Dimension dim = getSize();
+            imageBuffer = createImage( dim.width, dim.height );
+            return imageBuffer.getGraphics();
+        }
+
+        public void setBounds( int x, int y, int width, int height ) {
+            setPreferredSize( new Dimension(width, height) );
+            setMinimumSize( new Dimension(width, height) );
+            super.setBounds( x, y, width, height );
+        }
+    }
+
     //Splash
     static Window splashScreen;
     /*
@@ -26,7 +52,7 @@ public class Utils {
         int width=325,height=148;
         Window win=new Window( new Frame() );
         win.pack();
-        BshCanvas can=new BshCanvas();
+        Canvas can = new Canvas();
         can.setSize( width, height ); // why is this necessary?
         Toolkit tk=Toolkit.getDefaultToolkit();
         Dimension dim=tk.getScreenSize();
