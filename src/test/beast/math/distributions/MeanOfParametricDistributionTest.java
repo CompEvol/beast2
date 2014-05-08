@@ -117,7 +117,7 @@ public class MeanOfParametricDistributionTest extends TestCase {
         assertEquals(Double.NaN, dist.getMean(), 1e-10);
 
         dist = (Uniform) fromXML("<input spec='beast.math.distributions.Uniform' lower='-10' upper='10.0' offset='10'/>");
-        assertEquals(20, dist.getMean(), 1e-10);
+        assertEquals(10, dist.getMean(), 1e-10);
         
         dist = new Uniform();
         dist.initByName("lower", "-1.0", "upper", "0.0");
