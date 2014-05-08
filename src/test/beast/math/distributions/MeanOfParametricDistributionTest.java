@@ -1,11 +1,15 @@
 package test.beast.math.distributions;
 
+
 import org.junit.Test;
 
+import beast.core.BEASTObject;
 import beast.math.distributions.Exponential;
 import beast.math.distributions.Gamma;
 import beast.math.distributions.LogNormalDistributionModel;
 import beast.math.distributions.Normal;
+import beast.math.distributions.Uniform;
+import beast.util.XMLParser;
 
 
 
@@ -93,6 +97,36 @@ public class MeanOfParametricDistributionTest extends TestCase {
         } catch (RuntimeException e) {
         	// we are fine here
         }
+	}
+	
+	@Test
+	public void testMeanOfUniform() throws Exception {
+        Uniform dist = (Uniform) fromXML("<input spec='beast.math.distributions.Uniform' lower='0' upper='1.0' offset='0'/>");
+        assertEquals(0.5, dist.getMean(), 1e-10);
+        
+        dist = (Uniform) fromXML("<input spec='beast.math.distributions.Uniform'/>");
+        assertEquals(0.5, dist.getMean(), 1e-10);
+
+        dist = (Uniform) fromXML("<input spec='beast.math.distributions.Uniform' lower='0' upper='1.0' offset='10'/>");
+        assertEquals(10.5, dist.getMean(), 1e-10);
+
+        dist = (Uniform) fromXML("<input spec='beast.math.distributions.Uniform' upper='Infinity'/>");
+        assertEquals(Double.NaN, dist.getMean(), 1e-10);
+
+        dist = (Uniform) fromXML("<input spec='beast.math.distributions.Uniform' lower='-Infinity' offset='10'/>");
+        assertEquals(Double.NaN, dist.getMean(), 1e-10);
+
+        dist = (Uniform) fromXML("<input spec='beast.math.distributions.Uniform' lower='-10' upper='10.0' offset='10'/>");
+        assertEquals(20, dist.getMean(), 1e-10);
+        
+        dist = new Uniform();
+        dist.initByName("lower", "-1.0", "upper", "0.0");
+        assertEquals(-0.5, dist.getMean(), 1e-10);
+        
+	}
+	
+	BEASTObject fromXML(String xml) throws Exception {
+		return (new XMLParser()).parseBareFragment(xml, true);
 	}
 
 }

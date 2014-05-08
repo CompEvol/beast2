@@ -111,4 +111,12 @@ public class Uniform extends ParametricDistribution {
             return 0;
         }
     }
+    
+    @Override
+    public double getMean() {
+    	if (Double.isInfinite(_lower) || Double.isInfinite(_upper)) {
+    		return Double.NaN;
+    	}
+    	return offsetInput.get() + (_upper - _lower)/2;
+    }
 }
