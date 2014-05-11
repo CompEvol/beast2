@@ -81,7 +81,7 @@ public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
     //configuration file
-    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages" + beastVersion.getMajorVersion() + ".xml";
+    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages" + beastVersion.getVersion() + ".xml";
 
     public static final String INSTALLED = "installed";
     public static final String NOT_INSTALLED = "un-installed";
