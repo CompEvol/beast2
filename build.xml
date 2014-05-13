@@ -392,7 +392,8 @@
 		<echo message="Linux/Unix version release is finished." />
 	</target>
 
-	<property name="jarbundler_dir" value="/Applications/eclipse/plugins/org.apache.ant_1.8.2.v20110505-1300/lib" />
+	<!--property name="jarbundler_dir" value="/Applications/eclipse/plugins/org.apache.ant_1.8.2.v20110505-1300/lib" /-->
+	<property name="jarbundler_dir" value="/Users/remcobouckaert/bin/eclipse/plugins/org.apache.ant_1.8.3.v20120321-1730/lib" />
 	<target name="mac"
 	        depends="build_jar_all_BEAST_NoJUnitTest"
 	        description="release Mac version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
