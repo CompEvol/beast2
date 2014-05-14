@@ -206,7 +206,7 @@ public class CompoundDistribution extends Distribution {
     
     @Override
     public double getNonStochasticLogP() throws Exception {
-        logP = 0;
+        double logP = 0;
         if (ignore) {
         	return logP;
         }
