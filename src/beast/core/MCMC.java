@@ -39,7 +39,7 @@ import java.util.List;
         "which operators to apply on the state space and where to log results.")
 @Citation(value= "Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
         "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology 10(4): e1003537, 2014", year = 2014, firstAuthorSurname = "bouckaert",
-        DOI="10.1371/journal.pcbi.1003335")
+        DOI="10.1371/journal.pcbi.1003537")
 public class MCMC extends Runnable {
 
     public Input<Integer> chainLengthInput =
