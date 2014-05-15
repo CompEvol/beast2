@@ -11,8 +11,8 @@ import beast.core.Input;
 
 @Description("Uniform distribution over a given interval (including lower and upper values)")
 public class Uniform extends ParametricDistribution {
-    public Input<Double> lowerInput = new Input<Double>("lower", "lower bound on the interval, defaul 0", 0.0);
-    public Input<Double> upperInput = new Input<Double>("upper", "lower bound on the interval, defaul 1", 1.0);
+    public Input<Double> lowerInput = new Input<Double>("lower", "lower bound on the interval, default 0", 0.0);
+    public Input<Double> upperInput = new Input<Double>("upper", "lower bound on the interval, default 1", 1.0);
 
     UniformImpl distr = new UniformImpl();
 
