@@ -61,6 +61,10 @@ public class MCMC extends Runnable {
     public Input<Integer> burnInInput =
             new Input<Integer>("preBurnin", "Number of burn in samples taken before entering the main loop", 0);
 
+
+    public Input<Integer> numInitializationAttempts =
+            new Input<Integer>("numInitializationAttempts", "Number of initialization attempts before failing (default=10)", 10);
+
     public Input<Distribution> posteriorInput =
             new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)",
                     Input.Validate.REQUIRED);
@@ -290,7 +294,7 @@ public class MCMC extends Runnable {
 
         burnIn = burnInInput.get();
         chainLength = chainLengthInput.get();
-        int nInitiliasiationAttemps = 0;
+        int nInitialisationAttempts = 0;
         state.setEverythingDirty(true);
         posterior = posteriorInput.get();
 
@@ -305,7 +309,8 @@ public class MCMC extends Runnable {
                     initialiser.initStateNodes();
                 }
                 oldLogLikelihood = state.robustlyCalcPosterior(posterior);
-            } while (Double.isInfinite(oldLogLikelihood) && nInitiliasiationAttemps++ < 10);
+                nInitialisationAttempts += 1;
+            } while (Double.isInfinite(oldLogLikelihood) && nInitialisationAttempts < numInitializationAttempts.get());
         }
         final long startTime = System.currentTimeMillis();
 
@@ -317,7 +322,7 @@ public class MCMC extends Runnable {
 //        System.err.println("Start state:");
 //        System.err.println(state.toString());
 
-        System.err.println("Start likelihood: " + oldLogLikelihood + " " + (nInitiliasiationAttemps > 1 ? "after " + nInitiliasiationAttemps + " initialisation attempts" : ""));
+        System.err.println("Start likelihood: " + oldLogLikelihood + " " + (nInitialisationAttempts > 1 ? "after " + nInitialisationAttempts + " initialisation attempts" : ""));
         if (Double.isInfinite(oldLogLikelihood) || Double.isNaN(oldLogLikelihood)) {
             reportLogLikelihoods(posterior, "");
             throw new Exception("Could not find a proper state to initialise. Perhaps try another seed.");
