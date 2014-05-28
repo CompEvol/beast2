@@ -50,18 +50,22 @@ abstract public class BEASTObject {
     /**
      * @return set of Objects that have this Object in one of its Inputs
      */
-	public Set<Object> getOutputs() {
+	@SuppressWarnings("rawtypes")
+	public Set getOutputs() {
 		return getOutputs(this);
 	};
 
-	static Map<Object,Set<Object>> outputMap = new HashMap<>();
-	static public Set<Object> getOutputs(Object object) {
+	@SuppressWarnings("rawtypes")
+	static Map<Object,Set> outputMap = new HashMap<Object, Set>();
+
+	@SuppressWarnings("rawtypes")
+	static public Set getOutputs(Object object) {
 		return outputMap.get(object);
 	}
 
     /* default constructor */
     public BEASTObject() {
-    	outputMap.put(this, new HashSet<Object>());
+    	outputMap.put(this, outputs);
     }
 
 //	protected void setInputTypes() {
