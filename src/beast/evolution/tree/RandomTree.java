@@ -161,13 +161,13 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //		
 //	}
         // pick up constraints in m_initial tree
-        for (final BEASTObject plugin : outputs) {
+        for (final Object plugin : getOutputs()) {
             if (plugin instanceof MRCAPrior && !calibrations.contains(plugin) ) {
                 calibrations.add((MRCAPrior) plugin);
             }
         }
         if (m_initial.get() != null) {
-            for (final BEASTObject plugin : m_initial.get().outputs) {
+            for (final Object plugin : m_initial.get().getOutputs()) {
                 if (plugin instanceof MRCAPrior && !calibrations.contains(plugin) ) {
                     calibrations.add((MRCAPrior) plugin);
                 }

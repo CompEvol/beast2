@@ -243,9 +243,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         m_iMode = comboBox.getSelectedIndex();
         try {
             // clear
-            for (BEASTObject plugin : traitSet.outputs) {
+            for (Object plugin : traitSet.getOutputs()) {
                 if (plugin instanceof Tree) {
-                    for (BEASTObject plugin2 : plugin.outputs) {
+                    for (Object plugin2 : BEASTObject.getOutputs(plugin)) {
                         if (plugin2 instanceof TipDatesRandomWalker) {
                             TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
                             switch (m_iMode) {

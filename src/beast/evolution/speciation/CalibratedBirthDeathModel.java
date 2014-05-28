@@ -121,7 +121,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
 
         } else {
             // find calibration points from prior
-            for (final BEASTObject plugin : outputs) {
+            for (final Object plugin : getOutputs()) {
                 if (plugin instanceof CompoundDistribution) {
                     final CompoundDistribution prior = (CompoundDistribution) plugin;
                     for (final Distribution distr : prior.pDistributions.get()) {

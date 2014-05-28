@@ -505,11 +505,12 @@ System.err.println("needsRePartition = " + needsRePartition);
 				if (tModels.size() == 1) {
 					// remove old tree from model
 					((BEASTObject)oldTree).setInputValue("estimate", false);
-					for (BEASTObject plugin : ((BEASTObject) oldTree).outputs.toArray(new BEASTObject[0])) {
-						for (Input<?> input : plugin.listInputs()) {
+                	// use toArray to prevent ConcurrentModificationException
+					for (Object plugin : BEASTObject.getOutputs(oldTree).toArray()) { //.toArray(new BEASTObject[0])) {
+						for (Input<?> input : ((BEASTObject)plugin).listInputs()) {
 							try {
 							if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
-								input.setValue(null, plugin);
+								input.setValue(null, (BEASTObject) plugin);
 							} else if (input.get() instanceof List) {
 								List<?> list = (List<?>) input.get();
 								if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {

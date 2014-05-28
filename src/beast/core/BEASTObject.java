@@ -27,8 +27,10 @@ package beast.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 // This class was formerly called 'Plugin'
@@ -39,12 +41,27 @@ import java.util.Set;
 )
 abstract public class BEASTObject {
     /**
-     * set of YObjects that have this YObject in one of its Inputs *
+     * set of Objects that have this Object in one of its Inputs *
+     * @deprecate use getOuputs() or BEASTObject.getOuputs(object) instead
      */
+	@Deprecated
     public Set<BEASTObject> outputs = new HashSet<BEASTObject>();
+	
+    /**
+     * @return set of Objects that have this Object in one of its Inputs
+     */
+	public Set<Object> getOutputs() {
+		return getOutputs(this);
+	};
+
+	static Map<Object,Set<Object>> outputMap = new HashMap<>();
+	static public Set<Object> getOutputs(Object object) {
+		return outputMap.get(object);
+	}
 
     /* default constructor */
     public BEASTObject() {
+    	outputMap.put(this, new HashSet<Object>());
     }
 
 //	protected void setInputTypes() {

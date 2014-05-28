@@ -169,7 +169,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             m_isEstimatedBox.setToolTipText(parameter.isEstimatedInput.getHTMLTipText());
 
             boolean bIsClockRate = false;
-            for (BEASTObject output : parameter.outputs) {
+            for (Object output : parameter.getOutputs()) {
                 if (output instanceof BranchRateModel.Base) {
                     bIsClockRate |= ((BranchRateModel.Base) output).meanRateInput.get() == parameter;
                 }
@@ -189,14 +189,14 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 
                         	if (sID.startsWith("RealParameter")) {
                             	ParametricDistribution parent = null; 
-                	            for (BEASTObject plugin2 : parameter.outputs) {
+                	            for (Object plugin2 : parameter.getOutputs()) {
                 	                if (plugin2 instanceof ParametricDistribution) {
                                 		parent = (ParametricDistribution) plugin2; 
                 	                    break;
                 	                }
                 	            }
                 	            Distribution grandparent = null; 
-                	            for (BEASTObject plugin2 : parent.outputs) {
+                	            for (Object plugin2 : parent.getOutputs()) {
                 	                if (plugin2 instanceof Distribution) {
                                 		grandparent = (Distribution) plugin2; 
                 	                    break;
@@ -228,14 +228,14 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             //m_editPluginButton.setVisible(false);
             //m_bAddButtons = false;
             if (itemNr < 0) {
-	            for (BEASTObject plugin2 : ((BEASTObject) m_input.get()).outputs) {
+	            for (Object plugin2 : ((BEASTObject) m_input.get()).getOutputs()) {
 	                if (plugin2 instanceof ParametricDistribution) {
 	                    m_isEstimatedBox.setVisible(true);
 	                	isParametricDistributionParameter = true;
 	                    break;
 	                }
 	            }
-	            for (BEASTObject plugin2 : ((BEASTObject) m_input.get()).outputs) {
+	            for (Object plugin2 : ((BEASTObject) m_input.get()).getOutputs()) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);
@@ -243,7 +243,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 	                }
 	            }
             } else {
-	            for (BEASTObject plugin2 : ((BEASTObject) ((List)m_input.get()).get(itemNr)).outputs) {
+	            for (Object plugin2 : ((BEASTObject) ((List)m_input.get()).get(itemNr)).getOutputs()) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);

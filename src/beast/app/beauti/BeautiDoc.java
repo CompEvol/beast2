@@ -821,7 +821,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             // replace alignment
             for (BEASTObject plugin : pluginmap.values()) {
                 if (plugin instanceof Alignment) {
-                    for (Object output : plugin.outputs.toArray()) {
+                	// use toArray to prevent ConcurrentModificationException
+                    for (Object output : plugin.getOutputs().toArray()) {
                         replaceInputs((BEASTObject) output, plugin, alignments.get(0));
                     }
                 }
@@ -1225,7 +1226,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         if (pluginmap.containsKey("Tree.t:Species")) {
         	Tree sptree = (Tree) pluginmap.get("Tree.t:Species");
 	        // check whether there is a calibration
-	        for (BEASTObject plugin : sptree.outputs) {
+	        for (Object plugin : sptree.getOutputs()) {
 	            if (plugin instanceof MRCAPrior) {
 	                MRCAPrior prior = (MRCAPrior) plugin;
 	                if (prior.distInput.get() != null) {
@@ -1254,7 +1255,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                             bNeedsEstimation = true;
                         }
                         // check whether there is a calibration
-                        for (BEASTObject plugin : tree.outputs) {
+                        for (Object plugin : tree.getOutputs()) {
                             if (plugin instanceof MRCAPrior) {
                                 MRCAPrior prior = (MRCAPrior) plugin;
                                 if (prior.distInput.get() != null) {
@@ -1381,8 +1382,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                         list.remove(i);
                     }
                 }
-                if (srcPlugin != null && srcPlugin.outputs != null) {
-                    srcPlugin.outputs.remove(target);
+                if (srcPlugin != null && srcPlugin.getOutputs() != null) {
+                    srcPlugin.getOutputs().remove(target);
                 }
             } else {
                 if (input.get() != null && input.get() instanceof BEASTObject &&
@@ -1743,10 +1744,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 collectAncestors(plugin2, ancestors2, tabu);
                 ancestors.addAll(ancestors2);
             } else if (plugin2 instanceof Alignment || plugin2 instanceof FilteredAlignment) {
-                for (BEASTObject output : plugin2.outputs) {
+                for (Object output : plugin2.getOutputs()) {
                     if (!tabu.contains(output)) {
                         Set<BEASTObject> ancestors2 = new HashSet<BEASTObject>();
-                        collectAncestors(output, ancestors2, tabu);
+                        collectAncestors((BEASTObject)output, ancestors2, tabu);
                         ancestors.addAll(ancestors2);
                     }
                 }
@@ -1773,8 +1774,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             String copyID = renameId(id, partitionContext);
             if (doc.pluginmap.containsKey(copyID)) {
                 BEASTObject org = doc.pluginmap.get(copyID);
-                for (BEASTObject output : org.outputs) {
-                    for (Input<?> input : output.listInputs()) {
+                for (Object output : org.getOutputs()) {
+                    for (Input<?> input : ((BEASTObject)output).listInputs()) {
                         if (input.get() instanceof List) {
                             ((List) input.get()).remove(org);
                         } else {
@@ -1819,10 +1820,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
             copy.setID(renameId(id, partitionContext));
             // set outputs
-            for (BEASTObject output : plugin2.outputs) {
+            for (Object output : plugin2.getOutputs()) {
                 if (tabu.contains(output) && output != parent) {
-                    BEASTObject output2 = getCopyValue(output, copySet, partitionContext, doc);
-                    for (Input<?> input : output.listInputs()) {
+                    BEASTObject output2 = getCopyValue((BEASTObject)output, copySet, partitionContext, doc);
+                    for (Input<?> input : ((BEASTObject)output).listInputs()) {
                         // do not add state node initialisers automatically
                         if (input.get() instanceof List &&
                                 // do not update state node initialisers
@@ -1951,9 +1952,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
         ancestors.add(plugin);
         try {
-            for (BEASTObject plugin2 : plugin.outputs) {
+            for (Object plugin2 : plugin.getOutputs()) {
                 if (!ancestors.contains(plugin2) && !tabu.contains(plugin2)) {
-                    collectAncestors(plugin2, ancestors, tabu);
+                    collectAncestors((BEASTObject)plugin2, ancestors, tabu);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -2106,9 +2107,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         linked.clear();
         for (BEASTObject plugin : posteriorPredecessors) {
             Map<String, Integer> outputIDs = new HashMap<String, Integer>();
-            for (BEASTObject output : plugin.outputs) {
+            for (Object output : plugin.getOutputs()) {
                 if (posteriorPredecessors.contains(output)) {
-                    String sID = output.getID();
+                    String sID = ((BEASTObject)output).getID();
                     if (sID.indexOf('.') >= 0) {
                         sID = sID.substring(0, sID.indexOf('.'));
                         if (outputIDs.containsKey(sID)) {
@@ -2119,25 +2120,25 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     }
                 }
             }
-            for (BEASTObject output : plugin.outputs) {
+            for (Object output : plugin.getOutputs()) {
                 if (posteriorPredecessors.contains(output)) {
-                    String sID = output.getID();
+                    String sID = ((BEASTObject)output).getID();
                     if (sID.indexOf('.') >= 0) {
                         sID = sID.substring(0, sID.indexOf('.'));
                         if (outputIDs.get(sID) > 1) {
-                            addLink(plugin, output);
+                            addLink((BEASTObject)plugin, (BEASTObject)output);
                         }
                     }
                 }
             }
             // add parameters that have more than 1 outputs into susbtitution models
             if (plugin instanceof Parameter<?>) {
-                for (BEASTObject output : plugin.outputs) {
+                for (Object output : plugin.getOutputs()) {
                     if (posteriorPredecessors.contains(output)) {
                         if (output instanceof SubstitutionModel) {
                             int nrOfSubstModelsInOutput = 0;
                             try {
-                                for (Input<?> input : output.listInputs()) {
+                                for (Input<?> input : ((BEASTObject)output).listInputs()) {
                                     if (input.get() != null && input.get().equals(plugin)) {
                                         nrOfSubstModelsInOutput++;
                                     }
@@ -2146,7 +2147,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                 // ignore
                             }
                             if (nrOfSubstModelsInOutput > 1) {
-                                addLink(plugin, output);
+                                addLink((BEASTObject)plugin, (BEASTObject)output);
                             }
                         }
                     }
@@ -2237,8 +2238,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     }
                     // ensure they share an output
                     boolean foundCommonOutput = false;
-                    for (BEASTObject out1 : plugin.outputs) {
-                        for (BEASTObject out2 : candidate.outputs) {
+                    for (Object out1 : plugin.getOutputs()) {
+                        for (Object out2 : candidate.getOutputs()) {
                             if (out1 == out2 && out1 instanceof SubstitutionModel) {
                                 foundCommonOutput = true;
                                 break;

@@ -270,11 +270,11 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
     		Object other = list.get(itemNr);
     		if (other != o) {
     			if (other instanceof BEASTObject) {
-    				((BEASTObject)other).outputs.remove(m_plugin);
+    				BEASTObject.getOutputs(other).remove(m_plugin);
     			}
     			list.set(itemNr, o);
     			if (o instanceof BEASTObject) {
-    				((BEASTObject) o).outputs.add(m_plugin);
+    				BEASTObject.getOutputs(o).add(m_plugin);
     			}
     		}
     	}
