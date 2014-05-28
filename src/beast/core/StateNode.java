@@ -93,9 +93,9 @@ public abstract class StateNode extends BEASTObject implements Loggable, Cloneab
      * NB: Should only be used for initialisation!
      */
     public void assignFromWithoutID(StateNode other) {
-        final String sID = ID;
+        final String sID = getID();
         assignFrom(other);
-        ID = sID;
+        setID(sID);
     }
 
     /**

@@ -438,7 +438,7 @@ public class Tree extends StateNode implements TreeInterface {
     @Override
     public Tree copy() {
         Tree tree = new Tree();
-        tree.ID = ID;
+        tree.setID(getID());
         tree.index = index;
         tree.root = root.copy();
         tree.nodeCount = nodeCount;
@@ -455,7 +455,7 @@ public class Tree extends StateNode implements TreeInterface {
         final Tree tree = (Tree) other;
         final Node[] nodes = new Node[nodeCount];
         listNodes(tree.root, nodes);
-        tree.ID = ID;
+        tree.setID(getID());
         //tree.index = index;
         root.assignTo(nodes);
         tree.root = nodes[root.getNr()];
@@ -474,7 +474,7 @@ public class Tree extends StateNode implements TreeInterface {
         for (int i = 0; i < tree.getNodeCount(); i++) {
             nodes[i] = newNode();
         }
-        ID = tree.ID;
+        setID(tree.getID());
         //index = tree.index;
         root = nodes[tree.root.getNr()];
         root.assignFrom(nodes, tree.root);

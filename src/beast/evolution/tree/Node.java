@@ -537,7 +537,7 @@ public class Node extends BEASTObject {
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
         node.parent = null;
-        node.setID(ID);
+        node.setID(getID());
 
         for (final Node child : getChildren()) {
             node.addChild(child.copy());
@@ -554,7 +554,7 @@ public class Node extends BEASTObject {
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
         node.parent = null;
-        node.ID = ID;
+        node.setID(getID());
         if (getLeft() != null) {
             node.setLeft(nodes[getLeft().getNr()]);
             getLeft().assignTo(nodes);
@@ -575,7 +575,7 @@ public class Node extends BEASTObject {
         labelNr = node.labelNr;
         metaDataString = node.metaDataString;
         parent = null;
-        ID = node.ID;
+        setID(node.getID());
         if (node.getLeft() != null) {
             setLeft(nodes[node.getLeft().getNr()]);
             getLeft().assignFrom(nodes, node.getLeft());

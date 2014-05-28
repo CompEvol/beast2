@@ -267,7 +267,7 @@ public interface Parameter<T> extends Function {
         @Override
         public String toString() {
             final StringBuilder buf = new StringBuilder();
-            buf.append(ID).append("[").append(values.length);
+            buf.append(getID()).append("[").append(values.length);
             if (minorDimension > 0) {
                 buf.append(" ").append(minorDimension);
             }

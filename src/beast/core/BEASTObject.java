@@ -26,6 +26,7 @@ package beast.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -136,7 +137,25 @@ abstract public class BEASTObject {
         this.ID = ID;
     }
 
+    static String getID(Object o) {
+    	try {
+            Method method = o.getClass().getMethod("getID");
+            Object ID = method.invoke(o);
+            return ID.toString();
+    	} catch (Exception e) {
+    		throw new RuntimeException("could not call getID() on object: " + e.getMessage());
+    	}
+    }
 
+    static void setID(Object o, String ID) {
+    	try {
+            Method method = o.getClass().getMethod("SetID", String.class);
+            method.invoke(o, ID);
+    	} catch (Exception e) {
+    		throw new RuntimeException("could not call setID(ID) on object: " + e.getMessage());
+    	}
+    }
+    
     /**
      * @return description from @Description annotation
      */
