@@ -236,7 +236,8 @@ public class DocMaker {
 	                 "	height: 45px;\n" +
 	                 "	color: #243D02;\n" +
 	                 "	border-top: 1px solid #243D02;\n" +
-	                 "}\n"
+	                 "}\n" +
+	                 "table, th, td {border: 0px;)\n"
     				 ;
     }
 

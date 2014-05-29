@@ -2269,4 +2269,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public JFrame getFrame() {
         return beauti.frame;
     }
+
+    @Override
+    public void initAndValidate() throws Exception {
+    }
+
 } // class BeautiDoc

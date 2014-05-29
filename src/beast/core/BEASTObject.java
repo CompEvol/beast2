@@ -28,10 +28,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 // This class was formerly called 'Plugin'
@@ -56,17 +54,24 @@ abstract public class BEASTObject {
 		return getOutputs(this);
 	};
 
-	@SuppressWarnings("rawtypes")
-	static Map<Object,Set> outputMap = new HashMap<Object, Set>();
 
 	@SuppressWarnings("rawtypes")
 	static public Set getOutputs(Object object) {
-		return outputMap.get(object);
+		if (object instanceof BEASTObject) {
+			return ((BEASTObject)object).outputs;
+		} else {
+	    	try {
+	            Method method = object.getClass().getMethod("getOutputs");
+	            Object outputs = method.invoke(object);
+	            return (Set) outputs;
+	    	} catch (Exception e) {
+	    		throw new RuntimeException("could not call getID() on object: " + e.getMessage());
+	    	}
+		}
 	}
 
     /* default constructor */
     public BEASTObject() {
-    	outputMap.put(this, outputs);
     }
 
 //	protected void setInputTypes() {
@@ -137,20 +142,20 @@ abstract public class BEASTObject {
         this.ID = ID;
     }
 
-    static String getID(Object o) {
+    static String getID(Object object) {
     	try {
-            Method method = o.getClass().getMethod("getID");
-            Object ID = method.invoke(o);
+            Method method = object.getClass().getMethod("getID");
+            Object ID = method.invoke(object);
             return ID.toString();
     	} catch (Exception e) {
     		throw new RuntimeException("could not call getID() on object: " + e.getMessage());
     	}
     }
 
-    static void setID(Object o, String ID) {
+    static void setID(Object object, String ID) {
     	try {
-            Method method = o.getClass().getMethod("SetID", String.class);
-            method.invoke(o, ID);
+            Method method = object.getClass().getMethod("SetID", String.class);
+            method.invoke(object, ID);
     	} catch (Exception e) {
     		throw new RuntimeException("could not call setID(ID) on object: " + e.getMessage());
     	}
