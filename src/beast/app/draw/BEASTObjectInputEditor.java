@@ -9,6 +9,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.util.AddOnManager;
 
 
@@ -32,7 +33,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 
     @Override
     public Class<?> type() {
-        return BEASTObject.class;
+        return BEASTInterface.class;
     }
 
     /**
@@ -43,7 +44,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
      * o validation label -- optional, if input is not valid
      */
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	//box.setAlignmentY(LEFT_ALIGNMENT);
     	
         m_bAddButtons = bAddButtons;
@@ -63,14 +64,14 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
      * a validation icon
      * *
      */
-    void simpleInit(Input<?> input, BEASTObject plugin) {
+    void simpleInit(Input<?> input, BEASTInterface plugin) {
 
         addInputLabel();
 
         addComboBox(this, input, plugin);
 
         if (m_bAddButtons) {
-            if (BEASTObjectPanel.countInputs((BEASTObject) m_input.get(), doc) > 0) {
+            if (BEASTObjectPanel.countInputs((BEASTInterface) m_input.get(), doc) > 0) {
                 m_editPluginButton = new SmallButton("e", true);
                 if (input.get() == null) {
                     m_editPluginButton.setEnabled(false);
@@ -80,10 +81,10 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                 m_editPluginButton.addActionListener(new ActionListener() {
                     // implements ActionListener
                     public void actionPerformed(ActionEvent e) {
-                        BEASTObjectDialog dlg = new BEASTObjectDialog((BEASTObject) m_input.get(), m_input.getType(), doc);
+                        BEASTObjectDialog dlg = new BEASTObjectDialog((BEASTInterface) m_input.get(), m_input.getType(), doc);
                         if (dlg.showDialog()) {
                             try {
-                                dlg.accept((BEASTObject) m_input.get(), doc);
+                                dlg.accept((BEASTInterface) m_input.get(), doc);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -102,7 +103,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
     void refresh() {
     	if (m_selectPluginBox != null) {
 	        String sOldID = (String) m_selectPluginBox.getSelectedItem();
-	        String sID = ((BEASTObject) m_input.get()).getID();
+	        String sID = ((BEASTInterface) m_input.get()).getID();
 	        if (!sID.equals(sOldID)) {
 	            m_selectPluginBox.addItem(sID);
 	            m_selectPluginBox.setSelectedItem(sID);
@@ -141,7 +142,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 
     Box m_expansionBox = null;
 
-    void expandedInit(Input<?> input, BEASTObject plugin) {
+    void expandedInit(Input<?> input, BEASTInterface plugin) {
         addInputLabel();
         Box box = Box.createVerticalBox();
         // add horizontal box with combobox of Plugins to select from
@@ -149,7 +150,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
         addComboBox(combobox, input, plugin);
         box.add(combobox);
 
-        doc.getInpuEditorFactory().addInputs(box, (BEASTObject) input.get(), this, this, doc);
+        doc.getInpuEditorFactory().addInputs(box, (BEASTInterface) input.get(), this, this, doc);
 
         box.setBorder(new EtchedBorder());
         //box.setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -164,7 +165,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
      * On choosing a new value, create plugin (if is not already an object)
      * Furthermore, if expanded, update expanded inputs
      */
-    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
     	if (itemNr >= 0) {
     		box.add(new JLabel(plugin.getID()));
     		box.add(Box.createGlue());
@@ -195,7 +196,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
             if (o == null) {
                 sID = plugin.getID();
             } else {
-                sID = ((BEASTObject) o).getID();
+                sID = ((BEASTInterface) o).getID();
             }
             if (sID.indexOf('.')>=0) {
             	sID = sID.substring(0, sID.indexOf('.'));
@@ -217,7 +218,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 
                     // get a handle of the selected plugin
                     BeautiSubTemplate sSelected = (BeautiSubTemplate) m_selectPluginBox.getSelectedItem();
-                    BEASTObject plugin = (BEASTObject) m_input.get();
+                    BEASTInterface plugin = (BEASTInterface) m_input.get();
                     String sID = plugin.getID();
                     String sPartition = sID.substring(sID.indexOf('.') + 1);
                     if (sPartition.indexOf(':') >= 0) {
@@ -321,7 +322,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                         sync();
                         refreshPanel();
                     } catch (Exception ex) {
-                        sID = ((BEASTObject) m_input.get()).getID();
+                        sID = ((BEASTInterface) m_input.get()).getID();
                         m_selectPluginBox.setSelectedItem(sID);
                         //ex.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Could not change plugin: " +

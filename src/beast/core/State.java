@@ -99,7 +99,7 @@ public class State extends BEASTObject {
      * Maps a Plugin to a list of Outputs.
      * This map only contains those plug-ins that have a path to the posterior *
      */
-    private HashMap<BEASTObject, List<BEASTObject>> outputMap;
+    private HashMap<BEASTInterface, List<BEASTInterface>> outputMap;
 
     /**
      * Same as m_outputMap, but only for StateNodes indexed by the StateNode number
@@ -464,21 +464,21 @@ public class State extends BEASTObject {
         // CalculationNodes need to be taken in account, but for
         // debugging purposes (developer forgot to derive from CalculationNode)
         // we keep track of the lot.
-        outputMap = new HashMap<BEASTObject, List<BEASTObject>>();
-        outputMap.put(posterior, new ArrayList<BEASTObject>());
+        outputMap = new HashMap<BEASTInterface, List<BEASTInterface>>();
+        outputMap.put(posterior, new ArrayList<BEASTInterface>());
         boolean bProgress = true;
-        List<BEASTObject> plugins = new ArrayList<BEASTObject>();
+        List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
         plugins.add(posterior);
         while (bProgress) {
             bProgress = false;
             // loop over plug-ins, till no more plug-ins can be added
             // efficiency is no issue here
             for (int iPlugin = 0; iPlugin < plugins.size(); iPlugin++) {
-                BEASTObject plugin = plugins.get(iPlugin);
+            	BEASTInterface plugin = plugins.get(iPlugin);
                 try {
-                    for (BEASTObject inputPlugin : plugin.listActivePlugins()) {
+                    for (BEASTInterface inputPlugin : plugin.listActivePlugins()) {
                         if (!outputMap.containsKey(inputPlugin)) {
-                            outputMap.put(inputPlugin, new ArrayList<BEASTObject>());
+                            outputMap.put(inputPlugin, new ArrayList<BEASTInterface>());
                             plugins.add(inputPlugin);
                             bProgress = true;
                         }
@@ -499,7 +499,7 @@ public class State extends BEASTObject {
         for (int i = 0; i < stateNode.length; i++) {
             stateNodeOutputs[i] = new ArrayList<CalculationNode>();
             if (outputMap.containsKey(stateNode[i])) {
-                for (BEASTObject plugin : outputMap.get(stateNode[i])) {
+                for (BEASTInterface plugin : outputMap.get(stateNode[i])) {
                     if (plugin instanceof CalculationNode) {
                         stateNodeOutputs[i].add((CalculationNode) plugin);
                     } else {
@@ -568,7 +568,7 @@ public class State extends BEASTObject {
                 // efficiency is no issue here
                 for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
                     CalculationNode node = calcNodes.get(iCalcNode);
-                    for (BEASTObject output : outputMap.get(node)) {
+                    for (BEASTInterface output : outputMap.get(node)) {
                         if (output instanceof CalculationNode) {
                             final CalculationNode calcNode = (CalculationNode) output;
                             if (!calcNodes.contains(calcNode)) {
@@ -590,7 +590,7 @@ public class State extends BEASTObject {
         // put calc nodes in partial order
         for (int i = 0; i < calcNodes.size(); i++) {
             CalculationNode node = calcNodes.get(i);
-            List<BEASTObject> inputList = node.listActivePlugins();
+            List<BEASTInterface> inputList = node.listActivePlugins();
             for (int j = calcNodes.size() - 1; j > i; j--) {
                 if (inputList.contains(calcNodes.get(j))) {
                     // swap

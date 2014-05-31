@@ -16,6 +16,7 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.BEASTObjectDialog;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.Prior;
 
@@ -34,7 +35,7 @@ public class PriorInputEditor extends InputEditor.Base {
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTObject plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
@@ -72,7 +73,7 @@ public class PriorInputEditor extends InputEditor.Base {
                 BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
                 //String sID = ((Plugin) list.get(iItem)).getID();
                 //String sPartition = BeautiDoc.parsePartition(sID);
-                PartitionContext context = doc.getContextFor((BEASTObject) list.get(itemNr));
+                PartitionContext context = doc.getContextFor((BEASTInterface) list.get(itemNr));
                 Prior prior = (Prior) list.get(itemNr);
                 try {
                     template.createSubNet(context, prior, prior.distInput, true);

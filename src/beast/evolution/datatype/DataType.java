@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import beast.core.Description;
 import beast.core.BEASTObject;
+import beast.core.Description;
 
 
 
@@ -60,7 +60,7 @@ public interface DataType {
     /**
      * data type description, e.g. nucleotide, codon *
      */
-    public String getDescription();
+    public String getTypeDescription();
 
     /**
      * Get character corresponding to a given state
@@ -82,7 +82,7 @@ public interface DataType {
     public String getCode(int state);
 
     @Description(value = "Base class bringing class and interfaces together", isInheritable = false)
-    public abstract class Base extends BEASTObject implements DataType {
+    public abstract class Base extends BEASTObject.Core implements DataType {
         /**
          * size of the state space *
          */
@@ -274,7 +274,7 @@ public interface DataType {
 
         @Override
         public String toString() {
-            return getDescription();
+            return getTypeDescription();
         }
         
         /** return state associated with a character */

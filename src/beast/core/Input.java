@@ -383,7 +383,7 @@ public class Input<T> {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void setValue(final Object value, final BEASTObject plugin) {
+    public void setValue(final Object value, final BEASTInterface plugin) {
         if (value == null) {
             if (this.value != null) {
                 if (this.value instanceof BEASTObject) {
@@ -465,7 +465,7 @@ public class Input<T> {
      * It is best for Beauti to throw an Exception from canSetName() with some
      * diagnostic info when the value cannot be set.
      */
-    public boolean canSetValue(Object value, BEASTObject plugin) {
+    public boolean canSetValue(Object value, BEASTInterface plugin) {
         String inputName = new String(name.charAt(0) + "").toUpperCase() + name.substring(1);
         try {
             Method method = plugin.getClass().getMethod("canSet" + inputName, Object.class);
@@ -554,7 +554,7 @@ public class Input<T> {
      * @throws Exception when all conversions fail
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setStringValue(final String sValue, final BEASTObject plugin) throws Exception {
+    private void setStringValue(final String sValue, final BEASTInterface plugin) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (value instanceof List<?>) {
             List list = (List) value;

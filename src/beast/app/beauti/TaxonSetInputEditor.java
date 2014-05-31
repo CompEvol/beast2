@@ -24,6 +24,7 @@ import javax.swing.table.TableCellRenderer;
 import beast.app.draw.InputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
@@ -54,7 +55,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
     }
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_input = input;
         m_plugin = plugin;
 		this.itemNr = itemNr;

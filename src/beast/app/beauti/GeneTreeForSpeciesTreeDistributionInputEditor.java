@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import beast.app.draw.InputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution;
 
 
@@ -27,7 +28,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
@@ -54,7 +55,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 			}
 			
 			@Override
-			public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+			public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 				m_plugin = plugin;
 				m_input = input;
 				m_bAddButtons = bAddButtons;

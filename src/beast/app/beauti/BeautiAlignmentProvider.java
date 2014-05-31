@@ -25,6 +25,8 @@ import beast.app.draw.ExtensionFileFilter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
+import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -54,7 +56,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	/** 
 	 * return new alignment, return null if not successfull 
 	 * **/
-	List<BEASTObject> getAlignments(BeautiDoc doc) {
+	List<BEASTInterface> getAlignments(BeautiDoc doc) {
 		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
@@ -82,8 +84,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
      * @param files
      * @return
      */
-    public List<BEASTObject> getAlignments(BeautiDoc doc, File[] files) {
-        List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
+    public List<BEASTInterface> getAlignments(BeautiDoc doc, File[] files) {
+        List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
         for (File file : files) {
             String fileName = file.getName();
             // if (sFileName.lastIndexOf('/') > 0) {
@@ -138,7 +140,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
                 }
             }
             if (file.getName().toLowerCase().endsWith(".xml")) {
-                BEASTObject alignment = getXMLData(file);
+                BEASTInterface alignment = getXMLData(file);
                 selectedPlugins.add(alignment);
             }
             if (file.getName().toLowerCase().endsWith(".fas") || file.getName().toLowerCase().endsWith(".fasta") ||
@@ -146,11 +148,11 @@ public class BeautiAlignmentProvider extends BEASTObject {
             		file.getName().toLowerCase().endsWith(".fna") || file.getName().toLowerCase().endsWith(".ffn") || 
             		file.getName().toLowerCase().endsWith(".faa") || file.getName().toLowerCase().endsWith(".frn") 
             		) {
-                BEASTObject alignment = getFASTAData(file);
+                BEASTInterface alignment = getFASTAData(file);
                 selectedPlugins.add(alignment);
             }
         }
-        for (BEASTObject plugin : selectedPlugins) {
+        for (BEASTInterface plugin : selectedPlugins) {
         	// ensure ID of alignment is unique
         	int k = 0;
         	String id = plugin.getID();
@@ -188,7 +190,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		return template.get();
 	}
 
-	static public BEASTObject getXMLData(File file) {
+	static public BEASTInterface getXMLData(File file) {
 		String sXML = "";
 		try {
 			// parse as BEAST 2 xml fragment
@@ -198,8 +200,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				sXML += fin.readLine() + "\n";
 			}
 			fin.close();
-			BEASTObject runnable = parser.parseBareFragment(sXML, false);
-			BEASTObject alignment = getAlignment(runnable);
+			BEASTInterface runnable = parser.parseBareFragment(sXML, false);
+			BEASTInterface alignment = getAlignment(runnable);
             alignment.initAndValidate();
             return alignment;
 		} catch (Exception ex) {
@@ -207,7 +209,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			try {
 				String ID = file.getName();
 				ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
-				BEASTObject alignment = parseBeast1XML(ID, sXML);
+				BEASTInterface alignment = parseBeast1XML(ID, sXML);
 				if (alignment != null) {
 					alignment.setID(file.getName().substring(0, file.getName().length() - 4).replaceAll("\\..*", ""));
 				}
@@ -221,7 +223,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		}
 	}
 	
-    private BEASTObject getFASTAData(File file) {
+    private BEASTInterface getFASTAData(File file) {
     	try {
     		// grab alignment data
         	Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();
@@ -309,7 +311,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		return null;
 	}
 
-	private static BEASTObject parseBeast1XML(String ID, String sXML) throws Exception {
+	private static BEASTInterface parseBeast1XML(String ID, String sXML) throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
 		doc.normalize();
@@ -362,11 +364,11 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	} // parseBeast1XML
 
 
-	static BEASTObject getAlignment(BEASTObject plugin) throws IllegalArgumentException, IllegalAccessException {
+	static BEASTInterface getAlignment(BEASTInterface plugin) throws IllegalArgumentException, IllegalAccessException {
 		if (plugin instanceof Alignment) {
 			return plugin;
 		}
-		for (BEASTObject plugin2 : plugin.listActivePlugins()) {
+		for (BEASTInterface plugin2 : plugin.listActivePlugins()) {
 			plugin2 = getAlignment(plugin2);
 			if (plugin2 != null) {
 				return plugin2;

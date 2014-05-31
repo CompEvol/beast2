@@ -41,6 +41,7 @@ import org.w3c.dom.Node;
 
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.util.Randomizer;
 
 
@@ -49,7 +50,7 @@ import beast.util.Randomizer;
 
 public class BEASTObjectShape extends Shape {
     static Font g_PluginFont = new Font("arial", Font.PLAIN, 11);
-    public beast.core.BEASTObject m_plugin;
+    public beast.core.BEASTInterface m_plugin;
     List<InputShape> m_inputs;
 
 
@@ -58,7 +59,7 @@ public class BEASTObjectShape extends Shape {
         m_fillcolor = new Color(Randomizer.nextInt(256), 128 + Randomizer.nextInt(128), Randomizer.nextInt(128));
     }
 
-    public BEASTObjectShape(BEASTObject plugin, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public BEASTObjectShape(BEASTInterface plugin, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         super();
         m_plugin = plugin;
         m_fillcolor = new Color(Randomizer.nextInt(256), 128 + Randomizer.nextInt(128), Randomizer.nextInt(128));
@@ -72,7 +73,7 @@ public class BEASTObjectShape extends Shape {
     public void init(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
     	m_doc = doc;
         if (m_plugin == null) {
-            m_plugin = (beast.core.BEASTObject) Class.forName(sClassName).newInstance();
+            m_plugin = (beast.core.BEASTInterface) Class.forName(sClassName).newInstance();
         }
         m_inputs = new ArrayList<InputShape>();
         if (m_plugin.getID() == null) {
@@ -178,7 +179,7 @@ public class BEASTObjectShape extends Shape {
             if (node.getAttributes().getNamedItem("class") != null) {
                 String sClassName = node.getAttributes().getNamedItem("class").getNodeValue();
                 try {
-                    m_plugin = (beast.core.BEASTObject) Class.forName(sClassName).newInstance();
+                    m_plugin = (beast.core.BEASTInterface) Class.forName(sClassName).newInstance();
                     m_plugin.setID(m_sID);
                 } catch (Exception e) {
                     // TODO: handle exception

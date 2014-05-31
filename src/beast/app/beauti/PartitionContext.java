@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 
 public class PartitionContext {
@@ -39,7 +40,7 @@ public class PartitionContext {
 			sID = BeautiDoc.parsePartition(sID);
 		}
 		this.clockModel = sID;
-		sID = ((BEASTObject) treeLikelihood.siteModelInput.get()).getID();
+		sID = ((BEASTInterface) treeLikelihood.siteModelInput.get()).getID();
 		sID = BeautiDoc.parsePartition(sID);
 		this.siteModel = sID;
 		sID = treeLikelihood.treeInput.get().getID();

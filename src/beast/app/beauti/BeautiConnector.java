@@ -9,6 +9,7 @@ import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 
 
@@ -129,8 +130,8 @@ public class BeautiConnector extends BEASTObject {
     /**
      * check that conditions in the 'if' input are met *
      */
-    public boolean isActivated(PartitionContext partitionContext, List<BEASTObject> posteriorPredecessors,
-    		List<BEASTObject> likelihoodPredecessors, BeautiDoc doc) {
+    public boolean isActivated(PartitionContext partitionContext, List<BEASTInterface> posteriorPredecessors,
+    		List<BEASTInterface> likelihoodPredecessors, BeautiDoc doc) {
         if (atInitialisationOnly()) {
             return false;
         }
@@ -152,7 +153,7 @@ public class BeautiConnector extends BEASTObject {
         for (int i = 0; i < sConditionIDs.length; i++) {
         	//String sID = sConditionIDs[i].replaceAll("\\$\\(n\\)", sPartition);
         	String sID = BeautiDoc.translatePartitionNames(sConditionIDs[i], partitionContext);
-            BEASTObject plugin = doc.pluginmap.get(sID);
+            BEASTInterface plugin = doc.pluginmap.get(sID);
             if (plugin == null) {
             	if (conditionOperations[i] != Operation.IS_NOT_AN_OPERTOR) {
                     return false;

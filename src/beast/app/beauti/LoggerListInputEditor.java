@@ -11,6 +11,7 @@ import beast.app.draw.StringInputEditor;
 import beast.core.Input;
 import beast.core.Logger;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 
 
 
@@ -33,12 +34,12 @@ public class LoggerListInputEditor extends ListInputEditor {
     
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     }
     
     @Override
-    protected void addSingleItem(BEASTObject plugin) {
+    protected void addSingleItem(BEASTInterface plugin) {
     	currentLogger = (Logger) plugin;
     	super.addSingleItem(plugin);
     }

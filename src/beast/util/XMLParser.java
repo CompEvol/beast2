@@ -145,7 +145,7 @@ public class XMLParser {
     final static String LOG_CLASS = Logger.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
     final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
-    final static String PLUGIN_CLASS = BEASTObject.class.getName();
+    final static String PLUGIN_CLASS = BEASTInterface.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
     final static String RUNNABLE_CLASS = Runnable.class.getName();
@@ -180,7 +180,7 @@ public class XMLParser {
      */
     String m_sDataMap;
 
-    HashMap<String, BEASTObject> IDMap;
+    HashMap<String, BEASTInterface> IDMap;
     HashMap<String, Integer[]> likelihoodMap;
     HashMap<String, Node> IDNodeMap;
 
@@ -203,7 +203,7 @@ public class XMLParser {
         }
     }
     
-    List<BEASTObject> pluginsWaitingToInit;
+    List<BEASTInterface> pluginsWaitingToInit;
     List<Node> nodesWaitingToInit;
 
     public HashMap<String, String> getElement2ClassMap() {
@@ -227,7 +227,7 @@ public class XMLParser {
     PartitionContext partitionContext = null;
 
     public XMLParser() {
-        pluginsWaitingToInit = new ArrayList<BEASTObject>();
+        pluginsWaitingToInit = new ArrayList<BEASTInterface>();
         nodesWaitingToInit = new ArrayList<Node>();
     }
 
@@ -244,7 +244,7 @@ public class XMLParser {
         String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
         replace(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
         
-        IDMap = new HashMap<String, BEASTObject>();
+        IDMap = new HashMap<String, BEASTInterface>();
         likelihoodMap = new HashMap<String, Integer[]>();
         IDNodeMap = new HashMap<String, Node>();
 
@@ -263,7 +263,7 @@ public class XMLParser {
      * Useful for retrieving all non-runnable elements when a template
      * is instantiated by Beauti *
      */
-    public List<BEASTObject> parseTemplate(final String sXML, final HashMap<String, BEASTObject> sIDMap, final boolean bInitialize) throws Exception {
+    public List<BEASTInterface> parseTemplate(final String sXML, final HashMap<String, BEASTInterface> sIDMap, final boolean bInitialize) throws Exception {
         m_bInitialize = bInitialize;
         // parse the XML file into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -276,7 +276,7 @@ public class XMLParser {
         likelihoodMap = new HashMap<String, Integer[]>();
         IDNodeMap = new HashMap<String, Node>();
 
-        final List<BEASTObject> plugins = new ArrayList<BEASTObject>();
+        final List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
 
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
@@ -317,7 +317,7 @@ public class XMLParser {
     	Node node = null;
         try {
         	for (int i = 0; i < pluginsWaitingToInit.size(); i++) {
-        		final BEASTObject plugin = pluginsWaitingToInit.get(i);
+        		final BEASTInterface plugin = pluginsWaitingToInit.get(i);
         		node = nodesWaitingToInit.get(i);
         		plugin.initAndValidate();
         	}
@@ -387,7 +387,7 @@ public class XMLParser {
      * Only the run element or if that does not exist the last child element of
      * the top level <beast> element is considered.
      */
-    public BEASTObject parseFragment(final String sXML, final boolean bInitialize) throws Exception {
+    public BEASTInterface parseFragment(final String sXML, final boolean bInitialize) throws Exception {
         m_bInitialize = bInitialize;
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -395,7 +395,7 @@ public class XMLParser {
         doc.normalize();
         processPlates();
 
-        IDMap = new HashMap<String, BEASTObject>();
+        IDMap = new HashMap<String, BEASTInterface>();
         likelihoodMap = new HashMap<String, Integer[]>();
         IDNodeMap = new HashMap<String, Node>();
 
@@ -427,7 +427,7 @@ public class XMLParser {
             throw new Exception("Need at least one child element");
         }
 
-        final BEASTObject plugin = createObject(children.item(i), PLUGIN_CLASS, null);
+        final BEASTInterface plugin = createObject(children.item(i), PLUGIN_CLASS, null);
         initPlugins();
         return plugin;
     } // parseFragment
@@ -439,7 +439,7 @@ public class XMLParser {
      * Tree tree = (Tree) new XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
      * to create a simple tree.
      */
-    public BEASTObject parseBareFragment(String sXML, final boolean bInitialize) throws Exception {
+    public BEASTInterface parseBareFragment(String sXML, final boolean bInitialize) throws Exception {
         // get rid of XML processing instruction
         sXML = sXML.replaceAll("<\\?xml[^>]*>", "");
         if (sXML.contains("<beast")) {
@@ -449,7 +449,7 @@ public class XMLParser {
         }
     }
 
-    public List<BEASTObject> parseBareFragments(final String sXML, final boolean bInitialize) throws Exception {
+    public List<BEASTInterface> parseBareFragments(final String sXML, final boolean bInitialize) throws Exception {
         m_bInitialize = bInitialize;
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -467,10 +467,10 @@ public class XMLParser {
         parseNameSpaceAndMap(topNode);
 
         final NodeList children = topNode.getChildNodes();
-        final List<BEASTObject> plugins = new ArrayList<BEASTObject>();
+        final List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                final BEASTObject plugin = createObject(children.item(i), PLUGIN_CLASS, null);
+                final BEASTInterface plugin = createObject(children.item(i), PLUGIN_CLASS, null);
                 plugins.add(plugin);
             }
         }
@@ -626,7 +626,7 @@ public class XMLParser {
      * This involves a parameter clutch to deal with non-real parameters.
      * This needs a bit of work, obviously...
      */
-    boolean checkType(final String sClass, final BEASTObject plugin) throws Exception {
+    boolean checkType(final String sClass, final BEASTInterface plugin) throws Exception {
         if (sClass.equals(INPUT_CLASS) || Class.forName(sClass).isInstance(plugin)) {
             return true;
         }
@@ -637,14 +637,14 @@ public class XMLParser {
         return false;
     } // checkType
 
-    BEASTObject createObject(final Node node, final String sClass, final BEASTObject parent) throws Exception {
+    BEASTInterface createObject(final Node node, final String sClass, final BEASTInterface parent) throws Exception {
     	//sClass = sClass.replaceAll("beast", "yabby");
         // try the IDMap first
         final String sID = getID(node);
 
         if (sID != null) {
             if (IDMap.containsKey(sID)) {
-                final BEASTObject plugin = IDMap.get(sID);
+                final BEASTInterface plugin = IDMap.get(sID);
                 if (checkType(sClass, plugin)) {
                     return plugin;
                 }
@@ -664,13 +664,13 @@ public class XMLParser {
                 }
             }
             if (IDMap.containsKey(sIDRef)) {
-                final BEASTObject plugin = IDMap.get(sIDRef);
+                final BEASTInterface plugin = IDMap.get(sIDRef);
                 if (checkType(sClass, plugin)) {
                     return plugin;
                 }
                 throw new XMLParserException(node, "id=" + sIDRef + ". Expected object of type " + sClass + " instead of " + plugin.getClass().getName(), 106);
             } else if (IDNodeMap.containsKey(sIDRef)) {
-                final BEASTObject plugin = createObject(IDNodeMap.get(sIDRef), sClass, parent);
+                final BEASTInterface plugin = createObject(IDNodeMap.get(sIDRef), sClass, parent);
                 if (checkType(sClass, plugin)) {
                     return plugin;
                 }
@@ -692,7 +692,7 @@ public class XMLParser {
         }
     	//sSpecClass = sSpecClass.replaceAll("beast", "yabby");
     	
-    	if (sSpecClass.indexOf("BEASTObject") > 0) {
+    	if (sSpecClass.indexOf("BEASTInterface") > 0) {
     		System.out.println(sSpecClass);
     	}
 
@@ -728,7 +728,7 @@ public class XMLParser {
             throw new XMLParserException(node, "Cannot create class: " + sSpecClass + ". " + e.getMessage(), 122);
         }
         // sanity check
-        if (!(o instanceof BEASTObject)) {
+        if (!(o instanceof BEASTInterface)) {
             if (o instanceof Input) {
                 // if we got this far, it is a basic input,
                 // that is, one of the form <input name='xyz'>value</input>
@@ -746,7 +746,7 @@ public class XMLParser {
             }
         }
         // set id
-        final BEASTObject plugin = (BEASTObject) o;
+        final BEASTInterface plugin = (BEASTInterface) o;
         plugin.setID(sID);
         register(node, plugin);
         // process inputs
@@ -777,7 +777,7 @@ public class XMLParser {
         if (sClass.contains(".")) {
             sName = sClass.substring(sClass.lastIndexOf('.') + 1);
         }
-        final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
         int nBestDistance = Integer.MAX_VALUE;
         String sClosest = null;
         for (final String sPlugin : sPluginNames) {
@@ -842,7 +842,7 @@ public class XMLParser {
         return p[n];
     }
 
-    void parseInputs(final BEASTObject parent, final Node node) throws Exception {
+    void parseInputs(final BEASTInterface parent, final Node node) throws Exception {
         // first, process attributes
         final NamedNodeMap atts = node.getAttributes();
         if (atts != null) {
@@ -859,7 +859,7 @@ public class XMLParser {
                         element.setAttribute("idref", sIDRef);
                         // add child in case things go belly up, and an XMLParserException is thrown
                         node.appendChild(element);
-                        final BEASTObject plugin = createObject(element, PLUGIN_CLASS, parent);
+                        final BEASTInterface plugin = createObject(element, PLUGIN_CLASS, parent);
                         // it is save to remove the elment now
                         node.removeChild(element);
                         setInput(node, parent, sName, plugin);
@@ -887,7 +887,7 @@ public class XMLParser {
                 if (element2ClassMap.containsKey(sElement)) {
                     sClass = element2ClassMap.get(sElement);
                 }
-                final BEASTObject childItem = createObject(child, sClass, parent);
+                final BEASTInterface childItem = createObject(child, sClass, parent);
                 if (childItem != null) {
                     setInput(node, parent, sName, childItem);
                 }
@@ -925,7 +925,7 @@ public class XMLParser {
         }
     } // setInputs
 
-    void setInput(final Node node, final BEASTObject plugin, final String sName, final BEASTObject plugin2) throws XMLParserException {
+    void setInput(final Node node, final BEASTInterface plugin, final String sName, final BEASTInterface plugin2) throws XMLParserException {
         try {
             final Input<?> input = plugin.getInput(sName);
             // test whether input was not set before, this is done by testing whether input has default value.
@@ -960,7 +960,7 @@ public class XMLParser {
         //throw new XMLParserException(node, "no such input '"+sName+"' for element <" + node.getNodeName() + ">", 167);
     }
 
-    void setInput(final Node node, final BEASTObject plugin, final String sName, final String sValue) throws XMLParserException {
+    void setInput(final Node node, final BEASTInterface plugin, final String sName, final String sValue) throws XMLParserException {
         try {
             plugin.setInputValue(sName, sValue);
             return;
@@ -983,7 +983,7 @@ public class XMLParser {
     /**
      * records id in IDMap, for ease of retrieving Plugins associated with idrefs *
      */
-    void register(final Node node, final BEASTObject plugin) {
+    void register(final Node node, final BEASTInterface plugin) {
         final String sID = getID(node);
         if (sID != null) {
             IDMap.put(sID, plugin);
@@ -1055,7 +1055,7 @@ public class XMLParser {
     }
 
     public interface RequiredInputProvider {
-		Object createInput(BEASTObject plugin, Input<?> input, PartitionContext context);
+		Object createInput(BEASTInterface plugin, Input<?> input, PartitionContext context);
     }
 
     public void setRequiredInputProvider(final RequiredInputProvider provider, final PartitionContext context) {
@@ -1073,7 +1073,7 @@ public class XMLParser {
             System.setOut(System.err);
             // parse the file
             final XMLParser parser = new XMLParser();
-            final BEASTObject plugin = parser.parseFile(new File(args[0]));
+            final BEASTInterface plugin = parser.parseFile(new File(args[0]));
             // restore stdout
             System.setOut(out);
             System.out.println(new XMLProducer().toXML(plugin));

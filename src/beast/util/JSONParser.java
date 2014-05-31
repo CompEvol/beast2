@@ -50,7 +50,7 @@ public class JSONParser {
 	final public static String ANALYSIS_ELEMENT = "analysis";
 
 	final static String INPUT_CLASS = Input.class.getName();
-	final static String YOBJECT_CLASS = BEASTObject.class.getName();
+	final static String YOBJECT_CLASS = BEASTInterface.class.getName();
 	final static String RUNNABLE_CLASS = Runnable.class.getName();
 
 	Runnable runnable;
@@ -65,7 +65,7 @@ public class JSONParser {
 	 */
 	String DataMap;
 
-	HashMap<String, BEASTObject> IDMap;
+	HashMap<String, BEASTInterface> IDMap;
 	HashMap<String, Integer[]> likelihoodMap;
 	HashMap<String, JSONObject> IDNodeMap;
 
@@ -79,7 +79,7 @@ public class JSONParser {
 		}
 	}
 
-	List<BEASTObject> pluginsWaitingToInit;
+	List<BEASTInterface> pluginsWaitingToInit;
 	List<JSONObject> nodesWaitingToInit;
 
 	public HashMap<String, String> getElement2ClassMap() {
@@ -102,7 +102,7 @@ public class JSONParser {
 	PartitionContext partitionContext = null;
 
 	public JSONParser() {
-		pluginsWaitingToInit = new ArrayList<BEASTObject>();
+		pluginsWaitingToInit = new ArrayList<BEASTInterface>();
 		nodesWaitingToInit = new ArrayList<JSONObject>();
 	}
 
@@ -126,7 +126,7 @@ public class JSONParser {
 		doc = new JSONObject(buf.toString());
 		processPlates(doc);
 
-		IDMap = new HashMap<String, BEASTObject>();
+		IDMap = new HashMap<String, BEASTInterface>();
 		likelihoodMap = new HashMap<String, Integer[]>();
 		IDNodeMap = new HashMap<String, JSONObject>();
 
@@ -200,7 +200,7 @@ public class JSONParser {
 		JSONObject node = null;
 		try {
 			for (int i = 0; i < pluginsWaitingToInit.size(); i++) {
-				BEASTObject plugin = pluginsWaitingToInit.get(i);
+				BEASTInterface plugin = pluginsWaitingToInit.get(i);
 				node = nodesWaitingToInit.get(i);
 				plugin.initAndValidate();
 			}
@@ -607,7 +607,7 @@ public class JSONParser {
 	 * sClass. This involves a parameter clutch to deal with non-real
 	 * parameters. This needs a bit of work, obviously...
 	 */
-	boolean checkType(String sClass, BEASTObject plugin) throws Exception {
+	boolean checkType(String sClass, BEASTInterface plugin) throws Exception {
 		// parameter clutch
 		if (plugin instanceof Parameter<?>) {
 			for (String nameSpace : m_sNameSpaces) {
@@ -633,14 +633,14 @@ public class JSONParser {
 		return false;
 	} // checkType
 
-	BEASTObject createObject(JSONObject node, String className, BEASTObject parent) throws Exception {
+	BEASTInterface createObject(JSONObject node, String className, BEASTInterface parent) throws Exception {
 		//className = className.replaceAll("beast", "yabby");
 		// try the IDMap first
 		String ID = getID(node);
 
 		if (ID != null) {
 			if (IDMap.containsKey(ID)) {
-				BEASTObject plugin = IDMap.get(ID);
+				BEASTInterface plugin = IDMap.get(ID);
 				if (checkType(className, plugin)) {
 					return plugin;
 				}
@@ -658,14 +658,14 @@ public class JSONParser {
 						+ "'. All other attributes are ignored.\n");
 			}
 			if (IDMap.containsKey(IDRef)) {
-				BEASTObject plugin = IDMap.get(IDRef);
+				BEASTInterface plugin = IDMap.get(IDRef);
 				if (checkType(className, plugin)) {
 					return plugin;
 				}
 				throw new JSONParserException(node, "id=" + IDRef + ". Expected object of type " + className + " instead of "
 						+ plugin.getClass().getName(), 106);
 			} else if (IDNodeMap.containsKey(IDRef)) {
-				BEASTObject plugin = createObject(IDNodeMap.get(IDRef), className, parent);
+				BEASTInterface plugin = createObject(IDNodeMap.get(IDRef), className, parent);
 				if (checkType(className, plugin)) {
 					return plugin;
 				}
@@ -723,7 +723,7 @@ public class JSONParser {
 			throw new JSONParserException(node, "Cannot create class: " + specClass + ". " + e.getMessage(), 122);
 		}
 		// sanity check
-		if (!(o instanceof BEASTObject)) {
+		if (!(o instanceof BEASTInterface)) {
 			// if (o instanceof Input) {
 			// // if we got this far, it is a basic input,
 			// // that is, one of the form <input name='xyz'>value</input>
@@ -741,7 +741,7 @@ public class JSONParser {
 			// }
 		}
 		// set id
-		BEASTObject plugin = (BEASTObject) o;
+		BEASTInterface plugin = (BEASTInterface) o;
 		plugin.setID(ID);
 		register(node, plugin);
 		// process inputs
@@ -772,7 +772,7 @@ public class JSONParser {
 		if (className.contains(".")) {
 			sName = className.substring(className.lastIndexOf('.') + 1);
 		}
-		List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+		List<String> pluginNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
 		int bestDistance = Integer.MAX_VALUE;
 		String closest = null;
 		for (String pluginName : pluginNames) {
@@ -836,7 +836,7 @@ public class JSONParser {
 		return p[n];
 	}
 
-	void parseInputs(BEASTObject parent, JSONObject node) throws Exception {
+	void parseInputs(BEASTInterface parent, JSONObject node) throws Exception {
 		// sanity check: all attributes should be valid input names
 		for (String name : node.keySet()) {
 			if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
@@ -924,7 +924,7 @@ public class JSONParser {
 		}
 	} // setInputs
 
-	private void processInput(String name, JSONObject node, BEASTObject parent) throws Exception {
+	private void processInput(String name, JSONObject node, BEASTInterface parent) throws Exception {
 		if (node.has(name)) {
 			if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
 				Object o = node.get(name);
@@ -934,7 +934,7 @@ public class JSONParser {
 						String IDRef = value.substring(1);
 						JSONObject element = new JSONObject();
 						element.put("idref", IDRef);
-						BEASTObject plugin = createObject(element, YOBJECT_CLASS, parent);
+						BEASTInterface plugin = createObject(element, YOBJECT_CLASS, parent);
 						setInput(node, parent, name, plugin);
 					} else {
 						setInput(node, parent, name, value);
@@ -946,7 +946,7 @@ public class JSONParser {
 				} else if (o instanceof JSONObject) {
 					JSONObject child = (JSONObject) o;
 					String className = getClassName(child, name, parent);
-					BEASTObject childItem = createObject(child, className, parent);
+					BEASTInterface childItem = createObject(child, className, parent);
 					if (childItem != null) {
 						setInput(node, parent, name, childItem);
 					}
@@ -958,7 +958,7 @@ public class JSONParser {
 						if (o2 instanceof JSONObject) {
 							JSONObject child = (JSONObject) o2;
 							String className = getClassName(child, name, parent);
-							BEASTObject childItem = createObject(child, className, parent);
+							BEASTInterface childItem = createObject(child, className, parent);
 							if (childItem != null) {
 								setInput(node, parent, name, childItem);
 							}
@@ -973,7 +973,7 @@ public class JSONParser {
 		}		
 	}
 
-	void setInput(JSONObject node, BEASTObject plugin, String name, BEASTObject plugin2) throws JSONParserException {
+	void setInput(JSONObject node, BEASTInterface plugin, String name, BEASTInterface plugin2) throws JSONParserException {
 		try {
 			Input<?> input = plugin.getInput(name);
 			// test whether input was not set before, this is done by testing
@@ -1007,7 +1007,7 @@ public class JSONParser {
 		}
 	}
 
-	void setInput(JSONObject node, BEASTObject plugin, String sName, String sValue) throws JSONParserException {
+	void setInput(JSONObject node, BEASTInterface plugin, String sName, String sValue) throws JSONParserException {
 		try {
 			plugin.setInputValue(sName, sValue);
 			return;
@@ -1026,7 +1026,7 @@ public class JSONParser {
 	 * records id in IDMap, for ease of retrieving Plugins associated with
 	 * idrefs *
 	 */
-	void register(JSONObject node, BEASTObject plugin) {
+	void register(JSONObject node, BEASTInterface plugin) {
 		String ID = getID(node);
 		if (ID != null) {
 			IDMap.put(ID, plugin);
@@ -1075,7 +1075,7 @@ public class JSONParser {
 	}
 
 	public interface RequiredInputProvider {
-		Object createInput(BEASTObject plugin, Input<?> input, PartitionContext context);
+		Object createInput(BEASTInterface plugin, Input<?> input, PartitionContext context);
 	}
 
 	public void setRequiredInputProvider(RequiredInputProvider provider, PartitionContext context) {
@@ -1083,7 +1083,7 @@ public class JSONParser {
 		partitionContext = context;
 	}
 
-	String getClassName(JSONObject child, String name, BEASTObject parent) throws Exception {
+	String getClassName(JSONObject child, String name, BEASTInterface parent) throws Exception {
 		String className = getAttribute(child, "spec");
 		if (className == null) {
 			Input<?> input = parent.getInput(name);
@@ -1110,7 +1110,7 @@ public class JSONParser {
 			System.setOut(System.err);
 			// parse the file
 			JSONParser parser = new JSONParser();
-			BEASTObject plugin = parser.parseFile(new File(args[0]));
+			BEASTInterface plugin = parser.parseFile(new File(args[0]));
 			// restore stdout
 			System.setOut(out);
 			System.out.println(new XMLProducer().toXML(plugin));

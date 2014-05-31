@@ -25,6 +25,7 @@
 package beast.core.util;
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,6 +39,7 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 
 
 @Description("Takes a collection of distributions, typically a number of likelihoods " +
@@ -186,9 +188,9 @@ public class CompoundDistribution extends Distribution {
     }
 
     @Override
-    public List<BEASTObject> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
     	if (ignoreInput.get()) {
-    		return new ArrayList<BEASTObject>();
+    		return new ArrayList<BEASTInterface>();
     	} else {
     		return super.listActivePlugins();
     	}

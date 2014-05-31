@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -34,6 +35,8 @@ import beast.app.util.Utils;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
+import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
@@ -106,7 +109,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		this.itemNr = itemNr;
 		if (input.get() instanceof List) {
 			alignments = (List<Alignment>) input.get();
@@ -194,7 +197,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
     private void addFiles(File[] fileArray) {
-        List<BEASTObject> plugins = null;
+        List<BEASTInterface> plugins = null;
 
         List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
         BeautiAlignmentProvider selectedProvider = null;
@@ -330,7 +333,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			switch (nColumn) {
 			case SITEMODEL_COLUMN:
 				if (!doc.pluginmap.containsKey("SiteModel.s:" + sPartition)) {
-					String sID = ((BEASTObject)likelihoods[iRow].siteModelInput.get()).getID();
+					String sID = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
 					oldName = BeautiDoc.parsePartition(sID);
 					doc.renamePartition(BeautiDoc.SITEMODEL_PARTITION, oldName, sPartition);
 					isRenaming = true;
@@ -404,7 +407,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sPartition);
 				if (siteModel != likelihoods[iRow].siteModelInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
-					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTObject) likelihoods[iRow].siteModelInput.get(),
+					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].siteModelInput.get(),
 							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
@@ -419,7 +422,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			needsRePartition = (this.likelihoods[iRow].siteModelInput.get() != siteModel);
 			this.likelihoods[iRow].siteModelInput.setValue(siteModel, this.likelihoods[iRow]);
 
-			sPartition = ((BEASTObject)likelihoods[iRow].siteModelInput.get()).getID();
+			sPartition = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
 			sPartition = BeautiDoc.parsePartition(sPartition);
 			getDoc().setCurrentPartition(BeautiDoc.SITEMODEL_PARTITION, iRow, sPartition);
 		}
@@ -442,7 +445,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			// the same as
 			// for the likelihood
 			TreeInterface tree = null;
-			for (Input<?> input : ((BEASTObject) clockModel).listInputs()) {
+			for (Input<?> input : ((BEASTInterface) clockModel).listInputs()) {
 				if (input.getName().equals("tree")) {
 					tree = (TreeInterface) input.get();
 				}
@@ -469,7 +472,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				tree = (TreeInterface) doc.pluginmap.get("Tree.t:" + sPartition);
 				if (tree != likelihoods[iRow].treeInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
-					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTObject) likelihoods[iRow].treeInput.get(), likelihoods[iRow],
+					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].treeInput.get(), likelihoods[iRow],
 							(MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
@@ -504,13 +507,13 @@ System.err.println("needsRePartition = " + needsRePartition);
 				}
 				if (tModels.size() == 1) {
 					// remove old tree from model
-					((BEASTObject)oldTree).setInputValue("estimate", false);
+					((BEASTInterface)oldTree).setInputValue("estimate", false);
                 	// use toArray to prevent ConcurrentModificationException
-					for (Object plugin : BEASTObject.getOutputs(oldTree).toArray()) { //.toArray(new BEASTObject[0])) {
-						for (Input<?> input : ((BEASTObject)plugin).listInputs()) {
+					for (Object plugin : BEASTInterface.getOutputs(oldTree).toArray()) { //.toArray(new BEASTInterface[0])) {
+						for (Input<?> input : ((BEASTInterface)plugin).listInputs()) {
 							try {
 							if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
-								input.setValue(null, (BEASTObject) plugin);
+								input.setValue(null, (BEASTInterface) plugin);
 							} else if (input.get() instanceof List) {
 								List<?> list = (List<?>) input.get();
 								if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
@@ -625,7 +628,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 	}
 
 	private String getPartition(Input<?> input) {
-		BEASTObject plugin = (BEASTObject) input.get();
+		BEASTInterface plugin = (BEASTInterface) input.get();
 		String sID = plugin.getID();
 		String sPartition = BeautiDoc.parsePartition(sID);
 		return sPartition;
@@ -860,7 +863,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			partitionNames[i] = new HashSet<String>();
 		}
 		for (int i = 0; i < nPartitions; i++) {
-			partitionNames[0].add(((BEASTObject) likelihoods[i].siteModelInput.get()).getID());
+			partitionNames[0].add(((BEASTInterface) likelihoods[i].siteModelInput.get()).getID());
 			partitionNames[1].add(likelihoods[i].branchRateModelInput.get().getID());
 			partitionNames[2].add(likelihoods[i].treeInput.get().getID());
 		}
@@ -1057,14 +1060,14 @@ System.err.println("needsRePartition = " + needsRePartition);
 	}
 
 	@Override
-	protected void addSingleItem(BEASTObject plugin) {
+	protected void addSingleItem(BEASTInterface plugin) {
 		initTableData();
 		repaint();
 	}
 
 	@Override
 	protected void addItem() {
-		List<BEASTObject> plugins = pluginSelector(m_input, m_plugin, null);
+		List<BEASTInterface> plugins = pluginSelector(m_input, m_plugin, null);
 
 		// Component c = this;
 		if (plugins != null) {
@@ -1118,7 +1121,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				
 				if (sModels.size() > 0) {
 					// site model is linked, so we need to unlink
-					if (doc.getPartitionNr((BEASTObject) siteModel) != iRow) {
+					if (doc.getPartitionNr((BEASTInterface) siteModel) != iRow) {
 						tableData[iRow][SITEMODEL_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
 					} else {
 						int iFreePartition = doc.getPartitionNr(sModels.get(0));
@@ -1129,7 +1132,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				
 				if (tModels.size() > 0) {
 					// tree is linked, so we need to unlink
-					if (doc.getPartitionNr((BEASTObject) tree) != iRow) {
+					if (doc.getPartitionNr((BEASTInterface) tree) != iRow) {
 						tableData[iRow][TREE_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
 					} else {
 						int iFreePartition = doc.getPartitionNr(tModels.get(0));
@@ -1205,7 +1208,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 	} // splitItem
 
 	@Override
-	public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject plugin, List<String> sTabuList) {
+	public List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface plugin, List<String> sTabuList) {
 		List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
 		BeautiAlignmentProvider selectedProvider = null;
 		if (providers.size() == 1) {
@@ -1219,7 +1222,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				return null;
 			}
 		}
-		List<BEASTObject> selectedPlugins = selectedProvider.getAlignments(doc);
+		List<BEASTInterface> selectedPlugins = selectedProvider.getAlignments(doc);
 		return selectedPlugins;
 		
 	} // pluginSelector

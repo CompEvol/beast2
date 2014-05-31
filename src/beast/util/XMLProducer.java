@@ -63,7 +63,7 @@ public class XMLProducer extends XMLParser {
     /**
      * list of objects already converted to XML, so an idref suffices
      */
-    HashSet<BEASTObject> isDone;
+    HashSet<BEASTInterface> isDone;
     @SuppressWarnings("rawtypes")
     HashSet<Input> inputsDone;
     /**
@@ -88,11 +88,11 @@ public class XMLProducer extends XMLParser {
      * representing the plug-in. This assumes plugin is Runnable
      */
     @SuppressWarnings("rawtypes")
-    public String toXML(BEASTObject plugin) {
-        return toXML(plugin, new ArrayList<BEASTObject>());
+    public String toXML(BEASTInterface plugin) {
+        return toXML(plugin, new ArrayList<BEASTInterface>());
     }
 
-    public String toXML(BEASTObject plugin, Collection<BEASTObject> others) {
+    public String toXML(BEASTInterface plugin, Collection<BEASTInterface> others) {
         try {
             StringBuffer buf = new StringBuffer();
             buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0' namespace='" + DEFAULT_NAMESPACE + "'>\n");
@@ -102,7 +102,7 @@ public class XMLProducer extends XMLParser {
             	}
             }
             buf.append("\n\n");
-            isDone = new HashSet<BEASTObject>();
+            isDone = new HashSet<BEASTInterface>();
             inputsDone = new HashSet<Input>();
             IDs = new HashSet<String>();
             indent = 0;
@@ -125,7 +125,7 @@ public class XMLProducer extends XMLParser {
 
             buf = new StringBuffer();
             if (others.size() > 0) {
-                for (BEASTObject plugin2 : others) {
+                for (BEASTInterface plugin2 : others) {
                     if (!IDs.contains(plugin2.getID())) {
                         pluginToXML(plugin2, buf, null, false);
                     }
@@ -165,7 +165,7 @@ public class XMLProducer extends XMLParser {
     /**
      * like toXML() but without the assumption that plugin is Runnable *
      */
-    public String modelToXML(BEASTObject plugin) {
+    public String modelToXML(BEASTInterface plugin) {
         try {
             String sXML0 = toRawXML(plugin);
             String sXML = cleanUpXML(sXML0, m_sSupressAlignmentXSL);
@@ -186,7 +186,7 @@ public class XMLProducer extends XMLParser {
      * like modelToXML, but without the cleanup *
      */
     @SuppressWarnings("rawtypes")
-    public String toRawXML(BEASTObject plugin) {
+    public String toRawXML(BEASTInterface plugin) {
         return toRawXML(plugin, null);
     } // toRawXML
 
@@ -195,10 +195,10 @@ public class XMLProducer extends XMLParser {
      * For plugin without name
      */
     @SuppressWarnings("rawtypes")
-    public String toRawXML(BEASTObject plugin, String sName) {
+    public String toRawXML(BEASTInterface plugin, String sName) {
         try {
             StringBuffer buf = new StringBuffer();
-            isDone = new HashSet<BEASTObject>();
+            isDone = new HashSet<BEASTInterface>();
             inputsDone = new HashSet<Input>();
             IDs = new HashSet<String>();
             indent = 0;
@@ -212,11 +212,11 @@ public class XMLProducer extends XMLParser {
 
 
 
-    public String stateNodeToXML(BEASTObject plugin) {
+    public String stateNodeToXML(BEASTInterface plugin) {
         try {
             StringBuffer buf = new StringBuffer();
             //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
-            isDone = new HashSet<BEASTObject>();
+            isDone = new HashSet<BEASTInterface>();
             IDs = new HashSet<String>();
             indent = 0;
             pluginToXML(plugin, buf, null, false);
@@ -581,7 +581,7 @@ public class XMLProducer extends XMLParser {
      * that is moderately readable.
      */
     @SuppressWarnings("rawtypes")
-    void pluginToXML(BEASTObject plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
+    void pluginToXML(BEASTInterface plugin, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
         String sElementName = "input";
         for (String key : element2ClassMap.keySet()) {
@@ -716,7 +716,7 @@ public class XMLProducer extends XMLParser {
      * @throws Exception 
      */
     @SuppressWarnings("rawtypes")
-    void inputToXML(String sInput, BEASTObject plugin, StringBuffer buf, boolean isShort) throws Exception {
+    void inputToXML(String sInput, BEASTInterface plugin, StringBuffer buf, boolean isShort) throws Exception {
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
@@ -751,8 +751,8 @@ public class XMLProducer extends XMLParser {
                             	int k = 0;
                             	List list = (List) input.get();
                                 for (Object o2 : list) {
-                                	if (o2 instanceof BEASTObject) {
-                                		pluginToXML((BEASTObject) o2, buf, sInput, false);
+                                	if (o2 instanceof BEASTInterface) {
+                                		pluginToXML((BEASTInterface) o2, buf, sInput, false);
                                 	} else {
                                 		k++;
                                 		buf.append(o2.toString());
@@ -763,14 +763,14 @@ public class XMLProducer extends XMLParser {
                                 }
                             }
                             return;
-                        } else if (input.get() instanceof BEASTObject) {
+                        } else if (input.get() instanceof BEASTInterface) {
                         	if (!input.get().equals(input.defaultValue)) {
-	                            if (isShort && isDone.contains((BEASTObject) input.get())) {
-	                                buf.append(" " + sInput + "='@" + ((BEASTObject) input.get()).getID() + "'");
+	                            if (isShort && isDone.contains((BEASTInterface) input.get())) {
+	                                buf.append(" " + sInput + "='@" + ((BEASTInterface) input.get()).getID() + "'");
 	                                inputsDone.add(input);
 	                            }
 	                            if (!isShort && !inputsDone.contains(input)) {
-	                                pluginToXML((BEASTObject) input.get(), buf, sInput, false);
+	                                pluginToXML((BEASTInterface) input.get(), buf, sInput, false);
 	                            }
                         	}
                             return;

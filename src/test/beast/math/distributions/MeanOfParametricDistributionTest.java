@@ -1,9 +1,10 @@
 package test.beast.math.distributions;
 
 
+
 import org.junit.Test;
 
-import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.math.distributions.Exponential;
 import beast.math.distributions.Gamma;
 import beast.math.distributions.LogNormalDistributionModel;
@@ -125,7 +126,7 @@ public class MeanOfParametricDistributionTest extends TestCase {
         
 	}
 	
-	BEASTObject fromXML(String xml) throws Exception {
+	BEASTInterface fromXML(String xml) throws Exception {
 		return (new XMLParser()).parseBareFragment(xml, true);
 	}
 

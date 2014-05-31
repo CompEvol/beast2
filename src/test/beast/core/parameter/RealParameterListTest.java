@@ -6,10 +6,15 @@ import beast.core.parameter.Parameter;
 import beast.core.parameter.GeneralParameterList;
 import beast.core.parameter.RealParameter;
 import beast.core.parameter.RealParameterList;
+
 import java.io.ByteArrayInputStream;
+
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -115,4 +120,10 @@ public class RealParameterListTest extends Operator {
     public double proposal() {
         return 0.0;
     }
+
+	@Override
+	public void initAndValidate() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

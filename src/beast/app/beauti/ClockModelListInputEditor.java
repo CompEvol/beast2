@@ -17,6 +17,7 @@ import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -54,7 +55,7 @@ public class ClockModelListInputEditor extends ListInputEditor {
     protected SmallLabel fixMeanRatesValidateLabel;
     
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean rate of clock models");
     	m_buttonStatus = ButtonStatus.NONE;
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);

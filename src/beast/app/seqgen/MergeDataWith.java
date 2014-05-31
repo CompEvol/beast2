@@ -38,7 +38,7 @@ public class MergeDataWith extends BEASTObject {
 		String templateXML = BeautiDoc.load(templateFile);
 		templateXML = templateXML.replaceAll("\\$\\(n\\)", iteration+"");
 		XMLParser parser = new XMLParser();
-		BEASTObject b = parser.parseBareFragment(templateXML, false);
+		BEASTInterface b = parser.parseBareFragment(templateXML, false);
 
 		// repalce alignment
 		Alignment a = getAlignment(b);
@@ -51,16 +51,16 @@ public class MergeDataWith extends BEASTObject {
 		outputFile = outputFile.replaceAll("\\$\\(n\\)", iteration+"");
 		FileWriter outfile = new FileWriter(outputFile);
 		
-		Set<BEASTObject> plugins = new HashSet<BEASTObject>();
+		Set<BEASTInterface> plugins = new HashSet<BEASTInterface>();
 		String sXML = new XMLProducer().toXML(b, plugins);
         outfile.write(sXML);
         outfile.close();
 	} // process
 
 
-	private Alignment getAlignment(BEASTObject b) throws IllegalArgumentException, IllegalAccessException {
+	private Alignment getAlignment(BEASTInterface b) throws IllegalArgumentException, IllegalAccessException {
 		Alignment a = null;
-		for (BEASTObject i : b.listActivePlugins()) {
+		for (BEASTInterface i : b.listActivePlugins()) {
 			if (i.getClass().equals(Alignment.class)){
 				return (Alignment) i;
 			} else {

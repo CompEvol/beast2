@@ -70,7 +70,7 @@ public class UserDataType extends Base {
     }
 
     @Override
-    public String getDescription() {
+    public String getTypeDescription() {
         return "user defined";
     }
 

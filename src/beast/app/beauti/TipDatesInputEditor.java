@@ -28,6 +28,7 @@ import javax.swing.table.TableCellRenderer;
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.operators.TipDatesRandomWalker;
@@ -57,7 +58,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     List<Taxon> taxonsets;
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         this.itemNr = itemNr;
         if (itemNr >= 0) {
@@ -67,12 +68,12 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         }
         if (tree != null) {
             try {
-                m_input = ((BEASTObject) tree).getInput("trait");
+                m_input = ((BEASTInterface) tree).getInput("trait");
             } catch (Exception e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            m_plugin = (BEASTObject) tree;
+            m_plugin = (BEASTInterface) tree;
             traitSet = tree.getDateTrait();
 
             Box box = Box.createVerticalBox();
@@ -245,7 +246,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             // clear
             for (Object plugin : traitSet.getOutputs()) {
                 if (plugin instanceof Tree) {
-                    for (Object plugin2 : BEASTObject.getOutputs(plugin)) {
+                    for (Object plugin2 : BEASTInterface.getOutputs(plugin)) {
                         if (plugin2 instanceof TipDatesRandomWalker) {
                             TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
                             switch (m_iMode) {
