@@ -84,9 +84,6 @@ public class LogAnalyser extends Runnable {
 
     @Override
     public void initAndValidate() throws Exception {
-        super.initAndValidate();
-
-
     }
 
     @Override

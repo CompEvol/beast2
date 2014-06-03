@@ -5,10 +5,15 @@ import beast.core.State;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.BooleanParameterList;
 import beast.core.parameter.Parameter;
+
 import java.io.ByteArrayInputStream;
+
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -147,4 +152,10 @@ public class BooleanParameterListTest extends Operator {
     public double proposal() {
         return 0.0;
     }
+
+	@Override
+	public void initAndValidate() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

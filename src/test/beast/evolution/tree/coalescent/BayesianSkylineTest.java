@@ -25,6 +25,7 @@ public class BayesianSkylineTest extends TestCase {
 
         Tree tree = new Tree("(((1:1,2:1):2.5,(3:1.5,4:1.5):2):2,5:5.5);");
         TreeIntervals intervals = new TreeIntervals(tree);
+        intervals.treeInput.setValue(tree, intervals);
 
         BayesianSkyline skyline = new BayesianSkyline();
         //skyline.init(popSize, groupSize, intervals);

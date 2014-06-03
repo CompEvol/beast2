@@ -32,13 +32,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 // This class was formerly called 'Plugin'
 @Description(
         value = "Base class for all BEAST objects, which is pretty much every class " +
                 "you want to incorporate in a model.",
         isInheritable = false
 )
-abstract public class BEASTObject {
+abstract public class BEASTObject implements BEASTInterface {
+
+    /* default constructor */
+    public BEASTObject() {
+    }
+    
     /**
      * set of Objects that have this Object in one of its Inputs *
      * @deprecate use getOuputs() or BEASTObject.getOuputs(object) instead
@@ -51,9 +57,19 @@ abstract public class BEASTObject {
      */
 	@SuppressWarnings("rawtypes")
 	public Set getOutputs() {
-		return getOutputs(this);
+		return outputs;
 	};
 
+    // identifiable
+    protected String ID;
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(final String ID) {
+        this.ID = ID;
+    }
 
 	@SuppressWarnings("rawtypes")
 	static public Set getOutputs(Object object) {
@@ -70,9 +86,17 @@ abstract public class BEASTObject {
 		}
 	}
 
-    /* default constructor */
-    public BEASTObject() {
-    }
+	public void initAndValidate() throws Exception {
+    // TODO: AR - Why is this not an abstract method? Does Plugin need to be concrete?
+    // RRB: can be abstract, but this breaks some of the DocMaker stuff.
+    // It only produces pages for Plugins that are not abstract.
+    // This means the MCMC page does not point to Operator page any more since the latter does not exist.
+    // As a result, there is no place that lists all Operators, which is a bit of a shame.
+    // Perhaps DocMaker can be fixed to work around this, otherwise I see no issues making this abstract.
+
+    throw new Exception("BEASTobject.initAndValidate(): Every BEAST object should implement this method to" +
+            " assure the class behaves, even when inputs are not specified");
+	}
 
 //	protected void setInputTypes() {
 //		try {
@@ -96,12 +120,16 @@ abstract public class BEASTObject {
       * initAndValidate().
       */
     public void init(final Object... objects) throws Exception {
-        final List<Input<?>> inputs = listInputs();
+    	init(this, objects);
+    }
+    
+    static public void init(BEASTInterface BEASTi, final Object... objects) throws Exception {
+    	final List<Input<?>> inputs = listInputs(BEASTi);
         int i = 0;
         for (final Object object : objects) {
-            inputs.get(i++).setValue(object, this);
+            inputs.get(i++).setValue(object, BEASTi);
         }
-        initAndValidate();
+        BEASTi.initAndValidate();
     } // init
 
     /* Utility for testing purposes
@@ -112,60 +140,39 @@ abstract public class BEASTObject {
       * After assigning inputs, initAndValidate() is called.
       */
     public void initByName(final Object... objects) throws Exception {
+    	initByName(this, objects);
+    }
+    static public void initByName(BEASTInterface BEASTi, final Object... objects) throws Exception {
+    
         if (objects.length % 2 == 1) {
             throw new RuntimeException("Expected even number of arguments, name-value pairs");
         }
         for (int i = 0; i < objects.length; i += 2) {
             if (objects[i] instanceof String) {
                 final String sName = (String) objects[i];
-                setInputValue(sName, objects[i + 1]);
+                setInputValue(BEASTi, sName, objects[i + 1]);
             } else {
                 throw new RuntimeException("Expected a String in " + i + "th argument ");
             }
         }
         try {
-            initAndValidate();
+        	BEASTi.initAndValidate();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("initAndValidate() failed! " + e.getMessage());
         }
     } // initByName
 
-    // identifiable
-    protected String ID;
-
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(final String ID) {
-        this.ID = ID;
-    }
-
-    static String getID(Object object) {
-    	try {
-            Method method = object.getClass().getMethod("getID");
-            Object ID = method.invoke(object);
-            return ID.toString();
-    	} catch (Exception e) {
-    		throw new RuntimeException("could not call getID() on object: " + e.getMessage());
-    	}
-    }
-
-    static void setID(Object object, String ID) {
-    	try {
-            Method method = object.getClass().getMethod("SetID", String.class);
-            method.invoke(object, ID);
-    	} catch (Exception e) {
-    		throw new RuntimeException("could not call setID(ID) on object: " + e.getMessage());
-    	}
-    }
     
     /**
      * @return description from @Description annotation
      */
     public String getDescription() {
-        final Annotation[] classAnnotations = this.getClass().getAnnotations();
+    	return getDescription(this);
+    }
+    
+    static public String getDescription(BEASTInterface BEASTi) {
+        final Annotation[] classAnnotations = BEASTi.getClass().getAnnotations();
         for (final Annotation annotation : classAnnotations) {
             if (annotation instanceof Description) {
                 final Description description = (Description) annotation;
@@ -179,7 +186,11 @@ abstract public class BEASTObject {
      * @return citation from @Citation annotation *
      */
     public final Citation getCitation() {
-        final Annotation[] classAnnotations = this.getClass().getAnnotations();
+    	return getCitation(this);
+    }
+    
+    static public Citation getCitation(BEASTInterface BEASTi) {
+        final Annotation[] classAnnotations = BEASTi.getClass().getAnnotations();
         for (final Annotation annotation : classAnnotations) {
             if (annotation instanceof Citation) {
                 return (Citation) annotation;
@@ -192,30 +203,34 @@ abstract public class BEASTObject {
      * @return references for this plug in and all its inputs *
      */
     public final String getCitations() {
-        return getCitations(new HashSet<String>(), new HashSet<String>());
+    	return getCitations(this);
+    }
+    
+    static public final String getCitations(BEASTInterface BEASTi) {
+        return getCitations(BEASTi, new HashSet<String>(), new HashSet<String>());
     }
 
-    private String getCitations(final HashSet<String> citations, final HashSet<String> IDs) {
-        if (getID() != null) {
-            if (IDs.contains(getID())) {
+    private static String getCitations(BEASTInterface BEASTi, final HashSet<String> citations, final HashSet<String> IDs) {
+        if (BEASTi.getID() != null) {
+            if (IDs.contains(BEASTi.getID())) {
                 return "";
             }
-            IDs.add(getID());
+            IDs.add(BEASTi.getID());
         }
         final StringBuilder buf = new StringBuilder();
-        if (getCitation() != null) {
+        if (getCitation(BEASTi) != null) {
             // only add citation if it is not already processed
-            if (!citations.contains(getCitation().value())) {
+            if (!citations.contains(getCitation(BEASTi).value())) {
                 // and there is actually a citation to add
-                buf.append(getCitation().value());
+                buf.append(getCitation(BEASTi).value());
                 buf.append("\n\n");
-                citations.add(getCitation().value());
+                citations.add(getCitation(BEASTi).value());
             }
             //return buf.toString();
         }
         try {
-            for (final BEASTObject plugin : listActivePlugins()) {
-                buf.append(plugin.getCitations(citations, IDs));
+            for (final BEASTObject plugin : listActivePlugins(BEASTi)) {
+                buf.append(plugin.getCitations(plugin, citations, IDs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,11 +243,15 @@ abstract public class BEASTObject {
      * create list of inputs to this plug-in *
      */
     public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
+    	return listInputs(this);
+    }
+    
+    static public List<Input<?>> listInputs(BEASTInterface BEASTi) throws IllegalArgumentException, IllegalAccessException {
         final List<Input<?>> inputs = new ArrayList<Input<?>>();
-        final Field[] fields = getClass().getFields();
+        final Field[] fields = BEASTi.getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(BEASTi);
                 inputs.add(input);
             }
         }
@@ -249,11 +268,15 @@ abstract public class BEASTObject {
      * @throws IllegalArgumentException
      */
     public List<BEASTObject> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    	return listActivePlugins(this);
+    }
+    
+    static public List<BEASTObject> listActivePlugins(BEASTInterface BEASTi) throws IllegalArgumentException, IllegalAccessException {
         final List<BEASTObject> plugins = new ArrayList<BEASTObject>();
-        final Field[] fields = getClass().getFields();
+        final Field[] fields = BEASTi.getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(BEASTi);
                 if (input.get() != null) {
                     if (input.get() instanceof List<?>) {
                         final List<?> vector = (List<?>) input.get();
@@ -278,10 +301,14 @@ abstract public class BEASTObject {
      * @return list of inputs
      */
     public String getTipText(final String name) throws IllegalArgumentException, IllegalAccessException {
-        final Field[] fields = getClass().getDeclaredFields();
+    	return getTipText(this, name);
+    }
+    
+    static public String getTipText(BEASTInterface BEASTi, final String name) throws IllegalArgumentException, IllegalAccessException {
+        final Field[] fields = BEASTi.getClass().getDeclaredFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(BEASTi);
                 if (input.getName().equals(name)) {
                     return input.getTipText();
                 }
@@ -295,11 +322,14 @@ abstract public class BEASTObject {
      * check whether the input is an Integer, Double, Boolean or String *
      */
     public boolean isPrimitive(final String name) throws Exception {
-        final Input<?> input = getInput(name);
+    	return isPrimitive(this, name);
+    }
+    static public boolean isPrimitive(BEASTInterface BEASTi, final String name) throws Exception {
+        final Input<?> input = getInput(BEASTi, name);
         final Class<?> inputType = input.getType();
 
         if (inputType == null) {
-            input.determineClass(this);
+            input.determineClass(BEASTi);
         }
 
         assert inputType != null;
@@ -327,7 +357,10 @@ abstract public class BEASTObject {
      * get value of an input by input name *
      */
     public Object getInputValue(final String name) throws Exception {
-        final Input<?> input = getInput(name);
+    	return getInputValue(this, name);
+    }
+    static public Object getInputValue(BEASTInterface BEASTi, final String name) throws Exception {
+        final Input<?> input = getInput(BEASTi, name);
         return input.get();
     } // getInputValue
 
@@ -335,21 +368,27 @@ abstract public class BEASTObject {
      * set value of an input by input name *
      */
     public void setInputValue(final String name, final Object value) throws Exception {
-        final Input<?> input = getInput(name);
-        if (!input.canSetValue(value, this)) {
+    	setInputValue(this, name, value);
+    }
+    static public void setInputValue(BEASTInterface BEASTi, final String name, final Object value) throws Exception {
+        final Input<?> input = getInput(BEASTi, name);
+        if (!input.canSetValue(value, BEASTi)) {
             throw new RuntimeException("Cannot set input value of " + name);
         }
-        input.setValue(value, this);
+        input.setValue(value, BEASTi);
     } // setInputValue
 
     /**
      * get input by input name *
      */
     public Input<?> getInput(final String name) throws Exception {
-        final Field[] fields = getClass().getFields();
+    	return getInput(this, name);
+    }
+    static public Input<?> getInput(BEASTInterface BEASTi, final String name) throws Exception {
+        final Field[] fields = BEASTi.getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
+                final Input<?> input = (Input<?>) field.get(BEASTi);
                 if (input.getName().equals(name)) {
                     return input;
                 }
@@ -358,28 +397,13 @@ abstract public class BEASTObject {
 
 
         String inputNames = " "; // <- space here to prevent error in .substring below
-        for (final Input<?> input : listInputs()) {
+        for (final Input<?> input : listInputs(BEASTi)) {
             inputNames += input.getName() + ",";
         }
-        throw new Exception("This BEASTObject (" + (this.getID() == null ? this.getClass().getName() : this.getID()) + ") has no input with name " + name + ". " +
+        throw new Exception("This BEASTObject (" + (BEASTi.getID() == null ? BEASTi.getClass().getName() : BEASTi.getID()) + ") has no input with name " + name + ". " +
                 "Choose one of these inputs:" + inputNames.substring(0, inputNames.length() - 1));
     } // getInput
 
-    /**
-     * @throws Exception when plugin does not implement this method
-     */
-    //abstract public void initAndValidate() throws Exception;
-    public void initAndValidate() throws Exception {
-        // TODO: AR - Why is this not an abstract method? Does Plugin need to be concrete?
-        // RRB: can be abstract, but this breaks some of the DocMaker stuff.
-        // It only produces pages for Plugins that are not abstract.
-        // This means the MCMC page does not point to Operator page any more since the latter does not exist.
-        // As a result, there is no place that lists all Operators, which is a bit of a shame.
-        // Perhaps DocMaker can be fixed to work around this, otherwise I see no issues making this abstract.
-
-        throw new Exception("BEASTobject.initAndValidate(): Every BEAST object should implement this method to" +
-                " assure the class behaves, even when inputs are not specified");
-    }
 
     /**
      * check validation rules for all its inputs *
@@ -387,7 +411,11 @@ abstract public class BEASTObject {
      * @throws Exception when validation fails
      */
     public void validateInputs() throws Exception {
-        for (final Input<?> input : listInputs()) {
+    	validateInputs(this);
+    }
+    
+    static public void validateInputs(BEASTInterface BEASTi) throws Exception {
+        for (final Input<?> input : listInputs(BEASTi)) {
             input.validate();
         }
     }
@@ -401,12 +429,15 @@ abstract public class BEASTObject {
      *                     (but x need not necessarily be a predecesor of y)
      */
 
-    public void getPredecessors(final List<BEASTObject> predecessors) {
-        predecessors.add(this);
+    public void getPredecessors(final List<BEASTInterface> predecessors) {
+    	getPredecessors(this, predecessors);
+    }
+    static public void getPredecessors(BEASTInterface BEASTi, final List<BEASTInterface> predecessors) {
+        predecessors.add(BEASTi);
         try {
-            for (final BEASTObject plugin2 : listActivePlugins()) {
+            for (final BEASTInterface plugin2 : listActivePlugins(BEASTi)) {
                 if (!predecessors.contains(plugin2)) {
-                    plugin2.getPredecessors(predecessors);
+                    getPredecessors(plugin2, predecessors);
                 }
             }
         } catch (IllegalArgumentException e) {

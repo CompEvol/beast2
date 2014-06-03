@@ -32,7 +32,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
-import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
@@ -192,7 +192,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	            final ParametricDistribution distr = prior.distInput.get();
 	            final Bound bounds = new Bound();
 	            if (distr != null) {
-	        		List<BEASTObject> plugins = new ArrayList<BEASTObject>();
+	        		List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
 	        		distr.getPredecessors(plugins);
 	        		for (int i = plugins.size() - 1; i >= 0 ; i--) {
 	        			plugins.get(i).initAndValidate();
