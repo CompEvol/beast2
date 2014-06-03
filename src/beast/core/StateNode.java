@@ -13,7 +13,7 @@ import java.io.PrintStream;
  * @author Alexei Drummond
  */
 @Description("A node that can be part of the state.")
-public abstract class StateNode extends BEASTObject implements Loggable, Cloneable, Function {
+public abstract class StateNode extends CalculationNode implements Loggable, Cloneable, Function {
     /**
      * Flag to indicate the StateNode is not constant.
      * This is particularly useful for Beauti *

@@ -386,8 +386,8 @@ public class Input<T> {
     public void setValue(final Object value, final BEASTInterface plugin) {
         if (value == null) {
             if (this.value != null) {
-                if (this.value instanceof BEASTObject) {
-                    ((BEASTObject) this.value).getOutputs().remove(plugin);
+                if (this.value instanceof BEASTInterface) {
+                    ((BEASTInterface) this.value).getOutputs().remove(plugin);
                 }
             }
             this.value = null;
@@ -423,8 +423,8 @@ public class Input<T> {
 //                    }
 //                }
                 vector.add(value);
-                if (value instanceof BEASTObject) {
-                    ((BEASTObject) value).getOutputs().add(plugin);
+                if (value instanceof BEASTInterface) {
+                    ((BEASTInterface) value).getOutputs().add(plugin);
                 }
             } else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>) value).get(0).getClass())) {
                 // add all elements in given list to input list.
@@ -432,8 +432,8 @@ public class Input<T> {
                 final List<Object> vector = (List) this.value;
                 for (Object v : ((List<?>) value)) {
                     vector.add(v);
-                    if (v instanceof BEASTObject) {
-                        ((BEASTObject) v).getOutputs().add(plugin);
+                    if (v instanceof BEASTInterface) {
+                        ((BEASTInterface) v).getOutputs().add(plugin);
                     }
                 }
             } else {
@@ -443,11 +443,11 @@ public class Input<T> {
 
         } else {
             if (theClass.isAssignableFrom(value.getClass())) {
-                if (value instanceof BEASTObject) {
+                if (value instanceof BEASTInterface) {
                     if (this.value != null) {
-                        ((BEASTObject) this.value).getOutputs().remove(plugin);
+                        ((BEASTInterface) this.value).getOutputs().remove(plugin);
                     }
-                    ((BEASTObject) value).getOutputs().add(plugin);
+                    ((BEASTInterface) value).getOutputs().add(plugin);
                 }
                 this.value = (T) value;
             } else {
@@ -630,8 +630,8 @@ public class Input<T> {
             } else {
                 value = (T) o;
             }
-            if (o instanceof BEASTObject) {
-                ((BEASTObject) o).getOutputs().add(plugin);
+            if (o instanceof BEASTInterface) {
+                ((BEASTInterface) o).getOutputs().add(plugin);
             }
         } catch (Exception e) {
             throw new Exception("Input 103: type mismatch, cannot initialize input '" + getName() +
