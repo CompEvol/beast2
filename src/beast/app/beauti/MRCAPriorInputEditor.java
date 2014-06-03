@@ -15,6 +15,7 @@ import beast.app.beauti.PriorListInputEditor.MRCAPriorActionListener;
 import beast.app.draw.InputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.MRCAPrior;
@@ -35,7 +36,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTObject plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;

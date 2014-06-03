@@ -9,6 +9,7 @@ import java.util.Set;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.util.XMLParser;
 
@@ -159,7 +160,7 @@ public class BeautiConfig extends BEASTObject {
         panels = new ArrayList<BeautiPanelConfig>();
     }
 
-    public List<BeautiSubTemplate> getInputCandidates(BEASTObject plugin, Input<?> input, Class<?> type) {
+    public List<BeautiSubTemplate> getInputCandidates(BEASTInterface plugin, Input<?> input, Class<?> type) {
         List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
         for (BeautiSubTemplate template : subTemplates) {
             if (type.isAssignableFrom(template._class)) {
@@ -222,7 +223,7 @@ public class BeautiConfig extends BEASTObject {
         return sStr;
     }
 
-    public String getInputLabel(BEASTObject plugin, String sName) {
+    public String getInputLabel(BEASTInterface plugin, String sName) {
         if (inputLabelMap.containsKey(plugin.getClass().getName() + "." + sName)) {
             sName = inputLabelMap.get(plugin.getClass().getName() + "." + sName);
         }

@@ -12,6 +12,7 @@ import java.util.Map;
 
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TraitSet;
 
@@ -42,7 +43,7 @@ public class JSONProducer {
     /**
      * list of objects already converted to XML, so an idref suffices
      */
-    HashSet<BEASTObject> isDone;
+    HashSet<BEASTInterface> isDone;
     @SuppressWarnings("rawtypes")
     HashSet<Input> isInputsDone;
     /**
@@ -65,12 +66,12 @@ public class JSONProducer {
      * Given a plug-in, produces the XML in BEAST 2 format
      * representing the plug-in. This assumes plugin is Runnable
      */
-    public String toJSON(BEASTObject plugin) {
-    	return toJSON(plugin, new ArrayList<BEASTObject>());
+    public String toJSON(BEASTInterface plugin) {
+    	return toJSON(plugin, new ArrayList<BEASTInterface>());
     }
 
 	@SuppressWarnings("rawtypes")
-    public String toJSON(BEASTObject plugin, Collection<BEASTObject> others) {
+    public String toJSON(BEASTInterface plugin, Collection<BEASTInterface> others) {
         try {
             StringBuffer buf = new StringBuffer();
             //buf.append("{\"version\": \"2.0\",\n\"namespace\": \"" + DEFAULT_NAMESPACE + "\",\n\n" +
@@ -78,24 +79,24 @@ public class JSONProducer {
             buf.append("{version: \"2.0\",\nnamespace: \"" + DEFAULT_NAMESPACE + "\",\n\n" +
             		JSONParser.ANALYSIS_ELEMENT + ": [\n");
             //buf.append("\n\n");
-            isDone = new HashSet<BEASTObject>();
+            isDone = new HashSet<BEASTInterface>();
             isInputsDone = new HashSet<Input>();
             IDs = new HashSet<String>();
             indentCount = 1;
             
-            List<BEASTObject> priorityPlugins = new ArrayList<BEASTObject>();
+            List<BEASTInterface> priorityPlugins = new ArrayList<BEASTInterface>();
             findPriorityPlugins(plugin, priorityPlugins);
-            for (BEASTObject plugin2 : priorityPlugins) {
+            for (BEASTInterface plugin2 : priorityPlugins) {
             	if (!isDone.contains(plugin2)) {
             		//String name = plugin2.getClass().getName();
             		//name = name.substring(name.lastIndexOf('.') + 1).toLowerCase();
-            		pluginToJSON(plugin2, BEASTObject.class, buf, null, true);
+            		pluginToJSON(plugin2, BEASTInterface.class, buf, null, true);
             		buf.append(",");
             	}
             }
             buf.append("\n\n");
             
-            pluginToJSON(plugin, BEASTObject.class, buf, null, true);
+            pluginToJSON(plugin, BEASTInterface.class, buf, null, true);
             String end = "\n]\n}";
             buf.append(end);
 
@@ -112,14 +113,14 @@ public class JSONProducer {
         }
     } // toXML
 
-    private void findPriorityPlugins(BEASTObject plugin, List<BEASTObject> priorityPlugins) throws IllegalArgumentException, IllegalAccessException {
+    private void findPriorityPlugins(BEASTInterface plugin, List<BEASTInterface> priorityPlugins) throws IllegalArgumentException, IllegalAccessException {
     	if (plugin.getClass().equals(Alignment.class)) {
     		priorityPlugins.add(plugin);
     	}
     	if (plugin instanceof TraitSet) {
     		priorityPlugins.add(plugin);
     	}
-		for (BEASTObject plugin2 : plugin.listActivePlugins()) {
+		for (BEASTInterface plugin2 : BEASTObject.listActivePlugins(plugin)) {
 			findPriorityPlugins(plugin2, priorityPlugins);
 		}
 	}
@@ -146,11 +147,11 @@ public class JSONProducer {
 
 
 
-    public String stateNodeToJSON(BEASTObject plugin) {
+    public String stateNodeToJSON(BEASTInterface plugin) {
         try {
             StringBuffer buf = new StringBuffer();
             //buf.append("<" + XMLParser.beast_ELEMENT + " version='2.0'>\n");
-            isDone = new HashSet<BEASTObject>();
+            isDone = new HashSet<BEASTInterface>();
             IDs = new HashSet<String>();
             indentCount = 1;
             pluginToJSON(plugin, null, buf, null, false);
@@ -169,7 +170,7 @@ public class JSONProducer {
      * that is moderately readable.
      */
 //    @SuppressWarnings("rawtypes")
-    void pluginToJSON(BEASTObject plugin, Class<?> defaultType, StringBuffer buf, String name, boolean bIsTopLevel) throws Exception {
+    void pluginToJSON(BEASTInterface plugin, Class<?> defaultType, StringBuffer buf, String name, boolean bIsTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
 
     	String indent = "";
@@ -230,7 +231,7 @@ public class JSONProducer {
         if (!skipInputs) {
             // process inputs of this plugin
             // first, collect values as attributes
-            List<Input<?>> inputs = plugin.listInputs();
+            List<Input<?>> inputs = BEASTObject.listInputs(plugin);
             for (Input<?> input : inputs) {
             	StringBuffer buf2 = new StringBuffer();
                 inputToJSON(input.getName(), plugin, buf2, true, indent);
@@ -291,7 +292,7 @@ public class JSONProducer {
      * @throws Exception
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void inputToJSON(String input0, BEASTObject plugin, StringBuffer buf, boolean isShort, String indent) throws Exception {
+    void inputToJSON(String input0, BEASTInterface plugin, StringBuffer buf, boolean isShort, String indent) throws Exception {
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
@@ -339,8 +340,8 @@ public class JSONProducer {
                                 		buf2.append(",\n");
                                 	}
                                 	StringBuffer buf3 = new StringBuffer();
-                                	if (o2 instanceof BEASTObject) {
-                                		pluginToJSON((BEASTObject) o2, input.getType(), buf3, null, false);
+                                	if (o2 instanceof BEASTInterface) {
+                                		pluginToJSON((BEASTInterface) o2, input.getType(), buf3, null, false);
                                 	} else {
                                 		buf2.append(o2.toString());
                                 	}
@@ -353,14 +354,14 @@ public class JSONProducer {
                                 }
                             }
                             return;
-                        } else if (input.get() instanceof BEASTObject) {
+                        } else if (input.get() instanceof BEASTInterface) {
                         	if (!input.get().equals(input.defaultValue)) {
-	                            if (isShort && isDone.contains((BEASTObject) input.get())) {
-	                                buf.append(" " + input0 + ": \"@" + ((BEASTObject) input.get()).getID() + "\"");
+	                            if (isShort && isDone.contains((BEASTInterface) input.get())) {
+	                                buf.append(" " + input0 + ": \"@" + ((BEASTInterface) input.get()).getID() + "\"");
 	                                isInputsDone.add(input);
 	                            }
 	                            if (!isShort && !isInputsDone.contains(input)) {
-	                                pluginToJSON((BEASTObject) input.get(), input.getType(), buf, input0, false);
+	                                pluginToJSON((BEASTInterface) input.get(), input.getType(), buf, input0, false);
 	                            }
                         	}
                             return;
@@ -425,7 +426,7 @@ public class JSONProducer {
 	public static void main(String[] args) throws Exception {
 		// convert BEAST 2 XML to BEAST json file
 		XMLParser parser = new XMLParser();
-		BEASTObject plugin = parser.parseFile(new File(args[0]));
+		BEASTInterface plugin = parser.parseFile(new File(args[0]));
 
 		String JSONFile = args[0].replace(".xml", ".json");
 		PrintStream out;

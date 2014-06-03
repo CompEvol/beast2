@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
@@ -42,7 +43,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         useDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
 
 //    	if (useDefaultBehavior && false) {
@@ -62,7 +63,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
     @Override
     /** suppress combobox **/
-    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
         if (useDefaultBehavior) {
             super.addComboBox(box, input, plugin);
         }

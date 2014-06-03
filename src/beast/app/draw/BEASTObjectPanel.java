@@ -14,6 +14,7 @@ import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Taxon;
 import beast.util.AddOnManager;
@@ -41,7 +42,7 @@ public class BEASTObjectPanel extends JPanel {
     /**
      * plug in to be edited *
      */
-    public BEASTObject m_plugin;
+    public BEASTInterface m_plugin;
     /**
      * (super) class of plug-in, this determines the super-class
      * that is allowable if the plugin class is changed.
@@ -53,7 +54,7 @@ public class BEASTObjectPanel extends JPanel {
     private boolean m_bOK = false;
     /* Set of plugins in the system.
       * These are the plugins that an input can be connected to **/
-    static public HashMap<String, BEASTObject> g_plugins = null;
+    static public HashMap<String, BEASTInterface> g_plugins = null;
     //    static public Set<Operator> g_operators = null;
 //    static public Set<StateNode> g_stateNodes = null;
 //    static public Set<Loggable> g_loggers = null;
@@ -88,7 +89,7 @@ public class BEASTObjectPanel extends JPanel {
 //        }
 
         m_position = new Point(0, 0);
-        g_plugins = new HashMap<String, BEASTObject>();
+        g_plugins = new HashMap<String, BEASTInterface>();
 //        g_operators = new HashSet<Operator>();
 //        g_stateNodes = new HashSet<StateNode>();
 //        g_loggers = new HashSet<Loggable>();
@@ -97,9 +98,9 @@ public class BEASTObjectPanel extends JPanel {
     }
 
 
-    public BEASTObjectPanel(BEASTObject plugin, Class<?> _pluginClass, List<BEASTObject> plugins, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTInterface plugin, Class<?> _pluginClass, List<BEASTInterface> plugins, BeautiDoc doc) {
         //g_plugins = new HashMap<String, Plugin>();
-        for (BEASTObject plugin2 : plugins) {
+        for (BEASTInterface plugin2 : plugins) {
             String sID = getID(plugin2);
             // ensure IDs are unique
             if (g_plugins.containsKey(sID)) {
@@ -116,7 +117,7 @@ public class BEASTObjectPanel extends JPanel {
      *
      * @return true if it was already registered *
      */
-    static public boolean registerPlugin(String sID, BEASTObject plugin, BeautiDoc doc) {
+    static public boolean registerPlugin(String sID, BEASTInterface plugin, BeautiDoc doc) {
         if (doc != null) {
             doc.registerPlugin(plugin);
         }
@@ -142,7 +143,7 @@ public class BEASTObjectPanel extends JPanel {
         return false;
     }
 
-    public static void renamePluginID(BEASTObject plugin, String sOldID, String sID, BeautiDoc doc) {
+    public static void renamePluginID(BEASTInterface plugin, String sOldID, String sID, BeautiDoc doc) {
         if (doc != null) {
             doc.unregisterPlugin(plugin);
         }
@@ -155,20 +156,20 @@ public class BEASTObjectPanel extends JPanel {
         registerPlugin(sID, plugin, doc);
     }
 
-    public BEASTObjectPanel(BEASTObject plugin, Class<?> _pluginClass, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTInterface plugin, Class<?> _pluginClass, BeautiDoc doc) {
         this(plugin, _pluginClass, true, doc);
     }
 
-    public BEASTObjectPanel(BEASTObject plugin, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTInterface plugin, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
         initPlugins(plugin, doc);
         init(plugin, _pluginClass, bShowHeader, doc);
     }
 
-    void init(BEASTObject plugin, Class<?> _pluginClass, boolean showHeader, BeautiDoc doc) {
+    void init(BEASTInterface plugin, Class<?> _pluginClass, boolean showHeader, BeautiDoc doc) {
         try {
             m_plugin = plugin.getClass().newInstance();
-            for (Input<?> input : plugin.listInputs()) {
-                m_plugin.setInputValue(input.getName(), input.get());
+            for (Input<?> input : BEASTObject.listInputs(plugin)) {
+            	BEASTObject.setInputValue(m_plugin, input.getName(), input.get());
             }
             m_plugin.setID(plugin.getID());
         } catch (Exception e) {
@@ -218,10 +219,10 @@ public class BEASTObjectPanel extends JPanel {
     /**
      * add all inputs of a plugin to a box *
      */
-    public static int countInputs(BEASTObject plugin, BeautiDoc doc) {
+    public static int countInputs(BEASTInterface plugin, BeautiDoc doc) {
         int nInputs = 0;
         try {
-            List<Input<?>> inputs = plugin.listInputs();
+            List<Input<?>> inputs = BEASTObject.listInputs(plugin);
             for (Input<?> input : inputs) {
                 String sFullInputName = plugin.getClass().getName() + "." + input.getName();
                 if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
@@ -327,19 +328,19 @@ public class BEASTObjectPanel extends JPanel {
      * collect all plugins that can reach this input (actually, it's parent)
      * and add them to the tabu list.
      */
-    static List<BEASTObject> listAscendants(BEASTObject parent, Collection<BEASTObject> plugins) {
+    static List<BEASTInterface> listAscendants(BEASTInterface parent, Collection<BEASTInterface> plugins) {
         /* First, calculate outputs for each plugin */
-        HashMap<BEASTObject, List<BEASTObject>> outputs = getOutputs(plugins);
+        HashMap<BEASTInterface, List<BEASTInterface>> outputs = getOutputs(plugins);
         /* process outputs */
-        List<BEASTObject> ascendants = new ArrayList<BEASTObject>();
+        List<BEASTInterface> ascendants = new ArrayList<BEASTInterface>();
         ascendants.add(parent);
         boolean bProgress = true;
         while (bProgress) {
             bProgress = false;
             for (int i = 0; i < ascendants.size(); i++) {
-                BEASTObject ascendant = ascendants.get(i);
+                BEASTInterface ascendant = ascendants.get(i);
                 if (outputs.containsKey(ascendant)) {
-                    for (BEASTObject parent2 : outputs.get(ascendant)) {
+                    for (BEASTInterface parent2 : outputs.get(ascendant)) {
                         if (!ascendants.contains(parent2)) {
                             ascendants.add(parent2);
                             bProgress = true;
@@ -356,17 +357,17 @@ public class BEASTObjectPanel extends JPanel {
       * so they can be retrieved indexed by plugin like this:
       * ArrayList<Plugin> output = outputs.get(plugin)*/
 
-    static HashMap<BEASTObject, List<BEASTObject>> getOutputs(Collection<BEASTObject> plugins) {
-        HashMap<BEASTObject, List<BEASTObject>> outputs = new HashMap<BEASTObject, List<BEASTObject>>();
-        for (BEASTObject plugin : plugins) {
-            outputs.put(plugin, new ArrayList<BEASTObject>());
+    static HashMap<BEASTInterface, List<BEASTInterface>> getOutputs(Collection<BEASTInterface> plugins) {
+        HashMap<BEASTInterface, List<BEASTInterface>> outputs = new HashMap<BEASTInterface, List<BEASTInterface>>();
+        for (BEASTInterface plugin : plugins) {
+            outputs.put(plugin, new ArrayList<BEASTInterface>());
         }
-        for (BEASTObject plugin : plugins) {
+        for (BEASTInterface plugin : plugins) {
             try {
-                for (Input<?> input2 : plugin.listInputs()) {
+                for (Input<?> input2 : BEASTObject.listInputs(plugin)) {
                     Object o = input2.get();
-                    if (o != null && o instanceof BEASTObject) {
-                        List<BEASTObject> list = outputs.get(o);
+                    if (o != null && o instanceof BEASTInterface) {
+                        List<BEASTInterface> list = outputs.get(o);
 //                    	if (list == null) {
 //                    		int h = 3;
 //                    		h++;
@@ -376,8 +377,8 @@ public class BEASTObjectPanel extends JPanel {
                     }
                     if (o != null && o instanceof List<?>) {
                         for (Object o2 : (List<?>) o) {
-                            if (o2 != null && o2 instanceof BEASTObject) {
-                                List<BEASTObject> list = outputs.get(o2);
+                            if (o2 != null && o2 instanceof BEASTInterface) {
+                                List<BEASTInterface> list = outputs.get(o2);
                                 if (list == null) {
                                     int h = 3;
                                     h++;
@@ -395,25 +396,25 @@ public class BEASTObjectPanel extends JPanel {
         return outputs;
     } // getOutputs
 
-    public void initPlugins(BEASTObject plugin, BeautiDoc doc) {
+    public void initPlugins(BEASTInterface plugin, BeautiDoc doc) {
         //g_plugins = new HashMap<String, Plugin>();
         addPluginToMap(plugin, doc);
     }
 
-    static public void addPluginToMap(BEASTObject plugin, BeautiDoc doc) {
+    static public void addPluginToMap(BEASTInterface plugin, BeautiDoc doc) {
         if (registerPlugin(getID(plugin), plugin, doc)) {
             return;
         }
         try {
-            for (Input<?> input : plugin.listInputs()) {
+            for (Input<?> input : BEASTObject.listInputs(plugin)) {
                 if (input.get() != null) {
-                    if (input.get() instanceof BEASTObject) {
-                        addPluginToMap((BEASTObject) input.get(), doc);
+                    if (input.get() instanceof BEASTInterface) {
+                        addPluginToMap((BEASTInterface) input.get(), doc);
                     }
                     if (input.get() instanceof List<?>) {
                         for (Object o : (List<?>) input.get()) {
-                            if (o instanceof BEASTObject) {
-                                addPluginToMap((BEASTObject) o, doc);
+                            if (o instanceof BEASTInterface) {
+                                addPluginToMap((BEASTInterface) o, doc);
                             }
                         }
                     }
@@ -428,7 +429,7 @@ public class BEASTObjectPanel extends JPanel {
     /**
      * return ID of plugin, if no ID is specified, generate an appropriate ID first
      */
-    public static String getID(BEASTObject plugin) {
+    public static String getID(BEASTInterface plugin) {
         if (plugin.getID() == null || plugin.getID().length() == 0) {
             String sID = plugin.getClass().getName().replaceAll(".*\\.", "");
             int i = 0;
@@ -460,12 +461,12 @@ public class BEASTObjectPanel extends JPanel {
                 } finally {
                     scanner.close();
                 }
-                BEASTObject plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
+                BEASTInterface plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
                 pluginPanel = new BEASTObjectPanel(plugin, plugin.getClass(), null);
             } else if (args.length == 1) {
-                pluginPanel = new BEASTObjectPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null);
+                pluginPanel = new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null);
             } else if (args.length == 2) {
-                pluginPanel = new BEASTObjectPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null);
+                pluginPanel = new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null);
             } else {
                 throw new Exception("Incorrect number of arguments");
             }
@@ -480,7 +481,7 @@ public class BEASTObjectPanel extends JPanel {
         }
         pluginPanel.setVisible(true);
         if (pluginPanel.m_bOK) {
-            BEASTObject plugin = pluginPanel.m_plugin;
+            BEASTInterface plugin = pluginPanel.m_plugin;
             String sXML = new XMLProducer().modelToXML(plugin);
             System.out.println(sXML);
         }

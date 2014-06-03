@@ -32,6 +32,7 @@ import javax.swing.filechooser.FileFilter;
 
 import beast.app.util.Utils;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.alignment.Sequence;
 import beast.util.AddOnManager;
 import beast.util.Randomizer;
@@ -1265,7 +1266,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
     } // init
 
-    boolean needsDrawing(BEASTObject plugin) {
+    boolean needsDrawing(BEASTInterface plugin) {
         if (plugin == null) {
             return true;
         }
@@ -1292,7 +1293,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 shape.m_bNeedsDrawing = true;
             }
             if (shape instanceof BEASTObjectShape) {
-                BEASTObject plugin = ((BEASTObjectShape) shape).m_plugin;
+                BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
                 if (needsDrawing(plugin)) {
                     shape.m_bNeedsDrawing = true;
                 }
@@ -1636,11 +1637,11 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 // resolve the associated input
                                 InputShape ellipse = (InputShape) shape;
                                 String sInput = ellipse.getInputName();
-                                BEASTObject plugin = ellipse.getPlugin();
-                                if (plugin.isPrimitive(sInput)) {
+                                BEASTInterface plugin = ellipse.getPlugin();
+                                if (BEASTObject.isPrimitive(plugin, sInput)) {
                                     String sValue = "";
-                                    if (plugin.getInputValue(sInput) != null) {
-                                        sValue = plugin.getInputValue(sInput)
+                                    if (BEASTObject.getInputValue(plugin, sInput) != null) {
+                                        sValue = BEASTObject.getInputValue(plugin, sInput)
                                                 .toString();
                                     }
                                     sValue = JOptionPane.showInputDialog(sInput
@@ -1727,9 +1728,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     public void actionPerformed(ActionEvent ae) {
                         Shape shape = m_Selection.getSingleSelectionShape();
                         if (shape instanceof BEASTObjectShape) {
-                            BEASTObject plugin = ((BEASTObjectShape) shape).m_plugin;
+                            BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
 
-                            List<BEASTObject> plugins = new ArrayList<BEASTObject>();
+                            List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
                             for (Shape shape2 : m_doc.m_objects) {
                                 if (shape2 instanceof BEASTObjectShape) {
                                     plugins.add(((BEASTObjectShape) shape2).m_plugin);
@@ -1740,7 +1741,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 // add newly created Plug-ins
                                 int nNewShapes = 0;
                                 if (plugins.size() < BEASTObjectPanel.g_plugins.size()) {
-                                    for (BEASTObject plugin2 : BEASTObjectPanel.g_plugins.values()) {
+                                    for (BEASTInterface plugin2 : BEASTObjectPanel.g_plugins.values()) {
                                         if (!plugins.contains(plugin2)) {
                                             try {
                                                 nNewShapes++;
@@ -1772,7 +1773,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 saveAsItem.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
                         Shape shape = m_Selection.getSingleSelectionShape();
-                        BEASTObject plugin = ((BEASTObjectShape) shape).m_plugin;
+                        BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
                         JFileChooser fc = new JFileChooser(m_sDir);
                         fc.addChoosableFileFilter(ef1);
                         fc.setDialogTitle("Save Plugin As");

@@ -14,6 +14,7 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.SmallLabel;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 
@@ -44,7 +45,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
     ActionEvent m_e;
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
@@ -109,9 +110,9 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
                     public void run() {
                         JComboBox currentComboBox = (JComboBox) m_e.getSource();
                         @SuppressWarnings("unchecked")
-                        List<BEASTObject> list = (List<BEASTObject>) m_input.get();
+                        List<BEASTInterface> list = (List<BEASTInterface>) m_input.get();
                         BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
-                        PartitionContext partitionContext = doc.getContextFor((BEASTObject) list.get(itemNr));
+                        PartitionContext partitionContext = doc.getContextFor((BEASTInterface) list.get(itemNr));
                         try {
                             template.createSubNet(partitionContext, list, itemNr, true);
                         } catch (Exception ex) {

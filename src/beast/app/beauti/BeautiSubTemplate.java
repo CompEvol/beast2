@@ -15,6 +15,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Logger;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
@@ -105,9 +106,9 @@ public class BeautiSubTemplate extends BEASTObject {
             // nothing to do
             return;
         }
-        BEASTObject plugin = null;
-        if (o instanceof BEASTObject) {
-            plugin = (BEASTObject) o;
+        BEASTInterface plugin = null;
+        if (o instanceof BEASTInterface) {
+            plugin = (BEASTInterface) o;
         }
 
         // find template that created this plugin
@@ -128,48 +129,48 @@ public class BeautiSubTemplate extends BEASTObject {
         removeSubNet(template, context);
     }
 
-    public BEASTObject createSubNet(PartitionContext partition, BEASTObject plugin, Input<?> input, boolean init) throws Exception {
+    public BEASTInterface createSubNet(PartitionContext partition, BEASTInterface plugin, Input<?> input, boolean init) throws Exception {
         removeSubNet(input.get());
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             input.setValue(null, plugin);
             return null;
         }
-        BEASTObject o = createSubNet(partition, doc.pluginmap, init);
+        BEASTInterface o = createSubNet(partition, doc.pluginmap, init);
         input.setValue(o, plugin);
         return o;
     }
 
-    public BEASTObject createSubNet(PartitionContext partition, List<BEASTObject> list, int iItem, boolean init) throws Exception {
+    public BEASTInterface createSubNet(PartitionContext partition, List<BEASTInterface> list, int iItem, boolean init) throws Exception {
         removeSubNet(list.get(iItem));
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             list.set(iItem, null);
             return null;
         }
-        BEASTObject o = createSubNet(partition, doc.pluginmap, init);
+        BEASTInterface o = createSubNet(partition, doc.pluginmap, init);
         list.set(iItem, o);
         return o;
     }
 
-    public BEASTObject createSubNet(PartitionContext partition, boolean init) throws Exception {
+    public BEASTInterface createSubNet(PartitionContext partition, boolean init) throws Exception {
         if (sXML == null) {
             // this is the NULL_TEMPLATE
             return null;
         }
-        BEASTObject o = createSubNet(partition, doc.pluginmap, init);
+        BEASTInterface o = createSubNet(partition, doc.pluginmap, init);
         return o;
     }
 
 
-    BEASTObject createSubNet(Alignment data, BeautiDoc doc, boolean init) {
+    BEASTInterface createSubNet(Alignment data, BeautiDoc doc, boolean init) {
         String sPartition = data.getID();
-        HashMap<String, BEASTObject> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
+        HashMap<String, BEASTInterface> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
         sIDMap.put(sPartition, data);
         return createSubNet(new PartitionContext(sPartition), sIDMap, init);
     }
 
-    private BEASTObject createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTObject> sIDMap, boolean init) {
+    private BEASTInterface createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTInterface> sIDMap, boolean init) {
         // wrap in a beast element with appropriate name spaces
         String _sXML = "<beast version='2.0' \n" +
                 "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
@@ -183,10 +184,10 @@ public class BeautiSubTemplate extends BEASTObject {
 
         XMLParser parser = new XMLParser();
         parser.setRequiredInputProvider(doc, context);
-        List<BEASTObject> plugins = null;
+        List<BEASTInterface> plugins = null;
         try {
             plugins = parser.parseTemplate(_sXML, sIDMap, true);
-            for (BEASTObject plugin : plugins) {
+            for (BEASTInterface plugin : plugins) {
                 doc.addPlugin(plugin);
                 try {
                 	System.err.println("Adding " + plugin.getClass().getName() + " " + plugin);
@@ -228,11 +229,11 @@ public class BeautiSubTemplate extends BEASTObject {
 
         String sID = sMainID;
         sID = BeautiDoc.translatePartitionNames(sID, context); //sID.replaceAll("\\$\\(n\\)", sPartition);
-        BEASTObject plugin = doc.pluginmap.get(sID);
+        BEASTInterface plugin = doc.pluginmap.get(sID);
 
         if (this == doc.beautiConfig.partitionTemplate.get()) {
             // HACK: need to make sure the subst model is of the correct type
-            BEASTObject treeLikelihood = doc.pluginmap.get("treeLikelihood." + context.partition);
+            BEASTInterface treeLikelihood = doc.pluginmap.get("treeLikelihood." + context.partition);
             if (treeLikelihood != null && ((GenericTreeLikelihood) treeLikelihood).siteModelInput.get() instanceof SiteModel.Base) {
 	            SiteModel.Base siteModel = (SiteModel.Base) ((GenericTreeLikelihood) treeLikelihood).siteModelInput.get();
 	            SubstitutionModel substModel = siteModel.substModelInput.get();

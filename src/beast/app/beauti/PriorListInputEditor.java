@@ -28,6 +28,7 @@ import beast.core.Logger;
 import beast.core.State;
 import beast.core.StateNode;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -64,14 +65,14 @@ public class PriorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	List<?> list = (List) input.get();
     	Collections.sort(list, new Comparator<Object>() {
 			@Override
 			public int compare(Object o1, Object o2) {
-				if (o1 instanceof BEASTObject && o2 instanceof BEASTObject) {
-					String sID1 = ((BEASTObject)o1).getID();
-					String sID2 = ((BEASTObject)o2).getID();
+				if (o1 instanceof BEASTInterface && o2 instanceof BEASTInterface) {
+					String sID1 = ((BEASTInterface)o1).getID();
+					String sID2 = ((BEASTInterface)o2).getID();
 					// first the tree priors
 					if (o1 instanceof TreeDistribution) {
 						if (o2 instanceof TreeDistribution) {
@@ -145,7 +146,7 @@ public class PriorListInputEditor extends ListInputEditor {
      * @param plugin  plugin to add
      */
     @Override
-    protected InputEditor addPluginItem(Box itemBox, BEASTObject plugin) {
+    protected InputEditor addPluginItem(Box itemBox, BEASTInterface plugin) {
 		try {
 	    	int listItemNr = ((List) m_input.get()).indexOf(plugin);
 	    	InputEditor editor = doc.getInpuEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
@@ -231,7 +232,7 @@ public class PriorListInputEditor extends ListInputEditor {
     } // addItem
 
     @Override
-    public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject parent, List<String> sTabuList) {
+    public List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> sTabuList) {
         MRCAPrior prior = new MRCAPrior();
         try {
 
@@ -277,7 +278,7 @@ public class PriorListInputEditor extends ListInputEditor {
         } catch (Exception e) {
             // TODO: handle exception
         }
-        List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
+        List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
         selectedPlugins.add(prior);
         g_collapsedIDs.add(prior.getID());
         return selectedPlugins;

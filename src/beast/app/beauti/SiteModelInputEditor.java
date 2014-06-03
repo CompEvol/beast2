@@ -22,6 +22,7 @@ import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
@@ -54,7 +55,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     }
     
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr,
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr,
     		ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean substitution rate");
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
@@ -168,7 +169,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 
     public InputEditor createShapeEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
-        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, (BEASTObject) m_input.get(), doc);
+        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, (BEASTInterface) m_input.get(), doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
@@ -194,7 +195,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
             	super.validateInput();
             }
         };
-        inVarEditor.init(input, (BEASTObject) m_input.get(), -1, ExpandOption.FALSE, true);
+        inVarEditor.init(input, (BEASTInterface) m_input.get(), -1, ExpandOption.FALSE, true);
         inVarEditor.addValidationListener(this);
         return inVarEditor;
     }

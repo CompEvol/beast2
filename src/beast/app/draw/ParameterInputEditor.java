@@ -21,6 +21,7 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.math.distributions.ParametricDistribution;
@@ -47,7 +48,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     
     
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	m_plugin = plugin;
     }
@@ -103,7 +104,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 
 
     @Override
-    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
         Box paramBox = Box.createHorizontalBox();
         RealParameter parameter = null;
         if (itemNr >= 0) {
@@ -119,7 +120,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             paramBox.add(m_entry);
             if (doc.bAllowLinking) {
 	            boolean isLinked = doc.isLinked(m_input);
-				if (isLinked || doc.suggestedLinks((BEASTObject) m_input.get()).size() > 0) {
+				if (isLinked || doc.suggestedLinks((BEASTInterface) m_input.get()).size() > 0) {
 		            JButton linkbutton = new JButton(BeautiPanel.getIcon(BeautiPanel.ICONPATH + 
 		            		(isLinked ? "link.png" : "unlink.png")));
 		            linkbutton.setBorder(BorderFactory.createEmptyBorder());
@@ -130,7 +131,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 							if (doc.isLinked(m_input)) {
 								// unlink
 								try {
-									BEASTObject candidate = doc.getUnlinkCandidate(m_input, m_plugin);
+									BEASTInterface candidate = doc.getUnlinkCandidate(m_input, m_plugin);
 									m_input.setValue(candidate, m_plugin);
 									doc.deLink(m_input);
 								} catch (Exception e2) {
@@ -139,10 +140,10 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 								
 							} else {
 								// create a link
-								List<BEASTObject> candidates = doc.suggestedLinks((BEASTObject) m_input.get());
+								List<BEASTInterface> candidates = doc.suggestedLinks((BEASTInterface) m_input.get());
 								JComboBox jcb = new JComboBox(candidates.toArray());
 								JOptionPane.showMessageDialog( null, jcb, "select parameter to link with", JOptionPane.QUESTION_MESSAGE);
-								BEASTObject candidate = (BEASTObject) jcb.getSelectedItem();
+								BEASTInterface candidate = (BEASTInterface) jcb.getSelectedItem();
 								if (candidate != null) {
 									try {
 										m_input.setValue(candidate, m_plugin);
@@ -228,14 +229,14 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             //m_editPluginButton.setVisible(false);
             //m_bAddButtons = false;
             if (itemNr < 0) {
-	            for (Object plugin2 : ((BEASTObject) m_input.get()).getOutputs()) {
+	            for (Object plugin2 : ((BEASTInterface) m_input.get()).getOutputs()) {
 	                if (plugin2 instanceof ParametricDistribution) {
 	                    m_isEstimatedBox.setVisible(true);
 	                	isParametricDistributionParameter = true;
 	                    break;
 	                }
 	            }
-	            for (Object plugin2 : ((BEASTObject) m_input.get()).getOutputs()) {
+	            for (Object plugin2 : ((BEASTInterface) m_input.get()).getOutputs()) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);
@@ -243,7 +244,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 	                }
 	            }
             } else {
-	            for (Object plugin2 : ((BEASTObject) ((List)m_input.get()).get(itemNr)).getOutputs()) {
+	            for (Object plugin2 : ((BEASTInterface) ((List)m_input.get()).get(itemNr)).getOutputs()) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);

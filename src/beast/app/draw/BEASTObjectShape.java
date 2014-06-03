@@ -41,6 +41,7 @@ import org.w3c.dom.Node;
 
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.util.Randomizer;
 
 
@@ -49,7 +50,7 @@ import beast.util.Randomizer;
 
 public class BEASTObjectShape extends Shape {
     static Font g_PluginFont = new Font("arial", Font.PLAIN, 11);
-    public beast.core.BEASTObject m_plugin;
+    public beast.core.BEASTInterface m_plugin;
     List<InputShape> m_inputs;
 
 
@@ -58,7 +59,7 @@ public class BEASTObjectShape extends Shape {
         m_fillcolor = new Color(Randomizer.nextInt(256), 128 + Randomizer.nextInt(128), Randomizer.nextInt(128));
     }
 
-    public BEASTObjectShape(BEASTObject plugin, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public BEASTObjectShape(BEASTInterface plugin, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         super();
         m_plugin = plugin;
         m_fillcolor = new Color(Randomizer.nextInt(256), 128 + Randomizer.nextInt(128), Randomizer.nextInt(128));
@@ -72,7 +73,7 @@ public class BEASTObjectShape extends Shape {
     public void init(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
     	m_doc = doc;
         if (m_plugin == null) {
-            m_plugin = (beast.core.BEASTObject) Class.forName(sClassName).newInstance();
+            m_plugin = (beast.core.BEASTInterface) Class.forName(sClassName).newInstance();
         }
         m_inputs = new ArrayList<InputShape>();
         if (m_plugin.getID() == null) {
@@ -84,7 +85,7 @@ public class BEASTObjectShape extends Shape {
         if (m_plugin.getID().equals("mcmc")) {
         	int h = 3;
         }
-        List<Input<?>> sInputs = m_plugin.listInputs();
+        List<Input<?>> sInputs = BEASTObject.listInputs(m_plugin);
         for (Input<?> input_ : sInputs) {
 			String longInputName = m_plugin.getClass().getName() + "." + input_.getName(); 
 			//System.err.print(longInputName);
@@ -130,7 +131,7 @@ public class BEASTObjectShape extends Shape {
     void adjustInputs() {
         if (m_plugin != null) {
             try {
-                List<Input<?>> inputs = m_plugin.listInputs();
+                List<Input<?>> inputs = BEASTObject.listInputs(m_plugin);
                 for (int i = 0; i < m_inputs.size(); i++) {
                     InputShape input = m_inputs.get(i);
                     //input.m_input = inputs.get(i);
@@ -178,7 +179,7 @@ public class BEASTObjectShape extends Shape {
             if (node.getAttributes().getNamedItem("class") != null) {
                 String sClassName = node.getAttributes().getNamedItem("class").getNodeValue();
                 try {
-                    m_plugin = (beast.core.BEASTObject) Class.forName(sClassName).newInstance();
+                    m_plugin = (beast.core.BEASTInterface) Class.forName(sClassName).newInstance();
                     m_plugin.setID(m_sID);
                 } catch (Exception e) {
                     // TODO: handle exception
@@ -189,7 +190,7 @@ public class BEASTObjectShape extends Shape {
                 String[] sInputID = sInputIDs.split(" ");
                 m_inputs = new ArrayList<InputShape>();
                 try {
-                    List<Input<?>> inputs = m_plugin.listInputs();
+                    List<Input<?>> inputs = BEASTObject.listInputs(m_plugin);
                     for (int i = 0; i < sInputID.length; i++) {
                         InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
                         m_inputs.add(ellipse);

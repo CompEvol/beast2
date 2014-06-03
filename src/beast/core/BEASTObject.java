@@ -384,6 +384,8 @@ abstract public class BEASTObject implements BEASTInterface {
     public Input<?> getInput(final String name) throws Exception {
     	return getInput(this, name);
     }
+    
+    static boolean recursing = false;
     static public Input<?> getInput(BEASTInterface BEASTi, final String name) throws Exception {
         final Field[] fields = BEASTi.getClass().getFields();
         for (final Field field : fields) {
@@ -395,11 +397,27 @@ abstract public class BEASTObject implements BEASTInterface {
             }
         }
 
+        // it is not a field, it may be a Map. try to call  public Input<?> getInput(java.lang.String name);
+        try {
+        	if (!recursing) {
+	        	recursing = true;
+		        final Method method = BEASTi.getClass().getMethod("getInput", String.class);
+		        if (method != null) {
+		        	Input input = (Input<?>) method.invoke(BEASTi, name);
+		        	recursing = false;
+		        	return input;
+		        }
+        	}
+        } catch (Exception e) {
+        	// ignore
+        }
+        
 
         String inputNames = " "; // <- space here to prevent error in .substring below
         for (final Input<?> input : listInputs(BEASTi)) {
             inputNames += input.getName() + ",";
         }
+        
         throw new Exception("This BEASTObject (" + (BEASTi.getID() == null ? BEASTi.getClass().getName() : BEASTi.getID()) + ") has no input with name " + name + ". " +
                 "Choose one of these inputs:" + inputNames.substring(0, inputNames.length() - 1));
     } // getInput

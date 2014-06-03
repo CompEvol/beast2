@@ -17,6 +17,7 @@ import beast.core.Input;
 import beast.core.Operator;
 import beast.core.StateNode;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 
 
 
@@ -40,7 +41,7 @@ public class OperatorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	Box box = Box.createHorizontalBox();
     	box.add(Box.createHorizontalStrut(25));
     	box.add(new JLabel("Operator"));
@@ -54,7 +55,7 @@ public class OperatorListInputEditor extends ListInputEditor {
     }
     
     @Override
-    protected InputEditor addPluginItem(Box itemBox, BEASTObject plugin) {
+    protected InputEditor addPluginItem(Box itemBox, BEASTInterface plugin) {
         Operator operator = (Operator) plugin;
 
         JTextField entry = new JTextField(" " + getLabel(operator));
@@ -150,7 +151,7 @@ public class OperatorListInputEditor extends ListInputEditor {
         }
         sName += ": ";
         try {
-            for (BEASTObject plugin2 : operator.listActivePlugins()) {
+            for (BEASTInterface plugin2 : operator.listActivePlugins()) {
                 if (plugin2 instanceof StateNode && ((StateNode) plugin2).isEstimatedInput.get()) {
                     sName += plugin2.getID() + " ";
                 }

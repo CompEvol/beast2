@@ -8,6 +8,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.util.XMLProducer;
 
 
@@ -47,11 +48,11 @@ public class BEASTObjectDialog extends JDialog {
         this.doc = doc;
     }
 
-    public BEASTObjectDialog(BEASTObject plugin, Class<? extends BEASTObject> aClass, List<BEASTObject> plugins, BeautiDoc doc) {
+    public BEASTObjectDialog(BEASTInterface plugin, Class<? extends BEASTInterface> aClass, List<BEASTInterface> plugins, BeautiDoc doc) {
         this(new BEASTObjectPanel(plugin, aClass, plugins, doc), doc);
     }
 
-    public BEASTObjectDialog(BEASTObject plugin, Class<?> type, BeautiDoc doc) {
+    public BEASTObjectDialog(BEASTInterface plugin, Class<?> type, BeautiDoc doc) {
         this(new BEASTObjectPanel(plugin, type, doc), doc);
     }
 
@@ -83,16 +84,16 @@ public class BEASTObjectDialog extends JDialog {
     }
     
     /* to be called when OK is pressed **/
-    public void accept(BEASTObject plugin, BeautiDoc doc) {
+    public void accept(BEASTInterface plugin, BeautiDoc doc) {
         try {
-            for (Input<?> input : m_panel.m_plugin.listInputs()) {
+            for (Input<?> input : BEASTObject.listInputs(m_panel.m_plugin)) {
             	if (input.get() != null && (input.get() instanceof List)) {
                     // setInpuValue (below) on lists does not lead to expected result
             		// it appends values to the list instead, so we have to clear it first
-                    List list = (List)plugin.getInput(input.getName()).get();
+                    List list = (List)BEASTObject.getInput(plugin, input.getName()).get();
                     list.clear();
             	}
-            	plugin.setInputValue(input.getName(), input.get());
+            	BEASTObject.setInputValue(plugin, input.getName(), input.get());
             }
             plugin.setID(m_panel.m_plugin.getID());
             if (doc != null) {
@@ -178,12 +179,12 @@ public class BEASTObjectDialog extends JDialog {
                 } finally {
                     scanner.close();
                 }
-                BEASTObject plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
+                BEASTInterface plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
                 dlg = new BEASTObjectDialog(new BEASTObjectPanel(plugin, plugin.getClass(), null), null);
             } else if (args.length == 1) {
-                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null), null);
+                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null), null);
             } else if (args.length == 2) {
-                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTObject) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null), null);
+                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null), null);
             } else {
                 throw new Exception("Incorrect number of arguments");
             }
@@ -198,7 +199,7 @@ public class BEASTObjectDialog extends JDialog {
         }
         dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         if (dlg.showDialog()) {
-            BEASTObject plugin = dlg.m_panel.m_plugin;
+            BEASTInterface plugin = dlg.m_panel.m_plugin;
             String sXML = new XMLProducer().modelToXML(plugin);
             System.out.println(sXML);
         }

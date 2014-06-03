@@ -36,6 +36,8 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
+import beast.core.BEASTObject;
+
 public class Arrow extends Shape {
     String m_sHeadID;
     String m_sTailID;
@@ -101,7 +103,7 @@ public class Arrow extends Shape {
         m_headShape = shape;
         adjustCoordinates();
         String sInputName = m_headShape.getInputName();
-        m_headShape.getPlugin().setInputValue(sInputName, m_tailShape.m_plugin);
+        BEASTObject.setInputValue(m_headShape.getPlugin(), sInputName, m_tailShape.m_plugin);
         return true;//setFunctionInput(objects, doc);
     }
 

@@ -5,6 +5,7 @@ import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.util.CompoundDistribution;
@@ -194,13 +195,13 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
             return;
         }
         String type = config.bHasPartitionsInput.get().toString();
-        for (BEASTObject partition : doc.getPartitions(type)) {
+        for (BEASTInterface partition : doc.getPartitions(type)) {
         	if (type.equals("SiteModel")) {
-        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).siteModelInput.get();
+        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).siteModelInput.get();
         	} else if (type.equals("ClockModel")) {
-        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
+        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
         	} else if (type.equals("Tree")) {
-        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).treeInput.get();
+        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).treeInput.get();
         	}
             String sPartition = partition.getID();
             sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
@@ -270,7 +271,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 //		g_currentPanel = this;
     }
     
-    void refreshInputPanel(BEASTObject plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
+    void refreshInputPanel(BEASTInterface plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
         if (centralComponent != null) {
             remove(centralComponent);
         }
@@ -329,7 +330,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
     void refreshInputPanel() throws Exception {
         doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
-        BEASTObject plugin = config;
+        BEASTInterface plugin = config;
         Input<?> input = config.resolveInput(doc, iPartition);
 
         boolean bAddButtons = config.addButtons();
@@ -349,16 +350,16 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
     	}
 
     	String type = config.bHasPartitionsInput.get().toString();
-    	java.util.List<BEASTObject> list = doc.getPartitions(type);
+    	java.util.List<BEASTInterface> list = doc.getPartitions(type);
     	int iSource = -1, iTarget = -1;
         for (int i = 0; i < list.size(); i++) {
-        	BEASTObject partition = list.get(i);
+        	BEASTInterface partition = list.get(i);
         	if (type.equals("SiteModel")) {
-        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).siteModelInput.get();
+        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).siteModelInput.get();
         	} else if (type.equals("ClockModel")) {
-        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
+        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
         	} else if (type.equals("Tree")) {
-        		partition = (BEASTObject) ((GenericTreeLikelihood) partition).treeInput.get();
+        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).treeInput.get();
         	}
             String sPartition = partition.getID();
             sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
@@ -388,7 +389,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 			SiteModelInterface siteModelSource = likelihoodSource.siteModelInput.get();
 			SiteModelInterface  siteModel = null;
 			try {
-				siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTObject) siteModelSource,
+				siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) siteModelSource,
 					likelihood, (MCMC) doc.mcmc.get(), context, doc, null);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
@@ -400,7 +401,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
     		BranchRateModel clockModelSource = likelihoodSource.branchRateModelInput.get();
     		BranchRateModel clockModel = null;
 			try {
-				clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin((BEASTObject) clockModelSource,
+				clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin((BEASTInterface) clockModelSource,
 						likelihood, (MCMC) doc.mcmc.get(), context, doc, null);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
@@ -410,7 +411,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 			// the same as for the likelihood
 			TreeInterface tree = null;
 			try {
-				for (Input<?> input : ((BEASTObject) clockModel).listInputs()) {
+				for (Input<?> input : BEASTObject.listInputs(((BEASTInterface) clockModel))) {
 					if (input.getName().equals("tree")) {
 						tree = (TreeInterface) input.get();
 					}
@@ -434,7 +435,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 			TreeInterface tree = null;
 			TreeInterface treeSource = likelihoodSource.treeInput.get();
 			try {
-			tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTObject) treeSource, likelihood,
+			tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) treeSource, likelihood,
 							(MCMC) doc.mcmc.get(), context, doc, null);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());

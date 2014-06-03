@@ -32,6 +32,7 @@ import org.w3c.dom.NodeList;
 import beast.core.Input;
 import beast.core.Runnable;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.util.AddOnManager;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -95,7 +96,7 @@ public class Document {
 
     public Document() {
         // load all parsers
-        List<String> sPlugInNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> sPlugInNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
         m_sPlugInNames = sPlugInNames.toArray(new String[0]);
         tabulist = new HashSet<String>();
         Properties properties = new Properties();
@@ -259,7 +260,7 @@ public class Document {
         if (shape.m_plugin.getID() != null && shape.m_plugin.getID().length() > 0) {
             return;
         }
-        BEASTObject plugin = shape.m_plugin;
+        BEASTInterface plugin = shape.m_plugin;
         String sBase = plugin.getClass().getName().replaceAll(".*\\.", "");
         int nID = 0;
         while (containsID(sBase + nID, m_objects, null)) {
@@ -306,10 +307,10 @@ public class Document {
     void checkForOtherPluginShapes(List<Integer> iObjects, BEASTObjectShape shape) {
         // check whether we need to create any input plugins
         try {
-            List<Input<?>> inputs = ((BEASTObjectShape) shape).m_plugin.listInputs();
+            List<Input<?>> inputs = BEASTObject.listInputs(((BEASTObjectShape) shape).m_plugin);
             for (Input<?> input : inputs) {
-                if (input.get() instanceof BEASTObject) {
-                    BEASTObject plugin = (BEASTObject) input.get();
+                if (input.get() instanceof BEASTInterface) {
+                    BEASTInterface plugin = (BEASTInterface) input.get();
                     BEASTObjectShape pluginShape = new BEASTObjectShape(plugin, this);
                     pluginShape.m_x = Math.max(shape.m_x - DX, 0);
                     pluginShape.m_y = shape.m_y;
@@ -635,8 +636,8 @@ public class Document {
 
         void doit() {
             try {
-                String sValue = m_pluginShape.m_plugin.getInput(m_sInput).get().toString();
-                m_pluginShape.m_plugin.setInputValue(m_sInput, m_sValue);
+                String sValue = BEASTObject.getInput(m_pluginShape.m_plugin, m_sInput).get().toString();
+                BEASTObject.setInputValue(m_pluginShape.m_plugin, m_sInput, m_sValue);
                 m_sValue = sValue;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1365,13 +1366,13 @@ public class Document {
     final static int DY = 80;
 
     void addInput(BEASTObjectShape shape, Object o2, int nDepth, String sInput) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        if (o2 instanceof BEASTObject) {
-            BEASTObjectShape shape2 = getPluginShapeWithLabel(((BEASTObject) o2).getID());
+        if (o2 instanceof BEASTInterface) {
+            BEASTObjectShape shape2 = getPluginShapeWithLabel(((BEASTInterface) o2).getID());
             if (shape2 == null) {
-                shape2 = new BEASTObjectShape((BEASTObject) o2, this);
+                shape2 = new BEASTObjectShape((BEASTInterface) o2, this);
                 shape2.m_x = nDepth * DX;
                 shape2.m_w = DY;
-                shape2.m_plugin = (BEASTObject) o2;
+                shape2.m_plugin = (BEASTInterface) o2;
                 setPluginID(shape2);
                 m_objects.add(shape2);
             }
@@ -1380,8 +1381,8 @@ public class Document {
     }
 
     void process(BEASTObjectShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        BEASTObject plugin = shape.m_plugin;
-        List<Input<?>> sInputs = plugin.listInputs();
+        BEASTInterface plugin = shape.m_plugin;
+        List<Input<?>> sInputs = BEASTObject.listInputs(plugin);
         for (Input<?> input_ : sInputs) {
             Object o = input_.get();
             if (o != null) {
@@ -1389,7 +1390,7 @@ public class Document {
                     for (Object o2 : (List<?>) o) {
                         addInput(shape, o2, nDepth + 1, input_.getName());
                     }
-                } else if (o instanceof BEASTObject) {
+                } else if (o instanceof BEASTInterface) {
                     addInput(shape, o, nDepth + 1, input_.getName());
                     // } else {
                     // it is a primitive type
@@ -1414,7 +1415,7 @@ public class Document {
             } finally {
                 scanner.close();
             }
-            BEASTObject plugin0 = parser.parseBareFragment(sXML.toString(), false);
+            BEASTInterface plugin0 = parser.parseBareFragment(sXML.toString(), false);
             init(plugin0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1427,7 +1428,7 @@ public class Document {
         m_objects.clear();
         try {
             XMLParser parser = new XMLParser();
-            BEASTObject plugin0 = parser.parseBareFragment(sXML, false);
+            BEASTInterface plugin0 = parser.parseBareFragment(sXML, false);
             init(plugin0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1435,14 +1436,14 @@ public class Document {
         }
     }
 
-    public void init(BEASTObject plugin0) {
+    public void init(BEASTInterface plugin0) {
         try {
             if (plugin0 instanceof BEASTObjectSet) {
-                List<BEASTObject> set = ((BEASTObjectSet) plugin0).m_plugins.get();
+                List<BEASTInterface> set = ((BEASTObjectSet) plugin0).m_plugins.get();
                 if (set == null) {
                     return;
                 }
-                for (BEASTObject plugin : set) {
+                for (BEASTInterface plugin : set) {
                     BEASTObjectShape shape = new BEASTObjectShape(plugin, this);
                     shape.m_plugin = plugin;
                     setPluginID(shape);
@@ -1534,12 +1535,12 @@ public class Document {
      */
     BEASTObjectSet calcPluginSet() {
         // collect all plug-ins
-        Collection<BEASTObject> plugins = getPlugins();
+        Collection<BEASTInterface> plugins = getPlugins();
         // calc outputs
-        HashMap<BEASTObject, List<BEASTObject>> outputs = BEASTObjectPanel.getOutputs(plugins);
+        HashMap<BEASTInterface, List<BEASTInterface>> outputs = BEASTObjectPanel.getOutputs(plugins);
         // put all plugins with no ouputs in the PluginSet
         BEASTObjectSet pluginSet = new BEASTObjectSet();
-        for (BEASTObject plugin : outputs.keySet()) {
+        for (BEASTInterface plugin : outputs.keySet()) {
             if (outputs.get(plugin).size() == 0) {
                 try {
                     pluginSet.setInputValue("plugin", plugin);
@@ -1554,8 +1555,8 @@ public class Document {
     /**
      * convert m_objects in set of plugins *
      */
-    Collection<BEASTObject> getPlugins() {
-        Collection<BEASTObject> plugins = new HashSet<BEASTObject>();
+    Collection<BEASTInterface> getPlugins() {
+        Collection<BEASTInterface> plugins = new HashSet<BEASTInterface>();
         for (Shape shape : m_objects) {
             if (shape instanceof BEASTObjectShape) {
                 plugins.add(((BEASTObjectShape) shape).m_plugin);
@@ -1567,9 +1568,9 @@ public class Document {
     /**
      * return true if source is ascendant of target *
      */
-    boolean isAscendant(BEASTObject source, BEASTObject target) {
-        Collection<BEASTObject> plugins = getPlugins();
-        List<BEASTObject> ascendants = BEASTObjectPanel.listAscendants(target, plugins);
+    boolean isAscendant(BEASTInterface source, BEASTInterface target) {
+        Collection<BEASTInterface> plugins = getPlugins();
+        List<BEASTInterface> ascendants = BEASTObjectPanel.listAscendants(target, plugins);
         return ascendants.contains(source);
     }
 
@@ -1860,7 +1861,7 @@ public class Document {
             return STATUS_ORPHANS_IN_MODEL;
         }
         boolean hasRunable = false;
-        for (BEASTObject plugin : pluginSet.m_plugins.get()) {
+        for (BEASTInterface plugin : pluginSet.m_plugins.get()) {
             if (plugin instanceof Runnable) {
                 hasRunable = true;
             }
@@ -1883,7 +1884,7 @@ public class Document {
             }
         }
         // build map for quick resolution of PluginShapes
-        HashMap<BEASTObject, BEASTObjectShape> map = new HashMap<BEASTObject, BEASTObjectShape>();
+        HashMap<BEASTInterface, BEASTObjectShape> map = new HashMap<BEASTInterface, BEASTObjectShape>();
         for (Shape shape : m_objects) {
             if (shape instanceof BEASTObjectShape) {
                 map.put(((BEASTObjectShape) shape).m_plugin, (BEASTObjectShape) shape);
@@ -1894,13 +1895,13 @@ public class Document {
             Shape shape = m_objects.get(i);
             if (shape instanceof BEASTObjectShape) {
                 BEASTObjectShape headShape = ((BEASTObjectShape) shape);
-                BEASTObject plugin = headShape.m_plugin;
+                BEASTInterface plugin = headShape.m_plugin;
                 try {
-                    List<Input<?>> inputs = plugin.listInputs();
+                    List<Input<?>> inputs = BEASTObject.listInputs(plugin);
                     for (Input<?> input : inputs) {
                         if (input.get() != null) {
-                            if (input.get() instanceof BEASTObject) {
-                                BEASTObjectShape tailShape = map.get((BEASTObject) input.get());
+                            if (input.get() instanceof BEASTInterface) {
+                                BEASTObjectShape tailShape = map.get((BEASTInterface) input.get());
                                 try {
 	                                Arrow arrow = new Arrow(tailShape, headShape, input.getName());
 	                                arrow.setID(getNewID(null));
@@ -1911,8 +1912,8 @@ public class Document {
                             }
                             if (input.get() instanceof List<?>) {
                                 for (Object o : (List<?>) input.get()) {
-                                    if (o != null && o instanceof BEASTObject) {
-                                        BEASTObjectShape tailShape = map.get((BEASTObject) o);
+                                    if (o != null && o instanceof BEASTInterface) {
+                                        BEASTObjectShape tailShape = map.get((BEASTInterface) o);
                                         try {
 	                                        Arrow arrow = new Arrow(tailShape, headShape, input.getName());
 	                                        arrow.setID(getNewID(null));

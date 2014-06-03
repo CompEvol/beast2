@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.substitutionmodel.Frequencies;
@@ -36,14 +37,14 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     } // init
 
 
     @Override
     /** suppress combobox **/
-    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
         Frequencies freqs = (Frequencies) input.get();
 
         JComboBox comboBox = new JComboBox(new String[]{"Estimated", "Empirical", "All equal"});
@@ -92,7 +93,7 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
         box.add(comboBox);
     }
 
-    private BEASTObject getCandidate(Input<?> input, Frequencies freqs) {
+    private BEASTInterface getCandidate(Input<?> input, Frequencies freqs) {
         return getDoc().getPartition(freqs);
 //		List<String> sCandidates = PluginPanel.getAvailablePlugins(input, freqs, null);
 //		String sID = sCandidates.get(0);

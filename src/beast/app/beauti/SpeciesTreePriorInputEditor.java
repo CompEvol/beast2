@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.evolution.speciation.SpeciesTreePrior;
 
 
@@ -23,11 +24,11 @@ public class SpeciesTreePriorInputEditor extends BEASTObjectInputEditor {
 	}
 	
 	@Override
-	public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 	}
 
-    protected void addComboBox(JComponent box, Input<?> input, BEASTObject plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
     	m_bAddButtons = true;
     	String label = "Species Tree Population Size";
     	addInputLabel(label, label);
