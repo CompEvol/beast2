@@ -759,7 +759,10 @@ public class Tree extends StateNode implements TreeInterface {
      * @return true if so
      */
     public boolean hasDateTrait() {
-        return getDateTrait() != null;
+        if (getDateTrait() != null)
+            return true;
+        else
+            return false;
     }
 
     /**
