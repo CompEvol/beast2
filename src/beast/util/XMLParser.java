@@ -243,6 +243,10 @@ public class XMLParser {
         int pointIdx = file.getName().lastIndexOf('.');
         String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
         replace(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
+
+        // Substitute occurrences of "$(seed)" with RNG seed
+        replace(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
+                String.valueOf(Randomizer.getSeed()));
         
         IDMap = new HashMap<String, BEASTInterface>();
         likelihoodMap = new HashMap<String, Integer[]>();
