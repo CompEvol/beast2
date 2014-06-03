@@ -2274,10 +2274,4 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public void initAndValidate() throws Exception {
     }
 
-	@Override
-	public Object createInput(BEASTObject plugin, Input<?> input, PartitionContext context) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 } // class BeautiDoc

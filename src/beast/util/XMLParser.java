@@ -962,7 +962,7 @@ public class XMLParser {
 
     void setInput(final Node node, final BEASTInterface plugin, final String sName, final String sValue) throws XMLParserException {
         try {
-            plugin.setInputValue(sName, sValue);
+			plugin.setInputValue(sName, sValue);
             return;
         } catch (Exception e) {
         	if (sName.equals("xml:base")) {

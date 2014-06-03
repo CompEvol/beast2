@@ -82,7 +82,7 @@ public interface DataType {
     public String getCode(int state);
 
     @Description(value = "Base class bringing class and interfaces together", isInheritable = false)
-    public abstract class Base extends BEASTObject.Core implements DataType {
+    public abstract class Base extends BEASTObject implements DataType {
         /**
          * size of the state space *
          */
