@@ -40,6 +40,7 @@ import beast.app.beauti.PartitionContext;
 import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.Runnable;
+import beast.core.parameter.Map;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
@@ -962,7 +963,11 @@ public class XMLParser {
 
     void setInput(final Node node, final BEASTInterface plugin, final String sName, final String sValue) throws XMLParserException {
         try {
-        	BEASTObject.setInputValue(plugin, sName, sValue);
+			if (plugin instanceof Map) {
+				((Map)plugin).setInputValue(sName, sValue);
+			} else {
+				BEASTObject.setInputValue(plugin, sName, sValue);
+			}
             return;
         } catch (Exception e) {
         	if (sName.equals("xml:base")) {
