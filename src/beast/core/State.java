@@ -564,8 +564,9 @@ public class State extends BEASTObject {
             // next the path following the outputs
             while (bProgress) {
                 bProgress = false;
-                // loop over plugins, till no more plugins can be added
-                // efficiency is no issue here
+                // loop over plugins till no more plugins can be added
+                // efficiency is no issue here, assuming the graph remains 
+                // constant
                 for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
                     CalculationNode node = calcNodes.get(iCalcNode);
                     for (BEASTObject output : outputMap.get(node)) {
