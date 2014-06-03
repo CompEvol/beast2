@@ -1,5 +1,6 @@
 package test.beast.core;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,6 +69,47 @@ public class BEASTInterfaceTest extends TestCase {
 		assertEquals(beasti2, beasti3);
 		
 		assertEquals(1, beasti2.getOutputs().size());
+		
+		String description = BEASTObject.getDescription(beasti);
+		assertEquals("class that impements BEASTInterface but is not a BEASTObject", description);
+		
+		List<BEASTInterface> predecessors = new ArrayList<BEASTInterface>();
+		BEASTObject.getPredecessors(beasti2, predecessors);
+		assertEquals(1, predecessors.size());
+		BEASTObject.getPredecessors(beasti, predecessors);
+		assertEquals(2, predecessors.size());
+		assertEquals(beasti, predecessors.get(1));
+		assertEquals(beasti2, predecessors.get(0));
+		
+		description = BEASTObject.getTipText(beasti, "other");
+		assertEquals("link to another BEASTi object", description);
+		
+		boolean b = BEASTObject.isPrimitive(beasti, "value");
+		assertEquals(true, b);
+		b = BEASTObject.isPrimitive(beasti, "other");
+		assertEquals(false, b);
+		
+		List<BEASTInterface> plugins = BEASTObject.listActivePlugins(beasti);
+		assertEquals(1, plugins.size());
+		assertEquals(beasti2, plugins.get(0));
+		plugins = BEASTObject.listActivePlugins(beasti2);
+		assertEquals(0, plugins.size());
+		
+		
+		BEASTObject.validateInputs(beasti);
+
+		try {
+			BEASTObject.validateInputs(beasti2);
+			assertEquals(true, false); // should never get here
+		} catch (Throwable t) {
+			// lucky to be here
+		}
+		
+		
+		BEASTObject.setInputValue(beasti2, "value", "Goodbye!");
+		String msg = (String) BEASTObject.getInputValue(beasti2, "value");
+		assertEquals("Goodbye!", msg);
+		
 	}
 	
 	

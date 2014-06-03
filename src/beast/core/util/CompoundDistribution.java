@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
 import beast.app.BeastMCMC;
+import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -186,9 +187,9 @@ public class CompoundDistribution extends Distribution {
     }
 
     @Override
-    public List<BEASTObject> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
     	if (ignoreInput.get()) {
-    		return new ArrayList<BEASTObject>();
+    		return new ArrayList<BEASTInterface>();
     	} else {
     		return super.listActivePlugins();
     	}

@@ -229,8 +229,8 @@ abstract public class BEASTObject implements BEASTInterface {
             //return buf.toString();
         }
         try {
-            for (final BEASTObject plugin : listActivePlugins(BEASTi)) {
-                buf.append(plugin.getCitations(plugin, citations, IDs));
+            for (final BEASTInterface plugin : listActivePlugins(BEASTi)) {
+                buf.append(getCitations(plugin, citations, IDs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -267,12 +267,12 @@ abstract public class BEASTObject implements BEASTInterface {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    public List<BEASTObject> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
     	return listActivePlugins(this);
     }
     
-    static public List<BEASTObject> listActivePlugins(BEASTInterface BEASTi) throws IllegalArgumentException, IllegalAccessException {
-        final List<BEASTObject> plugins = new ArrayList<BEASTObject>();
+    static public List<BEASTInterface> listActivePlugins(BEASTInterface BEASTi) throws IllegalArgumentException, IllegalAccessException {
+        final List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
         final Field[] fields = BEASTi.getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
@@ -281,12 +281,12 @@ abstract public class BEASTObject implements BEASTInterface {
                     if (input.get() instanceof List<?>) {
                         final List<?> vector = (List<?>) input.get();
                         for (final Object o : vector) {
-                            if (o instanceof BEASTObject) {
-                                plugins.add((BEASTObject) o);
+                            if (o instanceof BEASTInterface) {
+                                plugins.add((BEASTInterface) o);
                             }
                         }
-                    } else if (input.get() != null && input.get() instanceof BEASTObject) {
-                        plugins.add((BEASTObject) input.get());
+                    } else if (input.get() != null && input.get() instanceof BEASTInterface) {
+                        plugins.add((BEASTInterface) input.get());
                     }
                 }
             }
