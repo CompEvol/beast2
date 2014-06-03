@@ -64,8 +64,8 @@
 		<mkdir dir="${build}" />
 
 		<!-- Compile the java code from ${src} into ${build} /bin -->
-		<javac source="1.6"
-		       target="1.6"
+		<javac source="1.8"
+		       target="1.8"
 		       srcdir="${src}"
 		       destdir="${build}"
 		       classpathref="classpath"

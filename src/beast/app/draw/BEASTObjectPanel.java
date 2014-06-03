@@ -169,7 +169,7 @@ public class BEASTObjectPanel extends JPanel {
 
     void init(BEASTInterface plugin, Class<?> _pluginClass, boolean showHeader, BeautiDoc doc) {
         try {
-            m_plugin = plugin.getClass().newInstance()
+            m_plugin = plugin.getClass().newInstance();
             for (Input<?> input : plugin.listInputs()) {
                 m_plugin.setInputValue(input.getName(), input.get());
             }
