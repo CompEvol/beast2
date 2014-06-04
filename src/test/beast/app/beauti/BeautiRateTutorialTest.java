@@ -58,6 +58,8 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("// 0. Load RSV2.nex");
 		importAlignment("examples/nexus", new File("RSV2.nex"));
 
+        beautiFrame.menuItemWithPath("Mode", "Automatic set fix mean substitution rate flag").click();
+
 		// load anolis.nex
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
 		f.requireVisible();
