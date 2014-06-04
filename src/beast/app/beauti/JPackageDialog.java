@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 import beast.core.Description;
+import beast.util.AddOnManager;
 import beast.util.Package;
 
 import javax.swing.*;
@@ -25,40 +26,70 @@ import static beast.util.AddOnManager.*;
  * @author  Walter Xie
  */
 @Description("BEAUti package manager")
-public class JPackageDialog extends JDialog {
+public class JPackageDialog extends JPanel {
     private static final long serialVersionUID = 1L;
     JScrollPane scrollPane;
+    JLabel jLabel;
+    Box buttonBox;
     JCheckBox allDepCheckBox = new JCheckBox("install/uninstall all dependencies", null, true);
-    final JFrame frame;
+    JFrame frame;
     JTable dataTable = null;
 
     List<Package> packages = new ArrayList<Package>();
 
-    public JPackageDialog(JFrame frame) {
-        super(frame);
-        this.frame = frame;
-        frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        setModal(true);
-        setTitle("BEAST 2 Package Manager");
+    boolean isRunning;
+    Thread t;
+    
+    public JPackageDialog() {
+        jLabel = new JLabel("List of available packages for BEAST v" + beastVersion.getMajorVersion() + ".*");
+        frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        setLayout(new BorderLayout());
 
-        JLabel jLabel = new JLabel("List of available packages for BEAST v" + beastVersion.getMajorVersion() + ".*");
-        getContentPane().add(BorderLayout.NORTH, jLabel);
-
-        createTable();
+        // update pacakges using a 30 second time out
+        isRunning = true;
+        t = new Thread() {
+        	public void run() {
+        		createTable();
+        		isRunning = false;
+        	}
+        };
+        t.start();
+    	Thread t2 = new Thread() {
+    		public void run() {
+    			try {
+    				// wait 30 seconds
+					sleep(30000);
+	    			if (isRunning) {
+	    				t.interrupt();
+	    				JOptionPane.showMessageDialog(frame, "<html>Download of file " +
+	    						AddOnManager.PACKAGES_XML + " timed out.<br>" +
+	    								"Perhaps this is due to lack of internet access</br>" +
+	    								"or some security settings not allowing internet access.</html>"
+	    						);
+	    			}
+				} catch (InterruptedException e) {
+				}
+    		};
+    	};
+    	t2.start();
+        
+        try {
+			t.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        	
         scrollPane = new JScrollPane(dataTable);
-        getContentPane().add(BorderLayout.CENTER, scrollPane);
+        /*getContentPane().*/add(BorderLayout.CENTER, scrollPane);
 
-        Box buttonBox = createButtonBox();
-        getContentPane().add(buttonBox, BorderLayout.SOUTH);
+        buttonBox = createButtonBox();
+        /*getContentPane().*/add(buttonBox, BorderLayout.SOUTH);
 
         scrollPane.setPreferredSize(new Dimension(660, 400));
         Dimension dim = scrollPane.getPreferredSize();
         Dimension dim2 = buttonBox.getPreferredSize();
         setSize(dim.width + 30, dim.height + dim2.height + 30);
-        Point frameLocation = frame.getLocation();
-        Dimension frameSize = frame.getSize();
-        setLocation(frameLocation.x + frameSize.width / 2 - dim.width / 2, frameLocation.y + frameSize.height / 2 - dim.height / 2);
-        frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
 
@@ -106,7 +137,7 @@ public class JPackageDialog extends JDialog {
 
     private void showDetail(Package aPackage) {
         //custom title, no icon
-        JOptionPane.showMessageDialog(frame,
+        JOptionPane.showMessageDialog(null,
                 aPackage.toHTML(),
                 aPackage.packageName,
                 JOptionPane.PLAIN_MESSAGE);
@@ -207,10 +238,13 @@ public class JPackageDialog extends JDialog {
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+            	if (dlg != null) {
+            		dlg.setVisible(false);
+            	} else {
+            		setVisible(false);
+            	}
             }
         });
         box.add(Box.createGlue());
@@ -327,5 +361,36 @@ public class JPackageDialog extends JDialog {
         }
     }
 
+	
+	
+	public JDialog asDialog(JFrame frame) {
+		if (frame == null) {
+	        frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+		}
+		this.frame = frame;
+    	dlg = new JDialog(frame, "BEAST 2 Package Manager", true);
+		dlg.getContentPane().add(scrollPane, BorderLayout.CENTER);  
+		dlg.getContentPane().add(jLabel, BorderLayout.NORTH);  
+		dlg.getContentPane().add(buttonBox, BorderLayout.SOUTH);  
+		dlg.pack();  
+        Point frameLocation = frame.getLocation();
+        Dimension frameSize = frame.getSize();
+        Dimension dim = getPreferredSize();
+		dlg.setSize(690, 430);
+        dlg.setLocation(frameLocation.x + frameSize.width / 2 - dim.width / 2, frameLocation.y + frameSize.height / 2 - dim.height / 2);
 
+        frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        return dlg;
+	}
+
+
+	JDialog dlg = null;
+	@Override
+	public void setCursor(Cursor cursor) {
+		if (dlg != null) {
+			dlg.setCursor(cursor);
+		} else {
+			super.setCursor(cursor);
+		}
+	}
 }
