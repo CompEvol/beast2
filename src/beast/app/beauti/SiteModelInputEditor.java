@@ -202,11 +202,11 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         return inVarEditor;
     }
 
-    public void customConnector(BeautiDoc doc) {
+    public static boolean customConnector(BeautiDoc doc) {
  		try {
  	        DeltaExchangeOperator operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
  	        if (operator == null) {
- 	        	return;
+ 	        	return false;
  	        }
 
  	       	List<RealParameter> parameters = operator.parameterInput.get();
@@ -239,11 +239,6 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 	    		}
 	    	}
 			
-		    if (doc.bAutoUpdateFixMeanSubstRate) {
-		    	fixMeanRatesCheckBox.setSelected(hasOneEstimatedRate);
-		    	doFixMeanRates(hasOneEstimatedRate);
-		    }
-
 		    IntegerParameter weightParameter;
 			if (weights.equals("")) {
 		    	weightParameter = new IntegerParameter();
@@ -254,17 +249,23 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 			}
 			weightParameter.isEstimatedInput.setValue(false, weightParameter);
 	    	operator.parameterWeightsInput.setValue(weightParameter, operator);
+	    	return hasOneEstimatedRate;
 		} catch (Exception e) {
 			
 		}
-    	
+		return false;
     }
     
     /** set up relative weights and parameter input **/
     public void setUpOperator() {
     	boolean bAllClocksAreEqual = true;
     	try {
-    		customConnector(doc);
+    		boolean hasOneEstimatedRate = customConnector(doc);
+		    if (doc.bAutoUpdateFixMeanSubstRate) {
+		    	fixMeanRatesCheckBox.setSelected(hasOneEstimatedRate);
+		    	doFixMeanRates(hasOneEstimatedRate);
+		    }
+
 
      		try {
      	    	double commonClockRate = -1;

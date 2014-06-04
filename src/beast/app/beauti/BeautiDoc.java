@@ -1038,6 +1038,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             if (bAutoSetClockRate) {
                 setClockRate();
             }
+            if (bAutoUpdateFixMeanSubstRate) {
+            	SiteModelInputEditor.customConnector(this);
+            }
 
             // set estimate flag on tree, only if tree occurs in a partition
             for (BEASTInterface plugin : pluginmap.values()) {
