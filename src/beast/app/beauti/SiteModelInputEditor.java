@@ -21,7 +21,6 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
@@ -59,6 +58,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     		ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean substitution rate");
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
+    	fixMeanRatesCheckBox.setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
@@ -66,22 +66,11 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox averageRatesBox = (JCheckBox) e.getSource();
-				boolean averageRates = averageRatesBox.isSelected();				
-				List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
-				if (averageRates) {
-					// connect DeltaExchangeOperator
-					if (!operators.contains(operator)) {
-						operators.add(operator);
-					}
+				doFixMeanRates(averageRatesBox.isSelected());
+				if (averageRatesBox.isSelected())
 					// set up relative weights
 					setUpOperator();
-				} else {
-					operators.remove(operator);
-					fixMeanRatesValidateLabel.setVisible(false);
-					repaint();
-				}
 			}
-
 		});
     	operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
     	if (operator == null) {
@@ -115,6 +104,19 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 //		return types;
 //    }
 
+	private void doFixMeanRates(boolean averageRates) {
+		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
+		if (averageRates) {
+			// connect DeltaExchangeOperator
+			if (!operators.contains(operator)) {
+				operators.add(operator);
+			}
+		} else {
+			operators.remove(operator);
+			fixMeanRatesValidateLabel.setVisible(false);
+			repaint();
+		}
+	}
 
     public InputEditor createGammaCategoryCountEditor() throws Exception {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
@@ -200,7 +202,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         return inVarEditor;
     }
 
-    public static void customConnector(BeautiDoc doc) {
+    public void customConnector(BeautiDoc doc) {
  		try {
  	        DeltaExchangeOperator operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
  	        if (operator == null) {
@@ -212,6 +214,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
  	    	double commonClockRate = -1;
 		   	String weights = "";
 		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
+		    boolean hasOneEstimatedRate = false;
 			for (Distribution d : likelihood.pDistributions.get()) {
 				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
 	    		Alignment data = treelikelihood.dataInput.get(); 
@@ -221,7 +224,9 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 		    		RealParameter mutationRate = siteModel.muParameterInput.get();
 		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
 		    		if (mutationRate.isEstimatedInput.get()) {
-		    			if (commonClockRate < 0) {
+		    			hasOneEstimatedRate = true;
+
+		    		    if (commonClockRate < 0) {
 		    				commonClockRate = mutationRate.valuesInput.get().get(0);
 		    			} else {
 		    				if (Math.abs(commonClockRate - mutationRate.valuesInput.get().get(0)) > 1e-10) {
@@ -234,7 +239,12 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 	    		}
 	    	}
 			
-			IntegerParameter weightParameter;
+		    if (doc.bAutoUpdateFixMeanSubstRate) {
+		    	fixMeanRatesCheckBox.setSelected(hasOneEstimatedRate);
+		    	doFixMeanRates(hasOneEstimatedRate);
+		    }
+
+		    IntegerParameter weightParameter;
 			if (weights.equals("")) {
 		    	weightParameter = new IntegerParameter();
 			} else {

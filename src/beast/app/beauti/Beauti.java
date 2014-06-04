@@ -76,6 +76,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     JCheckBoxMenuItem autoSetClockRate;
     JCheckBoxMenuItem allowLinking;
     JCheckBoxMenuItem autoUpdateOperatorWeights;
+    JCheckBoxMenuItem autoUpdateFixMeanSubstRate;
 
     /**
      * flag indicating beauti is in the process of being set up and panels
@@ -685,6 +686,16 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
         });
         modeMenu.add(autoUpdateOperatorWeights);
+
+        autoUpdateFixMeanSubstRate = new JCheckBoxMenuItem(
+                "Automatic set fix mean substitution rate flag", this.doc.bAutoUpdateFixMeanSubstRate);
+        autoUpdateFixMeanSubstRate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                doc.bAutoUpdateFixMeanSubstRate = autoUpdateFixMeanSubstRate.getState();
+                refreshPanel();
+            }
+        });
+        modeMenu.add(autoUpdateFixMeanSubstRate);
 
         // final JCheckBoxMenuItem muteSound = new
         // JCheckBoxMenuItem("Mute sound", false);
