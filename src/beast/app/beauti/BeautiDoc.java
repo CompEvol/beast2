@@ -153,7 +153,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public String getTemplateName() {
         return templateName;
     }
-
+    
     public ActionOnExit parseArgs(String[] args) throws Exception {
         ActionOnExit endState = ActionOnExit.UNKNOWN;
         String sOutputFileName = "beast.xml";
@@ -169,6 +169,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     i += 1;
                 } else if (args[i].equals("-h") || args[i].equals("-help")) {
                     showUsageAndExit();
+                } else if (args[i].equals("-capture")) {
+                	// capture stderr and stdout
+                	// already done in beast.app.beauti.Beauti
+                	i += 1;
                 } else if (args[i].equals("-xml")) {
                     String sFileName = args[i + 1];
                     sXML = load(sFileName);

@@ -5,6 +5,7 @@
   	<mainClass>beast.app.beauti.BeautiLauncher</mainClass>
   	<cp>./lib/launcher.jar</cp>
   </classPath>
+  <cmdLine>-capture</cmdLine>
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>
