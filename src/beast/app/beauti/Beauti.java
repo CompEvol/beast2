@@ -355,7 +355,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            JPackageDialog dlg = new JPackageDialog(frame);
+        	JPackageDialog panel = new JPackageDialog();
+        	JDialog dlg = panel.asDialog(frame);
             dlg.setVisible(true);
             // refresh template menu item
             templateMenu.removeAll();
