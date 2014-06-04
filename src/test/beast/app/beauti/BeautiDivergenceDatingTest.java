@@ -31,6 +31,8 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
         warning("// 0. Load primate-mtDNA.nex");
         importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
 
+        beautiFrame.menuItemWithPath("Mode", "Automatic set fix mean substitution rate flag").click();
+
         JTabbedPaneFixture f = beautiFrame.tabbedPane();
         f.requireVisible();
         f.requireTitle("Partitions", Index.atIndex(0));
@@ -350,6 +352,8 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
             warning("// 0. Load primate-mtDNA.nex");
             importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
             screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "DataPartitions.png");
+
+            beautiFrame.menuItemWithPath("Mode", "Automatic set fix mean substitution rate flag").click();
 
             JTabbedPaneFixture f = beautiFrame.tabbedPane();
             f.requireVisible();

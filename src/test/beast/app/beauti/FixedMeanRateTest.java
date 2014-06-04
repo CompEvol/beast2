@@ -16,6 +16,8 @@ public class FixedMeanRateTest extends BeautiBase {
 
 		importAlignment("examples/nexus", new File("26.nex"), new File("29.nex"));
 		
+		beautiFrame.menuItemWithPath("Mode", "Automatic set fix mean substitution rate flag").click();
+
 		
 		warning("Setting fixed mean rates");
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
