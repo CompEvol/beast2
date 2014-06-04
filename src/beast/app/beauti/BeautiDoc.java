@@ -71,6 +71,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public boolean bAutoSetClockRate = true;
         
     public boolean bAutoUpdateOperatorWeights = true;
+
+    public boolean bAutoUpdateFixMeanSubstRate = true;
     /**
      * flags for whether parameters can be linked.
      * Once a parameter is linked, (un)linking in the alignment editor should be disabled
@@ -710,6 +712,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	    if (!bAutoUpdateOperatorWeights) {
 	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateOperatorWeights";
 	    }
+	    if (!bAutoUpdateFixMeanSubstRate) {
+	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateFixMeanSubstRate";
+	    }
 	    return beautiStatus;
     }
 
@@ -748,6 +753,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         beauti.allowLinking.setSelected(bAllowLinking);
         bAutoUpdateOperatorWeights = !beautiStatus.contains("noAutoUpdateOperatorWeights");
         beauti.autoUpdateOperatorWeights.setSelected(bAutoUpdateOperatorWeights);
+        bAutoUpdateFixMeanSubstRate = !beautiStatus.contains("noAutoUpdateFixMeanSubstRate"); 
+        beauti.autoUpdateFixMeanSubstRate.setSelected(bAutoUpdateFixMeanSubstRate);
 
         // parse file
         XMLParser parser = new XMLParser();
