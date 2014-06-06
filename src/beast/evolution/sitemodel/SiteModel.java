@@ -116,6 +116,10 @@ public class SiteModel extends SiteModelInterface.Base {
         }
 
         if (/*invarParameter != null && */invarParameter.getValue() > 0) {
+            if (invarParameter.getValue() >= 1.0) {
+            	throw new RuntimeException("Wrong value for parameter " + invarParameter.getID() +
+            			". Proportion invariant should be in bewteen 0 and 1 (exclusive)");
+            }
             if (hasPropInvariantCategory) {
                 categoryCount += 1;
             }
