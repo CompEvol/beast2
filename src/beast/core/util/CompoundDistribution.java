@@ -26,10 +26,12 @@ package beast.core.util;
 
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -53,6 +55,7 @@ public class CompoundDistribution extends Distribution {
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
                     new ArrayList<Distribution>());
     public Input<Boolean> useThreadsInput = new Input<Boolean>("useThreads", "calculated the distributions in parallel using threads (default false)", false);
+    public Input<Integer> maxNrOfThreadsInput = new Input<Integer>("threads","maximum number of threads to use, if less than 1 the number of threads in BeastMCMC is used (default -1)", -1);
     public Input<Boolean> ignoreInput = new Input<Boolean>("ignore", "ignore all distributions and return 1 as distribution (default false)", false);
     
     /**
@@ -60,12 +63,22 @@ public class CompoundDistribution extends Distribution {
      * true and BeasMCMC.nrOfThreads > 1
      */
     boolean useThreads;
+    int nrOfThreads;
     boolean ignore;
-
+    public static ExecutorService exec;
+    
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
+		nrOfThreads = useThreads ? BeastMCMC.m_nThreads : 1;
+		if (useThreads && maxNrOfThreadsInput.get() > 0) {
+			nrOfThreads = Math.min(maxNrOfThreadsInput.get(), BeastMCMC.m_nThreads);
+		}
+		if (useThreads) {
+		     exec = Executors.newFixedThreadPool(nrOfThreads);
+		}
+
         ignore = ignoreInput.get();
 
         if (pDistributions.get().size() == 0) {
@@ -122,12 +135,12 @@ public class CompoundDistribution extends Distribution {
                 e.printStackTrace();
                 System.exit(0);
             }
-            m_nCountDown.countDown();
+            countDown.countDown();
         }
 
     } // CoreRunnable
 
-    CountDownLatch m_nCountDown;
+    CountDownLatch countDown;
 
     private double calculateLogPUsingThreads() throws Exception {
         try {
@@ -138,15 +151,15 @@ public class CompoundDistribution extends Distribution {
                     nrOfDirtyDistrs++;
                 }
             }
-            m_nCountDown = new CountDownLatch(nrOfDirtyDistrs);
+            countDown = new CountDownLatch(nrOfDirtyDistrs);
             // kick off the threads
             for (Distribution dists : pDistributions.get()) {
                 if (dists.isDirtyCalculation()) {
                     CoreRunnable coreRunnable = new CoreRunnable(dists);
-                    BeastMCMC.g_exec.execute(coreRunnable);
+                    exec.execute(coreRunnable);
                 }
             }
-            m_nCountDown.await();
+            countDown.await();
             logP = 0;
             for (Distribution distr : pDistributions.get()) {
                 logP += distr.getCurrentLogP();
@@ -155,8 +168,6 @@ public class CompoundDistribution extends Distribution {
         } catch (RejectedExecutionException e) {
             useThreads = false;
             System.err.println("Stop using threads: " + e.getMessage());
-            // refresh thread pool
-            BeastMCMC.g_exec = Executors.newFixedThreadPool(BeastMCMC.m_nThreads);
             return calculateLogP();
         }
     }
