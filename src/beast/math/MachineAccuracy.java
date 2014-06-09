@@ -67,4 +67,16 @@ public class MachineAccuracy {
     public static boolean same(double a, double b) {
         return Math.abs((a / b) - 1.0) <= SQRT_EPSILON;
     }
+    
+    /**
+     * Tests to see whether the absolute difference between a and b is
+     * smaller than EPSILON.
+     * 
+     * @param a
+     * @param b
+     * @return result of test
+     */
+    public static boolean sameAbsolute(double a, double b) {
+        return Math.abs(a-b) < EPSILON;
+    }
 }
