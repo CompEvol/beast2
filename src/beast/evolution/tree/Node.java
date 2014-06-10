@@ -48,7 +48,7 @@ public class Node extends BEASTObject {
     /**
      * Arbitrarily labeled metadata on this node. Not currently implemented as part of state!
      */
-    protected Map<String, Object> metaData;
+    protected Map<String, Object> metaData = new TreeMap<String, Object>();
 
     /**
      * list of children of this node *
@@ -536,6 +536,7 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
+        node.metaData = new TreeMap<String, Object>(metaData);
         node.parent = null;
         node.setID(getID());
 
@@ -553,6 +554,7 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
+        node.metaData = new TreeMap<String, Object>(metaData);
         node.parent = null;
         node.setID(getID());
         if (getLeft() != null) {
@@ -574,6 +576,7 @@ public class Node extends BEASTObject {
         height = node.height;
         labelNr = node.labelNr;
         metaDataString = node.metaDataString;
+        metaData = new TreeMap<String, Object>(node.metaData);
         parent = null;
         setID(node.getID());
         if (node.getLeft() != null) {
@@ -601,7 +604,6 @@ public class Node extends BEASTObject {
             height = (Double) fValue;
             isDirty |= Tree.IS_DIRTY;
         } else {
-            if (metaData == null) metaData = new TreeMap<String, Object>();
             metaData.put(sPattern, fValue);
         }
 
@@ -612,7 +614,7 @@ public class Node extends BEASTObject {
                 sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             return height;
-        } else if (metaData != null) {
+        } else {
             final Object d = metaData.get(sPattern);
             if (d != null) return d;
         }
@@ -620,9 +622,6 @@ public class Node extends BEASTObject {
     }
 
     public Set<String> getMetaDataNames() {
-        if (metaData == null) {
-            return null;
-        }
         return metaData.keySet();
     }
 
