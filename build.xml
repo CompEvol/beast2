@@ -64,8 +64,9 @@
 		<mkdir dir="${build}" />
 
 		<!-- Compile the java code from ${src} into ${build} /bin -->
-		<javac source="1.8"
-		       target="1.8"
+		<javac source="1.6"
+		       target="1.6"
+			   bootclasspath='/opt/jdk1.7.0_25/jre/lib/rt.jar'
 		       srcdir="${src}"
 		       destdir="${build}"
 		       classpathref="classpath"
@@ -78,6 +79,23 @@
 			<include name="org/**/**" />
 			<!-- compile JUnit test classes -->
 			<include name="test/beast/**" />
+		</javac>
+
+		<!-- compile the launcher apps against Java 6-->
+		<delete file="${build}/beast/app/beastapp/BeastLauncher.class" />
+		<delete file="${build}/beast/app/beauti/BeautiLauncher.class" />
+		<javac source="1.6"
+		       target="1.6"
+			   bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
+		       srcdir="${src}"
+		       destdir="${build}"
+		       classpathref="classpath"
+		       fork="true"
+		       memoryinitialsize="256m"
+		       memorymaximumsize="1024m"
+			   includeAntRuntime='false'>
+			<include name="beast/app/beastapp/BeastLauncher.java" />
+			<include name="beast/app/beauti/BeautiLauncher.java" />
 		</javac>
 		<copy todir="${build}">
 			<fileset dir="${src}" includes="**/*.properties" />
@@ -109,9 +127,15 @@
 			<zipgroupfileset dir="${lib}" includes="colt.jar" />
 			<zipgroupfileset dir="${lib}" includes="commons-math3-3.1.1.jar" />
 		</jar>
+		<jar jarfile="${dist}/launcher.jar">
+			<fileset dir="${build}">
+				<include name="beast/**/*Launcher.class" />
+			</fileset>
+		</jar>
 		<jar jarfile="${dist}/beast.src.jar">
 			<fileset dir="${src}">
 				<include name="beast/**/*.java" />
+				<include name="org/**/*.java" />
 				<include name="beast/**/*.png" />
 				<include name="beast/**/*.xsl" />
 			</fileset>
@@ -182,8 +206,8 @@
 
 
 	<!-- Release -->
-	<property name="version" value="2.1.3" />
-	<property name="version_number" value="2.1.3" />
+	<property name="version" value="2.2.0" />
+	<property name="version_number" value="2.2.0" />
 	<property name="release_dir" value="release" />
 	<property name="copyright" value="Beast 2 development team 2011-2014" />
 
@@ -207,8 +231,8 @@
 
 	<!-- Need to either install Launch4j under {BEAST workspace}/${release}
                  or install it in the default directory and change the location of launch4j.dir -->
+	        <!--depends="build_jar_all_BEAST_NoJUnitTest"-->
 	<target name="windows"
-	        depends="build_jar_all_BEAST_NoJUnitTest"
 	        description="release Windows version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
 
 		<delete dir="${Windows_package_dir}" />
@@ -356,6 +380,7 @@
 		<copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
 		<!-- <copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" /> 
 		<copy file="${dist}/beauti.jar" todir="${Linux_package_dir}/lib" /> -->
+		<copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
 		<copy file="${dist}/beast.jar" todir="${Linux_package_dir}/lib" />
 		<copy file="${dist}/beast.src.jar" todir="${Linux_package_dir}/lib" />
 		<!-- <copy file="${dist}/beast-beagle.jar" todir="${Linux_package_dir}/lib"/> 
@@ -394,8 +419,8 @@
 
 	<!--property name="jarbundler_dir" value="/Applications/eclipse/plugins/org.apache.ant_1.8.2.v20110505-1300/lib" /-->
 	<property name="jarbundler_dir" value="/Users/remcobouckaert/bin/eclipse/plugins/org.apache.ant_1.8.3.v20120321-1730/lib" />
+	<!--        depends="build_jar_all_BEAST_NoJUnitTest"-->
 	<target name="mac"
-	        depends="build_jar_all_BEAST_NoJUnitTest"
 	        description="release Mac version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
 		<delete dir="${Mac_package_dir}" />
 		<delete file="${Mac_dir}/pack.temp.dmg"/>
@@ -423,6 +448,7 @@
 		</copy>
 		
 		<copy file="${dist}/beauti.jar" todir="${Mac_package_dir}/lib" /> -->
+		<copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
 		<copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
 		<copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
 		<!-- <copy file="${dist}/beast-beagle.jar" todir="${Mac_package_dir}/lib"/> 
@@ -441,7 +467,7 @@
 		<!-- create a jar bundle for the mac -->
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${BEAST_name}"
-		            mainclass="${main_class_BEAST}"
+		            mainclass="beast.app.beastapp.BeastLauncher"
 		            icon="${common_dir}/icons/beast.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
@@ -450,7 +476,7 @@
 		            infostring="${BEAST_name}, ${copyright}"
 		            bundleid="${main_class_BEAST}">
 			<jarfileset dir="${Mac_package_dir}/lib">
-				<include name="**/beast.jar" />
+				<include name="**/launcher.jar" />
 				<!-- <include name="**/beast-beagle.jar" /> -->
 			</jarfileset>
 			<!-- 			<jarfileset dir="${Mac_package_dir}/lib">
@@ -462,7 +488,7 @@
 
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${BEAUti_name}"
-		            mainclass="beast.app.beauti.Beauti"
+		            mainclass="beast.app.beauti.BeautiLauncher"
 		            icon="${common_dir}/icons/beauti.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M -Xdock:name=&quot;BEAUti 2&quot;"
@@ -471,7 +497,7 @@
 		            infostring="${BEAUti_name}, ${copyright}"
 		            bundleid="beast.app.beauti.Beauti">
 			<jarfileset dir="${Mac_package_dir}/lib">
-				<include name="**/beast.jar" />
+				<include name="**/launcher.jar" />
 			</jarfileset>
 			<!--<jarfileset dir="${Mac_package_dir}/lib">
 				<include name="**/quaqua.jar" />
@@ -486,7 +512,7 @@
 		<!-- ant copy will not redirect the source, so that have to re-bundler it -->
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${LogCombiner_name}"
-		            mainclass="beast.app.tools.LogCombiner"
+		            mainclass="beast.app.tools.LogCombinerLauncher"
 		            icon="${beast1_dir}/utility.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
@@ -495,7 +521,7 @@
 		            infostring="${LogCombiner_name}, ${copyright}"
 		            bundleid="dr.app.tools.logcombiner">
 			<jarfileset dir="${Mac_package_dir}/lib">
-				<include name="**/beast.jar" />
+				<include name="**/launcher.jar" />
 			</jarfileset>
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
