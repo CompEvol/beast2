@@ -45,11 +45,12 @@ public class JPackageDialog extends JPanel {
         frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         setLayout(new BorderLayout());
 
+		createTable();
         // update pacakges using a 30 second time out
         isRunning = true;
         t = new Thread() {
         	public void run() {
-        		createTable();
+                resetPackages();
         		isRunning = false;
         	}
         };
@@ -110,7 +111,6 @@ public class JPackageDialog extends JPanel {
                 }
             }
         });
-        resetPackages();
     }
 
     private void resetPackages() {
