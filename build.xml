@@ -21,6 +21,7 @@
 	<path id="classpath">
 		<fileset dir="${lib}" includes="beagle.jar"/>
 		<fileset dir="${lib}" includes="jam.jar"/>
+		<fileset dir="${lib}" includes="colt.jar"/>
 		<fileset dir="${lib}" includes="fest.jar"/>
 		<fileset dir="${lib}" includes="junit-4.8.2.jar"/>
  	</path>
