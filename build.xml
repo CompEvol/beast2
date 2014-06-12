@@ -94,8 +94,7 @@
 		       memoryinitialsize="256m"
 		       memorymaximumsize="1024m"
 			   includeAntRuntime='false'>
-			<include name="beast/app/beastapp/BeastLauncher.java" />
-			<include name="beast/app/beauti/BeautiLauncher.java" />
+			<include name="beast/**/*Launcher.java" />
 		</javac>
 		<copy todir="${build}">
 			<fileset dir="${src}" includes="**/*.properties" />
@@ -390,8 +389,8 @@
 
 		<!--		
 		<copy file="${beast1_dir}/beast161.jar" todir="${Linux_package_dir}/lib" />
-		-->
 		<copy file="${tools_dir}/treeannotator.jar" todir="${Linux_package_dir}/lib" />
+		-->
 
 		<copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
 		<copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
@@ -529,7 +528,7 @@
 
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${TreeAnnotator_name}"
-		            mainclass="beast.app.treeannotator.TreeAnnotator"
+		            mainclass="beast.app.treeannotator.TreeAnnotatorLauncher"
 		            icon="${beast1_dir}/utility.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
@@ -538,7 +537,7 @@
 		            infostring="${TreeAnnotator_name}, ${copyright}"
 		            bundleid="beast.app.treeannotator.treeannotator">
 			<jarfileset dir="${tools_dir}">
-				<include name="**/treeannotator.jar" />
+				<include name="**/launcher.jar" />
 			</jarfileset>
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
@@ -580,7 +579,7 @@
 
         <jarbundler dir="${Mac_package_dir}"
                     name="${AppStore_name}"
-                    mainclass="beast.app.tools.AppStore"
+                    mainclass="beast.app.tools.AppStoreLauncher"
                     icon="${beast1_dir}/utility.icns"
                     jvmversion="1.6+"
                     vmoptions="-Xmx1024M"
@@ -589,7 +588,7 @@
                     infostring="${AppStore_name}, ${copyright}"
                     bundleid="beast.app.tools.appstore">
 			<jarfileset dir="${Mac_package_dir}/lib">
-				<include name="**/beast.jar" />
+				<include name="**/launcher.jar" />
 			</jarfileset>
             <javaproperty name="apple.laf.useScreenMenuBar" value="true" />
             <javaproperty name="java.library.path" value="$JAVAROOT/lib" />

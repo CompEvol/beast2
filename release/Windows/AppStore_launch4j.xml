@@ -2,8 +2,8 @@
   <headerType>gui</headerType>
   <icon>../common/icons/utility.ico</icon>
   <classPath>
-  	<mainClass>beast.app.tools.AppStore</mainClass>
-  	<cp>./lib/beast.jar</cp>
+  	<mainClass>beast.app.tools.AppStoreLauncher</mainClass>
+  	<cp>./lib/launcher.jar</cp>
   </classPath>
   <cmdLine></cmdLine>
   <jre>

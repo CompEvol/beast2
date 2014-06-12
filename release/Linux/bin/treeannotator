@@ -23,5 +23,5 @@ if [ -z "$BEAST" ]; then
 fi
 
 BEAST_LIB="$BEAST/lib"
-java -Xms256m -Xmx1024m -Djava.library.path="$BEAST_LIB" -cp "$BEAST_LIB/treeannotator.jar" beast.app.treeannotator.TreeAnnotator $*
+java -Xms256m -Xmx1024m -Djava.library.path="$BEAST_LIB" -cp "$BEAST_LIB/launcher.jar" beast.app.treeannotator.TreeAnnotatorLauncher $*
 
