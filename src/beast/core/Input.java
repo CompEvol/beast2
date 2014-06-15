@@ -611,6 +611,9 @@ public class Input<T> {
         }
 
         if (theClass.isEnum()) {
+        	if (possibleValues == null) {
+        		possibleValues = (T[]) theClass.getDeclaringClass().getEnumConstants();
+        	}
             for (final T t : possibleValues) {
                 if (sValue.equals(t.toString())) {
                     value = t;
