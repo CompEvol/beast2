@@ -4,6 +4,7 @@ package beast.app.beauti;
 import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.ExpandOption;
+import beast.app.util.Utils;
 import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.Input;
@@ -20,8 +21,8 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
-import java.net.URL;
 import java.util.List;
 
 
@@ -146,7 +147,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
             return;
         }
         box.add(Box.createVerticalGlue());
-        box.add(new JLabel(getIcon(iPanel, config)));
+        box.add(new JLabel(Utils.getIcon(iPanel, config)));
 
         //if (splitPane.getLeftComponent() != null) {
         //    Dimension d = splitPane.getLeftComponent().getSize();
@@ -214,29 +215,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
             listOfPartitions.setSelectedIndex(iPartition);
     }
 
-    public static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
-        String sIconLocation = ICONPATH + iPanel + ".png";
-        if (config != null) {
-            sIconLocation = ICONPATH + config.getIcon();
-        }
-        return getIcon(sIconLocation);
-    }
-
-    public static ImageIcon getIcon(String sIconLocation) {
-        try {
-            URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
-            if (url == null) {
-                System.err.println("Cannot find icon " + sIconLocation);
-                return null;
-            }
-            ImageIcon icon = new ImageIcon(url);
-            return icon;
-        } catch (Exception e) {
-            System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
-            return null;
-        }
-
-    }
+    
 
     // AR remove globals (doesn't seem to be used anywhere)...
 //	static BeautiPanel g_currentPanel = null;
