@@ -65,9 +65,8 @@
 		<mkdir dir="${build}" />
 
 		<!-- Compile the java code from ${src} into ${build} /bin -->
-		<javac source="1.6"
-		       target="1.6"
-			   bootclasspath='/opt/jdk1.7.0_25/jre/lib/rt.jar'
+		<javac source="1.8"
+		       target="1.8"
 		       srcdir="${src}"
 		       destdir="${build}"
 		       classpathref="classpath"
@@ -85,6 +84,9 @@
 		<!-- compile the launcher apps against Java 6-->
 		<delete file="${build}/beast/app/beastapp/BeastLauncher.class" />
 		<delete file="${build}/beast/app/beauti/BeautiLauncher.class" />
+		<delete file="${build}/beast/app/tools/AppStoreLauncher.class" />
+		<delete file="${build}/beast/app/tools/LogCombinerLauncher.class" />
+		<delete file="${build}/beast/app/treeannotator/TreeAnnotatorLauncher.class" />
 		<javac source="1.6"
 		       target="1.6"
 			   bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
