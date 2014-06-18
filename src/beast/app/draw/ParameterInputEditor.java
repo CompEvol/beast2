@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.PartitionContext;
+import beast.app.util.Utils;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
@@ -121,7 +122,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             if (doc.bAllowLinking) {
 	            boolean isLinked = doc.isLinked(m_input);
 				if (isLinked || doc.suggestedLinks((BEASTInterface) m_input.get()).size() > 0) {
-		            JButton linkbutton = new JButton(BeautiPanel.getIcon(BeautiPanel.ICONPATH + 
+		            JButton linkbutton = new JButton(Utils.getIcon(BeautiPanel.ICONPATH + 
 		            		(isLinked ? "link.png" : "unlink.png")));
 		            linkbutton.setBorder(BorderFactory.createEmptyBorder());
 		            linkbutton.setToolTipText("link/unlink this parameter with another compatible parameter");

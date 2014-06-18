@@ -3,9 +3,14 @@ package beast.app.util;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.BeautiPanelConfig;
+
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +54,8 @@ public class Utils {
     */
     public static void startSplashScreen()
     {
-        int width=325,height=148;
+        Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
+        int width=img.getWidth(null), height=img.getHeight(null);
         Window win=new Window( new Frame() );
         win.pack();
         Canvas can = new Canvas();
@@ -59,8 +65,8 @@ public class Utils {
         win.setBounds(
                 dim.width/2-width/2, dim.height/2-height/2, width, height );
         win.add("Center", can);
-        Image img=tk.getImage(
-                Utils.class.getResource("beast.png") ); //what
+//        Image img=tk.getImage(
+//                Utils.class.getResource("beast.png") ); //what
         MediaTracker mt=new MediaTracker(can);
         mt.addImage(img,0);
         try { mt.waitForAll(); } catch ( Exception e ) { }
@@ -325,4 +331,26 @@ public class Utils {
         reader.close();
         return out.toString();
     }
+	public static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
+	    String sIconLocation = BeautiPanel.ICONPATH + iPanel + ".png";
+	    if (config != null) {
+	        sIconLocation = BeautiPanel.ICONPATH + config.getIcon();
+	    }
+	    return Utils.getIcon(sIconLocation);
+	}
+	public static ImageIcon getIcon(String sIconLocation) {
+	    try {
+	        URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
+	        if (url == null) {
+	            System.err.println("Cannot find icon " + sIconLocation);
+	            return null;
+	        }
+	        ImageIcon icon = new ImageIcon(url);
+	        return icon;
+	    } catch (Exception e) {
+	        System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+	        return null;
+	    }
+	
+	}
 }
