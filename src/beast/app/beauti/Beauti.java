@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import beast.app.BEASTVersion;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
@@ -540,7 +541,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             BEASTVersion version = new BEASTVersion();
             JOptionPane.showMessageDialog(null, version.getCredits(),
                     "About Beauti 2", JOptionPane.PLAIN_MESSAGE,
-                    BeautiPanel.getIcon(BEAUTI_ICON));
+                    Utils.getIcon(BEAUTI_ICON));
         }
     } // class ActionAbout
 
@@ -1050,7 +1051,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             JFrame frame = new JFrame("BEAUti 2: " + doc.getTemplateName()
                     + " " + doc.getFileName());
             beauti.frame = frame;
-            ImageIcon icon = BeautiPanel.getIcon(BEAUTI_ICON);
+            ImageIcon icon = Utils.getIcon(BEAUTI_ICON);
             if (icon != null) {
                 frame.setIconImage(icon.getImage());
             }
