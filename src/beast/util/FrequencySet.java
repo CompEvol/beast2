@@ -37,8 +37,6 @@ import java.util.*;
 public class FrequencySet<T> {
     public static final double DEFAULT_CRED_SET = 0.95;
 
-    protected CredibleSet<String> credibleSet;
-
     public FrequencySet() { }
 
     public FrequencySet(double credSetProbability) {
@@ -83,6 +81,10 @@ public class FrequencySet<T> {
      * get sum of all frequencies
      */
     public int getSumFrequency() {
+        if (!sorted) {
+            sortByFrequency();
+        }
+
         int sum = 0;
         for (int i = 0; i < size(); i++) {
             sum += getFrequency(i);
