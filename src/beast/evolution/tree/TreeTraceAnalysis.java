@@ -48,7 +48,7 @@ public class TreeTraceAnalysis {
     protected List<Tree> treeInCredSetList;
     protected int burnin, totalTrees;
 
-    protected FrequencySet<String> topologiesFrequencySet; // include credSetProbability
+    protected FrequencySet<String> topologiesFrequencySet;
     protected CredibleSet<String> credibleSet;
 
     public TreeTraceAnalysis() {   }
@@ -61,18 +61,18 @@ public class TreeTraceAnalysis {
      * need to run analyze(credSetProbability)
      *
      * @param posteriorTreeList
-     * @param burninPercentage
+     * @param burninFraction
      */
-    public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninPercentage) {
+    public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction) {
         totalTrees = posteriorTreeList.size();
-        burnin = getBurnIn(totalTrees, burninPercentage);
+        burnin = getBurnIn(totalTrees, burninFraction);
 
         // Remove burnin from trace:
         treeInCredSetList = getSubListOfTrees(posteriorTreeList, burnin);
     }
 
-    public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninPercentage, double credSetProbability) {
-        this(posteriorTreeList, burninPercentage);
+    public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction, double credSetProbability) {
+        this(posteriorTreeList, burninFraction);
         analyze(credSetProbability);
     }
 
