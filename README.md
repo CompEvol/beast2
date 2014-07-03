@@ -1,7 +1,7 @@
 BEAST 2
 =======
 
-BEAST is a cross-platform program for Bayesian MCMC analysis of
+BEAST is a cross-platform program for Bayesian inference using MCMC of
 molecular sequences. It is entirely orientated towards rooted,
 time-measured phylogenies inferred using strict or relaxed molecular
 clock models. It can be used as a method of reconstructing phylogenies

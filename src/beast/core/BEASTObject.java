@@ -67,7 +67,10 @@ abstract public class BEASTObject implements BEASTInterface{
 
     // A default method in BEASTInterface cannot override
     // a method in Object, so it needs to be in BEASTObject
-    public String getString() {
+    public String toString() {
     	return getID();
     }
+    
+    
+    
 } // class BEASTObject

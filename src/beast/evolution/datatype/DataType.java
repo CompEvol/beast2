@@ -254,7 +254,7 @@ public interface DataType {
 
         @Override
         public boolean isAmbiguousState(int state) {
-            return (state < 0 && state >= stateCount);
+            return (state < 0 || state >= stateCount);
         }
 
         @Override
