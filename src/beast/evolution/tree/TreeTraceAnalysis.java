@@ -22,6 +22,8 @@ import beast.util.FrequencySet;
 import beast.util.NexusParser;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +35,7 @@ import java.util.Map;
 
 /**
  * Partial re-implementation of TreeTraceAnalysis from BEAST 1.
- *
+ * <p/>
  * Represents an analysis of a list of trees obtained either directly
  * from a logger or from a trace file.  Currently only the 95% credible
  * set of tree topologies is calculated.
@@ -51,7 +53,8 @@ public class TreeTraceAnalysis {
     protected FrequencySet<String> topologiesFrequencySet;
     protected CredibleSet<String> credibleSet;
 
-    public TreeTraceAnalysis() {   }
+    public TreeTraceAnalysis() {
+    }
 
     public TreeTraceAnalysis(List<Tree> posteriorTreeList) {
         this(posteriorTreeList, DEFAULT_BURN_IN_FRACTION);
@@ -93,13 +96,14 @@ public class TreeTraceAnalysis {
 
     public static int getBurnIn(int total, double burninFraction) {
         // Record original list length and burnin for report:
-        int burnin = (int)(total * burninFraction);
+        int burnin = (int) (total * burninFraction);
         assert burnin < total;
         return burnin;
     }
 
     /**
      * used to remove burn in
+     *
      * @param rawTreeList
      * @param start
      * @param end
@@ -115,8 +119,9 @@ public class TreeTraceAnalysis {
     }
 
     public void reportShort(PrintStream oStream) {
-        oStream.println("burnin = " + String.valueOf(burnin));
-        oStream.println("total trees used (total - burnin) = "
+        // prefix non-tabular lines with # so file can be read into R
+        oStream.println("# burnin = " + String.valueOf(burnin));
+        oStream.println("# total trees used (total - burnin) = "
                 + String.valueOf(treeInCredSetList.size()));
     }
 
@@ -128,7 +133,8 @@ public class TreeTraceAnalysis {
     public void report(PrintStream oStream) {
         reportShort(oStream);
 
-        oStream.print("\n" + String.valueOf(topologiesFrequencySet.getCredSetProbability()*100)
+        // prefix non-tabular lines with # so file can be read into R
+        oStream.print("# \n# " + String.valueOf(topologiesFrequencySet.getCredSetProbability() * 100)
                 + "% credible set");
 
         oStream.println(" (" + String.valueOf(credibleSet.credibleSetList.size())
@@ -136,19 +142,19 @@ public class TreeTraceAnalysis {
                 + String.valueOf(credibleSet.sumFrequency)
                 + " trees in total)");
 
-        oStream.println("Count\tPercent\tRunning\tTree");
+        oStream.println("Rank\tCount\tPercent\tRunning\tTree");
         double runningPercent = 0;
-        for (int i=0; i<credibleSet.credibleSetList.size(); i++) {
-            double percent = 100.0*credibleSet.getFrequency(i, topologiesFrequencySet)/(totalTrees-burnin);
+        for (int i = 0; i < credibleSet.credibleSetList.size(); i++) {
+            double percent = 100.0 * credibleSet.getFrequency(i, topologiesFrequencySet) / (totalTrees - burnin);
             runningPercent += percent;
 
+            oStream.print((i+1) + "\t");
             oStream.print(credibleSet.getFrequency(i, topologiesFrequencySet) + "\t");
             oStream.format("%.2f%%\t", percent);
             oStream.format("%.2f%%\t", runningPercent);
             oStream.println(credibleSet.credibleSetList.get(i));
         }
     }
-
 
     /**
      * Recursive function for constructing a Newick tree representation
@@ -164,15 +170,15 @@ public class TreeTraceAnalysis {
             StringBuilder builder = new StringBuilder("(");
 
             List<String> subTrees = new ArrayList<String>();
-            for (int i=0; i<node.getChildCount(); i++) {
+            for (int i = 0; i < node.getChildCount(); i++) {
                 subTrees.add(uniqueNewick(node.getChild(i)));
             }
 
             Collections.sort(subTrees);
 
-            for (int i=0; i<subTrees.size(); i++) {
+            for (int i = 0; i < subTrees.size(); i++) {
                 builder.append(subTrees.get(i));
-                if (i<subTrees.size()-1) {
+                if (i < subTrees.size() - 1) {
                     builder.append(",");
                 }
             }
@@ -195,7 +201,7 @@ public class TreeTraceAnalysis {
      * Obtain frequencies with which members of the credible set appeared
      * in the original tree list.
      *
-     * @return  List of absolute topology frequencies.
+     * @return List of absolute topology frequencies.
      */
 //    public List<Integer> getCredibleSetFreqs() {
 //        return credibleSetFreqs;
@@ -210,19 +216,41 @@ public class TreeTraceAnalysis {
         return treeInCredSetList.size();
     }
 
-    public Map<String,Integer> getTopologyCounts() {
+    public Map<String, Integer> getTopologyCounts() {
         return topologiesFrequencySet.getFrequencyMap();
     }
 
     public static void main(String[] args) {
-        try {
-            NexusParser parser = new NexusParser();
-            parser.parseFile(new File(args[0]));
-            TreeTraceAnalysis analysis = new TreeTraceAnalysis(parser.trees);
-            analysis.analyze(0.95);
-            analysis.report(System.out);
-        } catch (Exception e) {
-            e.printStackTrace();
+        PrintStream out = System.out;
+        File inputFile = null;
+
+        if (args.length > 0) {
+            System.out.println("Input file  = " + args[0]);
+            inputFile = new File(args[0]);
+        } else {
+            System.out.println("Error: Expected nexus file, but not file name was provided.");
+            System.exit(0);
         }
+
+        if (args.length > 1) {
+            System.out.println("Output file = " + args[1]);
+            try {
+                out = new PrintStream(new FileOutputStream(args[1]));
+            } catch (FileNotFoundException e) {
+                System.out.println("Error: Unable to create output file.");
+                System.exit(0);
+            }
+        }
+
+        NexusParser parser = new NexusParser();
+        try {
+            parser.parseFile(inputFile);
+        } catch (Exception e) {
+            System.out.println("Error occurred while parsing input file.");
+            System.exit(0);
+        }
+        TreeTraceAnalysis analysis = new TreeTraceAnalysis(parser.trees);
+        analysis.analyze(0.95);
+        analysis.report(out);
     }
 }

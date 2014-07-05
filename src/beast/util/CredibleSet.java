@@ -27,14 +27,13 @@ public class CredibleSet<T> {
 
     public void setCredibleSetList(T target, FrequencySet<T> frequencySet) {
         int total = frequencySet.getSumFrequency();
-        int credSet = (int) (credSetProbability * total);
 
         for (int i = 0; i < frequencySet.size(); i++) {
             final int freq = frequencySet.getFrequency(i);
             final double prop = ((double) freq) / total;
 
             sumFrequency += freq;
-            final double sumProp = ((double) sumFrequency) / total;
+            final double sumProp = ((double) sumFrequency) / (double)total;
 
             T obj = frequencySet.get(i);
             credibleSetList.add(obj);
@@ -44,7 +43,7 @@ public class CredibleSet<T> {
                 targetCum = sumProp;
             }
 
-            if (sumFrequency >= credSet) {
+            if (sumProp >= credSetProbability) {
                 break;
             }
         }
