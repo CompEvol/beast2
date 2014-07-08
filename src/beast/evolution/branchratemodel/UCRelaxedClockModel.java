@@ -9,6 +9,8 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.ParametricDistribution;
+import beast.util.Randomizer;
+import org.apache.commons.math.MathException;
 
 /**
  * @author Alexei Drummond
@@ -20,38 +22,66 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.REQUIRED);
     public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
+    public Input<RealParameter> quantileInput = new Input<RealParameter>("rateQuantiles", "the rate quantiles associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.XOR, categoryInput);
+
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
     public Input<Boolean> normalizeInput = new Input<Boolean>("normalize", "Whether to normalize the average rate (default false).", false);
-//    public Input<Boolean> initialiseInput = new Input<Boolean>("initialise", "Whether to initilise rates by a heuristic instead of random (default false).", false);
+//    public Input<Boolean> initialiseInput = new Input<Boolean>("initialise", "Whether to initialise rates by a heuristic instead of random (default false).", false);
 
     RealParameter meanRate;
 //    boolean initialise;
+
+    final int LATTICE_SIZE_FOR_DISCRETIZED_RATES = 1000;
+
+    // true if quantiles are used, false if discrete rate categories are used.
+    boolean usingQuantiles;
+
+    private int branchCount;
 
     @Override
     public void initAndValidate() throws Exception {
 
         tree = treeInput.get();
+        branchCount = tree.getNodeCount() - 1;
 
         categories = categoryInput.get();
-        int nCategoryCount = tree.getNodeCount() - 1;
-        categories.setDimension(nCategoryCount);
-        Integer[] iCategories = new Integer[nCategoryCount];
-        for (int i = 0; i < nCategoryCount; i++) {
-            iCategories[i] = i;
+
+        usingQuantiles = (categories == null);
+
+        if (usingQuantiles) {
+            quantiles = quantileInput.get();
+            quantiles.setDimension(branchCount);
+            Double[] initialQuantiles = new Double[branchCount];
+            for (int i = 0; i < branchCount; i++) {
+                initialQuantiles[i] = Randomizer.nextDouble();
+            }
+            RealParameter other = new RealParameter(initialQuantiles);
+            quantiles.assignFromWithoutID(other);
+            quantiles.setLower(0.0);
+            quantiles.setUpper(1.0);
+        } else {
+            categories.setDimension(branchCount);
+            Integer[] initialCategories = new Integer[branchCount];
+            for (int i = 0; i < branchCount; i++) {
+                initialCategories[i] = Randomizer.nextInt(LATTICE_SIZE_FOR_DISCRETIZED_RATES);
+            }
+            // set initial values of rate categories
+            IntegerParameter other = new IntegerParameter(initialCategories);
+            categories.assignFromWithoutID(other);
+            categories.setLower(0);
+            categories.setUpper(LATTICE_SIZE_FOR_DISCRETIZED_RATES - 1);
         }
-        IntegerParameter other = new IntegerParameter(iCategories);
-        categories.assignFromWithoutID(other);
-        categories.setLower(0);
-        categories.setUpper(categories.getDimension() - 1);
 
         distribution = rateDistInput.get();
 
-        rates = new double[categories.getDimension()];
-        storedRates = new double[categories.getDimension()];
-        for (int i = 0; i < rates.length; i++) {
-            rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+        if (!usingQuantiles) {
+            rates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
+            storedRates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
+            for (int i = 0; i < rates.length; i++) {
+                rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+            }
+            System.arraycopy(rates, 0, storedRates, 0, rates.length);
         }
-        System.arraycopy(rates, 0, storedRates, 0, rates.length);
         normalize = normalizeInput.get();
 
         meanRate = meanRateInput.get();
@@ -67,7 +97,6 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         } catch (RuntimeException e) {
             // ignore
         }
-//        initialise = initialiseInput.get();
     }
 
     public double getRateForBranch(Node node) {
@@ -75,10 +104,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             // root has no rate
             return 1;
         }
-        if (recompute) {
-            prepare();
-            recompute = false;
-        }
+
         if (renormalize) {
             if (normalize) {
                 computeFactor();
@@ -86,16 +112,14 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             renormalize = false;
         }
 
-        int nodeNumber = node.getNr();
-
-        if (nodeNumber == categories.getDimension()) {
-            // root node has nr less than #categories, so use that nr
-            nodeNumber = node.getTree().getRoot().getNr();
+        if (recompute) {
+            prepare();
+            recompute = false;
         }
 
-        int rateCategory = categories.getValue(nodeNumber);
+        int nodeNumber = node.getNr();
 
-        return rates[rateCategory] * scaleFactor * meanRate.getValue();
+        return getRawRate(node) * scaleFactor * meanRate.getValue();
     }
 
     // compute scale factor
@@ -110,53 +134,62 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         for (int i = 0; i < tree.getNodeCount(); i++) {
             Node node = tree.getNode(i);
             if (!node.isRoot()) {
-                int nodeNumber = node.getNr();
-                if (nodeNumber == categories.getDimension()) {
-                    // root node has nr less than #categories, so use that nr
-                    nodeNumber = node.getTree().getRoot().getNr();
-                }
-                int rateCategory = categories.getValue(nodeNumber);
-                treeRate += rates[rateCategory] * node.getLength();
+                treeRate += getRawRate(node) * node.getLength();
                 treeTime += node.getLength();
-
-                //System.out.println("rates and time\t" + rates[rateCategory] + "\t" + node.getLength());
             }
         }
-        //treeRate /= treeTime;
-
         scaleFactor = 1.0 / (treeRate / treeTime);
+    }
 
+    /**
+     * @param node the node to get the rate of
+     * @return the rate of the branch
+     */
+    private double getRawRate(Node node) {
 
-        //System.out.println("scaleFactor\t\t\t\t\t" + scaleFactor);
+        int nodeNumber = node.getNr();
+        if (nodeNumber == branchCount) {
+            // root node has nr less than #categories, so use that nr
+            nodeNumber = node.getTree().getRoot().getNr();
+        }
+
+        double rate;
+        if (usingQuantiles) {
+            try {
+                rate = distribution.inverseCumulativeProbability(quantiles.getValue(nodeNumber));
+            } catch (MathException e) {
+                throw new RuntimeException("Failed to compute inverse cumulative probability!");
+            }
+        } else {
+            rate = rates[categories.getValue(nodeNumber)];
+        }
+        return rate;
     }
 
 
     private void prepare() {
-//    	if (initialise) {
-//    		initialise();
-//    		initialise = false;
-//    	}
-        //System.out.println("prepare");
 
-        categories = (IntegerParameter) categoryInput.get();
+        categories = categoryInput.get();
+
+        usingQuantiles = (categories == null);
 
         distribution = rateDistInput.get();
 
         tree = treeInput.get();
 
-        rates = new double[categories.getDimension()];
-        try {
-            for (int i = 0; i < rates.length; i++) {
-                rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+        if (!usingQuantiles) {
+            rates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
+            try {
+                for (int i = 0; i < rates.length; i++) {
+                    rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+                }
+            } catch (Exception e) {
+                // Exception due to distribution not having  inverseCumulativeProbability implemented.
+                // This should already been caught at initAndValidate()
+                e.printStackTrace();
+                System.exit(0);
             }
-        } catch (Exception e) {
-            // Exception due to distribution not having  inverseCumulativeProbability implemented.
-            // This should already been caught at initAndValidate()
-            e.printStackTrace();
-            System.exit(0);
         }
-
-        //if (normalize) computeFactor();
     }
 
     /**
@@ -274,10 +307,15 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             return true;
         }
         // NOT processed as trait on the tree, so DO mark as dirty
-        if (categoryInput.get().somethingIsDirty()) {
+        if (categoryInput.get() != null && categoryInput.get().somethingIsDirty()) {
             //recompute = true;
             return true;
         }
+
+        if (quantileInput.get() != null && quantileInput.get().somethingIsDirty()) {
+            return true;
+        }
+
         if (meanRate.somethingIsDirty()) {
             return true;
         }
@@ -287,22 +325,26 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     public void store() {
-        System.arraycopy(rates, 0, storedRates, 0, rates.length);
+        if (!usingQuantiles) System.arraycopy(rates, 0, storedRates, 0, rates.length);
+
         storedScaleFactor = scaleFactor;
         super.store();
     }
 
     @Override
     public void restore() {
-        double[] tmp = rates;
-        rates = storedRates;
-        storedRates = tmp;
+        if (!usingQuantiles) {
+            double[] tmp = rates;
+            rates = storedRates;
+            storedRates = tmp;
+        }
         scaleFactor = storedScaleFactor;
         super.restore();
     }
 
     ParametricDistribution distribution;
     IntegerParameter categories;
+    RealParameter quantiles;
     Tree tree;
 
     private boolean normalize = false;

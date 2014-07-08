@@ -99,6 +99,17 @@ public class TreeSetParser {
 		fileMarked = 0;
 		
 		BufferedReader fin = new BufferedReader(new FileReader(sFile));
+		
+        int nrOfTrees = 0;
+        // first, sweep through the log file to determine the number of trees
+        while (fin.ready()) {
+            if (fin.readLine().toLowerCase().startsWith("tree ")) {
+            	nrOfTrees++;
+            }
+        }
+        fin.close();
+        
+        fin = new BufferedReader(new FileReader(sFile));
 		String sStr = readLine(fin);
 		// grab translate block
 		while (fin.ready() && sStr.toLowerCase().indexOf("translate") < 0) {
@@ -216,7 +227,7 @@ public class TreeSetParser {
 			
 			// read trees
 			// read trees
-            int nBurnIn = 0;
+            int nBurnIn = m_nBurnInPercentage * nrOfTrees / 100;
             //int k = 0;                    
             while (fin.ready()) {
                     sStr = readLine(fin);
@@ -245,10 +256,10 @@ public class TreeSetParser {
 		}
 		
 		// discard burn-in percentage
-		int burnIn = m_nBurnInPercentage * trees.size() / 100;
-		for (int i = 0; i < burnIn; i++) {
-			trees.remove(i);
-		}
+//		int burnIn = m_nBurnInPercentage * trees.size() / 100;
+//		for (int i = 0; i < burnIn; i++) {
+//			trees.remove(i);
+//		}
 		
 		
 		// convert lengths (stored as node heights) to heights

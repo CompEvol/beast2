@@ -1412,6 +1412,10 @@ public class TreeAnnotator {
         if (arguments.hasOption("burnin")) {
             burnin = arguments.getIntegerOption("burnin");
         }
+        if (burnin >= 100) {
+        	System.err.println("burnin is a percentage and should be less than 100.");
+        	System.exit(0);
+        }
 
         double posteriorLimit = 0.0;
         if (arguments.hasOption("limit")) {
