@@ -618,7 +618,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             node.setNr(lastLabel[0] + 1);
             lastLabel[0] += 1;
         } else if (labels != null && node.getNr() < labels.size()) {
-            node.setID(labels.get(node.getNr()));
+            node.setID(labels.get(node.getNr()));           //TODO setting ID here will result in incorrect work of translateLeafIds
         }
     }
 
