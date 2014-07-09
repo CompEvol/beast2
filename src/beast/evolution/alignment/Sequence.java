@@ -35,7 +35,7 @@ import beast.evolution.datatype.DataType;
 
 @Description("Single sequence in an alignment.")
 public class Sequence extends BEASTObject {
-    public Input<Integer> totalCountInput = new Input<Integer>("totalcount", "number of lineages for this species");
+    public Input<Integer> totalCountInput = new Input<Integer>("totalcount", "number of states or the number of lineages for this species in SNAPP analysis");
     public Input<String> taxonInput = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
     public Input<String> dataInput = new Input<String>("value",
             "sequence data, either encoded as a string or as comma separated list of integers." +
