@@ -49,6 +49,21 @@ public class FilteredAlignmentTest extends TestCase {
     }
 
     @Test
+    public void testIndividualsFiltered() throws Exception {
+        Alignment data = getAlignment();
+        FilteredAlignment data2 = new FilteredAlignment();
+        data2.initByName("data", data, "filter", "1");
+        assertEquals(1, data2.getSiteCount());
+
+        data2.initByName("data", data, "filter", "2,5");
+        assertEquals(2, data2.getSiteCount());
+
+        data2.initByName("data", data, "filter", "2,5,3,4");
+        assertEquals(4, data2.getSiteCount());
+    }
+    
+
+    @Test
     public void testWeightedSites() throws Exception {
     	// add constant sites to ordinary alignment
         Alignment data = getAlignment();
@@ -143,6 +158,7 @@ public class FilteredAlignmentTest extends TestCase {
         assertEquals("[11232, 1, 1, 1, 1, 2, 1, 1, 3, 4]", weights);
     }
     
+
     @Test
     public void testRangeFiltered() throws Exception {
         Alignment data = getAlignment();
