@@ -12,21 +12,26 @@ import java.util.List;
 public class StandardData extends DataType.Base {
 
     public Input<Integer> maxNrOrStatesInput = new Input<Integer>("nrOfStates", "specifies the maximum number of " +
-            "character states in data matrix or in the filtered alignment", Input.Validate.REQUIRED);
+            "character states in data matrix or in the filtered alignment");
     public Input<String> listOfAmbiguitiesInput = new Input<String>("ambiguities", "all possible ambiguities presented " +
             "as space separated sets of ordered elements. Elements are digits 0..9.");
     public Input<List<CharStateLabels>> charStateLabelsInput= new Input<List<CharStateLabels>>("charstatelabels",
             "list of morphological character descriptions. Position in the list corresponds to the position of the" +
                     "character in the alignment");
 
-    private String[] ambiguities;
+    private String[] ambiguities = {};
     private ArrayList<String> codeMapping;
 
     private int ambCount;
 
 
     public StandardData() {
-        stateCount = maxNrOrStatesInput.get();
+        if (maxNrOrStatesInput.get() != null) {
+            stateCount = maxNrOrStatesInput.get();
+        } else {
+            stateCount = -1;
+        }
+
         mapCodeToStateSet = null;
         codeLength = -1;
         codeMap = null;
@@ -34,7 +39,10 @@ public class StandardData extends DataType.Base {
     }
 
     private void createCodeMapping() {
-        ambiguities = listOfAmbiguitiesInput.get().split(" ");
+        if (listOfAmbiguitiesInput.get() != null) {
+            ambiguities = listOfAmbiguitiesInput.get().split(" ");
+        }
+
         ambCount = ambiguities.length;
         codeMapping = new ArrayList<String>();
         for (int i=0; i<stateCount; i++) {
