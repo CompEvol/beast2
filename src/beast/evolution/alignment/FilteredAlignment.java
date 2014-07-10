@@ -16,7 +16,7 @@ import beast.evolution.datatype.DataType;
 public class FilteredAlignment extends Alignment {
     public Input<String> filterInput = new Input<String>("filter", "specifies which of the sites in the input alignment should be selected " +
             "First site is 1." +
-            "Filter specs are comma separated, either a range [from]-[to] or iteration [from]:[to]:[step]; " +
+            "Filter specs are comma separated, either a singleton, a range [from]-[to] or iteration [from]:[to]:[step]; " +
             "1-100 defines a range, " +
             "1-100\3 or 1:100:3 defines every third in range 1-100, " +
             "1::3,2::3 removes every third site. " +
