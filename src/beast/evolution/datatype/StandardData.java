@@ -15,9 +15,9 @@ public class StandardData extends DataType.Base {
             "character states in data matrix or in the filtered alignment");
     public Input<String> listOfAmbiguitiesInput = new Input<String>("ambiguities", "all possible ambiguities presented " +
             "as space separated sets of ordered elements. Elements are digits 0..9.");
-//    public Input<List<StandardData.CharStateLabels>> charStateLabelsInput= new Input<List<StandardData.CharStateLabels>>("charstatelabels",
-//            "list of morphological character descriptions. Position in the list corresponds to the position of the" +
-//                    "character in the alignment");
+    public Input<List<CharStateLabels>> charStateLabelsInput= new Input<List<CharStateLabels>>("charstatelabels",
+            "list of morphological character descriptions. Position in the list corresponds to the position of the" +
+                    "character in the alignment", new ArrayList<>());
 
     private String[] ambiguities = {};
     private ArrayList<String> codeMapping;
