@@ -3,6 +3,7 @@ package beast.util;
 import beast.core.util.Log;
 import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.StandardData;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 
@@ -364,9 +365,14 @@ public class NexusParser {
                 } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
                     alignment.dataTypeInput.setValue("aminoacid", alignment);
                     nTotalCount = 20;
-                } else if (sDataType.toLowerCase().equals("standard") && (sSymbols == null || sSymbols.equals("01"))) {
-                    alignment.dataTypeInput.setValue("binary", alignment);
-                    nTotalCount = 2;
+                } else if (sDataType.toLowerCase().equals("standard")) {
+                    if (sSymbols == null || sSymbols.equals("01")) {
+                        alignment.dataTypeInput.setValue("binary", alignment);
+                        nTotalCount = 2;
+                    }  else {
+                        alignment.dataTypeInput.setValue("standard", alignment);
+                        nTotalCount = sSymbols.length();
+                    }
                 } else {
                     alignment.dataTypeInput.setValue("integer", alignment);
                     if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
@@ -383,7 +389,87 @@ public class NexusParser {
                 }
                 sMatchChar = getAttValue("matchchar", sStr);
             }
-        } while (!sStr.toLowerCase().contains("matrix"));
+        } while (!sStr.toLowerCase().contains("matrix") && !sStr.toLowerCase().contains("charstatelabels"));
+
+        if (alignment.dataTypeInput.get().equals("standard")) {
+            alignment.setInputValue("userDataType", new StandardData());
+        }
+
+        //reading CHATSTATELABELS block
+        if (sStr.toLowerCase().contains("charstatelabels")) {
+            if (!alignment.dataTypeInput.get().equals("standard")) {
+                new Exception("If CHATSTATELABELS block is specified then DATATYPE has to be Standard");
+            }
+            StandardData standardDataType = (StandardData)alignment.userDataTypeInput.get();
+            ArrayList<StandardData.CharStateLabels> charDescriptions = new ArrayList<>();
+            int maxNumberOfStates =0;
+            while (true) {
+                sStr = nextLine(fin);
+                if (sStr.contains(";")) {
+                    break;
+                }
+                String[] sStrSplit = sStr.split("/");
+                ArrayList<String> states = new ArrayList<>();
+
+                if (sStrSplit.length < 2) {
+                    charDescriptions.add(standardDataType.new CharStateLabels(sStrSplit[0], states));
+                    continue;
+                }
+
+                String stateStr = sStrSplit[1];
+
+                final int WAITING=0, WORD=1, PHRASE_IN_QUOTES=2;
+                int mode =WAITING; //0 waiting for non-space letter, 1 reading a word; 2 reading a phrase in quotes
+                int begin =0, end;
+
+                for (int i=0; i< stateStr.length(); i++) {
+                    switch (mode) {
+                        case WAITING:
+                            while (stateStr.charAt(i) == ' ') {
+                                i++;
+                            }
+                            mode = stateStr.charAt(i) == '\'' ? PHRASE_IN_QUOTES : WORD;
+                            begin = i;
+                            break;
+                        case WORD:
+                            end = stateStr.indexOf(" ", begin) != -1 ? stateStr.indexOf(" ", begin) : stateStr.indexOf(",", begin);
+                            states.add(stateStr.substring(begin, end));
+                            i=end;
+                            mode = WAITING;
+                            break;
+                        case PHRASE_IN_QUOTES:
+                            end = begin;
+                            do {
+                                end = stateStr.indexOf("'", end+2);
+                            } while (stateStr.charAt(end+1) == '\'' || end == -1);
+                            if (end == -1) {
+                                System.out.println("Incorrect description in charstatelabels. Single quote found in line ");
+                            }
+                            end++;
+                            states.add(stateStr.substring(begin, end));
+                            i=end;
+                            mode=WAITING;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                //TODO make sStrSplit[0] look nicer (remove whitespaces and may be numbers at the beginning)
+                charDescriptions.add(standardDataType.new CharStateLabels(sStrSplit[0], states));
+                maxNumberOfStates = Math.max(maxNumberOfStates, states.size());
+            }
+            standardDataType.setInputValue("charstatelabels", charDescriptions);
+            standardDataType.setInputValue("nrOfStates", maxNumberOfStates);
+            //TODO figure out what should be the maxNrOfStates:
+            // It coulb be the largest number occurred in the sequences
+            // or the largest number of states in the charstatelabels.
+            //The former can be less than the latter if some taxa were removed.
+        }
+
+        //skipping before MATRIX block
+        while (!sStr.toLowerCase().contains(("matrix"))) {
+            sStr = nextLine(fin);
+        }
 
         // read character data
         // Use string builder for efficiency
@@ -460,14 +546,41 @@ public class NexusParser {
         if (nTaxa > 0 && sTaxa.size() > nTaxa) {
             throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
         }
+
+        HashSet<String> sortedAmbiguities = new HashSet<>();
         for (final String sTaxon : sTaxa) {
             final StringBuilder bsData = seqMap.get(sTaxon);
             String sData = bsData.toString().replaceAll("\\s", "");
             seqMap.put(sTaxon, new StringBuilder(sData));
 
-            if (sData.length() != nChar) {
+            //collect all ambiguities in the sequence
+            List<String> ambiguities = new ArrayList<String>();
+            Matcher m = Pattern.compile("\\{(.*?)\\}").matcher(sData);
+            while (m.find()) {
+                int mLength = m.group().length();
+                ambiguities.add(m.group().substring(1, mLength-1));
+            }
+
+            //sort elements of ambiguity sets
+            for (String amb : ambiguities) {
+                List<Integer> ambInt = new ArrayList<>();
+                for (int i=0; i<amb.length(); i++) {
+                    ambInt.add(Integer.parseInt(amb.charAt(i) + ""));
+                }
+                Collections.sort(ambInt);
+                String ambStr = "";
+                for (int i=0; i<ambInt.size(); i++) {
+                    ambStr += Integer.toString(ambInt.get(i));
+                }
+                sortedAmbiguities.add(ambStr);
+            }
+
+            //check the length of the sequence (treat ambiguity sets as single characters)
+            String sData_without_ambiguities = sData.replaceAll("\\{(.*?)\\}", "?");
+            if (sData_without_ambiguities.length() != nChar) {
                 throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
             }
+
             // map to standard missing and gap chars
             sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
             sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
@@ -490,6 +603,18 @@ public class NexusParser {
             sequence.setID(generateSequenceID(sTaxon));
             alignment.sequenceInput.setValue(sequence, alignment);
         }
+
+
+        if (alignment.dataTypeInput.get().equals("standard")) {
+            //convert sortedAmbiguities to a whitespace separated string of ambiguities
+            String ambiguitiesStr = "";
+            for (String sAmb: sortedAmbiguities) {
+                ambiguitiesStr += sAmb + " ";
+            }
+            ambiguitiesStr = ambiguitiesStr.substring(0, ambiguitiesStr.length()-1);
+            alignment.userDataTypeInput.get().setInputValue("ambiguities", ambiguitiesStr);
+        }
+
         alignment.initAndValidate();
         if (nTaxa > 0 && nTaxa != alignment.getNrTaxa()) {
             throw new Exception("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getNrTaxa() + " taxa found");
