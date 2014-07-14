@@ -42,7 +42,7 @@ foreach $sFile (@list) {
 
 
 # grab description and input info from DocMaker
-open (FIN,"java -cp build:lib/commons-math-2.0.jar beast.app.DocMaker -javadoc |");
+open (FIN,"java -cp build:lib/commons-math3-3.1.1.jar beast.app.DocMaker -javadoc |");
 while ($s = <FIN>) {
     $s =~ /^([^:]*):([^:]*):(.*)$/;
     $map{"$1 $2"} = $3;
@@ -85,3 +85,4 @@ foreach $sFile (@list) {
 }
 #print `cp src/beast/core/Plugin.java src2/beast/core`;
 print `cp src/beast/core/Description.java src2/beast/core`;
+print `cp src/beast/core/Citation.java src2/beast/core`;

@@ -637,10 +637,11 @@
 	<target name="javadoc" description="Create Javadocs for Beast 2" depends='docPreProcess'>
 		<mkdir dir="${common_dir}/javadoc/" />
 		<javadoc destdir="${common_dir}/javadoc/">
-			<fileset dir="src2/" includes="beast/core/**/*.java" />
-			<fileset dir="src2/" includes="beast/util/**/*.java" />
-			<fileset dir="src2/" includes="beast/math/**/*.java" />
-			<fileset dir="src2/" includes="beast/evolution/**/*.java" />
+            <fileset dir="src2/" includes="beast/**/*.java" />
+			<!--<fileset dir="src2/" includes="beast/core/**/*.java" />-->
+			<!--<fileset dir="src2/" includes="beast/util/**/*.java" />-->
+			<!--<fileset dir="src2/" includes="beast/math/**/*.java" />-->
+			<!--<fileset dir="src2/" includes="beast/evolution/**/*.java" />-->
 		</javadoc>
 		
 		<!-- clean up -->
