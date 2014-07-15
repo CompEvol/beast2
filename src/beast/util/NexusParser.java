@@ -392,7 +392,9 @@ public class NexusParser {
         } while (!sStr.toLowerCase().contains("matrix") && !sStr.toLowerCase().contains("charstatelabels"));
 
         if (alignment.dataTypeInput.get().equals("standard")) {
-            alignment.setInputValue("userDataType", new StandardData());
+        	StandardData type = new StandardData();
+        	type.initAndValidate();
+            alignment.setInputValue("userDataType", type);
         }
 
         //reading CHATSTATELABELS block
@@ -611,7 +613,9 @@ public class NexusParser {
             for (String sAmb: sortedAmbiguities) {
                 ambiguitiesStr += sAmb + " ";
             }
-            ambiguitiesStr = ambiguitiesStr.substring(0, ambiguitiesStr.length()-1);
+            if (ambiguitiesStr.length() > 0) {
+            	ambiguitiesStr = ambiguitiesStr.substring(0, ambiguitiesStr.length()-1);
+            }
             alignment.userDataTypeInput.get().setInputValue("ambiguities", ambiguitiesStr);
         }
 
