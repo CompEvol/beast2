@@ -252,6 +252,11 @@ public interface DataType {
             return stateSet;
         } // getStateSet
 
+        /** Default implementations represent non-ambiguous states as numbers
+         * 0 ... stateCount-1, and ambiguous characters as numbers >= stateCount 
+         * For data types that count something -- like microsattelites, or number 
+         * of lineages in SNAPP -- a stateCount < 0 represents missing data. 
+         */
         @Override
         public boolean isAmbiguousState(int state) {
             return (state < 0 || state >= stateCount);
