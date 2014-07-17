@@ -184,6 +184,26 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 
             for(int i = 0; i < dmin.length; ++i) {
                 dg[i] += dmin[i];
+                if (dmin[i] == Double.MAX_VALUE) {
+                	// this happens when a gene tree has no taxa for some species-tree taxon.
+                	// TODO: ensure that if this happens, there will always be an "infinite"
+                	// distance between species-taxon 0 and the species-taxon with missing lineages,
+                	// so i < nSpecies - 1.
+                	// What if lineages for species-taxon 0 are missing? Then all entries will be 'infinite'.
+                	String id = (i < nSpecies - 1? stree.getExternalNodes().get(i+1).getID() : "unknown taxon");
+                	if (i == 0) {
+                		// test that all entries are 'infinite', which implies taxon 0 has lineages missing 
+                		boolean b = true;
+                		for (int k = 1; b && k < nSpecies - 1; k++) {
+                			b = (dmin[k] == Double.MAX_VALUE);
+                		}
+                		if (b) {
+                			// if all entries have 'infinite' distances, it is probably the first taxon that is at fault
+                			id = stree.getExternalNodes().get(0).getID();
+                		}
+                	}
+                	throw new RuntimeException("Gene tree " + g.getID() + " has no lineages for species taxon " + id + " ");
+                }
             }
         }
 

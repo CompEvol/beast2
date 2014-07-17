@@ -1,7 +1,7 @@
 package beast.evolution.datatype;
 
 
-import beast.core.BEASTInterface;
+
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
@@ -9,7 +9,6 @@ import beast.core.Input;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @Description("Integer data type to describe discrete morphological characters with polymorphisms")
 public class StandardData extends DataType.Base {
@@ -28,7 +27,8 @@ public class StandardData extends DataType.Base {
     private int ambCount;
 
 
-    public StandardData() {
+	@Override
+	public void initAndValidate() throws Exception {
         if (maxNrOrStatesInput.get() != null) {
             stateCount = maxNrOrStatesInput.get();
         } else {
@@ -39,7 +39,7 @@ public class StandardData extends DataType.Base {
         codeLength = -1;
         codeMap = null;
         createCodeMapping();
-    }
+	}
 
     private void createCodeMapping() {
         if (listOfAmbiguitiesInput.get() != null) {
@@ -57,7 +57,39 @@ public class StandardData extends DataType.Base {
         codeMapping.add(Character.toString(GAP_CHAR));
         codeMapping.add(Character.toString(MISSING_CHAR));
 
+        mapCodeToStateSet = new int[codeMapping.size()][];
+        for (int i = 0; i < codeMapping.size() - 2; i++) {
+        	int [] stateSet = new int[codeMapping.get(i).length()];
+        	for (int k = 0; k < stateSet.length; k++) {
+        		stateSet[k] = (codeMapping.get(i).charAt(k) - '0');
+        	}
+        	mapCodeToStateSet[i] = stateSet;
+        }
+        
+    	// TODO: is this the correct way to deal with stateCount == -1?
+    	int n = stateCount >= 0 ? stateCount : 10;
+        int [] stateSet = new int[n];
+        for (int i = 0; i < n; i++) {
+        	stateSet[i] = i;
+        }
+        // GAP_CHAR
+        mapCodeToStateSet[mapCodeToStateSet.length - 2] = stateSet;
+        // MISSING_CHAR
+        mapCodeToStateSet[mapCodeToStateSet.length - 1] = stateSet;
+
+    	mapCodeToStateSet[mapCodeToStateSet.length - 2] = stateSet;
+        mapCodeToStateSet[mapCodeToStateSet.length - 1] = stateSet;
     }
+    
+    @Override
+    public int[] getStatesForCode(int iState) {
+    	if (iState >= 0) {
+    		return mapCodeToStateSet[iState];
+    	} else {
+    		return mapCodeToStateSet[mapCodeToStateSet.length - 1];
+    	}
+    }
+
 
     @Override
     public List<Integer> string2state(String data) throws Exception {

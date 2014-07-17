@@ -45,6 +45,7 @@ public class Prior extends Distribution {
             for (int i = 0; i < x.getDimension(); i++) {
             	double value = x.getArrayValue(i);
             	if (value < l || value > h) {
+            		logP = Double.NEGATIVE_INFINITY;
             		return Double.NEGATIVE_INFINITY;
             	}
             }

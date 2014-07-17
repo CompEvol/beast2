@@ -660,10 +660,9 @@ public class XMLParser {
         if (sIDRef != null) {
             // produce warning if there are other attributes than idref
             if (node.getAttributes().getLength() > 1) {
-                // check if there are just 2 attributes and other attribute is 'name'
-            	final int idOffset = (getAttribute(node, "id") == null? 0: 1);
-                if (node.getAttributes().getLength() > 1 + idOffset || 
-                		(node.getAttributes().getLength() == 2 + idOffset && getAttribute(node, "name") == null)) {
+                // check if there are just 2 attributes and other attribute is 'name' and/or 'id'
+            	final int offset = (getAttribute(node, "id") == null? 0: 1) + (getAttribute(node, "name") == null? 0: 1);
+                if (node.getAttributes().getLength() > 1 + offset) {
                     Log.warning.println("Element " + node.getNodeName() + " found with idref='" + sIDRef + "'. All other attributes are ignored.\n");
                 }
             }
