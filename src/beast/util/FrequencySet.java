@@ -37,7 +37,9 @@ import java.util.*;
 public class FrequencySet<T> {
     public static final double DEFAULT_CRED_SET = 0.95;
 
-    public FrequencySet() { }
+    public FrequencySet() {
+        this(DEFAULT_CRED_SET);
+    }
 
     public FrequencySet(double credSetProbability) {
         setCredSetProbability(credSetProbability);

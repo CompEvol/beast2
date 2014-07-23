@@ -37,11 +37,13 @@ import java.util.Map;
  * Partial re-implementation of TreeTraceAnalysis from BEAST 1.
  * <p/>
  * Represents an analysis of a list of trees obtained either directly
- * from a logger or from a trace file.  Currently only the 95% credible
- * set of tree topologies is calculated.
+ * from a logger or from a trace file. The set of tree topologies is
+ * calculated by given credible set probability threshold (default 95%).
  *
- * @author Tim Vaughan
+ *
  * @author Walter Xie
+ * @author Alexei Drummond
+ * @author Tim Vaughan
  */
 public class TreeTraceAnalysis {
 
@@ -53,6 +55,8 @@ public class TreeTraceAnalysis {
     protected FrequencySet<String> topologiesFrequencySet;
     protected CredibleSet<String> credibleSet;
 
+    protected boolean taxaLabel = true; // false to display node index instead
+
     public TreeTraceAnalysis() {
     }
 
@@ -61,39 +65,55 @@ public class TreeTraceAnalysis {
     }
 
     /**
-     * need to run analyze(credSetProbability)
+     * default credible set probability threshold 95%
      *
      * @param posteriorTreeList
      * @param burninFraction
      */
     public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction) {
-        totalTrees = posteriorTreeList.size();
-        burnin = getBurnIn(totalTrees, burninFraction);
-
-        // Remove burnin from trace:
-        treeInCredSetList = getSubListOfTrees(posteriorTreeList, burnin);
+        removeBurnin(posteriorTreeList, burninFraction);
+        analyze();
     }
 
+    /**
+     *
+     *
+     * @param posteriorTreeList
+     * @param burninFraction        such as 0.1 not 10
+     * @param credSetProbability
+     */
     public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction, double credSetProbability) {
-        this(posteriorTreeList, burninFraction);
+        removeBurnin(posteriorTreeList, burninFraction);
         analyze(credSetProbability);
     }
 
     /**
+     * Analyse tree topologies, and set credSetProbability 95%
+     */
+    public void analyze() {
+        // 95%
+        topologiesFrequencySet = new FrequencySet<String>();
+
+        analyze(topologiesFrequencySet);
+    }
+
+    /**
      * Analyse tree topologies, and set credSetProbability
+     * @param credSetProbability
      */
     public void analyze(double credSetProbability) {
         // set credSetProbability
         topologiesFrequencySet = new FrequencySet<String>(credSetProbability);
 
-        for (Tree tree : treeInCredSetList) {
-            String topology = uniqueNewick(tree.getRoot());
-            topologiesFrequencySet.add(topology, 1);
-        }
-
-        credibleSet = topologiesFrequencySet.getCredibleSet();
+        analyze(topologiesFrequencySet);
     }
 
+    /**
+     * get burn in from total and burninFraction
+     * @param total
+     * @param burninFraction
+     * @return
+     */
     public static int getBurnIn(int total, double burninFraction) {
         // Record original list length and burnin for report:
         int burnin = (int) (total * burninFraction);
@@ -102,7 +122,8 @@ public class TreeTraceAnalysis {
     }
 
     /**
-     * used to remove burn in
+     * get a subset of trees from total trees in a range.
+     * it can be used to
      *
      * @param rawTreeList
      * @param start
@@ -118,20 +139,15 @@ public class TreeTraceAnalysis {
         return getSubListOfTrees(rawTreeList, start, rawTreeList.size());
     }
 
+    /**
+     * report number of unique tree topologies and total trees in the credible set
+     * @param oStream
+     */
     public void reportShort(PrintStream oStream) {
         // prefix non-tabular lines with # so file can be read into R
         oStream.println("# burnin = " + String.valueOf(burnin));
         oStream.println("# total trees used (total - burnin) = "
                 + String.valueOf(treeInCredSetList.size()));
-    }
-
-    /**
-     * Generate report summarising analysis.
-     *
-     * @param oStream Print stream to write output to.
-     */
-    public void report(PrintStream oStream) {
-        reportShort(oStream);
 
         // prefix non-tabular lines with # so file can be read into R
         oStream.print("# \n# " + String.valueOf(topologiesFrequencySet.getCredSetProbability() * 100)
@@ -141,6 +157,15 @@ public class TreeTraceAnalysis {
                 + " unique tree topologies, "
                 + String.valueOf(credibleSet.sumFrequency)
                 + " trees in total)");
+    }
+
+    /**
+     * Generate report summarising analysis.
+     *
+     * @param oStream Print stream to write output to.
+     */
+    public void report(PrintStream oStream) {
+        reportShort(oStream);
 
         oStream.println("Rank\tCount\tPercent\tRunning\tTree");
         double runningPercent = 0;
@@ -156,6 +181,26 @@ public class TreeTraceAnalysis {
         }
     }
 
+    // Remove burnin
+    protected void removeBurnin(List<Tree> posteriorTreeList, double burninFraction) {
+        totalTrees = posteriorTreeList.size();
+        burnin = getBurnIn(totalTrees, burninFraction);
+
+        // Remove burnin from trace:
+        treeInCredSetList = getSubListOfTrees(posteriorTreeList, burnin);
+    }
+
+    // topologiesFrequencySet = new FrequencySet<String>(double credSetProbability);
+    protected void analyze(FrequencySet<String> topologiesFrequencySet) {
+
+        for (Tree tree : treeInCredSetList) {
+            String topology = uniqueNewick(tree.getRoot());
+            topologiesFrequencySet.add(topology, 1);
+        }
+
+        credibleSet = topologiesFrequencySet.getCredibleSet();
+    }
+
     /**
      * Recursive function for constructing a Newick tree representation
      * in the given buffer.
@@ -165,7 +210,11 @@ public class TreeTraceAnalysis {
      */
     protected String uniqueNewick(Node node) {
         if (node.isLeaf()) {
-            return String.valueOf(node.getNr());
+            if (taxaLabel) {
+                return String.valueOf(node.getID());
+            } else {
+                return String.valueOf(node.getNr());
+            }
         } else {
             StringBuilder builder = new StringBuilder("(");
 
@@ -186,6 +235,14 @@ public class TreeTraceAnalysis {
 
             return builder.toString();
         }
+    }
+
+    public boolean isTaxaLabel() {
+        return taxaLabel;
+    }
+
+    public void setTaxaLabel(boolean taxaLabel) {
+        this.taxaLabel = taxaLabel;
     }
 
     /**
@@ -252,5 +309,6 @@ public class TreeTraceAnalysis {
         TreeTraceAnalysis analysis = new TreeTraceAnalysis(parser.trees);
         analysis.analyze(0.95);
         analysis.report(out);
+//        analysis.reportShort(out);
     }
 }
