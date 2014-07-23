@@ -277,7 +277,7 @@ public class Randomizer {
      * Draw from an exponential distribution.  Accesses a default instance of
      * this class, access is synchronized.
      * 
-     * @param lambda scale parameter (not mean) for the exponential
+     * @param lambda rate parameter (not mean) for the exponential
      * @return number drawn from distribution
      */
     public static double nextExponential(double lambda) {
