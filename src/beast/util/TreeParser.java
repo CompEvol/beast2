@@ -48,10 +48,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     final static double DEFAULT_LENGTH = 0.001f;
 
     /**
-     * labels of leafs *
+     * labels of leafs, order of this list corresponds to node numbers
      */
     List<String> labels = null;
-    
+
     /**
      * for memory saving, set to true *
      */
@@ -64,7 +64,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public final Input<Boolean> isLabelledNewickInput = new Input<Boolean>(
             "IsLabelledNewick",
             "Is the newick tree labelled (alternatively contains node numbers)? Default=false.", false);
-    
+
     public final Input<Alignment> dataInput = new Input<Alignment>("taxa",
             "Specifies the list of taxa represented by leaves in the beast.tree");
     public final Input<String> newickInput = new Input<String>("newick",
@@ -98,8 +98,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             labels = m_taxonset.get().asStringList();
         } else {
             if (isLabelledNewickInput.get()) {
-                labels = new ArrayList<String>();
-                createUnrecognizedTaxa = true;
+                if (m_initial.get() != null) {
+                    labels = m_initial.get().getTaxonset().asStringList();
+                } else {
+                    labels = new ArrayList<String>();
+                    createUnrecognizedTaxa = true;
+                }
             } else {
                 if (m_initial.get() != null) {
                     // try to pick up taxa from initial tree
@@ -129,7 +133,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             processTraits(m_initial.get().m_traitList.get());
         else
             processTraits(m_traitList.get());
-        
+
         if (timeTraitSet != null)
             adjustTreeNodeHeights(root);
         else if (adjustTipHeightsInput.get()) {
