@@ -104,9 +104,8 @@ public class StandardData extends DataType.Base {
                 switch (c) {
                     case GAP_CHAR:
                     case MISSING_CHAR:
-                    	for (int i = 0; i < getStateCount(); i++) {
-                    		sequence.add(i);
-                    	}
+                    	String missing = Character.toString(MISSING_CHAR);
+                   		sequence.add(codeMapping.indexOf(missing));
                         break;
                     case '{':
                         readingAmb = true;
