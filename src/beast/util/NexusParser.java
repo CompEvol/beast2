@@ -463,6 +463,7 @@ public class NexusParser {
             }
             standardDataType.setInputValue("charstatelabels", charDescriptions);
             standardDataType.setInputValue("nrOfStates", maxNumberOfStates);
+            standardDataType.initAndValidate();
             for (UserDataType dataType : standardDataType.charStateLabelsInput.get()) {
             	dataType.initAndValidate();
             }
@@ -620,7 +621,7 @@ public class NexusParser {
             if (ambiguitiesStr.length() > 0) {
             	ambiguitiesStr = ambiguitiesStr.substring(0, ambiguitiesStr.length()-1);
             }
-            alignment.userDataTypeInput.get().setInputValue("ambiguities", ambiguitiesStr);
+            alignment.userDataTypeInput.get().initByName("ambiguities", ambiguitiesStr);
         }
 
         alignment.initAndValidate();
