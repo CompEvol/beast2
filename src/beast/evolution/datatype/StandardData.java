@@ -154,10 +154,7 @@ public class StandardData extends DataType.Base {
     
     @Override
     public String getCode(int state) {
-    	if (state < getStateCount()) {
-    		return getChar(state)+"";
-    	}
-    	return "{" + ambiguities[state - getStateCount()] +"}";
+    	return codeMapping.get(state);
     }
 
 //    @Description("A class to store the description of a character")
