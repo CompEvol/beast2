@@ -2,7 +2,6 @@ package beast.evolution.datatype;
 
 
 
-import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
 
@@ -17,7 +16,7 @@ public class StandardData extends DataType.Base {
             "character states in data matrix or in the filtered alignment");
     public Input<String> listOfAmbiguitiesInput = new Input<String>("ambiguities", "all possible ambiguities presented " +
             "as space separated sets of ordered elements. Elements are digits 0..9.");
-    public Input<List<CharStateLabels>> charStateLabelsInput = new Input<List<CharStateLabels>>("charstatelabels",
+    public Input<List<UserDataType>> charStateLabelsInput = new Input<List<UserDataType>>("charstatelabels",
             "list of morphological character descriptions. Position in the list corresponds to the position of the" +
                     "character in the alignment", new ArrayList<>());
 
@@ -105,7 +104,8 @@ public class StandardData extends DataType.Base {
                 switch (c) {
                     case GAP_CHAR:
                     case MISSING_CHAR:
-                        sequence.add(-1);
+                    	String missing = Character.toString(MISSING_CHAR);
+                   		sequence.add(codeMapping.indexOf(missing));
                         break;
                     case '{':
                         readingAmb = true;
@@ -151,41 +151,46 @@ public class StandardData extends DataType.Base {
         }
         return (char)('0'+state);
     }
-
-    @Description("A class to store the description of a character")
-    public class CharStateLabels extends BEASTObject {
-
-        public Input<Integer> nrOfStatesInput = new Input<Integer>("states", "number of states fro this character");
-        public Input<String> characterNameInput = new Input<>("characterName", "the name of the charcter");
-        public Input<List<String>> stateNamesInput = new Input<>("stateNames", "the list of the state names ordered " +
-                "according to codes given, that is the first in the list is coded by 0, second, by 1 and so forth.", new ArrayList<>());
-
-        private int nrOfStates;
-        private String charName;
-        private ArrayList<String> stateNames;
-
-        public CharStateLabels(String newCharName, ArrayList<String> newStateNames) {
-            characterNameInput.setValue(newCharName, this);
-            charName = newCharName;
-            stateNamesInput.setValue(newStateNames, this);
-            stateNames = newStateNames;
-            nrOfStates = stateNames.size();
-            nrOfStatesInput.setValue(nrOfStates, this);
-        }
-
-        public int getNrOfStates() {
-            return nrOfStates;
-        }
-
-        public String getCharacterName() {
-            return charName;
-        }
-
-        public ArrayList<String> getStateNames() { return stateNames; }
-
-        @Override
-        public void initAndValidate() throws Exception {
-        }
-
+    
+    @Override
+    public String getCode(int state) {
+    	return codeMapping.get(state);
     }
+
+//    @Description("A class to store the description of a character")
+//    public class CharStateLabels extends BEASTObject {
+//
+//        public Input<Integer> nrOfStatesInput = new Input<Integer>("states", "number of states fro this character");
+//        public Input<String> characterNameInput = new Input<>("characterName", "the name of the charcter");
+//        public Input<List<String>> stateNamesInput = new Input<>("stateNames", "the list of the state names ordered " +
+//                "according to codes given, that is the first in the list is coded by 0, second, by 1 and so forth.", new ArrayList<>());
+//
+//        private int nrOfStates;
+//        private String charName;
+//        private ArrayList<String> stateNames;
+//
+//        public CharStateLabels(String newCharName, ArrayList<String> newStateNames) {
+//            characterNameInput.setValue(newCharName, this);
+//            charName = newCharName;
+//            stateNamesInput.setValue(newStateNames, this);
+//            stateNames = newStateNames;
+//            nrOfStates = stateNames.size();
+//            nrOfStatesInput.setValue(nrOfStates, this);
+//        }
+//
+//        public int getNrOfStates() {
+//            return nrOfStates;
+//        }
+//
+//        public String getCharacterName() {
+//            return charName;
+//        }
+//
+//        public ArrayList<String> getStateNames() { return stateNames; }
+//
+//        @Override
+//        public void initAndValidate() throws Exception {
+//        }
+//
+//    }
 }

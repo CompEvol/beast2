@@ -4,6 +4,7 @@ import beast.core.util.Log;
 import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
+import beast.evolution.datatype.UserDataType;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 
@@ -403,7 +404,7 @@ public class NexusParser {
                 new Exception("If CHATSTATELABELS block is specified then DATATYPE has to be Standard");
             }
             StandardData standardDataType = (StandardData)alignment.userDataTypeInput.get();
-            ArrayList<StandardData.CharStateLabels> charDescriptions = new ArrayList<>();
+            ArrayList<UserDataType> charDescriptions = new ArrayList<>();
             int maxNumberOfStates =0;
             while (true) {
                 sStr = nextLine(fin);
@@ -414,7 +415,7 @@ public class NexusParser {
                 ArrayList<String> states = new ArrayList<>();
 
                 if (sStrSplit.length < 2) {
-                    charDescriptions.add(standardDataType.new CharStateLabels(sStrSplit[0], states));
+                    charDescriptions.add(new UserDataType(sStrSplit[0], states));
                     continue;
                 }
 
@@ -457,11 +458,15 @@ public class NexusParser {
                     }
                 }
                 //TODO make sStrSplit[0] look nicer (remove whitespaces and may be numbers at the beginning)
-                charDescriptions.add(standardDataType.new CharStateLabels(sStrSplit[0], states));
+                charDescriptions.add(new UserDataType(sStrSplit[0], states));
                 maxNumberOfStates = Math.max(maxNumberOfStates, states.size());
             }
             standardDataType.setInputValue("charstatelabels", charDescriptions);
             standardDataType.setInputValue("nrOfStates", maxNumberOfStates);
+            standardDataType.initAndValidate();
+            for (UserDataType dataType : standardDataType.charStateLabelsInput.get()) {
+            	dataType.initAndValidate();
+            }
             //TODO figure out what should be the maxNrOfStates:
             // It coulb be the largest number occurred in the sequences
             // or the largest number of states in the charstatelabels.
@@ -616,7 +621,7 @@ public class NexusParser {
             if (ambiguitiesStr.length() > 0) {
             	ambiguitiesStr = ambiguitiesStr.substring(0, ambiguitiesStr.length()-1);
             }
-            alignment.userDataTypeInput.get().setInputValue("ambiguities", ambiguitiesStr);
+            alignment.userDataTypeInput.get().initByName("ambiguities", ambiguitiesStr);
         }
 
         alignment.initAndValidate();
