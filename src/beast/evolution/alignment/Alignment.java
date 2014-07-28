@@ -37,6 +37,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.Map;
 import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.StandardData;
 import beast.util.AddOnManager;
 
 
@@ -226,10 +227,12 @@ public class Alignment extends Map<String> {
         }
         // Sanity check: make sure sequences are of same length
         int nLength = counts.get(0).size();
-        for (List<Integer> seq : counts) {
-            if (seq.size() != nLength) {
-                throw new Exception("Two sequences with different length found: " + nLength + " != " + seq.size());
-            }
+        if (!(m_dataType instanceof StandardData)) {
+	        for (List<Integer> seq : counts) {
+	            if (seq.size() != nLength) {
+	                throw new Exception("Two sequences with different length found: " + nLength + " != " + seq.size());
+	            }
+	        }
         }
         if (siteWeights != null && siteWeights.length != nLength) {
         	throw new RuntimeException("Number of weights (" + siteWeights.length + ") does not match sequence length (" + nLength +")");

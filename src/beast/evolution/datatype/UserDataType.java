@@ -19,7 +19,32 @@ public class UserDataType extends Base {
             "A comma separated string of codes with a subset of states. " +
             "A state set is a space separates list of zero based integers, up to the number of states, " +
             "e.g. A=0, C=1, R=0 2, ? = 0 1 2 3", Validate.REQUIRED);
+    
+    public Input<String> characterNameInput = new Input<>("characterName", "the name of the character");
+    public Input<String> stateNamesInput = new Input<>("value", "the list of the state names ordered " +
+    		"according to codes given, that is the first in the list is coded by 0, second, by 1 and so forth.");
 
+    public UserDataType() {} // default c'tor
+    public UserDataType(String newCharName, ArrayList<String> newStateNames) {
+    	characterNameInput.setValue(newCharName, this);
+    	StringBuilder buf = new StringBuilder();
+    	for (int i = 0; i < newStateNames.size(); i++) {
+    		buf.append(i + "=" + i +", ");
+    	}
+    	buf.append("? =");
+    	for (int i = 0; i < newStateNames.size(); i++) {
+    		buf.append(i +" ");
+    	}
+    	codeMapInput.setValue(buf.toString(), this);
+    	buf = new StringBuilder();
+    	for (int i = 0; i < newStateNames.size(); i++) {
+    		buf.append(newStateNames.get(i) +", ");
+    	}
+    	buf.delete(buf.length()-2, buf.length());
+    	stateNamesInput.setValue(buf.toString(), this);
+    	stateCountInput.setValue(newStateNames.size(), this);
+    }
+    
     @Override
     public void initAndValidate() throws Exception {
         stateCount = stateCountInput.get();
