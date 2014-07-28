@@ -68,6 +68,7 @@ public class TreeTraceAnalysis {
      * @param burninFraction
      */
     public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction) {
+        assert posteriorTreeList != null;
         removeBurnin(posteriorTreeList, burninFraction);
         analyze();
     }
@@ -80,6 +81,7 @@ public class TreeTraceAnalysis {
      * @param credSetProbability
      */
     public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction, double credSetProbability) {
+        assert posteriorTreeList != null;
         removeBurnin(posteriorTreeList, burninFraction);
         analyze(credSetProbability);
     }
@@ -316,14 +318,14 @@ public class TreeTraceAnalysis {
             }
         }
 
-        NexusParser parser = new NexusParser();
+        List<Tree> trees = null;
         try {
-            parser.parseFile(inputFile);
+            trees = TreeTraceAnalysis.Utils.getTrees(inputFile);
         } catch (Exception e) {
             System.out.println("Error occurred while parsing input file.");
             System.exit(0);
         }
-        TreeTraceAnalysis analysis = new TreeTraceAnalysis(parser.trees); // default 0.1, 0.95
+        TreeTraceAnalysis analysis = new TreeTraceAnalysis(trees); // default 0.1, 0.95
         analysis.report(out);
     }
 }
