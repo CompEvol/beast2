@@ -57,9 +57,6 @@ public class TreeTraceAnalysis {
 
     protected boolean taxaLabel = true; // false to display node index instead
 
-    public TreeTraceAnalysis() {
-    }
-
     public TreeTraceAnalysis(List<Tree> posteriorTreeList) {
         this(posteriorTreeList, DEFAULT_BURN_IN_FRACTION);
     }
@@ -91,7 +88,7 @@ public class TreeTraceAnalysis {
      * Analyse tree topologies, and set credSetProbability 95%
      */
     public void analyze() {
-        // 95%
+        // 0.95
         topologiesFrequencySet = new FrequencySet<String>();
 
         analyze(topologiesFrequencySet);
@@ -109,41 +106,12 @@ public class TreeTraceAnalysis {
     }
 
     /**
-     * get burn in from total and burninFraction
-     * @param total
-     * @param burninFraction
-     * @return
-     */
-    public static int getBurnIn(int total, double burninFraction) {
-        // Record original list length and burnin for report:
-        int burnin = (int) (total * burninFraction);
-        assert burnin < total;
-        return burnin;
-    }
-
-    /**
-     * get a subset of trees from total trees in a range.
-     * it can be used to
-     *
-     * @param rawTreeList
-     * @param start
-     * @param end
-     * @return
-     */
-    public static List<Tree> getSubListOfTrees(List<Tree> rawTreeList, int start, int end) {
-        assert start < end;
-        return new ArrayList<Tree>(rawTreeList.subList(start, end));
-    }
-
-    public static List<Tree> getSubListOfTrees(List<Tree> rawTreeList, int start) {
-        return getSubListOfTrees(rawTreeList, start, rawTreeList.size());
-    }
-
-    /**
      * report number of unique tree topologies and total trees in the credible set
-     * @param oStream
+     *
+     * @param oStream Print stream to write output to.
+     * @param shortReport
      */
-    public void reportShort(PrintStream oStream) {
+    public void report(PrintStream oStream, boolean shortReport) {
         // prefix non-tabular lines with # so file can be read into R
         oStream.println("# burnin = " + String.valueOf(burnin));
         oStream.println("# total trees used (total - burnin) = "
@@ -157,37 +125,41 @@ public class TreeTraceAnalysis {
                 + " unique tree topologies, "
                 + String.valueOf(credibleSet.sumFrequency)
                 + " trees in total)");
-    }
 
-    /**
-     * Generate report summarising analysis.
-     *
-     * @param oStream Print stream to write output to.
-     */
-    public void report(PrintStream oStream) {
-        reportShort(oStream);
+        if (!shortReport) {
+            oStream.println("Rank\tCount\tPercent\tRunning\tTree");
+            double runningPercent = 0;
+            for (int i = 0; i < credibleSet.credibleSetList.size(); i++) {
+                double percent = 100.0 * credibleSet.getFrequency(i, topologiesFrequencySet) / (totalTrees - burnin);
+                runningPercent += percent;
 
-        oStream.println("Rank\tCount\tPercent\tRunning\tTree");
-        double runningPercent = 0;
-        for (int i = 0; i < credibleSet.credibleSetList.size(); i++) {
-            double percent = 100.0 * credibleSet.getFrequency(i, topologiesFrequencySet) / (totalTrees - burnin);
-            runningPercent += percent;
-
-            oStream.print((i+1) + "\t");
-            oStream.print(credibleSet.getFrequency(i, topologiesFrequencySet) + "\t");
-            oStream.format("%.2f%%\t", percent);
-            oStream.format("%.2f%%\t", runningPercent);
-            oStream.println(credibleSet.credibleSetList.get(i));
+                oStream.print((i + 1) + "\t");
+                oStream.print(credibleSet.getFrequency(i, topologiesFrequencySet) + "\t");
+                oStream.format("%.2f%%\t", percent);
+                oStream.format("%.2f%%\t", runningPercent);
+                oStream.println(credibleSet.credibleSetList.get(i));
+            }
         }
     }
+
+
+    public void report(PrintStream oStream) {
+        report(oStream, false);
+    }
+
+
+    public int getTreeCount() {
+        return treeInCredSetList.size();
+    }
+
 
     // Remove burnin
     protected void removeBurnin(List<Tree> posteriorTreeList, double burninFraction) {
         totalTrees = posteriorTreeList.size();
-        burnin = getBurnIn(totalTrees, burninFraction);
+        burnin = Utils.getBurnIn(totalTrees, burninFraction);
 
         // Remove burnin from trace:
-        treeInCredSetList = getSubListOfTrees(posteriorTreeList, burnin);
+        treeInCredSetList = Utils.getSubListOfTrees(posteriorTreeList, burnin);
     }
 
     // topologiesFrequencySet = new FrequencySet<String>(double credSetProbability);
@@ -208,7 +180,7 @@ public class TreeTraceAnalysis {
      * @param node
      * @return
      */
-    protected String uniqueNewick(Node node) {
+    public String uniqueNewick(Node node) {
         if (node.isLeaf()) {
             if (taxaLabel) {
                 return String.valueOf(node.getID());
@@ -277,6 +249,51 @@ public class TreeTraceAnalysis {
         return topologiesFrequencySet.getFrequencyMap();
     }
 
+    public static class Utils {
+        /**
+         * get list of trees from file
+         * @param treeFile
+         * @return
+         * @throws Exception
+         */
+        public static List<Tree> getTrees (File treeFile) throws Exception {
+            NexusParser parser = new NexusParser();
+            parser.parseFile(treeFile);
+            return parser.trees;
+        }
+
+        /**
+         * get burn in from total and burninFraction
+         * @param total
+         * @param burninFraction
+         * @return
+         */
+        public static int getBurnIn(int total, double burninFraction) {
+            // Record original list length and burnin for report:
+            int burnin = (int) (total * burninFraction);
+            assert burnin < total;
+            return burnin;
+        }
+
+        /**
+         * get a subset of trees from total trees in a range.
+         * it can be used to
+         *
+         * @param rawTreeList
+         * @param start
+         * @param end
+         * @return
+         */
+        public static List<Tree> getSubListOfTrees(List<Tree> rawTreeList, int start, int end) {
+            assert start < end;
+            return new ArrayList<Tree>(rawTreeList.subList(start, end));
+        }
+
+        public static List<Tree> getSubListOfTrees(List<Tree> rawTreeList, int start) {
+            return getSubListOfTrees(rawTreeList, start, rawTreeList.size());
+        }
+    }
+
     public static void main(String[] args) {
         PrintStream out = System.out;
         File inputFile = null;
@@ -306,9 +323,7 @@ public class TreeTraceAnalysis {
             System.out.println("Error occurred while parsing input file.");
             System.exit(0);
         }
-        TreeTraceAnalysis analysis = new TreeTraceAnalysis(parser.trees);
-        analysis.analyze(0.95);
+        TreeTraceAnalysis analysis = new TreeTraceAnalysis(parser.trees); // default 0.1, 0.95
         analysis.report(out);
-//        analysis.reportShort(out);
     }
 }
