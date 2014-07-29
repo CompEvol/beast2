@@ -56,7 +56,7 @@
         <branchRateModel idref="branchRates" /> 
     </input>
 
-    <tree spec='beast.util.TreeParser' id='tree' newick=
+    <tree spec='beast.util.TreeParser' id='tree' IsLabelledNewick='true' newick=
             '(siamang:0.06318470579939774,((gorilla:0.031056173315146828,((chimp:0.00982869388112981,bonobo:0.00982869388112981)
         :0.01030402958978773,human:0.02013272347091754):0.010923449844229289):0.022256750048834654,orangutan:0.05331292336398148)
         :0.009871782435416254);'
