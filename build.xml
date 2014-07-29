@@ -138,6 +138,7 @@
 			<fileset dir="${src}">
 				<include name="beast/**/*.java" />
 				<include name="org/**/*.java" />
+				<include name="test/**/*.java" />
 				<include name="beast/**/*.png" />
 				<include name="beast/**/*.xsl" />
 			</fileset>
