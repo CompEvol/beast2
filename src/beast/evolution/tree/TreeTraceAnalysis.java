@@ -49,13 +49,15 @@ public class TreeTraceAnalysis {
 
     public static final double DEFAULT_BURN_IN_FRACTION = 0.1;
 
-    protected List<Tree> treeInCredSetList;
-    protected int burnin, totalTrees;
+    protected List<Tree> treeInTrace;
+
+    protected int totalTrees; // total from original log
+    protected int burnin;
 
     protected FrequencySet<String> topologiesFrequencySet;
     protected CredibleSet<String> credibleSet;
 
-    protected boolean taxaLabel = true; // false to display node index instead
+    protected boolean isTaxaLabel = true; // false to display node index instead
 
     public TreeTraceAnalysis(List<Tree> posteriorTreeList) {
         this(posteriorTreeList, DEFAULT_BURN_IN_FRACTION);
@@ -63,27 +65,13 @@ public class TreeTraceAnalysis {
 
     /**
      * default credible set probability threshold 95%
-     *
+     * analyze() needs after create TreeTraceAnalysis
      * @param posteriorTreeList
      * @param burninFraction
      */
     public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction) {
         assert posteriorTreeList != null;
         removeBurnin(posteriorTreeList, burninFraction);
-        analyze();
-    }
-
-    /**
-     *
-     *
-     * @param posteriorTreeList
-     * @param burninFraction        such as 0.1 not 10
-     * @param credSetProbability
-     */
-    public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction, double credSetProbability) {
-        assert posteriorTreeList != null;
-        removeBurnin(posteriorTreeList, burninFraction);
-        analyze(credSetProbability);
     }
 
     /**
@@ -91,9 +79,7 @@ public class TreeTraceAnalysis {
      */
     public void analyze() {
         // 0.95
-        topologiesFrequencySet = new FrequencySet<String>();
-
-        analyze(topologiesFrequencySet);
+        analyze(FrequencySet.DEFAULT_CRED_SET);
     }
 
     /**
@@ -102,9 +88,15 @@ public class TreeTraceAnalysis {
      */
     public void analyze(double credSetProbability) {
         // set credSetProbability
-        topologiesFrequencySet = new FrequencySet<String>(credSetProbability);
+        topologiesFrequencySet = new FrequencySet<String>();
+        topologiesFrequencySet.setCredSetProbability(credSetProbability);
 
-        analyze(topologiesFrequencySet);
+        for (Tree tree : treeInTrace) {
+            String topology = uniqueNewick(tree.getRoot());
+            topologiesFrequencySet.add(topology, 1);
+        }
+
+        credibleSet = topologiesFrequencySet.getCredibleSet();
     }
 
     /**
@@ -117,7 +109,7 @@ public class TreeTraceAnalysis {
         // prefix non-tabular lines with # so file can be read into R
         oStream.println("# burnin = " + String.valueOf(burnin));
         oStream.println("# total trees used (total - burnin) = "
-                + String.valueOf(treeInCredSetList.size()));
+                + String.valueOf(treeInTrace.size()));
 
         // prefix non-tabular lines with # so file can be read into R
         oStream.print("# \n# " + String.valueOf(topologiesFrequencySet.getCredSetProbability() * 100)
@@ -149,32 +141,6 @@ public class TreeTraceAnalysis {
         report(oStream, false);
     }
 
-
-    public int getTreeCount() {
-        return treeInCredSetList.size();
-    }
-
-
-    // Remove burnin
-    protected void removeBurnin(List<Tree> posteriorTreeList, double burninFraction) {
-        totalTrees = posteriorTreeList.size();
-        burnin = Utils.getBurnIn(totalTrees, burninFraction);
-
-        // Remove burnin from trace:
-        treeInCredSetList = Utils.getSubListOfTrees(posteriorTreeList, burnin);
-    }
-
-    // topologiesFrequencySet = new FrequencySet<String>(double credSetProbability);
-    protected void analyze(FrequencySet<String> topologiesFrequencySet) {
-
-        for (Tree tree : treeInCredSetList) {
-            String topology = uniqueNewick(tree.getRoot());
-            topologiesFrequencySet.add(topology, 1);
-        }
-
-        credibleSet = topologiesFrequencySet.getCredibleSet();
-    }
-
     /**
      * Recursive function for constructing a Newick tree representation
      * in the given buffer.
@@ -184,7 +150,7 @@ public class TreeTraceAnalysis {
      */
     public String uniqueNewick(Node node) {
         if (node.isLeaf()) {
-            if (taxaLabel) {
+            if (isTaxaLabel) {
                 return String.valueOf(node.getID());
             } else {
                 return String.valueOf(node.getNr());
@@ -212,11 +178,23 @@ public class TreeTraceAnalysis {
     }
 
     public boolean isTaxaLabel() {
-        return taxaLabel;
+        return isTaxaLabel;
     }
 
     public void setTaxaLabel(boolean taxaLabel) {
-        this.taxaLabel = taxaLabel;
+        this.isTaxaLabel = taxaLabel;
+    }
+
+    public int getBurnin() {
+        return burnin;
+    }
+
+    public double getBurninFraction() {
+        return (double) burnin / (double) totalTrees;
+    }
+
+    public double getCredSetProbability() {
+        return topologiesFrequencySet.getCredSetProbability();
     }
 
     /**
@@ -226,6 +204,28 @@ public class TreeTraceAnalysis {
      */
     public List<String> getCredibleSetList() {
         return credibleSet.credibleSetList;
+    }
+
+    /**
+     * total from original log
+     *
+     * @return  Number of trees from log
+     */
+    public int getTotalTreesInLog() {
+        return totalTrees;
+    }
+
+    /**
+     * Obtain total number of trees analysed after burnin removed.
+     *
+     * @return Number of trees analysed.
+     */
+    public int getTotalTreesBurninRemoved() {
+        return treeInTrace.size();
+    }
+
+    public Map<String, Integer> getTopologyCounts() {
+        return topologiesFrequencySet.getFrequencyMap();
     }
 
     /**
@@ -239,18 +239,8 @@ public class TreeTraceAnalysis {
 //    }
 
     /**
-     * Obtain total number of trees analysed (excluding burnin).
-     *
-     * @return Number of trees analysed.
+     * static Utils
      */
-    public int getTotalTreesUsed() {
-        return treeInCredSetList.size();
-    }
-
-    public Map<String, Integer> getTopologyCounts() {
-        return topologiesFrequencySet.getFrequencyMap();
-    }
-
     public static class Utils {
         /**
          * get list of trees from file
@@ -296,6 +286,18 @@ public class TreeTraceAnalysis {
         }
     }
 
+    //******** protected *****
+
+    // Remove burnin
+    protected void removeBurnin(List<Tree> posteriorTreeList, double burninFraction) {
+        totalTrees = posteriorTreeList.size();
+        burnin = Utils.getBurnIn(totalTrees, burninFraction);
+
+        // Remove burnin from trace:
+        treeInTrace = Utils.getSubListOfTrees(posteriorTreeList, burnin);
+    }
+
+    //******** main *****
     public static void main(String[] args) {
         PrintStream out = System.out;
         File inputFile = null;
@@ -326,6 +328,8 @@ public class TreeTraceAnalysis {
             System.exit(0);
         }
         TreeTraceAnalysis analysis = new TreeTraceAnalysis(trees); // default 0.1, 0.95
+        analysis.analyze();
         analysis.report(out);
     }
+
 }
