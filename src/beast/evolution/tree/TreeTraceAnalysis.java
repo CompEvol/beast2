@@ -103,9 +103,9 @@ public class TreeTraceAnalysis {
      * report number of unique tree topologies and total trees in the credible set
      *
      * @param oStream Print stream to write output to.
-     * @param shortReport
+     * @param verbose if true then print all trees
      */
-    public void report(PrintStream oStream, boolean shortReport) {
+    public void report(PrintStream oStream, boolean verbose) {
         // prefix non-tabular lines with # so file can be read into R
         oStream.println("# burnin = " + String.valueOf(burnin));
         oStream.println("# total trees used (total - burnin) = "
@@ -120,7 +120,7 @@ public class TreeTraceAnalysis {
                 + String.valueOf(credibleSet.sumFrequency)
                 + " trees in total)");
 
-        if (!shortReport) {
+        if (verbose) {
             oStream.println("Rank\tCount\tPercent\tRunning\tTree");
             double runningPercent = 0;
             for (int i = 0; i < credibleSet.credibleSetList.size(); i++) {
@@ -138,7 +138,7 @@ public class TreeTraceAnalysis {
 
 
     public void report(PrintStream oStream) {
-        report(oStream, false);
+        report(oStream, true);
     }
 
     /**
