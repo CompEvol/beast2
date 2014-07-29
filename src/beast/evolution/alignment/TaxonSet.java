@@ -2,12 +2,12 @@ package beast.evolution.alignment;
 
 
 
+import beast.core.Description;
+import beast.core.Input;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import beast.core.Description;
-import beast.core.Input;
 
 
 @Description("Set of taxa, useful for instance for multi-gene analysis")
@@ -51,7 +51,26 @@ public class TaxonSet extends Taxon {
     public List<String> asStringList() {
         return taxaNames;
     }
-    
+
+    /**
+     * @return the ID of the ith taxon.
+     */
+    public String getTaxonId(int taxonIndex) {
+        return taxaNames.get(taxonIndex);
+    }
+
+    /**
+     * return index of given Taxon name
+     * @param id
+     * @return  -1 if not found
+     */
+    public int getTaxonIndex(String id) {
+        for (int i = 0; i < taxaNames.size(); i++) {
+            if (getTaxonId(i).contentEquals(id)) return i;
+        }
+        return -1;
+    }
+
     //  convenience methods
 
     public boolean containsAny(final Collection<String> taxa) {
