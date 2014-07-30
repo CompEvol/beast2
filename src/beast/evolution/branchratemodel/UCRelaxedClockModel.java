@@ -25,7 +25,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.REQUIRED);
     public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
 
-    public Input<Integer> numberOfDiscreteRates = new Input<Integer>("numberOfDiscreteRates", "the number of discrete rate categories to approximate the rate distribution by.", 100);
+    public Input<Integer> numberOfDiscreteRates = new Input<Integer>("numberOfDiscreteRates", "the number of discrete rate categories to approximate the rate distribution by. A value <= 0 will cause the number of categories to be set equal to the number of branches in the tree. (default = -1)", -1);
 
     public Input<RealParameter> quantileInput = new Input<RealParameter>("rateQuantiles", "the rate quantiles associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.XOR, categoryInput);
 
@@ -52,6 +52,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         categories = categoryInput.get();
 
         LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
+        if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) LATTICE_SIZE_FOR_DISCRETIZED_RATES = branchCount;
+
         System.out.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate categories to approximate rate distribution across branches.");
 
         usingQuantiles = (categories == null);
@@ -87,7 +89,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             rates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
             storedRates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
 
-            System.arraycopy(rates, 0, storedRates, 0, rates.length);
+            //System.arraycopy(rates, 0, storedRates, 0, rates.length);
         }
         normalize = normalizeInput.get();
 
@@ -123,8 +125,6 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             prepare();
             recompute = false;
         }
-
-        int nodeNumber = node.getNr();
 
         return getRawRate(node) * scaleFactor * meanRate.getValue();
     }
@@ -168,20 +168,20 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
                 throw new RuntimeException("Failed to compute inverse cumulative probability!");
             }
         } else {
-            rate = getRawRate(categories.getValue(nodeNumber));
+            rate = getRawRateForCategory(categories.getValue(nodeNumber));
         }
         return rate;
     }
 
-    private double getRawRate(int i) {
-        if (rates[i] == 0.0) {
+    private double getRawRateForCategory(int category) {
+        if (rates[category] == 0.0) {
             try {
-                rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+                rates[category] = distribution.inverseCumulativeProbability((category + 0.5) / rates.length);
             } catch (MathException e) {
                 throw new RuntimeException("Failed to compute inverse cumulative probability!");
             }
         }
-        return rates[i];
+        return rates[category];
     }
 
 
