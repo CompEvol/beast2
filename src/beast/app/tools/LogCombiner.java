@@ -2,6 +2,7 @@ package beast.app.tools;
 
 
 import beast.app.BEASTVersion;
+import beast.util.LogAnalyser;
 import jam.console.ConsoleApplication;
 
 import javax.swing.*;

@@ -1,7 +1,8 @@
-package beast.app.tools;
+package beast.util;
 
 
 import beast.app.BEASTVersion;
+import beast.app.tools.LogCombinerDialog;
 import jam.console.ConsoleApplication;
 
 import javax.swing.*;
