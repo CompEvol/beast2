@@ -1,4 +1,4 @@
-package beast.app.tools;
+package beast.util;
 
 import beast.app.BEASTVersion;
 import beast.app.util.Utils;
