@@ -12,6 +12,8 @@ import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
 import org.apache.commons.math.MathException;
 
+import java.util.Arrays;
+
 /**
  * @author Alexei Drummond
  */
@@ -22,6 +24,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.REQUIRED);
     public Input<IntegerParameter> categoryInput = new Input<IntegerParameter>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
+
+    public Input<Integer> numberOfDiscreteRates = new Input<Integer>("numberOfDiscreteRates", "the number of discrete rate categories to approximate the rate distribution by.", 100);
+
     public Input<RealParameter> quantileInput = new Input<RealParameter>("rateQuantiles", "the rate quantiles associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.XOR, categoryInput);
 
     public Input<Tree> treeInput = new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
@@ -31,7 +36,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     RealParameter meanRate;
 //    boolean initialise;
 
-    final int LATTICE_SIZE_FOR_DISCRETIZED_RATES = 1000;
+    int LATTICE_SIZE_FOR_DISCRETIZED_RATES = 100;
 
     // true if quantiles are used, false if discrete rate categories are used.
     boolean usingQuantiles;
@@ -45,6 +50,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         branchCount = tree.getNodeCount() - 1;
 
         categories = categoryInput.get();
+
+        LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
+        System.out.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate categories to approximate rate distribution across branches.");
 
         usingQuantiles = (categories == null);
 
@@ -75,11 +83,10 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         distribution = rateDistInput.get();
 
         if (!usingQuantiles) {
+            // rates are initially zero and are computed by getRawRate(int i) as needed
             rates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
             storedRates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
-            for (int i = 0; i < rates.length; i++) {
-                rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
-            }
+
             System.arraycopy(rates, 0, storedRates, 0, rates.length);
         }
         normalize = normalizeInput.get();
@@ -161,9 +168,20 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
                 throw new RuntimeException("Failed to compute inverse cumulative probability!");
             }
         } else {
-            rate = rates[categories.getValue(nodeNumber)];
+            rate = getRawRate(categories.getValue(nodeNumber));
         }
         return rate;
+    }
+
+    private double getRawRate(int i) {
+        if (rates[i] == 0.0) {
+            try {
+                rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
+            } catch (MathException e) {
+                throw new RuntimeException("Failed to compute inverse cumulative probability!");
+            }
+        }
+        return rates[i];
     }
 
 
@@ -178,17 +196,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         tree = treeInput.get();
 
         if (!usingQuantiles) {
-            rates = new double[LATTICE_SIZE_FOR_DISCRETIZED_RATES];
-            try {
-                for (int i = 0; i < rates.length; i++) {
-                    rates[i] = distribution.inverseCumulativeProbability((i + 0.5) / rates.length);
-                }
-            } catch (Exception e) {
-                // Exception due to distribution not having  inverseCumulativeProbability implemented.
-                // This should already been caught at initAndValidate()
-                e.printStackTrace();
-                System.exit(0);
-            }
+            // rates array initialized to correct length in initAndValidate
+            // here we just reset rates to zero and they are computed by getRawRate(int i) as needed
+            Arrays.fill(rates, 0.0);
         }
     }
 
