@@ -1,4 +1,8 @@
-package beast.util;
+package beast.app.tools;
+
+import beast.app.BEASTVersion;
+import beast.app.util.Utils;
+import beast.core.util.ESS;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,10 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import beast.app.BEASTVersion;
-import beast.app.util.Utils;
-import beast.core.util.ESS;
 
 
 

@@ -15,10 +15,11 @@ import java.util.Locale;
 
 
 /**
- * combines log files produced by a ParticleFilter for
- * combined analysis*
+ * compare log files to find the set of parameters same between logs but having significantly different value
+ *
+ * @author Walter Xie
  */
-public class LogCombiner extends LogAnalyser {
+public class LogComparator extends LogAnalyser {
 
     List<String> m_sLogFileName = new ArrayList<String>();
     String m_sParticleDir;
@@ -400,7 +401,7 @@ public class LogCombiner extends LogAnalyser {
                 "</center></html>";
 
 
-        LogCombiner combiner = new LogCombiner();
+        LogComparator combiner = new LogComparator();
         try {
             if (args.length == 0) {
                 System.setProperty("com.apple.macos.useScreenMenuBar", "true");
@@ -408,7 +409,7 @@ public class LogCombiner extends LogAnalyser {
                 System.setProperty("apple.awt.showGrowBox", "true");
 
                 // TODO: set up ICON
-                java.net.URL url = LogCombiner.class.getResource("images/logcombiner.png");
+                java.net.URL url = LogComparator.class.getResource("images/logcombiner.png");
                 javax.swing.Icon icon = null;
 
                 if (url != null) {
