@@ -18,6 +18,8 @@ import java.util.Locale;
 
 
 public class LogAnalyser {
+    // MAX_LAG typical = 2000; = maximum lag for ESS, TODO not used
+    protected final static int MAX_LAG = 2000;
 
     /**
      * column labels in log file *
@@ -59,14 +61,15 @@ public class LogAnalyser {
     }
 
     /**
-     * MAX_LAG typical = 2000; = maximum lag for ESS
-     * nBurnInPercentage typical = 10; percentage of data that can be ignored
-     * *
+     *
+     * @param args
+     * @param nBurnInPercentage  nBurnInPercentage typical = 10; percentage of data that can be ignored
+     * @throws Exception
      */
-    public LogAnalyser(String[] args, int MAX_LAG, int nBurnInPercentage) throws Exception {
+    public LogAnalyser(String[] args, int nBurnInPercentage) throws Exception {
         String sFile = args[args.length - 1];
         readLogFile(sFile, nBurnInPercentage);
-        calcStats(MAX_LAG);
+        calcStats();
     }
 
     protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
@@ -145,7 +148,7 @@ public class LogAnalyser {
      * calculate statistics on the data, one per column.
      * First column (sample nr) is not set *
      */
-    void calcStats(int MAX_LAG) {
+    void calcStats() {
         logln("\nCalculating statistics\n\n" + BAR);
         int nStars = 0;
         int nItems = m_sLabels.length;
@@ -227,11 +230,11 @@ public class LogAnalyser {
         logln("\n");
     } // calcStats
 
-    public void setData(Double[][] fTraces, String[] sLabels, type[] types, int MAX_LAG) {
+    public void setData(Double[][] fTraces, String[] sLabels, type[] types) {
         m_fTraces = fTraces.clone();
         m_sLabels = sLabels.clone();
         m_types = types.clone();
-        calcStats(MAX_LAG);
+        calcStats();
     }
 
     public void setData(Double[] fTrace, int nSampleStep) {
@@ -241,7 +244,7 @@ public class LogAnalyser {
             fTraces[0][i] = (double) i * nSampleStep;
         }
         fTraces[1] = fTrace.clone();
-        setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL}, 2000);
+        setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL});
     }
 
     public double getMean(String sLabel) {
@@ -461,10 +464,10 @@ public class LogAnalyser {
                 if (file == null) {
                     return;
                 }
-                analyser = new LogAnalyser(new String[]{file.getAbsolutePath()}, 2000, 10);
+                analyser = new LogAnalyser(new String[]{file.getAbsolutePath()}, 10);
                 analyser.print(System.out);
             } else {
-                analyser = new LogAnalyser(args, 2000, 10);
+                analyser = new LogAnalyser(args, 10);
             }
             analyser.print(System.out);
         } catch (Exception e) {
