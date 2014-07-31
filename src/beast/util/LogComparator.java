@@ -13,6 +13,7 @@ import static beast.util.OutputUtils.format;
 
 /**
  * Compare log files to find the set of parameters same between logs but having significantly different value.
+ * Z score = 2 * |mean1 - mean2| / (stdError1 + stdError2), If Z score > 2 it is significant.
  * It is limited to 2 logs at a time at moment.
  *
  * @author Walter Xie
@@ -127,7 +128,7 @@ public class LogComparator {
     }
 
     /**
-     * @param args
+     * main
      */
     public static void main(String[] args) {
         LogAnalyser analyser1 = null;
