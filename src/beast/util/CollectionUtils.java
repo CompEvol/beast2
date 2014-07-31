@@ -29,4 +29,16 @@ public class CollectionUtils {
         }
         return -1;
     }
+
+    /**
+     *
+     * @param array the array to be converted into list
+     * @param fromIndex the index of the first element, inclusive, to be sorted
+     * @param toIndex the index of the last element, exclusive, to be sorted
+     * @return
+     */
+    public static <E> List<E> toList(E[] array, int fromIndex, int toIndex) {
+        List<E> list = Arrays.asList(array);
+        return list.subList(fromIndex, toIndex);
+    }
 }
