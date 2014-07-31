@@ -8,13 +8,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
+import static beast.util.OutputUtils.format;
 
 
 public class LogAnalyser {
@@ -266,13 +264,19 @@ public class LogAnalyser {
         setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL});
     }
 
-    public double getMean(String sLabel) {
-        return m_fMean[indexof(sLabel)];
-    }
-
     public int indexof(String sLabel) {
         return CollectionUtils.indexof(sLabel, m_sLabels);
 	}
+
+    /**
+     * First column "Sample" (sample nr) needs to be removed
+     * @return
+     */
+    public List<String> getLabels() {
+        if (m_sLabels.length < 2)
+            return new ArrayList<>();
+        return CollectionUtils.toList(m_sLabels, 1, m_sLabels.length);
+    }
 
     public Double [] getTrace(int index) {
     	return m_fTraces[index].clone();
@@ -282,32 +286,40 @@ public class LogAnalyser {
     	return m_fTraces[indexof(sLabel)].clone();
     }
 
-	public double getStdDev(String sLabel) {
-        return m_fStdDev[indexof(sLabel)];
+    public double getMean(String sLabel) {
+        return getMean(indexof(sLabel));
+    }
+
+    public double getStdError(String sLabel) {
+        return getStdError(indexof(sLabel));
+    }
+
+    public double getStdDev(String sLabel) {
+        return getStdDev(indexof(sLabel));
     }
 
     public double getMedian(String sLabel) {
-        return m_fMedian[indexof(sLabel)];
+        return getMedian(indexof(sLabel));
     }
 
     public double get95HPDup(String sLabel) {
-        return m_f95HPDup[indexof(sLabel)];
+        return get95HPDup(indexof(sLabel));
     }
 
     public double get95HPDlow(String sLabel) {
-        return m_f95HPDlow[indexof(sLabel)];
+        return get95HPDlow(indexof(sLabel));
     }
 
     public double getESS(String sLabel) {
-        return m_fESS[indexof(sLabel)];
+        return getESS(indexof(sLabel));
     }
 
     public double getACT(String sLabel) {
-        return m_fACT[indexof(sLabel)];
+        return getACT(indexof(sLabel));
     }
 
     public double getGeometricMean(String sLabel) {
-        return m_fGeometricMean[indexof(sLabel)];
+        return getGeometricMean(indexof(sLabel));
     }
 
     public double getMean(int iColumn) {
@@ -316,6 +328,10 @@ public class LogAnalyser {
 
     public double getStdDev(int iColumn) {
         return m_fStdDev[iColumn];
+    }
+
+    public double getStdError(int iColumn) {
+        return m_fStdError[iColumn];
     }
 
     public double getMedian(int iColumn) {
@@ -389,7 +405,7 @@ public class LogAnalyser {
     /**
      * print statistics for each column except first column (sample nr). *
      */
-    final static String SPACE = " ";
+    final String SPACE = OutputUtils.SPACE;
     public void print(PrintStream out) {
     	// set up header for prefix, if any is specified
     	String prefix = System.getProperty("prefix");
@@ -427,46 +443,11 @@ public class LogAnalyser {
     }
 
     protected void log(String s) {
-        System.err.print(s); // TODO why err ?
+        System.err.print(s);
     }
 
     protected void logln(String s) {
         System.err.println(s);
-    }
-
-    String format(String s) {
-        while (s.length() < 8) {
-            s += " ";
-        }
-    	return s + SPACE;
-    }
-    
-    String format(Double d) {
-        if (Double.isNaN(d)) {
-            return "NaN     ";
-        }
-        if (Math.abs(d) > 1e-4 || d == 0) {
-	        DecimalFormat f = new DecimalFormat("#0.######", new DecimalFormatSymbols(Locale.US));
-	        String sStr = f.format(d);
-	        if (sStr.length() > 8) {
-	            sStr = sStr.substring(0, 8);
-	        }
-	        while (sStr.length() < 8) {
-	            sStr += " ";
-	        }
-	        return sStr;
-        } else {
-	        DecimalFormat f = new DecimalFormat("0.##E0", new DecimalFormatSymbols(Locale.US));
-	        String sStr = f.format(d);
-	        if (sStr.length() > 8) {
-		        String [] sStrs = sStr.split("E");
-	            sStr =  sStrs[0].substring(0, 8 - sStrs[1].length() - 1) + "E" + sStrs[1];
-	        }
-	        while (sStr.length() < 8) {
-	            sStr += " ";
-	        }
-	        return sStr;        	
-        }
     }
 
     /**
