@@ -21,6 +21,10 @@ public class LogAnalyser {
     // MAX_LAG typical = 2000; = maximum lag for ESS, TODO not used
     protected final static int MAX_LAG = 2000;
 
+    public static final int BURN_IN_PERCENTAGE = 10; // default
+
+    protected final String sFile;
+
     /**
      * column labels in log file *
      */
@@ -58,6 +62,7 @@ public class LogAnalyser {
     final protected static String BAR = "|---------|---------|---------|---------|---------|---------|---------|---------|";
 
     public LogAnalyser() {
+        sFile = null;
     }
 
     /**
@@ -67,12 +72,26 @@ public class LogAnalyser {
      * @throws Exception
      */
     public LogAnalyser(String[] args, int nBurnInPercentage) throws Exception {
-        String sFile = args[args.length - 1];
-        readLogFile(sFile, nBurnInPercentage);
+        sFile = args[args.length - 1];
+        readLogFile(nBurnInPercentage);
         calcStats();
     }
 
-    protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
+    public LogAnalyser(String[] args) throws Exception {
+        this(args, BURN_IN_PERCENTAGE);
+    }
+
+    public LogAnalyser(String sFile, int nBurnInPercentage) throws Exception {
+        this.sFile = sFile;
+        readLogFile(nBurnInPercentage);
+        calcStats();
+    }
+
+    public LogAnalyser(String sFile) throws Exception {
+        this(sFile, BURN_IN_PERCENTAGE);
+    }
+
+    protected void readLogFile(int nBurnInPercentage) throws Exception {
         log("\nLoading " + sFile);
         BufferedReader fin = new BufferedReader(new FileReader(sFile));
         String sStr = null;
@@ -99,7 +118,7 @@ public class LogAnalyser {
         m_fTraces = new Double[nItems][nData - nBurnIn];
         fin = new BufferedReader(new FileReader(sFile));
         nData = -nBurnIn - 1;
-        logln(" skipping " + nBurnIn + " log lines\n\n" + BAR);
+        logln(", burnin " + nBurnInPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
         // grab data from the log, ignoring burn in samples
         m_types = new type[nItems];
         Arrays.fill(m_types, type.INTEGER);
@@ -251,15 +270,10 @@ public class LogAnalyser {
         return m_fMean[indexof(sLabel)];
     }
 
-    private int indexof(String sLabel) {
-    	for (int i = 0; i < m_sLabels.length ; i++) {
-    		if (m_sLabels[i].equals(sLabel)) {
-    			return i;
-    		}
-    	}
-		return -1;
+    public int indexof(String sLabel) {
+        return CollectionUtils.indexof(sLabel, m_sLabels);
 	}
-    
+
     public Double [] getTrace(int index) {
     	return m_fTraces[index].clone();
     }
@@ -267,7 +281,7 @@ public class LogAnalyser {
     public Double [] getTrace(String sLabel) {
     	return m_fTraces[indexof(sLabel)].clone();
     }
-    
+
 	public double getStdDev(String sLabel) {
         return m_fStdDev[indexof(sLabel)];
     }
@@ -368,6 +382,10 @@ public class LogAnalyser {
         return m_fGeometricMean[1];
     }
 
+    public String getLogFile() {
+        return sFile;
+    }
+
     /**
      * print statistics for each column except first column (sample nr). *
      */
@@ -409,7 +427,7 @@ public class LogAnalyser {
     }
 
     protected void log(String s) {
-        System.err.print(s);
+        System.err.print(s); // TODO why err ?
     }
 
     protected void logln(String s) {
@@ -464,10 +482,9 @@ public class LogAnalyser {
                 if (file == null) {
                     return;
                 }
-                analyser = new LogAnalyser(new String[]{file.getAbsolutePath()}, 10);
-                analyser.print(System.out);
+                analyser = new LogAnalyser(file.getAbsolutePath());
             } else {
-                analyser = new LogAnalyser(args, 10);
+                analyser = new LogAnalyser(args);
             }
             analyser.print(System.out);
         } catch (Exception e) {
