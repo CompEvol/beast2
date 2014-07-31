@@ -24,7 +24,7 @@ public class LogComparator {
      */
     protected List<String> matchedLabels;
 
-    protected Double[] significance; // Z score
+    protected Double[] zScore; // Z score
 
     protected LogAnalyser analyser1, analyser2;
 
@@ -42,12 +42,12 @@ public class LogComparator {
         compareLogs();
     }
 
-    public double getSignificance(String sLabel) {
+    public double getZScore(String sLabel) {
         int index = matchedLabels.indexOf(sLabel);
         if (index < 0)
             throw new IllegalArgumentException("Cannot find " + sLabel + " from matched parameter list !");
 
-        return significance[index];
+        return zScore[index];
     }
 
     protected void compareLogs() {
@@ -56,7 +56,7 @@ public class LogComparator {
         if (matchedLabels.size() < 1)
             throw new IllegalArgumentException("There is no parameter name matched between log files !");
 
-        significance = new Double[matchedLabels.size()];
+        zScore = new Double[matchedLabels.size()];
 
         for (String mLabel : matchedLabels) {
             int index1 = analyser1.indexof(mLabel);
@@ -69,7 +69,7 @@ public class LogComparator {
 
             int index = matchedLabels.indexOf(mLabel);
             // Z score = 2 * |m1 - m2| / (se1 + se2), If Z score > 2 it is significant
-            significance[index] = 2 * Math.abs(m1 - m2) / (se1 + se2);
+            zScore[index] = 2 * Math.abs(m1 - m2) / (se1 + se2);
         }
     }
 
@@ -101,7 +101,7 @@ public class LogComparator {
 
         List<String> significantLabels = new ArrayList<>();
         if (verbose) {
-            out.println("item" + sSpace.substring(4) + " " + prefixHead + "   " + format("signific") +
+            out.println("item" + sSpace.substring(4) + " " + prefixHead + "   " + format("ZScore") +
                     format("mean1") + format("stderr1") + format("mean2") + format("stderr2"));
 
             for (int i = 1; i < matchedLabels.size(); i++) {
@@ -116,10 +116,10 @@ public class LogComparator {
                 double se2 = analyser2.getStdError(index2);
 
                 out.println(mLabel + sSpace.substring(mLabel.length()) + SPACE + (prefix == null ? "" : prefix + SPACE) +
-                        (significance[i] > 2 ? STAR : NON_STAR) + SPACE + format(significance[i]) + SPACE +
+                        (zScore[i] > 2 ? STAR : NON_STAR) + SPACE + format(zScore[i]) + SPACE +
                         format(m1) + SPACE + format(se1) + SPACE + format(m2) + SPACE + format(se2));
 
-                if (significance[i] > 2) significantLabels.add(mLabel);
+                if (zScore[i] > 2) significantLabels.add(mLabel);
             }
         }
 
