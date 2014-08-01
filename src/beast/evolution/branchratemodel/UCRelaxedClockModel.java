@@ -50,13 +50,20 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         branchCount = tree.getNodeCount() - 1;
 
         categories = categoryInput.get();
-
-        LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
-        if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) LATTICE_SIZE_FOR_DISCRETIZED_RATES = branchCount;
-
-        System.out.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate categories to approximate rate distribution across branches.");
-
         usingQuantiles = (categories == null);
+
+        if (!usingQuantiles) {
+            LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
+            if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) LATTICE_SIZE_FOR_DISCRETIZED_RATES = branchCount;
+            System.out.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate categories to approximate rate distribution across branches.");
+        } else {
+            if (numberOfDiscreteRates.get() != null) {
+                throw new RuntimeException("Can't specify both numberOfDiscreteRates and rateQuantiles inputs.");
+            }
+            System.out.println("  UCRelaxedClockModel: using quantiles for rate distribution across branches.");
+        }
+
+
 
         if (usingQuantiles) {
             quantiles = quantileInput.get();
@@ -129,8 +136,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         return getRawRate(node) * scaleFactor * meanRate.getValue();
     }
 
-    // compute scale factor
-
+    /**
+     * Computes a scale factor for normalization. Only called if normalize=true.
+     */
     private void computeFactor() {
 
         //scale mean rate to 1.0 or separate parameter
@@ -138,21 +146,39 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         double treeRate = 0.0;
         double treeTime = 0.0;
 
-        for (int i = 0; i < tree.getNodeCount(); i++) {
-            Node node = tree.getNode(i);
-            if (!node.isRoot()) {
-                treeRate += getRawRate(node) * node.getLength();
-                treeTime += node.getLength();
+        if (!usingQuantiles) {
+            for (int i = 0; i < tree.getNodeCount(); i++) {
+                Node node = tree.getNode(i);
+                if (!node.isRoot()) {
+                    treeRate += getRawRateForCategory(node) * node.getLength();
+                    treeTime += node.getLength();
+                }
+            }
+        } else {
+            for (int i = 0; i < tree.getNodeCount(); i++) {
+                Node node = tree.getNode(i);
+                if (!node.isRoot()) {
+                    treeRate += getRawRateForQuantile(node) * node.getLength();
+                    treeTime += node.getLength();
+                }
             }
         }
+
         scaleFactor = 1.0 / (treeRate / treeTime);
+    }
+
+    private double getRawRate(Node node) {
+        if (usingQuantiles) {
+            return getRawRateForQuantile(node);
+        }
+        return getRawRateForCategory(node);
     }
 
     /**
      * @param node the node to get the rate of
      * @return the rate of the branch
      */
-    private double getRawRate(Node node) {
+    private double getRawRateForCategory(Node node) {
 
         int nodeNumber = node.getNr();
         if (nodeNumber == branchCount) {
@@ -160,20 +186,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             nodeNumber = node.getTree().getRoot().getNr();
         }
 
-        double rate;
-        if (usingQuantiles) {
-            try {
-                rate = distribution.inverseCumulativeProbability(quantiles.getValue(nodeNumber));
-            } catch (MathException e) {
-                throw new RuntimeException("Failed to compute inverse cumulative probability!");
-            }
-        } else {
-            rate = getRawRateForCategory(categories.getValue(nodeNumber));
-        }
-        return rate;
-    }
+        int category = categories.getValue(nodeNumber);
 
-    private double getRawRateForCategory(int category) {
         if (rates[category] == 0.0) {
             try {
                 rates[category] = distribution.inverseCumulativeProbability((category + 0.5) / rates.length);
@@ -184,6 +198,20 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         return rates[category];
     }
 
+    private double getRawRateForQuantile(Node node) {
+
+        int nodeNumber = node.getNr();
+        if (nodeNumber == branchCount) {
+            // root node has nr less than #categories, so use that nr
+            nodeNumber = node.getTree().getRoot().getNr();
+        }
+
+        try {
+            return distribution.inverseCumulativeProbability(quantiles.getValue(nodeNumber));
+        } catch (MathException e) {
+            throw new RuntimeException("Failed to compute inverse cumulative probability!");
+        }
+    }
 
     private void prepare() {
 
