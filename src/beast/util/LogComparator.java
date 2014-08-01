@@ -51,7 +51,7 @@ public class LogComparator {
     }
 
     protected void compareLogs() {
-        matchedLabels = CollectionUtils.insect(analyser1.getLabels(), analyser2.getLabels());
+        matchedLabels = CollectionUtils.intersection(analyser1.getLabels(), analyser2.getLabels());
 
         if (matchedLabels.size() < 1)
             throw new IllegalArgumentException("There is no parameter name matched between log files !");

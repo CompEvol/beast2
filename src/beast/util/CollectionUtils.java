@@ -12,13 +12,13 @@ import java.util.List;
 public class CollectionUtils {
 
     // not use set because hard to get element given index
-    public static <E> List<E> insect(List<E> list1, List<E> list2) {
+    public static <E> List<E> intersection(List<E> list1, List<E> list2) {
         list1.retainAll(list2);
         return list1;
     }
 
-    public static <E> List<E> insect(E[] array1, E[] array2) {
-        return insect(Arrays.asList(array1), Arrays.asList(array2));
+    public static <E> List<E> intersection(E[] array1, E[] array2) {
+        return intersection(Arrays.asList(array1), Arrays.asList(array2));
     }
 
     public static <E> int indexof(E sLabel, E[] m_sLabels) {
