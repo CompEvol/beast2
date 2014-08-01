@@ -1,23 +1,27 @@
 package beast.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintStream;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import beast.app.BEASTVersion;
 import beast.app.util.Utils;
 import beast.core.util.ESS;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static beast.util.OutputUtils.format;
 
 
 public class LogAnalyser {
+    // MAX_LAG typical = 2000; = maximum lag for ESS, TODO not used
+    protected final static int MAX_LAG = 2000;
+
+    public static final int BURN_IN_PERCENTAGE = 10; // default
+
+    protected final String sFile;
 
     /**
      * column labels in log file *
@@ -56,20 +60,36 @@ public class LogAnalyser {
     final protected static String BAR = "|---------|---------|---------|---------|---------|---------|---------|---------|";
 
     public LogAnalyser() {
+        sFile = null;
     }
 
     /**
-     * MAX_LAG typical = 2000; = maximum lag for ESS
-     * nBurnInPercentage typical = 10; percentage of data that can be ignored
-     * *
+     *
+     * @param args
+     * @param nBurnInPercentage  nBurnInPercentage typical = 10; percentage of data that can be ignored
+     * @throws Exception
      */
-    public LogAnalyser(String[] args, int MAX_LAG, int nBurnInPercentage) throws Exception {
-        String sFile = args[args.length - 1];
-        readLogFile(sFile, nBurnInPercentage);
-        calcStats(MAX_LAG);
+    public LogAnalyser(String[] args, int nBurnInPercentage) throws Exception {
+        sFile = args[args.length - 1];
+        readLogFile(nBurnInPercentage);
+        calcStats();
     }
 
-    protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
+    public LogAnalyser(String[] args) throws Exception {
+        this(args, BURN_IN_PERCENTAGE);
+    }
+
+    public LogAnalyser(String sFile, int nBurnInPercentage) throws Exception {
+        this.sFile = sFile;
+        readLogFile(nBurnInPercentage);
+        calcStats();
+    }
+
+    public LogAnalyser(String sFile) throws Exception {
+        this(sFile, BURN_IN_PERCENTAGE);
+    }
+
+    protected void readLogFile(int nBurnInPercentage) throws Exception {
         log("\nLoading " + sFile);
         BufferedReader fin = new BufferedReader(new FileReader(sFile));
         String sStr = null;
@@ -96,7 +116,7 @@ public class LogAnalyser {
         m_fTraces = new Double[nItems][nData - nBurnIn];
         fin = new BufferedReader(new FileReader(sFile));
         nData = -nBurnIn - 1;
-        logln(" skipping " + nBurnIn + " log lines\n\n" + BAR);
+        logln(", burnin " + nBurnInPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
         // grab data from the log, ignoring burn in samples
         m_types = new type[nItems];
         Arrays.fill(m_types, type.INTEGER);
@@ -145,7 +165,7 @@ public class LogAnalyser {
      * calculate statistics on the data, one per column.
      * First column (sample nr) is not set *
      */
-    void calcStats(int MAX_LAG) {
+    void calcStats() {
         logln("\nCalculating statistics\n\n" + BAR);
         int nStars = 0;
         int nItems = m_sLabels.length;
@@ -227,11 +247,11 @@ public class LogAnalyser {
         logln("\n");
     } // calcStats
 
-    public void setData(Double[][] fTraces, String[] sLabels, type[] types, int MAX_LAG) {
+    public void setData(Double[][] fTraces, String[] sLabels, type[] types) {
         m_fTraces = fTraces.clone();
         m_sLabels = sLabels.clone();
         m_types = types.clone();
-        calcStats(MAX_LAG);
+        calcStats();
     }
 
     public void setData(Double[] fTrace, int nSampleStep) {
@@ -241,22 +261,23 @@ public class LogAnalyser {
             fTraces[0][i] = (double) i * nSampleStep;
         }
         fTraces[1] = fTrace.clone();
-        setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL}, 2000);
+        setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL});
     }
 
-    public double getMean(String sLabel) {
-        return m_fMean[indexof(sLabel)];
-    }
-
-    private int indexof(String sLabel) {
-    	for (int i = 0; i < m_sLabels.length ; i++) {
-    		if (m_sLabels[i].equals(sLabel)) {
-    			return i;
-    		}
-    	}
-		return -1;
+    public int indexof(String sLabel) {
+        return CollectionUtils.indexof(sLabel, m_sLabels);
 	}
-    
+
+    /**
+     * First column "Sample" (sample nr) needs to be removed
+     * @return
+     */
+    public List<String> getLabels() {
+        if (m_sLabels.length < 2)
+            return new ArrayList<>();
+        return CollectionUtils.toList(m_sLabels, 1, m_sLabels.length);
+    }
+
     public Double [] getTrace(int index) {
     	return m_fTraces[index].clone();
     }
@@ -264,33 +285,41 @@ public class LogAnalyser {
     public Double [] getTrace(String sLabel) {
     	return m_fTraces[indexof(sLabel)].clone();
     }
-    
-	public double getStdDev(String sLabel) {
-        return m_fStdDev[indexof(sLabel)];
+
+    public double getMean(String sLabel) {
+        return getMean(indexof(sLabel));
+    }
+
+    public double getStdError(String sLabel) {
+        return getStdError(indexof(sLabel));
+    }
+
+    public double getStdDev(String sLabel) {
+        return getStdDev(indexof(sLabel));
     }
 
     public double getMedian(String sLabel) {
-        return m_fMedian[indexof(sLabel)];
+        return getMedian(indexof(sLabel));
     }
 
     public double get95HPDup(String sLabel) {
-        return m_f95HPDup[indexof(sLabel)];
+        return get95HPDup(indexof(sLabel));
     }
 
     public double get95HPDlow(String sLabel) {
-        return m_f95HPDlow[indexof(sLabel)];
+        return get95HPDlow(indexof(sLabel));
     }
 
     public double getESS(String sLabel) {
-        return m_fESS[indexof(sLabel)];
+        return getESS(indexof(sLabel));
     }
 
     public double getACT(String sLabel) {
-        return m_fACT[indexof(sLabel)];
+        return getACT(indexof(sLabel));
     }
 
     public double getGeometricMean(String sLabel) {
-        return m_fGeometricMean[indexof(sLabel)];
+        return getGeometricMean(indexof(sLabel));
     }
 
     public double getMean(int iColumn) {
@@ -299,6 +328,10 @@ public class LogAnalyser {
 
     public double getStdDev(int iColumn) {
         return m_fStdDev[iColumn];
+    }
+
+    public double getStdError(int iColumn) {
+        return m_fStdError[iColumn];
     }
 
     public double getMedian(int iColumn) {
@@ -365,10 +398,14 @@ public class LogAnalyser {
         return m_fGeometricMean[1];
     }
 
+    public String getLogFile() {
+        return sFile;
+    }
+
     /**
      * print statistics for each column except first column (sample nr). *
      */
-    final static String SPACE = " ";
+    final String SPACE = OutputUtils.SPACE;
     public void print(PrintStream out) {
     	// set up header for prefix, if any is specified
     	String prefix = System.getProperty("prefix");
@@ -413,41 +450,6 @@ public class LogAnalyser {
         System.err.println(s);
     }
 
-    String format(String s) {
-        while (s.length() < 8) {
-            s += " ";
-        }
-    	return s + SPACE;
-    }
-    
-    String format(Double d) {
-        if (Double.isNaN(d)) {
-            return "NaN     ";
-        }
-        if (Math.abs(d) > 1e-4 || d == 0) {
-	        DecimalFormat f = new DecimalFormat("#0.######", new DecimalFormatSymbols(Locale.US));
-	        String sStr = f.format(d);
-	        if (sStr.length() > 8) {
-	            sStr = sStr.substring(0, 8);
-	        }
-	        while (sStr.length() < 8) {
-	            sStr += " ";
-	        }
-	        return sStr;
-        } else {
-	        DecimalFormat f = new DecimalFormat("0.##E0", new DecimalFormatSymbols(Locale.US));
-	        String sStr = f.format(d);
-	        if (sStr.length() > 8) {
-		        String [] sStrs = sStr.split("E");
-	            sStr =  sStrs[0].substring(0, 8 - sStrs[1].length() - 1) + "E" + sStrs[1];
-	        }
-	        while (sStr.length() < 8) {
-	            sStr += " ";
-	        }
-	        return sStr;        	
-        }
-    }
-
     /**
      * @param args
      */
@@ -461,10 +463,9 @@ public class LogAnalyser {
                 if (file == null) {
                     return;
                 }
-                analyser = new LogAnalyser(new String[]{file.getAbsolutePath()}, 2000, 10);
-                analyser.print(System.out);
+                analyser = new LogAnalyser(file.getAbsolutePath());
             } else {
-                analyser = new LogAnalyser(args, 2000, 10);
+                analyser = new LogAnalyser(args);
             }
             analyser.print(System.out);
         } catch (Exception e) {

@@ -1,26 +1,18 @@
 package beast.app.tools;
 
 
+import beast.app.BEASTVersion;
+import beast.util.LogAnalyser;
 import jam.console.ConsoleApplication;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.PrintStream;
+import javax.swing.*;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import javax.swing.JFrame;
-
-import beast.app.BEASTVersion;
-import beast.app.tools.LogCombinerDialog;
-import beast.util.LogAnalyser;
-
 
 
 /**
@@ -132,7 +124,7 @@ public class LogCombiner extends LogAnalyser {
                 m_bIsTreeLog = true;
                 readTreeLogFile(sFile, nBurbIns[k]);
             } else {
-                readLogFile(sFile, nBurbIns[k]);
+                readLogFile(nBurbIns[k]);
             }
 
             if (m_fCombinedTraces == null) {
@@ -295,7 +287,7 @@ public class LogCombiner extends LogAnalyser {
         logln("\n" + nLines + " lines in combined log");
     }
 
-    private String format(String sTree) {
+    protected String format(String sTree) {
         if (m_bUseDecimalFormat) {
             // convert scientific to decimal format
             if (sTree.matches(".*[0-9]+\\.[0-9]+[0-9-]+E[0-9-]+.*")) {
