@@ -57,13 +57,11 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) LATTICE_SIZE_FOR_DISCRETIZED_RATES = branchCount;
             System.out.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate categories to approximate rate distribution across branches.");
         } else {
-            if (numberOfDiscreteRates.get() != null) {
+            if (numberOfDiscreteRates.get() != -1) {
                 throw new RuntimeException("Can't specify both numberOfDiscreteRates and rateQuantiles inputs.");
             }
             System.out.println("  UCRelaxedClockModel: using quantiles for rate distribution across branches.");
         }
-
-
 
         if (usingQuantiles) {
             quantiles = quantileInput.get();
