@@ -29,6 +29,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
@@ -58,25 +59,21 @@ import java.util.*;
         "<br/>o neighborjoining " +
         "<br/>o neighborjoining2 - corrects tree for tip data, unlike plain neighborjoining")
 public class ClusterTree extends Tree implements StateNodeInitialiser {
-    final static String M_SINGLE = "single";
-    final static String M_AVERAGE = "average";
-    final static String M_COMPLETE = "complete";
-    final static String M_UPGMA = "upgma";
-    final static String M_MEAN = "mean";
-    final static String M_CENTROID = "centroid";
-    final static String M_WARD = "ward";
-    final static String M_ADJCOMPLETE = "adjcomplete";
-    final static String M_NEIGHBORJOINING = "neighborjoining";
-    final static String M_NEIGHBORJOINING2 = "neighborjoining2";
+
+    enum Type {single, average, complete, upgma, mean, centroid, ward, adjcomplete, neighborjoining, neighborjoining2}
+
+
     double EPSILON = 1e-10;
 
-    final static String[] TYPES = {M_SINGLE, M_AVERAGE, M_COMPLETE, M_UPGMA, M_MEAN, M_CENTROID, M_WARD, M_ADJCOMPLETE, M_NEIGHBORJOINING, M_NEIGHBORJOINING2};
-
-    public Input<String> clusterTypeInput = new Input<String>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
-            "Should be one of " + Arrays.toString(TYPES) + " (default " + M_AVERAGE + ")", M_AVERAGE, TYPES);
+    public Input<Type> clusterTypeInput = new Input<Type>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
+            "Should be one of " + Type.values() + " (default " + Type.average + ")", Type.average, Type.values());
     public Input<Alignment> dataInput = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
-    //public Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "specifies taxon set in same order as used for distance", Validate.XOR, dataInput);
+
     public Input<Distance> distanceInput = new Input<Distance>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
+
+    public Input<RealParameter> clockRateInput = new Input<RealParameter>("clock.rate",
+            "the clock rate parameter, used to divide all divergence times by, to convert from substitutions to times. (default 1.0)",
+            new RealParameter(new Double[] {1.0}));
 
     /**
      * Whether the distance represent node height (if false) or branch length (if true).
@@ -85,9 +82,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     Distance distance;
     List<String> taxaNames;
 
+    /**
+     * Holds the Link type used calculate distance between clusters
+     */
+    Type nLinkType = Type.single;
+
+
     @Override
     public void initAndValidate() throws Exception {
     	
+        RealParameter clockRate = clockRateInput.get();
 
     	if (dataInput.get() != null) {
     		taxaNames = dataInput.get().getTaxaNames();
@@ -138,38 +142,18 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         	((Distance.Base) distance).setPatterns(dataInput.get());
         }
 
-        final String sType = clusterTypeInput.get().toLowerCase();
-        if (sType.equals(M_SINGLE)) {
-            m_nLinkType = SINGLE;
-        } else if (sType.equals(M_COMPLETE)) {
-            m_nLinkType = COMPLETE;
-        } else if (sType.equals(M_AVERAGE)) {
-            m_nLinkType = AVERAGE;
-        } else if (sType.equals(M_UPGMA)) {
-            m_nLinkType = AVERAGE;
-        } else if (sType.equals(M_MEAN)) {
-            m_nLinkType = MEAN;
-        } else if (sType.equals(M_CENTROID)) {
-            m_nLinkType = CENTROID;
-        } else if (sType.equals(M_WARD)) {
-            m_nLinkType = WARD;
-        } else if (sType.equals(M_ADJCOMPLETE)) {
-            m_nLinkType = ADJCOMLPETE;
-        } else if (sType.equals(M_NEIGHBORJOINING)) {
-            m_nLinkType = NEIGHBOR_JOINING;
+        nLinkType = clusterTypeInput.get();
+
+        if (nLinkType == Type.upgma) nLinkType = Type.average;
+
+        if (nLinkType == Type.neighborjoining || nLinkType == Type.neighborjoining2) {
             distanceIsBranchLength = true;
-        } else if (sType.equals(M_NEIGHBORJOINING2)) {
-            m_nLinkType = NEIGHBOR_JOINING2;
-            distanceIsBranchLength = true;
-        } else {
-            System.out.println("Warning: unrecognized cluster type. Using Average/UPGMA.");
-            m_nLinkType = AVERAGE;
         }
         final Node root = buildClusterer();
         setRoot(root);
         root.labelInternalNodes((getNodeCount() + 1) / 2);
         super.initAndValidate();
-        if (m_nLinkType == NEIGHBOR_JOINING2) {
+        if (nLinkType == Type.neighborjoining2) {
             // set tip dates to zero
             final Node[] nodes = getNodesAsArray();
             for (int i = 0; i < getLeafNodeCount(); i++) {
@@ -191,29 +175,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         		getNode(i).setHeight(0);
         	}
         }
-        // node distances need to be halved when converted to heights.
-        // Need to scale when building :(
-        //scale(0.5);
+
+        //divide all node heights by clock rate to convert from substitutions to time.
+        for (Node node : getInternalNodes()) {
+            double height = node.getHeight();
+            node.setHeight(height/clockRate.getValue());
+        }
+
         initStateNodes();
     }
 
-    /**
-     * the various link types
-     */
-    final static int SINGLE = 0;
-    final static int COMPLETE = 1;
-    final static int AVERAGE = 2;
-    final static int MEAN = 3;
-    final static int CENTROID = 4;
-    final static int WARD = 5;
-    final static int ADJCOMLPETE = 6;
-    final static int NEIGHBOR_JOINING = 7;
-    final static int NEIGHBOR_JOINING2 = 8;
-
-    /**
-     * Holds the Link type used calculate distance between clusters
-     */
-    int m_nLinkType = SINGLE;
 
     public ClusterTree() {
     } // c'tor
@@ -380,13 +351,12 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     public Node buildClusterer() throws Exception {
         final int nTaxa = taxaNames.size();
         if (nTaxa == 1) {
-            // patalogical case
+            // pathological case
             final Node node = newNode();
             node.setHeight(1);
             node.setNr(0);
             return node;
         }
-
 
         // use array of integer vectors to store cluster indices,
         // starting with one cluster per instance
@@ -400,7 +370,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
         // used for keeping track of hierarchy
         final NodeX[] clusterNodes = new NodeX[nTaxa];
-        if (m_nLinkType == NEIGHBOR_JOINING || m_nLinkType == NEIGHBOR_JOINING2) {
+        if (nLinkType == Type.neighborjoining || nLinkType == Type.neighborjoining2) {
             neighborJoining(nClusters, nClusterID, clusterNodes);
         } else {
             doLinkClustering(nClusters, nClusterID, clusterNodes);
@@ -628,19 +598,19 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      */
     double getDistance0(final List<Integer> cluster1, final List<Integer> cluster2) {
         double fBestDist = Double.MAX_VALUE;
-        switch (m_nLinkType) {
-            case SINGLE:
-            case NEIGHBOR_JOINING:
-            case NEIGHBOR_JOINING2:
-            case CENTROID:
-            case COMPLETE:
-            case ADJCOMLPETE:
-            case AVERAGE:
-            case MEAN:
+        switch (nLinkType) {
+            case single:
+            case neighborjoining:
+            case neighborjoining2:
+            case centroid:
+            case complete:
+            case adjcomplete:
+            case average:
+            case mean:
                 // set up two instances for distance function
                 fBestDist = distance(cluster1.get(0), cluster2.get(0));
                 break;
-            case WARD: {
+            case ward: {
                 // finds the distance of the change in caused by merging the cluster.
                 // The information of a cluster is calculated as the error sum of squares of the
                 // centroids of the cluster and its members.
@@ -666,8 +636,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      */
     double getDistance(final double[][] fDistance, final List<Integer> cluster1, final List<Integer> cluster2) {
         double fBestDist = Double.MAX_VALUE;
-        switch (m_nLinkType) {
-            case SINGLE:
+        switch (nLinkType) {
+            case single:
                 // find single link distance aka minimum link, which is the closest distance between
                 // any item in cluster1 and any item in cluster2
                 fBestDist = Double.MAX_VALUE;
@@ -682,8 +652,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                     }
                 }
                 break;
-            case COMPLETE:
-            case ADJCOMLPETE:
+            case complete:
+            case adjcomplete:
                 // find complete link distance aka maximum link, which is the largest distance between
                 // any item in cluster1 and any item in cluster2
                 fBestDist = 0;
@@ -697,7 +667,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                         }
                     }
                 }
-                if (m_nLinkType == COMPLETE) {
+                if (nLinkType == Type.complete) {
                     break;
                 }
                 // calculate adjustment, which is the largest within cluster distance
@@ -724,7 +694,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 }
                 fBestDist -= fMaxDist;
                 break;
-            case AVERAGE:
+            case average:
                 // finds average distance between the elements of the two clusters
                 fBestDist = 0;
                 for (int i = 0; i < cluster1.size(); i++) {
@@ -736,7 +706,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 }
                 fBestDist /= (cluster1.size() * cluster2.size());
                 break;
-            case MEAN: {
+            case mean: {
                 // calculates the mean distance of a merged cluster (akak Group-average agglomerative clustering)
                 final List<Integer> merged = new ArrayList<Integer>();
                 merged.addAll(cluster1);
@@ -753,7 +723,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 fBestDist /= (n * (n - 1.0) / 2.0);
             }
             break;
-            case CENTROID:
+            case centroid:
                 // finds the distance of the centroids of the clusters
                 final int nPatterns = dataInput.get().getPatternCount();
                 final double[] centroid1 = new double[nPatterns];
@@ -776,7 +746,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 }
                 fBestDist = distance(centroid1, centroid2);
                 break;
-            case WARD: {
+            case ward: {
                 // finds the distance of the change in caused by merging the cluster.
                 // The information of a cluster is calculated as the error sum of squares of the
                 // centroids of the cluster and its members.
