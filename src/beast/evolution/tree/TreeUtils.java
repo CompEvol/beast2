@@ -292,4 +292,40 @@ public class TreeUtils {
         }
         return true;
     }
+
+    /**
+     * get tree topology in Newick that is sorted by taxa labels or node indexes.
+     * @param node
+     * @param isTaxaLabel       if true, then print taxa label instead of node index
+     * @return
+     */
+    public static String sortedNewickTopology(Node node, boolean isTaxaLabel) {
+        if (node.isLeaf()) {
+            if (isTaxaLabel) {
+                return String.valueOf(node.getID());
+            } else {
+                return String.valueOf(node.getNr());
+            }
+        } else {
+            StringBuilder builder = new StringBuilder("(");
+
+            List<String> subTrees = new ArrayList<String>();
+            for (int i = 0; i < node.getChildCount(); i++) {
+                subTrees.add(sortedNewickTopology(node.getChild(i), isTaxaLabel));
+            }
+
+            Collections.sort(subTrees);
+
+            for (int i = 0; i < subTrees.size(); i++) {
+                builder.append(subTrees.get(i));
+                if (i < subTrees.size() - 1) {
+                    builder.append(",");
+                }
+            }
+            builder.append(")");
+
+            return builder.toString();
+        }
+    }
+
 }
