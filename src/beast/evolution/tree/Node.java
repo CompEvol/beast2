@@ -25,11 +25,11 @@
 package beast.evolution.tree;
 
 
-import java.util.*;
-
-import beast.core.Description;
 import beast.core.BEASTObject;
+import beast.core.Description;
 import beast.util.HeapSort;
+
+import java.util.*;
 
 
 @Description("Nodes in building beast.tree data structure.")
@@ -407,20 +407,19 @@ public class Node extends BEASTObject {
         throw new UnsupportedOperationException("Please use toNewick(). Labels will come from node.getId() or node.getNr().");
     }
 
-
-        /**
-         * @return beast.tree in Newick format with taxon labels for labelled tip nodes
-         * and labeled (having non-null ID) internal nodes.
-         * If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
-         */
-    public String toNewick() {
+    /**
+     *
+     * @param onlyTopology  if true, only print topology
+     * @return
+     */
+    public String toNewick(boolean onlyTopology) {
         final StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            buf.append(getLeft().toNewick());
+            buf.append(getLeft().toNewick(onlyTopology));
             if (getRight() != null) {
                 buf.append(',');
-                buf.append(getRight().toNewick());
+                buf.append(getRight().toNewick(onlyTopology));
             }
             buf.append(")");
             if (getID() != null) {
@@ -433,9 +432,21 @@ public class Node extends BEASTObject {
                 buf.append(getID());
             }
         }
-        buf.append(getNewickMetaData());
-        buf.append(":").append(getLength());
+        if (!onlyTopology) {
+            buf.append(getNewickMetaData());
+            buf.append(":").append(getLength());
+        }
         return buf.toString();
+    }
+
+
+    /**
+     * @return beast.tree in Newick format with taxon labels for labelled tip nodes
+     * and labeled (having non-null ID) internal nodes.
+     * If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
+     */
+    public String toNewick() {
+        return toNewick(false);
     }
 
     public String getNewickMetaData() {

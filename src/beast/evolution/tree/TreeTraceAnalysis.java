@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -149,32 +148,7 @@ public class TreeTraceAnalysis {
      * @return
      */
     public String uniqueNewick(Node node) {
-        if (node.isLeaf()) {
-            if (isTaxaLabel) {
-                return String.valueOf(node.getID());
-            } else {
-                return String.valueOf(node.getNr());
-            }
-        } else {
-            StringBuilder builder = new StringBuilder("(");
-
-            List<String> subTrees = new ArrayList<String>();
-            for (int i = 0; i < node.getChildCount(); i++) {
-                subTrees.add(uniqueNewick(node.getChild(i)));
-            }
-
-            Collections.sort(subTrees);
-
-            for (int i = 0; i < subTrees.size(); i++) {
-                builder.append(subTrees.get(i));
-                if (i < subTrees.size() - 1) {
-                    builder.append(",");
-                }
-            }
-            builder.append(")");
-
-            return builder.toString();
-        }
+        return TreeUtils.sortedNewickTopology(node, isTaxaLabel);
     }
 
     public boolean isTaxaLabel() {
