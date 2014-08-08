@@ -23,29 +23,37 @@ import beast.evolution.tree.TreeInterface;
 public class YuleModel extends SpeciesTreeDistribution {
     public Input<RealParameter> birthDiffRateParameterInput =
             new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
+    public Input<RealParameter> originHeightParameterInput =
+            new Input<RealParameter>("originHeight", "the height of the point of origin of the process");
     public Input<Boolean> conditionalOnRootInput =
             new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
 
     protected boolean conditionalOnRoot;
+    protected boolean conditionalOnOrigin;
 
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         conditionalOnRoot = conditionalOnRootInput.get();
+        conditionalOnOrigin = originHeightParameterInput.get() != null;
 
+        if (conditionalOnRoot && conditionalOnOrigin) {
+            System.err.println("WARNING: Cannot condition on both root and origin!");
+        }
+        
         // make sure that all tips are at the same height,
         // otherwise this Yule Model is not appropriate
         TreeInterface tree = treeInput.get();
         if (tree == null) {
-        	tree = treeIntervalsInput.get().treeInput.get();
+            tree = treeIntervalsInput.get().treeInput.get();
         }
         List<Node> leafs = tree.getExternalNodes();
         double height = leafs.get(0).getHeight();
         for (Node leaf : leafs) {
-        	if (Math.abs(leaf.getHeight() - height) > 1e-8) {
-        		System.err.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
-        		break;
-        	}
+            if (Math.abs(leaf.getHeight() - height) > 1e-8) {
+                System.err.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
+                break;
+            }
         }
     }
 
@@ -55,6 +63,10 @@ public class YuleModel extends SpeciesTreeDistribution {
     }
 
     protected double calculateTreeLogLikelihood(final TreeInterface tree, final double rho, final double a) {
+    	
+    	if (conditionalOnOrigin && tree.getRoot().getHeight() > originHeightParameterInput.get().getValue())
+    		return Double.NEGATIVE_INFINITY;
+    	
         final int taxonCount = tree.getLeafNodeCount();
         final double r = birthDiffRateParameterInput.get().getValue();
 
@@ -80,7 +92,19 @@ public class YuleModel extends SpeciesTreeDistribution {
      */
     protected double logTreeProbability(final int taxonCount, double r, double rho, double a) {
         double c1 = logCoeff(taxonCount);
-        if (!conditionalOnRoot) {
+        if (conditionalOnOrigin) {
+            final double height = originHeightParameterInput.get().getValue();
+            final double mrh = -r * height;
+            final double ca = 1 - a;
+            final double emrh = Math.exp(-mrh);
+            double l = taxonCount - 1;
+            if (emrh != 1.0) {
+                l *= Math.log(r * ca * (1 + ca / (emrh - 1)));
+            } else {  // use exp(x)-1 = x for x near 0
+                l *= Math.log(ca * (r + ca / height));
+            }
+            c1 += l;
+        } else if (!conditionalOnRoot) {
             c1 += (taxonCount - 1) * Math.log(r * rho) + taxonCount * Math.log(1 - a);
         }
         return c1;
@@ -113,15 +137,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         final double height = node.getHeight();
         final double mrh = -r * height;
 
-        if (!conditionalOnRoot) {
-            final double z = Math.log(rho + ((1 - rho) - a) * Math.exp(mrh));
-            double l = -2 * z + mrh;
-
-            if (node.isRoot()) {
-                l += mrh - z;
-            }
-            return l;
-        } else {
+        if (conditionalOnRoot) {
             double l;
             if (!node.isRoot()) {
                 final double z = Math.log(1 - a * Math.exp(mrh));
@@ -137,7 +153,21 @@ public class YuleModel extends SpeciesTreeDistribution {
                 }
             }
             return l;
+        } else if (conditionalOnOrigin) {
+            // Treat all nodes including root equally
+            final double z = Math.log(1 - a * Math.exp(mrh));
+            double l = -2 * z + mrh;
+            return l;
+        } else {
+            final double z = Math.log(rho + ((1 - rho) - a) * Math.exp(mrh));
+            double l = -2 * z + mrh;
+
+            if (node.isRoot()) {
+                l += mrh - z;
+            }
+            return l;
         }
+        
     } // calcLogNodeProbability
 
 //    public boolean includeExternalNodesInLikelihoodCalculation() {
@@ -146,12 +176,14 @@ public class YuleModel extends SpeciesTreeDistribution {
 
     @Override
     protected boolean requiresRecalculation() {
-        return super.requiresRecalculation() || birthDiffRateParameterInput.get().somethingIsDirty();
+        return super.requiresRecalculation()
+                || birthDiffRateParameterInput.get().somethingIsDirty()
+                || (conditionalOnOrigin && originHeightParameterInput.get().somethingIsDirty());
     }
     
     @Override
-	public boolean canHandleTipDates() {
-		return false;
-	}
+    public boolean canHandleTipDates() {
+        return false;
+    }
 
 }
