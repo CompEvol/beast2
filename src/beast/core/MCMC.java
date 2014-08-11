@@ -37,8 +37,11 @@ import java.util.List;
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
-@Citation(value= "Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut, Alexei J Drummond "+ 
-        "BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology 10(4): e1003537, 2014", year = 2014, firstAuthorSurname = "bouckaert",
+@Citation(value=
+        "Bouckaert RR, Heled J, Kuehnert D, Vaughan TG, Wu C-H, Xie D, Suchard MA,\n" +
+                "  Rambaut A, Drummond AJ (2014) BEAST 2: A software platform for Bayesian\n" +
+                "  evolutionary analysis. PLoS Computational Biology 10(4): e1003537"
+        , year = 2014, firstAuthorSurname = "bouckaert",
         DOI="10.1371/journal.pcbi.1003537")
 public class MCMC extends Runnable {
 
@@ -160,10 +163,10 @@ public class MCMC extends Runnable {
 
     @Override
     public void initAndValidate() throws Exception {
-        Log.info.println("======================================================");
-        Log.info.println("Please cite the following when publishing this model:\n");
+        Log.info.println("===============================================================================");
+        Log.info.println("Citations for this model:");
         Log.info.println(getCitations());
-        Log.info.println("======================================================");
+        Log.info.println("===============================================================================");
 
         operatorSchedule = operatorScheduleInput.get();
         for (final Operator op : operatorsInput.get()) {

@@ -26,8 +26,10 @@ import java.util.List;
 @Description("Yule prior with calibrated monophyletic clades. With this prior, the marginal distribution of the" +
         " calibrated nodes (the MRCA of clades) is identical to the specified calibration, but the Yule is not preserved over" +
         " the whole tree space, only among sub-spaces.")
-@Citation(value = "Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time Estimation. " +
-        "Syst Biol (2012) 61 (1): 138-149.", DOI = "10.1093/sysbio/syr087", year = 2012, firstAuthorSurname = "heled")
+@Citation(value =
+        "Heled J, Drummond AJ (2012) Calibrated Tree Priors for Relaxed Phylogenetics\n" +
+                "  and Divergence Time Estimation. Systematic Biology 61(1):138-149."
+        , DOI = "10.1093/sysbio/syr087", year = 2012, firstAuthorSurname = "heled")
 public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     static enum Type {
