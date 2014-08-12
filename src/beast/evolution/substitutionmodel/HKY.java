@@ -34,8 +34,10 @@ import beast.evolution.datatype.Nucleotide;
 import beast.evolution.tree.Node;
 
 @Description("HKY85 (Hasegawa, Kishino & Yano, 1985) substitution model of nucleotide evolution.")
-@Citation(value = "Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. " +
-        "Journal of Molecular Evolution 22:160-174.", DOI = "10.1007/BF02101694", year = 1985, firstAuthorSurname = "hasegawa")
+@Citation(value =
+        "Hasegawa M, Kishino H, Yano T (1985) Dating the human-ape splitting by a\n"+
+                "  molecular clock of mitochondrial DNA. Journal of Molecular Evolution\n" +
+                "  22:160-174.", DOI = "10.1007/BF02101694", year = 1985, firstAuthorSurname = "hasegawa")
 public class HKY extends SubstitutionModel.NucleotideBase {
     public Input<RealParameter> kappaInput = new Input<RealParameter>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 

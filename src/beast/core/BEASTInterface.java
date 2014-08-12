@@ -145,8 +145,9 @@ public interface BEASTInterface {
             // only add citation if it is not already processed
             if (!citations.contains(getCitation().value())) {
                 // and there is actually a citation to add
+                buf.append("\n");
                 buf.append(getCitation().value());
-                buf.append("\n\n");
+                buf.append("\n");
                 citations.add(getCitation().value());
             }
             //return buf.toString();
