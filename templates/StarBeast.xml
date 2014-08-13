@@ -358,7 +358,7 @@
             <distribution spec="CompoundDistribution" id="prior">
 			    <!-- species tree priors -->
 		        <distribution id="YuleModel.t:Species" spec="speciation.YuleModel" tree='@Tree.t:Species'>
-		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.t:Species" value='213.2021' lower='0' upper='10000' />
+		            <birthDiffRate spec='parameter.RealParameter' id="birthRate.t:Species" value='1' lower='0' />
 		        </distribution>
 	            <distribution id='YuleBirthRatePrior.t:Species' spec='beast.math.distributions.Prior' x='@birthRate.t:Species'>
 		             <distr spec="beast.math.distributions.OneOnX"/>
