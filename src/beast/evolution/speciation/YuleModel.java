@@ -94,7 +94,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         double c1 = logCoeff(taxonCount);
         if (conditionalOnOrigin) {
             final double height = originHeightParameterInput.get().getValue();
-            c1 += (taxonCount - 1) * calcLogConditionConstant(height, r, rho, a);
+            c1 += (taxonCount - 1) * calcLogConditioningTerm(height, r, rho, a);
         } else if (!conditionalOnRoot) {
             c1 += (taxonCount - 1) * Math.log(r * rho) + taxonCount * Math.log(1 - a);
         }
@@ -128,7 +128,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         final double height = node.getHeight();
 
         if (conditionalOnRoot && node.isRoot()) {
-            return (taxonCount - 2) * calcLogConditionConstant(height, r, rho, a);
+            return (taxonCount - 2) * calcLogConditioningTerm(height, r, rho, a);
         }
         
         final double mrh = -r * height;
@@ -146,7 +146,7 @@ public class YuleModel extends SpeciesTreeDistribution {
 //        return false;
 //    }
 
-    double calcLogConditionConstant(double height, double r, double rho, double a) {
+    double calcLogConditioningTerm(double height, double r, double rho, double a) {
         final double ca = 1 - a;
         final double erh = Math.exp(r * height);
         if (erh != 1.0) {
