@@ -25,14 +25,6 @@
 
 package beast.app.treeannotator;
 
-import jam.console.ConsoleApplication;
-//import org.rosuda.JRI.REXP;
-//import org.rosuda.JRI.RVector;
-//import org.rosuda.JRI.Rengine;
-
-
-import javax.swing.*;
-
 import beast.app.BEASTVersion;
 import beast.app.beauti.BeautiDoc;
 import beast.app.tools.LogCombiner;
@@ -43,12 +35,17 @@ import beast.evolution.tree.Tree;
 import beast.math.statistic.DiscreteStatistics;
 import beast.util.HeapSort;
 import beast.util.TreeParser;
+import jam.console.ConsoleApplication;
 
-
+import javax.swing.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+
+//import org.rosuda.JRI.REXP;
+//import org.rosuda.JRI.RVector;
+//import org.rosuda.JRI.Rengine;
 
 /**
  * @author Alexei Drummond
@@ -143,7 +140,8 @@ public class TreeAnnotator {
         	for (Node root : roots) {
         		trees[i++] = new Tree(root);
         	}
-        	progressStream.println(trees.length + " trees read.");
+        	progressStream.println("Read " + trees.length + " trees from file" +
+                    (burninPercentage > 0 ? " after ignoring first " + burninPercentage + "% trees." : "."));
         } catch (Exception e) {
         	e.printStackTrace();
             System.err.println("Error Parsing Input Tree: " + e.getMessage());
@@ -157,7 +155,7 @@ public class TreeAnnotator {
 	            	cladeSystem.add(tree, false);
 	                totalTreesUsed++;
 	            }
-	            totalTrees = Math.max(burninPercentage, 0) + totalTreesUsed;
+	            totalTrees = totalTreesUsed * 100 / (100-Math.max(burninPercentage, 0));
             } catch (Exception e) {
                 System.err.println("Error Processing Input Tree: " + e.getMessage());
                 return;
@@ -177,10 +175,10 @@ public class TreeAnnotator {
             }
             cladeSystem.calculateCladeCredibilities(totalTreesUsed);
 
-            progressStream.println("Total trees read: " + totalTrees);
-            if (burninPercentage > 0) {
-                progressStream.println("Ignoring first " + burninPercentage + " trees.");
-            }
+            progressStream.println("Total trees have " + totalTrees + ", where " + totalTreesUsed + " are used.");
+//            if (burninPercentage > 0) {
+//                progressStream.println("Ignoring first " + burninPercentage + "% trees.");
+//            }
 
             progressStream.println("Total unique clades: " + cladeSystem.getCladeMap().keySet().size());
             progressStream.println();
