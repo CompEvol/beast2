@@ -38,7 +38,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         conditionalOnOrigin = originHeightParameterInput.get() != null;
 
         if (conditionalOnRoot && conditionalOnOrigin) {
-            System.err.println("WARNING: Cannot condition on both root and origin!");
+            throw new RuntimeException("ERROR: Cannot condition on both root and origin.");
         }
         
         // make sure that all tips are at the same height,
