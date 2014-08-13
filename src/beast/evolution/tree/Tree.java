@@ -28,7 +28,8 @@ public class Tree extends StateNode implements TreeInterface {
 
     /**
      * state of dirtiness of a node in the tree
-     * DIRTY means a property on the node has changed, but not the topology
+     * DIRTY means a property on the node has changed, but not the topology. "property" includes the node height
+     *       and that branch length to its parent.
      * FILTHY means the nodes' parent or child has changed.
      */
     public static final int IS_CLEAN = 0, IS_DIRTY = 1, IS_FILTHY = 2;
@@ -692,7 +693,6 @@ public class Tree extends StateNode implements TreeInterface {
             m_storedNodes = tmp;
         }
 
-
         storeNodes(0, nodeCount);
         storedRoot = m_storedNodes[root.getNr()];
     }
@@ -707,8 +707,8 @@ public class Tree extends StateNode implements TreeInterface {
      */
     private void storeNodes(final int iStart, final int iEnd) {
         for (int i = iStart; i < iEnd; i++) {
-            Node sink = m_storedNodes[i];
-            Node src = m_nodes[i];
+            final Node sink = m_storedNodes[i];
+            final Node src = m_nodes[i];
             sink.height = src.height;
 
             if (!src.isRoot()) {
@@ -719,9 +719,14 @@ public class Tree extends StateNode implements TreeInterface {
                 sink.setParent(null, false);
             }
 
-            sink.removeAllChildren(false);
+            sink.children.clear();
+            //sink.removeAllChildren(false);
             for (final Node srcChild : src.getChildren()) {
-                sink.addChild(m_storedNodes[srcChild.getNr()]);
+                // don't call addChild, which calls  setParent(..., true);
+                final Node c = m_storedNodes[srcChild.getNr()];
+                c.setParent(sink, false);
+                sink.children.add(c);
+                //sink.addChild(c);
             }
         }
     }
