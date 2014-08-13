@@ -94,16 +94,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         double c1 = logCoeff(taxonCount);
         if (conditionalOnOrigin) {
             final double height = originHeightParameterInput.get().getValue();
-            final double mrh = -r * height;
-            final double ca = 1 - a;
-            final double emrh = Math.exp(-mrh);
-            double l = taxonCount - 1;
-            if (emrh != 1.0) {
-                l *= Math.log(r * ca * (1 + ca / (emrh - 1)));
-            } else {  // use exp(x)-1 = x for x near 0
-                l *= Math.log(ca * (r + ca / height));
-            }
-            c1 += l;
+            c1 += (taxonCount - 1) * calcLogConditionConstant(height, r, rho, a);
         } else if (!conditionalOnRoot) {
             c1 += (taxonCount - 1) * Math.log(r * rho) + taxonCount * Math.log(1 - a);
         }
@@ -135,45 +126,36 @@ public class YuleModel extends SpeciesTreeDistribution {
      */
     protected double calcLogNodeProbability(Node node, double r, double rho, double a, int taxonCount) {
         final double height = node.getHeight();
-        final double mrh = -r * height;
 
-        if (conditionalOnRoot) {
-            double l;
-            if (!node.isRoot()) {
-                final double z = Math.log(1 - a * Math.exp(mrh));
-                l = -2 * z + mrh;
-            } else {
-                // Root dependent coefficient from each internal node
-                final double ca = 1 - a;
-                final double emrh = Math.exp(-mrh);
-                if (emrh != 1.0) {
-                    l = (taxonCount - 2) * Math.log(r * ca * (1 + ca / (emrh - 1)));
-                } else {  // use exp(x)-1 = x for x near 0
-                    l = (taxonCount - 2) * Math.log(ca * (r + ca / height));
-                }
-            }
-            return l;
-        } else if (conditionalOnOrigin) {
-            // Treat all nodes including root equally
-            final double z = Math.log(1 - a * Math.exp(mrh));
-            double l = -2 * z + mrh;
-            return l;
-        } else {
-            final double z = Math.log(rho + ((1 - rho) - a) * Math.exp(mrh));
-            double l = -2 * z + mrh;
-
-            if (node.isRoot()) {
-                l += mrh - z;
-            }
-            return l;
+        if (conditionalOnRoot && node.isRoot()) {
+            return (taxonCount - 2) * calcLogConditionConstant(height, r, rho, a);
         }
         
+        final double mrh = -r * height;
+        final double z = Math.log(rho + ((1 - rho) - a) * Math.exp(mrh));
+        double l = -2 * z + mrh;
+        
+        if (!conditionalOnOrigin && !conditionalOnRoot && node.isRoot())
+        	l += mrh - z;
+        
+        return l;
+                
     } // calcLogNodeProbability
-
+    
 //    public boolean includeExternalNodesInLikelihoodCalculation() {
 //        return false;
 //    }
 
+    double calcLogConditionConstant(double height, double r, double rho, double a) {
+        final double ca = 1 - a;
+        final double erh = Math.exp(r * height);
+        if (erh != 1.0) {
+            return Math.log(r * ca * (rho + ca / (erh - 1)));
+        } else {  // use exp(x)-1 = x for x near 0
+            return Math.log(ca * (r * rho + ca / height));
+        }
+    }
+    
     @Override
     protected boolean requiresRecalculation() {
         return super.requiresRecalculation()
