@@ -444,7 +444,7 @@
 			<parameter name='clock.rate' id='ucldMean.c:$(n)' value='1.0'/>
             <distr id='LogNormalDistributionModel.c:$(n)' name='distr' spec="beast.math.distributions.LogNormalDistributionModel" meanInRealSpace='true'>
                 <parameter name='M' value="1.0" estimate='false' lower='0' upper='1'/>
-                <parameter name='S' id='ucldStdev.c:$(n)' value="0.5" lower="0" upper="5" estimate='true'/>
+                <parameter name='S' id='ucldStdev.c:$(n)' value="0.1" lower="0" estimate='true'/>
             </distr>
             <rateCategories spec='parameter.IntegerParameter' id='rateCategories.c:$(n)' value="1" dimension='10' estimate='true'/>
         </plugin>
@@ -461,9 +461,16 @@
 		</upDownOperator>
 
         <prior id='ucldStdevPrior.c:$(n)' x='@ucldStdev.c:$(n)'>
-            <distr spec="beast.math.distributions.Exponential">
-                <parameter name='mean' value="0.3333" estimate='false'/>
+
+            <!-- this prior has a median of 0.1 and 97.5% of its probability is below S=1 -->
+            <distr spec="beast.math.distributions.Gamma">
+                <parameter name='alpha' value="0.5396" estimate='false'/> <!-- shape -->
+                <parameter name='beta' value="0.3819" estimate='false'/> <!-- scale -->
             </distr>
+
+            <!-- <distr spec="beast.math.distributions.Exponential">
+                <parameter name='mean' value="0.3333" estimate='false'/>
+            </distr> -->
         </prior>
 
 
