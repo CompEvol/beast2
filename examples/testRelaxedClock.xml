@@ -136,12 +136,12 @@
             <log idref="posterior"/>
         </logger>
         <logger logEvery="1000" fileName="test.(time).$(seed).trees" mode='tree'>
-			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>
+			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree' dp='6'>
 				<branchratemodel idref='branchRates'/>
 			</log>
         </logger>
         <logger logEvery="1000" fileName="test.(subst).$(seed).trees" mode='tree'>
-			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree' substitutions='true'>
+			<log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree' substitutions='true' dp='6'>
 				<branchratemodel idref='branchRates'/>
 			</log>
         </logger>
