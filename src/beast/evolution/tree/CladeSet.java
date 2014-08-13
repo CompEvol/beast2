@@ -33,7 +33,7 @@ import java.util.*;
 
 /**
  * Stores a set of unique clades (and their node heights) for a tree.
- * Import from from BEAST 1.
+ * Import from BEAST 1.
  *
  * @author Andrew Rambaut
  * @author Alexei Drummond
@@ -159,7 +159,7 @@ public class CladeSet extends FrequencySet<BitSet> {
         totalNodeHeight.put(bits, (getTotalNodeHeight(bits) + height));
     }
 
-    // Generifying found that this code was buggy. Kuckily it is not used anymore.
+    // Generifying found that this code was buggy. Luckily it is not used anymore.
 
 //    /** adds all the clades in the CladeSet */
 //    public void add(CladeSet cladeSet)
