@@ -50,9 +50,9 @@ showstringspaces=false % no special string spaces
 
   
 % BEAST book specific commands
-\newcommand{\BEASTVersion}{2.0}
-\newcommand{\TracerVersion}{1.5}
-\newcommand{\FigTreeVersion}{1.3.1}
+\newcommand{\BEASTVersion}{2.1.x}
+\newcommand{\TracerVersion}{1.6}
+\newcommand{\FigTreeVersion}{1.4.2}
 %\newcommand{\TODO}[1]{{\color{red} #1}}
 \newcommand{\TODO}[1]{}
 \newcommand{\chapter}[1]{}
@@ -85,15 +85,15 @@ cambridgemods baseline-skip author authors cambridgestyle en-vir-on-ment polar}
 \usepackage[all]{xy}
 
 
-\title{Divergence Dating Tutorial with BEAST 2.0}
-\author{Alexei Drummond, Andrew Rambaut and Remco Bouckaert}
+\title{Divergence Dating Tutorial with BEAST {\BEASTVersion}}
+\author{Alexei Drummond, Andrew Rambaut, Remco Bouckaert, and Walter Xie}
 
 \begin{document}
 \maketitle
 
-\newcommand{\chainLength}{{1,000,000}}
-\newcommand{\logEvery}{{200}}
-\newcommand{\screenEvery}{{1000}}
+\newcommand{\chainLength}{{3,000,000}}
+\newcommand{\logEvery}{{1,000}}
+\newcommand{\screenEvery}{{10,000}}
 \newcommand{\mccTree}{{\texttt{Primates.MCC.tree}}}
 
 \section{Introduction}
@@ -104,12 +104,12 @@ You will need the following software at your disposal:
 
 \begin{itemize}
 
-\item {\bf BEAST} - this package contains the BEAST program, BEAUti, TreeAnnotator and other utility programs. This tutorial is written for BEAST v{\BEASTVersion}, which has support for multiple partitions. It is available for download from \\* \texttt{http://beast2.cs.auckland.ac.nz/}.
+\item {\bf BEAST} - this package contains the BEAST program, BEAUti, TreeAnnotator and other utility programs. This tutorial is written for BEAST v{\BEASTVersion}, which has support for multiple partitions. It is available for download from \texttt{http://www.beast2.org/}.
 \item {\bf Tracer} - this program is used to explore the output of BEAST (and other Bayesian MCMC programs). It graphically and
 quantitively summarizes the distributions of continuous parameters and provides diagnostic information. At the time of
-writing, the current version is v{\TracerVersion}. It is available for download from \texttt{http://beast.bio.ed.ac.uk/}.
+writing, the current version is v{\TracerVersion}. It is available for download from\\*\texttt{http://tree.bio.ed.ac.uk/software/}.
 \item {\bf FigTree} - this is an application for displaying and printing molecular phylogenies, in particular those obtained using
-BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is available for download from \texttt{http://tree.bio.ed.ac.uk/}.
+BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is available for download from \texttt{http://tree.bio.ed.ac.uk/software/}.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -124,7 +124,7 @@ This tutorial will guide you through the analysis of an alignment of sequences s
 
 \begin{figure}	
 
-\includegraphics[width=\textwidth]{figures/BEAUti_Alignment.png}
+\includegraphics[width=\textwidth]{figures/AlignmentViewer.png}
 
 \caption{Part of the alignment for primates.\label{fig:primateAlignment}}
 \label{fig:BEAUti_ImportNexus}
@@ -146,17 +146,6 @@ the Linux and Windows versions will have the same layout and functionality.
 \TODO{Provide instructions for executing BEAUti  in a Linux environment.}
 
 \subsection{Loading the NEXUS file }
-
-To load a NEXUS format alignment, simply select the \texttt{Import
-Alignment...} option from the File menu. 
-
-%\begin{figure}
-%
-%\includegraphics[width=\textwidth]{figures/ImportNexus}
-%
-%\caption{A screenshot of the import nexus file menu option in BEAUti. \TODO{Need to have the correct menu shortcuts for OS X!}}
-%\label{fig:BEAUti_ImportNexus}
-%\end{figure}
 
 The example file called \texttt{primates-mtDNA.nex} is in the {\tt examples/nexus/} directory of the directory where BEAST was installed.
 This file contains an alignment of sequences of 12 species of primates. 
@@ -190,6 +179,32 @@ This file contains an alignment of sequences of 12 species of primates.
 %end;\end{verbatim}
 %
 %\medskip{}
+
+To load a NEXUS format alignment, simply select the \texttt{Import Alignment...} option from the File menu, or drag the file into the {\bf Partitions} panel. 
+
+%\begin{figure}
+%
+%\includegraphics[width=\textwidth]{figures/ImportNexus}
+%
+%\caption{A screenshot of the import nexus file menu option in BEAUti. \TODO{Need to have the correct menu shortcuts for OS X!}}
+%\label{fig:BEAUti_ImportNexus}
+%\end{figure}
+
+The following windows (Figure \ref{fig:addPartition} and \ref{fig:warning}) would appear if a related package is installed. If you are using ``pure'' BEAST 2, you can go to the next paragraph.    
+If an \texttt{Add Partition} window pops up, you need to select \texttt{Add Alignment} and click \textbf{OK} to continue (Figure \ref{fig:addPartition}), and then read the following warning message to click \textbf{OK} (Figure \ref{fig:warning}).
+
+\begin{figure}
+\centering	
+\includegraphics[width=7.5cm]{figures/AddPartition.png}
+\caption{Add Partition window (Only appear if related packages are installed).}
+\label{fig:addPartition}
+\end{figure}
+
+\begin{figure}	
+\includegraphics[width=\textwidth]{figures/warning.png}
+\caption{Warning message window (Only appear if related packages are installed).}
+\label{fig:warning}
+\end{figure}
 
 Once loaded, five character partitions are displayed in the main panel (Figure \ref{fig:BEAUTI_DataPartitions}). {\bf You must remove the `coding' partition before continuing to the next step as it refers to the same nucleotides as partitions `1stpos', `2ndpos' and `3rdpos'.} To remove the `coding' partition select the row and click the `-' button at the bottom of the table. 
 %You can view the alignment by double clicking the partition (Figure \ref{fig:BEAUTI_AlignmentViewer}).
@@ -231,7 +246,7 @@ be the default values for nucleotide data so we need to make some changes.
 
 Most of the models should be familiar to you. %(see Chapter {\ref{chapter:SubstitutionModels} for details}). 
 First, set the \textbf{Gamma Category Count} to 4 and then check the `estimate' box for the \textbf{Shape} parameter. This will allow rate variation 
-between sites in each partition to be modeled.  Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu (Figure \ref{fig:BEAUti_Model}) and select \textbf{Empirical} from the \textbf{Frequencies} drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models again). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. Finally check the `estimate' box for the \textbf{Substitution rate} parameter and select the \textbf{Fix mean mutation rate} check box. This will allow the individual partitions to have their relative rates estimated once we unlink the site models.
+between sites in each partition to be modeled.  Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu and select \textbf{Empirical} from the \textbf{Frequencies} drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models again). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. Finally check the `estimate' box for the \textbf{Substitution rate} parameter and select the \textbf{Fix mean mutation rate} check box. This will allow the individual partitions to have their relative rates estimated once we unlink the site models (Figure \ref{fig:BEAUti_Model}).
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/BEAUti_Model}
@@ -239,8 +254,15 @@ between sites in each partition to be modeled.  Then select  \textbf{HKY} from t
 \label{fig:BEAUti_Model}
 \end{figure}
 
-Now, return to the `Partitions' panel and unlink the site models so that each partition has its own named site model with independent substitution model parameters and relative rate.
-%Finally, in order to allow for a different absolute rate of evolution for each partition we will return to the `Site Model' panel and check `estimate' for the \textbf{Mutation Rate} for each of partitions \textbf{noncoding}, \textbf{1stpos}, \textbf{2ndpos} in turn. Don't check `estimate' for the \textpos{3rdpos} because this is the rate that the other partitions will be estimated relative to.
+%Now, return to the {\bf Partitions} panel and unlink the site models so that each partition has its own named site model with independent substitution model parameters and relative rate.
+Finally, hold `shift' key to select all site models on the left side, and click \textbf{OK} to clone the setting from \textbf{noncoding} into \textbf{1stpos}, \textbf{2ndpos} and \textbf{3rdpos} (Figure \ref{fig:cloneFrom}). 
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/cloneFrom}
+\caption{clone configuration from one site model to others.}
+\label{fig:cloneFrom}
+\end{figure}
+
 
 \subsection{Setting the clock model}
 
@@ -284,26 +306,43 @@ ancestor (MRCA) later on.
 
 Name the taxa set by filling in the taxon set label entry. 
 Call it \texttt{human-chimp} (it will contain the taxa for {\it Homo sapiens} and {\it Pan}).
-In next list below you will see the available taxa. Select each of the two taxa in turn and press the $> >$ arrow button. 
+In next list below you will see the available taxa. Select each of the two taxa in turn and press the $> >$ arrow button. (Figure \ref{fig:BEAUti_TaxonSets}).
 Click OK and the newly defined taxa set will be added in to the prior list.
 As this is a calibrated node to be used in conjunction with the Calibrated Yule prior, monophyly must be enforced, so select the checkbox marked \texttt{Monophyletic}. This will constrain the tree topology so that the human-chimp grouping is kept monophyletic during the course of the MCMC analysis.
 
-We now need to specify a prior distribution on the calibrated node, based on our prior fossil knowledge. This is known
-as calibrating our tree. Select the \textbf{Normal} distribution from the drop down menu to the right of the newly added \texttt{human-chimp.prior}. Click on the black triangle to the right and
-a graph of the probability density function will appear, along with parameters for the normal distribution.
-We are going to specify a normal distribution centered at 6 million
-years with a standard deviation of 0.5 million years. This will give
-a central 95\% range of about 5-7 My. This roughly corresponds to the current consensus
-estimate of the date of the most recent common ancestor of humans and chimpanzees (Figure \ref{fig:BEAUti_TaxonSets}).
-
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/BEAUti_TaxonSets}
-\caption{A screenshot of the calibration prior options in the Priors panel in BEAUti.}
+\centering
+\includegraphics[width=9cm]{figures/BEAUti_TaxonSets}
+\caption{Taxon set editor in BEAUti.}
 \label{fig:BEAUti_TaxonSets}
 \end{figure}
 
-Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (\texttt{clockRate}) and the speciation rate (\texttt{birthRateY}) of the Yule tree prior. For each of these parameters select \textbf{Gamma} from the drop-down menu and using the arrow button to the right, expand the view to reveal the parameters of the Gamma prior. For both the clock rate and the Yule birth rate set the Alpha (shape) parameter to 0.001 and the Beta (scale) parameter to 1000.
+To encode the calibration information we need to specify a distribution for the MRCA of human-chimp.
+Select the \textbf{Log-normal} distribution from the drop down menu to the right of the newly added \texttt{human-chimp.prior}. 
+Click on the black triangle and a graph of the probability density function will appear, along with parameters for the log normal distribution.
+We are going to set $M=1.78$ and $S=0.085$ which will specify a distribution centred at about 6 million
+years with a standard deviation of about 0.5 million years. This will give
+a central 95\% probability range covering 5-7 Mya. This roughly corresponds to the current consensus
+estimate of the date of the most recent common ancestor of humans and chimpanzees (Figure \ref{fig:BEAUti_Prior2}).
 
+%We now need to specify a prior distribution on the calibrated node, based on our prior fossil knowledge. This is known
+%as calibrating our tree. Select the \textbf{Log Normal} distribution from the drop down menu to the right of the newly added \texttt{human-%chimp.prior}. Click on the black triangle to the right and a graph of the probability density function will appear, along with parameters for the log-%normal distribution.
+%We are going to specify a normal distribution centered at 6 million years with a standard deviation of 0.5 million years. This will give a central 95\% range of about 5-7 My. 
+%This roughly corresponds to the current consensus estimate of the date of the most recent common ancestor of humans and chimpanzees (Figure %\ref{fig:BEAUti_TaxonSets}).
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/BEAUti_Prior2}
+\caption{A screenshot of the calibration prior options in the Priors panel in BEAUti.}
+\label{fig:BEAUti_Prior2}
+\end{figure}
+
+Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (\texttt{clockRate}) and the speciation rate (\texttt{birthRateY}) of the Yule tree prior. For each of them, select \textbf{Gamma} from the drop-down list and expand the view using the arrow button to the left. For both the clock rate and the Yule birth rate, set the Alpha (shape) parameter to 0.001 and the Beta (scale) parameter to 1000 (Figure \ref{fig:GammaPrior}).
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/GammaPrior}
+\caption{Gamma prior.}
+\label{fig:GammaPrior}
+\end{figure}
 
 %Finally, put a log-normal distribution on the kappa parameters. \TODO{with what M and S parameters?}
 %The clock model parameters will appear when the clock rate is estimated. 
@@ -328,8 +367,8 @@ steps the MCMC will make in the chain before finishing. How long this
 should be depends on the size of the data set, the complexity of the
 model and the quality of answer required. The default value of 10,000,000
 is entirely arbitrary and should be adjusted according to the size
-of your data set. For this data set let's initially set the chain
-length to \chainLength{} as this will run reasonably quickly on most modern
+of your data set. For this data set let's initially set the \texttt{chain
+length} to \underline{\chainLength{}} as this will run reasonably quickly on most modern
 computers (a few minutes).
 
 %\begin{figure}
@@ -351,9 +390,9 @@ very large files with little extra benefit in terms of the accuracy
 of the analysis. Sample too infrequently and the log file will not
 record sufficient information about the distributions of the parameters. 
 You probably want to aim to store no more than 10,000 samples so this should be
-set to no less than chain length / 10000.
+set to no less than chain length / 10,000.
 
-For this exercise we will set the screen log to \screenEvery{} and the trace log to \logEvery{}. The final two
+For this exercise we will set the \texttt{screen log} to \underline{\screenEvery{}} and the \texttt{trace log} to \underline{\logEvery{}}. The final two
 options give the file names of the log files for the sampled parameters and
 the trees. These will be set to a default based on the name of the
 imported NEXUS file. 
@@ -388,7 +427,7 @@ look something like this:
 
 {\scriptsize   
 \begin{verbatim}
-          BEAST v2.0.d Prerelease r613, 2002-2011
+                  BEAST v2.1.3, 2002-2014
        Bayesian Evolutionary Analysis Sampling Trees
                  Designed and developed by
 Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard
@@ -421,20 +460,22 @@ Source code distributed under the GNU Lesser General Public License:
                          Thanks to:
     	Roald Forsberg, Beth Shapiro and Korbinian Strimmer
 
+File: Primates.xml seed: 777 threads: 1
 
-Random number seed: 777
-
-12 taxa
-898 sites
-413 patterns
-TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
-TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
-TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
-TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+  Using rescaling scheme : dynamic
+  Using BEAGLE version: 2.1.2 resource 0: CPU
+    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
+  Using BEAGLE version: 2.1.2 resource 0: CPU
+    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
+  Using BEAGLE version: 2.1.2 resource 0: CPU
+    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
+  Using BEAGLE version: 2.1.2 resource 0: CPU
+    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
 ======================================================
 Please cite the following when publishing this model:
 
-A prototype for BEAST 2.0: The computational science of evolutionary software. Bouckaert, Drummond, Rambaut, Alekseyenko, Suchard, Walter & the BEAST Core Development Team. 2010
+Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut,Start likelihood: -7939.559067600949 
+ Alexei J Drummond BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology 10(4): e1003537, 2014
 
 Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time Estimation. Syst Biol (2012) 61 (1): 138-149.
 
@@ -442,50 +483,49 @@ Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a 
 
 
 ======================================================
-Trying to write file primate-mtDNA.777.log but the file already exists (perhaps use the -overwrite flag?).
-Overwrite (Y/N)?:
-Y
-Writing file primate-mtDNA.777.log
+Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/primate-mtDNA.log
          Sample      posterior ESS(posterior)     likelihood          prior
-Writing file primate-mtDNA.tree.777.trees
-              0     -7766.9711              N     -7688.4922       -78.4789 --
-          10000     -5527.1265         2.0        -5453.0299       -74.0966 --
-          20000     -5521.2666         3.0        -5446.4954       -74.7711 --
-          30000     -5518.7901         4.0        -5442.6380       -76.1520 --
-          40000     -5514.6676         5.0        -5438.3693       -76.2982 --
-          50000     -5522.7987         6.0        -5447.3333       -75.4654 --
-          60000     -5513.6936         7.0        -5440.6748       -73.0187 2m50s/Msamples
+Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/tree.trees
+              0     -7924.3599              N     -7688.4922      -235.8676 --
+          10000     -5523.1281         2.0        -5451.4142       -71.7139 --
+          20000     -5524.1632         3.0        -5445.1231       -79.0401 --
+          30000     -5515.9203         4.0        -5441.8444       -74.0759 --
+          40000     -5513.6938         5.0        -5440.5830       -73.1108 --
+          50000     -5518.7113         6.0        -5447.3710       -71.3403 --
+          60000     -5515.6182         7.0        -5440.9238       -74.6944 1m51s/Msamples
+          70000     -5517.6669         8.0        -5444.8966       -72.7703 1m50s/Msamples
           ...
-        9990000     -5512.1732       739.1        -5441.1958       -70.9773 2m49s/Msamples
-       10000000     -5515.2321       734.5        -5437.9182       -77.3138 2m49s/Msamples
+        2990000     -5519.5032       247.6        -5443.7829       -75.7202 1m55s/Msamples
+        3000000     -5515.6591       249.3        -5444.7916       -70.8675 1m55s/Msamples
 Operator                                                              Tuning	#accept	#reject	#total	acceptance rate
-ScaleOperator_treeScaler.t:tree                                       0.728 	75940	281958	357898	0.212 
-ScaleOperator_treeRootScaler.t:tree                                   0.581 	48659	309158	357817	0.136 
-Uniform_UniformOperator.t:tree                                              	799104	2781229	3580333	0.223 
-SubtreeSlide_SubtreeSlide.t:tree                                      10.01 	450154	1339576	1789730	0.252 
-Exchange_narrow.t:tree                                                      	1368	1787165	1788533	0.001 
-Exchange_wide.t:tree                                                        	25	357913	357938	0 
-WilsonBalding_WilsonBalding.t:tree                                          	14	358742	358756	0 
-ScaleOperator_gammaShapeScaler.s:noncoding                            0.369 	2843	8998	11841	0.24 
-ScaleOperator_KappaScaler.s:noncoding                                 0.352 	2950	8870	11820	0.25 
-DeltaExchangeOperator_FixMeanMutationRatesOperator                    0.340 	35796	203561	239357	0.15 
-ScaleOperator_KappaScaler.s:1stpos                                    0.420 	2713	9297	12010	0.226 
-ScaleOperator_gammaShapeScaler.s:1stpos                               0.419 	3266	8762	12028	0.272 
-ScaleOperator_KappaScaler.s:2ndpos                                    0.324 	2886	8933	11819	0.244 
-ScaleOperator_gammaShapeScaler.s:2ndpos                               0.278 	2984	9046	12030	0.248 
-ScaleOperator_KappaScaler.s:3rdpos                                    0.541 	2622	9246	11868	0.221 
-ScaleOperator_gammaShapeScaler.s:3rdpos                               0.308 	3343	8577	11920	0.28 
-ScaleOperator_CalibratedYuleBirthRateScaler.t:tree                    0.249 	98194	258404	356598	0.275 
-ScaleOperator_StrictClockRateScaler.c:clock                           0.704 	82888	276401	359289	0.231 
-UpDownOperator_strictClockUpDownOperator.c:clock                      0.600 	85379	273037	358416	0.238 
-Total calculation time: 1710.509 seconds
+beast.evolution.operators.ScaleOperator_treeScaler.t:tree             0.694 	19418	87709	107127	0.181 
+beast.evolution.operators.ScaleOperator_treeRootScaler.t:tree         0.644 	18839	88900	107739	0.175 
+beast.evolution.operators.Uniform_UniformOperator.t:tree                    	240273	833290	1073563	0.224 
+beast.evolution.operators.SubtreeSlide_SubtreeSlide.t:tree            9.098 	147088	390301	537389	0.274 
+beast.evolution.operators.Exchange_narrow.t:tree                            	421	536829	537250	0.001 
+beast.evolution.operators.Exchange_wide.t:tree                              	8	107544	107552	0 
+beast.evolution.operators.WilsonBalding_WilsonBalding.t:tree                	8	106739	106747	0 
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:noncoding  0.389 	951	2502	3453	0.275 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:noncoding       0.387 	981	2491	3472	0.283 
+beast.evolution.operators.DeltaExchangeOperator_FixMeanMutationRatesOperator0.381 	9591	61904	71495	0.134 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:1stpos          0.425 	825	2667	3492	0.236 
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:1stpos     0.386 	868	2794	3662	0.237 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:2ndpos          0.343 	924	2647	3571	0.259 
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:2ndpos     0.274 	867	2701	3568	0.243 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:3rdpos          0.551 	780	2719	3499	0.223 
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:3rdpos     0.333 	1133	2411	3544	0.32 
+beast.evolution.operators.ScaleOperator_CalibratedYuleBirthRateScaler.t:tree0.260 	31511	75785	107296	0.294 
+beast.evolution.operators.ScaleOperator_StrictClockRateScaler.c:clock 0.707 	25395	82605	108000	0.235 
+beast.evolution.operators.UpDownOperator_strictClockUpDownOperator.c:clock0.592 	26181	81401	107582	0.243 
+Total calculation time: 347.045 seconds
+End likelihood: -5515.659153809371
 \end{verbatim}}
 
 \section{Analyzing the results}
 
 Run the program called {\bf Tracer} to analyze the output of BEAST. When the main
 window has opened, choose {\bf Import Trace File...} from the {\bf File} menu and select the file that
-BEAST has created called \texttt{Primates.log} (Figure \ref{fig:Tracer1}).
+BEAST has created called \texttt{primate-mtDNA.log} (Figure \ref{fig:Tracer1}).
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/Tracer1}
@@ -518,7 +558,7 @@ age of the root and the calibration MRCA we specified earlier in BEAUti. You can
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/Tracer_marginalDensity}
-\caption{A screenshot of the marginal posterior densities of the relative substitution rates of the four partitions (relative to the site-weighted mean rate). This plot shows that codon positions 1 and 2 have substantially different rates (0.452 versus 0.181) and both are far slower than codon position 3 with a relative rate of 2.95. The noncoding partition has a rate intermediate between codon positions 1 and 2 (0.344). Taken together this result suggests strong purifying selection in both the coding and noncoding regions of the alignment.}
+\caption{A screenshot of the marginal posterior densities of the relative substitution rates of the four partitions (relative to the site-weighted mean rate). This plot shows that codon positions 1 and 2 have substantially different rates (0.455 versus 0.184) and both are far slower than codon position 3 with a relative rate of 2.942. The noncoding partition has a rate intermediate between codon positions 1 and 2 (0.345). Taken together this result suggests strong purifying selection in both the coding and noncoding regions of the alignment.}
 \label{fig:Tracer_marginalDensity}
 \end{figure}
 
@@ -592,8 +632,8 @@ node. Run the TreeAnnotator program and set it up as depicted in Figure \ref{fig
 
 The burnin is the number of trees to remove from the start of the sample. Unlike {\bf Tracer} which specifies the number of
 steps as a burnin, in {\bf TreeAnnotator} you need to specify the actual number of trees. For this run, you specified a chain
-length of \chainLength{} steps sampling every \logEvery{} steps. Thus the trees file will contain 5000 trees and so to specify a 1\% burnin
-use the value 50.
+length of \chainLength{} steps sampling every \logEvery{} steps. Thus the trees file will contain 3,000 trees and so to specify a 10\% burnin
+in the top text field.
 
 The {\bf Posterior probability limit} option specifies a limit such that if a node is found at less than this frequency in the sample
 of trees (i.e., has a posterior probability less than this limit), it will not be annotated. The default of 0.5 means that only nodes
