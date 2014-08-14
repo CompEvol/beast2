@@ -6,7 +6,6 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.speciation.BirthDeathGernhard08Model;
 import beast.evolution.tree.Tree;
-
 import test.beast.BEASTTestCase;
 import junit.framework.TestCase;
 
@@ -21,6 +20,7 @@ public class BirthDeathGernhard08ModelTest extends TestCase {
 
         RealParameter birthDiffRate = new RealParameter("1.0");
         RealParameter relativeDeathRate = new RealParameter("0.5");
+        RealParameter originHeight = new RealParameter("0.1");
         BirthDeathGernhard08Model likelihood = new BirthDeathGernhard08Model();
         likelihood.initByName("type", "unscaled",
                 "tree", tree,
@@ -52,6 +52,14 @@ public class BirthDeathGernhard08ModelTest extends TestCase {
                 "relativeDeathRate", relativeDeathRate);
         fLogP = likelihood.calculateLogP();
         assertEquals(fLogP, 1.2661341104158121, BEASTTestCase.PRECISION);
+        
+        likelihood.initByName("type", "labeled",
+        		"tree", tree,
+        		"birthDiffRate", birthDiffRate,
+        		"relativeDeathRate", relativeDeathRate,
+        		"originHeight", originHeight);
+        fLogP = likelihood.calculateLogP();
+        assertEquals(fLogP, 8.41413452832378, BEASTTestCase.PRECISION);
     }
 
 }

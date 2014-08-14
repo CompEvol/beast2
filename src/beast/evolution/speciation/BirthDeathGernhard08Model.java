@@ -96,7 +96,9 @@ public class BirthDeathGernhard08Model extends YuleModel {
         UNSCALED,     // no coefficient 
         TIMESONLY,    // n!
         ORIENTED,     // n
-        LABELED,      // 2^(n-1)/(n-1)!  (conditional on root: 2^(n-1)/n!(n-1) )
+        LABELED,      // 2^(n-1)/(n-1)!
+                      // conditional on root: 2^(n-1)/n!(n-1)
+                      // conditional on origin: 2^(n-1)/n!
     }
 
     /**
@@ -112,10 +114,12 @@ public class BirthDeathGernhard08Model extends YuleModel {
                 return Math.log(taxonCount);
             case LABELED: {
                 final double two2nm1 = (taxonCount - 1) * Math.log(2.0);
-                if (!conditionalOnRoot) {
-                    return two2nm1 - logGamma(taxonCount);
-                } else {
+                if (conditionalOnRoot) {
                     return two2nm1 - Math.log(taxonCount - 1) - logGamma(taxonCount + 1);
+                } else if (conditionalOnOrigin) {
+                	return two2nm1 - logGamma(taxonCount + 1);
+                } else {
+                    return two2nm1 - logGamma(taxonCount);
                 }
             }
         }
