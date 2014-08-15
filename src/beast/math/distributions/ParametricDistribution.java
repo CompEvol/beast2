@@ -25,8 +25,6 @@
 
 package beast.math.distributions;
 
-
-
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.IntegerDistribution;
@@ -36,9 +34,6 @@ import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
 import beast.util.Randomizer;
-
-import java.sql.Types;
-
 
 /**
  * A class that describes a parametric distribution
@@ -74,7 +69,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     }
 
     /*
-     * This implemenatation is only suitable for univariate distributions.
+     * This implementation is only suitable for univariate distributions.
      * Must be overwritten for multivariate ones.
      */
     public Double[][] sample(final int size) throws Exception {
