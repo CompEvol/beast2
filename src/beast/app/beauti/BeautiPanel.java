@@ -1,11 +1,9 @@
 package beast.app.beauti;
 
-
 import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.ExpandOption;
 import beast.app.util.Utils;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
@@ -17,20 +15,17 @@ import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TreeInterface;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import java.awt.*;
 import java.util.List;
 
-
-
 /**
  * panel making up each of the tabs in Beauti *
  */
-public class BeautiPanel extends JPanel implements ListSelectionListener{
+public class BeautiPanel extends JPanel implements ListSelectionListener {
+
     private static final long serialVersionUID = 1L;
     public final static String ICONPATH = "beast/app/beauti/";
 
@@ -179,10 +174,14 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
 
         listOfPartitions.addListSelectionListener(this);
         updateList();
-        listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
+
+        // AJD: This is unnecessary and not appropriate for Mac OS X look and feel
+        //listOfPartitions.setBorder(new BevelBorder(BevelBorder.RAISED));
+
         JScrollPane listPane = new JScrollPane(listOfPartitions);
         partitionComponent.add(listPane, BorderLayout.CENTER);
-        partitionComponent.setBorder(new EtchedBorder());
+        // AJD: This is unnecessary and not appropriate for Mac OS X look and feel
+        //partitionComponent.setBorder(new EtchedBorder());
         return partitionComponent;
     }
 
@@ -244,8 +243,6 @@ public class BeautiPanel extends JPanel implements ListSelectionListener{
         if (partitionComponent != null && config.getType() != null) {
             partitionComponent.setVisible(doc.getPartitions(config.getType()).size() > 1);
         }
-
-
 
 //		g_currentPanel = this;
     }

@@ -24,7 +24,6 @@
 */
 package beast.core;
 
-
 import beast.core.util.CompoundDistribution;
 import beast.core.util.Evaluator;
 import beast.core.util.Log;

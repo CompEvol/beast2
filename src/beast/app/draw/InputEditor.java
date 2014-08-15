@@ -1,7 +1,5 @@
 package beast.app.draw;
 
-
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,11 +23,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
-import beast.core.BEASTInterface;
-
-
 
 /**
  * Base class for editors that provide a GUI for manipulating an Input for a Plugin.
@@ -43,11 +37,12 @@ import beast.core.BEASTInterface;
  */
 /** note that it is assumed that any InputEditor is a java.awt.Component **/
 public interface InputEditor {
+
     final public static String NO_VALUE = "<none>";
 
-    public enum ExpandOption {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM};
+    public enum ExpandOption {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM}
 
-    public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY};
+    public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY}
     
     public enum ValidationStatus {
         IS_VALID,
@@ -76,7 +71,6 @@ public interface InputEditor {
 
     /** set decoration **/
     void setBorder(Border border);
-    
 
     /** prepare to validate input **/
     void startValidating(ValidationStatus state);
@@ -87,12 +81,12 @@ public interface InputEditor {
     /** add input editor to listen for changes **/
     void addValidationListener(InputEditor validateListener);
     
-    /** propagate status of predecesor inputs through list of plugins **/
+    /** propagate status of predecessor inputs through list of plugins **/
     void notifyValidationListeners(ValidationStatus state);
     
     Component getComponent();
 
-public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, ValidateListener {
+public abstract class Base extends JPanel implements InputEditor {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -318,7 +312,6 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
 	    return sName;
     }
 
-    
     protected void addInputLabel(String sLabel, String sTipText) {
         if (m_bAddButtons) {
             m_inputLabel = new JLabel(sLabel);
@@ -465,28 +458,28 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
         }
     }
 
-    @Override
+    // we should leave it to the component to set its own border
+    @Deprecated
     public void setBorder(Border border) {
-        // No border
-		//super.setBorder(BorderFactory.createEtchedBorder());
+		super.setBorder(border);
     }
-    
+
     @Override
     public void setDoc(BeautiDoc doc) {
     	this.doc = doc;
     }
 
-    @Override
+    // what is this method for? We should leave repainting to the standard mechanism
+    @Deprecated
 	public void repaint() {
 	this.repaint(0);
 		super.repaint();
 	}
-    
-    @Override
+
 	public Component getComponent() {
 		return this;
 	}
-    
+
 } // class InputEditor.Base
 
 } // InputEditor interface

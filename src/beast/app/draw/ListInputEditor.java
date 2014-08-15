@@ -1,8 +1,5 @@
 package beast.app.draw;
 
-
-
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -10,10 +7,7 @@ import javax.swing.event.DocumentListener;
 
 import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
-import beast.core.BEASTInterface;
-
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -38,7 +32,6 @@ public class ListInputEditor extends InputEditor.Base {
             e.printStackTrace();
         }
     }
-
 
     protected ButtonStatus m_buttonStatus = ButtonStatus.ALL;
 
@@ -85,7 +78,6 @@ public class ListInputEditor extends InputEditor.Base {
         m_validateLabels = new ArrayList<SmallLabel>();
         m_bExpandOption = ExpandOption.FALSE;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        //box.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     }
 
     @Override
@@ -130,18 +122,13 @@ public class ListInputEditor extends InputEditor.Base {
             }
         }
 
-
         add(m_listBox);
         Box box = Box.createHorizontalBox();
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
             m_addButton = new SmallButton("+", true);
             m_addButton.setName("+");
             m_addButton.setToolTipText("Add item to the list");
-            m_addButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    addItem();
-                }
-            });
+            m_addButton.addActionListener(e -> addItem());
             box.add(m_addButton);
             if (!doc.isExpertMode()) {
                 // if nothing can be added, make add button invisible
@@ -211,7 +198,9 @@ public class ListInputEditor extends InputEditor.Base {
         itemBox.add(validateLabel);
         validateLabel.setVisible(true);
         m_validateLabels.add(validateLabel);
-        itemBox.setBorder(BorderFactory.createEtchedBorder());
+
+        // AJD: This is not consistent with Mac OS X look and feel, and its not necessary
+        //itemBox.setBorder(BorderFactory.createEtchedBorder());
 
         if (m_bExpandOption == ExpandOption.TRUE || m_bExpandOption == ExpandOption.TRUE_START_COLLAPSED ||
                 (m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {

@@ -30,7 +30,6 @@ public class BeautiPanelConfig extends BEASTObject {
             "distribution/distribution[id='prior'] for prior distributions." +
             "distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
 
-
     public Input<Partition> bHasPartitionsInput = new Input<Partition>("hasPartitions", "flag to indicate the panel has" +
             "a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
 
@@ -49,7 +48,6 @@ public class BeautiPanelConfig extends BEASTObject {
 
     public Input<InputEditor.ButtonStatus> buttonStatusInput = new Input<InputEditor.ButtonStatus>("buttonStatus", "whether to show add and delete buttons. " +
             "This can be " + Arrays.toString(InputEditor.ButtonStatus.values()) + " (default 'ALL')", InputEditor.ButtonStatus.ALL, InputEditor.ButtonStatus.values());
-
 
     String[] sPathComponents;
     String[] sConditionalAttribute;

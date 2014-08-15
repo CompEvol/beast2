@@ -1,7 +1,5 @@
 package beast.app.beauti;
 
-
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -47,10 +45,6 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TreeInterface;
 
-
-
-
-
 // TODO: add useAmbiguities flag 
 // TODO: add warning if useAmbiguities=false and nr of patterns=1 (happens when all data is ambiguous)
 
@@ -83,9 +77,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	JButton splitButton; 
 	JButton delButton;
 
-	JScrollPane scrollPane;
+	private JScrollPane scrollPane;
 
-	// public AlignmentListInputEditor() {}
 	public AlignmentListInputEditor(BeautiDoc doc) {
 		super(doc);
 	}
@@ -157,31 +150,25 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
 		delButton.setName("-");
 		delButton.setToolTipText("Delete selected items from the list");
-		delButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (doc.bHasLinkedAtLeastOnce) {
-					JOptionPane.showMessageDialog(null, "Cannot delete partition while parameters are linked");
-					return;
-				}
-				delItem();
-			}
-		});
+		delButton.addActionListener(e -> {
+            if (doc.bHasLinkedAtLeastOnce) {
+                JOptionPane.showMessageDialog(null, "Cannot delete partition while parameters are linked");
+                return;
+            }
+            delItem();
+        });
 		buttonBox.add(delButton);
 		buttonBox.add(Box.createHorizontalStrut(5));
 
 		splitButton = new JButton("Split");
 		splitButton.setName("Split");
 		splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
-		splitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				splitItem();
-			}
-		});
+		splitButton.addActionListener(e -> splitItem());
 		buttonBox.add(splitButton);
 
 		buttonBox.add(Box.createHorizontalGlue());
 		panel.add(buttonBox, BorderLayout.SOUTH);
-		add(panel);
+        add(panel);
 		
 		updateStatus();
 	}
@@ -588,7 +575,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				tableData[i][FILE_COLUMN] = data;
 			}
 			// # taxa
-			tableData[i][TAXA_COLUMN] = data.getNrTaxa();
+			tableData[i][TAXA_COLUMN] = data.getTaxonCount();
 			// # sites
 			tableData[i][SITES_COLUMN] = data.getSiteCount();
 			// Data type
@@ -638,6 +625,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		String[] columnData = new String[] { "Name", "File", "Taxa", "Sites", "Data Type", "Site Model", "Clock Model",
 				"Tree", "Ambiguities" };
 		initTableData();
+
 		// set up table.
 		// special features: background shading of rows
 		// custom editor allowing only Date column to be edited.
@@ -816,43 +804,35 @@ System.err.println("needsRePartition = " + needsRePartition);
 		});
 
 		scrollPane = new JScrollPane(table);
-		
-		scrollPane.addComponentListener(new ComponentListener() {
-			
-			@Override
-			public void componentShown(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void componentResized(ComponentEvent e) {
-				if (doc.getFrame() != null) {
-					Dimension preferredSize = doc.getFrame().getSize();
-					if (Utils.isWindows()) {
-					preferredSize.height = Math.max(preferredSize.height - 180, 0);
-					preferredSize.width = Math.max(preferredSize.width - 50, 0);
-					} else {
-						preferredSize.height = Math.max(preferredSize.height - 150, 0);
-						preferredSize.width = Math.max(preferredSize.width - 25, 0);
-						
-					}
-					scrollPane.setPreferredSize(preferredSize);
-				}				
-			}
-			
-			@Override
-			public void componentMoved(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void componentHidden(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+
+// AJD: This custom component listener was causing undesirable behaviour in Mac OS X -- Issue #191
+//		scrollPane.addComponentListener(new ComponentListener() {
+//
+//			@Override
+//			public void componentShown(ComponentEvent e) {}
+//
+//			@Override
+//			public void componentResized(ComponentEvent e) {
+//				if (doc.getFrame() != null) {
+//					Dimension preferredSize = doc.getFrame().getSize();
+//					if (Utils.isWindows()) {
+//					preferredSize.height = Math.max(preferredSize.height - 180, 0);
+//					preferredSize.width = Math.max(preferredSize.width - 50, 0);
+//					} else {
+//						preferredSize.height = Math.max(preferredSize.height - 150, 0);
+//						preferredSize.width = Math.max(preferredSize.width - 25, 0);
+//
+//					}
+//					scrollPane.setPreferredSize(preferredSize);
+//				}
+//			}
+//
+//			@Override
+//			public void componentMoved(ComponentEvent e) {}
+//
+//			@Override
+//			public void componentHidden(ComponentEvent e) {}
+//		});
 		return scrollPane;
 	} // createListBox
 	

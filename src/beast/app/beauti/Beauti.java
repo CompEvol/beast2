@@ -97,7 +97,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     }
 
     void setTitle() {
-        frame.setTitle("Beauti 2: " + this.doc.getTemplateName() + " "
+        frame.setTitle("BEAUti 2: " + this.doc.getTemplateName() + " "
                 + doc.getFileName());
     }
 
