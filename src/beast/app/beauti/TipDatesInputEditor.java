@@ -369,41 +369,37 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         });
         table.setRowHeight(24);
         scrollPane = new JScrollPane(table);
-        scrollPane.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentShown(ComponentEvent e) {
-                // TODO Auto-generated method stub
-            }
 
-            @Override
-            public void componentResized(ComponentEvent e) {
-                Component c = (Component) e.getSource();
-                while (c.getParent() != null && !(c.getParent() instanceof JSplitPane)) {
-                    c = c.getParent();
-                }
-                if (c.getParent() != null) {
-                    Dimension preferredSize = c.getSize();
-                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
-                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
-                    scrollPane.setPreferredSize(preferredSize);
-                } else if (doc.getFrame() != null) {
-                    Dimension preferredSize = doc.getFrame().getSize();
-                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
-                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
-                    scrollPane.setPreferredSize(preferredSize);
-                }
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-                // TODO Auto-generated method stub
-            }
-        });
+// AJD: This ComponentListener breaks the resizing of the tip dates table, so I have removed it.
+//        scrollPane.addComponentListener(new ComponentListener() {
+//            @Override
+//            public void componentShown(ComponentEvent e) {}
+//
+//            @Override
+//            public void componentResized(ComponentEvent e) {
+//                Component c = (Component) e.getSource();
+//                while (c.getParent() != null && !(c.getParent() instanceof JSplitPane)) {
+//                    c = c.getParent();
+//                }
+//                if (c.getParent() != null) {
+//                    Dimension preferredSize = c.getSize();
+//                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
+//                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
+//                    scrollPane.setPreferredSize(preferredSize);
+//                } else if (doc.getFrame() != null) {
+//                    Dimension preferredSize = doc.getFrame().getSize();
+//                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
+//                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
+//                    scrollPane.setPreferredSize(preferredSize);
+//                }
+//            }
+//
+//            @Override
+//            public void componentMoved(ComponentEvent e) {}
+//
+//            @Override
+//            public void componentHidden(ComponentEvent e) {}
+//        });
 
         return scrollPane;
     } // createListBox
