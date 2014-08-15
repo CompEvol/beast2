@@ -1,6 +1,5 @@
 package beast.app.beauti;
 
-
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,12 +14,9 @@ import javax.swing.JLabel;
 import beast.app.draw.InputEditor;
 import beast.app.draw.BEASTObjectDialog;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.Prior;
-
-
 
 public class PriorInputEditor extends InputEditor.Base {
 	private static final long serialVersionUID = 1L;
@@ -50,7 +46,6 @@ public class PriorInputEditor extends InputEditor.Base {
         label.setPreferredSize(PREFERRED_SIZE);
         itemBox.add(label);
 
-
         List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
@@ -63,27 +58,24 @@ public class PriorInputEditor extends InputEditor.Base {
                 comboBox.setSelectedItem(template);
             }
         }
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
+        comboBox.addActionListener(e -> {
+            JComboBox comboBox1 = (JComboBox) e.getSource();
 
-                List<?> list = (List<?>) m_input.get();
+            List<?> list = (List<?>) m_input.get();
 
-                BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
-                //String sID = ((Plugin) list.get(iItem)).getID();
-                //String sPartition = BeautiDoc.parsePartition(sID);
-                PartitionContext context = doc.getContextFor((BEASTInterface) list.get(itemNr));
-                Prior prior = (Prior) list.get(itemNr);
-                try {
-                    template.createSubNet(context, prior, prior.distInput, true);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-
-                sync();
-                refreshPanel();
+            BeautiSubTemplate template = (BeautiSubTemplate) comboBox1.getSelectedItem();
+            //String sID = ((Plugin) list.get(iItem)).getID();
+            //String sPartition = BeautiDoc.parsePartition(sID);
+            PartitionContext context = doc.getContextFor((BEASTInterface) list.get(itemNr));
+            Prior prior1 = (Prior) list.get(itemNr);
+            try {
+                template.createSubNet(context, prior1, prior1.distInput, true);
+            } catch (Exception e1) {
+                e1.printStackTrace();
             }
+
+            sync();
+            refreshPanel();
         });
         itemBox.add(comboBox);
 

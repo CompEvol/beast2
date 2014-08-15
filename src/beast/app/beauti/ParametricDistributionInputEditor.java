@@ -1,31 +1,21 @@
 package beast.app.beauti;
 
 import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.ParametricDistribution;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
+
+import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.IntegerDistribution;
-
-
 
 public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
@@ -84,23 +74,32 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
     /* class for drawing information for a parametric distribution **/
     class PDPanel extends JPanel {
+        // the length in pixels of a tick
+        private static final int TICK_LENGTH = 5;
+
+        // the right margin
+        private static final int RIGHT_MARGIN = 20;
+
+        // the margin to the left of y-labels
+        private static final int MARGIN_LEFT_OF_Y_LABELS = 5;
+
+        // the top margin
+        private static final int TOP_MARGIN = 10;
+
         int m_nTicks;
         private static final long serialVersionUID = 1L;
 
         @Override
         public void paintComponent(java.awt.Graphics g) {
+
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
             final int width = getWidth();
             final int height = getHeight();
-            final int graphoffset = 20;
             final int labeloffset = 50;
-            int nGraphWidth = width - graphoffset * 2;
-            int nGraphHeight = height - graphoffset * 2 - labeloffset;
-            g.setColor(Color.WHITE);
-            g.fillRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
-            g.setColor(Color.BLACK);
-            g.drawRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
 
-            ParametricDistribution m_distr = (ParametricDistribution) m_input.get();
+            ParametricDistribution m_distr = (ParametricDistribution)m_input.get();
             if (m_distr == null) {
                 return;
             }
@@ -155,21 +154,19 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             fMinValue = f2; //fXRange = fAdjXRange;
 
             int nPoints;
-            if (!m_distr.isIntegerDistribution())
+            if (!m_distr.isIntegerDistribution()) {
                 nPoints = 100;
-            else
-                nPoints = (int)(fXRange);
+            } else {
+                nPoints = (int) (fXRange);
+            }
             int[] xPoints = new int[nPoints];
             int[] yPoints = new int[nPoints];
             double[] fyPoints = new double[nPoints];
             double fYMax = 0;
             for (int i = 0; i < nPoints; i++) {
-                xPoints[i] = graphoffset + nGraphWidth * i / nPoints;
-                try {
+                //try {
                     fyPoints[i] = getDensityForPlot(m_distr, fMinValue + (fXRange * i) / nPoints);
-                } catch (Exception e) {
-                    fyPoints[i] = 0;
-                }
+                //}
                 if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
                     fyPoints[i] = 0;
                 }
@@ -180,13 +177,47 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             fYMax = adjust(fYMax);
             final int NR_OF_TICKS_Y = m_nTicks;
 
+            // draw ticks on edge
+            Font smallFont = new Font(font.getName(), font.getStyle(), 8);
+            g.setFont(smallFont);
+
+            // collect the ylabels and the maximum label width in small font
+            String[] ylabels = new String[NR_OF_TICKS_Y+1];
+            int maxLabelWidth = 0;
+            FontMetrics sfm = getFontMetrics(smallFont);
+            for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
+                ylabels[i] = format(fYMax * i / NR_OF_TICKS_Y);
+                int stringWidth = sfm.stringWidth(ylabels[i]);
+                if (stringWidth > maxLabelWidth) maxLabelWidth = stringWidth;
+            }
+
+            // collect the xlabels
+            String[] xlabels = new String[NR_OF_TICKS_X+1];
+            for (int i = 0; i <= NR_OF_TICKS_X; i++) {
+                xlabels[i] = format(fMinValue + fXRange * i / NR_OF_TICKS_X);
+            }
+            int maxLabelHeight = sfm.getMaxAscent()+sfm.getMaxDescent();
+
+            int leftMargin = maxLabelWidth + TICK_LENGTH + 1 + MARGIN_LEFT_OF_Y_LABELS;
+            int bottomMargin = maxLabelHeight + TICK_LENGTH + 1;
+
+            int nGraphWidth = width - leftMargin - RIGHT_MARGIN;
+            int nGraphHeight = height - TOP_MARGIN - bottomMargin - labeloffset;
+
+            // DRAW GRAPH PAPER
+            g.setColor(Color.WHITE);
+            g.fillRect(leftMargin, TOP_MARGIN, nGraphWidth, nGraphHeight);
+            g.setColor(Color.BLACK);
+            g.drawRect(leftMargin, TOP_MARGIN, nGraphWidth, nGraphHeight);
+
             for (int i = 0; i < nPoints; i++) {
-                yPoints[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
+                xPoints[i] = leftMargin + nGraphWidth * i / nPoints;
+                yPoints[i] = 1 + (int) (TOP_MARGIN + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
             }
             if (!m_distr.isIntegerDistribution()) {
                 g.drawPolyline(xPoints, yPoints, nPoints);
             } else {
-                int y0 = 1 + graphoffset + nGraphHeight;
+                int y0 = 1 + TOP_MARGIN + nGraphHeight;
                 int dotDiameter = nGraphHeight/20;
                 for (int i=0; i<nPoints; i++) {
                     g.drawLine(xPoints[i], y0, xPoints[i], yPoints[i]);
@@ -194,18 +225,17 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 }
             }
 
-            // draw ticks on edge
-            Font smallFont = new Font(font.getName(), font.getStyle(), 8);
-            g.setFont(smallFont);
             for (int i = 0; i <= NR_OF_TICKS_X; i++) {
-                int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;
-                g.drawLine(x, graphoffset + nGraphHeight, x, graphoffset + nGraphHeight + 5);
-                g.drawString(format(fMinValue + fXRange * i / NR_OF_TICKS_X), x + 2, graphoffset + nGraphHeight + 5 + 2);
+                int x = leftMargin + i * nGraphWidth / NR_OF_TICKS_X;
+                g.drawLine(x, TOP_MARGIN + nGraphHeight, x, TOP_MARGIN + nGraphHeight + TICK_LENGTH);
+                g.drawString(xlabels[i], x-sfm.stringWidth(xlabels[i])/2, TOP_MARGIN + nGraphHeight + TICK_LENGTH + 1 + sfm.getMaxAscent());
             }
+
+            // draw the y labels and ticks
             for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
-                int y = graphoffset + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
-                g.drawLine(graphoffset - 5, y, graphoffset, y);
-                g.drawString(format(fYMax * i / NR_OF_TICKS_Y), 0, y + 3);
+                int y = TOP_MARGIN + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
+                g.drawLine(leftMargin - TICK_LENGTH, y, leftMargin, y);
+                g.drawString(ylabels[i], leftMargin - TICK_LENGTH - 1 - sfm.stringWidth(ylabels[i]), y + 3);
             }
 
             g.setFont(new Font(font.getName(), font.getStyle(), 10));
@@ -214,16 +244,19 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 String[] sStrs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
                 Double[] fQuantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
                 for (k = 0; k < 5; k++) {
+
+                    int y = TOP_MARGIN + nGraphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * 10;
+
                 	try {
-                        g.drawString(format(m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                        g.drawString(format(m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + leftMargin, y);
                     } catch (MathException e) {
-                        g.drawString("not available", nGraphWidth / 2 + graphoffset, graphoffset + nGraphHeight + 20 + k * 10);
+                        g.drawString("not available", nGraphWidth / 2 + leftMargin, y);
                     }
-                    g.drawString(sStrs[k], nGraphWidth / 2 - fontMetrics.stringWidth(sStrs[k]), graphoffset + nGraphHeight + 20 + k * 10);
+                    g.drawString(sStrs[k], nGraphWidth / 2 - fontMetrics.stringWidth(sStrs[k]) + leftMargin - 10, y);
                 }
             } catch (Exception e) {
                 // probably something wrong with the parameters of the parametric distribution
-                g.drawString("Improper parameters", graphoffset, graphoffset + nGraphHeight + 20);
+                g.drawString("Improper parameters", leftMargin, TOP_MARGIN + nGraphHeight + bottomMargin + g.getFontMetrics().getMaxAscent());
             }
         }
         
@@ -270,10 +303,11 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
      * @return density at x or probability of closest integer to x
      */
     private double getDensityForPlot(ParametricDistribution pDistr, double x) {
-        if (pDistr.isIntegerDistribution())
-            return pDistr.density((int)Math.round(x));
-        else
+        if (pDistr.isIntegerDistribution()) {
+            return pDistr.density((int) Math.round(x));
+        } else {
             return pDistr.density(x);
+        }
     }
 
     private Component createGraph() {
@@ -287,7 +321,6 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
         box.add(panel);
         return box;
     }
-
 
     @Override
     public void validate() {
