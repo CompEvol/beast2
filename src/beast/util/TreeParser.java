@@ -172,6 +172,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 System.out.printf( "       TL scale factor = %8.3f\n", scaleFactor);
             }
         }
+
+        if( m_taxonset.get() == null && labels != null ) {
+            m_taxonset.setValue(new TaxonSet(TaxonSet.createTaxonList(labels)), this);
+        }
+
         initStateNodes();
     } // init
 
