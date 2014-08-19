@@ -32,7 +32,9 @@ import beast.app.util.Arguments;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeUtils;
 import beast.math.statistic.DiscreteStatistics;
+import beast.util.CollectionUtils;
 import beast.util.HeapSort;
 import beast.util.TreeParser;
 import jam.console.ConsoleApplication;
@@ -209,12 +211,12 @@ public class TreeAnnotator {
             }
             case MAX_CLADE_CREDIBILITY: {
                 progressStream.println("Finding maximum credibility tree...");
-                targetTree = summarizeTrees(burninPercentage, cladeSystem, inputFileName, false).copy();
+                targetTree = summarizeTrees(cladeSystem, false).copy();
                 break;
             }
             case MAX_SUM_CLADE_CREDIBILITY: {
                 progressStream.println("Finding maximum sum clade credibility tree...");
-                targetTree = summarizeTrees(burninPercentage, cladeSystem, inputFileName, true).copy();
+                targetTree = summarizeTrees(cladeSystem, true).copy();
                 break;
             }
         }
@@ -234,7 +236,7 @@ public class TreeAnnotator {
             setupAttributes(trees[0]);
             int counter = 0;
         	for (Tree tree: trees) {
-                cladeSystem.collectAttributes(tree);
+                cladeSystem.collectAttributes(tree, attributeNames);
                 if (counter > 0 && counter % stepSize == 0 && reported < 61) {
                     progressStream.print("*");
                     progressStream.flush();
@@ -244,7 +246,7 @@ public class TreeAnnotator {
                 counter++;
         	}
         	
-            cladeSystem.removeClades(targetTree, targetTree.getRoot(), true);
+            cladeSystem.removeClades(targetTree.getRoot(), true);
             //progressStream.println("totalTreesUsed=" + totalTreesUsed);
             cladeSystem.calculateCladeCredibilities(totalTreesUsed);
         } catch (Exception e) {
@@ -257,10 +259,10 @@ public class TreeAnnotator {
         progressStream.println("Annotating target tree...");
 
         try {
-            cladeSystem.annotateTree(targetTree, targetTree.getRoot(), null, heightsOption);
+            annotateTree(cladeSystem, targetTree.getRoot(), null, heightsOption);
 
             if( heightsOption == HeightsSummary.CA_HEIGHTS ) {
-                setTreeHeightsByCA(targetTree, inputFileName, burninPercentage);
+                setTreeHeightsByCA(targetTree);
             }
         } catch (Exception e) {
         	e.printStackTrace();
@@ -342,8 +344,7 @@ public class TreeAnnotator {
         }
     }
 
-    private Tree summarizeTrees(int burnin, CladeSystem cladeSystem, String inputFileName,
-                                boolean useSumCladeCredibility) throws IOException {
+    private Tree summarizeTrees(CladeSystem cladeSystem, boolean useSumCladeCredibility) throws IOException {
 
         Tree bestTree = null;
         double bestScore = Double.NEGATIVE_INFINITY;
@@ -382,551 +383,304 @@ public class TreeAnnotator {
 
     private double scoreTree(Tree tree, CladeSystem cladeSystem, boolean useSumCladeCredibility) {
         if (useSumCladeCredibility) {
-            return cladeSystem.getSumCladeCredibility(tree, tree.getRoot(), null);
+            return cladeSystem.getSumCladeCredibility(tree.getRoot(), null);
         } else {
-            return cladeSystem.getLogCladeCredibility(tree, tree.getRoot(), null);
+            return cladeSystem.getLogCladeCredibility(tree.getRoot(), null);
         }
     }
 
-    private class CladeSystem {
-        //
-        // Public stuff
-        //
 
-        /**
-         */
-        public CladeSystem() {
-        }
+    private void annotateTree(CladeSystem cladeSystem, Node node, BitSet bits, HeightsSummary heightsOption) {
 
-        /**
-         */
-        public CladeSystem(Tree targetTree) throws Exception {
-            //this.targetTree = targetTree;
-            add(targetTree, true);
-        }
+        BitSet bits2 = new BitSet();
 
-        /**
-         * adds all the clades in the tree
-         */
-        public void add(Tree tree, boolean includeTips) throws Exception {
-//            if (taxonList == null) {
-//            	List<Taxon> taxa = new ArrayList<Taxon>();
-//                
-//                for (String taxonName : tree.getTaxaNames()) {
-//                	taxa.add(new Taxon(taxonName));
-//                }
-//                taxonList = new TaxonSet(taxa);
-//            }
+        if (node.isLeaf()) {
 
-            // Recurse over the tree and add all the clades (or increment their
-            // frequency if already present). The root clade is added too (for
-            // annotation purposes).
-            addClades(tree, tree.getRoot(), includeTips);
-        }
-//
-//        public Clade getClade(Node node) {
-//            return null;
-//        }
+            int index = cladeSystem.getTaxonIndex(node);
+            bits2.set(index);
 
-        private BitSet addClades(Tree tree, Node node, boolean includeTips) {
+            annotateNode(cladeSystem, node, bits2, true, heightsOption);
+        } else {
 
-            BitSet bits = new BitSet();
+            for (int i = 0; i < node.getChildCount(); i++) {
 
-            if (node.isLeaf()) {
+                Node node1 = node.getChild(i);
 
-                int index = getTaxonIndex(node);
-                bits.set(index);
-
-                if (includeTips) {
-                    addClade(bits);
-                }
-
-            } else {
-
-                for (int i = 0; i < node.getChildCount(); i++) {
-
-                    Node node1 = node.getChild(i);
-
-                    bits.or(addClades(tree, node1, includeTips));
-                }
-
-                addClade(bits);
+                annotateTree(cladeSystem, node1, bits2, heightsOption);
             }
 
-            return bits;
+            annotateNode(cladeSystem, node, bits2, false, heightsOption);
         }
 
-        private void addClade(BitSet bits) {
-            Clade clade = cladeMap.get(bits);
-            if (clade == null) {
-                clade = new Clade(bits);
-                cladeMap.put(bits, clade);
+        if (bits != null) {
+            bits.or(bits2);
+        }
+    }
+
+    private void annotateNode(CladeSystem cladeSystem, Node node, BitSet bits, boolean isTip, HeightsSummary heightsOption) {
+        CladeSystem.Clade clade = cladeSystem.cladeMap.get(bits);
+        assert clade != null : "Clade missing?";
+
+        boolean filter = false;
+        if (!isTip) {
+            final double posterior = clade.getCredibility();
+            node.setMetaData("posterior", posterior);
+            if (posterior < posteriorLimit) {
+                filter = true;
             }
-            clade.setCount(clade.getCount() + 1);
         }
 
-        public void collectAttributes(Tree tree) {
-            collectAttributes(tree, tree.getRoot());
-        }
+        int i = 0;
+        for (String attributeName : attributeNames) {
 
-        private BitSet collectAttributes(Tree tree, Node node) {
+            if (clade.attributeValues != null && clade.attributeValues.size() > 0) {
+                double[] values = new double[clade.attributeValues.size()];
 
-            BitSet bits = new BitSet();
+                HashMap<Object, Integer> hashMap = new HashMap<Object, Integer>();
 
-            if (node.isLeaf()) {
+                Object[] v = clade.attributeValues.get(0);
+                if (v[i] != null) {
 
-                int index = getTaxonIndex(node);
-                if (index < 0) {
-                    throw new IllegalArgumentException("Taxon, " + node.getID() + ", not found in target tree");
-                }
-                bits.set(index);
+                    final boolean isHeight = attributeName.equals("height");
+                    boolean isBoolean = v[i] instanceof Boolean;
 
-            } else {
+                    boolean isDiscrete = v[i] instanceof String;
 
-                for (int i = 0; i < node.getChildCount(); i++) {
+                    if (forceIntegerToDiscrete && v[i] instanceof Integer) isDiscrete = true;
 
-                    Node node1 = node.getChild(i);
+                    double minValue = Double.MAX_VALUE;
+                    double maxValue = -Double.MAX_VALUE;
 
-                    bits.or(collectAttributes(tree, node1));
-                }
-            }
-
-            collectAttributesForClade(bits, tree, node);
-
-            return bits;
-        }
-
-        private void collectAttributesForClade(BitSet bits, Tree tree, Node node) {
-            Clade clade = cladeMap.get(bits);
-            if (clade != null) {
-
-                if (clade.attributeValues == null) {
-                    clade.attributeValues = new ArrayList<Object[]>();
-                }
-
-                int i = 0;
-                Object[] values = new Object[attributeNames.size()];
-                for (String attributeName : attributeNames) {
-                    boolean processed = false;
-
-                    if (!processed) {
-                        Object value;
-                        if (attributeName.equals("height")) {
-                            value = node.getHeight();
-                        } else if (attributeName.equals("length")) {
-                            value = getBranchLength(node);
-// AR - we deal with this once everything                             
-//                        } else if (attributeName.equals(location1Attribute)) {
-//                            // If this is one of the two specified bivariate location names then
-//                            // merge this and the other one into a single array.
-//                            Object value1 = tree.getNodeAttribute(node, attributeName);
-//                            Object value2 = tree.getNodeAttribute(node, location2Attribute);
-//
-//                            value = new Object[]{value1, value2};
-//                        } else if (attributeName.equals(location2Attribute)) {
-//                            // do nothing - already dealt with this...
-//                            value = null;
-                        } else {
-                            value = node.getMetaData(attributeName); 
-                            if (value instanceof String && ((String) value).startsWith("\"")) {
-                                value = ((String) value).replaceAll("\"", "");
+                    final boolean isArray = v[i] instanceof Object[];
+                    boolean isDoubleArray = isArray && ((Object[]) v[i])[0] instanceof Double;
+                    // This is Java, friends - first value type does not imply all.
+                    if (isDoubleArray) {
+                        for (Object n : (Object[]) v[i]) {
+                            if (!(n instanceof Double)) {
+                                isDoubleArray = false;
+                                break;
                             }
                         }
-
-                        //if (value == null) {
-                        //    progressStream.println("attribute " + attributeNames[i] + " is null.");
-                        //}
-
-                        values[i] = value;
                     }
-                    i++;
-                }
-                clade.attributeValues.add(values);
+                    // todo Handle other types of arrays
 
-                //progressStream.println(clade + " " + clade.getValuesSize());
-                clade.setCount(clade.getCount() + 1);
-            }
-        }
+                    double[][] valuesArray = null;
+                    double[] minValueArray = null;
+                    double[] maxValueArray = null;
+                    int lenArray = 0;
 
-        private Object getBranchLength(Node node) {
-        	if (node.isRoot()) {
-        		return 0;
-        	}
-			return node.getParent().getHeight() - node.getHeight();
-		}
+                    if (isDoubleArray) {
+                        lenArray = ((Object[]) v[i]).length;
 
-		public Map<BitSet, Clade> getCladeMap() {
-            return cladeMap;
-        }
+                        valuesArray = new double[lenArray][clade.attributeValues.size()];
+                        minValueArray = new double[lenArray];
+                        maxValueArray = new double[lenArray];
 
-        public void calculateCladeCredibilities(int totalTreesUsed) {
-            for (Clade clade : cladeMap.values()) {
-
-                if (clade.getCount() > totalTreesUsed) {
-
-                    throw new AssertionError("clade.getCount=(" + clade.getCount() +
-                            ") should be <= totalTreesUsed = (" + totalTreesUsed + ")");
-                }
-
-                clade.setCredibility(((double) clade.getCount()) / (double) totalTreesUsed);
-            }
-        }
-
-        public double getSumCladeCredibility(Tree tree, Node node, BitSet bits) {
-
-            double sum = 0.0;
-
-            if (node.isLeaf()) {
-
-                int index = getTaxonIndex(node);
-                bits.set(index);
-            } else {
-
-                BitSet bits2 = new BitSet();
-                for (int i = 0; i < node.getChildCount(); i++) {
-
-                    Node node1 = node.getChild(i);
-
-                    sum += getSumCladeCredibility(tree, node1, bits2);
-                }
-
-                sum += getCladeCredibility(bits2);
-
-                if (bits != null) {
-                    bits.or(bits2);
-                }
-            }
-
-            return sum;
-        }
-
-        public double getLogCladeCredibility(Tree tree, Node node, BitSet bits) {
-
-            double logCladeCredibility = 0.0;
-
-            if (node.isLeaf()) {
-
-                int index = getTaxonIndex(node);
-                bits.set(index);
-            } else {
-
-                BitSet bits2 = new BitSet();
-                for (int i = 0; i < node.getChildCount(); i++) {
-
-                    Node node1 = node.getChild(i);
-
-                    logCladeCredibility += getLogCladeCredibility(tree, node1, bits2);
-                }
-
-                logCladeCredibility += Math.log(getCladeCredibility(bits2));
-
-                if (bits != null) {
-                    bits.or(bits2);
-                }
-            }
-
-            return logCladeCredibility;
-        }
-
-        private double getCladeCredibility(BitSet bits) {
-            Clade clade = cladeMap.get(bits);
-            if (clade == null) {
-                return 0.0;
-            }
-            return clade.getCredibility();
-        }
-
-        public void annotateTree(Tree tree, Node node, BitSet bits, HeightsSummary heightsOption) {
-
-            BitSet bits2 = new BitSet();
-
-            if (node.isLeaf()) {
-
-                int index = getTaxonIndex(node);
-                bits2.set(index);
-
-                annotateNode(tree, node, bits2, true, heightsOption);
-            } else {
-
-                for (int i = 0; i < node.getChildCount(); i++) {
-
-                    Node node1 = node.getChild(i);
-
-                    annotateTree(tree, node1, bits2, heightsOption);
-                }
-
-                annotateNode(tree, node, bits2, false, heightsOption);
-            }
-
-            if (bits != null) {
-                bits.or(bits2);
-            }
-        }
-
-        private void annotateNode(Tree tree, Node node, BitSet bits, boolean isTip, HeightsSummary heightsOption) {
-            Clade clade = cladeMap.get(bits);
-            assert clade != null : "Clade missing?";
-
-            boolean filter = false;
-            if (!isTip) {
-                final double posterior = clade.getCredibility();
-                node.setMetaData("posterior", posterior);
-                if (posterior < posteriorLimit) {
-                    filter = true;
-                }
-            }
-
-            int i = 0;
-            for (String attributeName : attributeNames) {
-
-                if (clade.attributeValues != null && clade.attributeValues.size() > 0) {
-                    double[] values = new double[clade.attributeValues.size()];
-
-                    HashMap<Object, Integer> hashMap = new HashMap<Object, Integer>();
-
-                    Object[] v = clade.attributeValues.get(0);
-                    if (v[i] != null) {
-
-                        final boolean isHeight = attributeName.equals("height");
-                        boolean isBoolean = v[i] instanceof Boolean;
-
-                        boolean isDiscrete = v[i] instanceof String;
-
-                        if (forceIntegerToDiscrete && v[i] instanceof Integer) isDiscrete = true;
-
-                        double minValue = Double.MAX_VALUE;
-                        double maxValue = -Double.MAX_VALUE;
-
-                        final boolean isArray = v[i] instanceof Object[];
-                        boolean isDoubleArray = isArray && ((Object[]) v[i])[0] instanceof Double;
-                        // This is Java, friends - first value type does not imply all.
-                        if (isDoubleArray) {
-                            for (Object n : (Object[]) v[i]) {
-                                if (!(n instanceof Double)) {
-                                    isDoubleArray = false;
-                                    break;
-                                }
-                            }
+                        for (int k = 0; k < lenArray; k++) {
+                            minValueArray[k] = Double.MAX_VALUE;
+                            maxValueArray[k] = -Double.MAX_VALUE;
                         }
-                        // todo Handle other types of arrays
+                    }
 
-                        double[][] valuesArray = null;
-                        double[] minValueArray = null;
-                        double[] maxValueArray = null;
-                        int lenArray = 0;
-
-                        if (isDoubleArray) {
-                            lenArray = ((Object[]) v[i]).length;
-
-                            valuesArray = new double[lenArray][clade.attributeValues.size()];
-                            minValueArray = new double[lenArray];
-                            maxValueArray = new double[lenArray];
-
-                            for (int k = 0; k < lenArray; k++) {
-                                minValueArray[k] = Double.MAX_VALUE;
-                                maxValueArray[k] = -Double.MAX_VALUE;
-                            }
-                        }
-
-                        for (int j = 0; j < clade.attributeValues.size(); j++) {
-                            Object value = clade.attributeValues.get(j)[i];
-                            if (isDiscrete) {
-                                final Object s = value;
-                                if (hashMap.containsKey(s)) {
-                                    hashMap.put(s, hashMap.get(s) + 1);
-                                } else {
-                                    hashMap.put(s, 1);
-                                }
-                            } else if (isBoolean) {
-                                values[j] = (((Boolean) value) ? 1.0 : 0.0);
-                            } else if (isDoubleArray) {
-                                // Forcing to Double[] causes a cast exception. MAS
-                            	try {
-	                                Object[] array = (Object[]) value;
-	                                for (int k = 0; k < lenArray; k++) {
-	                                    valuesArray[k][j] = ((Double) array[k]);
-	                                    if (valuesArray[k][j] < minValueArray[k]) minValueArray[k] = valuesArray[k][j];
-	                                    if (valuesArray[k][j] > maxValueArray[k]) maxValueArray[k] = valuesArray[k][j];
-	                                }
-                            	} catch (Exception e) {
-									// ignore
-								}
+                    for (int j = 0; j < clade.attributeValues.size(); j++) {
+                        Object value = clade.attributeValues.get(j)[i];
+                        if (isDiscrete) {
+                            final Object s = value;
+                            if (hashMap.containsKey(s)) {
+                                hashMap.put(s, hashMap.get(s) + 1);
                             } else {
-                                // Ignore other (unknown) types
-                                if (value instanceof Number) {
-                                    values[j] = ((Number) value).doubleValue();
-                                    if (values[j] < minValue) minValue = values[j];
-                                    if (values[j] > maxValue) maxValue = values[j];
+                                hashMap.put(s, 1);
+                            }
+                        } else if (isBoolean) {
+                            values[j] = (((Boolean) value) ? 1.0 : 0.0);
+                        } else if (isDoubleArray) {
+                            // Forcing to Double[] causes a cast exception. MAS
+                            try {
+                                Object[] array = (Object[]) value;
+                                for (int k = 0; k < lenArray; k++) {
+                                    valuesArray[k][j] = ((Double) array[k]);
+                                    if (valuesArray[k][j] < minValueArray[k]) minValueArray[k] = valuesArray[k][j];
+                                    if (valuesArray[k][j] > maxValueArray[k]) maxValueArray[k] = valuesArray[k][j];
                                 }
+                            } catch (Exception e) {
+                                // ignore
+                            }
+                        } else {
+                            // Ignore other (unknown) types
+                            if (value instanceof Number) {
+                                values[j] = ((Number) value).doubleValue();
+                                if (values[j] < minValue) minValue = values[j];
+                                if (values[j] > maxValue) maxValue = values[j];
                             }
                         }
-                        if (isHeight) {
-                            if (heightsOption == HeightsSummary.MEAN_HEIGHTS) {
-                                final double mean = DiscreteStatistics.mean(values);
-                                node.setHeight(mean);
-                            } else if (heightsOption == HeightsSummary.MEDIAN_HEIGHTS) {
-                                final double median = DiscreteStatistics.median(values);
-                                node.setHeight(median);
-                            } else {
-                                // keep the existing height
+                    }
+                    if (isHeight) {
+                        if (heightsOption == HeightsSummary.MEAN_HEIGHTS) {
+                            final double mean = DiscreteStatistics.mean(values);
+                            node.setHeight(mean);
+                        } else if (heightsOption == HeightsSummary.MEDIAN_HEIGHTS) {
+                            final double median = DiscreteStatistics.median(values);
+                            node.setHeight(median);
+                        } else {
+                            // keep the existing height
+                        }
+                    }
+
+                    if (!filter) {
+                        boolean processed = false;
+                        for (TreeAnnotationPlugin plugin : plugins) {
+                            if (plugin.handleAttribute(node, attributeName, values)) {
+                                processed = true;
                             }
                         }
 
-                        if (!filter) {
-                            boolean processed = false;
-                            for (TreeAnnotationPlugin plugin : plugins) {
-                                if (plugin.handleAttribute(tree, node, attributeName, values)) {
-                                    processed = true;
-                                }
-                            }
-
-                            if (!processed) {
-                                if (!isDiscrete) {
-                                    if (!isDoubleArray)
-                                        annotateMeanAttribute(tree, node, attributeName, values);
-                                    else {
-                                        for (int k = 0; k < lenArray; k++) {
-                                            annotateMeanAttribute(tree, node, attributeName + (k + 1), valuesArray[k]);
-                                        }
+                        if (!processed) {
+                            if (!isDiscrete) {
+                                if (!isDoubleArray)
+                                    annotateMeanAttribute(node, attributeName, values);
+                                else {
+                                    for (int k = 0; k < lenArray; k++) {
+                                        annotateMeanAttribute(node, attributeName + (k + 1), valuesArray[k]);
                                     }
-                                } else {
-                                    annotateModeAttribute(tree, node, attributeName, hashMap);
-                                    annotateFrequencyAttribute(tree, node, attributeName, hashMap);
                                 }
-                                if (!isBoolean && minValue < maxValue && !isDiscrete && !isDoubleArray) {
-                                    // Basically, if it is a boolean (0, 1) then we don't need the distribution information
-                                    // Likewise if it doesn't vary.
-                                    annotateMedianAttribute(tree, node, attributeName + "_median", values);
-                                    annotateHPDAttribute(tree, node, attributeName + "_95%_HPD", 0.95, values);
-                                    annotateRangeAttribute(tree, node, attributeName + "_range", values);
-                                }
+                            } else {
+                                annotateModeAttribute(node, attributeName, hashMap);
+                                annotateFrequencyAttribute(node, attributeName, hashMap);
+                            }
+                            if (!isBoolean && minValue < maxValue && !isDiscrete && !isDoubleArray) {
+                                // Basically, if it is a boolean (0, 1) then we don't need the distribution information
+                                // Likewise if it doesn't vary.
+                                annotateMedianAttribute(node, attributeName + "_median", values);
+                                annotateHPDAttribute(node, attributeName + "_95%_HPD", 0.95, values);
+                                annotateRangeAttribute(node, attributeName + "_range", values);
+                            }
 
-                                if (isDoubleArray) {
-                                    String name = attributeName;
-                                    // todo
+                            if (isDoubleArray) {
+                                String name = attributeName;
+                                // todo
 //                                    if (name.equals(location1Attribute)) {
 //                                        name = locationOutputAttribute;
 //                                    }
-                                    boolean want2d = processBivariateAttributes && lenArray == 2;
-                                    if (name.equals("dmv")) {  // terrible hack
-                                        want2d = false;
+                                boolean want2d = processBivariateAttributes && lenArray == 2;
+                                if (name.equals("dmv")) {  // terrible hack
+                                    want2d = false;
+                                }
+                                for (int k = 0; k < lenArray; k++) {
+                                    if (minValueArray[k] < maxValueArray[k]) {
+                                        annotateMedianAttribute(node, name + (k + 1) + "_median", valuesArray[k]);
+                                        annotateRangeAttribute(node, name + (k + 1) + "_range", valuesArray[k]);
+                                        if (!want2d)
+                                            annotateHPDAttribute(node, name + (k + 1) + "_95%_HPD", 0.95, valuesArray[k]);
                                     }
-                                    for (int k = 0; k < lenArray; k++) {
-                                        if (minValueArray[k] < maxValueArray[k]) {
-                                            annotateMedianAttribute(tree, node, name + (k + 1) + "_median", valuesArray[k]);
-                                            annotateRangeAttribute(tree, node, name + (k + 1) + "_range", valuesArray[k]);
-                                            if (!want2d)
-                                                annotateHPDAttribute(tree, node, name + (k + 1) + "_95%_HPD", 0.95, valuesArray[k]);
-                                        }
-                                    }
-                                    // 2D contours
-                                    if (want2d) {
+                                }
+                                // 2D contours
+                                if (want2d) {
 
-                                        boolean variationInFirst = (minValueArray[0] < maxValueArray[0]);
-                                        boolean variationInSecond = (minValueArray[1] < maxValueArray[1]);
+                                    boolean variationInFirst = (minValueArray[0] < maxValueArray[0]);
+                                    boolean variationInSecond = (minValueArray[1] < maxValueArray[1]);
 
-                                        if (variationInFirst && !variationInSecond)
-                                            annotateHPDAttribute(tree, node, name + "1" + "_95%_HPD", 0.95, valuesArray[0]);
+                                    if (variationInFirst && !variationInSecond)
+                                        annotateHPDAttribute(node, name + "1" + "_95%_HPD", 0.95, valuesArray[0]);
 
-                                        if (variationInSecond && !variationInFirst)
-                                            annotateHPDAttribute(tree, node, name + "2" + "_95%_HPD", 0.95, valuesArray[1]);
+                                    if (variationInSecond && !variationInFirst)
+                                        annotateHPDAttribute(node, name + "2" + "_95%_HPD", 0.95, valuesArray[1]);
 
-                                        if (variationInFirst && variationInSecond)
-                                            annotate2DHPDAttribute(tree, node, name, "_" + (int) (100 * hpd2D) + "%HPD", hpd2D, valuesArray);
-                                    }
+                                    if (variationInFirst && variationInSecond)
+                                        annotate2DHPDAttribute(node, name, "_" + (int) (100 * hpd2D) + "%HPD", hpd2D, valuesArray);
                                 }
                             }
                         }
                     }
                 }
-                i++;
+            }
+            i++;
+        }
+    }
+
+    private void annotateMeanAttribute(Node node, String label, double[] values) {
+        double mean = DiscreteStatistics.mean(values);
+        node.setMetaData(label, mean);
+    }
+
+    private void annotateMedianAttribute(Node node, String label, double[] values) {
+        double median = DiscreteStatistics.median(values);
+        node.setMetaData(label, median);
+
+    }
+
+    private void annotateModeAttribute(Node node, String label, HashMap<Object, Integer> values) {
+        Object mode = null;
+        int maxCount = 0;
+        int totalCount = 0;
+        int countInMode = 1;
+
+        for (Object key : values.keySet()) {
+            int thisCount = values.get(key);
+            if (thisCount == maxCount) {
+                // I hope this is the intention
+                mode = mode.toString().concat("+" + key);
+                countInMode++;
+            } else if (thisCount > maxCount) {
+                mode = key;
+                maxCount = thisCount;
+                countInMode = 1;
+            }
+            totalCount += thisCount;
+        }
+        double freq = (double) maxCount / (double) totalCount * countInMode;
+        node.setMetaData(label, mode);
+        node.setMetaData(label + ".prob", freq);
+    }
+
+    private void annotateFrequencyAttribute(Node node, String label, HashMap<Object, Integer> values) {
+        double totalCount = 0;
+        Set<?> keySet = values.keySet();
+        int length = keySet.size();
+        String[] name = new String[length];
+        Double[] freq = new Double[length];
+        int index = 0;
+        for (Object key : values.keySet()) {
+            name[index] = key.toString();
+            freq[index] = new Double(values.get(key));
+            totalCount += freq[index];
+            index++;
+        }
+        for (int i = 0; i < length; i++)
+            freq[i] /= totalCount;
+
+        node.setMetaData(label + ".set", name);
+        node.setMetaData(label + ".set.prob", freq);
+    }
+
+    private void annotateRangeAttribute(Node node, String label, double[] values) {
+        double min = DiscreteStatistics.min(values);
+        double max = DiscreteStatistics.max(values);
+        node.setMetaData(label, new Object[]{min, max});
+    }
+
+    private void annotateHPDAttribute(Node node, String label, double hpd, double[] values) {
+        int[] indices = new int[values.length];
+        HeapSort.sort(values, indices);
+
+        double minRange = Double.MAX_VALUE;
+        int hpdIndex = 0;
+
+        int diff = (int) Math.round(hpd * (double) values.length);
+        for (int i = 0; i <= (values.length - diff); i++) {
+            double minValue = values[indices[i]];
+            double maxValue = values[indices[i + diff - 1]];
+            double range = Math.abs(maxValue - minValue);
+            if (range < minRange) {
+                minRange = range;
+                hpdIndex = i;
             }
         }
+        double lower = values[indices[hpdIndex]];
+        double upper = values[indices[hpdIndex + diff - 1]];
+        node.setMetaData(label, new Object[]{lower, upper});
+    }
 
-        private void annotateMeanAttribute(Tree tree, Node node, String label, double[] values) {
-            double mean = DiscreteStatistics.mean(values);
-            node.setMetaData(label, mean);
-        }
-
-        private void annotateMedianAttribute(Tree tree, Node node, String label, double[] values) {
-            double median = DiscreteStatistics.median(values);
-            node.setMetaData(label, median);
-
-        }
-
-        private void annotateModeAttribute(Tree tree, Node node, String label, HashMap<Object, Integer> values) {
-            Object mode = null;
-            int maxCount = 0;
-            int totalCount = 0;
-            int countInMode = 1;
-
-            for (Object key : values.keySet()) {
-                int thisCount = values.get(key);
-                if (thisCount == maxCount) {
-                    // I hope this is the intention
-                    mode = mode.toString().concat("+" + key);
-                    countInMode++;
-                } else if (thisCount > maxCount) {
-                    mode = key;
-                    maxCount = thisCount;
-                    countInMode = 1;
-                }
-                totalCount += thisCount;
-            }
-            double freq = (double) maxCount / (double) totalCount * countInMode;
-            node.setMetaData(label, mode);
-            node.setMetaData(label + ".prob", freq);
-        }
-
-        private void annotateFrequencyAttribute(Tree tree, Node node, String label, HashMap<Object, Integer> values) {
-            double totalCount = 0;
-            Set<?> keySet = values.keySet();
-            int length = keySet.size();
-            String[] name = new String[length];
-            Double[] freq = new Double[length];
-            int index = 0;
-            for (Object key : values.keySet()) {
-                name[index] = key.toString();
-                freq[index] = new Double(values.get(key));
-                totalCount += freq[index];
-                index++;
-            }
-            for (int i = 0; i < length; i++)
-                freq[i] /= totalCount;
-
-            node.setMetaData(label + ".set", name);
-            node.setMetaData(label + ".set.prob", freq);
-        }
-
-        private void annotateRangeAttribute(Tree tree, Node node, String label, double[] values) {
-            double min = DiscreteStatistics.min(values);
-            double max = DiscreteStatistics.max(values);
-            node.setMetaData(label, new Object[]{min, max});
-        }
-
-        private void annotateHPDAttribute(Tree tree, Node node, String label, double hpd, double[] values) {
-            int[] indices = new int[values.length];
-            HeapSort.sort(values, indices);
-
-            double minRange = Double.MAX_VALUE;
-            int hpdIndex = 0;
-
-            int diff = (int) Math.round(hpd * (double) values.length);
-            for (int i = 0; i <= (values.length - diff); i++) {
-                double minValue = values[indices[i]];
-                double maxValue = values[indices[i + diff - 1]];
-                double range = Math.abs(maxValue - minValue);
-                if (range < minRange) {
-                    minRange = range;
-                    hpdIndex = i;
-                }
-            }
-            double lower = values[indices[hpdIndex]];
-            double upper = values[indices[hpdIndex + diff - 1]];
-            node.setMetaData(label, new Object[]{lower, upper});
-        }
-
-        // todo Move rEngine to outer class; create once.
+    // todo Move rEngine to outer class; create once.
 //        Rengine rEngine = null;
 //
 //        private final String[] rArgs = {"--no-save"};
@@ -956,21 +710,21 @@ public class TreeAnnotator {
 //            return sb.toString();
 //        }
 
-        public static final String CORDINATE = "cordinates";
+    public static final String CORDINATE = "cordinates";
 
 //		private String formattedLocation(double loc1, double loc2) {
 //			return formattedLocation(loc1) + "," + formattedLocation(loc2);
 //		}
 
-        private String formattedLocation(double x) {
-            return String.format("%5.2f", x);
-        }
+    private String formattedLocation(double x) {
+        return String.format("%5.2f", x);
+    }
 
-        private void annotate2DHPDAttribute(Tree tree, Node node, String preLabel, String postLabel,
-                                            double hpd, double[][] values) {
-            if (USE_R) {
+    private void annotate2DHPDAttribute(Node node, String preLabel, String postLabel,
+                                        double hpd, double[][] values) {
+        if (USE_R) {
 
-                // Uses R-Java interface, and the HPD routines from 'emdbook' and 'coda'
+            // Uses R-Java interface, and the HPD routines from 'emdbook' and 'coda'
 
 //                int N = 50;
 //                if (rEngine == null) {
@@ -1030,167 +784,45 @@ public class TreeAnnotator {
 //                }
 
 
-            } else { // do not use R
+        } else { // do not use R
 
 
 //                KernelDensityEstimator2D kde = new KernelDensityEstimator2D(values[0], values[1], N);
-                //ContourMaker kde = new ContourWithSynder(values[0], values[1], N);
-                boolean bandwidthLimit = false;
+            //ContourMaker kde = new ContourWithSynder(values[0], values[1], N);
+            boolean bandwidthLimit = false;
 
-                ContourMaker kde = new ContourWithSynder(values[0], values[1], bandwidthLimit);
+            ContourMaker kde = new ContourWithSynder(values[0], values[1], bandwidthLimit);
 
-                ContourPath[] paths = kde.getContourPaths(hpd);
+            ContourPath[] paths = kde.getContourPaths(hpd);
 
-                node.setMetaData(preLabel + postLabel + "_modality", paths.length);
+            node.setMetaData(preLabel + postLabel + "_modality", paths.length);
 
-                if (paths.length > 1) {
-                    System.err.println("Warning: a node has a disjoint " + 100 * hpd + "% HPD region.  This may be an artifact!");
-                    System.err.println("Try decreasing the enclosed mass or increasing the number of samples.");
+            if (paths.length > 1) {
+                System.err.println("Warning: a node has a disjoint " + 100 * hpd + "% HPD region.  This may be an artifact!");
+                System.err.println("Try decreasing the enclosed mass or increasing the number of samples.");
+            }
+
+            StringBuffer output = new StringBuffer();
+            int i = 0;
+            for (ContourPath p : paths) {
+                output.append("\n<" + CORDINATE + ">\n");
+                double[] xList = p.getAllX();
+                double[] yList = p.getAllY();
+                StringBuffer xString = new StringBuffer("{");
+                StringBuffer yString = new StringBuffer("{");
+                for (int k = 0; k < xList.length; k++) {
+                    xString.append(formattedLocation(xList[k])).append(",");
+                    yString.append(formattedLocation(yList[k])).append(",");
                 }
+                xString.append(formattedLocation(xList[0])).append("}");
+                yString.append(formattedLocation(yList[0])).append("}");
 
-                StringBuffer output = new StringBuffer();
-                int i = 0;
-                for (ContourPath p : paths) {
-                    output.append("\n<" + CORDINATE + ">\n");
-                    double[] xList = p.getAllX();
-                    double[] yList = p.getAllY();
-                    StringBuffer xString = new StringBuffer("{");
-                    StringBuffer yString = new StringBuffer("{");
-                    for (int k = 0; k < xList.length; k++) {
-                        xString.append(formattedLocation(xList[k])).append(",");
-                        yString.append(formattedLocation(yList[k])).append(",");
-                    }
-                    xString.append(formattedLocation(xList[0])).append("}");
-                    yString.append(formattedLocation(yList[0])).append("}");
+                node.setMetaData(preLabel + "1" + postLabel + "_" + (i + 1), xString);
+                node.setMetaData(preLabel + "2" + postLabel + "_" + (i + 1), yString);
+                i++;
 
-                    node.setMetaData(preLabel + "1" + postLabel + "_" + (i + 1), xString);
-                    node.setMetaData(preLabel + "2" + postLabel + "_" + (i + 1), yString);
-                    i++;
-
-                }
             }
         }
-
-        public BitSet removeClades(Tree tree, Node node, boolean includeTips) {
-
-            BitSet bits = new BitSet();
-
-            if (node.isLeaf()) {
-
-                int index = getTaxonIndex(node);
-                bits.set(index);
-
-                if (includeTips) {
-                    removeClade(bits);
-                }
-
-            } else {
-
-                for (int i = 0; i < node.getChildCount(); i++) {
-
-                    Node node1 = node.getChild(i);
-
-                    bits.or(removeClades(tree, node1, includeTips));
-                }
-
-                removeClade(bits);
-            }
-
-            return bits;
-        }
-
-        private void removeClade(BitSet bits) {
-            Clade clade = cladeMap.get(bits);
-            if (clade != null) {
-                clade.setCount(clade.getCount() - 1);
-            }
-
-        }
-
-        // Get tree clades as bitSets on target taxa
-        // codes is an array of existing BitSet objects, which are reused
-
-        void getTreeCladeCodes(Tree tree, BitSet[] codes) {
-            getTreeCladeCodes(tree, tree.getRoot(), codes);
-        }
-
-        int getTreeCladeCodes(Tree tree, Node node, BitSet[] codes) {
-            final int inode = node.getNr();
-            codes[inode].clear();
-            if (node.isLeaf()) {
-                int index = getTaxonIndex(node);//getTaxonIndex(node);
-                codes[inode].set(index);
-            } else {
-                for (int i = 0; i < node.getChildCount(); i++) {
-                    final Node child = node.getChild(i);
-                    final int childIndex = getTreeCladeCodes(tree, child, codes);
-
-                    codes[inode].or(codes[childIndex]);
-                }
-            }
-            return inode;
-        }
-
-        private int getTaxonIndex(Node node) {
-        	return node.getNr();
-//        	String ID = node.getID();
-//			return taxonList.asStringList().indexOf(ID);
-		}
-
-		class Clade {
-            public Clade(BitSet bits) {
-                this.bits = bits;
-                count = 0;
-                credibility = 0.0;
-            }
-
-            public int getCount() {
-                return count;
-            }
-
-            public void setCount(int count) {
-                this.count = count;
-            }
-
-            public double getCredibility() {
-                return credibility;
-            }
-
-            public void setCredibility(double credibility) {
-                this.credibility = credibility;
-            }
-
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
-
-                final Clade clade = (Clade) o;
-
-                return !(bits != null ? !bits.equals(clade.bits) : clade.bits != null);
-
-            }
-
-            public int hashCode() {
-                return (bits != null ? bits.hashCode() : 0);
-            }
-
-            public String toString() {
-                return "clade " + bits.toString();
-            }
-
-            int count;
-            double credibility;
-            BitSet bits;
-            List<Object[]> attributeValues = null;
-        }
-
-        //
-        // Private stuff
-        //
-        //TaxonSet taxonList = null;
-        Map<BitSet, Clade> cladeMap = new HashMap<BitSet, Clade>();
-
-        //Tree targetTree;
     }
 
     int totalTrees = 0;
@@ -1464,22 +1096,14 @@ public class TreeAnnotator {
      * @author Andrew Rambaut
      * @version $Id$
      */
+    //TODO code review: it seems not necessary
     public static interface TreeAnnotationPlugin {
         Set<String> setAttributeNames(Set<String> attributeNames);
 
-        boolean handleAttribute(Tree tree, Node node, String attributeName, double[] values);
+        boolean handleAttribute(Node node, String attributeName, double[] values);
     }
 
-    // very inefficient, but Java wonderful bitset has no subset op
-    // perhaps using bit iterator would be faster, I can't br bothered.
-
-    static boolean isSubSet(BitSet x, BitSet y) {
-        y = (BitSet) y.clone();
-        y.and(x);
-        return y.equals(x);
-    }
-
-    boolean setTreeHeightsByCA(Tree targetTree, final String inputFileName, final int burnin)
+    boolean setTreeHeightsByCA(Tree targetTree)
             throws Exception {
         progressStream.println("Setting node heights...");
         progressStream.println("0              25             50             75            100");
@@ -1517,12 +1141,12 @@ public class TreeAnnotator {
 
         int counter = 0;
         for (Tree tree: trees) {
-            preOrderTraversalList(tree, postOrderList);
+            TreeUtils.preOrderTraversalList(tree, postOrderList);
             cladeSystem.getTreeCladeCodes(tree, ctree);
             for (int k = 0; k < nClades; ++k) {
                 int j = postOrderList[k];
                 for (int i = 0; i < nClades; ++i) {
-                    if( isSubSet(ctarget[i], ctree[j]) ) {
+                    if( CollectionUtils.isSubSet(ctarget[i], ctree[j]) ) {
                         hs[i] = tree.getNode(j).getHeight();
                     }
                 }
@@ -1540,7 +1164,7 @@ public class TreeAnnotator {
 
         }
         targetTree.initAndValidate();
-        cladeSystem.removeClades(targetTree, targetTree.getRoot(), true);
+        cladeSystem.removeClades(targetTree.getRoot(), true);
         for (int k = 0; k < nClades; ++k) {
             ths[k] /= totalTreesUsed;
             final Node node = targetTree.getNode(k);
@@ -1552,31 +1176,6 @@ public class TreeAnnotator {
 
         return true;
     }
-    
-    // populate  postOrderList with node numbers in posorder: parent before children.
-    //  postOrderList is pre-allocated with the right size
-    public static void preOrderTraversalList(Tree tree, int[] postOrderList) {
 
-        final int nodeCount = tree.getNodeCount();
-        if (postOrderList.length != nodeCount) {
-            throw new IllegalArgumentException("Illegal list length");
-        }
-        postOrderList[0] = tree.getRoot().getNr();
-        preOrderTraversalList(tree, 0, postOrderList);
-    }
-
-    static int preOrderTraversalList(Tree tree, int idx, int[] postOrderList) {
-        final Node node = tree.getNode(postOrderList[idx]);
-        for(int i = 0; i < node.getChildCount(); ++i) {
-            final Node child = node.getChild(i);
-            idx += 1;
-            postOrderList[idx] = child.getNr();
-            if( ! child.isLeaf() ) {
-              idx = preOrderTraversalList(tree, idx, postOrderList);
-            }
-        }
-        return idx;
-    }
-    
 }
 

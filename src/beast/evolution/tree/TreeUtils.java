@@ -328,4 +328,28 @@ public class TreeUtils {
         }
     }
 
+    // populate  postOrderList with node numbers in posorder: parent before children.
+    //  postOrderList is pre-allocated with the right size
+    public static void preOrderTraversalList(Tree tree, int[] postOrderList) {
+
+        final int nodeCount = tree.getNodeCount();
+        if (postOrderList.length != nodeCount) {
+            throw new IllegalArgumentException("Illegal list length");
+        }
+        postOrderList[0] = tree.getRoot().getNr();
+        preOrderTraversalList(tree, 0, postOrderList);
+    }
+
+    public static int preOrderTraversalList(Tree tree, int idx, int[] postOrderList) {
+        final Node node = tree.getNode(postOrderList[idx]);
+        for(int i = 0; i < node.getChildCount(); ++i) {
+            final Node child = node.getChild(i);
+            idx += 1;
+            postOrderList[idx] = child.getNr();
+            if( ! child.isLeaf() ) {
+              idx = preOrderTraversalList(tree, idx, postOrderList);
+            }
+        }
+        return idx;
+    }
 }
