@@ -33,4 +33,32 @@ public interface TreeInterface {
     * Internal nodes are numbered higher, but the root has no guaranteed 
     * number.
     */
+
+
+    /**
+     * @param node  top of tree/sub tree (null defaults to whole tree)
+     * @param nodes array to fill (null will result in creating a new one)
+     * @return tree nodes in post-order, children before parents
+     */
+    default public Node[] listNodesPostOrder(Node node, Node[] nodes) {
+        if (node == null) {
+            node = getRoot();
+        }
+        if (nodes == null) {
+            final int n = node.getNodeCount();
+            nodes = new Node[n];
+        }
+        getNodesPostOrder(node, nodes, 0);
+        return nodes;
+    }
+
+    static int
+    getNodesPostOrder(final Node node, final Node[] nodes, int pos) {
+        //node.m_tree = this;
+        for (final Node child : node.children) {
+            pos = getNodesPostOrder(child, nodes, pos);
+        }
+        nodes[pos] = node;
+        return pos + 1;
+    }
 }
