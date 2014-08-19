@@ -719,13 +719,14 @@ public class Tree extends StateNode implements TreeInterface {
                 sink.setParent(null, false);
             }
 
-            sink.children.clear();
+            final List<Node> children = sink.children;
+            children.clear();
             //sink.removeAllChildren(false);
             for (final Node srcChild : src.getChildren()) {
                 // don't call addChild, which calls  setParent(..., true);
                 final Node c = m_storedNodes[srcChild.getNr()];
                 c.setParent(sink, false);
-                sink.children.add(c);
+                children.add(c);
                 //sink.addChild(c);
             }
         }
@@ -746,6 +747,10 @@ public class Tree extends StateNode implements TreeInterface {
         leafNodeCount = root.getLeafNodeCount();
 
         hasStartedEditing = false;
+
+        for( Node n : m_nodes ) {
+            n.isDirty = Tree.IS_CLEAN;
+        }
     }
 
     /**
