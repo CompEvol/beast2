@@ -4,30 +4,17 @@ package beast.app.draw;
 
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
-import beast.app.beauti.BeautiConfig;
 import beast.app.beauti.BeautiDoc;
-import beast.app.beauti.BeautiSubTemplate;
-import beast.app.draw.InputEditor.ButtonStatus;
-import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.Input;
 import beast.core.MCMC;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
-import beast.core.BEASTInterface;
-import beast.core.Input.Validate;
 import beast.evolution.alignment.Taxon;
-import beast.util.AddOnManager;
 import beast.util.XMLProducer;
 
 
 import java.awt.*;
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -198,7 +185,7 @@ public class BEASTObjectPanel extends JPanel {
             }
         }
 
-        doc.getInpuEditorFactory().addInputs(mainBox, m_plugin, null, null, doc);
+        doc.getInputEditorFactory().addInputs(mainBox, m_plugin, null, null, doc);
 
 
         mainBox.add(Box.createVerticalStrut(5));

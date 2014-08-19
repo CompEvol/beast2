@@ -46,7 +46,7 @@ public class PriorInputEditor extends InputEditor.Base {
         label.setPreferredSize(PREFERRED_SIZE);
         itemBox.add(label);
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
+        List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
 

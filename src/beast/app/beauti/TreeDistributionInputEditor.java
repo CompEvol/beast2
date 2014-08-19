@@ -13,7 +13,6 @@ import javax.swing.SwingUtilities;
 import beast.app.draw.InputEditor;
 import beast.app.draw.SmallLabel;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
@@ -67,7 +66,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
         // List<String> sAvailablePlugins =
         // PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin,
+        List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(m_input, m_plugin,
                 null, doc); 
         // make sure we are dealing with a TreeDistribution
         for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {

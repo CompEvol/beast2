@@ -131,7 +131,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     static ByteArrayOutputStream baos = null;
 
 
-    public InputEditorFactory getInpuEditorFactory() {
+    public InputEditorFactory getInputEditorFactory() {
         return inputEditorFactory;
     }
 

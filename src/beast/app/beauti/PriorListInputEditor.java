@@ -27,7 +27,6 @@ import beast.core.Input;
 import beast.core.Logger;
 import beast.core.State;
 import beast.core.StateNode;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
@@ -125,15 +124,15 @@ public class PriorListInputEditor extends ListInputEditor {
 
         
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
-	        m_addButton = new SmallButton("+", true);
-	        m_addButton.setName("addItem");
-	        m_addButton.setToolTipText("Add item to the list");
-	        m_addButton.addActionListener(new ActionListener() {
+	        addButton = new SmallButton("+", true);
+	        addButton.setName("addItem");
+	        addButton.setToolTipText("Add item to the list");
+	        addButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                addItem();
 	            }
 	        });
-	        add(m_addButton);
+	        add(addButton);
         }
     }
 
@@ -149,7 +148,7 @@ public class PriorListInputEditor extends ListInputEditor {
     protected InputEditor addPluginItem(Box itemBox, BEASTInterface plugin) {
 		try {
 	    	int listItemNr = ((List) m_input.get()).indexOf(plugin);
-	    	InputEditor editor = doc.getInpuEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
+	    	InputEditor editor = doc.getInputEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
 	    	itemBox.add((Component) editor);
 	    	return editor;
 		} catch (Exception e) {

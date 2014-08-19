@@ -157,7 +157,7 @@ public class InputEditorFactory {
         	}
         }
 
-        //Log.trace.print(inputClass.getName() + " => ");        
+        //Log.trace.print(inputClass.getName() + " => ");
         InputEditor inputEditor;
 
         // check whether the super.editor has a custom method for creating an Editor
@@ -169,7 +169,7 @@ public class InputEditorFactory {
                 Class<?> _class = editor.getClass();
                 Method method = _class.getMethod(sName);
                 inputEditor = (InputEditor) method.invoke(editor);
-                //Log.trace.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");        
+                //Log.trace.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");
                 return inputEditor;
             } catch (Exception e) {
                 // ignore
@@ -255,7 +255,7 @@ public class InputEditorFactory {
         inputEditor.init(input, plugin, listItemNr, expandOption, bAddButtons);
         inputEditor.setBorder(BorderFactory.createEmptyBorder());
         inputEditor.getComponent().setVisible(true);
-        //Log.trace.println(inputEditor.getClass().getName());        
+        //Log.trace.println(inputEditor.getClass().getName());
         return inputEditor;
     } // createInputEditor
 

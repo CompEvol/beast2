@@ -50,7 +50,6 @@ public interface InputEditor {
         HAS_INVALIDMEMBERS
     }
 
-
     /** type of Plugin to which this editor can be used **/ 
     Class<?> type();
 
@@ -69,7 +68,10 @@ public interface InputEditor {
     /** set document with the model containing the input **/
     void setDoc(BeautiDoc doc);
 
-    /** set decoration **/
+    /**
+     * set decoration. This method is deprecated, because decoration can be handled by the JComponent with setBorder method on
+     **/
+    @Deprecated
     void setBorder(Border border);
 
     /** prepare to validate input **/
@@ -147,34 +149,16 @@ public abstract class Base extends JPanel implements InputEditor {
         }
     }
 
-
-    public static Integer g_nLabelWidth = 150;
-
-//    Box box;
-    
-//    public Base() {
-////    	box = Box.createHorizontalBox();
-//        super(BoxLayout.X_AXIS);
-//        //g_currentInputEditors.add(this);
-////    	super.add(box);
-//    }
-
-//    @Override
-//   	public Component add(Component comp) {
-//   		return box.add(comp);
-//   	}
+    // TODO this should not be static. Better if it was an instance variable,
+    // TODO since its currently set by an input of BeautiPanelConfig, which can be different for each BeautiPanel.
+    public static int g_nLabelWidth = 150;
 
 	public Base(BeautiDoc doc) {
-		//super(BoxLayout.X_AXIS);
-		//box = Box.createHorizontalBox();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		//setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		//setLayout(new GridLayout());
 		this.doc = doc;
 		if (doc != null) {
 			doc.currentInputEditors.add(this);
 		}
-		//super.add(box);
 	} // c'tor
 
 	protected BeautiDoc getDoc() {
@@ -189,7 +173,6 @@ public abstract class Base extends JPanel implements InputEditor {
         }
         return doc;
     }
-
 
     /**
      * return class the editor is suitable for.
@@ -221,7 +204,6 @@ public abstract class Base extends JPanel implements InputEditor {
         add(Box.createHorizontalGlue());
         addValidationLabel();
     } // init
-
 
     void setUpEntry() {
         m_entry = new JTextField();

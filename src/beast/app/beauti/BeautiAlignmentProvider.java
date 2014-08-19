@@ -65,7 +65,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		String[] exts = { ".nex", ".nxs", ".nexus" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
 
-		fileChooser.setDialogTitle("Load Sequence");
+		fileChooser.setDialogTitle("Load Alignment");
 		fileChooser.setMultiSelectionEnabled(true);
 		int rval = fileChooser.showOpenDialog(null);
 

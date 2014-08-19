@@ -1,13 +1,8 @@
 package beast.app.beauti;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -29,11 +24,8 @@ import javax.swing.table.TableColumn;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallButton;
 import beast.app.util.FileDrop;
-import beast.app.util.Utils;
 import beast.core.Input;
 import beast.core.MCMC;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
@@ -63,6 +55,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	
 	final static int NR_OF_COLUMNS = 9;
 
+    final static int STRUT_SIZE = 5;
+
 	/**
 	 * alignments that form a partition. These can be FilteredAlignments *
 	 */
@@ -74,8 +68,12 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	JTextField nameEditor;
 	List<JButton> linkButtons;
 	List<JButton> unlinkButtons;
-	JButton splitButton; 
-	JButton delButton;
+	JButton splitButton;
+
+    /**
+     * The button for deleting an alignment in the alignment list.
+     */
+    JButton delButton;
 
 	private JScrollPane scrollPane;
 
@@ -114,16 +112,21 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		linkButtons = new ArrayList<JButton>();
 		unlinkButtons = new ArrayList<JButton>();
 		nPartitions = alignments.size();
-		// super.init(input, plugin, bExpandOption, false);
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		
-		Box box = Box.createVerticalBox();
-		box.add(Box.createVerticalStrut(5));
-		box.add(createButtonBox());
-		box.add(Box.createVerticalStrut(5));
-		box.add(createListBox());
-		panel.add(box, BorderLayout.NORTH);
+
+        // override BoxLayout in superclass
+        setLayout(new BorderLayout());
+
+        add(createLinkButtons(), BorderLayout.NORTH);
+        add(createListBox(), BorderLayout.CENTER);
+
+        //Box box = Box.createVerticalBox();
+		//box.add(Box.createVerticalStrut(STRUT_SIZE));
+		//box.add(createLinkButtons());
+		//box.add(Box.createVerticalStrut(STRUT_SIZE));
+		//box.add(createListBox());
+        //box.add(Box.createVerticalStrut(STRUT_SIZE));
+        //box.add(Box.createVerticalGlue());
+		//add(box, BorderLayout.CENTER);
 
         Color focusColor = UIManager.getColor("Focus.color");
         Border focusBorder = BorderFactory.createMatteBorder(2, 2, 2, 2, focusColor);
@@ -133,55 +136,62 @@ public class AlignmentListInputEditor extends ListInputEditor {
             }   // end filesDropped
         }); // end FileDrop.Listener
 
-		Box buttonBox = Box.createHorizontalBox();
+        // this should place the add/remove/split buttons at the bottom of the window.
+        add(createAddRemoveSplitButtons(), BorderLayout.SOUTH);
 
-		m_addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
-		m_addButton.setName("+");
-		m_addButton.setToolTipText("Add item to the list");
-		m_addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				addItem();
-			}
-		});
-		buttonBox.add(Box.createHorizontalStrut(5));
-		buttonBox.add(m_addButton);
-		buttonBox.add(Box.createHorizontalStrut(5));
+        updateStatus();
+	}
 
-		delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
-		delButton.setName("-");
-		delButton.setToolTipText("Delete selected items from the list");
-		delButton.addActionListener(e -> {
+    /**
+     * Creates the link/unlink button component
+     * @return a box containing three link/unlink button pairs.
+     */
+	private JComponent createLinkButtons() {
+
+        Box box = Box.createHorizontalBox();
+		addLinkUnlinkPair(box, "Site Models");
+        box.add(Box.createHorizontalStrut(STRUT_SIZE));
+        addLinkUnlinkPair(box, "Clock Models");
+        box.add(Box.createHorizontalStrut(STRUT_SIZE));
+        addLinkUnlinkPair(box, "Trees");
+		box.add(Box.createHorizontalGlue());
+		return box;
+	}
+
+    private JComponent createAddRemoveSplitButtons() {
+        Box buttonBox = Box.createHorizontalBox();
+
+        addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
+        addButton.setName("+");
+        addButton.setToolTipText("Add item to the list");
+        addButton.addActionListener(e -> addItem());
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
+        buttonBox.add(addButton);
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
+
+        delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
+        delButton.setName("-");
+        delButton.setToolTipText("Delete selected items from the list");
+        delButton.addActionListener(e -> {
             if (doc.bHasLinkedAtLeastOnce) {
                 JOptionPane.showMessageDialog(null, "Cannot delete partition while parameters are linked");
                 return;
             }
             delItem();
         });
-		buttonBox.add(delButton);
-		buttonBox.add(Box.createHorizontalStrut(5));
+        buttonBox.add(delButton);
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
 
-		splitButton = new JButton("Split");
-		splitButton.setName("Split");
-		splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
-		splitButton.addActionListener(e -> splitItem());
-		buttonBox.add(splitButton);
+        splitButton = new JButton("Split");
+        splitButton.setName("Split");
+        splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
+        splitButton.addActionListener(e -> splitItem());
+        buttonBox.add(splitButton);
 
-		buttonBox.add(Box.createHorizontalGlue());
-		panel.add(buttonBox, BorderLayout.SOUTH);
-        add(panel);
-		
-		updateStatus();
-	}
+        buttonBox.add(Box.createHorizontalGlue());
 
-	protected Component createButtonBox() {
-		Box box = Box.createHorizontalBox();
-		box.add(Box.createHorizontalGlue());
-		addLinkUnlinkPair(box, "Site Models");
-		addLinkUnlinkPair(box, "Clock Models");
-		addLinkUnlinkPair(box, "Trees");
-		box.add(Box.createHorizontalGlue());
-		return box;
-	}
+        return buttonBox;
+    }
 
     private void addFiles(File[] fileArray) {
         List<BEASTInterface> plugins = null;
@@ -208,35 +218,34 @@ public class AlignmentListInputEditor extends ListInputEditor {
         }
     }
 
+    /**
+     * This method just adds the two buttons (with add()) and does not add any glue or struts before or after.
+     * @param box
+     * @param sLabel
+     */
 	private void addLinkUnlinkPair(Box box, String sLabel) {
-		JButton linkSModelButton = new JButton("Link " + sLabel);
-		linkSModelButton.setName("Link " + sLabel);
-		linkSModelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton button = (JButton) e.getSource();
-				link(columnLabelToNr(button.getText()));
-				table.repaint();
-			}
 
-		});
+        //JLabel label = new JLabel(sLabel+":");
+        //box.add(label);
+        JButton linkSModelButton = new JButton("Link " + sLabel);
+		linkSModelButton.setName("Link " + sLabel);
+		linkSModelButton.addActionListener(e -> {
+            JButton button = (JButton) e.getSource();
+            link(columnLabelToNr(button.getText()));
+            table.repaint();
+        });
 		box.add(linkSModelButton);
 		linkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
 		JButton unlinkSModelButton = new JButton("Unlink " + sLabel);
 		unlinkSModelButton.setName("Unlink " + sLabel);
-		unlinkSModelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton button = (JButton) e.getSource();
-				unlink(columnLabelToNr(button.getText()));
-				table.repaint();
-			}
-
-		});
+		unlinkSModelButton.addActionListener(e -> {
+            JButton button = (JButton) e.getSource();
+            unlink(columnLabelToNr(button.getText()));
+            table.repaint();
+        });
 		box.add(unlinkSModelButton);
 		unlinkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
-		box.add(Box.createHorizontalGlue());
-		
+
 		linkButtons.add(linkSModelButton);
 		unlinkButtons.add(unlinkSModelButton);
 	}
@@ -289,16 +298,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 	}
 
-	int[] getTableRowSelection() {
-		int[] nSelected = table.getSelectedRows();
-//		if (nSelected.length == 0) {
-//			// select all
-//			nSelected = new int[nPartitions];
-//			for (int i = 0; i < nPartitions; i++) {
-//				nSelected[i] = i;
-//			}
-//		}
-		return nSelected;
+
+    int[] getTableRowSelection() {
+        return table.getSelectedRows();
 	}
 
 	/** set partition of type nColumn to partition model nr iRow **/
@@ -805,34 +807,11 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 		scrollPane = new JScrollPane(table);
 
-// AJD: This custom component listener was causing undesirable behaviour in Mac OS X -- Issue #191
-//		scrollPane.addComponentListener(new ComponentListener() {
-//
-//			@Override
-//			public void componentShown(ComponentEvent e) {}
-//
-//			@Override
-//			public void componentResized(ComponentEvent e) {
-//				if (doc.getFrame() != null) {
-//					Dimension preferredSize = doc.getFrame().getSize();
-//					if (Utils.isWindows()) {
-//					preferredSize.height = Math.max(preferredSize.height - 180, 0);
-//					preferredSize.width = Math.max(preferredSize.width - 50, 0);
-//					} else {
-//						preferredSize.height = Math.max(preferredSize.height - 150, 0);
-//						preferredSize.width = Math.max(preferredSize.width - 25, 0);
-//
-//					}
-//					scrollPane.setPreferredSize(preferredSize);
-//				}
-//			}
-//
-//			@Override
-//			public void componentMoved(ComponentEvent e) {}
-//
-//			@Override
-//			public void componentHidden(ComponentEvent e) {}
-//		});
+        int rowsToDisplay = 3;
+        Dimension d = table.getPreferredSize();
+        scrollPane.setPreferredSize(
+                new Dimension(d.width,table.getRowHeight()*rowsToDisplay+table.getTableHeader().getHeight()));
+
 		return scrollPane;
 	} // createListBox
 	

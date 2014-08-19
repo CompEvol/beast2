@@ -171,7 +171,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 
     public InputEditor createShapeEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
-        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, (BEASTInterface) m_input.get(), doc);
+        gammaShapeEditor = doc.getInputEditorFactory().createInputEditor(input, (BEASTInterface) m_input.get(), doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }

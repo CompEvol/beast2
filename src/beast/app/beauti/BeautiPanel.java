@@ -84,22 +84,6 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         this.doc = doc;
         this.iPanel = iPanel;
 
-//        SmallButton helpButton2 = new SmallButton("?", true);
-//        helpButton2.setToolTipText("Show help for this plugin");
-//        helpButton2.addActionListener(new ActionListener() {
-//            // implementation ActionListener
-//            public void actionPerformed(ActionEvent e) {
-//                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-//                HelpBrowser b = new HelpBrowser(m_config.getType());
-//                b.setSize(800, 800);
-//                b.setVisible(true);
-//                b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//            }
-//        });
-//    	add(helpButton2);
-
-
         setLayout(new BorderLayout());
 
         this.config = config;
@@ -111,25 +95,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             splitPane = null;
         }
 
-//        PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-//            public void propertyChange(PropertyChangeEvent changeEvent) {
-//                JSplitPane sourceSplitPane = (JSplitPane) changeEvent.getSource();
-//                String propertyName = changeEvent.getPropertyName();
-//                if (propertyName.equals(JSplitPane.LAST_DIVIDER_LOCATION_PROPERTY)) {
-//                    partitionListPreferredWidth = sourceSplitPane.getDividerLocation();
-//
-//                    Integer priorLast = (Integer) changeEvent.getOldValue();
-//                    System.out.println("Prior last: " + priorLast);
-//                    System.out.println("new: " + partitionListPreferredWidth);
-//
-//                }
-//            }
-//        };
-//        splitPane.addPropertyChangeListener(propertyChangeListener);
-
         refreshPanel();
         addPartitionPanel(this.config.hasPartition(), iPanel);
-
 
         setOpaque(false);
     } // c'tor
@@ -144,16 +111,16 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         box.add(Box.createVerticalGlue());
         box.add(new JLabel(Utils.getIcon(iPanel, config)));
 
-        //if (splitPane.getLeftComponent() != null) {
-        //    Dimension d = splitPane.getLeftComponent().getSize();
-        //}
-
         splitPane.add(box, JSplitPane.LEFT);
         if (listOfPartitions != null) {
             listOfPartitions.setSelectedIndex(iPartition);
         }
     }
 
+    /**
+     * Create a list of partitions and return as a JComponent;
+     * @return
+     */
     JComponent createList() {
         partitionComponent = new JPanel();
         partitionComponent.setLayout(new BorderLayout());
@@ -253,25 +220,15 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
         if (input != null && input.get() != null && input.getType() != null) {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
-            InputEditor inputEditor = doc.getInpuEditorFactory().createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
+            InputEditor inputEditor = doc.getInputEditorFactory().createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
 
-            //Box box = Box.createVerticalBox();
-            //box.add(inputEditor.getComponent());
-            // RRB: is there a better way than just pooring in glue at the bottom?
-            //for (int i = 0; i < 30; i++) {
-
-            //box.add(Box.createVerticalStrut(1024 - ((Component)inputEditor).getPreferredSize().height));
-            //}
-            //JScrollPane scroller = new JScrollPane(box);
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
             if (isToClone()) {
                 ClonePartitionPanel clonePartitionPanel = new ClonePartitionPanel(this);
                 p.add(clonePartitionPanel, BorderLayout.NORTH);
             } else {
-                p.add(inputEditor.getComponent(), BorderLayout.NORTH);
-                //p.add(Box.createVerticalStrut(1024 - inputEditor.getComponent().getPreferredSize().height), BorderLayout.SOUTH);
-                //p.setPreferredSize(new Dimension(1024,1024));
+                p.add(inputEditor.getComponent(), BorderLayout.CENTER);
             }
 
             Rectangle bounds = new Rectangle(0,0);
@@ -294,7 +251,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             scroller.getViewport().scrollRectToVisible(bounds);
             centralComponent = scroller;
         } else {
-            centralComponent = new JLabel("Nothing to be specified");
+            centralComponent = new JLabel("No input editors.");
         }
         if (splitPane != null) {
             splitPane.add(centralComponent, JSplitPane.RIGHT);

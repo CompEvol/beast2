@@ -20,7 +20,6 @@
 */
 package beast.app.treeannotator;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -30,9 +29,6 @@ import java.util.List;
 import java.util.Vector;
 
 import beast.evolution.tree.Node;
-
-
-
 
 public class TreeSetParser {
 	/**

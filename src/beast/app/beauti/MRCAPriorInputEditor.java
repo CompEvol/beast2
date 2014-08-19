@@ -11,10 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-import beast.app.beauti.PriorListInputEditor.MRCAPriorActionListener;
 import beast.app.draw.InputEditor;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -84,7 +82,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 
         }
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
+        List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
 
