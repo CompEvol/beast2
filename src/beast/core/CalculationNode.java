@@ -53,17 +53,22 @@ public abstract class CalculationNode extends BEASTObject {
      *         Called only on those CalculationNodes potentially affected by a
      *         StateNode change.
      *         <p/>
-     *         Default implementation inspects all input plugins
-     *         and checks if there is any dirt anywhere.
-     *         Derived classes can provide a more efficient implementation
-     *         by checking which part of any input StateNode or Plugin has changed.
-     *         <p/>
-     *         Note this default implementation is relative expensive since it uses
-     *         introspection, so overrides should be preferred.
-     *         After the operation has changed the state.
+     *         Default implementation return 'true', since requiresRecalculation is
+     *         called for a node only if one of its arguments has changed.
      */
     protected boolean requiresRecalculation() {
         return true;
+
+
+//        *         <p/>
+//        *         Default implementation inspects all input plugins
+//        *         and checks if there is any dirt anywhere.
+//        *         Derived classes can provide a more efficient implementation
+//        *         by checking which part of any input StateNode or Plugin has changed.
+//        *         <p/>
+//        *         Note this default implementation is relative expensive since it uses
+//        *         introspection, so overrides should be preferred.
+//        *         After the operation has changed the state.state
         // this is a prototypical implementation of requiresRecalculation()
 //        try {
 //            for (Plugin plugin : listActivePlugins()) {
