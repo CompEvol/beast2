@@ -205,10 +205,29 @@ public class Exchange extends TreeOperator {
 //                (iP.getHeight() > jP.getHeight() && i.getHeight() > j.getHeight()))
                 ) {
             exchangeNodes(i, j, iP, jP);
-            // System.out.println("tries = " + tries+1);
+
+            // All the nodes on the path from i/j to the common ancestor of i/j parents had a topology change,
+            // so they need to be marked FILTHY.
+            {
+                Node iup = iP;
+                Node jup = jP;
+                while (iup != jup) {
+                    if( iup.getHeight() < jup.getHeight() ) {
+                        assert !iup.isRoot();
+                        iup = iup.getParent();
+                        iup.makeDirty(Tree.IS_FILTHY);
+                    } else {
+                        assert !jup.isRoot();
+                        jup = jup.getParent();
+                        jup.makeDirty(Tree.IS_FILTHY);
+                    }
+                }
+            }
             return 0;
         }
-        // Couldn't find valid wide move on this beast.tree!
+
+        // Randomly selected nodes i and j are not valid candidates for a wide exchange.
+        // reject instead of counting (like we do for narrow).
         return Double.NEGATIVE_INFINITY;
     }
 

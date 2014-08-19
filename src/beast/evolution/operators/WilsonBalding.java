@@ -69,6 +69,7 @@ public class WilsonBalding extends TreeOperator {
     public void initAndValidate() {
     }
 
+    int icase = -1;
     /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
@@ -106,6 +107,7 @@ public class WilsonBalding extends TreeOperator {
             return Double.NEGATIVE_INFINITY;
         }
 
+        assert jP != null;  // j != root tested above
         if (jP.getNr() == iP.getNr() || j.getNr() == iP.getNr() || jP.getNr() == i.getNr())
             return Double.NEGATIVE_INFINITY;
 
@@ -129,41 +131,62 @@ public class WilsonBalding extends TreeOperator {
             return Double.NEGATIVE_INFINITY;
         }
 
+        // root changing moves disallowed earlier
+
         //update
-        if (j.isRoot()) {
-            // 1. remove edges <iP, CiP>
-            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
-
-            replace(iP, CiP, j);
-            replace(PiP, iP, CiP);
-
-            // iP is the new root
-            iP.setParent(null);
-            tree.setRoot(iP);
-
-        } else if (iP.isRoot()) {
-            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
-            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
-
-            replace(jP, j, iP);
-            //replace(iP, CiP, iP);
-            replace(iP, CiP, j);
-
-            // CiP is the new root
-            CiP.setParent(null);
-            tree.setRoot(CiP);
-
-        } else {
-            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
+//        if (j.isRoot()) {
+//            // 1. remove edges <iP, CiP>
+//            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
+//
+//            replace(iP, CiP, j);
+//            replace(PiP, iP, CiP);
+//
+//            // iP is the new root
+//            iP.setParent(null);
+//            tree.setRoot(iP);
+//
+//        } else if (iP.isRoot()) {
+//            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
+//            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
+//
+//            replace(jP, j, iP);
+//            //replace(iP, CiP, iP);
+//            replace(iP, CiP, j);
+//
+//            // CiP is the new root
+//            CiP.setParent(null);
+//            tree.setRoot(CiP);
+//
+//        } else {
+//            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
             // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
 
             // disconnect iP
-            replace(iP.getParent(), iP, CiP);
+            final Node iPP = iP.getParent();
+            replace(iPP, iP, CiP);
             // re-attach, first child node to iP
             replace(iP, CiP, j);
             // then parent node of j to iP
             replace(jP, j, iP);
-        }
+
+        // mark paths to common ancestor as changed
+            {
+                Node iup = iPP;
+                Node jup = iP;
+                while (iup != jup) {
+                    if( iup.getHeight() < jup.getHeight() ) {
+                        assert !iup.isRoot();
+                        iup = iup.getParent();
+                        iup.makeDirty(Tree.IS_FILTHY);
+                    } else {
+                        assert !jup.isRoot();
+                        jup = jup.getParent();
+                        jup.makeDirty(Tree.IS_FILTHY);
+                    }
+                }
+            }
+
+//        }
 
         iP.setHeight(newAge);
 
