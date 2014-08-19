@@ -19,7 +19,10 @@ import java.util.Arrays;
  */
 
 @Description("Defines an uncorrelated relaxed molecular clock.")
-@Citation(value = "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088", year = 2006, firstAuthorSurname = "drummond")
+@Citation(value =
+        "Drummond AJ, Ho SYW, Phillips MJ, Rambaut A (2006) Relaxed Phylogenetics and\n" +
+        "  Dating with Confidence. PLoS Biol 4(5): e88", DOI = "10.1371/journal.pbio.0040088",
+        year = 2006, firstAuthorSurname = "drummond")
 public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     public Input<ParametricDistribution> rateDistInput = new Input<ParametricDistribution>("distr", "the distribution governing the rates among branches. Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.REQUIRED);
@@ -119,16 +122,16 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             return 1;
         }
 
+        if (recompute) {
+            prepare();
+            recompute = false;
+        }
+
         if (renormalize) {
             if (normalize) {
                 computeFactor();
             }
             renormalize = false;
-        }
-
-        if (recompute) {
-            prepare();
-            recompute = false;
         }
 
         return getRawRate(node) * scaleFactor * meanRate.getValue();
