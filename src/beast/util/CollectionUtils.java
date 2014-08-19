@@ -2,12 +2,11 @@ package beast.util;
 
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 /**
  * some useful methods
- *
- * @author Walter Xie
  */
 public class CollectionUtils {
 
@@ -40,5 +39,18 @@ public class CollectionUtils {
     public static <E> List<E> toList(E[] array, int fromIndex, int toIndex) {
         List<E> list = Arrays.asList(array);
         return list.subList(fromIndex, toIndex);
+    }
+
+    /**
+     * very inefficient, but Java wonderful bitset has no subset op
+     * perhaps using bit iterator would be faster, I can't br bothered.
+     * @param x
+     * @param y
+     * @return
+     */
+    public static boolean isSubSet(BitSet x, BitSet y) {
+        y = (BitSet) y.clone();
+        y.and(x);
+        return y.equals(x);
     }
 }
