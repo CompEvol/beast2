@@ -65,7 +65,7 @@ public class TreeAnnotator {
 
 	Tree [] trees;
 
-	enum Target {
+    enum Target {
         MAX_CLADE_CREDIBILITY("Maximum clade credibility tree"),
         MAX_SUM_CLADE_CREDIBILITY("Maximum sum of clade credibilities"),
         USER_TARGET_TREE("User target tree");
@@ -105,6 +105,8 @@ public class TreeAnnotator {
 //    private final String location1Attribute = "longLat1";
 //    private final String location2Attribute = "longLat2";
 //    private final String locationOutputAttribute = "location";
+
+    public TreeAnnotator() { }
 
     public TreeAnnotator(final int burninPercentage,
     					boolean bAllowSingleChild,
@@ -151,7 +153,6 @@ public class TreeAnnotator {
 		}
         
         if (targetOption != Target.USER_TARGET_TREE) {
-            cladeSystem = new CladeSystem();
             try {
 	            for (Tree tree : trees) {
 	            	cladeSystem.add(tree, false);
@@ -381,7 +382,7 @@ public class TreeAnnotator {
         return bestTree;
     }
 
-    private double scoreTree(Tree tree, CladeSystem cladeSystem, boolean useSumCladeCredibility) {
+    public double scoreTree(Tree tree, CladeSystem cladeSystem, boolean useSumCladeCredibility) {
         if (useSumCladeCredibility) {
             return cladeSystem.getSumCladeCredibility(tree.getRoot(), null);
         } else {
