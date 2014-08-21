@@ -478,7 +478,9 @@
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
-            <argument value="-window -working -options"/>
+            <argument value="-window"/>
+            <argument value="-working"/>
+            <argument value="-options"/>
         </bundleapp>
 
         <echo message="Creating BEAUti.app ..." />
