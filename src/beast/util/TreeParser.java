@@ -344,7 +344,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 checkTaxaIsAvailable(sStr, nIndex);
                 return nIndex;
             } catch (Exception e) {
-                System.out.println(e.getClass().getName() + " " + e.getMessage() + ". Perhaps taxa or taxonset is not specified?");
+//                System.out.println(e.getClass().getName() + " " + e.getMessage() + ". Perhaps taxa or taxonset is not specified?");
+                throw new RuntimeException(e.getClass().getName() + " " + e.getMessage() +
+                        ".\nEither use IsLabelledNewick='true' to specify using taxa labels not index, or perhaps taxa/taxonset is not specified?");
             }
         }
 
@@ -593,7 +595,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             return tree;
         } catch (Exception e) {
             System.err.println(e.getClass().toString() + "/" + e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
-            throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
+//            throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart - 100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ...");
+            throw new Exception();
         }
 //        return node;
     }
