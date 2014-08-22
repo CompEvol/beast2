@@ -5,7 +5,7 @@ export source=BEAST
 export applicationName=BEAST
 export version=`perl -e 'while($s=<>) {if ($s=~/"version"/) {$s =~ /value="([^"]*)"/; print $1;}}' < ../../build.xml`
 export title="BEAST v${version}"
-export size=30000
+export size=1g
 export backgroundPictureName=install.png
 export finalDMGName=${title}
 
