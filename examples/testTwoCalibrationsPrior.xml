@@ -1,0 +1,91 @@
+<?xml version="1.0" standalone="yes"?>
+<beast version='2.0'
+       namespace='beast.evolution.alignment:beast.evolution.speciation:beast.core:beast.evolution.tree.coalescent:beast.util:beast.core.util:beast.evolution.likelihood:beast.math.distributions:beast.evolution.operators'>
+
+    <!-- for Figure 9.1 in BEAST2 book -->
+
+    <taxonset spec='TaxonSet' id='taxa'>
+        <taxon spec='Taxon' id='1'/>
+        <taxon spec='Taxon' id='2'/>
+        <taxon spec='Taxon' id='3'/>
+        <taxon spec='Taxon' id='4'/>
+    </taxonset>
+
+    <data id="alignment" dataType="nucleotide">
+        <sequence taxon="1">A</sequence>
+        <sequence taxon="2">A</sequence>
+        <sequence taxon="3">A</sequence>
+        <sequence taxon="4">A</sequence>
+    </data>
+
+    <distr id="Uniform.0" lower="0.0" offset="0.0" spec="beast.math.distributions.Uniform" upper="Infinity"/>
+
+
+    <input spec='YuleModel' id="yule">
+        <parameter name='birthDiffRate' id="birthRate" value="1"/>
+        <tree spec='TreeParser' id='tree' taxa='@alignment'
+              newick='(((1:1.0,2:1.0):1.0,3:2.0):1.0,4:3.0);'/>
+    </input>
+
+    <distribution id='mrcaPrior1' spec='beast.math.distributions.MRCAPrior' tree='@tree' monophyletic='true'>
+        <taxonset spec='TaxonSet' id='all'>
+            <!--
+            -->
+            <taxon idref='1'/>
+            <taxon idref='2'/>
+            <taxon idref='3'/>
+            <taxon idref='4'/>
+        </taxonset>
+        <distr id='uniformPrior' spec='beast.math.distributions.Uniform' lower="0.0" upper="10.0"/>
+    </distribution>
+
+    <distribution id='mrcaPrior2' spec='beast.math.distributions.MRCAPrior' tree='@tree' monophyletic='true'>
+        <taxonset spec='TaxonSet' id='ingroup'>
+            <taxon idref='1'/>
+            <taxon idref='2'/>
+            <taxon idref='3'/>
+
+        </taxonset>
+        <distr id='logNormalDistribution' spec='beast.math.distributions.LogNormalDistributionModel'>
+            <!-- lognormal distribution(2.19,0.115) -->
+            <parameter name='M' value='2.19'/>
+            <parameter name='S' value='0.115'/>
+        </distr>
+    </distribution>
+
+
+    <run spec="MCMC" id="mcmc" chainLength="1000000">
+
+        <state>
+            <stateNode idref='tree'/>
+            <stateNode idref="birthRate"/>
+        </state>
+
+        <distribution spec='CompoundDistribution' id='posterior'>
+            <distribution id="yule.prior" idref='yule'/>
+            <distribution idref="mrcaPrior1"/>
+            <distribution idref="mrcaPrior2"/>
+        </distribution>
+
+        <operator spec='SubtreeSlide' weight="4" gaussian="true" size="2.5" tree="@tree"/>
+        <operator spec="ScaleOperator" weight="1" scaleFactor="0.25">
+            <parameter idref="birthRate"/>
+        </operator>
+
+        <logger logEvery="100" fileName="test_two_calibrations.$(seed).log">
+            <model idref='posterior'/>
+            <log idref="posterior"/>
+            <log idref="yule"/>
+            <log spec='beast.math.distributions.MRCAPrior' tree='@tree' id='all.age' taxonset='@all' />
+            <log spec='beast.math.distributions.MRCAPrior' tree='@tree' id='ingroup.age' taxonset='@ingroup' />
+
+        </logger>
+        <logger logEvery="100" fileName="test_two_calibrations.$(seed).trees">
+            <log idref="tree"/>
+        </logger>
+        <logger logEvery="100">
+            <model idref='posterior'/>
+            <log idref="yule"/>
+        </logger>
+    </run>
+</beast>
