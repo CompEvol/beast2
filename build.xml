@@ -484,6 +484,12 @@
             <argument value="-options"/>
         </bundleapp>
 
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${Mac_package_dir}/${BEAST_name}.app"/>
+        </exec>
+
         <echo message="Creating BEAUti.app ..." />
 
         <bundleapp outputdirectory="${Mac_package_dir}"
@@ -502,6 +508,12 @@
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
 
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${Mac_package_dir}/${BEAUti_name}.app"/>
+        </exec>
+
         <echo message="Creating LogCombiner.app ..." />
 
         <bundleapp outputdirectory="${Mac_package_dir}"
@@ -518,6 +530,12 @@
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${Mac_package_dir}/${LogCombiner_name}.app"/>
+        </exec>
 
         <echo message="Creating TreeAnnotator.app ..." />
 
@@ -536,6 +554,12 @@
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
 
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${Mac_package_dir}/${TreeAnnotator_name}.app"/>
+        </exec>
+
         <echo message="Creating DensiTree.app ..." />
 
         <bundleapp outputdirectory="${Mac_package_dir}"
@@ -551,6 +575,12 @@
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${Mac_package_dir}/${DensiTree}.app"/>
+        </exec>
 
         <echo message="Creating AppStore.app ..." />
 
