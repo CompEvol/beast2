@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import beast.app.beastapp.BeastLauncher;
 import beast.app.util.Utils;
 
@@ -12,11 +13,11 @@ import beast.app.util.Utils;
 public class BeautiLauncher extends BeastLauncher {
 
 	public static void main(String[] args) throws Exception {
-		Utils.startSplashScreen();
+		//Utils.startSplashScreen();
 		if (javaVersionCheck("BEAUti")) {
 			loadBEASTJars();
 			Beauti.main(args);
 		}
-        Utils.endSplashScreen();
+        //Utils.endSplashScreen();
 	}
 }
