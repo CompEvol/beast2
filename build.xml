@@ -485,6 +485,7 @@
         </bundleapp>
 
         <exec executable="codesign">
+            <arg value="--deep"/>
             <arg value="-s"/>
             <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
             <arg value="-v"/>
@@ -510,6 +511,7 @@
         </bundleapp>
 
         <exec executable="codesign">
+            <arg value="--deep"/>
             <arg value="-s"/>
             <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
             <arg value="-v"/>
@@ -534,6 +536,7 @@
         </bundleapp>
 
         <exec executable="codesign">
+            <arg value="--deep"/>
             <arg value="-s"/>
             <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
             <arg value="-v"/>
@@ -558,6 +561,7 @@
         </bundleapp>
 
         <exec executable="codesign">
+            <arg value="--deep"/>
             <arg value="-s"/>
             <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
             <arg value="-v"/>
@@ -605,6 +609,7 @@
         </bundleapp>
 
         <exec executable="codesign">
+            <arg value="--deep"/>
             <arg value="-s"/>
             <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
             <arg value="-v"/>
