@@ -36,10 +36,13 @@ import beast.evolution.tree.TreeUtils;
 import beast.math.statistic.DiscreteStatistics;
 import beast.util.CollectionUtils;
 import beast.util.HeapSort;
+import beast.util.NexusParser;
 import beast.util.TreeParser;
 import jam.console.ConsoleApplication;
 
 import javax.swing.*;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -195,14 +198,21 @@ public class TreeAnnotator {
                     progressStream.println("Reading user specified target tree, " + targetTreeFileName);
                     
                     String sTree = BeautiDoc.load(targetTreeFileName);
-                   
-                    TreeParser parser2 = new TreeParser();
-                    try {
-                    	Node root = parser2.parseNewick(sTree);
-                    	targetTree = new Tree(root);
-                    } catch (Exception e) {
-                        System.err.println("Error Parsing Target Tree: " + e.getMessage());
-                        return;
+                    
+                    if (sTree.startsWith("#NEXUS")) {
+                    	NexusParser parser2 = new NexusParser();
+                    	parser2.parseFile(new File(targetTreeFileName));
+                    	targetTree = parser2.trees.get(0);
+                    } else {
+	                    TreeParser parser2 = new TreeParser();
+	                    parser2.initByName("IsLabelledNewick", true);
+	                    try {
+	                    	Node root = parser2.parseNewick(sTree);
+	                    	targetTree = new Tree(root);
+	                    } catch (Exception e) {
+	                        System.err.println("Error Parsing Target Tree: " + e.getMessage());
+	                        return;
+	                    }
                     }
                 } else {
                     System.err.println("No user target tree specified.");
