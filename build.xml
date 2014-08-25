@@ -492,11 +492,12 @@
                    identifier="beast.app.beauti.Beauti"
                    icon="${common_dir}/icons/beauti.icns"
                    shortversion="${version}"
-                   copyright="${BEAST_name}, ${copyright}"
+                   copyright="${BEAUti_name}, ${copyright}"
                    mainclassname="beast.app.beauti.BeautiLauncher">
-            <classpath file="${dist}/beast.jar"/>
-            <librarypath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx1024M -Xdock:name=&quot;BEAUti 2&quot;"/>
+            <librarypath file="${dist}/beast.jar"/>
+            <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
+            <option value="-Xmx1024M"/>
+            <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
@@ -506,12 +507,13 @@
         <bundleapp outputdirectory="${Mac_package_dir}"
                    name="${LogCombiner_name}"
                    displayname="${LogCombiner_name}"
-                   identifier="beast.app.tools.LogCombinerLauncher"
+                   identifier="beast.app.tools.LogCombiner"
                    icon="${common_dir}/icons/utility.icns"
                    shortversion="${version}"
                    copyright="${LogCombiner_name}, ${copyright}"
                    mainclassname="beast.app.tools.LogCombinerLauncher">
-            <classpath file="${dist}/beast.jar"/>
+            <librarypath file="${dist}/beast.jar"/>
+            <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
@@ -527,7 +529,8 @@
                    shortversion="${version}"
                    copyright="${TreeAnnotator_name}, ${copyright}"
                    mainclassname="beast.app.treeannotator.TreeAnnotatorLauncher">
-            <classpath file="${dist}/beast.jar"/>
+            <librarypath file="${dist}/beast.jar"/>
+            <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
@@ -559,7 +562,8 @@
                    shortversion="${version}"
                    copyright="${AppStore_name}, ${copyright}"
                    mainclassname="beast.app.tools.AppStoreLauncher">
-            <classpath file="${dist}/beast.jar"/>
+            <librarypath file="${dist}/beast.jar"/>
+            <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
