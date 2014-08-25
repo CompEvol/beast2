@@ -567,7 +567,7 @@
 
         <exec executable="codesign">
             <arg value="-s"/>
-            <arg value="DeveloperIDApplication"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
             <arg value="${Mac_package_dir}/${AppStore_name}.app"/>
         </exec>
 
@@ -580,8 +580,7 @@
 
         <exec executable="codesign">
             <arg value="-s"/>
-            <arg value="DeveloperIDInstall"/>
-            <arg value="-v"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
             <arg value="${Mac_dir}/${BEAST_name} v${version}.dmg"/>
         </exec>
 
