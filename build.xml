@@ -21,6 +21,7 @@
 	<path id="classpath">
 		<fileset dir="${lib}" includes="beagle.jar"/>
 		<fileset dir="${lib}" includes="jam.jar"/>
+        <fileset dir="${lib}" includes="colt.jar"/>
 		<fileset dir="${lib}" includes="fest.jar"/>
 		<fileset dir="${lib}" includes="junit-4.8.2.jar"/>
  	</path>
@@ -112,6 +113,8 @@
 		<jar jarfile="${dist}/beast.src.jar">
 			<fileset dir="${src}">
 				<include name="beast/**/*.java" />
+                <include name="org/**/*.java" />
+                <include name="test/**/*.java" />
 				<include name="beast/**/*.png" />
 				<include name="beast/**/*.xsl" />
 			</fileset>
@@ -202,13 +205,13 @@
 	<property name="tools_dir" value="${common_dir}/tools" />
 
 	<property name="Mac_package_dir" value="${Mac_dir}/${BEAST_name}" />
+    <property name="Mac_bundle_dir" value="${Mac_package_dir}/${BEAST_name}" />
 	<property name="Linux_package_dir" value="${Linux_dir}/${BEAST_name}" />
 	<property name="Windows_package_dir" value="${Windows_dir}/${BEAST_name}" />
 
 	<!-- Need to either install Launch4j under {BEAST workspace}/${release}
                  or install it in the default directory and change the location of launch4j.dir -->
 	<target name="windows"
-	        depends="build_jar_all_BEAST_NoJUnitTest"
 	        description="release Windows version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
 
 		<delete dir="${Windows_package_dir}" />
@@ -366,7 +369,6 @@
 		<!--		
 		<copy file="${beast1_dir}/beast161.jar" todir="${Linux_package_dir}/lib" />
 		-->
-		<copy file="${tools_dir}/treeannotator.jar" todir="${Linux_package_dir}/lib" />
 
 		<copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
 		<copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
@@ -392,10 +394,219 @@
 		<echo message="Linux/Unix version release is finished." />
 	</target>
 
+    <!-- Define the appbundler task -->
+    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/appbundler-1.0.jar"/>
+
+    <!-- Create the app bundle -->
+    <target name="mac">
+        <delete dir="${Mac_package_dir}" />
+        <!--<delete file="${Mac_dir}/pack.temp.dmg"/>-->
+        <delete file="${Mac_dir}/BEAST v${version}.dmg"/>
+        <!-- Create the release directory -->
+        <mkdir dir="${Mac_package_dir}" />
+
+        <copy todir="${Mac_package_dir}/bin">
+            <fileset dir="${Linux_dir}/bin" />
+        </copy>
+        <chmod dir="${Mac_package_dir}/bin" perm="755" includes="**/**" />
+
+        <copy todir="${Mac_package_dir}/examples/">
+            <fileset dir="examples/">
+                <include name="*.xml" />
+                <include name="nexus/**" />
+                <exclude name="benchmark/**" />
+            </fileset>
+        </copy>
+        <!-- <copy todir="${Mac_package_dir}/native">
+            <fileset dir="${common_dir}/native" />
+        </copy>
+<copy todir="${Mac_package_dir}/doc">
+            <fileset dir="${common_dir}/doc" />
+        </copy>
+
+        <copy file="${dist}/beauti.jar" todir="${Mac_package_dir}/lib" /> -->
+        <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
+        <!-- <copy file="${dist}/beast-beagle.jar" todir="${Mac_package_dir}/lib"/>
+        <copy todir="${Mac_package_dir}/lib">
+            <fileset dir="${Mac_dir}/lib" />
+        </copy> -->
+
+        <copy file="${common_dir}/VERSION HISTORY.txt" todir="${Mac_package_dir}" />
+        <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}" />
+        <copy file="${common_dir}/LICENSE.txt" todir="${Mac_package_dir}" />
+
+        <echo message="Creating BEAST.app ..." />
+
+        <bundleapp outputdirectory="${Mac_package_dir}"
+                   name="${BEAST_name}"
+                   displayname="${BEAST_name}"
+                   identifier="beast.app.beastapp.Beast"
+                   icon="${common_dir}/icons/beast.icns"
+                   shortversion="${version}"
+                   copyright="${BEAST_name}, ${copyright}"
+                   mainclassname="beast.app.beastapp.Beast">
+            <classpath file="${dist}/beast.jar"/>
+            <option value="-Xmx1024M"/>
+            <option value="-Dapple.laf.useScreenMenuBar=true"/>
+            <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <argument value="-window"/>
+            <argument value="-working"/>
+            <argument value="-options"/>
+        </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${BEAST_name}.app"/>
+        </exec>
+
+        <echo message="Creating BEAUti.app ..." />
+
+        <bundleapp outputdirectory="${Mac_package_dir}"
+                   name="${BEAUti_name}"
+                   displayname="${BEAUti_name}"
+                   identifier="beast.app.beauti.Beauti"
+                   icon="${common_dir}/icons/beauti.icns"
+                   shortversion="${version}"
+                   copyright="${BEAUti_name}, ${copyright}"
+                   mainclassname="beast.app.beauti.Beauti">
+            <classpath file="${dist}/beast.jar"/>
+            <option value="-Xmx1024M"/>
+            <option value="-Xdock:name=&quot;BEAUti 2&quot;"/>
+            <option value="-Dapple.laf.useScreenMenuBar=true"/>
+            <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${BEAUti_name}.app"/>
+        </exec>
+
+        <echo message="Creating LogCombiner.app ..." />
+
+        <bundleapp outputdirectory="${Mac_package_dir}"
+                   name="${LogCombiner_name}"
+                   displayname="${LogCombiner_name}"
+                   identifier="beast.app.tools.LogCombiner"
+                   icon="${common_dir}/icons/utility.icns"
+                   shortversion="${version}"
+                   copyright="${LogCombiner_name}, ${copyright}"
+                   mainclassname="beast.app.tools.LogCombiner">
+            <classpath file="${dist}/beast.jar"/>
+            <option value="-Xmx1024M"/>
+            <option value="-Dapple.laf.useScreenMenuBar=true"/>
+            <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${LogCombiner_name}.app"/>
+        </exec>
+
+        <echo message="Creating TreeAnnotator.app ..." />
+
+        <bundleapp outputdirectory="${Mac_package_dir}"
+                   name="${TreeAnnotator_name}"
+                   displayname="${TreeAnnotator_name}"
+                   identifier="beast.app.treeannotator.TreeAnnotator"
+                   icon="${common_dir}/icons/utility.icns"
+                   shortversion="${version}"
+                   copyright="${TreeAnnotator_name}, ${copyright}"
+                   mainclassname="beast.app.treeannotator.TreeAnnotator">
+            <classpath file="${dist}/beast.jar"/>
+            <option value="-Xmx1024M"/>
+            <option value="-Dapple.laf.useScreenMenuBar=true"/>
+            <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${TreeAnnotator_name}.app"/>
+        </exec>
+
+        <echo message="Creating DensiTree.app ..." />
+
+        <bundleapp outputdirectory="${Mac_package_dir}"
+                   name="DensiTree"
+                   displayname="DensiTree"
+                   identifier="viz.DensiTree"
+                   icon="${tools_dir}/DensiTree.icns"
+                   shortversion="2.0"
+                   copyright="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
+                   mainclassname="viz.DensiTree">
+            <classpath file="${tools_dir}/DensiTree.jar"/>
+            <option value="-Xmx1024M"/>
+            <option value="-Dapple.laf.useScreenMenuBar=true"/>
+            <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/DensiTree.app"/>
+        </exec>
+
+        <echo message="Creating AppStore.app ..." />
+
+        <bundleapp outputdirectory="${Mac_package_dir}"
+                   name="${AppStore_name}"
+                   displayname="${AppStore_name}"
+                   identifier="beast.app.tools.AppStore"
+                   icon="${common_dir}/icons/utility.icns"
+                   shortversion="${version}"
+                   copyright="${AppStore_name}, ${copyright}"
+                   mainclassname="beast.app.tools.AppStore">
+            <classpath file="${dist}/beast.jar"/>
+            <option value="-Xmx1024M"/>
+            <option value="-Dapple.laf.useScreenMenuBar=true"/>
+            <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        </bundleapp>
+
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${AppStore_name}.app"/>
+        </exec>
+
+        <copy todir="${Mac_package_dir}/templates/">
+            <fileset dir="templates/" />
+        </copy>
+
+        <echo message="Building disk image." />
+        <exec executable='release/Mac/createdmg.sh'/>
+
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="-v"/>
+            <arg value="${Mac_dir}/${BEAST_name} v${version}.dmg"/>
+        </exec>
+
+        <delete file="${Mac_dir}/pack.temp.dmg"/>
+
+        <echo message="Mac version release is finished." />
+    </target>
+
 	<!--property name="jarbundler_dir" value="/Applications/eclipse/plugins/org.apache.ant_1.8.2.v20110505-1300/lib" /-->
 	<property name="jarbundler_dir" value="/Users/remcobouckaert/bin/eclipse/plugins/org.apache.ant_1.8.3.v20120321-1730/lib" />
-	<target name="mac"
-	        depends="build_jar_all_BEAST_NoJUnitTest"
+    <!--        depends="build_jar_all_BEAST_NoJUnitTest"-->
+    <target name="mac-old"
 	        description="release Mac version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
 		<delete dir="${Mac_package_dir}" />
 		<delete file="${Mac_dir}/pack.temp.dmg"/>
