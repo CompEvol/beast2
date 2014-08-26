@@ -333,10 +333,6 @@ public class Logger extends BEASTObject {
                 sFileName = sFileName.replace("$(tree)", treeName);
                 fileNameInput.setValue(sFileName, this);
             }
-            if (sFileName.contains("$(seed)")) {
-                sFileName = sFileName.replace("$(seed)", Randomizer.getSeed() + "");
-                fileNameInput.setValue(sFileName, this);
-            }
             if (System.getProperty("file.name.prefix") != null) {
                 sFileName = System.getProperty("file.name.prefix") + "/" + sFileName;
             }
