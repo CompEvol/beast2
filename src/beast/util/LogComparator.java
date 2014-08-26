@@ -99,7 +99,7 @@ public class LogComparator {
 
         out.println("Comparing log " + analyser1.getLogFile() + " and " + analyser2.getLogFile() + "\n");
 
-        List<String> significantLabels = new ArrayList<>();
+        List<String> significantLabels = new ArrayList<String>();
         if (verbose) {
             out.println("item" + sSpace.substring(4) + " " + prefixHead + "   " + format("ZScore") +
                     format("mean1") + format("stderr1") + format("mean2") + format("stderr2"));

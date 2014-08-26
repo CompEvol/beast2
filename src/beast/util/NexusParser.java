@@ -404,7 +404,7 @@ public class NexusParser {
                 new Exception("If CHATSTATELABELS block is specified then DATATYPE has to be Standard");
             }
             StandardData standardDataType = (StandardData)alignment.userDataTypeInput.get();
-            ArrayList<UserDataType> charDescriptions = new ArrayList<>();
+            ArrayList<UserDataType> charDescriptions = new ArrayList<UserDataType>();
             int maxNumberOfStates =0;
             while (true) {
                 sStr = nextLine(fin);
@@ -412,7 +412,7 @@ public class NexusParser {
                     break;
                 }
                 String[] sStrSplit = sStr.split("/");
-                ArrayList<String> states = new ArrayList<>();
+                ArrayList<String> states = new ArrayList<String>();
 
                 if (sStrSplit.length < 2) {
                     charDescriptions.add(new UserDataType(sStrSplit[0], states));
@@ -554,7 +554,7 @@ public class NexusParser {
             throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
         }
 
-        HashSet<String> sortedAmbiguities = new HashSet<>();
+        HashSet<String> sortedAmbiguities = new HashSet<String>();
         for (final String sTaxon : sTaxa) {
             final StringBuilder bsData = seqMap.get(sTaxon);
             String sData = bsData.toString().replaceAll("\\s", "");
@@ -570,7 +570,7 @@ public class NexusParser {
 
             //sort elements of ambiguity sets
             for (String amb : ambiguities) {
-                List<Integer> ambInt = new ArrayList<>();
+                List<Integer> ambInt = new ArrayList<Integer>();
                 for (int i=0; i<amb.length(); i++) {
                     ambInt.add(Integer.parseInt(amb.charAt(i) + ""));
                 }

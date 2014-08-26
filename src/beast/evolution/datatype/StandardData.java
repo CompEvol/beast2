@@ -18,7 +18,7 @@ public class StandardData extends DataType.Base {
             "as space separated sets of ordered elements. Elements are digits 0..9.");
     public Input<List<UserDataType>> charStateLabelsInput = new Input<List<UserDataType>>("charstatelabels",
             "list of morphological character descriptions. Position in the list corresponds to the position of the" +
-                    "character in the alignment", new ArrayList<>());
+                    "character in the alignment", new ArrayList<UserDataType>());
 
     private String[] ambiguities = {};
     private ArrayList<String> codeMapping;

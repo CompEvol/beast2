@@ -274,7 +274,7 @@ public class LogAnalyser {
      */
     public List<String> getLabels() {
         if (m_sLabels.length < 2)
-            return new ArrayList<>();
+            return new ArrayList<String>();
         return CollectionUtils.toList(m_sLabels, 1, m_sLabels.length);
     }
 

@@ -1,13 +1,13 @@
 package beast.evolution.datatype;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType.Base;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -20,8 +20,8 @@ public class UserDataType extends Base {
             "A state set is a space separates list of zero based integers, up to the number of states, " +
             "e.g. A=0, C=1, R=0 2, ? = 0 1 2 3", Validate.REQUIRED);
     
-    public Input<String> characterNameInput = new Input<>("characterName", "the name of the character");
-    public Input<String> stateNamesInput = new Input<>("value", "the list of the state names ordered " +
+    public Input<String> characterNameInput = new Input<String>("characterName", "the name of the character");
+    public Input<String> stateNamesInput = new Input<String>("value", "the list of the state names ordered " +
     		"according to codes given, that is the first in the list is coded by 0, second, by 1 and so forth.");
 
     public UserDataType() {} // default c'tor
