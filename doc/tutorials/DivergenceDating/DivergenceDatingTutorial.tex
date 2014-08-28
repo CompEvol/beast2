@@ -50,7 +50,7 @@ showstringspaces=false % no special string spaces
 
   
 % BEAST book specific commands
-\newcommand{\BEASTVersion}{2.1.x}
+\newcommand{\BEASTVersion}{2.2.x}
 \newcommand{\TracerVersion}{1.6}
 \newcommand{\FigTreeVersion}{1.4.2}
 %\newcommand{\TODO}[1]{{\color{red} #1}}
@@ -91,8 +91,9 @@ cambridgemods baseline-skip author authors cambridgestyle en-vir-on-ment polar}
 \begin{document}
 \maketitle
 
-\newcommand{\chainLength}{{3,000,000}}
+\newcommand{\chainLength}{{6,000,000}}
 \newcommand{\logEvery}{{1,000}}
+\newcommand{\tracesNumber}{{6,000}} %% chainLength/logEvery
 \newcommand{\screenEvery}{{10,000}}
 \newcommand{\mccTree}{{\texttt{Primates.MCC.tree}}}
 
@@ -395,7 +396,7 @@ set to no less than chain length / 10,000.
 For this exercise we will set the \texttt{screen log} to \underline{\screenEvery{}} and the \texttt{trace log} to \underline{\logEvery{}}. The final two
 options give the file names of the log files for the sampled parameters and
 the trees. These will be set to a default based on the name of the
-imported NEXUS file. 
+imported NEXUS file. We use \texttt{Primates.log} and \texttt{Primates.trees} here.
 
 \begin{itemize}
 \item If you are using the Windows operating system then we suggest you add the suffix \texttt{.txt} to both of these (so,
@@ -427,7 +428,8 @@ look something like this:
 
 {\scriptsize   
 \begin{verbatim}
-                  BEAST v2.1.3, 2002-2014
+
+                  BEAST v2.2.0, 2002-2014
        Bayesian Evolutionary Analysis Sampling Trees
                  Designed and developed by
 Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard
@@ -446,10 +448,10 @@ Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard
                      msuchard@ucla.edu
                               
                 Downloads, Help & Resources:
-              	http://beast2.cs.auckland.ac.nz
+                    	http://beast2.org/
                               
 Source code distributed under the GNU Lesser General Public License:
-              	http://code.google.com/p/beast2
+             	http://github.com/CompEvol/beast2
                               
                      BEAST developers:
 	Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, 
@@ -460,8 +462,14 @@ Source code distributed under the GNU Lesser General Public License:
                          Thanks to:
     	Roald Forsberg, Beth Shapiro and Korbinian Strimmer
 
-File: Primates.xml seed: 777 threads: 1
 
+Random number seed: 777
+
+12 taxa
+231 sites
+204 patterns
+  Ignoring ambiguities in tree likelihood.
+  With 204 unique site patterns.
   Using rescaling scheme : dynamic
   Using BEAGLE version: 2.1.2 resource 0: CPU
     with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
@@ -471,67 +479,57 @@ File: Primates.xml seed: 777 threads: 1
     with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
   Using BEAGLE version: 2.1.2 resource 0: CPU
     with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
-======================================================
-Please cite the following when publishing this model:
+===============================================================================
+Citations for this model:
 
-Remco Bouckaert, Joseph Heled, Denise Kuehnert, Tim Vaughan, Chieh-Hsi Wu, Dong Xie, Marc Suchard, Andrew Rambaut,Start likelihood: -7939.559067600949 
- Alexei J Drummond BEAST 2: A software platform for Bayesian evolutionary analysis. PLOS Computational Biology 10(4): e1003537, 2014
+Bouckaert RR, Heled J, Kuehnert D, Vaughan TG, Wu C-H, Xie D, Suchard MA,
+  Rambaut A, Drummond AJ (2014) BEAST 2: A Start likelihood: -8314.57301787964 
+software platform for Bayesian
+  evolutionary analysis. PLoS Computational Biology 10(4): e1003537
 
-Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time Estimation. Syst Biol (2012) 61 (1): 138-149.
+Heled J, Drummond AJ (2012) Calibrated Tree Priors for Relaxed Phylogenetics
+  and Divergence Time Estimation. Systematic Biology 61(1):138-149.
 
-Hasegawa, M., Kishino, H and Yano, T. 1985. Dating the human-ape splitting by a molecular clock of mitochondrial DNA. Journal of Molecular Evolution 22:160-174.
+Hasegawa M, Kishino H, Yano T (1985) Dating the human-ape splitting by a
+  molecular clock of mitochondrial DNA. Journal of Molecular Evolution
+  22:160-174.
 
-
-======================================================
-Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/primate-mtDNA.log
+===============================================================================
+Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/2.1.3/Primates.log
          Sample      posterior ESS(posterior)     likelihood          prior
-Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/tree.trees
-              0     -7924.3599              N     -7688.4922      -235.8676 --
-          10000     -5523.1281         2.0        -5451.4142       -71.7139 --
-          20000     -5524.1632         3.0        -5445.1231       -79.0401 --
-          30000     -5515.9203         4.0        -5441.8444       -74.0759 --
-          40000     -5513.6938         5.0        -5440.5830       -73.1108 --
-          50000     -5518.7113         6.0        -5447.3710       -71.3403 --
-          60000     -5515.6182         7.0        -5440.9238       -74.6944 1m51s/Msamples
-          70000     -5517.6669         8.0        -5444.8966       -72.7703 1m50s/Msamples
+Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/2.1.3/Primates.trees
+              0     -8297.7143              N     -8061.8466      -235.8676 --
+          10000     -5818.2850         2.0        -5753.6478       -64.6372 --
+          20000     -5780.9961         3.0        -5713.7078       -67.2883 --
+          30000     -5757.5930         4.0        -5688.7031       -68.8898 --
+          40000     -5682.1728         5.0        -5616.5731       -65.5996 --
+          50000     -5578.5853         6.0        -5510.1601       -68.4252 --
+          60000     -5534.0702         6.8        -5461.8812       -72.1889 1m51s/Msamples
+          70000     -5520.8494         7.0        -5446.1672       -74.6821 1m48s/Msamples
           ...
-        2990000     -5519.5032       247.6        -5443.7829       -75.7202 1m55s/Msamples
-        3000000     -5515.6591       249.3        -5444.7916       -70.8675 1m55s/Msamples
+        5990000     -5512.0562       537.2        -5436.6708       -75.3853 1m43s/Msamples
+        6000000     -5520.4564       541.0        -5447.6950       -72.7614 1m43s/Msamples
 Operator                                                              Tuning	#accept	#reject	#total	acceptance rate
-beast.evolution.operators.ScaleOperator_treeScaler.t:tree             0.694 	19418	87709	107127	0.181 
-beast.evolution.operators.ScaleOperator_treeRootScaler.t:tree         0.644 	18839	88900	107739	0.175 
-beast.evolution.operators.Uniform_UniformOperator.t:tree                    	240273	833290	1073563	0.224 
-beast.evolution.operators.SubtreeSlide_SubtreeSlide.t:tree            9.098 	147088	390301	537389	0.274 
-beast.evolution.operators.Exchange_narrow.t:tree                            	421	536829	537250	0.001 
-beast.evolution.operators.Exchange_wide.t:tree                              	8	107544	107552	0 
-beast.evolution.operators.WilsonBalding_WilsonBalding.t:tree                	8	106739	106747	0 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:noncoding  0.389 	951	2502	3453	0.275 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:noncoding       0.387 	981	2491	3472	0.283 
-beast.evolution.operators.DeltaExchangeOperator_FixMeanMutationRatesOperator0.381 	9591	61904	71495	0.134 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:1stpos          0.425 	825	2667	3492	0.236 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:1stpos     0.386 	868	2794	3662	0.237 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:2ndpos          0.343 	924	2647	3571	0.259 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:2ndpos     0.274 	867	2701	3568	0.243 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:3rdpos          0.551 	780	2719	3499	0.223 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:3rdpos     0.333 	1133	2411	3544	0.32 
-beast.evolution.operators.ScaleOperator_CalibratedYuleBirthRateScaler.t:tree0.260 	31511	75785	107296	0.294 
-beast.evolution.operators.ScaleOperator_StrictClockRateScaler.c:clock 0.707 	25395	82605	108000	0.235 
-beast.evolution.operators.UpDownOperator_strictClockUpDownOperator.c:clock0.592 	26181	81401	107582	0.243 
-Total calculation time: 347.045 seconds
-End likelihood: -5515.659153809371
+beast.evolution.operators.ScaleOperator_treeScaler.t:tree             0.703 	39763	174379	214142	0.186 
+...
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:2ndpos     0.303 	1984	5063	7047	0.282 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:3rdpos          0.507 	1336	5895	7231	0.185 
+End likelihood: -5520.456449464947
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:3rdpos     0.264 	1597	5517	7114	0.224 
+Total calculation time: 621.654 seconds
 \end{verbatim}}
 
 \section{Analyzing the results}
 
-Run the program called {\bf Tracer} to analyze the output of BEAST. When the main
-window has opened, choose {\bf Import Trace File...} from the {\bf File} menu and select the file that
-BEAST has created called \texttt{primate-mtDNA.log} (Figure \ref{fig:Tracer1}).
-
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/Tracer1}
+\includegraphics[width=0.9\textwidth]{figures/Tracer1}
 \caption{A screenshot of Tracer v{\TracerVersion}.}
 \label{fig:Tracer1}
 \end{figure}
+
+Run the program called {\bf Tracer} to analyze the output of BEAST. When the main
+window has opened, choose {\bf Import Trace File...} from the {\bf File} menu and select the file that
+BEAST has created called \texttt{primate-mtDNA.log} (Figure \ref{fig:Tracer1}).
 
 Remember that MCMC is a stochastic algorithm so the actual numbers will not be exactly the same as those depicted in the figure.
 
@@ -551,7 +549,7 @@ age of the root and the calibration MRCA we specified earlier in BEAUti. You can
 (\texttt{mrcatime(human-chimp)}) has a posterior distribution that matches the prior distribution we specified (Figure \ref{fig:Tracer_divergences}).
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/Tracer_divergences}
+\includegraphics[width=0.9\textwidth]{figures/Tracer_divergences}
 \caption{A screenshot of the 95\% HPD intervals of the root height and the user-specified (human-chimp) MRCA in Tracer.}
 \label{fig:Tracer_divergences}
 \end{figure}
@@ -578,6 +576,7 @@ age of the root and the calibration MRCA we specified earlier in BEAUti. You can
 \end{figure}
 \fi
 
+\newpage
 \subsection*{Questions}
 \vspace{5 mm}
 
@@ -614,7 +613,7 @@ age of the root and the calibration MRCA we specified earlier in BEAUti. You can
 %\vspace{5 mm}
 %\framebox(420,30){}
 %\vspace{5 mm}
-
+\newpage
 
 \section{Obtaining an estimate of the phylogenetic tree}
 
@@ -625,14 +624,14 @@ nodes and the corresponding 95\% HPD ranges. It will also calculate the posterio
 node. Run the TreeAnnotator program and set it up as depicted in Figure \ref{fig:TreeAnnotator1}.
 
 \begin{figure}
-\includegraphics[width=0.8\textwidth]{figures/TreeAnnotator1}
+\includegraphics[width=0.9\textwidth]{figures/TreeAnnotator1}
 \caption{A screenshot of TreeAnnotator.}
 \label{fig:TreeAnnotator1}
 \end{figure}
 
 The burnin is the number of trees to remove from the start of the sample. Unlike {\bf Tracer} which specifies the number of
 steps as a burnin, in {\bf TreeAnnotator} you need to specify the actual number of trees. For this run, you specified a chain
-length of \chainLength{} steps sampling every \logEvery{} steps. Thus the trees file will contain 3,000 trees and so to specify a 10\% burnin
+length of \chainLength{} steps sampling every \logEvery{} steps. Thus the trees file will contain \tracesNumber{} trees and so to specify a 10\% burnin
 in the top text field.
 
 The {\bf Posterior probability limit} option specifies a limit such that if a node is found at less than this frequency in the sample
@@ -651,21 +650,22 @@ output (here we called it \mccTree{}).
 
 Now press Run and wait for the program to finish.
 
-\begin{figure}
-\includegraphics[width=0.8\textwidth]{figures/FigTree}
-\includegraphics[width=0.7\textwidth]{figures/DensiTree}
-\caption{A screenshot of FigTree and DensiTree.}
-\label{fig:FigTree}
-\end{figure}
 \section{Visualizing the tree estimate}
+
 Finally, we can visualize the tree in another program called {\bf FigTree}. Run this program, and open
 the \mccTree{} file by using the Open command in the File menu. The tree should appear.
-You can now try selecting some of the options in the control panel on the left. Try selecting
+You can now try selecting some of the options in the control panel on the left. First of all, expend {\bf Trees} option in the panel, and check {\bf Order nodes} and choose \textit{Ordering} by \textit{decreasing}. Try selecting
 {\bf Node Bars} to get node age error bars. Also turn on {\bf Branch Labels} and select {\bf posterior} to get
 it to display the posterior probability for each node. 
 If you use a non strict clock model then under {\bf Appearance} you can also tell FigTree to colour the branches by the rate.
 You should end up with something similar to Figure \ref{fig:FigTree}.
 
+\begin{figure}
+\includegraphics[width=0.9\textwidth]{figures/FigTree}
+\includegraphics[width=0.9\textwidth]{figures/DensiTree}
+\caption{A screenshot of FigTree and DensiTree.}
+\label{fig:FigTree}
+\end{figure}
 
 An alternative view of the tree can be made with DensiTree, which is part of Beast 2. The advantage
 of DensiTree is that it is able to visualize both uncertainty in node heights and uncertainty in topology.
@@ -681,6 +681,7 @@ we conclude that this analysis results in a very high consensus on topology (Fig
 %\label{fig:DensiTree}
 %\end{figure}
 
+\newpage
 \subsection*{Questions}
 \vspace{5 mm}
 
@@ -714,6 +715,7 @@ Under the help menu, DensiTree shows some information.
 \vspace{5 mm}
 \framebox(420,30){}
 \vspace{5 mm}
+\newpage
 
 \section{Comparing your results to the prior}
 
