@@ -25,21 +25,17 @@
 
 package beast.app.treeannotator;
 
+import beast.app.util.WholeNumberField;
 import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-
-import beast.app.util.WholeNumberField;
-
-
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 
 public class TreeAnnotatorDialog {
@@ -57,10 +53,11 @@ public class TreeAnnotatorDialog {
     });
 
     private JComboBox nodeHeightsCombo = new JComboBox(new String[] {
-            TreeAnnotator.HeightsSummary.values()[3].toString(),
+            // cannot change order here, have to change in enum HeightsSummary
             TreeAnnotator.HeightsSummary.values()[0].toString(),
             TreeAnnotator.HeightsSummary.values()[1].toString(),
-            TreeAnnotator.HeightsSummary.values()[2].toString()
+            TreeAnnotator.HeightsSummary.values()[2].toString(),
+            TreeAnnotator.HeightsSummary.values()[3].toString()
     });
 
 	private File targetFile = null;
