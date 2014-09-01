@@ -121,7 +121,7 @@ BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is 
 
 %\section{Rates and dates}
 
-This tutorial will guide you through the analysis of an alignment of sequences sampled from twelve primate species (see Figure \ref{fig:primateAlignment}). The goal is to estimate the phylogeny as well as the rate of evolution on each lineage based on divergence times of their host species. 
+This tutorial will guide you through the analysis of an alignment of sequences sampled from twelve primate species (see Figure \ref{fig:primateAlignment}). The goal is to estimate the phylogeny, the rate of evolution on each lineage and the ages of the uncalibratedancestral divergences. 
 
 \begin{figure}	
 
@@ -141,16 +141,19 @@ The final step is to explore the output of BEAST in order to diagnose problems a
 
 The program BEAUti is a user-friendly program for setting the
 model parameters for BEAST. Run BEAUti by double clicking on its icon. Once running, \texttt{BEAUti} will look similar irrespective
-of which computer system it is running on. For this tutorial, the Mac OS X version is used in the Figures but
+of which computer system it is running on. For this tutorial, the Mac OS X version is used in the figures but
 the Linux and Windows versions will have the same layout and functionality.
 
 \TODO{Provide instructions for executing BEAUti  in a Linux environment.}
 
 \subsection{Loading the NEXUS file }
 
-The example file called \texttt{primates-mtDNA.nex} is in the {\tt examples/nexus/} directory of the directory where BEAST was installed.
+To load a NEXUS format alignment, simply select the \texttt{Import Alignment...} option from the \texttt{File} menu, or drag the file into the middle of {\bf Partitions} panel. 
+
+The example file called \texttt{primates-mtDNA.nex} is available from the {\tt examples/nexus/} directory for Mac and Linux and  {\tt examples/nexus/}for Windows inside the directory where BEAST was installed.
 This file contains an alignment of sequences of 12 species of primates. 
-%It looks likethis (the lines have been truncated):
+
+%It looks like this (the lines have been truncated):
 %
 %\begin{verbatim}
 %#NEXUS
@@ -181,8 +184,6 @@ This file contains an alignment of sequences of 12 species of primates.
 %
 %\medskip{}
 
-To load a NEXUS format alignment, simply select the \texttt{Import Alignment...} option from the File menu, or drag the file into the {\bf Partitions} panel. 
-
 %\begin{figure}
 %
 %\includegraphics[width=\textwidth]{figures/ImportNexus}
@@ -191,29 +192,33 @@ To load a NEXUS format alignment, simply select the \texttt{Import Alignment...}
 %\label{fig:BEAUti_ImportNexus}
 %\end{figure}
 
-The following windows (Figure \ref{fig:addPartition} and \ref{fig:warning}) would appear if a related package is installed. If you are using ``pure'' BEAST 2, you can go to the next paragraph.    
-If an \texttt{Add Partition} window pops up, you need to select \texttt{Add Alignment} and click \textbf{OK} to continue (Figure \ref{fig:addPartition}), and then read the following warning message to click \textbf{OK} (Figure \ref{fig:warning}).
+An \texttt{Add Partition} window (Figure \ref{fig:addPartition}) would pop up if the related package is installed. If you are using ``pure'' BEAST 2, you can go to the next paragraph.    
+Otherwise, select \texttt{Add Alignment} and click \textbf{OK} to continue.
 
 \begin{figure}
 \centering	
-\includegraphics[width=7.5cm]{figures/AddPartition.png}
+\includegraphics[width=0.5\textwidth]{figures/AddPartition.png}
 \caption{Add Partition window (Only appear if related packages are installed).}
 \label{fig:addPartition}
 \end{figure}
 
+If there is any coding overlaps in the partitions, the warning message window (Figure \ref{fig:warning}) will appear. Read and click \textbf{OK} to continue.
+
 \begin{figure}	
-\includegraphics[width=\textwidth]{figures/warning.png}
-\caption{Warning message window (Only appear if related packages are installed).}
+\centering	
+\includegraphics[width=0.9\textwidth]{figures/warning.png}
+\caption{Warning message window (Only appear if there is any coding overlaps in the partitions).}
 \label{fig:warning}
 \end{figure}
 
-Once loaded, five character partitions are displayed in the main panel (Figure \ref{fig:BEAUTI_DataPartitions}). {\bf You must remove the `coding' partition before continuing to the next step as it refers to the same nucleotides as partitions `1stpos', `2ndpos' and `3rdpos'.} To remove the `coding' partition select the row and click the `-' button at the bottom of the table. 
-%You can view the alignment by double clicking the partition (Figure \ref{fig:BEAUTI_AlignmentViewer}).
+Once loaded, five character partitions are displayed in the main panel (Figure \ref{fig:BEAUTI_DataPartitions}). The alignment is divided into a protein coding part and a non-coding part,and the coding part is divided in codon positions 1, 2 and 3. 
+{\bf You must remove the `coding' partition before continuing to the next step as it refers to the same nucleotides as partitions `1stpos', `2ndpos' and `3rdpos'.} To remove the `coding' partition select the row and click the `-' button at the bottom of the table. 
+You can view the alignment by double clicking the partition.
 
 \begin{figure}
-
-\includegraphics[width=\textwidth]{figures/BEAUti_DataPartitions}
-\caption{A screenshot of the data tab in BEAUti.}
+\centering	
+\includegraphics[width=0.9\textwidth]{figures/BEAUti_DataPartitions}
+\caption{A screenshot of the data tab in BEAUti. This and all following screenshotswere taken on an Apple computer running Mac OS X and will look slightly different on other operating systems.}
 \label{fig:BEAUTI_DataPartitions}
 \end{figure}
 
@@ -227,48 +232,58 @@ Once loaded, five character partitions are displayed in the main panel (Figure \
 
 \subsection*{Link/Unlink partition models}
 
-At this point we will need to link the clock model and tree. In the {\bf Partitions} panel, select all four partitions in the table (or none, by default all partitions are affected) and click the \texttt{Link Tree Models} button and then the \texttt{Link Clock Models} button (see Figure \ref{fig:BEAUti_DataPartitions_final}). Then click on the first drop-down menu in the Clock Model column and rename the shared clock model to `clock'. Likewise rename the shared tree to `tree'. This will make following options and generated log files more easy to read.
-
 \begin{figure}
-
-\includegraphics[width=\textwidth]{figures/BEAUti_DataPartitions_final}
+\centering	
+\includegraphics[width=0.9\textwidth]{figures/BEAUti_DataPartitions_final}
 \caption{A screenshot of the Partitions tab in BEAUti after linking and renaming the clock model and tree.}
 \label{fig:BEAUti_DataPartitions_final}
 \end{figure}
 
+Since the sequences are linked (i.e. they are all from the mitochondrial genomewhich is not believed to undergo recombination in birds and mammals) theyshare the same ancestry, so the partitions should share the same time-tree inthe model. For the sake of simplicity, we will also assume the partitions sharethe same evolutionary rate for each branch, and hence the same ``clock model''.
+We will restrict our modelling of rate heterogeneity to among-site heterogeneitywithin each partition, and also allow the partitions to have different mean rates of evolution. 
+
+So, at this point we will need to link the clock model and tree. In the {\bf Partitions} panel, select all four partitions in the table (or none, by default all partitions are affected) and click the \texttt{Link Tree Models} button and then the \texttt{Link Clock Models} button (see Figure \ref{fig:BEAUti_DataPartitions_final}). Then click on the first drop-down menu in the Clock Model column and rename the shared clock model to `clock'. Likewise rename the shared tree to `tree'. This will make following options and generated log files more easy to read.
+
+
 \subsection{Setting the substitution model}
 
-The next step is to set up the substitution model. First we will temporarily link the site models in the Partitions panel so that we can change the model of all partitions simultaneously. Then, select the {\bf Site Models} tab at the top of the
-main window. This will reveal the evolutionary model settings for
-BEAST. The options available depend on whether the data are
-nucleotides, or amino acids, binary data, or general data.
-The settings that will appear after loading the primate nucleotide alignment will
-be the default values for nucleotide data so we need to make some changes. 
-
-Most of the models should be familiar to you. %(see Chapter {\ref{chapter:SubstitutionModels} for details}). 
-First, set the \textbf{Gamma Category Count} to 4 and then check the `estimate' box for the \textbf{Shape} parameter. This will allow rate variation 
-between sites in each partition to be modeled.  Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu and select \textbf{Empirical} from the \textbf{Frequencies} drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models again). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. Finally check the `estimate' box for the \textbf{Substitution rate} parameter and select the \textbf{Fix mean mutation rate} check box. This will allow the individual partitions to have their relative rates estimated once we unlink the site models (Figure \ref{fig:BEAUti_Model}).
+The next step is to set up the substitution model. 
+%First we will temporarily link the site models in the Partitions panel so that we can change the model of all partitions simultaneously. 
+Then, select the {\bf Site Models} tab at the top of the main window (we skip the {\bf Tip Dates} tab since all taxa are from contemporarysamples). This will reveal the evolutionary model settings for BEAST. The options available depend on whether the data are nucleotides, or amino acids, binary data, or general data. The settings that will appear after loading the primate nucleotide alignment will be the default values for nucleotide data so we need to make some changes. 
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/BEAUti_Model}
+\centering	
+\includegraphics[width=0.9\textwidth]{figures/BEAUti_Model}
 \caption{A screenshot of the site model tab in BEAUti.}
 \label{fig:BEAUti_Model}
 \end{figure}
 
-%Now, return to the {\bf Partitions} panel and unlink the site models so that each partition has its own named site model with independent substitution model parameters and relative rate.
-Finally, hold `shift' key to select all site models on the left side, and click \textbf{OK} to clone the setting from \textbf{noncoding} into \textbf{1stpos}, \textbf{2ndpos} and \textbf{3rdpos} (Figure \ref{fig:cloneFrom}). 
+Most of the models should be familiar to you. %(see Chapter {\ref{chapter:SubstitutionModels} for details}). 
+First, set the \textbf{Gamma Category Count} to 4 and then tick the `estimate' box for the \textbf{Shape} parameter. This will allow rate variation 
+between sites in each partition to be modelled.  Note that 4 to 6 categories works sufficiently well for most datasets, while having more categories takes more time to compute for little added benefit. We leave the Proportion Invariant entry set to zero.
+
+Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu. Ideally, a substitution model should be selected that fit the data best for each partition, but here for the sake of simplicity we use HKY for all partitions. Further, select \textbf{Empirical} from the \textbf{Frequencies} drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. 
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/cloneFrom}
+\centering	
+\includegraphics[width=0.9\textwidth]{figures/cloneFrom}
 \caption{clone configuration from one site model to others.}
 \label{fig:cloneFrom}
 \end{figure}
+
+Finally check the `estimate' box for the \textbf{Substitution rate} parameter and select the \textbf{Fix mean mutation rate} check box. This will allow the individual partitions to have their relative rates estimated for unlinked the site models (Figure \ref{fig:BEAUti_Model}).
+
+%Now, return to the {\bf Partitions} panel and unlink the site models so that each partition has its own named site model with independent substitution model parameters and relative rate.
+
+At last, hold `shift' key to select all site models on the left side, and click \textbf{OK} to clone the setting from \textbf{noncoding} into \textbf{1stpos}, \textbf{2ndpos} and \textbf{3rdpos} (Figure \ref{fig:cloneFrom}). Go through each site model, as you can see, their configurations are same now. 
 
 
 \subsection{Setting the clock model}
 
 The next step is to select the {\bf Clock Models} tab at the top of the
-main window. This is where we select the molecular clock model. For this exercise we are going to leave the selection at the {\it default} value of a Strict molecular clock, because this data is very clock-like and does not need rate variation among branches to be included in the model.
+main window. This is where we select the molecular clock model. For this exercise we are going to leave the selection at the {\it default} value of a \textbf{strict molecular clock}, because this data is very clock-like, and does not need rate variation among branches to be included in the model.
+
+To test for clock-likeness, you can (i) run the analysis witha relaxed clock model and check how much variation among rates are impliedby the data (see coefficient of variation for more on this), or(ii) perform a model comparison between a strict and relaxed clock using pathsampling, or (iii) use a random local clock model \cite{drummond2010bayesian}which explicitly considers whether each branch in the tree needs its own branchrate.
 
 %\begin{figure}
 %\includegraphics[width=\textwidth]{figures/BEAUti_Clock}
@@ -289,8 +304,7 @@ in the model, and these are shown in the priors tab (see Figure \ref{fig:BEAUti_
 \end{figure}
 
 Here we also specify that we wish to use the Calibrated Yule model \cite{Heled:2012fk}
-as the tree prior. This is a simple model of speciation that
-is generally more appropriate when considering sequences from different species. %(see Section \ref{section:YuleBirthDeathModels} for details).
+as the tree prior. The Yule model is a simple model ofspeciation that is generally more appropriate when considering sequences fromdifferent species. %(see Section \ref{section:YuleBirthDeathModels} for details).
 Select this from the {\bf Tree prior} dropdown menu.
 
 %\begin{figure}
@@ -301,13 +315,13 @@ Select this from the {\bf Tree prior} dropdown menu.
 
 \subsubsection{Defining the calibration node}
 
-To define an extra prior, press the small {\bf +} button below list of priors. You will see a
+We now need to specify a prior distribution on the calibrated node, based on ourfossil knowledge. This is known as calibrating our tree. To define an extra prior, press the small {\bf +} button below list of priors. You will see a
 dialog that allows you to define a subset of the taxa in the phylogenetic tree. Once you have created a taxa set you will be able to add calibration information for its most recent common
 ancestor (MRCA) later on. 
 
 Name the taxa set by filling in the taxon set label entry. 
-Call it \texttt{human-chimp} (it will contain the taxa for {\it Homo sapiens} and {\it Pan}).
-In next list below you will see the available taxa. Select each of the two taxa in turn and press the $> >$ arrow button. (Figure \ref{fig:BEAUti_TaxonSets}).
+Call it \texttt{human-chimp}, since it will contain the taxa for {\it Homo sapiens} and {\it Pan}. 
+In the list below you will see the available taxa. Select each of the two taxa in turn and press the $> >$ arrow button. (Figure \ref{fig:BEAUti_TaxonSets}).
 Click OK and the newly defined taxa set will be added in to the prior list.
 As this is a calibrated node to be used in conjunction with the Calibrated Yule prior, monophyly must be enforced, so select the checkbox marked \texttt{Monophyletic}. This will constrain the tree topology so that the human-chimp grouping is kept monophyletic during the course of the MCMC analysis.
 
@@ -332,12 +346,15 @@ estimate of the date of the most recent common ancestor of humans and chimpanzee
 %This roughly corresponds to the current consensus estimate of the date of the most recent common ancestor of humans and chimpanzees (Figure %\ref{fig:BEAUti_TaxonSets}).
 
 \begin{figure}
+\centering	
 \includegraphics[width=\textwidth]{figures/BEAUti_Prior2}
 \caption{A screenshot of the calibration prior options in the Priors panel in BEAUti.}
 \label{fig:BEAUti_Prior2}
 \end{figure}
 
-Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (\texttt{clockRate}) and the speciation rate (\texttt{birthRateY}) of the Yule tree prior. For each of them, select \textbf{Gamma} from the drop-down list and expand the view using the arrow button to the left. For both the clock rate and the Yule birth rate, set the Alpha (shape) parameter to 0.001 and the Beta (scale) parameter to 1000 (Figure \ref{fig:GammaPrior}).
+We should convince ourselves that the priors shown in the priors panel really reflect the prior information we have about the parameters of the model. Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (\texttt{clockRate}) and the speciation rate (\texttt{birthRateY}) of the Yule tree prior. For each of them, select \textbf{Gamma} from the drop-down menuand using the arrow button, expand the view to reveal the parameters of theGamma prior. For both the clock rate and the Yule birth rate set the Alpha(shape) parameter to 0.001 and the Beta (scale) parameter to 1000 (Figure \ref{fig:GammaPrior}).
+
+By default each of the gamma shape parameters has an exponential priordistribution with a mean of 1. This implies (see Figure 3.7) we expect somerate variation. By default the kappa parameters for the HKY model have a lognormal(1,1.25) prior distribution, which broadly agrees with empirical evidence\cite{rosenberg2003patterns} on the range of realistic values for transition/transversionbias. These default priors are kept since they are suitable for this particularanalysis.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/GammaPrior}
@@ -368,7 +385,7 @@ steps the MCMC will make in the chain before finishing. How long this
 should be depends on the size of the data set, the complexity of the
 model and the quality of answer required. The default value of 10,000,000
 is entirely arbitrary and should be adjusted according to the size
-of your data set. For this data set let's initially set the \texttt{chain
+of your data set. For this data set let's set the \texttt{chain
 length} to \underline{\chainLength{}} as this will run reasonably quickly on most modern
 computers (a few minutes).
 
@@ -378,7 +395,8 @@ computers (a few minutes).
 %\label{fig:BEAUti_MCMC}
 %\end{figure}
 
-We will leave the \textbf{Store Every}  and \textbf{Pre Burnin} fields set to their default values. Below these are the details of the log files. Each one can be expanded by clicking the arrow to the right
+The \textbf{Store Every} field determines how often the state is stored to file. Storingthe state periodically is useful for situations where the computing environmentis not very reliable and a BEAST run can be interrupted. Having a stored copyof the recent state allows you to resume the chain instead of restarting from thebeginning, so you do not need to get through burn-in again.
+The \textbf{Pre Burnin} field specifies the number of samples that are not logged at the very beginning ofthe analysis. We leave the \textbf{Store Every} and \textbf{Pre Burnin} fields set to their defaultvalues. Below these are the details of the log files. Each one can be expanded byclicking the black triangle.
 
 The next options specify how often the parameter values in the Markov
 chain should be displayed on the screen and recorded in the log file.
@@ -415,7 +433,8 @@ We are now ready to run the file through BEAST.
 \section{Running BEAST }
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/BEAST}
+\centering	
+\includegraphics[width=0.7\textwidth]{figures/BEAST}
 \caption{A screenshot of BEAST.}
 \label{fig:BEAST}
 \end{figure}
@@ -426,7 +445,7 @@ reporting information to the screen. The actual results files are
 save to the disk in the same location as your input file. The output to the screen will
 look something like this: 
 
-{\scriptsize   
+{\tiny   
 \begin{verbatim}
 
                   BEAST v2.2.0, 2002-2014
@@ -471,14 +490,9 @@ Random number seed: 777
   Ignoring ambiguities in tree likelihood.
   With 204 unique site patterns.
   Using rescaling scheme : dynamic
-  Using BEAGLE version: 2.1.2 resource 0: CPU
-    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
-  Using BEAGLE version: 2.1.2 resource 0: CPU
-    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
-  Using BEAGLE version: 2.1.2 resource 0: CPU
-    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
-  Using BEAGLE version: 2.1.2 resource 0: CPU
-    with instance flags:  PRECISION_DOUBLE COMPUTATION_SYNCH EIGEN_REAL SCALING_MANUAL SCALERS_RAW VECTOR_NONE THREADING_NONE PROCESSOR_CPU FRAMEWORK_CPU
+  
+ ...
+ 
 ===============================================================================
 Citations for this model:
 
@@ -511,17 +525,37 @@ Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/2.1.3/Prim
         6000000     -5520.4564       541.0        -5447.6950       -72.7614 1m43s/Msamples
 Operator                                                              Tuning	#accept	#reject	#total	acceptance rate
 beast.evolution.operators.ScaleOperator_treeScaler.t:tree             0.703 	39763	174379	214142	0.186 
-...
+beast.evolution.operators.ScaleOperator_treeRootScaler.t:tree         0.643 	37328	177276	214604	0.174 
+beast.evolution.operators.Uniform_UniformOperator.t:tree                    	478519	1668478	2146997	0.223 
+beast.evolution.operators.SubtreeSlide_SubtreeSlide.t:tree            9.925 	272873	801494	1074367	0.254 
+beast.evolution.operators.Exchange_narrow.t:tree                            	807	1074563	1075370	0.001 
+beast.evolution.operators.Exchange_wide.t:tree                              	10	215072	215082	0 
+beast.evolution.operators.WilsonBalding_WilsonBalding.t:tree                	8	214371	214379	0 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:noncoding       0.352 	1777	5367	7144	0.249 
+beast.evolution.operators.DeltaExchangeOperator_FixMeanMutationRatesOperator0.425 	17226	126163	143389	0.12 
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:noncoding  0.374 	1708	5421	7129	0.24 
+beast.evolution.operators.ScaleOperator_CalibratedYuleBirthRateScaler.t:tree0.244 	58179	156028	214207	0.272 
+beast.evolution.operators.ScaleOperator_StrictClockRateScaler.c:clock 0.706 	50192	164963	215155	0.233 
+beast.evolution.operators.UpDownOperator_strictClockUpDownOperator.c:clock0.589 	50803	164338	215141	0.236 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:1stpos          0.440 	1822	5418	7240	0.252 
+beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:1stpos     0.420 	1890	5160	7050	0.268 
+beast.evolution.operators.ScaleOperator_KappaScaler.s:2ndpos          0.333 	1909	5304	7213	0.265 
 beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:2ndpos     0.303 	1984	5063	7047	0.282 
 beast.evolution.operators.ScaleOperator_KappaScaler.s:3rdpos          0.507 	1336	5895	7231	0.185 
-End likelihood: -5520.456449464947
 beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:3rdpos     0.264 	1597	5517	7114	0.224 
+End likelihood: -5520.456449464947
 Total calculation time: 621.654 seconds
 \end{verbatim}}
+
+Note that there is some useful information at the start concerning the alignments and which tree likelihoods are used. Also, all citations relevant for the analysis are mentioned at the start of the run, which can easily be copied tomanuscripts reporting about the analysis. Then follows reporting of the chain,which gives some real time feedback on progress of the chain.
+At the end, an operator analysis is printed, which lists all operators used in theanalysis together with how often the operator was tried, accepted, and rejected(see columns \#total, \#accept and \#reject respectively). The acceptance rate isthe proportion of times an operator is accepted when it is selected for doing aproposal. In general, an acceptance rate that is high, say over 0.5 indicates theproposals are conservative and do not explore the parameter space efficiently. Onthe other hand a low acceptance rate indicates that proposals are too aggressiveand almost always result in a state that is rejected because of its low posterior.Both too high and too low acceptance rates result in low ESS values. 
+An acceptance rate of 0.234 is the target (based on very limited evidence provided by \cite{gelman1996efficient}) for many (but not all) operators implemented in BEAST.
+Some operators have a tuning parameter, for example the scale factor of ascale parameter. If the final acceptance rate is not near the target, BEAST willsuggest a new value for the tuning parameter, which is printed in the operator analysis. In this case, all acceptance rates are good for the operators that have tuning parameters. Operators without tuning parameters include the wideexchange and Wilson-Balding operators for this analysis. Both these operatorsattempt to change the topology of the tree with large steps, but since the datasupports a single topology overwhelmingly, these radical proposals are almostalways rejected.
 
 \section{Analyzing the results}
 
 \begin{figure}
+\centering	
 \includegraphics[width=0.9\textwidth]{figures/Tracer1}
 \caption{A screenshot of Tracer v{\TracerVersion}.}
 \label{fig:Tracer1}
@@ -529,7 +563,7 @@ Total calculation time: 621.654 seconds
 
 Run the program called {\bf Tracer} to analyze the output of BEAST. When the main
 window has opened, choose {\bf Import Trace File...} from the {\bf File} menu and select the file that
-BEAST has created called \texttt{primate-mtDNA.log} (Figure \ref{fig:Tracer1}).
+BEAST has created called \texttt{Primates.log} (Figure \ref{fig:Tracer1}).
 
 Remember that MCMC is a stochastic algorithm so the actual numbers will not be exactly the same as those depicted in the figure.
 
@@ -544,19 +578,28 @@ Select the \texttt{clockRate} parameter in the lefthand list to look at
 the average rate of evolution (averaged over the whole tree and all sites). Tracer will plot a (marginal posterior) histogram for the selected statistic and also give you
 summary statistics such as the mean and median. The 95\% HPD stands for {\it highest posterior density interval} and represents the most compact interval on the selected parameter that contains 95\% of the posterior probability. It can be loosely thought of as a Bayesian analog to a confidence interval. The \texttt{TreeHeight} parameter gives the marginal posterior distribution of the age of the root of the entire tree.
 
-Select the \texttt{TreeHeight} parameter and then Ctrl-click \texttt{mrcatime(human-chimp)}  (Command-click on Mac OS X). This will show a display of the
-age of the root and the calibration MRCA we specified earlier in BEAUti. You can verify that the divergence that we used to calibrate the tree
+Select the \texttt{TreeHeight} parameter and then Ctrl-click \texttt{mrcatime(human-chimp)}  (Command-click on Mac OS X). This will show a display of the age of the root and the calibration MRCA we specified earlier in BEAUti. You can verify that the divergence that we used to calibrate the tree
 (\texttt{mrcatime(human-chimp)}) has a posterior distribution that matches the prior distribution we specified (Figure \ref{fig:Tracer_divergences}).
 
 \begin{figure}
+\centering	
 \includegraphics[width=0.9\textwidth]{figures/Tracer_divergences}
 \caption{A screenshot of the 95\% HPD intervals of the root height and the user-specified (human-chimp) MRCA in Tracer.}
 \label{fig:Tracer_divergences}
 \end{figure}
 
+\section{Marginal posterior estimates}
+
+To show the relative rates for the four partitions, select the mutationRate parameter for each of the four partitions, and select the marginal density tab in Tracer.Figure \ref{fig:Tracer_marginalDensity} shows the marginal densities for the relative substitution rates. Theplot shows that codon positions 1 and 2 have substantially different rates (0.458versus 0.183) and both are far slower than codon position 3 with a relative rate of2.938. The noncoding partition has a rate intermediate between codon positions1 and 2 (0.348). Taken together this result suggests strong purifying selection inboth the coding and noncoding regions of the alignment.
+
+%Likewise, a marginal posterior estimate can be obtained for the gamma shape%parameter and the kappa parameter, which are shown in Figures 6.10 and 6.11%respectively. The plot for the gamma shape parameter suggest that there is%considerable rate variation for all of the partitions with the least rate variation%in the third codon position.
+
+%The plot for the kappa parameter (Figure 6.11) shows that all partitions show%considerable transition/transversion bias, but that the third codon position in particular has a high bias with a mean of almost 29 more transitions than transversions.
+
 \begin{figure}
+\centering	
 \includegraphics[width=\textwidth]{figures/Tracer_marginalDensity}
-\caption{A screenshot of the marginal posterior densities of the relative substitution rates of the four partitions (relative to the site-weighted mean rate). This plot shows that codon positions 1 and 2 have substantially different rates (0.455 versus 0.184) and both are far slower than codon position 3 with a relative rate of 2.942. The noncoding partition has a rate intermediate between codon positions 1 and 2 (0.345). Taken together this result suggests strong purifying selection in both the coding and noncoding regions of the alignment.}
+\caption{A screenshot of the marginal posterior densities of the relative substitution rates of the four partitions (relative to the site-weighted mean rate).}
 \label{fig:Tracer_marginalDensity}
 \end{figure}
 
@@ -624,6 +667,7 @@ nodes and the corresponding 95\% HPD ranges. It will also calculate the posterio
 node. Run the TreeAnnotator program and set it up as depicted in Figure \ref{fig:TreeAnnotator1}.
 
 \begin{figure}
+\centering	
 \includegraphics[width=0.9\textwidth]{figures/TreeAnnotator1}
 \caption{A screenshot of TreeAnnotator.}
 \label{fig:TreeAnnotator1}
@@ -638,29 +682,30 @@ The {\bf Posterior probability limit} option specifies a limit such that if a no
 of trees (i.e., has a posterior probability less than this limit), it will not be annotated. The default of 0.5 means that only nodes
 seen in the majority of trees will be annotated. Set this to zero to annotate all nodes.
 
-For {\bf Target tree type} you can either choose a specific tree from a file or ask TreeAnnotator to find a tree in your sample.
+The {\bf Target tree type} specifies the tree topology that will be annotated. You can either choose a specific tree from a file or ask TreeAnnotator to find a tree in your sample.
 The default option, {\bf Maximum clade credibility tree}, finds the tree with the highest product of the posterior probability of
 all its nodes.
 
+For node heights, the default is Common Ancestor Heights, which calculatesthe height of a node as the mean of the MRCA time of all pairs of nodes inthe clade. For trees with large uncertainty in the topology and thus many cladeswith low support, some other methods can result in trees with negative branchlengths. In this analysis, the support for all clades in the summary tree is veryhigh, so this is no issue here.
 Choose {\bf Mean heights} for node heights. This sets the heights (ages) of each node in the tree to the mean height across the
 entire sample of trees for that clade.
 
 For the input file, select the trees file that BEAST created and select a file for the
-output (here we called it \mccTree{}).
-
-Now press Run and wait for the program to finish.
+output (here we called it \mccTree{}). Now press Run and wait for the program to finish.
 
 \section{Visualizing the tree estimate}
 
 Finally, we can visualize the tree in another program called {\bf FigTree}. Run this program, and open
 the \mccTree{} file by using the Open command in the File menu. The tree should appear.
-You can now try selecting some of the options in the control panel on the left. First of all, expend {\bf Trees} option in the panel, and check {\bf Order nodes} and choose \textit{Ordering} by \textit{decreasing}. Try selecting
-{\bf Node Bars} to get node age error bars. Also turn on {\bf Branch Labels} and select {\bf posterior} to get
+You can now try selecting some of the options in the control panel on the left. 
+First of all, expend {\bf Trees} option in the panel, and check {\bf Order nodes} and choose \textit{Ordering} by \textit{decreasing}. 
+Try selecting {\bf Node Bars} to get node age error bars. Also turn on {\bf Branch Labels} and select {\bf posterior} to get
 it to display the posterior probability for each node. 
 If you use a non strict clock model then under {\bf Appearance} you can also tell FigTree to colour the branches by the rate.
 You should end up with something similar to Figure \ref{fig:FigTree}.
 
 \begin{figure}
+\centering	
 \includegraphics[width=0.9\textwidth]{figures/FigTree}
 \includegraphics[width=0.9\textwidth]{figures/DensiTree}
 \caption{A screenshot of FigTree and DensiTree.}
@@ -719,11 +764,13 @@ Under the help menu, DensiTree shows some information.
 
 \section{Comparing your results to the prior}
 
+It is a good idea to rerun the analysis while sampling from the prior to make surethat interactions between priors are not affecting your prior information. Theinteraction between priors can be problematic especially when using calibrationssince it means putting multiple priors on the tree.
+
 Using BEAUti, set up the same analysis but under the MCMC options, select the {\bf Sample from prior only} option. This will allow you to visualize the full prior distribution in the absence of your sequence data. Summarize the trees from the full prior
 distribution and compare the summary to the posterior summary tree.
 
-
-
+Divergence time estimation using ``node dating" of the type described in thischapter has been applied to answer a variety of different questions in ecology
+and evolution. For example, node dating with fossils was used in determiningthe species diversity of cycads \cite{nagalingum2011recent}, analysing the rate ofevolution in flowering plants \cite{smith2008rates}, and investigating theorigins of hot and cold desert cyanobacteria \cite{bahl2011ancient}.
 
 % \renewcommand{\refname}{Bibliography}% if you prefer this heading
 \bibliographystyle{amsplain} 
