@@ -91,14 +91,17 @@ public interface InputEditor {
 public abstract class Base extends JPanel implements InputEditor {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * the input to be edited *
      */
     protected Input<?> m_input;
+
     /**
      * parent plugin *
      */
     protected BEASTInterface m_plugin;
+
     /**
      * text field used for primitive input editors *
      */

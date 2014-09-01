@@ -391,10 +391,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             try {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                BeautiAlignmentProvider provider = new BeautiAlignmentProvider();
-                provider.template.setValue(doc.beautiConfig.partitionTemplate.get(), provider);
-                provider.getAlignments(doc);
-                
+
+                // get user-specified alignments
+                doc.beautiConfig.selectAlignments(doc,Beauti.this);
+
                 doc.connectModel();
                 doc.fireDocHasChanged();
                 a_save.setEnabled(true);

@@ -1026,7 +1026,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 	@Override
 	protected void addItem() {
-		List<BEASTInterface> plugins = pluginSelector(m_input, m_plugin, null);
+		List<BEASTInterface> plugins = doc.beautiConfig.selectAlignments(doc, this);
 
 		// Component c = this;
 		if (plugins != null) {
@@ -1166,27 +1166,6 @@ System.err.println("needsRePartition = " + needsRePartition);
 		refreshPanel();
 	} // splitItem
 
-	@Override
-	public List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface plugin, List<String> sTabuList) {
-		List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
-		BeautiAlignmentProvider selectedProvider = null;
-		if (providers.size() == 1) {
-			selectedProvider = providers.get(0);
-		} else {
-			selectedProvider = (BeautiAlignmentProvider) JOptionPane.showInputDialog(this, "Select what to add", 
-					"Add partition",  
-					JOptionPane.QUESTION_MESSAGE, null, providers.toArray(), 
-					providers.get(0));
-			if (selectedProvider == null) {
-				return null;
-			}
-		}
-		List<BEASTInterface> selectedPlugins = selectedProvider.getAlignments(doc);
-		return selectedPlugins;
-		
-	} // pluginSelector
-	
-	
 	/** enable/disable buttons, etc **/
 	void updateStatus() {
 		boolean status = (alignments.size() > 1);

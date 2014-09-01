@@ -338,7 +338,6 @@ public class ListInputEditor extends InputEditor.Base {
         }
     } // addItem
 
-
     protected Object editItem(Object o) {
         int i = ((List<?>) m_input.get()).indexOf(o);
         BEASTInterface plugin = (BEASTInterface) ((List<?>) m_input.get()).get(i);
@@ -382,12 +381,12 @@ public class ListInputEditor extends InputEditor.Base {
 
     /**
      * Select existing plug-in, or create a new one.
-     * Suppress existing plug-ins with IDs from the tabu list.
+     * Suppress existing plug-ins with IDs from the taboo list.
      * Return null if nothing is selected.
      */
-    public List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> sTabuList) {
+    protected List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> tabooList) {
         List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
-        List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
+        List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, tabooList, doc);
         /* select a plugin **/
         String sClassName = null;
         if (sPlugins.size() == 1) {
@@ -397,7 +396,7 @@ public class ListInputEditor extends InputEditor.Base {
             // no candidate => we cannot be in expert mode
             // create a new Plugin
             doc.setExpertMode(true);
-            sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
+            sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, tabooList, doc);
             doc.setExpertMode(false);
             sClassName = sPlugins.get(0);
         } else {

@@ -230,8 +230,7 @@ public class PriorListInputEditor extends ListInputEditor {
         refreshPanel();
     } // addItem
 
-    @Override
-    public List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> sTabuList) {
+    protected List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> tabooList) {
         MRCAPrior prior = new MRCAPrior();
         try {
 

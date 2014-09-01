@@ -70,9 +70,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		int rval = fileChooser.showOpenDialog(null);
 
 		if (rval == JFileChooser.APPROVE_OPTION) {
-
 			File[] files = fileChooser.getSelectedFiles();
-
             return getAlignments(doc, files);
 		}
 		return null;
