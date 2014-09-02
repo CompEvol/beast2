@@ -66,11 +66,7 @@ public class BeastMain {
             final Logger logger = Logger.getLogger("beast");
 
             Handler handler = new MessageLogHandler();
-            handler.setFilter(new Filter() {
-                public boolean isLoggable(final LogRecord record) {
-                    return record.getLevel().intValue() < Level.WARNING.intValue();
-                }
-            });
+            handler.setFilter(record -> record.getLevel().intValue() < Level.WARNING.intValue());
             logger.addHandler(handler);
 
 //            // Add a handler to handle warnings and errors. This is a ConsoleHandler

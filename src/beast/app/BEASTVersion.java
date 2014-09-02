@@ -25,8 +25,6 @@ public class BEASTVersion extends Version {
 
     private static final boolean IS_PRERELEASE = true;
 
-    private static final String REVISION = "$Rev: $";
-    
     private static final String BEAST2_WEBPAGE = "http://beast2.org/";
     
     private static final String BEAST2_SOURCE = "http://github.com/CompEvol/beast2";
@@ -36,7 +34,7 @@ public class BEASTVersion extends Version {
     }
 
     public String getVersionString() {
-        return "v" + VERSION + (IS_PRERELEASE ? " Prerelease " + getBuildString() : "");
+        return "v" + VERSION + (IS_PRERELEASE ? " Prerelease" : "");
     }
 
     public String getDateString() {
@@ -98,10 +96,6 @@ public class BEASTVersion extends Version {
                         "Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie,<br>" +
                         "Denise Kuehnert</p>" +
                         "<p>Thanks to Roald Forsberg, Beth Shapiro and Korbinian Strimmer</p>";
-    }
-
-    public String getBuildString() {
-        return "r" + REVISION.split(" ")[1];
     }
 
     /**

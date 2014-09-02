@@ -73,6 +73,9 @@ public class Logger extends BEASTObject {
             "Element in a log. This can be any plug in that is Loggable.",
             new ArrayList<BEASTObject>(), Validate.REQUIRED, Loggable.class);
 
+    // the file name to log to, or null, or "" if logging to stdout
+    private String fileName;
+
     /**
      * list of loggers, if any
      */
@@ -109,9 +112,11 @@ public class Logger extends BEASTObject {
     long startLogTime = -5;
     int startSample;
 
-
     @Override
     public void initAndValidate() throws Exception {
+
+        fileName = fileNameInput.get();
+
         final List<BEASTObject> loggers = loggersInput.get();
         final int nLoggers = loggers.size();
         if (nLoggers == 0) {
@@ -193,6 +198,12 @@ public class Logger extends BEASTObject {
         }
     } // initAndValidate
 
+    /**
+     * @return true if this logger is logging to stdout.
+     */
+    public boolean isLoggingToStdout() {
+        return (fileName == null || fileName.length() == 0);
+    }
 
     /**
      * initialise log, open file (if necessary) and produce header of log
@@ -315,12 +326,11 @@ public class Logger extends BEASTObject {
 
 
 	boolean openLogFile() throws Exception {
-        String sFileName = fileNameInput.get();
-        if (sFileName == null || sFileName.length() == 0) {
+        if (isLoggingToStdout()) {
             m_out = System.out;
             return true;
         } else {
-            if (sFileName.contains("$(tree)")) {
+            if (fileName.contains("$(tree)")) {
             	String treeName = "tree";
             	for (final Loggable logger : loggerList) {
             		if (logger instanceof BEASTObject) {
@@ -330,24 +340,24 @@ public class Logger extends BEASTObject {
             			}
             		}
             	}
-                sFileName = sFileName.replace("$(tree)", treeName);
-                fileNameInput.setValue(sFileName, this);
+                fileName = fileName.replace("$(tree)", treeName);
+                fileNameInput.setValue(fileName, this);
             }
             if (System.getProperty("file.name.prefix") != null) {
-                sFileName = System.getProperty("file.name.prefix") + "/" + sFileName;
+                fileName = System.getProperty("file.name.prefix") + "/" + fileName;
             }
             switch (FILE_MODE) {
                 case only_new:// only open file if the file does not already exists
                 case only_new_or_exit: {
-                    final File file = new File(sFileName);
+                    final File file = new File(fileName);
                     if (file.exists()) {
                         if (FILE_MODE == LogFileMode.only_new_or_exit) {
-                            Log.err.println("Trying to write file " + sFileName + " but the file already exists. Exiting now.");
+                            Log.err.println("Trying to write file " + fileName + " but the file already exists. Exiting now.");
                             throw new RuntimeException("Use overwrite or resume option, or remove the file");
                             //System.exit(0);
                         }
                         // Check with user what to do next
-                        System.out.println("Trying to write file " + sFileName + " but the file already exists (perhaps use the -overwrite flag?).");
+                        System.out.println("Trying to write file " + fileName + " but the file already exists (perhaps use the -overwrite flag?).");
                         System.out.println("Overwrite (Y/N)?:");
                         System.out.flush();
                         final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
@@ -357,27 +367,27 @@ public class Logger extends BEASTObject {
                             System.exit(0);
                         }
                     }
-                    m_out = new PrintStream(sFileName);
-                    System.out.println("Writing file " + sFileName);
+                    m_out = new PrintStream(fileName);
+                    System.out.println("Writing file " + fileName);
                     return true;
                 }
                 case overwrite:// (over)write log file
                 {
                     String sMsg = "Writing";
-                    if (new File(sFileName).exists()) {
+                    if (new File(fileName).exists()) {
                         sMsg = "Warning: Overwriting";
                     }
-                    m_out = new PrintStream(sFileName);
-                    System.out.println(sMsg + " file " + sFileName);
+                    m_out = new PrintStream(fileName);
+                    System.out.println(sMsg + " file " + fileName);
                     return true;
                 }
                 case resume:// append log file, pick up SampleOffset by reading existing log
                 {
-                    final File file = new File(sFileName);
+                    final File file = new File(fileName);
                     if (file.exists()) {
                         if (mode == LOGMODE.compound) {
                             // first find the sample nr offset
-                            final BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+                            final BufferedReader fin = new BufferedReader(new FileReader(fileName));
                             String sStr = null;
                             while (fin.ready()) {
                                 sStr = fin.readLine();
@@ -390,17 +400,17 @@ public class Logger extends BEASTObject {
                             }
                             sampleOffset = nSampleOffset;
                             // open the file for appending
-                            final FileOutputStream out2 = new FileOutputStream(sFileName, true);
+                            final FileOutputStream out2 = new FileOutputStream(fileName, true);
                             m_out = new PrintStream(out2);
                         } else {
                             // it is a tree logger, we may need to get rid of the last line!
-                            final BufferedReader fin = new BufferedReader(new FileReader(sFileName));
+                            final BufferedReader fin = new BufferedReader(new FileReader(fileName));
 
                             // back up file in case something goes wrong (e.g. an out of memory error occurs)
-                            final File treeFileBackup = new File(sFileName);
-                            final boolean ok = treeFileBackup.renameTo(new File(sFileName + ".bu"));    assert ok;
+                            final File treeFileBackup = new File(fileName);
+                            final boolean ok = treeFileBackup.renameTo(new File(fileName + ".bu"));    assert ok;
                             // open the file and write back all but the last line
-                            final FileOutputStream out2 = new FileOutputStream(sFileName);
+                            final FileOutputStream out2 = new FileOutputStream(fileName);
                             m_out = new PrintStream(out2);
 
                             //final StringBuilder buf = new StringBuilder();
@@ -425,23 +435,23 @@ public class Logger extends BEASTObject {
                             // determine number of the last sample
                             if( sStrLast == null ) {
                                 // empty log file?
-                                 throw new Exception("Error 402: empty tree log file " + sFileName + "? (check if there is a back up file " + sFileName + ".bu)");
+                                 throw new Exception("Error 402: empty tree log file " + fileName + "? (check if there is a back up file " + fileName + ".bu)");
                             }
                             final String sStr = sStrLast.split("\\s+")[1];
                             final int nSampleOffset = Integer.parseInt(sStr.substring(6));
                             if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
-                                final boolean ok1 = treeFileBackup.renameTo(new File(sFileName));        assert ok1;
+                                final boolean ok1 = treeFileBackup.renameTo(new File(fileName));        assert ok1;
                                 throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
                             }
                             sampleOffset = nSampleOffset;
                             // it is safe to remove the backup file now
-                            new File(sFileName + ".bu").delete();
+                            new File(fileName + ".bu").delete();
                         }
-                        System.out.println("Appending file " + sFileName);
+                        System.out.println("Appending file " + fileName);
                         return false;
                     } else {
-                        m_out = new PrintStream(sFileName);
-                        System.out.println("Writing file " + sFileName);
+                        m_out = new PrintStream(fileName);
+                        System.out.println("Writing file " + fileName);
                         return true;
                     }
                 }

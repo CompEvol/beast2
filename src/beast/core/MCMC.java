@@ -29,9 +29,7 @@ import beast.core.util.Evaluator;
 import beast.core.util.Log;
 import beast.util.Randomizer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
@@ -89,7 +87,6 @@ public class MCMC extends Runnable {
      * of operators and calculation of statistics.
      */
     protected OperatorSchedule operatorSchedule;
-
 
     /**
      * The state that takes care of managing StateNodes,
@@ -265,17 +262,16 @@ public class MCMC extends Runnable {
     } // init
 
     public void log(final int sampleNr) {
-        for (final Logger log : loggersInput.get()) {
+        for (final Logger log : loggers) {
             log.log(sampleNr);
         }
     } // log
 
     public void close() {
-        for (final Logger log : loggersInput.get()) {
+        for (final Logger log : loggers) {
             log.close();
         }
     } // close
-
 
     protected double logAlpha;
     protected boolean debugFlag;
@@ -284,6 +280,8 @@ public class MCMC extends Runnable {
     protected int burnIn;
     protected int chainLength;
     protected Distribution posterior;
+
+    protected List<Logger> loggers;
 
     @Override
     public void run() throws Exception {
@@ -330,14 +328,28 @@ public class MCMC extends Runnable {
             throw new Exception("Could not find a proper state to initialise. Perhaps try another seed.");
         }
 
+        loggers = loggersInput.get();
+
+        // put the loggers logging to stdout at the bottom of the logger list so that screen output is tidier.
+        Collections.sort(loggers, (o1, o2) -> {
+            if (o1.isLoggingToStdout()) {
+                return o2.isLoggingToStdout() ? 0 : 1;
+            } else {
+                return o2.isLoggingToStdout() ? -1 : 0;
+            }
+        });
+
         // initialises log so that log file headers are written, etc.
-        for (final Logger log : loggersInput.get()) {
+        for (final Logger log : loggers) {
             log.init();
         }
 
         doLoop();
 
+        System.out.println();
         operatorSchedule.showOperatorRates(System.out);
+
+        System.out.println();
         final long endTime = System.currentTimeMillis();
         System.out.println("Total calculation time: " + (endTime - startTime) / 1000.0 + " seconds");
         close();

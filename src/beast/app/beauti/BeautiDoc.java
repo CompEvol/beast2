@@ -1717,35 +1717,35 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      * @throws Exception
      */
     static public BEASTInterface deepCopyPlugin(BEASTInterface plugin, BEASTInterface parent, MCMC mcmc,
-                                             PartitionContext partitionContext, BeautiDoc doc, List<BEASTInterface> tabuList)
+                                             PartitionContext partitionContext, BeautiDoc doc, List<BEASTInterface> tabooList)
             throws Exception {
-        /** tabu = list of plugins that should not be copied **/
-        Set<BEASTInterface> tabu = new HashSet<BEASTInterface>();
-        tabu.add(parent);
+        /** taboo = list of plugins that should not be copied **/
+        Set<BEASTInterface> taboo = new HashSet<BEASTInterface>();
+        taboo.add(parent);
         // add state
-        tabu.add(mcmc.startStateInput.get());
+        taboo.add(mcmc.startStateInput.get());
         // add likelihood and prior
         if (mcmc.posteriorInput.get() instanceof CompoundDistribution) {
             for (Distribution distr : ((CompoundDistribution) mcmc.posteriorInput.get()).pDistributions.get()) {
                 if (distr instanceof CompoundDistribution) {
-                    tabu.add(distr);
+                    taboo.add(distr);
                 }
             }
         }
         // add posterior
-        tabu.add(mcmc.posteriorInput.get());
+        taboo.add(mcmc.posteriorInput.get());
         // parent of operators
-        tabu.add(mcmc);
+        taboo.add(mcmc);
         // add loggers
-        tabu.addAll(mcmc.loggersInput.get());
+        taboo.addAll(mcmc.loggersInput.get());
         // add trees
         for (StateNode node : mcmc.startStateInput.get().stateNodeInput.get()) {
             if (node instanceof Tree) {
-                tabu.add(node);
+                taboo.add(node);
             }
         }
-        if (tabuList != null) {
-            tabu.addAll(tabuList);
+        if (tabooList != null) {
+            taboo.addAll(tabooList);
         }
 
         // find predecessors of plugin to be copied
@@ -1755,17 +1755,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // find ancestors of StateNodes that are predecessors + the plugin
         // itself
         Set<BEASTInterface> ancestors = new HashSet<BEASTInterface>();
-        collectAncestors(plugin, ancestors, tabu);
+        collectAncestors(plugin, ancestors, taboo);
         for (BEASTInterface plugin2 : predecessors) {
             if (plugin2 instanceof StateNode) {
                 Set<BEASTInterface> ancestors2 = new HashSet<BEASTInterface>();
-                collectAncestors(plugin2, ancestors2, tabu);
+                collectAncestors(plugin2, ancestors2, taboo);
                 ancestors.addAll(ancestors2);
             } else if (plugin2 instanceof Alignment || plugin2 instanceof FilteredAlignment) {
                 for (Object output : plugin2.getOutputs()) {
-                    if (!tabu.contains(output)) {
+                    if (!taboo.contains(output)) {
                         Set<BEASTInterface> ancestors2 = new HashSet<BEASTInterface>();
-                        collectAncestors((BEASTInterface)output, ancestors2, tabu);
+                        collectAncestors((BEASTInterface)output, ancestors2, taboo);
                         ancestors.addAll(ancestors2);
                     }
                 }
@@ -1807,7 +1807,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //			System.err.println("Copy: " + id);
         }
 
-        // set all inputs of copied plugins + outputs to tabu
+        // set all inputs of copied plugins + outputs to taboo
         for (BEASTInterface plugin2 : ancestors) {
             String id = plugin2.getID();
             System.err.println("Processin: " + id);
@@ -1839,13 +1839,13 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             copy.setID(renameId(id, partitionContext));
             // set outputs
             for (Object output : plugin2.getOutputs()) {
-                if (tabu.contains(output) && output != parent) {
+                if (taboo.contains(output) && output != parent) {
                 	BEASTInterface output2 = getCopyValue((BEASTInterface)output, copySet, partitionContext, doc);
                     for (Input<?> input : ((BEASTInterface)output).listInputs()) {
                         // do not add state node initialisers automatically
                         if (input.get() instanceof List &&
                                 // do not update state node initialisers
-                                !(tabu.contains(output2) && input.getName().equals("init"))) {
+                                !(taboo.contains(output2) && input.getName().equals("init"))) {
                             List<?> list = (List<?>) input.get();
                             if (list.contains(plugin2)) {
                                 output2.setInputValue(input.getName(), copy);
