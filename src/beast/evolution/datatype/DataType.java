@@ -190,7 +190,7 @@ public interface DataType {
                     String[] codes = codeMap.toUpperCase().split(",");
                     for (String code : data.split(",")) {
                         boolean isFound = false;
-                        for (int iCode = 0; iCode < codes.length - 1; iCode++) {
+                        for (int iCode = 0; iCode < codes.length; iCode++) {
                             if (code.equals(codes[iCode])) {
                                 sequence.add(iCode);
                                 isFound = true;
