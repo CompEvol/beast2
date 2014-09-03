@@ -121,8 +121,8 @@ public class StandardData extends DataType.Base {
                     readingAmb = false;
                     Collections.sort(amb);
                     String ambStr = "";
-                    for (int i=0; i<amb.size(); i++) {
-                        ambStr += Integer.toString(amb.get(i));
+                    for (Integer a : amb) {
+                        ambStr += Integer.toString(a);
                     }
                     sequence.add(codeMapping.indexOf(ambStr));
                 }
