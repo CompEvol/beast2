@@ -9,6 +9,7 @@ import beast.app.util.ErrorLogHandler;
 import beast.app.util.MessageLogHandler;
 import beast.app.util.Utils;
 import beast.app.util.Version;
+import beast.core.util.Log;
 import beast.util.Randomizer;
 import beast.util.XMLParserException;
 import jam.util.IconUtils;
@@ -254,6 +255,7 @@ public class BeastMain {
                         new Arguments.IntegerOption("threads", "The number of computational threads to use (default auto)"),
                         new Arguments.Option("java", "Use Java only, no native implementations"),
                         new Arguments.Option("noerr", "Suppress all output to standard error"),
+                        new Arguments.StringOption("loglevel", "LEVEL", "error,warning,info"),
                         new Arguments.Option("beagle", "Use beagle library if available"),
                         new Arguments.Option("beagle_info", "BEAGLE: show information on available resources"),
                         new Arguments.StringOption("beagle_order", "order", "BEAGLE: set order of resource use"),
@@ -528,6 +530,21 @@ public class BeastMain {
 
         if (useJava) {
             System.setProperty("java.only", "true");
+        }
+
+        if (arguments.hasOption("loglevel")) {
+            String l = arguments.getStringOption("loglevel");
+            switch (l) {
+                case "error":
+                    Log.setLevel(Log.Level.error);
+                    break;
+                case "warning":
+                    Log.setLevel(Log.Level.warning);
+                    break;
+                case "info":
+                    Log.setLevel(Log.Level.info);
+                    break;
+            }
         }
 
         if (fileNamePrefix != null && fileNamePrefix.trim().length() > 0) {
