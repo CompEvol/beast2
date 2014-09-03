@@ -36,7 +36,8 @@ import beast.evolution.tree.Tree;
 @Description("This operator changes a beast.tree.")
 abstract public class TreeOperator extends Operator {
     public Input<Tree> treeInput = new Input<Tree>("tree", "beast.tree on which this operation is performed", Validate.REQUIRED);
-
+    public Input<Boolean> markCladesInput = new Input<>("markclades", "Mark nodes whose clade (tips of the " +
+            "subtree under the node) has changed by the move", false);
 
     /**
      * @param parent the parent

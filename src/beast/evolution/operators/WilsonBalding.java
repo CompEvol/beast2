@@ -69,7 +69,6 @@ public class WilsonBalding extends TreeOperator {
     public void initAndValidate() {
     }
 
-    int icase = -1;
     /**
      * WARNING: Assumes strictly bifurcating beast.tree.
      */
@@ -90,7 +89,7 @@ public class WilsonBalding extends TreeOperator {
         do {
             i = tree.getNode(Randomizer.nextInt(nodeCount));
         } while (i.isRoot());
-        Node iP = i.getParent();
+        final Node iP = i.getParent();
 
         // choose another random node to insert i above
         Node j;
@@ -108,12 +107,14 @@ public class WilsonBalding extends TreeOperator {
         }
 
         assert jP != null;  // j != root tested above
-        if (jP.getNr() == iP.getNr() || j.getNr() == iP.getNr() || jP.getNr() == i.getNr())
+        final int iPnr = iP.getNr();
+        final int jPnr = jP.getNr();
+        if ( jPnr == iPnr || j.getNr() == iPnr || jPnr == i.getNr())
             return Double.NEGATIVE_INFINITY;
 
         final Node CiP = getOtherChild(iP, i);
 
-        Node PiP = iP.getParent();
+        final Node PiP = iP.getParent();
 
         newMinAge = Math.max(i.getHeight(), j.getHeight());
         newRange = jP.getHeight() - newMinAge;
@@ -131,7 +132,7 @@ public class WilsonBalding extends TreeOperator {
             return Double.NEGATIVE_INFINITY;
         }
 
-        // root changing moves disallowed earlier
+        // root changing moves disallowed earlier. Comment out just like in BEAST 1
 
         //update
 //        if (j.isRoot()) {
@@ -170,7 +171,7 @@ public class WilsonBalding extends TreeOperator {
             replace(jP, j, iP);
 
         // mark paths to common ancestor as changed
-            {
+            if( markCladesInput.get() ) {
                 Node iup = iPP;
                 Node jup = iP;
                 while (iup != jup) {

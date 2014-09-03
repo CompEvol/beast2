@@ -94,7 +94,7 @@ public class SubtreeSlide extends TreeOperator {
         double logq;
 
         Node i;
-
+        final boolean  markClades = markCladesInput.get();
         // 1. choose a random node avoiding root
         final int nNodes = tree.getNodeCount();
         do {
@@ -120,7 +120,7 @@ public class SubtreeSlide extends TreeOperator {
                 Node newChild = iP;
                 while (newParent.getHeight() < newHeight) {
                     newChild = newParent;
-                    newParent.makeDirty(Tree.IS_FILTHY); // JH
+                    if( markClades ) newParent.makeDirty(Tree.IS_FILTHY); // JH
                     newParent = newParent.getParent();
                     if (newParent == null) break;
                 }
@@ -196,7 +196,7 @@ public class SubtreeSlide extends TreeOperator {
                 }
 
                 iP.setHeight(newHeight);
-                {
+                if( markClades ) {
                     // make dirty the path from the (down) moved node back up to former parent.
                     Node n = iP;
                     while( n != CiP ) {
