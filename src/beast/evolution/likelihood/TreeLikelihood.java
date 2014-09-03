@@ -35,6 +35,7 @@ import java.util.Random;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
@@ -171,9 +172,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
         Alignment alignment = dataInput.get();
 
-        System.out.println(className + "(" + getID() + ") uses " + likelihoodCore.getClass().getSimpleName());
-        System.out.println("  " + alignment.toString(true));
-
+        Log.info.println(className + "(" + getID() + ") uses " + likelihoodCore.getClass().getSimpleName());
+        Log.info.println("  " + alignment.toString(true));
+        // print startup messages via Log.print*
 
         proportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
