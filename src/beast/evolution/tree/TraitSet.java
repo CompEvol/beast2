@@ -13,6 +13,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;
 
 
@@ -91,7 +92,7 @@ public class TraitSet extends BEASTObject {
         // sanity check: did we cover all taxa?
         for (int i = 0; i < labels.size(); i++) {
             if (taxonValues[i] == null) {
-                System.out.println("WARNING: no trait specified for " + labels.get(i));
+                Log.warning.println("WARNING: no trait specified for " + labels.get(i));
             }
         }
 
@@ -116,7 +117,7 @@ public class TraitSet extends BEASTObject {
         }
 
         for (int i = 0; i < labels.size(); i++) {
-            System.out.println(labels.get(i) + " = " + taxonValues[i] + " (" + (values[i]) + ")");
+            Log.info.println(labels.get(i) + " = " + taxonValues[i] + " (" + (values[i]) + ")");
         }
     } // initAndValidate
 
