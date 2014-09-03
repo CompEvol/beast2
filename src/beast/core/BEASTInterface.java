@@ -333,9 +333,7 @@ public interface BEASTInterface {
                     plugin2.getPredecessors(predecessors);
                 }
             }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
