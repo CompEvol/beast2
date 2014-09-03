@@ -208,7 +208,7 @@ public class Exchange extends TreeOperator {
 
             // All the nodes on the path from i/j to the common ancestor of i/j parents had a topology change,
             // so they need to be marked FILTHY.
-            {
+            if( markCladesInput.get() ) {
                 Node iup = iP;
                 Node jup = jP;
                 while (iup != jup) {
