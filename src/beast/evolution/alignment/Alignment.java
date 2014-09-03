@@ -33,6 +33,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.Map;
+import beast.core.util.Log;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
 import beast.util.AddOnManager;
@@ -200,6 +201,7 @@ public class Alignment extends Map<String> {
                 throw new Exception("data type + '" + dataTypeInput.get() + "' cannot be found. " +
                         "Choose one of " + Arrays.toString(types.toArray(new String[0])));
             }
+            // seems to spend forever in there??
             List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
             for (String sDataType : sDataTypes) {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
@@ -474,15 +476,16 @@ public class Alignment extends Map<String> {
             maxStateCount = Math.max(maxStateCount, m_nStateCount1);
         }
         // report some statistics
-        if (taxaNames.size() < 30) {
-	        for (int i = 0; i < taxaNames.size(); i++) {
-	            System.err.println(taxaNames.get(i) + ": " + counts.get(i).size() + " " + stateCounts.get(i));
-	        }
+        if( taxaNames.size() < 30 ) {
+            for (int i = 0; i < taxaNames.size(); i++) {
+                Log.info.println(taxaNames.get(i) + ": " + counts.get(i).size() + " " + stateCounts.get(i));
+            }
         }
 
         if (stripInvariantSitesInput.get()) {
             // don't add patterns that are invariant, e.g. all gaps
-            System.err.print("Stripping invariant sites");
+            Log.info.println("Stripping invariant sites");
+
             int removedSites = 0;
             for (int i = 0; i < nPatterns; i++) {
                 int[] nPattern = sitePatterns[i];
@@ -497,10 +500,11 @@ public class Alignment extends Map<String> {
                 if (bIsInvariant) {
                 	removedSites += patternWeight[i]; 
                     patternWeight[i] = 0;
-                    System.err.print(" <" + iValue + "> ");
+
+                    Log.info.print(" <" + iValue + "> ");
                 }
             }
-            System.err.println(" removed " + removedSites + " sites ");
+            Log.info.println(" removed " + removedSites + " sites ");
         }
     } // calcPatterns
 
