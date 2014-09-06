@@ -246,7 +246,7 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
 
 //
 //	@Override
-//    public void calcRootPsuedoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials) {
+//    public void calcRootPseudoRootPartials(double[] fFrequencies, int iNode, double [] fPseudoPartials) {
 //		int u = 0;
 //		double [] fInPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
 //		for (int k = 0; k < m_nPatterns * m_nMatrices; k++) {
@@ -259,7 +259,7 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
 //    }
 //    
 //	@Override
-//    public void calcPsuedoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials) {
+//    public void calcPseudoRootPartials(double [] fParentPseudoPartials, int iNode, double [] fPseudoPartials) {
 //		int v = 0;
 //		int u = 0;
 //		double [] fMatrices = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];

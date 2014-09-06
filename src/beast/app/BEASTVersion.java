@@ -44,7 +44,7 @@ public class BEASTVersion extends Version {
     public String[] getCredits() {
         return new String[]{
                 "Designed and developed by",
-                "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard",
+                "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut & Marc A. Suchard",
                 "",
                 "Department of Computer Science",
                 "University of Auckland",
@@ -61,19 +61,19 @@ public class BEASTVersion extends Version {
                 "",
                 "Downloads, Help & Resources:",
 
-                "\t" + BEAST2_WEBPAGE,
+                BEAST2_WEBPAGE,
                 "",
                 "Source code distributed under the GNU Lesser General Public License:",
-                "\t" + BEAST2_SOURCE,
+                BEAST2_SOURCE,
                 "",
                 "BEAST developers:",
-                "\tAlex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, ",
-                "\tSebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, ",
-                "\tGerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, ",
-                "\tOliver Pybus, Chieh-Hsi Wu, Walter Xie",
+                "Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, ",
+                "Sebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, ",
+                "Gerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, ",
+                "Oliver Pybus, Chieh-Hsi Wu, Walter Xie",
                 "",
                 "Thanks to:",
-                "\tRoald Forsberg, Beth Shapiro and Korbinian Strimmer"};
+                "Roald Forsberg, Beth Shapiro and Korbinian Strimmer"};
     }
 
     public String getHTMLCredits() {

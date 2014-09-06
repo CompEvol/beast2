@@ -207,14 +207,16 @@ public class BeastMain {
     }
 
     public static void printTitle() {
+
+        int pageWidth = 72;
+
         System.out.println();
-        centreLine("BEAST " + version.getVersionString() + ", " + version.getDateString(), 60);
-        centreLine("Bayesian Evolutionary Analysis Sampling Trees", 60);
+        centreLine("BEAST " + version.getVersionString() + ", " + version.getDateString(), pageWidth);
+        centreLine("Bayesian Evolutionary Analysis Sampling Trees", pageWidth);
         for (final String creditLine : version.getCredits()) {
-            centreLine(creditLine, 60);
+            centreLine(creditLine, pageWidth);
         }
         System.out.println();
-
     }
 
     public static void printUsage(final Arguments arguments) {
@@ -365,7 +367,7 @@ public class BeastMain {
             threadCount = arguments.getIntegerOption("threads");
             if (threadCount < 0) {
                 printTitle();
-                System.err.println("The the number of threads should be >= 0");
+                System.err.println("The number of threads should be >= 0");
                 System.exit(1);
             }
         }
@@ -557,7 +559,6 @@ public class BeastMain {
         MCMCargs.add(seed + "");
         Randomizer.setSeed(seed);
 
-        System.out.println();
         System.out.println("Random number seed: " + seed);
         System.out.println();
 
