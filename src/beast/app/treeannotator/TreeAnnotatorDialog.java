@@ -46,18 +46,9 @@ public class TreeAnnotatorDialog {
     private WholeNumberField burninText = new WholeNumberField(0, Integer.MAX_VALUE);
 	private RealNumberField limitText = new RealNumberField(0.0, 1.0);
 
-    private JComboBox summaryTreeCombo = new JComboBox(new String[]{
-            TreeAnnotator.Target.values()[0].toString(),
-            TreeAnnotator.Target.values()[1].toString(),
-            TreeAnnotator.Target.values()[2].toString()
-    });
+    private JComboBox summaryTreeCombo = new JComboBox(TreeAnnotator.Target.values());
 
-    private JComboBox nodeHeightsCombo = new JComboBox(new String[] {
-            TreeAnnotator.HeightsSummary.values()[3].toString(),
-            TreeAnnotator.HeightsSummary.values()[0].toString(),
-            TreeAnnotator.HeightsSummary.values()[1].toString(),
-            TreeAnnotator.HeightsSummary.values()[2].toString()
-    });
+    private JComboBox nodeHeightsCombo = new JComboBox(TreeAnnotator.HeightsSummary.values());
 
 	private File targetFile = null;
 	private File inputFile = null;
@@ -217,11 +208,11 @@ public class TreeAnnotatorDialog {
 	}
 
     public TreeAnnotator.Target getTargetOption() {
-        return TreeAnnotator.Target.values()[summaryTreeCombo.getSelectedIndex()];
+        return (TreeAnnotator.Target)summaryTreeCombo.getSelectedItem();
     }
 
     public TreeAnnotator.HeightsSummary getHeightsOption() {
-        return TreeAnnotator.HeightsSummary.values()[nodeHeightsCombo.getSelectedIndex()];
+        return (TreeAnnotator.HeightsSummary)nodeHeightsCombo.getSelectedItem();
     }
 
     public String getTargetFileName() {
