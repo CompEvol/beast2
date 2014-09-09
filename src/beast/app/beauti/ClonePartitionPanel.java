@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+import beast.app.beauti.guiutil.S11InitialSelection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +25,10 @@ public class ClonePartitionPanel extends JPanel {
         }
 
         cloneFromComboBox = new JComboBox(models);
+        // has to be editable
+        cloneFromComboBox.setEditable(true);
+        // change the editor's document
+        new S11InitialSelection(cloneFromComboBox);
 
         init();
     }
