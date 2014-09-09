@@ -27,33 +27,22 @@ package beast.util;
 
 
 
+import beast.core.BEASTObject;
+import beast.core.Input;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import beast.core.*;
-
-
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -631,7 +620,7 @@ public class XMLProducer extends XMLParser {
         boolean bSkipInputs = false;
         if (isDone.contains(plugin)) {
             // XML is already produced, we can idref it
-            buf.append(" idref='" + plugin.getID() + "'");
+            buf.append(" idref='" + normalise(plugin.getID()) + "'");
             bSkipInputs = true;
         } else {
             // see whether a reasonable id can be generated
@@ -645,7 +634,7 @@ public class XMLProducer extends XMLParser {
                     }
                     sID = sID + k;
                 }
-                buf.append(" id='" + sID + "'");
+                buf.append(" id='" + normalise(sID) + "'");
                 IDs.add(sID);
             }
             isDone.add(plugin);
@@ -712,8 +701,8 @@ public class XMLProducer extends XMLParser {
      * @param sInput: name of the input
      * @param plugin: plugin to produce this input XML for
      * @param buf:    gets XML results are appended
-     * @param bShort: flag to indicate attribute/value format (true) or element format (false)
-     * @throws Exception 
+     * @param isShort: flag to indicate attribute/value format (true) or element format (false)
+     * @throws Exception
      */
     @SuppressWarnings("rawtypes")
     void inputToXML(String sInput, BEASTObject plugin, StringBuffer buf, boolean isShort) throws Exception {
@@ -788,7 +777,7 @@ public class XMLProducer extends XMLParser {
 	                                        buf.append("    ");
 	                                    }
 	                                    if (sInput.equals("value")) {
-	                                        buf.append(input.get().toString());
+	                                        buf.append(normalise(input.get().toString()));
 	                                    } else {
 	                                        buf.append("<input name='" + sInput + "'>" + normalise(input.get().toString()) + "</input>\n");
 	                                    }
@@ -819,7 +808,6 @@ public class XMLProducer extends XMLParser {
     	return str;
     }
 
-    
-    
+
 } // class XMLProducer
 
