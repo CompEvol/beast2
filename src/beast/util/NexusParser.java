@@ -651,8 +651,10 @@ public class NexusParser {
             sStr = nextLine(fin);
             if (sStr.toLowerCase().matches("\\s*charset\\s.*")) {
                 sStr = sStr.replaceAll("^\\s+", "");
-                sStr = sStr.replaceAll(";", "");
-                final String[] sStrs = sStr.split("\\s+");
+                sStr = sStr.replaceAll("\\s*-\\s*", "-");
+                sStr = sStr.replaceAll("\\s*\\\\\\s*", "\\\\");
+                sStr = sStr.replaceAll("\\s*;", "");
+                final String[] sStrs = sStr.trim().split("\\s+");
                 final String sID = sStrs[1];
                 String sRange = "";
                 for (int i = 3; i < sStrs.length; i++) {
