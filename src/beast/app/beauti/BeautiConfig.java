@@ -1,18 +1,13 @@
 package beast.app.beauti;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.util.XMLParser;
 
-
+import javax.swing.*;
+import java.util.*;
 
 @Description("Beauti configuration object, used to find Beauti configuration " +
         "information from Beauti template files.")
@@ -158,6 +153,28 @@ public class BeautiConfig extends BEASTObject {
         sDisabledButtons = new HashSet<String>();
         panels = new ArrayList<BeautiPanelConfig>();
     }
+
+    /**
+     * @param doc
+     * @param parent
+     * @return a list of alignments based on the user selected alignment provider
+     */
+    public List<BEASTObject> selectAlignments(BeautiDoc doc, JComponent parent) {
+        List<BeautiAlignmentProvider> providers = alignmentProvider;
+        BeautiAlignmentProvider selectedProvider = null;
+        if (providers.size() == 1) {
+            selectedProvider = providers.get(0);
+        } else {
+            selectedProvider = (BeautiAlignmentProvider) JOptionPane.showInputDialog(parent, "Select what to add",
+                    "Add partition",
+                    JOptionPane.QUESTION_MESSAGE, null, providers.toArray(),
+                    providers.get(0));
+            if (selectedProvider == null) {
+                return null;
+            }
+        }
+        return selectedProvider.getAlignments(doc);
+    } // selectAlignments
 
     public List<BeautiSubTemplate> getInputCandidates(BEASTObject plugin, Input<?> input, Class<?> type) {
         List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();

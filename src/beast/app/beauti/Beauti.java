@@ -9,6 +9,7 @@ import beast.app.draw.HelpBrowser;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.util.Utils;
+import beast.core.util.Log;
 import beast.util.AddOnManager;
 import jam.framework.DocumentFrame;
 import org.w3c.dom.Document;
@@ -24,7 +25,9 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -76,6 +79,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     JCheckBoxMenuItem autoSetClockRate;
     JCheckBoxMenuItem allowLinking;
     JCheckBoxMenuItem autoUpdateOperatorWeights;
+    JCheckBoxMenuItem autoUpdateFixMeanSubstRate;
 
     /**
      * flag indicating beauti is in the process of being set up and panels
@@ -93,7 +97,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     }
 
     void setTitle() {
-        frame.setTitle("Beauti 2: " + this.doc.getTemplateName() + " "
+        frame.setTitle("BEAUti 2: " + this.doc.getTemplateName() + " "
                 + doc.getFileName());
     }
 
@@ -137,6 +141,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     Action a_viewall = new ActionViewAllPanels();
 
     Action a_help = new ActionHelp();
+    Action a_msgs = new ActionMsgs();
     Action a_citation = new ActionCitation();
     Action a_about = new ActionAbout();
     Action a_viewModel = new ActionViewModel();
@@ -354,7 +359,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
-            JPackageDialog dlg = new JPackageDialog(frame);
+        	JPackageDialog panel = new JPackageDialog();
+        	JDialog dlg = panel.asDialog(frame);
             dlg.setVisible(true);
             // refresh template menu item
             templateMenu.removeAll();
@@ -385,10 +391,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             try {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                BeautiAlignmentProvider provider = new BeautiAlignmentProvider();
-                provider.template.setValue(doc.beautiConfig.partitionTemplate.get(), provider);
-                provider.getAlignments(doc);
-                
+
+                // get user-specified alignments
+                doc.beautiConfig.selectAlignments(doc,Beauti.this);
+
                 doc.connectModel();
                 doc.fireDocHasChanged();
                 a_save.setEnabled(true);
@@ -534,7 +540,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             BEASTVersion version = new BEASTVersion();
             JOptionPane.showMessageDialog(null, version.getCredits(),
                     "About Beauti 2", JOptionPane.PLAIN_MESSAGE,
-                    BeautiPanel.getIcon(BEAUTI_ICON));
+                    Utils.getIcon(BEAUTI_ICON));
         }
     } // class ActionAbout
 
@@ -554,6 +560,29 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     } // class ActionHelp
+
+    class ActionMsgs extends MyAction {
+        private static final long serialVersionUID = -1;
+
+        public ActionMsgs() {
+            super("Messages", "Show information, warning and error messages", "msgs", -1);
+        } // c'tor
+
+        public void actionPerformed(ActionEvent ae) {
+        	if (doc.baos == null) {
+        		JOptionPane.showMessageDialog(frame, "<html>Error and warning messages are printed to Stdout and Stderr<br>" +
+        				"To show them here, start BEAUti with the -capture argument.</html>");
+        	} else {
+	        	String msgs = doc.baos.toString();
+	        	JTextArea textArea = new JTextArea(msgs);
+	        	textArea.setRows(40);
+	        	textArea.setColumns(50);
+	        	textArea.setEditable(true);
+	        	JScrollPane scroller = new JScrollPane(textArea);
+	        	JOptionPane.showMessageDialog(frame, scroller);
+        	}
+        }
+    }
 
     class ActionCitation extends MyAction implements ClipboardOwner {
         private static final long serialVersionUID = -1;
@@ -686,6 +715,16 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         });
         modeMenu.add(autoUpdateOperatorWeights);
 
+        autoUpdateFixMeanSubstRate = new JCheckBoxMenuItem(
+                "Automatic set fix mean substitution rate flag", this.doc.bAutoUpdateFixMeanSubstRate);
+        autoUpdateFixMeanSubstRate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                doc.bAutoUpdateFixMeanSubstRate = autoUpdateFixMeanSubstRate.getState();
+                refreshPanel();
+            }
+        });
+        modeMenu.add(autoUpdateFixMeanSubstRate);
+
         // final JCheckBoxMenuItem muteSound = new
         // JCheckBoxMenuItem("Mute sound", false);
         // muteSound.addActionListener(new ActionListener() {
@@ -705,6 +744,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         menuBar.add(helpMenu);
         helpMenu.setMnemonic('H');
         helpMenu.add(a_help);
+        helpMenu.add(a_msgs);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
         if (!Utils.isMac()) {
@@ -904,11 +944,27 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     public static Beauti main2(String[] args) {
         try {
+        	ByteArrayOutputStream baos = null;
+            for (String arg : args) {
+            	if (arg.equals("-capture")) {
+                	baos = new ByteArrayOutputStream();
+                	PrintStream p = new PrintStream(baos);
+                	System.setOut(p);
+                	System.setErr(p);
+                	Log.err = p;
+                	Log.warning = p;
+                	Log.info = p;
+                	Log.debug = p;
+                	Log.trace = p;
+            	}
+            }
+
             AddOnManager.loadExternalJars();
             Utils.loadUIManager();
             BEASTObjectPanel.init();
 
             BeautiDoc doc = new BeautiDoc();
+            doc.baos = baos;
             if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
                 return null;
             }
@@ -994,7 +1050,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             JFrame frame = new JFrame("BEAUti 2: " + doc.getTemplateName()
                     + " " + doc.getFileName());
             beauti.frame = frame;
-            ImageIcon icon = BeautiPanel.getIcon(BEAUTI_ICON);
+            ImageIcon icon = Utils.getIcon(BEAUTI_ICON);
             if (icon != null) {
                 frame.setIconImage(icon.getImage());
             }

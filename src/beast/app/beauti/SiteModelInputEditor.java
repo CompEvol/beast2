@@ -1,27 +1,7 @@
 package beast.app.beauti;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import beast.app.draw.InputEditor;
-import beast.app.draw.IntegerInputEditor;
-import beast.app.draw.ParameterInputEditor;
-import beast.app.draw.SmallLabel;
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.MCMC;
-import beast.core.Operator;
-import beast.core.BEASTObject;
+import beast.app.draw.*;
+import beast.core.*;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
@@ -30,6 +10,14 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 public class SiteModelInputEditor extends BEASTObjectInputEditor {
     private static final long serialVersionUID = 1L;
@@ -58,6 +46,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     		ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean substitution rate");
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
+    	fixMeanRatesCheckBox.setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
@@ -65,22 +54,11 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox averageRatesBox = (JCheckBox) e.getSource();
-				boolean averageRates = averageRatesBox.isSelected();				
-				List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
-				if (averageRates) {
-					// connect DeltaExchangeOperator
-					if (!operators.contains(operator)) {
-						operators.add(operator);
-					}
+				doFixMeanRates(averageRatesBox.isSelected());
+				if (averageRatesBox.isSelected())
 					// set up relative weights
 					setUpOperator();
-				} else {
-					operators.remove(operator);
-					fixMeanRatesValidateLabel.setVisible(false);
-					repaint();
-				}
 			}
-
 		});
     	operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
     	if (operator == null) {
@@ -114,6 +92,19 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 //		return types;
 //    }
 
+	private void doFixMeanRates(boolean averageRates) {
+		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
+		if (averageRates) {
+			// connect DeltaExchangeOperator
+			if (!operators.contains(operator)) {
+				operators.add(operator);
+			}
+		} else {
+			operators.remove(operator);
+			fixMeanRatesValidateLabel.setVisible(false);
+			repaint();
+		}
+	}
 
     public InputEditor createGammaCategoryCountEditor() throws Exception {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
@@ -168,7 +159,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 
     public InputEditor createShapeEditor() throws Exception {
         Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
-        gammaShapeEditor = doc.getInpuEditorFactory().createInputEditor(input, (BEASTObject) m_input.get(), doc);
+        gammaShapeEditor = doc.getInputEditorFactory().createInputEditor(input, (BEASTObject) m_input.get(), doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
@@ -199,11 +190,11 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         return inVarEditor;
     }
 
-    public static void customConnector(BeautiDoc doc) {
+    public static boolean customConnector(BeautiDoc doc) {
  		try {
  	        DeltaExchangeOperator operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
  	        if (operator == null) {
- 	        	return;
+ 	        	return false;
  	        }
 
  	       	List<RealParameter> parameters = operator.parameterInput.get();
@@ -211,6 +202,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
  	    	double commonClockRate = -1;
 		   	String weights = "";
 		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
+		    boolean hasOneEstimatedRate = false;
 			for (Distribution d : likelihood.pDistributions.get()) {
 				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
 	    		Alignment data = treelikelihood.dataInput.get(); 
@@ -220,7 +212,9 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 		    		RealParameter mutationRate = siteModel.muParameterInput.get();
 		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
 		    		if (mutationRate.isEstimatedInput.get()) {
-		    			if (commonClockRate < 0) {
+		    			hasOneEstimatedRate = true;
+
+		    		    if (commonClockRate < 0) {
 		    				commonClockRate = mutationRate.valuesInput.get().get(0);
 		    			} else {
 		    				if (Math.abs(commonClockRate - mutationRate.valuesInput.get().get(0)) > 1e-10) {
@@ -233,7 +227,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 	    		}
 	    	}
 			
-			IntegerParameter weightParameter;
+		    IntegerParameter weightParameter;
 			if (weights.equals("")) {
 		    	weightParameter = new IntegerParameter();
 			} else {
@@ -243,17 +237,23 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 			}
 			weightParameter.isEstimatedInput.setValue(false, weightParameter);
 	    	operator.parameterWeightsInput.setValue(weightParameter, operator);
+	    	return hasOneEstimatedRate;
 		} catch (Exception e) {
 			
 		}
-    	
+		return false;
     }
     
     /** set up relative weights and parameter input **/
     public void setUpOperator() {
     	boolean bAllClocksAreEqual = true;
     	try {
-    		customConnector(doc);
+    		boolean hasOneEstimatedRate = customConnector(doc);
+		    if (doc.bAutoUpdateFixMeanSubstRate) {
+		    	fixMeanRatesCheckBox.setSelected(hasOneEstimatedRate);
+		    	doFixMeanRates(hasOneEstimatedRate);
+		    }
+
 
      		try {
      	    	double commonClockRate = -1;

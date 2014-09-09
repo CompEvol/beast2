@@ -25,7 +25,6 @@ import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLParser.RequiredInputProvider;
 import beast.util.XMLProducer;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -39,7 +38,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import java.io.*;
 import java.util.*;
 
@@ -71,6 +69,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public boolean bAutoSetClockRate = true;
         
     public boolean bAutoUpdateOperatorWeights = true;
+
+    public boolean bAutoUpdateFixMeanSubstRate = true;
     /**
      * flags for whether parameters can be linked.
      * Once a parameter is linked, (un)linking in the alignment editor should be disabled
@@ -125,7 +125,11 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     InputEditorFactory inputEditorFactory;
 
-    public InputEditorFactory getInpuEditorFactory() {
+    /** used to capture Stdout and Stderr **/
+    static ByteArrayOutputStream baos = null;
+
+
+    public InputEditorFactory getInputEditorFactory() {
         return inputEditorFactory;
     }
 
@@ -163,6 +167,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     i += 1;
                 } else if (args[i].equals("-h") || args[i].equals("-help")) {
                     showUsageAndExit();
+                } else if (args[i].equals("-capture")) {
+                	// capture stderr and stdout
+                	// already done in beast.app.beauti.Beauti
+                	i += 1;
                 } else if (args[i].equals("-xml")) {
                     String sFileName = args[i + 1];
                     sXML = load(sFileName);
@@ -710,6 +718,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	    if (!bAutoUpdateOperatorWeights) {
 	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateOperatorWeights";
 	    }
+	    if (!bAutoUpdateFixMeanSubstRate) {
+	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateFixMeanSubstRate";
+	    }
 	    return beautiStatus;
     }
 
@@ -748,6 +759,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         beauti.allowLinking.setSelected(bAllowLinking);
         bAutoUpdateOperatorWeights = !beautiStatus.contains("noAutoUpdateOperatorWeights");
         beauti.autoUpdateOperatorWeights.setSelected(bAutoUpdateOperatorWeights);
+        bAutoUpdateFixMeanSubstRate = !beautiStatus.contains("noAutoUpdateFixMeanSubstRate");
+        beauti.autoUpdateFixMeanSubstRate.setSelected(bAutoUpdateFixMeanSubstRate);
 
         // parse file
         XMLParser parser = new XMLParser();
@@ -1030,6 +1043,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         try {
             if (bAutoSetClockRate) {
                 setClockRate();
+            }
+            if (bAutoUpdateFixMeanSubstRate) {
+            	SiteModelInputEditor.customConnector(this);
             }
 
             // set estimate flag on tree, only if tree occurs in a partition
