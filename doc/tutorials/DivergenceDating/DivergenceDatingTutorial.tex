@@ -121,7 +121,8 @@ BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is 
 
 %\section{Rates and dates}
 
-This tutorial will guide you through the analysis of an alignment of sequences sampled from twelve primate species (see Figure \ref{fig:primateAlignment}). The goal is to estimate the phylogeny, the rate of evolution on each lineage and the ages of the uncalibratedancestral divergences. 
+This tutorial will guide you through the analysis of an alignment of sequences sampled from twelve primate species (see Figure \ref{fig:primateAlignment}). The goal is to estimate the phylogeny, the rate of evolution on each lineage and the ages of the uncalibrated
+ancestral divergences. 
 
 \begin{figure}	
 
@@ -218,7 +219,8 @@ You can view the alignment by double clicking the partition.
 \begin{figure}
 \centering	
 \includegraphics[width=0.9\textwidth]{figures/BEAUti_DataPartitions}
-\caption{A screenshot of the data tab in BEAUti. This and all following screenshotswere taken on an Apple computer running Mac OS X and will look slightly different on other operating systems.}
+\caption{A screenshot of the data tab in BEAUti. This and all following screenshots
+were taken on an Apple computer running Mac OS X and will look slightly different on other operating systems.}
 \label{fig:BEAUTI_DataPartitions}
 \end{figure}
 
@@ -239,8 +241,13 @@ You can view the alignment by double clicking the partition.
 \label{fig:BEAUti_DataPartitions_final}
 \end{figure}
 
-Since the sequences are linked (i.e. they are all from the mitochondrial genomewhich is not believed to undergo recombination in birds and mammals) theyshare the same ancestry, so the partitions should share the same time-tree inthe model. For the sake of simplicity, we will also assume the partitions sharethe same evolutionary rate for each branch, and hence the same ``clock model''.
-We will restrict our modelling of rate heterogeneity to among-site heterogeneitywithin each partition, and also allow the partitions to have different mean rates of evolution. 
+Since the sequences are linked (i.e. they are all from the mitochondrial genome
+which is not believed to undergo recombination in birds and mammals) they
+share the same ancestry, so the partitions should share the same time-tree in
+the model. For the sake of simplicity, we will also assume the partitions share
+the same evolutionary rate for each branch, and hence the same ``clock model''.
+We will restrict our modelling of rate heterogeneity to among-site heterogeneity
+within each partition, and also allow the partitions to have different mean rates of evolution. 
 
 So, at this point we will need to link the clock model and tree. In the {\bf Partitions} panel, select all four partitions in the table (or none, by default all partitions are affected) and click the \texttt{Link Tree Models} button and then the \texttt{Link Clock Models} button (see Figure \ref{fig:BEAUti_DataPartitions_final}). Then click on the first drop-down menu in the Clock Model column and rename the shared clock model to `clock'. Likewise rename the shared tree to `tree'. This will make following options and generated log files more easy to read.
 
@@ -249,7 +256,8 @@ So, at this point we will need to link the clock model and tree. In the {\bf Par
 
 The next step is to set up the substitution model. 
 %First we will temporarily link the site models in the Partitions panel so that we can change the model of all partitions simultaneously. 
-Then, select the {\bf Site Models} tab at the top of the main window (we skip the {\bf Tip Dates} tab since all taxa are from contemporarysamples). This will reveal the evolutionary model settings for BEAST. The options available depend on whether the data are nucleotides, or amino acids, binary data, or general data. The settings that will appear after loading the primate nucleotide alignment will be the default values for nucleotide data so we need to make some changes. 
+Then, select the {\bf Site Models} tab at the top of the main window (we skip the {\bf Tip Dates} tab since all taxa are from contemporary
+samples). This will reveal the evolutionary model settings for BEAST. The options available depend on whether the data are nucleotides, or amino acids, binary data, or general data. The settings that will appear after loading the primate nucleotide alignment will be the default values for nucleotide data so we need to make some changes. 
 
 \begin{figure}
 \centering	
@@ -260,7 +268,8 @@ Then, select the {\bf Site Models} tab at the top of the main window (we skip th
 
 Most of the models should be familiar to you. %(see Chapter {\ref{chapter:SubstitutionModels} for details}). 
 First, set the \textbf{Gamma Category Count} to 4 and then tick the `estimate' box for the \textbf{Shape} parameter. This will allow rate variation 
-between sites in each partition to be modelled.  Note that 4 to 6 categories works sufficiently well for most datasets, while having more categories takes more time to compute for little added benefit. We leave the Proportion Invariant entry set to zero.
+between sites in each partition to be modelled.  Note that 4 to 6 categories works sufficiently well for most data
+sets, while having more categories takes more time to compute for little added benefit. We leave the Proportion Invariant entry set to zero.
 
 Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu. Ideally, a substitution model should be selected that fit the data best for each partition, but here for the sake of simplicity we use HKY for all partitions. Further, select \textbf{Empirical} from the \textbf{Frequencies} drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. 
 
@@ -283,7 +292,13 @@ At last, hold `shift' key to select all site models on the left side, and click 
 The next step is to select the {\bf Clock Models} tab at the top of the
 main window. This is where we select the molecular clock model. For this exercise we are going to leave the selection at the {\it default} value of a \textbf{strict molecular clock}, because this data is very clock-like, and does not need rate variation among branches to be included in the model.
 
-To test for clock-likeness, you can (i) run the analysis witha relaxed clock model and check how much variation among rates are impliedby the data (see coefficient of variation for more on this), or(ii) perform a model comparison between a strict and relaxed clock using pathsampling, or (iii) use a random local clock model \cite{drummond2010bayesian}which explicitly considers whether each branch in the tree needs its own branchrate.
+To test for clock-likeness, you can (i) run the analysis with
+a relaxed clock model and check how much variation among rates are implied
+by the data (see coefficient of variation for more on this), or
+(ii) perform a model comparison between a strict and relaxed clock using path
+sampling, or (iii) use a random local clock model \cite{drummond2010bayesian}
+which explicitly considers whether each branch in the tree needs its own branch
+rate.
 
 %\begin{figure}
 %\includegraphics[width=\textwidth]{figures/BEAUti_Clock}
@@ -304,7 +319,9 @@ in the model, and these are shown in the priors tab (see Figure \ref{fig:BEAUti_
 \end{figure}
 
 Here we also specify that we wish to use the Calibrated Yule model \cite{Heled:2012fk}
-as the tree prior. The Yule model is a simple model ofspeciation that is generally more appropriate when considering sequences fromdifferent species. %(see Section \ref{section:YuleBirthDeathModels} for details).
+as the tree prior. The Yule model is a simple model of
+speciation that is generally more appropriate when considering sequences from
+different species. %(see Section \ref{section:YuleBirthDeathModels} for details).
 Select this from the {\bf Tree prior} dropdown menu.
 
 %\begin{figure}
@@ -315,7 +332,8 @@ Select this from the {\bf Tree prior} dropdown menu.
 
 \subsubsection{Defining the calibration node}
 
-We now need to specify a prior distribution on the calibrated node, based on ourfossil knowledge. This is known as calibrating our tree. To define an extra prior, press the small {\bf +} button below list of priors. You will see a
+We now need to specify a prior distribution on the calibrated node, based on our
+fossil knowledge. This is known as calibrating our tree. To define an extra prior, press the small {\bf +} button below list of priors. You will see a
 dialog that allows you to define a subset of the taxa in the phylogenetic tree. Once you have created a taxa set you will be able to add calibration information for its most recent common
 ancestor (MRCA) later on. 
 
@@ -352,9 +370,18 @@ estimate of the date of the most recent common ancestor of humans and chimpanzee
 \label{fig:BEAUti_Prior2}
 \end{figure}
 
-We should convince ourselves that the priors shown in the priors panel really reflect the prior information we have about the parameters of the model. Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (\texttt{clockRate}) and the speciation rate (\texttt{birthRateY}) of the Yule tree prior. For each of them, select \textbf{Gamma} from the drop-down menuand using the arrow button, expand the view to reveal the parameters of theGamma prior. For both the clock rate and the Yule birth rate set the Alpha(shape) parameter to 0.001 and the Beta (scale) parameter to 1000 (Figure \ref{fig:GammaPrior}).
+We should convince ourselves that the priors shown in the priors panel really reflect the prior information we have about the parameters of the model. Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (\texttt{clockRate}) and the speciation rate (\texttt{birthRateY}) of the Yule tree prior. For each of them, select \textbf{Gamma} from the drop-down menu
+and using the arrow button, expand the view to reveal the parameters of the
+Gamma prior. For both the clock rate and the Yule birth rate set the Alpha
+(shape) parameter to 0.001 and the Beta (scale) parameter to 1000 (Figure \ref{fig:GammaPrior}).
 
-By default each of the gamma shape parameters has an exponential priordistribution with a mean of 1. This implies (see Figure 3.7) we expect somerate variation. By default the kappa parameters for the HKY model have a lognormal(1,1.25) prior distribution, which broadly agrees with empirical evidence\cite{rosenberg2003patterns} on the range of realistic values for transition/transversionbias. These default priors are kept since they are suitable for this particularanalysis.
+By default each of the gamma shape parameters has an exponential prior
+distribution with a mean of 1. This implies (see Figure 3.7) we expect some
+rate variation. By default the kappa parameters for the HKY model have a log
+normal(1,1.25) prior distribution, which broadly agrees with empirical evidence
+\cite{rosenberg2003patterns} on the range of realistic values for transition/transversion
+bias. These default priors are kept since they are suitable for this particular
+analysis.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/GammaPrior}
@@ -395,8 +422,15 @@ computers (a few minutes).
 %\label{fig:BEAUti_MCMC}
 %\end{figure}
 
-The \textbf{Store Every} field determines how often the state is stored to file. Storingthe state periodically is useful for situations where the computing environmentis not very reliable and a BEAST run can be interrupted. Having a stored copyof the recent state allows you to resume the chain instead of restarting from thebeginning, so you do not need to get through burn-in again.
-The \textbf{Pre Burnin} field specifies the number of samples that are not logged at the very beginning ofthe analysis. We leave the \textbf{Store Every} and \textbf{Pre Burnin} fields set to their defaultvalues. Below these are the details of the log files. Each one can be expanded byclicking the black triangle.
+The \textbf{Store Every} field determines how often the state is stored to file. Storing
+the state periodically is useful for situations where the computing environment
+is not very reliable and a BEAST run can be interrupted. Having a stored copy
+of the recent state allows you to resume the chain instead of restarting from the
+beginning, so you do not need to get through burn-in again.
+The \textbf{Pre Burnin} field specifies the number of samples that are not logged at the very beginning of
+the analysis. We leave the \textbf{Store Every} and \textbf{Pre Burnin} fields set to their default
+values. Below these are the details of the log files. Each one can be expanded by
+clicking the black triangle.
 
 The next options specify how often the parameter values in the Markov
 chain should be displayed on the screen and recorded in the log file.
@@ -448,7 +482,7 @@ look something like this:
 {\tiny   
 \begin{verbatim}
 
-                  BEAST v2.2.0, 2002-2014
+             BEAST v2.2.0, 2002-2014
        Bayesian Evolutionary Analysis Sampling Trees
                  Designed and developed by
 Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard
@@ -485,20 +519,17 @@ Source code distributed under the GNU Lesser General Public License:
 Random number seed: 777
 
 12 taxa
-231 sites
-204 patterns
-  Ignoring ambiguities in tree likelihood.
-  With 204 unique site patterns.
-  Using rescaling scheme : dynamic
-  
- ...
- 
+898 sites
+413 patterns
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
 ===============================================================================
 Citations for this model:
 
 Bouckaert RR, Heled J, Kuehnert D, Vaughan TG, Wu C-H, Xie D, Suchard MA,
-  Rambaut A, Drummond AJ (2014) BEAST 2: A Start likelihood: -8314.57301787964 
-software platform for Bayesian
+  Rambaut A, Drummond AJ (2014) BEAST 2: A software platform for Bayesian
   evolutionary analysis. PLoS Computational Biology 10(4): e1003537
 
 Heled J, Drummond AJ (2012) Calibrated Tree Priors for Relaxed Phylogenetics
@@ -509,48 +540,67 @@ Hasegawa M, Kishino H, Yano T (1985) Dating the human-ape splitting by a
   22:160-174.
 
 ===============================================================================
-Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/2.1.3/Primates.log
+Writing file /Primates.log
+Writing file /Primates.trees
          Sample      posterior ESS(posterior)     likelihood          prior
-Writing file /Users/dxie004/Documents/BEAST2/DivergenceDatingTutorial/2.1.3/Primates.trees
-              0     -8297.7143              N     -8061.8466      -235.8676 --
-          10000     -5818.2850         2.0        -5753.6478       -64.6372 --
-          20000     -5780.9961         3.0        -5713.7078       -67.2883 --
-          30000     -5757.5930         4.0        -5688.7031       -68.8898 --
-          40000     -5682.1728         5.0        -5616.5731       -65.5996 --
-          50000     -5578.5853         6.0        -5510.1601       -68.4252 --
-          60000     -5534.0702         6.8        -5461.8812       -72.1889 1m51s/Msamples
-          70000     -5520.8494         7.0        -5446.1672       -74.6821 1m48s/Msamples
+              0     -7924.3599              N     -7688.4922      -235.8676 --
+          10000     -5529.0700         2.0        -5459.1993       -69.8706 --
+          20000     -5516.8159         3.0        -5442.3372       -74.4786 --
+          30000     -5516.4959         4.0        -5439.0839       -77.4119 --
+          40000     -5521.1160         5.0        -5445.6047       -75.5113 --
+          50000     -5520.7350         6.0        -5444.6198       -76.1151 --
+          60000     -5512.9427         7.0        -5439.2561       -73.6866 2m39s/Msamples
+          70000     -5513.8357         8.0        -5437.9432       -75.8924 2m39s/Msamples
           ...
-        5990000     -5512.0562       537.2        -5436.6708       -75.3853 1m43s/Msamples
-        6000000     -5520.4564       541.0        -5447.6950       -72.7614 1m43s/Msamples
-Operator                                                              Tuning	#accept	#reject	#total	acceptance rate
-beast.evolution.operators.ScaleOperator_treeScaler.t:tree             0.703 	39763	174379	214142	0.186 
-beast.evolution.operators.ScaleOperator_treeRootScaler.t:tree         0.643 	37328	177276	214604	0.174 
-beast.evolution.operators.Uniform_UniformOperator.t:tree                    	478519	1668478	2146997	0.223 
-beast.evolution.operators.SubtreeSlide_SubtreeSlide.t:tree            9.925 	272873	801494	1074367	0.254 
-beast.evolution.operators.Exchange_narrow.t:tree                            	807	1074563	1075370	0.001 
-beast.evolution.operators.Exchange_wide.t:tree                              	10	215072	215082	0 
-beast.evolution.operators.WilsonBalding_WilsonBalding.t:tree                	8	214371	214379	0 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:noncoding       0.352 	1777	5367	7144	0.249 
-beast.evolution.operators.DeltaExchangeOperator_FixMeanMutationRatesOperator0.425 	17226	126163	143389	0.12 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:noncoding  0.374 	1708	5421	7129	0.24 
-beast.evolution.operators.ScaleOperator_CalibratedYuleBirthRateScaler.t:tree0.244 	58179	156028	214207	0.272 
-beast.evolution.operators.ScaleOperator_StrictClockRateScaler.c:clock 0.706 	50192	164963	215155	0.233 
-beast.evolution.operators.UpDownOperator_strictClockUpDownOperator.c:clock0.589 	50803	164338	215141	0.236 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:1stpos          0.440 	1822	5418	7240	0.252 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:1stpos     0.420 	1890	5160	7050	0.268 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:2ndpos          0.333 	1909	5304	7213	0.265 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:2ndpos     0.303 	1984	5063	7047	0.282 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:3rdpos          0.507 	1336	5895	7231	0.185 
-beast.evolution.operators.ScaleOperator_gammaShapeScaler.s:3rdpos     0.264 	1597	5517	7114	0.224 
-End likelihood: -5520.456449464947
-Total calculation time: 621.654 seconds
+        5990000     -5516.6832       474.6        -5442.5945       -74.0886 2m40s/Msamples
+        6000000     -5512.3802       472.2        -5440.8928       -71.4874 2m40s/Msamples
+
+Operator                                                     Tuning   #accept   #reject     total  prob.acc
+ScaleOperator(treeScaler.t:tree)                              0.703     39935    174155    214090     0.187 
+ScaleOperator(treeRootScaler.t:tree)                          0.644     37329    177166    214495     0.174 
+Uniform(UniformOperator.t:tree)                                        479419   1668915   2148334     0.223 
+SubtreeSlide(SubtreeSlide.t:tree)                             9.922    272787    801404   1074191     0.254 
+Exchange(narrow.t:tree)                                                   744   1074261   1075005     0.001 
+Exchange(wide.t:tree)                                                       9    214594    214603     0.000 
+WilsonBalding(WilsonBalding.t:tree)                                         4    214548    214552     0.000 
+ScaleOperator(KappaScaler.s:noncoding)                        0.352      1739      5375      7114     0.244 
+DeltaExchangeOperator(FixMeanMutationRatesOperator)           0.425     17277    126203    143480     0.120 
+ScaleOperator(gammaShapeScaler.s:noncoding)                   0.375      1729      5428      7157     0.242 
+ScaleOperator(CalibratedYuleBirthRateScaler.t:tree)           0.245     58005    156128    214133     0.271 
+ScaleOperator(StrictClockRateScaler.c:clock)                  0.706     50080    164952    215032     0.233 
+UpDownOperator(strictClockUpDownOperator.c:clock)             0.589     50809    163882    214691     0.237 
+ScaleOperator(KappaScaler.s:1stpos)                            0.44      1816      5388      7204     0.252 
+ScaleOperator(gammaShapeScaler.s:1stpos)                       0.42      1927      5129      7056     0.273 
+ScaleOperator(KappaScaler.s:2ndpos)                           0.332      1964      5301      7265     0.270 
+ScaleOperator(gammaShapeScaler.s:2ndpos)                      0.303      2033      5177      7210     0.282 
+ScaleOperator(KappaScaler.s:3rdpos)                           0.505      1424      5860      7284     0.195 
+ScaleOperator(gammaShapeScaler.s:3rdpos)                      0.267      1569      5536      7105     0.221 
+
+Total calculation time: 964.067 seconds
 \end{verbatim}}
 
-Note that there is some useful information at the start concerning the alignments and which tree likelihoods are used. Also, all citations relevant for the analysis are mentioned at the start of the run, which can easily be copied tomanuscripts reporting about the analysis. Then follows reporting of the chain,which gives some real time feedback on progress of the chain.
-At the end, an operator analysis is printed, which lists all operators used in theanalysis together with how often the operator was tried, accepted, and rejected(see columns \#total, \#accept and \#reject respectively). The acceptance rate isthe proportion of times an operator is accepted when it is selected for doing aproposal. In general, an acceptance rate that is high, say over 0.5 indicates theproposals are conservative and do not explore the parameter space efficiently. Onthe other hand a low acceptance rate indicates that proposals are too aggressiveand almost always result in a state that is rejected because of its low posterior.Both too high and too low acceptance rates result in low ESS values. 
+Note that there is some useful information at the start concerning the alignments and which tree likelihoods are used. Also, all citations relevant for the analysis are mentioned at the start of the run, which can easily be copied to
+manuscripts reporting about the analysis. Then follows reporting of the chain,
+which gives some real time feedback on progress of the chain.
+
+At the end, an operator analysis is printed, which lists all operators used in the
+analysis together with how often the operator was tried, accepted, and rejected
+(see columns \#total, \#accept and \#reject respectively). The acceptance rate is
+the proportion of times an operator is accepted when it is selected for doing a
+proposal. In general, an acceptance rate that is high, say over 0.5 indicates the
+proposals are conservative and do not explore the parameter space efficiently. On
+the other hand a low acceptance rate indicates that proposals are too aggressive
+and almost always result in a state that is rejected because of its low posterior.
+Both too high and too low acceptance rates result in low ESS values. 
 An acceptance rate of 0.234 is the target (based on very limited evidence provided by \cite{gelman1996efficient}) for many (but not all) operators implemented in BEAST.
-Some operators have a tuning parameter, for example the scale factor of ascale parameter. If the final acceptance rate is not near the target, BEAST willsuggest a new value for the tuning parameter, which is printed in the operator analysis. In this case, all acceptance rates are good for the operators that have tuning parameters. Operators without tuning parameters include the wideexchange and Wilson-Balding operators for this analysis. Both these operatorsattempt to change the topology of the tree with large steps, but since the datasupports a single topology overwhelmingly, these radical proposals are almostalways rejected.
+
+Some operators have a tuning parameter, for example the scale factor of a
+scale parameter. If the final acceptance rate is not near the target, BEAST will
+suggest a new value for the tuning parameter, which is printed in the operator analysis. In this case, all acceptance rates are good for the operators that have tuning parameters. Operators without tuning parameters include the wide
+exchange and Wilson-Balding operators for this analysis. Both these operators
+attempt to change the topology of the tree with large steps, but since the data
+supports a single topology overwhelmingly, these radical proposals are almost
+always rejected.
 
 \section{Analyzing the results}
 
@@ -590,11 +640,22 @@ Select the \texttt{TreeHeight} parameter and then Ctrl-click \texttt{mrcatime(hu
 
 \section{Marginal posterior estimates}
 
-To show the relative rates for the four partitions, select the mutationRate parameter for each of the four partitions, and select the marginal density tab in Tracer.Figure \ref{fig:Tracer_marginalDensity} shows the marginal densities for the relative substitution rates. Theplot shows that codon positions 1 and 2 have substantially different rates (0.458versus 0.183) and both are far slower than codon position 3 with a relative rate of2.938. The noncoding partition has a rate intermediate between codon positions1 and 2 (0.348). Taken together this result suggests strong purifying selection inboth the coding and noncoding regions of the alignment.
+To show the relative rates for the four partitions, select the mutationRate parameter for each of the four partitions, and select the marginal density tab in Tracer.
+Figure \ref{fig:Tracer_marginalDensity} shows the marginal densities for the relative substitution rates. The
+plot shows that codon positions 1 and 2 have substantially different rates (0.456
+versus 0.183) and both are far slower than codon position 3 with a relative rate of
+2.941. The noncoding partition has a rate intermediate between codon positions
+1 and 2 (0.346). Taken together this result suggests strong purifying selection in
+both the coding and noncoding regions of the alignment.
 
-%Likewise, a marginal posterior estimate can be obtained for the gamma shape%parameter and the kappa parameter, which are shown in Figures 6.10 and 6.11%respectively. The plot for the gamma shape parameter suggest that there is%considerable rate variation for all of the partitions with the least rate variation%in the third codon position.
+%Likewise, a marginal posterior estimate can be obtained for the gamma shape
+%parameter and the kappa parameter, which are shown in Figures 6.10 and 6.11
+%respectively. The plot for the gamma shape parameter suggest that there is
+%considerable rate variation for all of the partitions with the least rate variation
+%in the third codon position.
 
-%The plot for the kappa parameter (Figure 6.11) shows that all partitions show%considerable transition/transversion bias, but that the third codon position in particular has a high bias with a mean of almost 29 more transitions than transversions.
+%The plot for the kappa parameter (Figure 6.11) shows that all partitions show
+%considerable transition/transversion bias, but that the third codon position in particular has a high bias with a mean of almost 29 more transitions than transversions.
 
 \begin{figure}
 \centering	
@@ -686,7 +747,12 @@ The {\bf Target tree type} specifies the tree topology that will be annotated. Y
 The default option, {\bf Maximum clade credibility tree}, finds the tree with the highest product of the posterior probability of
 all its nodes.
 
-For node heights, the default is Common Ancestor Heights, which calculatesthe height of a node as the mean of the MRCA time of all pairs of nodes inthe clade. For trees with large uncertainty in the topology and thus many cladeswith low support, some other methods can result in trees with negative branchlengths. In this analysis, the support for all clades in the summary tree is veryhigh, so this is no issue here.
+For node heights, the default is Common Ancestor Heights, which calculates
+the height of a node as the mean of the MRCA time of all pairs of nodes in
+the clade. For trees with large uncertainty in the topology and thus many clades
+with low support, some other methods can result in trees with negative branch
+lengths. In this analysis, the support for all clades in the summary tree is very
+high, so this is no issue here.
 Choose {\bf Mean heights} for node heights. This sets the heights (ages) of each node in the tree to the mean height across the
 entire sample of trees for that clade.
 
@@ -764,13 +830,20 @@ Under the help menu, DensiTree shows some information.
 
 \section{Comparing your results to the prior}
 
-It is a good idea to rerun the analysis while sampling from the prior to make surethat interactions between priors are not affecting your prior information. Theinteraction between priors can be problematic especially when using calibrationssince it means putting multiple priors on the tree.
+It is a good idea to rerun the analysis while sampling from the prior to make sure
+that interactions between priors are not affecting your prior information. The
+interaction between priors can be problematic especially when using calibrations
+since it means putting multiple priors on the tree.
 
 Using BEAUti, set up the same analysis but under the MCMC options, select the {\bf Sample from prior only} option. This will allow you to visualize the full prior distribution in the absence of your sequence data. Summarize the trees from the full prior
 distribution and compare the summary to the posterior summary tree.
 
-Divergence time estimation using ``node dating" of the type described in thischapter has been applied to answer a variety of different questions in ecology
-and evolution. For example, node dating with fossils was used in determiningthe species diversity of cycads \cite{nagalingum2011recent}, analysing the rate ofevolution in flowering plants \cite{smith2008rates}, and investigating theorigins of hot and cold desert cyanobacteria \cite{bahl2011ancient}.
+Divergence time estimation using ``node dating" of the type described in this
+chapter has been applied to answer a variety of different questions in ecology
+and evolution. For example, node dating with fossils was used in determining
+the species diversity of cycads \cite{nagalingum2011recent}, analysing the rate of
+evolution in flowering plants \cite{smith2008rates}, and investigating the
+origins of hot and cold desert cyanobacteria \cite{bahl2011ancient}.
 
 % \renewcommand{\refname}{Bibliography}% if you prefer this heading
 \bibliographystyle{amsplain} 
