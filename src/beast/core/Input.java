@@ -405,7 +405,7 @@ public class Input<T> {
             try {
                 setStringValue((String) value, plugin);
             } catch (Exception e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
                 throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
             }
@@ -611,6 +611,9 @@ public class Input<T> {
         }
 
         if (theClass.isEnum()) {
+        	if (possibleValues == null) {
+        		possibleValues = (T[]) theClass.getDeclaringClass().getEnumConstants();
+        	}
             for (final T t : possibleValues) {
                 if (sValue.equals(t.toString())) {
                     value = t;
