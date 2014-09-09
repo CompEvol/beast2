@@ -2,16 +2,14 @@ package beast.app.draw;
 
 
 
+import beast.app.beauti.BeautiDoc;
+import beast.core.BEASTObject;
+import beast.core.Input;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import beast.app.beauti.BeautiDoc;
-import beast.core.Input;
-import beast.core.BEASTObject;
-
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -146,7 +144,7 @@ public class ListInputEditor extends InputEditor.Base {
                 for (int i = 0; i < m_entries.size(); i++) {
                     sTabuList.add(m_entries.get(i).getText());
                 }
-                List<String> sPlugins = doc.getInpuEditorFactory().getAvailablePlugins(m_input, m_plugin, sTabuList, doc);
+                List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(m_input, m_plugin, sTabuList, doc);
                 if (sPlugins.size() == 0) {
                     m_addButton.setVisible(false);
                 }
@@ -214,7 +212,7 @@ public class ListInputEditor extends InputEditor.Base {
                 (m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
             Box expandBox = Box.createVerticalBox();
             //box.add(itemBox);
-            doc.getInpuEditorFactory().addInputs(expandBox, plugin, editor, null, doc);
+            doc.getInputEditorFactory().addInputs(expandBox, plugin, editor, null, doc);
             //System.err.print(expandBox.getComponentCount());
             if (expandBox.getComponentCount() > 1) {
                 // only go here if it is worth showing expanded box
@@ -424,7 +422,7 @@ public class ListInputEditor extends InputEditor.Base {
      */
     public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject parent, List<String> sTabuList) {
         List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
-        List<String> sPlugins = doc.getInpuEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
+        List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
         /* select a plugin **/
         String sClassName = null;
         if (sPlugins.size() == 1) {
@@ -434,7 +432,7 @@ public class ListInputEditor extends InputEditor.Base {
             // no candidate => we cannot be in expert mode
             // create a new Plugin
             doc.setExpertMode(true);
-            sPlugins = doc.getInpuEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
+            sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
             doc.setExpertMode(false);
             sClassName = sPlugins.get(0);
         } else {

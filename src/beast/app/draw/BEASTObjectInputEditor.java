@@ -2,17 +2,15 @@ package beast.app.draw;
 
 
 
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
-
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
-import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.Input;
 import beast.util.AddOnManager;
 
-
-import java.awt.Dimension;
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -120,7 +118,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
     }
 
     void initSelectPluginBox() {
-        List<String> sAvailablePlugins = doc.getInpuEditorFactory().getAvailablePlugins(m_input, m_plugin, null, doc);
+        List<String> sAvailablePlugins = doc.getInputEditorFactory().getAvailablePlugins(m_input, m_plugin, null, doc);
         if (sAvailablePlugins.size() > 0) {
             sAvailablePlugins.add(NO_VALUE);
             for (int i = 0; i < sAvailablePlugins.size(); i++) {
@@ -149,7 +147,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
         addComboBox(combobox, input, plugin);
         box.add(combobox);
 
-        doc.getInpuEditorFactory().addInputs(box, (BEASTObject) input.get(), this, this, doc);
+        doc.getInputEditorFactory().addInputs(box, (BEASTObject) input.get(), this, this, doc);
 
         box.setBorder(new EtchedBorder());
         //box.setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -171,7 +169,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
     		return;
     	}
     	
-        List<BeautiSubTemplate> availableTemplates = doc.getInpuEditorFactory().getAvailableTemplates(m_input, m_plugin, null, doc);
+        List<BeautiSubTemplate> availableTemplates = doc.getInputEditorFactory().getAvailableTemplates(m_input, m_plugin, null, doc);
         if (availableTemplates.size() > 0) {
 //        	if (m_input.getRule() != Validate.REQUIRED || plugin == null) {
 //        		sAvailablePlugins.add(NO_VALUE);
@@ -309,7 +307,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                             }
                             // add new items to Expansion Box
                             if (plugin != null) {
-                            	doc.getInpuEditorFactory().addInputs(m_expansionBox, plugin, _this, _this, doc);
+                            	doc.getInputEditorFactory().addInputs(m_expansionBox, plugin, _this, _this, doc);
                             }
                         } else {
                             // it is not expanded, enable the edit button

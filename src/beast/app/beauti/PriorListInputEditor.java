@@ -2,32 +2,11 @@ package beast.app.beauti;
 
 
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-
+import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
-import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.SmallButton;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.Logger;
-import beast.core.State;
-import beast.core.StateNode;
-import beast.core.BEASTObject;
+import beast.core.*;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -37,6 +16,13 @@ import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
 import beast.math.distributions.Prior;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 
 
@@ -148,7 +134,7 @@ public class PriorListInputEditor extends ListInputEditor {
     protected InputEditor addPluginItem(Box itemBox, BEASTObject plugin) {
 		try {
 	    	int listItemNr = ((List) m_input.get()).indexOf(plugin);
-	    	InputEditor editor = doc.getInpuEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
+	    	InputEditor editor = doc.getInputEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
 	    	itemBox.add((Component) editor);
 	    	return editor;
 		} catch (Exception e) {

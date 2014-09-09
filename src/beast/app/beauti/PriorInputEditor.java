@@ -1,23 +1,19 @@
 package beast.app.beauti;
 
 
-import java.awt.Dimension;
+import beast.app.draw.BEASTObjectDialog;
+import beast.app.draw.InputEditor;
+import beast.core.BEASTObject;
+import beast.core.Input;
+import beast.core.parameter.RealParameter;
+import beast.math.distributions.Prior;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-
-import beast.app.draw.InputEditor;
-import beast.app.draw.BEASTObjectDialog;
-import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.core.parameter.RealParameter;
-import beast.math.distributions.Prior;
 
 
 
@@ -50,7 +46,7 @@ public class PriorInputEditor extends InputEditor.Base {
         itemBox.add(label);
 
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
+        List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
 

@@ -1,24 +1,19 @@
 package beast.app.beauti;
 
+import beast.app.draw.InputEditor;
+import beast.core.BEASTObject;
+import beast.core.Input;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
+import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.OneOnX;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-
-import beast.app.beauti.PriorListInputEditor.MRCAPriorActionListener;
-import beast.app.draw.InputEditor;
-import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
-import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.OneOnX;
 
 
 
@@ -83,7 +78,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 
         }
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
+        List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
 
