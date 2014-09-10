@@ -1,9 +1,6 @@
 package beast.evolution.tree;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
+import beast.core.*;
 import beast.evolution.alignment.TaxonSet;
 import beast.util.TreeParser;
 
@@ -51,6 +48,7 @@ public class Tree extends StateNode implements TreeInterface {
      * array of all nodes in the tree *
      */
     protected Node[] m_nodes = null;
+
     protected Node[] m_storedNodes = null;
 
     /**
@@ -276,7 +274,7 @@ public class Tree extends StateNode implements TreeInterface {
         nodeCount = this.root.getNodeCount();
         // ensure root is the last node
         if (m_nodes != null && root.labelNr != m_nodes.length - 1) {
-            int rootPos = m_nodes.length - 1;
+            final int rootPos = m_nodes.length - 1;
             Node tmp = m_nodes[rootPos];
             m_nodes[rootPos] = root;
             m_nodes[root.labelNr] = tmp;
@@ -396,31 +394,42 @@ public class Tree extends StateNode implements TreeInterface {
         }
     }
 
-    private int
-    getNodesPostOrder(final Node node, final Node[] nodes, int pos) {
-        node.m_tree = this;
-        for (final Node child : node.children) {
-            pos = getNodesPostOrder(child, nodes, pos);
-        }
-        nodes[pos] = node;
-        return pos + 1;
-    }
+//    private int
+//    getNodesPostOrder(final Node node, final Node[] nodes, int pos) {
+//        node.m_tree = this;
+//        for (final Node child : node.children) {
+//            pos = getNodesPostOrder(child, nodes, pos);
+//        }
+//        nodes[pos] = node;
+//        return pos + 1;
+//    }
 
-    /**
-     * @param node  top of tree/sub tree (null defaults to whole tree)
-     * @param nodes array to fill (null will result in creating a new one)
-     * @return tree nodes in post-order, children before parents
-     */
+//    /**
+//     * @param node  top of tree/sub tree (null defaults to whole tree)
+//     * @param nodes array to fill (null will result in creating a new one)
+//     * @return tree nodes in post-order, children before parents
+//     */
+//    public Node[] listNodesPostOrder(Node node, Node[] nodes) {
+//        if (node == null) {
+//            node = root;
+//        }
+//        if (nodes == null) {
+//            final int n = (node == root) ? nodeCount : node.getNodeCount();
+//            nodes = new Node[n];
+//        }
+//        getNodesPostOrder(node, nodes, 0);
+//        return nodes;
+//    }
+
+    private Node[] postCache = null;
     public Node[] listNodesPostOrder(Node node, Node[] nodes) {
-        if (node == null) {
-            node = root;
+        if( node != null ) {
+            return TreeInterface.super.listNodesPostOrder(node, nodes);
         }
-        if (nodes == null) {
-            final int n = (node == root) ? nodeCount : node.getNodeCount();
-            nodes = new Node[n];
+        if( postCache == null ) {
+            postCache = TreeInterface.super.listNodesPostOrder(node, nodes);
         }
-        getNodesPostOrder(node, nodes, 0);
-        return nodes;
+        return postCache;
     }
 
     /**
@@ -547,9 +556,15 @@ public class Tree extends StateNode implements TreeInterface {
     public void setEverythingDirty(final boolean bDirty) {
         setSomethingIsDirty(bDirty);
         if (!bDirty) {
-            root.makeAllDirty(IS_CLEAN);
+            for( Node n : m_nodes ) {
+                n.isDirty = IS_CLEAN;
+            }
+          //  root.makeAllDirty(IS_CLEAN);
         } else {
-            root.makeAllDirty(IS_FILTHY);
+            for( Node n : m_nodes ) {
+                n.isDirty = IS_FILTHY;
+            }
+        //    root.makeAllDirty(IS_FILTHY);
         }
     }
 
@@ -706,30 +721,37 @@ public class Tree extends StateNode implements TreeInterface {
      * @param iEnd   nodes are stored up to but not including this index
      */
     private void storeNodes(final int iStart, final int iEnd) {
+        // Use direct members for speed (we are talking 5-7% or more from total time for large trees :)
         for (int i = iStart; i < iEnd; i++) {
             final Node sink = m_storedNodes[i];
             final Node src = m_nodes[i];
             sink.height = src.height;
 
-            if (!src.isRoot()) {
-                sink.setParent(m_storedNodes[src.getParent().getNr()], false);
+            if ( src.parent != null ) {
+                sink.parent = m_storedNodes[src.parent.getNr()];
             } else {
                 // currently only called in the case of sampled ancestor trees
                 // where root node is not always last in the list
-                sink.setParent(null, false);
+                sink.parent = null;
             }
 
             final List<Node> children = sink.children;
             children.clear();
             //sink.removeAllChildren(false);
-            for (final Node srcChild : src.getChildren()) {
+            for (final Node srcChild : src.children) {
                 // don't call addChild, which calls  setParent(..., true);
                 final Node c = m_storedNodes[srcChild.getNr()];
-                c.setParent(sink, false);
+                c.parent = sink;
                 children.add(c);
                 //sink.addChild(c);
             }
         }
+    }
+
+    @Override
+    public void startEditing(final Operator operator) {
+        super.startEditing(operator);
+        postCache = null;
     }
 
     @Override
@@ -744,13 +766,21 @@ public class Tree extends StateNode implements TreeInterface {
         root = m_nodes[storedRoot.getNr()];
 
         // necessary for sampled ancestor trees,
-        leafNodeCount = root.getLeafNodeCount();
+        // we have the nodes, no need for expensive recursion
+        leafNodeCount = 0;
+        for( Node n : m_nodes ) {
+            leafNodeCount += n.isLeaf() ? 1 : 0;
+        }
+
+        //leafNodeCount = root.getLeafNodeCount();
 
         hasStartedEditing = false;
 
         for( Node n : m_nodes ) {
             n.isDirty = Tree.IS_CLEAN;
         }
+
+        postCache = null;
     }
 
     /**

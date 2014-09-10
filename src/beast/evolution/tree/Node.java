@@ -202,6 +202,15 @@ public class Node extends BEASTObject {
         }
     }
 
+     /**
+     * Sets the parent of this node. No overhead, no side effects like setting dirty flags etc.
+     *
+     * @param parent     the node to become parent
+     */
+    void setParentImmediate(final Node parent) {
+        this.parent = parent;
+    }
+
     /**
      * @return a copy of a list of immediate child nodes of this node.
      *         Note that changing the list does not affect the topology of the tree.

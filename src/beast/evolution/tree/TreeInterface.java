@@ -45,7 +45,8 @@ public interface TreeInterface {
             node = getRoot();
         }
         if (nodes == null) {
-            final int n = node.getNodeCount();
+            // overall node count is cached, faster
+            final int n = node == getRoot() ? getNodeCount() : node.getNodeCount();
             nodes = new Node[n];
         }
         getNodesPostOrder(node, nodes, 0);
