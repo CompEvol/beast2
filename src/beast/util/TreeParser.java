@@ -173,7 +173,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             }
         }
 
-        if( m_taxonset.get() == null && labels != null ) {
+        if( m_taxonset.get() == null && labels != null && isLabelledNewickInput.get() ) {
             m_taxonset.setValue(new TaxonSet(TaxonSet.createTaxonList(labels)), this);
         }
 

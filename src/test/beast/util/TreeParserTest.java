@@ -36,11 +36,12 @@ public class TreeParserTest extends TestCase {
 
 //        try {
 
-            boolean isLabeled = true;
+        boolean isLabeled = true;
 
-            TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
-
-            assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
+        TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
+        System.out.println("adfgad");
+        assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
+        // fix condition for adding the taxa and fix tree parse test
 
 //        } catch (Exception e) {
 //            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.  \
