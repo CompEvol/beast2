@@ -141,6 +141,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             for (int i = 0; i < getLeafNodeCount(); i++) {
                 getNode(i).setHeight(0);
             }
+            if (adjustTipHeightsInput.get().booleanValue() != false) {
+                System.err.println("Warning: Adjust tip heights is set to 'true'. (Do not use with dated tips!)");
+            }
         }
         initStateNodes();
     } // init
