@@ -538,7 +538,6 @@ public class BeastMain {
             System.setProperty("state.file.name", stateFileName.trim());
             System.out.println("Writing state to file " + stateFileName);
         }
-        
 
 //        if (allowOverwrite) {
 //            System.setProperty("log.allow.overwrite", "true");

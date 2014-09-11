@@ -498,13 +498,17 @@ public class Alignment extends Map<String> {
             builder.append(", " + getTotalWeight() + "]");
         } else {
 
+            long siteCount = getSiteCount();
+
             builder.append('\n');
             builder.append("  " + getTaxonCount() + " taxa");
             builder.append('\n');
-            builder.append("  " + getSiteCount() + " sites" + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight + ""));
+            builder.append("  " + siteCount + (siteCount == 1 ? " site": " sites") + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight + ""));
             builder.append('\n');
-            builder.append("  " + getPatternCount() + " patterns");
-            builder.append('\n');
+            if (siteCount > 1) {
+                builder.append("  " + getPatternCount() + " patterns");
+                builder.append('\n');
+            }
         }
         return builder.toString();
     }
