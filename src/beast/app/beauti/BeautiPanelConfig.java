@@ -1,17 +1,16 @@
 package beast.app.beauti;
 
 
+import beast.app.draw.BEASTObjectPanel;
+import beast.app.draw.InputEditor;
+import beast.core.BEASTObject;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import beast.app.draw.InputEditor;
-import beast.app.draw.BEASTObjectPanel;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.core.Input.Validate;
-
 
 
 
@@ -28,7 +27,6 @@ public class BeautiPanelConfig extends BEASTObject {
             "For example operator to edit the operator input of the top level run element. " +
             "distribution/distribution[id='prior'] for prior distributions." +
             "distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
-
 
     public Input<Partition> bHasPartitionsInput = new Input<Partition>("hasPartitions", "flag to indicate the panel has" +
             "a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
@@ -48,7 +46,6 @@ public class BeautiPanelConfig extends BEASTObject {
 
     public Input<InputEditor.ButtonStatus> buttonStatusInput = new Input<InputEditor.ButtonStatus>("buttonStatus", "whether to show add and delete buttons. " +
             "This can be " + Arrays.toString(InputEditor.ButtonStatus.values()) + " (default 'ALL')", InputEditor.ButtonStatus.ALL, InputEditor.ButtonStatus.values());
-
 
     String[] sPathComponents;
     String[] sConditionalAttribute;

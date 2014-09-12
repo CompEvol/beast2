@@ -1,40 +1,12 @@
 package beast.app.beauti;
 
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.EventObject;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallButton;
 import beast.app.util.FileDrop;
-import beast.app.util.Utils;
-import beast.core.Input;
-import beast.core.MCMC;
 import beast.core.BEASTObject;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.MCMC;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -44,11 +16,24 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TreeInterface;
 
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.util.*;
+import java.util.List;
 
-
-
-
-// TODO: add useAmbiguities flag 
+// TODO: add useAmbiguities flag
 // TODO: add warning if useAmbiguities=false and nr of patterns=1 (happens when all data is ambiguous)
 
 public class AlignmentListInputEditor extends ListInputEditor {
@@ -66,6 +51,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	
 	final static int NR_OF_COLUMNS = 9;
 
+    final static int STRUT_SIZE = 5;
+
 	/**
 	 * alignments that form a partition. These can be FilteredAlignments *
 	 */
@@ -77,12 +64,15 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	JTextField nameEditor;
 	List<JButton> linkButtons;
 	List<JButton> unlinkButtons;
-	JButton splitButton; 
-	JButton delButton;
+	JButton splitButton;
 
-	JScrollPane scrollPane;
+    /**
+     * The button for deleting an alignment in the alignment list.
+     */
+    JButton delButton;
 
-	// public AlignmentListInputEditor() {}
+	private JScrollPane scrollPane;
+
 	public AlignmentListInputEditor(BeautiDoc doc) {
 		super(doc);
 	}
@@ -118,16 +108,21 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		linkButtons = new ArrayList<JButton>();
 		unlinkButtons = new ArrayList<JButton>();
 		nPartitions = alignments.size();
-		// super.init(input, plugin, bExpandOption, false);
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		
-		Box box = Box.createVerticalBox();
-		box.add(Box.createVerticalStrut(5));
-		box.add(createButtonBox());
-		box.add(Box.createVerticalStrut(5));
-		box.add(createListBox());
-		panel.add(box, BorderLayout.NORTH);
+
+        // override BoxLayout in superclass
+        setLayout(new BorderLayout());
+
+        add(createLinkButtons(), BorderLayout.NORTH);
+        add(createListBox(), BorderLayout.CENTER);
+
+        //Box box = Box.createVerticalBox();
+		//box.add(Box.createVerticalStrut(STRUT_SIZE));
+		//box.add(createLinkButtons());
+		//box.add(Box.createVerticalStrut(STRUT_SIZE));
+		//box.add(createListBox());
+        //box.add(Box.createVerticalStrut(STRUT_SIZE));
+        //box.add(Box.createVerticalGlue());
+		//add(box, BorderLayout.CENTER);
 
         Color focusColor = UIManager.getColor("Focus.color");
         Border focusBorder = BorderFactory.createMatteBorder(2, 2, 2, 2, focusColor);
@@ -137,23 +132,46 @@ public class AlignmentListInputEditor extends ListInputEditor {
             }   // end filesDropped
         }); // end FileDrop.Listener
 
-		Box buttonBox = Box.createHorizontalBox();
+        // this should place the add/remove/split buttons at the bottom of the window.
+        add(createAddRemoveSplitButtons(), BorderLayout.SOUTH);
 
-		m_addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
-		m_addButton.setName("+");
-		m_addButton.setToolTipText("Add item to the list");
-		m_addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				addItem();
-			}
-		});
-		buttonBox.add(Box.createHorizontalStrut(5));
-		buttonBox.add(m_addButton);
-		buttonBox.add(Box.createHorizontalStrut(5));
+        updateStatus();
+	}
 
-		delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
-		delButton.setName("-");
-		delButton.setToolTipText("Delete selected items from the list");
+    /**
+     * Creates the link/unlink button component
+     * @return a box containing three link/unlink button pairs.
+     */
+	private JComponent createLinkButtons() {
+
+        Box box = Box.createHorizontalBox();
+		addLinkUnlinkPair(box, "Site Models");
+        box.add(Box.createHorizontalStrut(STRUT_SIZE));
+        addLinkUnlinkPair(box, "Clock Models");
+        box.add(Box.createHorizontalStrut(STRUT_SIZE));
+        addLinkUnlinkPair(box, "Trees");
+		box.add(Box.createHorizontalGlue());
+		return box;
+	}
+
+    private JComponent createAddRemoveSplitButtons() {
+        Box buttonBox = Box.createHorizontalBox();
+
+        addButton = new SmallButton("+", true, SmallButton.ButtonType.square);
+        addButton.setName("+");
+        addButton.setToolTipText("Add item to the list");
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addItem();
+            }
+        });
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
+        buttonBox.add(addButton);
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
+
+        delButton = new SmallButton("-", true, SmallButton.ButtonType.square);
+        delButton.setName("-");
+        delButton.setToolTipText("Delete selected items from the list");
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (doc.bHasLinkedAtLeastOnce) {
@@ -164,34 +182,22 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 		});
 		buttonBox.add(delButton);
-		buttonBox.add(Box.createHorizontalStrut(5));
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
 
-		splitButton = new JButton("Split");
-		splitButton.setName("Split");
-		splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
+        splitButton = new JButton("Split");
+        splitButton.setName("Split");
+        splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
 		splitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				splitItem();
 			}
 		});
-		buttonBox.add(splitButton);
+        buttonBox.add(splitButton);
 
-		buttonBox.add(Box.createHorizontalGlue());
-		panel.add(buttonBox, BorderLayout.SOUTH);
-		add(panel);
-		
-		updateStatus();
-	}
+        buttonBox.add(Box.createHorizontalGlue());
 
-	protected Component createButtonBox() {
-		Box box = Box.createHorizontalBox();
-		box.add(Box.createHorizontalGlue());
-		addLinkUnlinkPair(box, "Site Models");
-		addLinkUnlinkPair(box, "Clock Models");
-		addLinkUnlinkPair(box, "Trees");
-		box.add(Box.createHorizontalGlue());
-		return box;
-	}
+        return buttonBox;
+    }
 
     private void addFiles(File[] fileArray) {
         List<BEASTObject> plugins = null;
@@ -218,18 +224,26 @@ public class AlignmentListInputEditor extends ListInputEditor {
         }
     }
 
+    /**
+     * This method just adds the two buttons (with add()) and does not add any glue or struts before or after.
+     * @param box
+     * @param sLabel
+     */
 	private void addLinkUnlinkPair(Box box, String sLabel) {
-		JButton linkSModelButton = new JButton("Link " + sLabel);
+
+        //JLabel label = new JLabel(sLabel+":");
+        //box.add(label);
+        JButton linkSModelButton = new JButton("Link " + sLabel);
 		linkSModelButton.setName("Link " + sLabel);
 		linkSModelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton button = (JButton) e.getSource();
-				link(columnLabelToNr(button.getText()));
-				table.repaint();
-			}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton button = (JButton) e.getSource();
+                link(columnLabelToNr(button.getText()));
+                table.repaint();
+            }
 
-		});
+        });
 		box.add(linkSModelButton);
 		linkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
 		JButton unlinkSModelButton = new JButton("Unlink " + sLabel);
@@ -245,8 +259,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		});
 		box.add(unlinkSModelButton);
 		unlinkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
-		box.add(Box.createHorizontalGlue());
-		
+
 		linkButtons.add(linkSModelButton);
 		unlinkButtons.add(unlinkSModelButton);
 	}
@@ -299,16 +312,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 	}
 
-	int[] getTableRowSelection() {
-		int[] nSelected = table.getSelectedRows();
-//		if (nSelected.length == 0) {
-//			// select all
-//			nSelected = new int[nPartitions];
-//			for (int i = 0; i < nPartitions; i++) {
-//				nSelected[i] = i;
-//			}
-//		}
-		return nSelected;
+
+    int[] getTableRowSelection() {
+        return table.getSelectedRows();
 	}
 
 	/** set partition of type nColumn to partition model nr iRow **/
@@ -585,7 +591,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 				tableData[i][FILE_COLUMN] = data;
 			}
 			// # taxa
-			tableData[i][TAXA_COLUMN] = data.getNrTaxa();
+			tableData[i][TAXA_COLUMN] = data.getTaxonCount();
 			// # sites
 			tableData[i][SITES_COLUMN] = data.getSiteCount();
 			// Data type
@@ -635,6 +641,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		String[] columnData = new String[] { "Name", "File", "Taxa", "Sites", "Data Type", "Site Model", "Clock Model",
 				"Tree", "Ambiguities" };
 		initTableData();
+
 		// set up table.
 		// special features: background shading of rows
 		// custom editor allowing only Date column to be edited.
@@ -813,43 +820,12 @@ System.err.println("needsRePartition = " + needsRePartition);
 		});
 
 		scrollPane = new JScrollPane(table);
-		
-		scrollPane.addComponentListener(new ComponentListener() {
-			
-			@Override
-			public void componentShown(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void componentResized(ComponentEvent e) {
-				if (doc.getFrame() != null) {
-					Dimension preferredSize = doc.getFrame().getSize();
-					if (Utils.isWindows()) {
-					preferredSize.height = Math.max(preferredSize.height - 180, 0);
-					preferredSize.width = Math.max(preferredSize.width - 50, 0);
-					} else {
-						preferredSize.height = Math.max(preferredSize.height - 150, 0);
-						preferredSize.width = Math.max(preferredSize.width - 25, 0);
-						
-					}
-					scrollPane.setPreferredSize(preferredSize);
-				}				
-			}
-			
-			@Override
-			public void componentMoved(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void componentHidden(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+
+        int rowsToDisplay = 3;
+        Dimension d = table.getPreferredSize();
+        scrollPane.setPreferredSize(
+                new Dimension(d.width,table.getRowHeight()*rowsToDisplay+table.getTableHeader().getHeight()));
+
 		return scrollPane;
 	} // createListBox
 	
@@ -1064,7 +1040,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 	@Override
 	protected void addItem() {
-		List<BEASTObject> plugins = pluginSelector(m_input, m_plugin, null);
+		List<BEASTObject> plugins = doc.beautiConfig.selectAlignments(doc, this);
 
 		// Component c = this;
 		if (plugins != null) {
@@ -1204,27 +1180,6 @@ System.err.println("needsRePartition = " + needsRePartition);
 		refreshPanel();
 	} // splitItem
 
-	@Override
-	public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject plugin, List<String> sTabuList) {
-		List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
-		BeautiAlignmentProvider selectedProvider = null;
-		if (providers.size() == 1) {
-			selectedProvider = providers.get(0);
-		} else {
-			selectedProvider = (BeautiAlignmentProvider) JOptionPane.showInputDialog(this, "Select what to add", 
-					"Add partition",  
-					JOptionPane.QUESTION_MESSAGE, null, providers.toArray(), 
-					providers.get(0));
-			if (selectedProvider == null) {
-				return null;
-			}
-		}
-		List<BEASTObject> selectedPlugins = selectedProvider.getAlignments(doc);
-		return selectedPlugins;
-		
-	} // pluginSelector
-	
-	
 	/** enable/disable buttons, etc **/
 	void updateStatus() {
 		boolean status = (alignments.size() > 1);

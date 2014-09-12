@@ -1,30 +1,22 @@
 package beast.app.draw;
 
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.BeautiPanelConfig;
+import beast.core.BEASTObject;
+import beast.core.Input;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
-
-import beast.app.beauti.BeautiDoc;
-import beast.app.beauti.BeautiPanel;
-import beast.app.beauti.BeautiPanelConfig;
-import beast.core.Input;
-import beast.core.BEASTObject;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 
@@ -40,11 +32,12 @@ import beast.core.BEASTObject;
  */
 /** note that it is assumed that any InputEditor is a java.awt.Component **/
 public interface InputEditor {
+
     final public static String NO_VALUE = "<none>";
 
-    public enum ExpandOption {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM};
+    public enum ExpandOption {TRUE, TRUE_START_COLLAPSED, FALSE, IF_ONE_ITEM}
 
-    public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY};
+    public enum ButtonStatus {ALL, NONE, DELETE_ONLY, ADD_ONLY}
     
     public enum ValidationStatus {
         IS_VALID,
@@ -52,8 +45,7 @@ public interface InputEditor {
         HAS_INVALIDMEMBERS
     }
 
-
-    /** type of Plugin to which this editor can be used **/ 
+    /** type of Plugin to which this editor can be used **/
     Class<?> type();
 
     /** list of types of Plugins to which this editor can be used **/ 
@@ -71,9 +63,11 @@ public interface InputEditor {
     /** set document with the model containing the input **/
     void setDoc(BeautiDoc doc);
 
-    /** set decoration **/
+    /**
+     * set decoration. This method is deprecated, because decoration can be handled by the JComponent with setBorder method on
+     **/
+    @Deprecated
     void setBorder(Border border);
-    
 
     /** prepare to validate input **/
     void startValidating(ValidationStatus state);
@@ -84,22 +78,25 @@ public interface InputEditor {
     /** add input editor to listen for changes **/
     void addValidationListener(InputEditor validateListener);
     
-    /** propagate status of predecesor inputs through list of plugins **/
+    /** propagate status of predecessor inputs through list of plugins **/
     void notifyValidationListeners(ValidationStatus state);
     
     Component getComponent();
 
-public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, ValidateListener {
+public abstract class Base extends JPanel implements InputEditor {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * the input to be edited *
      */
     protected Input<?> m_input;
+
     /**
      * parent plugin *
      */
     protected BEASTObject m_plugin;
+
     /**
      * text field used for primitive input editors *
      */
@@ -150,34 +147,16 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
         }
     }
 
-
-    public static Integer g_nLabelWidth = 150;
-
-//    Box box;
-    
-//    public Base() {
-////    	box = Box.createHorizontalBox();
-//        super(BoxLayout.X_AXIS);
-//        //g_currentInputEditors.add(this);
-////    	super.add(box);
-//    }
-
-//    @Override
-//   	public Component add(Component comp) {
-//   		return box.add(comp);
-//   	}
+    // TODO this should not be static. Better if it was an instance variable,
+    // TODO since its currently set by an input of BeautiPanelConfig, which can be different for each BeautiPanel.
+    public static int g_nLabelWidth = 150;
 
 	public Base(BeautiDoc doc) {
-		//super(BoxLayout.X_AXIS);
-		//box = Box.createHorizontalBox();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		//setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		//setLayout(new GridLayout());
 		this.doc = doc;
 		if (doc != null) {
 			doc.currentInputEditors.add(this);
 		}
-		//super.add(box);
 	} // c'tor
 
 	protected BeautiDoc getDoc() {
@@ -462,28 +441,29 @@ public abstract class Base extends /*Box*/ JPanel implements InputEditor { //, V
         }
     }
 
-    @Override
+    // we should leave it to the component to set its own border
+    @Deprecated
     public void setBorder(Border border) {
-        // No border
-		//super.setBorder(BorderFactory.createEtchedBorder());
+		super.setBorder(border);
     }
-    
+
     @Override
     public void setDoc(BeautiDoc doc) {
     	this.doc = doc;
     }
 
-    @Override
+    // what is this method for? We should leave repainting to the standard mechanism
+    @Deprecated
 	public void repaint() {
 	this.repaint(0);
 		super.repaint();
 	}
-    
+
     @Override
 	public Component getComponent() {
 		return this;
 	}
-    
+
 } // class InputEditor.Base
 
 } // InputEditor interface

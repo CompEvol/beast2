@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ListInputEditor extends InputEditor.Base {
+
     private static final long serialVersionUID = 1L;
     static Image DOWN_ICON;
     static Image RIGHT_ICON;
@@ -34,15 +35,14 @@ public class ListInputEditor extends InputEditor.Base {
         }
     }
 
-
     protected ButtonStatus m_buttonStatus = ButtonStatus.ALL;
 
     /**
      * buttons for manipulating the list of inputs *
      */
-    protected SmallButton m_addButton;
+    protected SmallButton addButton;
     protected List<JTextField> m_entries;
-    protected List<SmallButton> m_delButton;
+    protected List<SmallButton> delButtonList;
     protected List<SmallButton> m_editButton;
     protected List<SmallLabel> m_validateLabels;
     protected Box m_listBox;
@@ -75,12 +75,11 @@ public class ListInputEditor extends InputEditor.Base {
     public ListInputEditor(BeautiDoc doc) {
         super(doc);
         m_entries = new ArrayList<JTextField>();
-        m_delButton = new ArrayList<SmallButton>();
+        delButtonList = new ArrayList<SmallButton>();
         m_editButton = new ArrayList<SmallButton>();
         m_validateLabels = new ArrayList<SmallLabel>();
         m_bExpandOption = ExpandOption.FALSE;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        //box.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     }
 
     @Override
@@ -125,19 +124,18 @@ public class ListInputEditor extends InputEditor.Base {
             }
         }
 
-
         add(m_listBox);
         Box box = Box.createHorizontalBox();
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
-            m_addButton = new SmallButton("+", true);
-            m_addButton.setName("+");
-            m_addButton.setToolTipText("Add item to the list");
-            m_addButton.addActionListener(new ActionListener() {
+            addButton = new SmallButton("+", true);
+            addButton.setName("+");
+            addButton.setToolTipText("Add item to the list");
+            addButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addItem();
                 }
             });
-            box.add(m_addButton);
+            box.add(addButton);
             if (!doc.isExpertMode()) {
                 // if nothing can be added, make add button invisible
                 List<String> sTabuList = new ArrayList<String>();
@@ -146,7 +144,7 @@ public class ListInputEditor extends InputEditor.Base {
                 }
                 List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(m_input, m_plugin, sTabuList, doc);
                 if (sPlugins.size() == 0) {
-                    m_addButton.setVisible(false);
+                    addButton.setVisible(false);
                 }
             }
         }
@@ -167,21 +165,6 @@ public class ListInputEditor extends InputEditor.Base {
     protected void addSingleItem(BEASTObject plugin) {
         Box itemBox = Box.createHorizontalBox();
 
-//    	String sFullInputName = plugin.getClass().getName() + "." + m_input.getName();
-//    	if (BeautiConfig.hasDeleteButton(sFullInputName)) {
-//        if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.DELETE_ONLY) {
-//
-//            SmallButton delButton = new SmallButton("-", true);
-//            delButton.setToolTipText("Delete item from the list");
-//            delButton.addActionListener(new ActionListenerObject(plugin) {
-//                // implements ActionListener
-//                public void actionPerformed(ActionEvent e) {
-//                    deleteItem(m_o);
-//                }
-//            });
-//            m_delButton.add(delButton);
-//            itemBox.add(delButton);
-//        }
         InputEditor editor = addPluginItem(itemBox, plugin);
         
         SmallButton editButton = new SmallButton("e", true, SmallButton.ButtonType.square);
@@ -206,7 +189,9 @@ public class ListInputEditor extends InputEditor.Base {
         itemBox.add(validateLabel);
         validateLabel.setVisible(true);
         m_validateLabels.add(validateLabel);
-        itemBox.setBorder(BorderFactory.createEtchedBorder());
+
+        // AJD: This is not consistent with Mac OS X look and feel, and its not necessary
+        //itemBox.setBorder(BorderFactory.createEtchedBorder());
 
         if (m_bExpandOption == ExpandOption.TRUE || m_bExpandOption == ExpandOption.TRUE_START_COLLAPSED ||
                 (m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() == 1)) {
@@ -295,26 +280,12 @@ public class ListInputEditor extends InputEditor.Base {
             sName = sName.substring(sName.lastIndexOf('.') + 1);
         }
         JLabel label = new JLabel(sName);
-        //JTextField entry = new JTextField(sName);
-        //Dimension size = new Dimension(200, 20);
-        //entry.setMinimumSize(size);
-//        entry.setMaximumSize(size);
-//        entry.setPreferredSize(size);
-        //entry.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(0xed,0xed,0xed)));
-//        entry.setBorder(BorderFactory.createCompoundBorder(
-//        		BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(0xed,0xed,0xed)),
-//        		BorderFactory.createBevelBorder(0)));
-
-        //entry.getDocument().addDocumentListener(new IDDocumentListener(plugin, entry));
 
         itemBox.add(Box.createRigidArea(new Dimension(5, 1)));
-//        itemBox.add(entry);
-//        m_entries.add(entry);
         itemBox.add(label);
         itemBox.add(Box.createHorizontalGlue());
         return this;
     }
-
 
     class IDDocumentListener implements DocumentListener {
         BEASTObject m_plugin;
@@ -349,7 +320,6 @@ public class ListInputEditor extends InputEditor.Base {
         }
     }
 
-
     protected void addItem() {
         List<String> sTabuList = new ArrayList<String>();
         for (int i = 0; i < m_entries.size(); i++) {
@@ -372,7 +342,6 @@ public class ListInputEditor extends InputEditor.Base {
             repaint();
         }
     } // addItem
-
 
     protected Object editItem(Object o) {
         int i = ((List<?>) m_input.get()).indexOf(o);
@@ -400,7 +369,7 @@ public class ListInputEditor extends InputEditor.Base {
         ((List<?>) m_input.get()).remove(i);
         //safeRemove(m_labels, i);
         safeRemove(m_entries, i);
-        safeRemove(m_delButton, i);
+        safeRemove(delButtonList, i);
         safeRemove(m_editButton, i);
         safeRemove(m_validateLabels, i);
         validateInput();
@@ -417,12 +386,12 @@ public class ListInputEditor extends InputEditor.Base {
 
     /**
      * Select existing plug-in, or create a new one.
-     * Suppress existing plug-ins with IDs from the tabu list.
+     * Suppress existing plug-ins with IDs from the taboo list.
      * Return null if nothing is selected.
      */
-    public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject parent, List<String> sTabuList) {
+    public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject parent, List<String> tabooList) {
         List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
-        List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
+        List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, tabooList, doc);
         /* select a plugin **/
         String sClassName = null;
         if (sPlugins.size() == 1) {
@@ -432,7 +401,7 @@ public class ListInputEditor extends InputEditor.Base {
             // no candidate => we cannot be in expert mode
             // create a new Plugin
             doc.setExpertMode(true);
-            sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, sTabuList, doc);
+            sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, tabooList, doc);
             doc.setExpertMode(false);
             sClassName = sPlugins.get(0);
         } else {

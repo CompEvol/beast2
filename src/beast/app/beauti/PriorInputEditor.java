@@ -45,7 +45,6 @@ public class PriorInputEditor extends InputEditor.Base {
         label.setPreferredSize(PREFERRED_SIZE);
         itemBox.add(label);
 
-
         List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
         comboBox.setName(sText+".distr");
@@ -61,17 +60,17 @@ public class PriorInputEditor extends InputEditor.Base {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
+                JComboBox comboBox1 = (JComboBox) e.getSource();
 
                 List<?> list = (List<?>) m_input.get();
 
-                BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
+                BeautiSubTemplate template = (BeautiSubTemplate) comboBox1.getSelectedItem();
                 //String sID = ((Plugin) list.get(iItem)).getID();
                 //String sPartition = BeautiDoc.parsePartition(sID);
                 PartitionContext context = doc.getContextFor((BEASTObject) list.get(itemNr));
-                Prior prior = (Prior) list.get(itemNr);
+                Prior prior1 = (Prior) list.get(itemNr);
                 try {
-                    template.createSubNet(context, prior, prior.distInput, true);
+                    template.createSubNet(context, prior1, prior1.distInput, true);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
