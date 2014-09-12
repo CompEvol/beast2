@@ -70,7 +70,7 @@ public class Alignment extends Map<String> {
             try {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
                 if (dataType.isStandard()) {
-                    String sDescription = dataType.getTypeDescription();
+                    String sDescription = dataType.getDescription();
                     if (!types.contains(sDescription)) {
                     	types.add(sDescription);
                     }
@@ -186,7 +186,7 @@ public class Alignment extends Map<String> {
             List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
             for (String sDataType : sDataTypes) {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
-                if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
+                if (dataTypeInput.get().equals(dataType.getDescription())) {
                     m_dataType = dataType;
                     break;
                 }
@@ -496,13 +496,17 @@ public class Alignment extends Map<String> {
             builder.append(", " + getTotalWeight() + "]");
         } else {
 
+            long siteCount = getSiteCount();
+
             builder.append('\n');
             builder.append("  " + getTaxonCount() + " taxa");
             builder.append('\n');
-            builder.append("  " + getSiteCount() + " sites" + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight + ""));
+            builder.append("  " + siteCount + (siteCount == 1 ? " site": " sites") + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight + ""));
             builder.append('\n');
-            builder.append("  " + getPatternCount() + " patterns");
-            builder.append('\n');
+            if (siteCount > 1) {
+                builder.append("  " + getPatternCount() + " patterns");
+                builder.append('\n');
+            }
         }
         return builder.toString();
     }

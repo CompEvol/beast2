@@ -14,7 +14,7 @@ public class IntegerData extends Base {
     }
 
     @Override
-    public String getTypeDescription() {
+    public String getDescription() {
         return "integer";
     }
     

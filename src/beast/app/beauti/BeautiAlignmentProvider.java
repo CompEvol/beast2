@@ -2,29 +2,10 @@ package beast.app.beauti;
 
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
 import beast.app.draw.ExtensionFileFilter;
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -32,7 +13,17 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.util.*;
 
 
 @Description("Class for creating new alignments to be edited by AlignmentListInputEditor")
@@ -63,14 +54,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		String[] exts = { ".nex", ".nxs", ".nexus" };
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
 
-		fileChooser.setDialogTitle("Load Sequence");
+		fileChooser.setDialogTitle("Load Alignment");
 		fileChooser.setMultiSelectionEnabled(true);
 		int rval = fileChooser.showOpenDialog(null);
 
 		if (rval == JFileChooser.APPROVE_OPTION) {
-
 			File[] files = fileChooser.getSelectedFiles();
-
             return getAlignments(doc, files);
 		}
 		return null;

@@ -60,7 +60,7 @@ public interface DataType {
     /**
      * data type description, e.g. nucleotide, codon *
      */
-    public String getTypeDescription();
+    public String getDescription();
 
     /**
      * Get character corresponding to a given state
@@ -279,7 +279,7 @@ public interface DataType {
 
         @Override
         public String toString() {
-            return getTypeDescription();
+            return this.getDescription();
         }
         
         /** return state associated with a character */

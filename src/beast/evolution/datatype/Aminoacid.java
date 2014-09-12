@@ -26,7 +26,7 @@ public class Aminoacid extends Base {
     }
 
     @Override
-    public String getTypeDescription() {
+    public String getDescription() {
         return "aminoacid";
     }
 

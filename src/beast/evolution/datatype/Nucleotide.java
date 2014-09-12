@@ -35,7 +35,7 @@ public class Nucleotide extends Base {
     }
 
     @Override
-    public String getTypeDescription() {
+    public String getDescription() {
         return "nucleotide";
     }
 
