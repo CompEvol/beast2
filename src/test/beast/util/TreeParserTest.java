@@ -36,10 +36,10 @@ public class TreeParserTest extends TestCase {
 
 //        try {
 
-            boolean isLabeled = false;
+            boolean isLabeled = true;
 
             TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
-        System.out.println("adfgad");
+
             assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
 
 //        } catch (Exception e) {
