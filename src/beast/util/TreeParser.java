@@ -24,7 +24,6 @@
 */
 package beast.util;
 
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
@@ -33,7 +32,9 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
     boolean createUnrecognizedTaxa = false;
 
-
     /**
      * Ensure the class behaves properly, even when inputs are not specified.
      */
@@ -134,12 +134,42 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         else
             processTraits(m_traitList.get());
 
-        if (timeTraitSet != null)
+        if (timeTraitSet != null) {
             adjustTreeNodeHeights(root);
-        else if (adjustTipHeightsInput.get()) {
+        } else if (adjustTipHeightsInput.get()) {
+
+            double treeLength = TreeUtils.getTreeLength(this,getRoot());
+
+            double extraTreeLength = 0.0;
+            double maxTipHeight = 0.0;
+
             // all nodes should be at zero height if no date-trait is available
             for (int i = 0; i < getLeafNodeCount(); i++) {
+                double height = getNode(i).getHeight();
+                if (maxTipHeight < height) {
+                    maxTipHeight = height;
+                }
+                extraTreeLength += height;
                 getNode(i).setHeight(0);
+            }
+
+            double scaleFactor = (treeLength+extraTreeLength)/treeLength;
+
+            final double SCALE_FACTOR_THRESHOLD = 0.001;
+
+            // if the change in total tree length is more than 0.1% then give the user a warning!
+            if (scaleFactor > 1.0 + SCALE_FACTOR_THRESHOLD) {
+
+                DecimalFormat format = new DecimalFormat("#.##");
+
+                System.out.println("WARNING: Adjust tip heights attribute set to 'true' in " + getClass().getSimpleName());
+                System.out.println("         has resulted in significant (>" + format.format(SCALE_FACTOR_THRESHOLD*100.0) + "%) change in tree length.");
+                System.out.println("         Use "+adjustTipHeightsInput.getName()+"='false' to override this default.");
+                System.out.printf( "  original max tip age = %8.3f\n", maxTipHeight);
+                System.out.printf( "       new max tip age = %8.3f\n", 0.0);
+                System.out.printf( "  original tree length = %8.3f\n", treeLength);
+                System.out.printf( "       new tree length = %8.3f\n", treeLength+extraTreeLength);
+                System.out.printf( "       TL scale factor = %8.3f\n", scaleFactor);
             }
         }
         initStateNodes();
