@@ -1,17 +1,14 @@
 package beast.app.tools;
 
 
-import beast.app.beauti.BeautiPanel;
 import beast.app.util.Utils;
 import beast.util.AddOnManager;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -252,9 +249,9 @@ public class AppStore extends JDialog {
                         packageApp.argumentsString = addOnAppElement.getAttribute("args");
 
                         String iconLocation = addOnAppElement.getAttribute("icon");
-                        packageApp.icon = BeautiPanel.getIcon(iconLocation);
+                        packageApp.icon = Utils.getIcon(iconLocation);
                         if (packageApp.icon == null || iconLocation.trim().isEmpty())
-                            packageApp.icon = BeautiPanel.getIcon(DEFAULT_ICON);
+                            packageApp.icon = Utils.getIcon(DEFAULT_ICON);
 
                         packageApps.add(packageApp);
                     }

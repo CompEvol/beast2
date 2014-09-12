@@ -24,7 +24,7 @@ public class TwoStateCovarion extends Base {
     }
 
     @Override
-    public String getDescription() {
+    public String getTypeDescription() {
         return "twoStateCovarion";
     }
 

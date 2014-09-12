@@ -20,7 +20,7 @@ public class Binary extends Base {
     }
 
     @Override
-    public String getDescription() {
+    public String getTypeDescription() {
         return "binary";
     }
 

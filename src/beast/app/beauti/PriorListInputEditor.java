@@ -110,15 +110,15 @@ public class PriorListInputEditor extends ListInputEditor {
 
         
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
-	        m_addButton = new SmallButton("+", true);
-	        m_addButton.setName("addItem");
-	        m_addButton.setToolTipText("Add item to the list");
-	        m_addButton.addActionListener(new ActionListener() {
+	        addButton = new SmallButton("+", true);
+            addButton.setName("addItem");
+            addButton.setToolTipText("Add item to the list");
+            addButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                addItem();
 	            }
 	        });
-	        add(m_addButton);
+	        add(addButton);
         }
     }
 

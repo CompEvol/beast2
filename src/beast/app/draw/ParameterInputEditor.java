@@ -1,29 +1,23 @@
 package beast.app.draw;
 
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.PartitionContext;
+import beast.app.util.Utils;
+import beast.core.BEASTObject;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.math.distributions.ParametricDistribution;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 
 
@@ -120,7 +114,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             if (doc.bAllowLinking) {
 	            boolean isLinked = doc.isLinked(m_input);
 				if (isLinked || doc.suggestedLinks((BEASTObject) m_input.get()).size() > 0) {
-		            JButton linkbutton = new JButton(BeautiPanel.getIcon(BeautiPanel.ICONPATH + 
+		            JButton linkbutton = new JButton(Utils.getIcon(BeautiPanel.ICONPATH +
 		            		(isLinked ? "link.png" : "unlink.png")));
 		            linkbutton.setBorder(BorderFactory.createEmptyBorder());
 		            linkbutton.setToolTipText("link/unlink this parameter with another compatible parameter");

@@ -135,7 +135,7 @@ public class StandardData extends DataType.Base {
     } // string2state
 
     @Override
-    public String getDescription() {
+    public String getTypeDescription() {
         return "standard";
     }
 
