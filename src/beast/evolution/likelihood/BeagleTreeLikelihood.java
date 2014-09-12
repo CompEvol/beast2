@@ -35,7 +35,8 @@ import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -374,9 +375,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      * Sets the partials from a sequence in an alignment.
      *
      * @param beagle        beagle
-     * @param patternList   patternList
-     * @param sequenceIndex sequenceIndex
      * @param nodeIndex     nodeIndex
+     * @param taxon the taxon
      */
     protected final void setPartials(Beagle beagle,
                                      int nodeIndex, int taxon) {
@@ -438,9 +438,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      * Sets the partials from a sequence in an alignment.
      *
      * @param beagle        beagle
-     * @param patternList   patternList
-     * @param sequenceIndex sequenceIndex
      * @param nodeIndex     nodeIndex
+     * @param taxon         the taxon
      */
     protected final void setStates(Beagle beagle,
                                    int nodeIndex, int taxon) {
@@ -754,7 +753,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     /**
      * Traverse the tree calculating partial likelihoods.
      *
-     * @param tree           tree
      * @param node           node
      * @param operatorNumber operatorNumber
      * @param flip           flip
@@ -1005,7 +1003,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     } // class BufferIndexHelper
 
     public enum PartialsRescalingScheme {
-        DEFAULT("default"), // what ever our current favourite default is
+        DEFAULT("default"), // whatever our current favourite default is
         NONE("none"),       // no scaling
         DYNAMIC("dynamic"), // rescale when needed and reuse scaling factors
         ALWAYS("always"),   // rescale every node, every site, every time - slow but safe

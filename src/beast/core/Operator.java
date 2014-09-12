@@ -25,21 +25,23 @@
 package beast.core;
 
 
+import beast.core.Input.Validate;
+import beast.core.util.Evaluator;
+import org.json.JSONObject;
+
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
-
-import org.json.JSONObject;
-
-import beast.core.Input.Validate;
-import beast.core.util.Evaluator;
 
 
 
 @Description("Proposes a move in state space.")
 public abstract class Operator extends BEASTObject {
     public Input<Double> m_pWeight = new Input<Double>("weight", "weight with which this operator is selected", Validate.REQUIRED);
+
+    private final String STANDARD_OPERATOR_PACKAGE = "beast.evolution.operators";
 
     /**
      * the schedule used for auto optimisation *
@@ -106,7 +108,12 @@ public abstract class Operator extends BEASTObject {
     }
 
     public String getName() {
-        return this.getClass().getName() + (getID() != null ? "_" + getID() : "");
+
+        String className = this.getClass().getName();
+        if (className.startsWith(STANDARD_OPERATOR_PACKAGE)) {
+            className = className.substring(STANDARD_OPERATOR_PACKAGE.length()+1);
+        }
+        return  className + "(" + (getID() != null ?  getID() : "") + ")";
     }
 
     /**
@@ -216,25 +223,29 @@ public abstract class Operator extends BEASTObject {
     }
 
     public String toString() {
-        String sName = getName();
-        if (sName.length() < 70) {
-            sName += "                                                                      ".substring(sName.length(), 70);
-        }
+        String name = getName();
         final DecimalFormat format = new DecimalFormat("#.###");
+
+        String tuning = "";
         if (!Double.isNaN(getCoercableParameterValue())) {
-            final String sStr = getCoercableParameterValue() + "";
-            sName += sStr.substring(0, Math.min(sStr.length(), 5));
-        } else {
-            sName += "     ";
+            tuning = format.format(getCoercableParameterValue());
         }
-        sName += " ";
-        return sName + "\t" + m_nNrAccepted + "\t" + m_nNrRejected + "\t" +
-                (m_nNrAccepted + m_nNrRejected) + "\t" +
-                format.format(((m_nNrAccepted + 0.0) / (m_nNrAccepted + m_nNrRejected))) +
-                (detailedRejection ? (
-                " (" + format.format(((m_nNrRejectedInvalid + 0.0) / (m_nNrRejected))) +
-                " , " + format.format(((m_nNrRejectedOperator + 0.0) / (m_nNrRejected))) + ") " ) : "")
-                + " " + getPerformanceSuggestion();
+
+        double accRate = (double) m_nNrAccepted / (double)(m_nNrAccepted + m_nNrRejected);
+
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb);
+
+        formatter.format("%-60s %6s %9d %9d %9d %9.3f",name,tuning, m_nNrAccepted, m_nNrRejected, m_nNrAccepted + m_nNrRejected,accRate);
+
+        if (detailedRejection) {
+            formatter.format(" %8.3f %8.3f", (double) m_nNrRejectedInvalid / (double) m_nNrRejected,
+                (double) m_nNrRejectedOperator / (double) m_nNrRejected);
+        }
+
+        sb.append(" " + getPerformanceSuggestion());
+
+        return sb.toString();
     }
 
     /** Store to state file, so on resume the parameter tuning is restored.
@@ -256,8 +267,8 @@ public abstract class Operator extends BEASTObject {
 	public void storeToFile(final PrintStream out) {
         out.print("{id:\"" + getID() + '"' +
         		", p:" + getCoercableParameterValue() +
-        		", accept:" + m_nNrAccepted + 
-        		", reject:" + m_nNrRejected + 
+        		", accept:" + m_nNrAccepted +
+        		", reject:" + m_nNrRejected +
         		", acceptFC:" + m_nNrAcceptedForCorrection +  
         		", rejectFC:" + m_nNrRejectedForCorrection +
                 ", rejectIv:" + m_nNrRejectedInvalid +
@@ -279,7 +290,7 @@ public abstract class Operator extends BEASTObject {
         m_nNrRejectedForCorrection = o.getInt("rejectFC");
 
         m_nNrRejectedInvalid =  o.has("rejectIv") ?  o.getInt("rejectIv") : 0;
-        m_nNrRejectedOperator  = o.has("rejectOp") ? o.getInt("rejectOp") : 0;
+        m_nNrRejectedOperator = o.has("rejectOp") ? o.getInt("rejectOp") : 0;
 	}
 
 

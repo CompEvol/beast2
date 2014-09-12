@@ -1,23 +1,16 @@
 package beast.core;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import beast.core.util.Log;
+import beast.util.Randomizer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import beast.core.util.Log;
-import beast.util.Randomizer;
-
-
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
+import java.util.List;
 
 @Description("Specify operator selection and optimisation schedule")
 public class OperatorSchedule extends BEASTObject {
@@ -107,7 +100,10 @@ public class OperatorSchedule extends BEASTObject {
      * @param out
      */
     public void showOperatorRates(final PrintStream out) {
-        out.println("Operator                                                              Tuning\t#accept\t#reject\t#total\tacceptance rate");
+
+        Formatter formatter = new Formatter(out);
+        formatter.format("%-60s %6s %9s %9s %9s %9s\n","Operator","Tuning","#accept","#reject","total","prob.acc");
+
         for (final Operator operator : operators) {
             out.println(operator);
         }
@@ -122,17 +118,6 @@ public class OperatorSchedule extends BEASTObject {
         File aFile = new File(stateFileName);
         PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(aFile, true)));
 
-//       Depracateded style of storing operator information: 
-//        out.println("<!--\nID Weight Paramvalue #Accepted #Rejected #CorrectionAccepted #CorrectionRejected");
-//        int i = 0;
-//        for (Operator operator: operators) {
-//        out.println(operator.getID() + " " + cumulativeProbs[i++] + " " + operator.getCoercableParameterValue() + " "
-//        		+ operator.m_nNrAccepted + " " + operator.m_nNrRejected + " " + operator.m_nNrAcceptedForCorrection
-//        		+ " " + operator.m_nNrRejectedForCorrection);
-//        }
-//        out.println("-->");
-//        out.close();
-        
         out.println("<!--");
         out.println("{operators:[");
         int k = 0;

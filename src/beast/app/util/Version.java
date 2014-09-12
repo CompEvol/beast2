@@ -13,8 +13,6 @@ public abstract class Version {
 
     public abstract String getVersionString();
 
-    public abstract String getBuildString();
-
     public abstract String getDateString();
 
     public abstract String[] getCredits();
@@ -32,6 +30,5 @@ public abstract class Version {
             }
         }
         return sStr;
-
     }
 }

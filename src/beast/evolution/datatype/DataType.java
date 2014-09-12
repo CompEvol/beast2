@@ -1,12 +1,12 @@
 package beast.evolution.datatype;
 
+import beast.core.BEASTObject;
+import beast.core.Description;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import beast.core.Description;
-import beast.core.BEASTObject;
 
 
 
@@ -60,7 +60,7 @@ public interface DataType {
     /**
      * data type description, e.g. nucleotide, codon *
      */
-    public String getDescription();
+    public String getTypeDescription();
 
     /**
      * Get character corresponding to a given state
@@ -279,7 +279,7 @@ public interface DataType {
 
         @Override
         public String toString() {
-            return getDescription();
+            return getTypeDescription();
         }
         
         /** return state associated with a character */

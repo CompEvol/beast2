@@ -26,12 +26,6 @@
 
 package beast.evolution.likelihood;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -45,6 +39,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 
+import java.util.*;
 
 
 
@@ -124,13 +119,16 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     @Override
     public void initAndValidate() throws Exception {
         // sanity check: alignment should have same #taxa as tree
-        if (dataInput.get().getNrTaxa() != treeInput.get().getLeafNodeCount()) {        	
+        if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
             throw new Exception("The number of nodes in the tree does not match the number of sequences");
         }
         beagle = null;
         beagle = new BeagleTreeLikelihood();
         try {
-	        beagle.initByName("data", dataInput.get(), "tree", treeInput.get(), "siteModel", siteModelInput.get(), "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(), "scaling", scaling.get().toString());
+	        beagle.initByName(
+                    "data", dataInput.get(), "tree", treeInput.get(), "siteModel", siteModelInput.get(),
+                    "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(),
+                    "scaling", scaling.get().toString());
 	        if (beagle.beagle != null) {
 	            //a Beagle instance was found, so we use it
 	            return;
@@ -147,7 +145,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
         m_siteModel = (SiteModel.Base) siteModelInput.get();
         m_siteModel.setDataType(dataInput.get().getDataType());
-        substitutionModel = (SubstitutionModel.Base) m_siteModel.substModelInput.get();
+        substitutionModel = m_siteModel.substModelInput.get();
 
         if (branchRateModelInput.get() != null) {
             branchRateModel = branchRateModelInput.get();
@@ -164,7 +162,14 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         } else {
             likelihoodCore = new BeerLikelihoodCore(nStateCount);
         }
-        System.out.println("TreeLikelihood uses " + likelihoodCore.getClass().getName());
+
+        String className = getClass().getSimpleName();
+
+        Alignment alignment = dataInput.get();
+
+        System.out.println(className + "(" + getID() + ") uses " + likelihoodCore.getClass().getSimpleName());
+        System.out.println("  " + alignment.toString(true));
+
 
         proportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);

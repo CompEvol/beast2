@@ -1,14 +1,14 @@
 package beast.evolution.alignment;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.datatype.DataType;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 
@@ -309,7 +309,7 @@ public class FilteredAlignment extends Alignment {
         //    System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
         //}
         System.err.println("Filter " + filterInput.get());
-        System.err.println(getNrTaxa() + " taxa");
+        System.err.println(getTaxonCount() + " taxa");
         if (constantSiteWeightsInput.get() != null) {
         	Integer [] constantWeights = constantSiteWeightsInput.get().getValues();
         	int sum = 0; 

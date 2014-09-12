@@ -4,24 +4,18 @@ import beagle.BeagleFlag;
 import beagle.BeagleInfo;
 import beast.app.BEASTVersion;
 import beast.app.BeastMCMC;
-import beast.app.util.Arguments;
-import beast.app.util.ErrorLogHandler;
-import beast.app.util.MessageLogHandler;
-import beast.app.util.Utils;
-import beast.app.util.Version;
+import beast.app.util.*;
 import beast.util.Randomizer;
 import beast.util.XMLParserException;
 import jam.util.IconUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.*;
 
@@ -211,14 +205,16 @@ public class BeastMain {
     }
 
     public static void printTitle() {
+
+        int pageWidth = 72;
+
         System.out.println();
-        centreLine("BEAST " + version.getVersionString() + ", " + version.getDateString(), 60);
-        centreLine("Bayesian Evolutionary Analysis Sampling Trees", 60);
+        centreLine("BEAST " + version.getVersionString() + ", " + version.getDateString(), pageWidth);
+        centreLine("Bayesian Evolutionary Analysis Sampling Trees", pageWidth);
         for (final String creditLine : version.getCredits()) {
-            centreLine(creditLine, 60);
+            centreLine(creditLine, pageWidth);
         }
         System.out.println();
-
     }
 
     public static void printUsage(final Arguments arguments) {
@@ -369,7 +365,7 @@ public class BeastMain {
             threadCount = arguments.getIntegerOption("threads");
             if (threadCount < 0) {
                 printTitle();
-                System.err.println("The the number of threads should be >= 0");
+                System.err.println("The number of threads should be >= 0");
                 System.exit(1);
             }
         }
@@ -561,7 +557,6 @@ public class BeastMain {
         MCMCargs.add(seed + "");
         Randomizer.setSeed(seed);
 
-        System.out.println();
         System.out.println("Random number seed: " + seed);
         System.out.println();
 

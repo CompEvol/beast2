@@ -25,13 +25,6 @@
 package beast.evolution.alignment;
 
 
-
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -39,6 +32,11 @@ import beast.core.parameter.Map;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
 import beast.util.AddOnManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 
 
@@ -72,7 +70,7 @@ public class Alignment extends Map<String> {
             try {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
                 if (dataType.isStandard()) {
-                    String sDescription = dataType.getDescription();
+                    String sDescription = dataType.getTypeDescription();
                     if (!types.contains(sDescription)) {
                     	types.add(sDescription);
                     }
@@ -188,7 +186,7 @@ public class Alignment extends Map<String> {
             List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
             for (String sDataType : sDataTypes) {
                 DataType dataType = (DataType) Class.forName(sDataType).newInstance();
-                if (dataTypeInput.get().equals(dataType.getDescription())) {
+                if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
                     m_dataType = dataType;
                     break;
                 }
@@ -239,6 +237,7 @@ public class Alignment extends Map<String> {
         }
 
         calcPatterns();
+        System.out.println(toString(false));
     } // initAndValidate
 
 
@@ -469,18 +468,44 @@ public class Alignment extends Map<String> {
             }
             System.err.println(" removed " + removedSites + " sites ");
         }
-
-        int totalWeight = 0;
-        for (int weight : patternWeight) {
-        	totalWeight += weight;
-        }
-        
-        System.out.println(getNrTaxa() + " taxa");
-        System.out.println(getSiteCount() + " sites" + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight));
-        System.out.println(getPatternCount() + " patterns");
-
     } // calcPatterns
 
+    /**
+     * @return the total weight of all the patterns (this is the effective number of sites)
+     */
+    private long getTotalWeight() {
+        long totalWeight = 0;
+        for (int weight : patternWeight) {
+            totalWeight += weight;
+        }
+        return totalWeight;
+    }
+
+    /**
+     * Pretty printing of vital statistics of an alignment including id, #taxa, #sites, #patterns and totalweight
+     * @param singleLine true if the string should fit on one line
+     * @return string representing this alignment
+     */
+    public String toString(boolean singleLine) {
+        long totalWeight = getTotalWeight();
+        StringBuilder builder = new StringBuilder();
+        builder.append(getClass().getSimpleName()+ "(" + getID() + ")");
+
+        if (singleLine) {
+            builder.append(": [taxa, patterns, sites] = [" + getTaxonCount() + ", " + getPatternCount());
+            builder.append(", " + getTotalWeight() + "]");
+        } else {
+
+            builder.append('\n');
+            builder.append("  " + getTaxonCount() + " taxa");
+            builder.append('\n');
+            builder.append("  " + getSiteCount() + " sites" + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight + ""));
+            builder.append('\n');
+            builder.append("  " + getPatternCount() + " patterns");
+            builder.append('\n');
+        }
+        return builder.toString();
+    }
 
     /**
      * returns an array containing the non-ambiguous states that this state represents.

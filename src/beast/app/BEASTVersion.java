@@ -23,10 +23,8 @@ public class BEASTVersion extends Version {
 
     private static final String DATE_STRING = "2002-2014";
 
-    private static final boolean IS_PRERELEASE = false;
+    private static final boolean IS_PRERELEASE = true;
 
-    private static final String REVISION = "$Rev: $";
-    
     private static final String BEAST2_WEBPAGE = "http://beast2.org/";
     
     private static final String BEAST2_SOURCE = "http://github.com/CompEvol/beast2";
@@ -36,7 +34,7 @@ public class BEASTVersion extends Version {
     }
 
     public String getVersionString() {
-        return "v" + VERSION + (IS_PRERELEASE ? " Prerelease " + getBuildString() : "");
+        return "v" + VERSION + (IS_PRERELEASE ? " Prerelease" : "");
     }
 
     public String getDateString() {
@@ -46,7 +44,7 @@ public class BEASTVersion extends Version {
     public String[] getCredits() {
         return new String[]{
                 "Designed and developed by",
-                "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard",
+                "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut & Marc A. Suchard",
                 "",
                 "Department of Computer Science",
                 "University of Auckland",
@@ -63,19 +61,19 @@ public class BEASTVersion extends Version {
                 "",
                 "Downloads, Help & Resources:",
 
-                "\t" + BEAST2_WEBPAGE,
+                BEAST2_WEBPAGE,
                 "",
                 "Source code distributed under the GNU Lesser General Public License:",
-                "\t" + BEAST2_SOURCE,
+                BEAST2_SOURCE,
                 "",
                 "BEAST developers:",
-                "\tAlex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, ",
-                "\tSebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, ",
-                "\tGerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, ",
-                "\tOliver Pybus, Chieh-Hsi Wu, Walter Xie",
+                "Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, ",
+                "Sebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, ",
+                "Gerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, ",
+                "Oliver Pybus, Chieh-Hsi Wu, Walter Xie",
                 "",
                 "Thanks to:",
-                "\tRoald Forsberg, Beth Shapiro and Korbinian Strimmer"};
+                "Roald Forsberg, Beth Shapiro and Korbinian Strimmer"};
     }
 
     public String getHTMLCredits() {
@@ -98,10 +96,6 @@ public class BEASTVersion extends Version {
                         "Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie,<br>" +
                         "Denise Kuehnert</p>" +
                         "<p>Thanks to Roald Forsberg, Beth Shapiro and Korbinian Strimmer</p>";
-    }
-
-    public String getBuildString() {
-        return "r" + REVISION.split(" ")[1];
     }
 
     /**
