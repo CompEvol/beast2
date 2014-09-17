@@ -45,8 +45,8 @@ import beast.util.Randomizer;
  */
 
 @Description("A class that describes a parametric distribution, that is, a distribution that takes some " +
-        "parameters/valuables as inputs and can produce (cummulative) densities and inverse " +
-        "cummulative densities.")
+        "parameters/valuables as inputs and can produce (cumulative) densities and inverse " +
+        "cumulative densities.")
 public abstract class ParametricDistribution extends CalculationNode implements ContinuousDistribution {
     public final Input<Double> offsetInput = new Input<Double>("offset", "offset of origin (defaults to 0)", 0.0);
 
@@ -131,7 +131,10 @@ public abstract class ParametricDistribution extends CalculationNode implements 
             if (dist instanceof ContinuousDistribution) {
                 return ((ContinuousDistribution) dist).logDensity(x);
             } else if (dist instanceof IntegerDistribution) {
-                return Math.log(((IntegerDistribution) dist).probability(x));
+                final double probability = ((IntegerDistribution) dist).probability(x);
+                if( probability > 0 ) {
+                    return Math.log(probability);
+                }
             }
   //      }
         return Double.NEGATIVE_INFINITY;
