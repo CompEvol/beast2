@@ -512,7 +512,7 @@ public class XMLParser {
 	                    // sanity check: class should exist
 	                    if (!bDone && Class.forName(sNameSpace + sClass) != null) {
 	                        element2ClassMap.put(sName, sClass);
-	                        System.err.println(sName + " => " + sNameSpace + sClass);
+	                        Log.info.println(sName + " => " + sNameSpace + sClass);
 	                        final String reserved = getAttribute(child, "reserved");
 	                        if (reserved != null && reserved.toLowerCase().equals("true")) {
 	                        	reservedElements.add(sName);
