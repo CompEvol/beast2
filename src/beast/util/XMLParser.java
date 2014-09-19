@@ -28,14 +28,6 @@ package beast.util;
 //import beast.core.parameter.IntegerParameter;
 //import beast.core.parameter.BooleanParameter;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
 import beast.app.beauti.PartitionContext;
 import beast.core.*;
 import beast.core.Input.Validate;
@@ -46,17 +38,14 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
-
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.PrintStream;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -154,18 +143,18 @@ public class XMLParser {
     /* This is the set of keywords in XML.
 * This list should not be added to unless there
 * is a very very good reason. */
-    final static String BEAST_ELEMENT = "beast";
-    final static String MAP_ELEMENT = "map";
-    final static String DISTRIBUTION_ELEMENT = "distribution";
-    final static String OPERATOR_ELEMENT = "operator";
-    final static String INPUT_ELEMENT = "input";
-    final static String LOG_ELEMENT = "logger";
-    final static String DATA_ELEMENT = "data";
-    final static String SEQUENCE_ELEMENT = "sequence";
-    final static String STATE_ELEMENT = "state";
-    final static String TREE_ELEMENT = "tree";
-    final static String REAL_PARAMETER_ELEMENT = "parameter";
-    final static String RUN_ELEMENT = "run";
+    public final static String BEAST_ELEMENT = "beast";
+    public final static String MAP_ELEMENT = "map";
+    public final static String DISTRIBUTION_ELEMENT = "distribution";
+    public final static String OPERATOR_ELEMENT = "operator";
+    public final static String INPUT_ELEMENT = "input";
+    public final static String LOG_ELEMENT = "logger";
+    public final static String DATA_ELEMENT = "data";
+    public final static String SEQUENCE_ELEMENT = "sequence";
+    public final static String STATE_ELEMENT = "state";
+    public final static String TREE_ELEMENT = "tree";
+    public final static String REAL_PARAMETER_ELEMENT = "parameter";
+    public final static String RUN_ELEMENT = "run";
     final static String PLATE_ELEMENT = "plate";
 
     Runnable m_runnable;
