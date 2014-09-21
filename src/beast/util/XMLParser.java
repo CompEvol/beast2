@@ -24,11 +24,6 @@
 */
 package beast.util;
 
-
-//import beast.core.parameter.IntegerParameter;
-//import beast.core.parameter.BooleanParameter;
-
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -57,6 +52,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static beast.util.XMLParserUtils.*;
 
 
 /**
@@ -237,15 +234,15 @@ public class XMLParser {
         //factory.setValidating(true);
         doc = factory.newDocumentBuilder().parse(file);
         doc.normalize();
-        processPlates();
+        processPlates(doc,PLATE_ELEMENT);
 
         // Substitute occurrences of "$(filebase)" with name of file 
         int pointIdx = file.getName().lastIndexOf('.');
         String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
-        replace(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
+        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
 
         // Substitute occurrences of "$(seed)" with RNG seed
-        replace(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
+        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
                 String.valueOf(Randomizer.getSeed()));
         
         IDMap = new HashMap<String, BEASTInterface>();
@@ -274,7 +271,7 @@ public class XMLParser {
         //factory.setValidating(true);
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
         doc.normalize();
-        processPlates();
+        processPlates(doc,PLATE_ELEMENT);
 
         IDMap = sIDMap;//new HashMap<String, Plugin>();
         likelihoodMap = new HashMap<String, Integer[]>();
@@ -334,58 +331,6 @@ public class XMLParser {
         }
 	}
 
-	/**
-     * Expand plates in XML by duplicating the containing XML and replacing
-     * the plate variable with the appropriate value.
-     */
-    void processPlates() {
-        // process plate elements
-        final NodeList nodes = doc.getElementsByTagName(PLATE_ELEMENT);
-        // instead of processing all plates, process them one by one,
-        // then check recursively for new plates that could have been
-        // created when they are nested
-        if (nodes.getLength() > 0) {
-            final Node node = nodes.item(0);
-            final String sVar = node.getAttributes().getNamedItem("var").getNodeValue();
-            final String sRange = node.getAttributes().getNamedItem("range").getNodeValue();
-            final String[] sValues = sRange.split(",");
-            for (final String sValue : sValues) {
-                // copy children
-                final NodeList children = node.getChildNodes();
-                for (int iChild = 0; iChild < children.getLength(); iChild++) {
-                    final Node child = children.item(iChild);
-                    final Node newChild = child.cloneNode(true);
-                    replace(newChild, sVar, sValue);
-                    node.getParentNode().insertBefore(newChild, node);
-                }
-            }
-            node.getParentNode().removeChild(node);
-            processPlates();
-        }
-    } // processPlates
-
-    void replace(final Node node, final String sVar, final String sValue) {
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            final Element element = (Element) node;
-            final NamedNodeMap atts = element.getAttributes();
-            for (int i = 0; i < atts.getLength(); i++) {
-                final Attr attr = (Attr) atts.item(i);
-                if (attr.getValue().contains("$(" + sVar + ")")) {
-                    String sAtt = attr.getValue();
-                    sAtt = sAtt.replaceAll("\\$\\(" + sVar + "\\)", sValue);
-                    attr.setNodeValue(sAtt);
-                }
-            }
-        }
-
-        // process children
-        final NodeList children = node.getChildNodes();
-        for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            final Node child = children.item(iChild);
-            replace(child, sVar, sValue);
-        }
-    } // replace
-
     /**
      * Parse an XML fragment representing a Plug-in
      * Only the run element or if that does not exist the last child element of
@@ -397,7 +342,7 @@ public class XMLParser {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
         doc.normalize();
-        processPlates();
+        processPlates(doc,PLATE_ELEMENT);
 
         IDMap = new HashMap<String, BEASTInterface>();
         likelihoodMap = new HashMap<String, Integer[]>();
@@ -459,7 +404,7 @@ public class XMLParser {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
         doc.normalize();
-        processPlates();
+        processPlates(doc,PLATE_ELEMENT);
 
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
@@ -1086,4 +1031,4 @@ public class XMLParser {
     }
 
 
-} // classXMLParser
+} // class XMLParser
