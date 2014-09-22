@@ -528,7 +528,7 @@ public class Logger extends BEASTObject {
 
     private String prettifyLogEntry(String sStr) {
         // TODO Q2R intelliJ says \\ can't be used in a range ...
-        if ("[\\d-E]+\\.[\\d-E]+".matches(sStr)) {
+        if (sStr.matches("[\\d-E]+\\.[\\d-E]+")) {
             // format as double
             if (sStr.contains("E")) {
                 if (sStr.length() > 15) {
