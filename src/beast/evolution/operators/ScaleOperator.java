@@ -155,18 +155,40 @@ public class ScaleOperator extends Operator {
             if (bScaleAllIndependently) {
                 // update all dimensions independently.
                 hastingsRatio = 0;
-                for (int i = 0; i < dim; i++) {
+                final BooleanParameter indicators = indicatorInput.get();
+                if (indicators != null) {
+                    final int nDim = indicators.getDimension();
+                    final Boolean[] indicator = indicators.getValues();
+                    final boolean impliedOne = nDim == (dim - 1);
+                    for (int i = 0; i < dim; i++) {
+                        if( (impliedOne && (i == 0 || indicator[i-1])) || (!impliedOne && indicator[i]) )  {
+                            final double scaleOne = getScaler();
+                            final double newValue = scaleOne * param.getValue(i);
 
-                    final double scaleOne = getScaler();
-                    final double newValue = scaleOne * param.getValue(i);
+                            hastingsRatio -= Math.log(scaleOne);
 
-                    hastingsRatio -= Math.log(scaleOne);
+                            if (outsideBounds(newValue, param)) {
+                                return Double.NEGATIVE_INFINITY;
+                            }
 
-                    if (outsideBounds(newValue, param)) {
-                        return Double.NEGATIVE_INFINITY;
+                            param.setValue(i, newValue);
+                        }
                     }
+                }  else {
 
-                    param.setValue(i, newValue);
+                    for (int i = 0; i < dim; i++) {
+
+                        final double scaleOne = getScaler();
+                        final double newValue = scaleOne * param.getValue(i);
+
+                        hastingsRatio -= Math.log(scaleOne);
+
+                        if( outsideBounds(newValue, param) ) {
+                            return Double.NEGATIVE_INFINITY;
+                        }
+
+                        param.setValue(i, newValue);
+                    }
                 }
             } else if (bScaleAll) {
                 // update all dimensions
