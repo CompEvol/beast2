@@ -1,11 +1,6 @@
 package beast.core;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -122,10 +117,10 @@ public class OperatorSchedule extends BEASTObject {
     public void storeToFile() throws Exception {
         // appends state of operator set to state file
         File aFile = new File(stateFileName);
-        PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(aFile, true)));
+        PrintWriter out = new PrintWriter(new FileWriter(aFile, true));
 
         out.println("<!--");
-        out.println("{operators:[");
+        out.println("{\"operators\":[");
         int k = 0;
         for (Operator operator: operators) {
             operator.storeToFile(out);
@@ -135,6 +130,7 @@ public class OperatorSchedule extends BEASTObject {
         }
         out.println("\n]}");
         out.println("-->");
+        out.flush();
         out.close();
     }
 

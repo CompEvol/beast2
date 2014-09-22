@@ -26,6 +26,8 @@ package beast.core;
 
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -35,6 +37,7 @@ import org.json.JSONObject;
 
 import beast.core.Input.Validate;
 import beast.core.util.Evaluator;
+import org.json.JSONWriter;
 
 @Description("Proposes a move in state space.")
 public abstract class Operator extends BEASTObject {
@@ -250,30 +253,40 @@ public abstract class Operator extends BEASTObject {
     /** Store to state file, so on resume the parameter tuning is restored.
      * By default, it stores information in JSON for example
      * 
-     * {id:"kappaScaler", p:0.5, accept:39, reject:35, acceptFC:0, rejectFC:0}
+     * {"id":"kappaScaler", "p":0.5, "accept":39, "reject":35, "acceptFC":0, "rejectFC":0}
      * 
      * Meta-operators (operators that have one or more operators as inputs)
      * need to override this method to store the tuning information associated
      * with their sub-operators by generating nested JSON, for example
      * 
-     * {id:"metaoperator", p:0.5, accept:396, reject:355, acceptFC:50, rejectFC:45,
+     * {"id":"metaoperator", "p":0.5, "accept":396, "reject":355, "acceptFC":50, "rejectFC":45,
      *  operators [
-     *  {id:"kappaScaler1", p:0.5, accept:39, reject:35, acceptFC:0, rejectFC:0}
-     *  {id:"kappaScaler2", p:0.5, accept:39, reject:35, acceptFC:0, rejectFC:0}
+     *  {"id":"kappaScaler1", "p":0.5, "accept":39, "reject":35, "acceptFC":0, "rejectFC":0}
+     *  {"id":"kappaScaler2", "p":0.5, "accept":39, "reject":35, "acceptFC":0, "rejectFC":0}
      *  ]
      * }
      *  **/
-	public void storeToFile(final PrintStream out) {
-        out.print("{id:\"" + getID() + '"' +
-        		", p:" + getCoercableParameterValue() +
-        		", accept:" + m_nNrAccepted +
-        		", reject:" + m_nNrRejected +
-        		", acceptFC:" + m_nNrAcceptedForCorrection +  
-        		", rejectFC:" + m_nNrRejectedForCorrection +
-                ", rejectIv:" + m_nNrRejectedInvalid +
-                 ", rejectOp:" + m_nNrRejectedOperator +
-        		"}"
-                );
+	public void storeToFile(final PrintWriter out) {
+
+        StringWriter writer = new StringWriter();
+        JSONWriter json = new JSONWriter(writer);
+        json.object();
+        json.key("id").value(getID());
+
+        double p = getCoercableParameterValue();
+        if (Double.isNaN(p)) {
+            json.key("p").value("NaN");
+        } else {
+            json.key("p").value(p);
+        }
+        json.key("accept").value(m_nNrAccepted);
+        json.key("reject").value(m_nNrRejected);
+        json.key("acceptFC").value(m_nNrAcceptedForCorrection);
+        json.key("rejectFC").value(m_nNrRejectedForCorrection);
+        json.key("rejectIv").value(m_nNrRejectedInvalid);
+        json.key("rejectOp").value(m_nNrRejectedOperator);
+        json.endObject();
+        out.print(writer.toString());
 	}
 
 	/** Restore tuning information from file
