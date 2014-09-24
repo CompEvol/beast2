@@ -190,7 +190,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         probabilities = new double[(nStateCount + 1) * (nStateCount + 1)];
         Arrays.fill(probabilities, 1.0);
 
-        if (dataInput.get() instanceof AscertainedAlignment) {
+        if (dataInput.get().isAscertained) {
             useAscertainedSitePatterns = true;
         }
     }

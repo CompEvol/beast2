@@ -153,7 +153,7 @@ public class Alignment extends Map<String> {
     /**
      * A flag to indicate if the alignment is ascertained
      */
-    private boolean isAscertained;
+    public boolean isAscertained;
 
     public Alignment() {
     }
