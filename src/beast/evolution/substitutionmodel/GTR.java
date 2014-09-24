@@ -87,10 +87,7 @@ public class GTR extends GeneralSubstitutionModel {
     }
 
     @Override
-    public boolean canHandleDataType(DataType dataType) throws Exception {
-        if (dataType instanceof Nucleotide) {
-            return true;
-        }
-        throw new Exception("Can only handle nucleotide data");
+    public boolean canHandleDataType(DataType dataType) {
+        return dataType instanceof Nucleotide;
     }
 }

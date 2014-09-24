@@ -651,10 +651,7 @@ public class WAG extends EmpiricalSubstitutionModel {
     }
 
     @Override
-    public boolean canHandleDataType(DataType dataType) throws Exception {
-        if (dataType instanceof Aminoacid) {
-            return true;
-        }
-        throw new Exception("Can only handle amino acid data");
+    public boolean canHandleDataType(DataType dataType) {
+        return dataType instanceof Aminoacid;
     }
 } // class WAG

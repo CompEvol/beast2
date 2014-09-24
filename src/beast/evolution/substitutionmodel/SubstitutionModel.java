@@ -87,10 +87,8 @@ public interface SubstitutionModel {
 
     /**
      * return true if this substitution model is suitable for the data type
-     *
-     * @throws Exception *
      */
-    boolean canHandleDataType(DataType dataType) throws Exception;
+    boolean canHandleDataType(DataType dataType);
 
     /**
      * basic implementation of a SubstitutionModel bringing together relevant super class*

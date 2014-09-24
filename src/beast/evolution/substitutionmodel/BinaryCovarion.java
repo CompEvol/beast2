@@ -79,11 +79,8 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 
 
     @Override
-    public boolean canHandleDataType(DataType dataType) throws Exception {
-        if (dataType.getClass().equals(TwoStateCovarion.class)) {
-            return true;
-        }
-        return false;
+    public boolean canHandleDataType(DataType dataType) {
+        return dataType.getClass().equals(TwoStateCovarion.class);
     }
 
 

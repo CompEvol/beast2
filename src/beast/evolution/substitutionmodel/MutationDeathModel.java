@@ -91,7 +91,7 @@ public class MutationDeathModel extends SubstitutionModel.Base {
     }
 
     @Override
-    public boolean canHandleDataType(DataType dataType) throws Exception {
+    public boolean canHandleDataType(DataType dataType) {
     	if (CTMCModelInput.get() == null) {
     		return dataType.getStateCount() == 2;
     	} else {

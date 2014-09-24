@@ -266,11 +266,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     }
 
     @Override
-    public boolean canHandleDataType(DataType dataType) throws Exception {
-        if (dataType.getStateCount() == Integer.MAX_VALUE) {
-            return false;
-        }
-        return true;
+    public boolean canHandleDataType(DataType dataType) {
+        return dataType.getStateCount() != Integer.MAX_VALUE;
     }
 
 } // class GeneralSubstitutionModel

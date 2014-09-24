@@ -98,7 +98,7 @@ public interface SiteModelInterface {
          */
         abstract public double[] getCategoryProportions(Node node);
     
-        public boolean canSetSubstModel(Object o) throws Exception {
+        public boolean canSetSubstModel(Object o) {
             final SubstitutionModel substModel = (SubstitutionModel) o;
             if (m_dataType == null) {
             	// try to find out the data type from the data in a treelikelihood in an output
@@ -112,7 +112,8 @@ public interface SiteModelInterface {
             }
             if (m_dataType != null) {
                 if (!substModel.canHandleDataType(m_dataType)) {
-                    throw new Exception("substitution model cannot handle data type");
+                    return false;
+                    //throw new Exception("substitution model cannot handle data type");
                 }
             }
             return true;
