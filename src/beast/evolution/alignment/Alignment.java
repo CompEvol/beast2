@@ -27,10 +27,7 @@ package beast.evolution.alignment;
 
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import beast.core.Description;
 import beast.core.Input;
@@ -92,7 +89,16 @@ public class Alignment extends Map<String> {
     public Input<DataType.Base> userDataTypeInput= new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
     public Input<Boolean> stripInvariantSitesInput = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
     public Input<String> siteWeightsInput = new Input<String>("weights","comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
-    
+
+    public Input<Boolean> isAscertainedInput = new Input<>("ascertained", "is true if the alignment allows ascertainment correction, i.e., conditioning the " +
+            "Felsenstein likelihood on excluding constant sites from the alignment", false);
+    /**
+     * Inputs from AscertainedAlignment
+      */
+    public Input<Integer> excludefromInput = new Input<Integer>("excludefrom", "first site to condition on, default 0", 0);
+    public Input<Integer> excludetoInput = new Input<Integer>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
+    public Input<Integer> excludeeveryInput = new Input<Integer>("excludeevery", "interval between sites to condition on (default 1)", 1);
+
     /**
      * list of taxa names defined through the sequences in the alignment *
      */
@@ -139,6 +145,15 @@ public class Alignment extends Map<String> {
      */
     protected int [] patternIndex;
 
+    /**
+     * From AscertainedAlignment
+     */
+    Set<Integer> excludedPatterns;
+
+    /**
+     * A flag to indicate if the alignment is ascertained
+     */
+    private boolean isAscertained;
 
     public Alignment() {
     }
@@ -240,6 +255,23 @@ public class Alignment extends Map<String> {
 
         calcPatterns();
         System.out.println(toString(false));
+
+        isAscertained = isAscertainedInput.get();
+
+        if (isAscertained) {
+            //From AscertainedAlignment
+            int iFrom = excludefromInput.get();
+            int iTo = excludetoInput.get();
+            int iEvery = excludeeveryInput.get();
+            excludedPatterns = new HashSet<Integer>();
+            for (int i = iFrom; i < iTo; i += iEvery) {
+                int iPattern = patternIndex[i];
+                // reduce weight, so it does not confuse the tree likelihood
+                patternWeight[iPattern] = 0;
+                excludedPatterns.add(iPattern);
+            }
+        }
+
     } // initAndValidate
 
 
@@ -529,5 +561,31 @@ public class Alignment extends Map<String> {
     boolean isAmbiguousState(int state) {
         return (state >= 0 && state < maxStateCount);
     }
+
+    //Methods from AscertainedAlignment
+    public Set<Integer> getExcludedPatternIndices() {
+        return excludedPatterns;
+    }
+
+    public int getExcludedPatternCount() {
+        return excludedPatterns.size();
+    }
+
+    public double getAscertainmentCorrection(double[] patternLogProbs) {
+        double excludeProb = 0, includeProb = 0, returnProb = 1.0;
+
+        for (int i : excludedPatterns) {
+            excludeProb += Math.exp(patternLogProbs[i]);
+        }
+
+        if (includeProb == 0.0) {
+            returnProb -= excludeProb;
+        } else if (excludeProb == 0.0) {
+            returnProb = includeProb;
+        } else {
+            returnProb = includeProb - excludeProb;
+        }
+        return Math.log(returnProb);
+    } // getAscertainmentCorrection
 
 } // class Data
