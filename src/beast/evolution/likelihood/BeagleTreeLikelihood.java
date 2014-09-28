@@ -28,7 +28,6 @@ package beast.evolution.likelihood;
 import beagle.*;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
@@ -284,7 +283,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             }
         }
 
-        if (dataInput.get() instanceof AscertainedAlignment) {
+        if (dataInput.get().isAscertained) {
             ascertainedSitePatterns = true;
         }
 
@@ -673,7 +672,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             if (ascertainedSitePatterns) {
                 // Need to correct for ascertainedSitePatterns
                 beagle.getSiteLogLikelihoods(patternLogLikelihoods);
-                logL = getAscertainmentCorrectedLogLikelihood((AscertainedAlignment) dataInput.get(),
+                logL = getAscertainmentCorrectedLogLikelihood(dataInput.get(),
                         patternLogLikelihoods, dataInput.get().getWeights());
             }
 
@@ -738,7 +737,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         beagle.setPartials(partialBufferHelper.getOffsetIndex(number), partials);
     }
 
-    private double getAscertainmentCorrectedLogLikelihood(AscertainedAlignment patternList,
+    private double getAscertainmentCorrectedLogLikelihood(Alignment patternList,
                                                           double[] patternLogLikelihoods,
                                                           int[] patternWeights) {
         double logL = 0.0;

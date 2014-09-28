@@ -36,7 +36,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.AscertainedAlignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.SiteModel;
@@ -367,7 +366,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     void calcLogP() throws Exception {
         logP = 0.0;
         if (useAscertainedSitePatterns) {
-            final double ascertainmentCorrection = ((AscertainedAlignment) dataInput.get()).getAscertainmentCorrection(patternLogLikelihoods);
+            final double ascertainmentCorrection = dataInput.get().getAscertainmentCorrection(patternLogLikelihoods);
             for (int i = 0; i < dataInput.get().getPatternCount(); i++) {
                 logP += (patternLogLikelihoods[i] - ascertainmentCorrection) * dataInput.get().getPatternWeight(i);
             }
