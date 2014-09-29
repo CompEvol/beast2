@@ -736,14 +736,27 @@ public class Tree extends StateNode implements TreeInterface {
             }
 
             final List<Node> children = sink.children;
-            children.clear();
-            //sink.removeAllChildren(false);
-            for (final Node srcChild : src.children) {
-                // don't call addChild, which calls  setParent(..., true);
-                final Node c = m_storedNodes[srcChild.getNr()];
-                c.parent = sink;
-                children.add(c);
-                //sink.addChild(c);
+            final List<Node> srcChildren = src.children;
+
+            if( children.size() == srcChildren.size() ) {
+               // shave some more time by avoiding list clear and add
+               for (int k = 0; k < children.size(); ++k) {
+                   final Node srcChild = srcChildren.get(k);
+                   // don't call addChild, which calls  setParent(..., true);
+                   final Node c = m_storedNodes[srcChild.getNr()];
+                   c.parent = sink;
+                   children.set(k, c);
+               }
+            } else {
+                children.clear();
+                //sink.removeAllChildren(false);
+                for (final Node srcChild : srcChildren) {
+                    // don't call addChild, which calls  setParent(..., true);
+                    final Node c = m_storedNodes[srcChild.getNr()];
+                    c.parent = sink;
+                    children.add(c);
+                    //sink.addChild(c);
+                }
             }
         }
     }
