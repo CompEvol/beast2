@@ -31,6 +31,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.datatype.DataType;
 
@@ -182,7 +183,7 @@ public class Frequencies extends CalculationNode {
 //        for (int i = 0; i < m_fFreqs.length; i++) {
 //            m_fFreqs[i] /= fSum;
 //        }
-        System.err.println("Starting frequencies: " + Arrays.toString(freqs));
+        Log.info.println("Starting frequencies: " + Arrays.toString(freqs));
     } // calcFrequencies
 
     /**
@@ -244,8 +245,8 @@ public class Frequencies extends CalculationNode {
      */
     private double getSumOfFrequencies(double[] frequencies) {
         double total = 0.0;
-        for (int i = 0; i < frequencies.length; i++) {
-            total += frequencies[i];
+        for (double frequency : frequencies) {
+            total += frequency;
         }
         return total;
     }
