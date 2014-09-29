@@ -8,6 +8,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
+import beast.core.util.Log;
 import beast.evolution.datatype.DataType;
 
 
@@ -219,7 +220,7 @@ public class FilteredAlignment extends Alignment {
         // addjust weight of invariant sites, if stripInvariantSitesInput i sspecified
         if (stripInvariantSitesInput.get()) {
             // don't add patterns that are invariant, e.g. all gaps
-            System.err.print("Stripping invariant sites");
+            Log.info.print("Stripping invariant sites");
             int removedSites = 0;
             
         	for (int i = 0; i < nrOfPatterns; i++) {
@@ -308,19 +309,19 @@ public class FilteredAlignment extends Alignment {
         //for (int i = 0; i < m_sTaxaNames.size(); i++) {
         //    System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
         //}
-        System.err.println("Filter " + filterInput.get());
-        System.err.println(getTaxonCount() + " taxa");
+        Log.info.println("Filter " + filterInput.get());
+        Log.info.println(getTaxonCount() + " taxa");
         if (constantSiteWeightsInput.get() != null) {
         	Integer [] constantWeights = constantSiteWeightsInput.get().getValues();
         	int sum = 0; 
         	for (int i : constantWeights) { 
         		sum += i;
         	}
-        	System.err.println(getSiteCount() + " sites + " + sum + " constant sites");
+        	Log.info.println(getSiteCount() + " sites + " + sum + " constant sites");
         } else {
-        	System.err.println(getSiteCount() + " sites");
+        	Log.info.println(getSiteCount() + " sites");
         }
-        System.err.println(getPatternCount() + " patterns");
+        Log.info.println(getPatternCount() + " patterns");
     }
     
     /** return indices of the sites that the filter uses **/

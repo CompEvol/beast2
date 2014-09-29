@@ -6,6 +6,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.ParametricDistribution;
@@ -58,12 +59,13 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         if (!usingQuantiles) {
             LATTICE_SIZE_FOR_DISCRETIZED_RATES = numberOfDiscreteRates.get();
             if (LATTICE_SIZE_FOR_DISCRETIZED_RATES <= 0) LATTICE_SIZE_FOR_DISCRETIZED_RATES = branchCount;
-            System.out.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate categories to approximate rate distribution across branches.");
+            Log.info.println("  UCRelaxedClockModel: using " + LATTICE_SIZE_FOR_DISCRETIZED_RATES + " rate " +
+                    "categories to approximate rate distribution across branches.");
         } else {
             if (numberOfDiscreteRates.get() != -1) {
                 throw new RuntimeException("Can't specify both numberOfDiscreteRates and rateQuantiles inputs.");
             }
-            System.out.println("  UCRelaxedClockModel: using quantiles for rate distribution across branches.");
+            Log.info.println("  UCRelaxedClockModel: using quantiles for rate distribution across branches.");
         }
 
         if (usingQuantiles) {
@@ -109,7 +111,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         try {
             double mean = rateDistInput.get().getMean();
             if (Math.abs(mean - 1.0) > 1e-6) {
-                System.out.println("WARNING: mean of distribution for relaxed clock model is not 1.0.");
+                Log.warning.println("WARNING: mean of distribution for relaxed clock model is not 1.0.");
             }
         } catch (RuntimeException e) {
             // ignore
