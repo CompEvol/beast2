@@ -15,9 +15,9 @@ import beast.core.Input;
  */
 @Deprecated
 public class AscertainedAlignment extends Alignment {
-    public Input<Integer> excludefromInput = new Input<Integer>("excludefrom", "first site to condition on, default 0", 0);
-    public Input<Integer> excludetoInput = new Input<Integer>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
-    public Input<Integer> excludeeveryInput = new Input<Integer>("excludeevery", "interval between sites to condition on (default 1)", 1);
+//    public Input<Integer> excludefromInput = new Input<Integer>("excludefrom", "first site to condition on, default 0", 0);
+//    public Input<Integer> excludetoInput = new Input<Integer>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
+//    public Input<Integer> excludeeveryInput = new Input<Integer>("excludeevery", "interval between sites to condition on (default 1)", 1);
 
 // RRB: Note that all commented code is stuff to support inclusion-sites,
 // so don't delete them.
