@@ -130,20 +130,26 @@ public class EBSPAnalyser {
         if (d >= xn) {
             return ys.get(n - 1);
         }
+        assert d >= xs.get(0);
 
-        int i = 0;
-        while (d < xs.get(i)) {
+        int i = 1;
+        while (d >= xs.get(i)) {
             ++i;
         }
-        // d >=  xs.get(i)
-        double x0 = xs.get(i);
-        double x1 = xs.get(i + 1);
-        double y0 = ys.get(i);
-        double y1 = ys.get(i + 1);
+        // d < xs.get(i)
+
+        double x0 = xs.get(i-1);
+        double x1 = xs.get(i);
+        double y0 = ys.get(i-1);
+        double y1 = ys.get(i);
+        assert x0 <= d && d <= x1 : "" + x0 + "," + x1 + "," + d;
         switch (type) {
             case LINEAR:
-                return (d * (y1 - y0) + (y0 * x1 - y1 * x0)) / (x1 - x0);
+                final double p = (d * (y1 - y0) + (y0 * x1 - y1 * x0)) / (x1 - x0);
+                assert p > 0;
+                return p;
             case STEPWISE:
+                assert y1 > 0;
                 return y1;
         }
         return 0;

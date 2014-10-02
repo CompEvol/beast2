@@ -43,7 +43,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
             "linear");
 
     public Input<Boolean> useMiddleInput = new Input<Boolean>("useIntervalsMiddle", "When true, the demographic X axis points are " +
-            "in the middle of the coalecent intervals. By default they are at the beggining.",
+            "in the middle of the coalescent intervals. By default they are at the beginning.",
             false);
 
     private RealParameter popSizeParameter;
