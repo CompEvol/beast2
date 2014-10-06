@@ -600,12 +600,15 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
     public void log(int nSample, PrintStream out) {
         // interval sizes
         out.print("0:" + popSizeParameter.getArrayValue(0) + "\t");
-        for (int i = 0; i < alltimes.length; i++) {
+        for (int i = 0; i < alltimes.length - (type == Type.STEPWISE ? 1 : 0); i++) {
             out.print(alltimes[i]);
             if (indicatorsParameter.getArrayValue(i) > 0) {
                 out.print(":" + popSizeParameter.getArrayValue(i + 1));
             }
             out.print("\t");
+        }
+        if( type == Type.STEPWISE ) {
+          out.print(alltimes[alltimes.length-1]);
         }
     }
 
