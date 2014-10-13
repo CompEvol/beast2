@@ -54,6 +54,17 @@ public class EBSPAnalyser {
         // first, sweep through the log file to determine size of the log
         while (fin.ready()) {
             sStr = fin.readLine();
+            // terrible hackish code, must improve later
+            if( sStr.charAt(0) == '#' ) {
+                int i = sStr.indexOf("spec=");
+                if( i > 0 ) {
+                   if( sStr.indexOf("type=\"stepwise\"") > 0 ) {
+                      m_type = Type.STEPWISE;
+                   }  else if( sStr.indexOf("type=\"linear\"") > 0 ) {
+                      m_type = Type.LINEAR;
+                   }
+                }
+            }
             if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
                 nData++;
             }
