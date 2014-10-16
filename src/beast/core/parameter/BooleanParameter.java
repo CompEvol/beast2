@@ -84,8 +84,6 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
         return (values[iValue] ? 1 : 0);
     }
 
-    ;
-
     /**
      * Loggable implementation follows *
      */
