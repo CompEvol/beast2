@@ -14,8 +14,8 @@
     <!-- a Yule speciation process (a pure birth process).                       -->
     <input spec='YuleModel' id="yule">
         <parameter name='birthDiffRate' idref="birthRate"/>
-	<tree spec='TreeParser' id='tree' taxa='@alignment'
-	        newick='((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0);'/>
+	<tree spec='TreeParser' id='tree' IsLabelledNewick='true' taxa='@alignment'
+	        newick='((A:1.0,B:1.0):1.0,(C:1.0,D:1.0):1.0);'/>
     </input>
 
     <input spec='BirthDeathGernhard08Model' id="yulelike" type='unscaled' tree='@tree'>
@@ -44,7 +44,7 @@
 	<state>
 	    <stateNode idref='tree'/>
 	    <stateNode idref='birthRate'/>
-	    <stateNode id='tree-test-single-child-parsing' spec='beast.util.TreeParser' singlechild='true' newick='((A:1.0):2,C:3);' >
+	    <stateNode id='tree-test-single-child-parsing' IsLabelledNewick='true' spec='beast.util.TreeParser' singlechild='true' newick='((A:1.0):2,C:3);' >
 			<taxonset spec='beast.evolution.alignment.TaxonSet'>
 				<taxon spec='beast.evolution.alignment.Taxon' id='A'/>
 				<taxon spec='beast.evolution.alignment.Taxon' id='C'/>
