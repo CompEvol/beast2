@@ -251,7 +251,7 @@ public abstract class Operator extends BEASTObject {
         json.object();
 
         if (getID()==null)
-           throw new IllegalArgumentException("Invalid xml in operator " + getName() + ": id = " + getID());
+           setID("unknown");
 
         json.key("id").value(getID());
 

@@ -53,12 +53,12 @@ analysis: [
 	 operator: [
 		 {id: "kappaScaler", spec: "ScaleOperator", parameter: "@hky.kappa", scaleFactor: 0.5, weight: 1.0 },
 		 {id: "treeScaler", spec: "ScaleOperator", tree: "@tree", scaleFactor: 0.5, weight: 1.0 },
-		 {spec: "SubtreeSlide", tree: "@tree", weight: 5.0 },
-		 {spec: "Uniform", tree: "@tree", weight: 10.0 },
-		 {spec: "SubtreeSlide", optimise: false, tree: "@tree", weight: 5.0 },
+		 {id: "subtreeSlide1", spec: "SubtreeSlide", tree: "@tree", weight: 5.0 },
+		 {id: "uniform", spec: "Uniform", tree: "@tree", weight: 10.0 },
+		 {id: "subtreeSlide2", spec: "SubtreeSlide", optimise: false, tree: "@tree", weight: 5.0 },
 		 {id: "narrow", spec: "Exchange", tree: "@tree", weight: 1.0 },
 		 {id: "wide", spec: "Exchange", isNarrow: false, tree: "@tree", weight: 1.0 },
-		 {spec: "WilsonBalding", tree: "@tree", weight: 1.0 }
+		 {id: "wilsonBalding", spec: "WilsonBalding", tree: "@tree", weight: 1.0 }
 	  ],
 	 logger: [
 		{ fileName: "test.$(seed).log", logEvery: 10000, model: "@treeLikelihood",
