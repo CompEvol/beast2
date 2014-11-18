@@ -269,6 +269,12 @@ public class DeltaExchangeOperator extends Operator {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(delta);
             delta = Math.exp(fDelta);
+            if (isIntegerOperator) {
+            	// when delta < 0.5
+            	// Randomizer.nextInt((int) Math.round(delta)) becomes
+            	// Randomizer.nextInt(0) which results in an exception
+            	delta = Math.max(0.5000000001, delta);
+            }
         }
 
     }
@@ -292,4 +298,5 @@ public class DeltaExchangeOperator extends Operator {
             return "Try setting delta to about " + formatter.format(newDelta);
         } else return "";
     }
+    
 }
