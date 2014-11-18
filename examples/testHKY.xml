@@ -76,12 +76,12 @@
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
 
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
+        <operator id='subtreeSlide' spec='SubtreeSlide' weight="5" gaussian="true" size="1.0" tree="@tree"/>
 
-        <operator spec='Uniform' weight="10" tree="@tree"/>
+        <operator id='uniform' spec='Uniform' weight="10" tree="@tree"/>
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="1" tree="@tree"/>
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1" tree="@tree"/>
-        <operator spec='WilsonBalding' weight="1" tree="@tree"/>
+        <operator id='wilsonBalding' spec='WilsonBalding' weight="1" tree="@tree"/>
 
         <logger logEvery="10000" fileName="test.$(seed).log">
             <model idref='likelihood'/>

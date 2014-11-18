@@ -25,19 +25,15 @@
 package beast.core;
 
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-
-import org.json.JSONObject;
-
 import beast.core.Input.Validate;
 import beast.core.util.Evaluator;
+import org.json.JSONObject;
 import org.json.JSONWriter;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Description("Proposes a move in state space.")
 public abstract class Operator extends BEASTObject {
@@ -253,6 +249,10 @@ public abstract class Operator extends BEASTObject {
         StringWriter writer = new StringWriter();
         JSONWriter json = new JSONWriter(writer);
         json.object();
+
+        if (getID()==null)
+           throw new IllegalArgumentException("Invalid xml in operator " + getName() + ": id = " + getID());
+
         json.key("id").value(getID());
 
         double p = getCoercableParameterValue();
