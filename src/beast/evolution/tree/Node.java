@@ -654,8 +654,10 @@ public class Node extends BEASTObject {
     public void scale(final double fScale) throws Exception {
         startEditing();
         isDirty |= Tree.IS_DIRTY;
-        if (!isLeaf()) {
+        if (!isLeaf() && !isFake()) {
             height *= fScale;
+        }
+        if (!isLeaf()) {
             getLeft().scale(fScale);
             if (getRight() != null) {
                 getRight().scale(fScale);
@@ -665,6 +667,32 @@ public class Node extends BEASTObject {
             }
         }
     }
+
+//    /**
+//     * Used for sampled ancestor trees
+//     * Scales this node and all its descendants (either all descendants, or only non-sampled descendants)
+//     *
+//     * @param fScale    the scalar to multiply each scaled node age by
+//     * @param scaleSNodes true if sampled nodes should be scaled as well as internal nodes, false if only non-sampled
+//     *                  internal nodes should be scaled.
+//     * @throws Exception throws exception if resulting tree would have negative branch lengths.
+//     */
+//    public void scale(double fScale, boolean scaleSNodes) throws Exception {
+//        startEditing();
+//        isDirty |= Tree.IS_DIRTY;
+//        if (scaleSNodes || (!isLeaf() && !isFake())) {
+//            height *= fScale;
+//        }
+//        if (!isLeaf()) {
+//            (getLeft()).scale(fScale, scaleSNodes);
+//            if (getRight() != null) {
+//                (getRight()).scale(fScale, scaleSNodes);
+//            }
+//            if (height < getLeft().height || height < getRight().height) {
+//                throw new Exception("Scale gives negative branch length");
+//            }
+//        }
+//    }
 
     protected void startEditing() {
         if (m_tree != null && m_tree.getState() != null) {
@@ -736,11 +764,43 @@ public class Node extends BEASTObject {
         return n;
     }
 
-    /** 
-     * is true if this leaf actually represents a direct ancestor (i.e. is on the end of a zero-length branch) 
+    /**
+     * @return true if this leaf actually represent a direct ancestor
+     * (i.e. is on the end of a zero-length branch)
      */
-	public boolean isDirectAncestor() {
-		return (!isRoot() && this.getParent().getHeight() == this.getHeight());
-	}
+    public boolean isDirectAncestor() {
+        return (isLeaf() && !isRoot() && this.getParent().getHeight() == this.getHeight());
+    }
+
+    /**
+     * @return true if this is a "fake" internal node (i.e. one of its children is a direct ancestor)
+     */
+    public boolean isFake() {
+        if (this.isLeaf())
+            return false;
+        return ((this.getLeft()).isDirectAncestor() || (this.getRight() != null && (this.getRight()).isDirectAncestor()));
+    }
+
+    public Node getNonDirectAncestorChild(){
+        if ((this.getLeft()).isDirectAncestor()){
+            return getRight();
+        }
+        if  ((this.getRight()).isDirectAncestor()){
+            return getLeft();
+        }
+        return null;
+    }
+
+    public Node getFakeChild(){
+
+        if ((this.getLeft()).isFake()){
+            return getLeft();
+        }
+        if ((this.getRight()).isFake()){
+            return getRight();
+        }
+        return null;
+    }
+
 	
 } // class Node

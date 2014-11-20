@@ -571,8 +571,26 @@ public class Tree extends StateNode implements TreeInterface {
     @Override
     public int scale(final double fScale) throws Exception {
         root.scale(fScale);
-        return getInternalNodeCount();
+        return getInternalNodeCount()- getDirectAncestorNodeCount();
     }
+
+
+//    /**
+//     * The same as scale but with option to scale all sampled nodes
+//     * @param fScale
+//     * @param scaleSNodes if true all sampled nodes are scaled. Note, the most recent node is considered to
+//     *                    have height 0.
+//     * @return
+//     * @throws Exception
+//     */
+//    public int scale(double fScale, boolean scaleSNodes) throws Exception {
+//        ((ZeroBranchSANode)root).scale(fScale, scaleSNodes);
+//        if (scaleSNodes) {
+//            return getNodeCount() - 1 - getDirectAncestorNodeCount();
+//        } else {
+//            return getInternalNodeCount() - getDirectAncestorNodeCount();
+//        }
+//    }
 
     /** Loggable interface implementation follows **/
 
