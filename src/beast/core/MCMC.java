@@ -494,7 +494,7 @@ public class MCMC extends Runnable {
             // make sure we always save just before exiting
             if (storeEvery > 0 && (sampleNr + 1) % storeEvery == 0 || sampleNr == chainLength) {
                 /*final double fLogLikelihood = */
-                state.robustlyCalcPosterior(posterior);
+                state.robustlyCalcNonStochasticPosterior(posterior);
                 state.storeToFile(sampleNr);
                 operatorSchedule.storeToFile();
             }
