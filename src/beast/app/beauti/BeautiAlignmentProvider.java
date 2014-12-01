@@ -40,7 +40,9 @@ import beast.util.XMLParser;
 @Description("Class for creating new alignments to be edited by AlignmentListInputEditor")
 public class BeautiAlignmentProvider extends BEASTObject {
 	
-	public Input<BeautiSubTemplate> template = new Input<BeautiSubTemplate>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED); 
+	public Input<BeautiSubTemplate> template = new Input<BeautiSubTemplate>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
+
+    private JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 	
 	@Override
 	public void initAndValidate() throws Exception {}
@@ -57,7 +59,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	 * return new alignment, return null if not successfull 
 	 * **/
 	List<BEASTInterface> getAlignments(BeautiDoc doc) {
-		JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
+        //JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
 		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
 		String[] extsf = { ".fas", ".fst", ".fasta", ".fna", ".ffn", ".faa", ".frn" };
