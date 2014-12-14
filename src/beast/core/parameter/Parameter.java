@@ -258,6 +258,8 @@ public interface Parameter<T> extends Function {
             final T tmp = values[iLeft];
             values[iLeft] = values[iRight];
             values[iRight] = tmp;
+            m_bIsDirty[iLeft] = true;
+            m_bIsDirty[iRight] = true;
         }
 
         /**
