@@ -367,6 +367,9 @@ public class MCMC extends Runnable {
      */
     protected void doLoop() throws Exception {
         int corrections = 0;
+        if (burnIn > 0) {
+        	Log.warning.println("Please wait while BEAST takes " + burnIn + " pre-burnin samples");
+        }
         for (int sampleNr = -burnIn; sampleNr <= chainLength; sampleNr++) {
             final int currentState = sampleNr;
 
