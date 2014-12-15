@@ -733,7 +733,7 @@ public class AddOnManager {
     private static void warning(String string) {
         System.out.println(string);
         System.out.println("Unexpected behavior may follow!");
-        if (!java.awt.GraphicsEnvironment.isHeadless()) {
+        if (!java.awt.GraphicsEnvironment.isHeadless() && System.getProperty("no.beast.popup") == null) {
             JOptionPane.showMessageDialog(null, string +
                     "\nUnexpected behavior may follow!");
         }
