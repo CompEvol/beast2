@@ -44,7 +44,7 @@ public class TraitSet extends BEASTObject {
     /**
      * String values of taxa in order of taxons in alignment*
      */
-    String[] taxonValues;
+    protected String[] taxonValues;
     
     /**
      * double representation of taxa value *
