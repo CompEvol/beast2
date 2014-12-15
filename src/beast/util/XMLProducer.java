@@ -29,6 +29,7 @@ package beast.util;
 
 import beast.core.BEASTInterface;
 import beast.core.Input;
+
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
@@ -38,11 +39,14 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -129,13 +133,17 @@ public class XMLProducer extends XMLParser {
             		+ sEndBeast;
 
             sXML = sXML.replaceAll("xmlns=\"http://www.w3.org/TR/xhtml1/strict\"", "");
+            
+            sXML = dedupName(sXML);
+            sXML = sortTags(sXML);
+            
 
             //insert newlines in alignments
             int k = sXML.indexOf("<data ");
             StringBuffer buf2 = new StringBuffer(sXML); 
             while (k > 0) {
             	while (sXML.charAt(k) != '>') {
-            		if (sXML.charAt(k) == ' ') {
+            		if (sXML.charAt(k) == ' ' && !sXML.startsWith("idref", k+1)) {
             			buf2.setCharAt(k, '\n');
             		}
             		k++;
@@ -151,7 +159,189 @@ public class XMLProducer extends XMLParser {
         }
     } // toXML
 
-    /**
+    // ensure attributes are ordered so that id goes first, then spec, then remainder of attributes
+    private String sortTags(String sXML) {
+    	//if (true) return sXML;
+    	String [] strs = sXML.split("<");
+    	StringBuilder bf = new StringBuilder();
+    	bf.append(strs[0]);
+    	for (int i = 1; i < strs.length; i++) {
+    		String str = strs[i];
+    		String [] ss = str.split(">");
+    		boolean [] isShortEnd = new  boolean[ss.length];
+    		for (int j = 0; j < ss.length; j++) {
+    			if (ss[j].endsWith("/")) {
+    				isShortEnd[j] = true;
+    				ss[j] = ss[j].substring(0,  ss[j].length() - 1);
+    			}
+    		}
+   			String [] strs2 = split(ss[0]);
+   			if (str.contains("data")) {
+   				int k = 3;
+   				k++;
+   			}
+   			int iSpec = 0;
+   			while (iSpec < strs2.length && !strs2[iSpec].startsWith("spec=")) {
+   				iSpec++;
+   			}
+   			int iID = 0;
+   			while (iID < strs2.length && !strs2[iID].startsWith("id=")) {
+   				iID++;
+   			}
+			bf.append('<');
+			if (strs2[0] != null)
+				bf.append(strs2[0]);
+			if (iID < strs2.length) {
+				bf.append(' ');
+				bf.append(strs2[iID]);
+			}
+			if (iSpec < strs2.length) {
+				bf.append(' ');
+				bf.append(strs2[iSpec]);
+			}
+			for (int j = 1; j < strs2.length; j++) {
+				if (j != iID && j != iSpec) {
+	    			bf.append(' ');
+	    			if (strs2[j] != null)
+	    				bf.append(strs2[j]);
+				}
+			}
+			for (int k = 1; k < ss.length; k++) {
+				if (isShortEnd[k-1]) {
+					bf.append('/');
+				}
+				bf.append('>');
+				bf.append(ss[k]);
+			}
+    	}
+		return bf.toString();
+	}
+    
+    // since str.split(" "): does not match trailing spaces, we need to split by hand
+    String [] split(String str) {
+    	List<String> s = new ArrayList<>();
+    	StringBuilder buf = new StringBuilder();
+    	int i = 0;
+    	while (i < str.length()) {
+    		char c = str.charAt(i);
+    		if (c == ' ') {
+    			s.add(buf.toString());
+    			buf = new StringBuilder();
+    		} else {
+    			buf.append(c);
+    		}
+    		i++;
+    	}
+		s.add(buf.toString());
+    	return s.toArray(new String []{});
+    }
+
+	private String dedupName(String sXML) {
+        // replace <$x name="$y" idref="$z"/> and <$x idref="$z" name="$y"/> 
+        // with <$y idref="$z"/>
+        StringBuilder sb = new StringBuilder();
+        int i = -1;
+        while (++i < sXML.length()) {
+        	char c = sXML.charAt(i);
+        	if (c == '<') {
+                StringBuilder tag = new StringBuilder();
+        		tag.append(c);
+        		while (((c = sXML.charAt(++i)) != ' ') && (c != '/') && c != '>') {
+        			tag.append(c);
+        		}
+        		if (c != '/' && c != '>') {
+                    StringBuilder tag2 = new StringBuilder();
+            		while ((c = sXML.charAt(++i)) != '=') {
+            			tag2.append(c);
+            		}
+            		if (tag2.toString().equals("name")) {
+                        ++i;
+                        StringBuilder value2 = new StringBuilder();
+                		while ((c = sXML.charAt(++i)) != '"') {
+                			value2.append(c);
+                		}
+                        StringBuilder tag3 = new StringBuilder();
+                        ++i;
+                		while (((c = sXML.charAt(++i)) != '=') && (c != '/') && (c != '>')) {
+                			tag3.append(c);
+                		}
+                		if (c != '/' && c != '>' && tag3.toString().equals("idref")) {
+                			tag3.append(c);
+                			tag3.append(sXML.charAt(++i));
+                    		while ((c = sXML.charAt(++i)) != '"') {
+                    			tag3.append(c);
+                    		}
+                    		sb.append('<');
+                			sb.append(value2);                			
+                    		sb.append('=');
+                    		sb.append(tag3);
+                    		sb.append("/>");
+                    		while ((c = sXML.charAt(++i)) != '>') {}
+                		} else {
+                			sb.append(tag);
+                			sb.append(' ');
+                			sb.append(tag2);
+                			sb.append("=\"");
+                			sb.append(value2);                			
+                			sb.append('"');
+                			sb.append(tag3);
+                			sb.append(c);
+                		}
+            		} else if (tag2.toString().equals("idref")) {
+            			tag2.append(c);
+            			tag2.append(sXML.charAt(++i));
+                		while (((c = sXML.charAt(++i)) != ' ') && (c != '/') && c != '>') {
+                			tag2.append(c);
+                		}
+                		if (c != '/' && c != '>') {
+                            StringBuilder tag3 = new StringBuilder();
+                    		while ((c = sXML.charAt(++i)) != '=') {
+                    			tag3.append(c);
+                    		}
+                    		if (tag3.toString().equals("name")) {
+                                ++i;
+                                StringBuilder value2 = new StringBuilder();
+                        		while ((c = sXML.charAt(++i)) != '"') {
+                        			value2.append(c);
+                        		}
+                        		sb.append('<');
+                    			sb.append(value2);                			
+                        		sb.append(' ');
+                        		sb.append(tag2);
+                        		sb.append("/>");
+                        		while ((c = sXML.charAt(++i)) != '>') {}
+                    		} else {
+                    			sb.append(tag);
+                    			sb.append(' ');
+                    			sb.append(tag2);
+                    			sb.append(' ');
+                    			sb.append(tag3);
+                    			sb.append(c);
+                    		}
+                		} else {
+                			sb.append(tag);
+                			sb.append(' ');
+                			sb.append(tag2);
+                			sb.append(c);
+                		}
+            		} else {
+            			sb.append(tag);
+            			sb.append(' ');
+            			sb.append(tag2);                			
+            			sb.append(c);
+            		}
+        		} else {
+        			sb.append(tag);
+        			tag.append(c);
+        		}
+        	} else {
+        		sb.append(c);
+        	}
+        }
+        return sb.toString();
+	}
+
+	/**
      * like toXML() but without the assumption that plugin is Runnable *
      */
     public String modelToXML(BEASTInterface plugin) {

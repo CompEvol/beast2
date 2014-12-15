@@ -422,7 +422,7 @@
     </target>
 
     <!-- Define the appbundler task -->
-    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/appbundler-1.0.jar"/>
+    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/bundler/appbundler-1.0.jar"/>
 
     <!-- Create the app bundle -->
     <target name="mac">

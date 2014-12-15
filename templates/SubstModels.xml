@@ -889,7 +889,7 @@
                 <distr id="popPriorDist.EBSP" mean="@populationMean.alltrees" spec="Exponential"/>
             </prior>
 
-            <logger id="EBSPLogger" fileName='EBSP.$(seed).log' logEvery='5000'>
+            <logger id="EBSPLogger" fileName='EBSP.$(seed).log' logEvery='5000' model="@demographic.alltrees">
                 <log idref='demographic.alltrees'/>
             </logger>
             <log id='sumIndicators' spec='beast.core.util.Sum' arg='@indicators.alltrees'/>
