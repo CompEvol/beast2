@@ -272,11 +272,25 @@ public class MRCAPrior extends Distribution {
 
     @Override
     public double getArrayValue() {
+    	if (Double.isNaN(logP)) {
+    		try {
+    			calculateLogP();
+    		}catch (Exception e) {
+    			logP  = Double.NaN;
+    		}
+    	}
         return logP;
     }
 
     @Override
     public double getArrayValue(final int iDim) {
+    	if (Double.isNaN(logP)) {
+    		try {
+    			calculateLogP();
+    		}catch (Exception e) {
+    			logP  = Double.NaN;
+    		}
+    	}
         switch (iDim) {
             case 0:
                 return logP;
