@@ -134,8 +134,8 @@ public class XMLProducer extends XMLParser {
 
             sXML = sXML.replaceAll("xmlns=\"http://www.w3.org/TR/xhtml1/strict\"", "");
             
-            sXML = dedupName(sXML);
-            sXML = sortTags(sXML);
+            //sXML = dedupName(sXML);
+            //sXML = sortTags(sXML);
             
 
             //insert newlines in alignments
@@ -176,10 +176,6 @@ public class XMLProducer extends XMLParser {
     			}
     		}
    			String [] strs2 = split(ss[0]);
-   			if (str.contains("data")) {
-   				int k = 3;
-   				k++;
-   			}
    			int iSpec = 0;
    			while (iSpec < strs2.length && !strs2[iSpec].startsWith("spec=")) {
    				iSpec++;
@@ -212,6 +208,9 @@ public class XMLProducer extends XMLParser {
 				}
 				bf.append('>');
 				bf.append(ss[k]);
+			}
+			if (ss.length == 1 && str != null && str.endsWith(">")) {
+				bf.append('>');
 			}
     	}
 		return bf.toString();
