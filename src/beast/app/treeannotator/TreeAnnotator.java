@@ -1065,6 +1065,7 @@ public class TreeAnnotator {
         double hpd2D = 0.80;
         if (arguments.hasOption("hpd2D")) {
             hpd2D = arguments.getRealOption("hpd2D");
+            processBivariateAttributes = true;
         }
 
         Target target = Target.MAX_CLADE_CREDIBILITY;
