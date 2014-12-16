@@ -1065,6 +1065,10 @@ public class TreeAnnotator {
         double hpd2D = 0.80;
         if (arguments.hasOption("hpd2D")) {
             hpd2D = arguments.getRealOption("hpd2D");
+            if (hpd2D <= 0 || hpd2D >=1) {
+            	System.err.println("hpd2D is a fraction and should be in between 0.0 and 1.0.");
+            	System.exit(0);            	
+            }
             processBivariateAttributes = true;
         }
 
