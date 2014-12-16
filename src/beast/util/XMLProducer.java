@@ -134,8 +134,8 @@ public class XMLProducer extends XMLParser {
 
             sXML = sXML.replaceAll("xmlns=\"http://www.w3.org/TR/xhtml1/strict\"", "");
             
-            //sXML = dedupName(sXML);
-            //sXML = sortTags(sXML);
+            sXML = dedupName(sXML);
+            sXML = sortTags(sXML);
             
 
             //insert newlines in alignments
@@ -235,7 +235,7 @@ public class XMLProducer extends XMLParser {
     	return s.toArray(new String []{});
     }
 
-	private String dedupName(String sXML) {
+	String dedupName(String sXML) {
         // replace <$x name="$y" idref="$z"/> and <$x idref="$z" name="$y"/> 
         // with <$y idref="$z"/>
         StringBuilder sb = new StringBuilder();
@@ -260,10 +260,12 @@ public class XMLProducer extends XMLParser {
                 			value2.append(c);
                 		}
                         StringBuilder tag3 = new StringBuilder();
-                        ++i;
-                		while (((c = sXML.charAt(++i)) != '=') && (c != '/') && (c != '>')) {
-                			tag3.append(c);
-                		}
+                        c = sXML.charAt(++i);
+                        if (c != '>') {
+                        	while (((c = sXML.charAt(++i)) != '=') && (c != '/') && (c != '>')) {
+                        		tag3.append(c);
+                        	}
+                        }
                 		if (c != '/' && c != '>' && tag3.toString().equals("idref")) {
                 			tag3.append(c);
                 			tag3.append(sXML.charAt(++i));
@@ -331,7 +333,7 @@ public class XMLProducer extends XMLParser {
             		}
         		} else {
         			sb.append(tag);
-        			tag.append(c);
+        			sb.append(c);
         		}
         	} else {
         		sb.append(c);
