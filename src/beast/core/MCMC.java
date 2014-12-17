@@ -533,7 +533,9 @@ public class MCMC extends Runnable {
      * incorrectly recalculated posteriors *
      */
     protected void reportLogLikelihoods(final Distribution distr, final String tabString) {
-        System.err.println(tabString + "P(" + distr.getID() + ") = " + distr.logP + " (was " + distr.storedLogP + ")");
+        final double full =  distr.logP, last = distr.storedLogP;
+        final String changed = full == last ? "" : "  **";
+        System.err.println(tabString + "P(" + distr.getID() + ") = " + full + " (was " + last + ")" + changed);
         if (distr instanceof CompoundDistribution) {
             for (final Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
                 reportLogLikelihoods(distr2, tabString + "\t");
