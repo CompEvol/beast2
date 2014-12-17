@@ -622,7 +622,7 @@ public class State extends BEASTObject {
 	public double robustlyCalcNonStochasticPosterior(Distribution posterior) throws Exception {
         store(-1);
         setEverythingDirty(true);
-        //state.storeCalculationNodes();
+        storeCalculationNodes();
         checkCalculationNodesDirtiness();
         final double fLogLikelihood = posterior.getNonStochasticLogP();
         setEverythingDirty(false);
