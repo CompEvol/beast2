@@ -390,7 +390,7 @@ public class NexusParser {
                 }
                 sMatchChar = getAttValue("matchchar", sStr);
             }
-        } while (!sStr.toLowerCase().contains("matrix") && !sStr.toLowerCase().contains("charstatelabels"));
+        } while (!sStr.trim().toLowerCase().startsWith("matrix") && !sStr.toLowerCase().contains("charstatelabels"));
 
         if (alignment.dataTypeInput.get().equals("standard")) {
         	StandardData type = new StandardData();
@@ -569,10 +569,20 @@ public class NexusParser {
             }
 
             //sort elements of ambiguity sets
+            String sData_without_ambiguities = sData.replaceAll("\\{(.*?)\\}", "?");
             for (String amb : ambiguities) {
                 List<Integer> ambInt = new ArrayList<>();
                 for (int i=0; i<amb.length(); i++) {
-                    ambInt.add(Integer.parseInt(amb.charAt(i) + ""));
+                	char c = amb.charAt(i);
+                	if (c >= '0' && c <= '9') {
+                		ambInt.add(Integer.parseInt(amb.charAt(i) + ""));
+                	} else {
+                		// ignore
+                		if (sData != sData_without_ambiguities) {
+                			Log.warning.println("Ambiguity found in " + sTaxon + " that is treated as missing value");
+                		}
+                		sData = sData_without_ambiguities; 
+                	}
                 }
                 Collections.sort(ambInt);
                 String ambStr = "";
@@ -583,7 +593,6 @@ public class NexusParser {
             }
 
             //check the length of the sequence (treat ambiguity sets as single characters)
-            String sData_without_ambiguities = sData.replaceAll("\\{(.*?)\\}", "?");
             if (sData_without_ambiguities.length() != nChar) {
                 throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
             }
