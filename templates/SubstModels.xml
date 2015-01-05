@@ -708,9 +708,9 @@
             <connect srcID='BirthDeath.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(BirthDeath.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='birthRate2.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(birthRate2.t:$(n)) and birthRate2/estimate=true'/>
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(birthRate2.t:$(n)) and birthRate2.t:$(n)/estimate=true'/>
             <connect srcID='relativeDeathRate2.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(relativeDeathRate2.t:$(n)) and relativeDeathRate22.t:$(n)/estimate=true'/>
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(relativeDeathRate2.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'/>
 
 			<connect srcID='birthRate2.t:Species' targetID='SBI' inputName='birthRate' if='inposterior(BirthDeath.t:Species) and inposterior(birthRate2.t:Species)'/>
         </subtemplate>
