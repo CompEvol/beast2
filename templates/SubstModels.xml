@@ -69,48 +69,48 @@
         <subtemplate id='TN93' class='beast.evolution.substitutionmodel.TN93' mainid='tn93.s:$(n)'>
             <![CDATA[
         <plugin spec='TN93' id='tn93.s:$(n)'>
-            <parameter id="rateAG.s:$(n)" name='kappa1' value="2.0" lower="0.0" estimate='true'/>
-            <parameter id="rateCT.s:$(n)" name='kappa2' value="2.0" lower="0.0" estimate='true'/>
+            <parameter id="kappa1.s:$(n)" name='kappa1' value="2.0" lower="0.0" estimate='true'/>
+            <parameter id="kappa2.s:$(n)" name='kappa2' value="2.0" lower="0.0" estimate='true'/>
             <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
                 <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
             </frequencies>
         </plugin>
 
-        <plugin id='RateAGScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateAG.s:$(n)"/>
-        <plugin id='RateCTScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateCT.s:$(n)"/>
+        <plugin id='kappa1Scaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@kappa1.s:$(n)"/>
+        <plugin id='kappa2Scaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@kappa2.s:$(n)"/>
         <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
-        <prior id='RateAGPrior.s:$(n)' x='@rateAG.s:$(n)'>
+        <prior id='kappa1Prior.s:$(n)' x='@kappa1.s:$(n)'>
             <distr spec="LogNormalDistributionModel" meanInRealSpace='false'>
                 <parameter name='M' value="1.0" estimate='false'/>
                 <parameter name='S' value="1.25" estimate='false'/>
             </distr>
-		</prior>
-        <prior id='RateCTPrior.s:$(n)' x='@rateCT.s:$(n)'>
+	</prior>
+        <prior id='kappa2Prior.s:$(n)' x='@kappa2.s:$(n)'>
             <distr spec="LogNormalDistributionModel" meanInRealSpace='false'>
                 <parameter name='M' value="1.0" estimate='false'/>
                 <parameter name='S' value="1.25" estimate='false'/>
             </distr>
-		</prior>
+	</prior>
 <!--
         <prior id='FrequenciesPrior.s:$(n)' x='@freqParameter.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
 -->
 
 ]]>
 
-            <connect srcID='rateAG.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(rateAG.s:$(n)) and rateAG.s:$(n)/estimate=true'/>
-            <connect srcID='rateCT.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(rateCT.s:$(n)) and rateCT.s:$(n)/estimate=true'/>
+            <connect srcID='kappa1.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(kappa1.s:$(n)) and kappa1.s:$(n)/estimate=true'/>
+            <connect srcID='kappa2.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(kappa2.s:$(n)) and kappa2.s:$(n)/estimate=true'/>
             <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(hky.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
-            <connect srcID='RateAGScaler.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(rateAG.s:$(n)) and rateAG.s:$(n)/estimate=true'>Scale TN93 rateAG (kappa1)
+            <connect srcID='kappa1Scaler.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(kappa1.s:$(n)) and kappa1.s:$(n)/estimate=true'>Scale TN93 kappa1 (rateAG)
                 parameter of partition s:$(n)
             </connect>
-            <connect srcID='RateCTScaler.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(rateCT.s:$(n)) and rateCT.s:$(n)/estimate=true'>Scale TN93 rateCT (kappa2)
+            <connect srcID='kappa2Scaler.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(kappa2.s:$(n)) and kappa2.s:$(n)/estimate=true'>Scale TN93 kappa2 (rateCT)
                 parameter of partition s:$(n)
             </connect>
             <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
@@ -118,19 +118,19 @@
                 Exchange values of frequencies of partition s:$(n)
             </connect>
 
-            <connect srcID='rateAG.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(rateAG.s:$(n)) and rateAG.s:$(n)/estimate=true'/>
-            <connect srcID='rateCT.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(rateCT.s:$(n)) and rateCT.s:$(n)/estimate=true'/>
+            <connect srcID='kappa1.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(kappa1.s:$(n)) and kappa1.s:$(n)/estimate=true'/>
+            <connect srcID='kappa2.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(kappa2.s:$(n)) and kappa2.s:$(n)/estimate=true'/>
             <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(hky.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
-            <connect srcID='RateAGPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(rateAG.s:$(n)) and kappa.s:$(n)/estimate=true'>TN93 rateAG (kappa1) parameter of
+            <connect srcID='kappa1Prior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(kappa1.s:$(n)) and kappa1.s:$(n)/estimate=true'>TN93 kappa1 (rateAG) parameter of
                 partition s:$(n)
             </connect>
-            <connect srcID='RateCTPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(rateCT.s:$(n)) and kappa.s:$(n)/estimate=true'>TN93 rateCT (kappa2) parameter of
+            <connect srcID='kappa2Prior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(kappa2.s:$(n)) and kappa2.s:$(n)/estimate=true'>TN93 kappa2 (rateCT) parameter of
                 partition s:$(n)
             </connect>
             <!--
