@@ -56,7 +56,7 @@ public class SimpleTreePriorTest extends BeautiBase {
 		assertStateEquals("Tree.t:anolis", "birthRate2.t:anolis", "relativeDeathRate2.t:anolis");
 		assertOperatorsEqual("treeScaler.t:anolis", "treeRootScaler.t:anolis", "UniformOperator.t:anolis", "SubtreeSlide.t:anolis", "narrow.t:anolis", "wide.t:anolis", "WilsonBalding.t:anolis", "BirthRateScaler.t:anolis", "DeathRateScaler.t:anolis");
 		assertPriorsEqual("BirthDeath.t:anolis", "BirthRatePrior.t:anolis", "DeathRatePrior.t:anolis");
-		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "BirthDeath.t:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "BirthDeath.t:anolis", "birthRate2.t:anolis", "relativeDeathRate2.t:anolis");
 
 		makeSureXMLParses();
 	}
