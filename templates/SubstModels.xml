@@ -163,12 +163,12 @@
         <operator id='RateGTScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@rateGT.s:$(n)"/>
         <operator id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
-        <prior id='RateACPrior.s:$(n)' x='@rateAC.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
-        <prior id='RateAGPrior.s:$(n)' x='@rateAG.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='20.0'/></prior>
-        <prior id='RateATPrior.s:$(n)' x='@rateAT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
-        <prior id='RateCGPrior.s:$(n)' x='@rateCG.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
-        <prior id='RateCTPrior.s:$(n)' x='@rateCT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='20.0'/></prior>
-        <prior id='RateGTPrior.s:$(n)' x='@rateGT.s:$(n)'><distr spec="beast.math.distributions.Gamma" alpha='0.05' beta='10.0'/></prior>
+        <prior id='RateACPrior.s:$(n)' x='@rateAC.s:$(n)'><distr spec="beast.math.distributions.Gamma"><parameter name="alpha" value='0.05' estimate='false'/><parameter name="beta" value='10.0' estimate='false'/></distr></prior>
+        <prior id='RateAGPrior.s:$(n)' x='@rateAG.s:$(n)'><distr spec="beast.math.distributions.Gamma"><parameter name="alpha" value='0.05' estimate="false"/><parameter name="beta" value='20.0' estimate="false"/></distr></prior>
+        <prior id='RateATPrior.s:$(n)' x='@rateAT.s:$(n)'><distr spec="beast.math.distributions.Gamma"><parameter name="alpha" value='0.05' estimate="false"/><parameter name="beta" value='10.0' estimate="false"/></distr></prior>
+        <prior id='RateCGPrior.s:$(n)' x='@rateCG.s:$(n)'><distr spec="beast.math.distributions.Gamma"><parameter name="alpha" value='0.05' estimate="false"/><parameter name="beta" value='10.0' estimate="false"/></distr></prior>
+        <prior id='RateCTPrior.s:$(n)' x='@rateCT.s:$(n)'><distr spec="beast.math.distributions.Gamma"><parameter name="alpha" value='0.05' estimate="false"/><parameter name="beta" value='20.0' estimate="false"/></distr></prior>
+        <prior id='RateGTPrior.s:$(n)' x='@rateGT.s:$(n)'><distr spec="beast.math.distributions.Gamma"><parameter name="alpha" value='0.05' estimate="false"/><parameter name="beta" value='10.0' estimate="false"/></distr></prior>
 ]]>
 
             <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
@@ -770,7 +770,7 @@
 	        <operator id="GrowthRateRandomWalk.t:$(n)" spec="RealRandomWalkOperator" windowSize='1' weight="3" parameter="@growthRate.t:$(n)"/>
 
 	        <prior id='ePopSizePrior.t:$(n)' x='@ePopSize.t:$(n)'><distr spec="OneOnX"/></prior>
-	        <prior id='GrowthRatePrior.t:$(n)' x='@growthRate.t:$(n)'><distr spec="LaplaceDistribution" mu='0.001' scale='30.701135'/></prior>
+	        <prior id='GrowthRatePrior.t:$(n)' x='@growthRate.t:$(n)'><distr spec="LaplaceDistribution"><parameter name="mu" value='0.001' estimate="false"/><parameter name="scale" value='30.701135' estimate="false"/></distr></prior>
 
 ]]>
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution'
