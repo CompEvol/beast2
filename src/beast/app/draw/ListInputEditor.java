@@ -122,7 +122,7 @@ public class ListInputEditor extends InputEditor.Base {
                 addSingleItem(plugin2);
             }
         }
-
+        
         add(m_listBox);
         Box box = Box.createHorizontalBox();
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
@@ -155,6 +155,13 @@ public class ListInputEditor extends InputEditor.Base {
         m_listBox.add(box);
 
         updateState();
+        
+        // RRB: is there a better way to ensure lists are not spaced out across all available space?
+    	JFrame frame = doc.getFrame();
+    	if (frame != null) {
+    		m_listBox.add(Box.createVerticalStrut(frame.getHeight() - 150));
+    	}
+
     } // init
 
     protected void addSingleItem(BEASTInterface plugin) {

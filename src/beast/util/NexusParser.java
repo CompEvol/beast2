@@ -659,6 +659,9 @@ public class NexusParser {
         do {
             sStr = nextLine(fin);
             if (sStr.toLowerCase().matches("\\s*charset\\s.*")) {
+            	// remove text in brackets (as TreeBase files are wont to contain)
+                sStr = sStr.replaceAll("\\(.*\\)", "");
+                // clean up spaces
                 sStr = sStr.replaceAll("^\\s+", "");
                 sStr = sStr.replaceAll("\\s*-\\s*", "-");
                 sStr = sStr.replaceAll("\\s*\\\\\\s*", "\\\\");
