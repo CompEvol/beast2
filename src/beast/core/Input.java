@@ -625,9 +625,29 @@ public class Input<T> {
 
         // call a string constructor of theClass
         try {
-            final Constructor ctor = theClass.getDeclaredConstructor(String.class);
+            Constructor ctor;
+            Object v = sValue;
+            try {
+            	ctor = theClass.getDeclaredConstructor(String.class);
+            } catch (NoSuchMethodException e) {
+            	// we get here if there is not String constructor
+            	// try integer constructor instead
+            	try {
+            		if (sValue.startsWith("0x")) {
+            			v = Integer.parseInt(sValue.substring(2), 16);
+            		} else {
+            			v = Integer.parseInt(sValue);
+            		}
+                	ctor = theClass.getDeclaredConstructor(int.class);
+                	
+            	} catch (NumberFormatException e2) {
+                	// could not parse as integer, try double instead
+            		v = Double.parseDouble(sValue);
+                	ctor = theClass.getDeclaredConstructor(double.class);
+            	}
+            }
             ctor.setAccessible(true);
-            final Object o = ctor.newInstance(sValue);
+            final Object o = ctor.newInstance(v);
             if (value != null && value instanceof List) {
                 ((List) value).add(o);
             } else {
