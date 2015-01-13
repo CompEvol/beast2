@@ -217,6 +217,7 @@ public class XMLProducer extends XMLParser {
 	}
     
     // since str.split(" "): does not match trailing spaces, we need to split by hand
+    // also, attributes with spaces in them should not be split, e.g. <x id="a b"/> should be split in 2, not 3
     String [] split(String str) {
     	List<String> s = new ArrayList<>();
     	StringBuilder buf = new StringBuilder();
@@ -224,8 +225,14 @@ public class XMLProducer extends XMLParser {
     	while (i < str.length()) {
     		char c = str.charAt(i);
     		if (c == ' ') {
-    			s.add(buf.toString());
-    			buf = new StringBuilder();
+    			String str2 = buf.toString();
+    			if ((str2.contains("='") && !str2.endsWith("'")) || 
+    					(str2.contains("=\"") && !str2.endsWith("\""))) {
+    				buf.append(c);
+    			} else {
+    				s.add(str2);
+    				buf = new StringBuilder();
+    			}
     		} else {
     			buf.append(c);
     		}
