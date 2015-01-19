@@ -2,7 +2,7 @@ package beast.app.beauti;
 
 
 import beast.app.beastapp.BeastLauncher;
-import beast.app.util.Utils;
+//import beast.app.util.Utils;
 
 /** 
  * Loads beast.jar and launches BEAUti through the Beauti class
