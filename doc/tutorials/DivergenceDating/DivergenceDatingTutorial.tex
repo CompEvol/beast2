@@ -26,7 +26,7 @@
 \usepackage{amsthm}
 % \usepackage{txfonts}% times font (used to produce EngCguide.pdf)
                       % this package must be loaded after amsthm.sty
-\usepackage{graphicx}
+%\usepackage{graphicx}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special packages used AJD
@@ -84,6 +84,12 @@ cambridgemods baseline-skip author authors cambridgestyle en-vir-on-ment polar}
 
 \usepackage[all]{xy}
 
+\newcommand{\includeimage}[2][]{%
+%HEVEA\imgsrc{#2.hevea.png}%
+%BEGIN LATEX
+\includegraphics[#1]{#2}
+%END LATEX
+}
 
 \title{Divergence Dating Tutorial with BEAST {\BEASTVersion}}
 \author{Alexei Drummond, Andrew Rambaut, Remco Bouckaert, and Walter Xie}
@@ -125,8 +131,8 @@ This tutorial will guide you through the analysis of an alignment of sequences s
 ancestral divergences. 
 
 \begin{figure}	
-
-\includegraphics[width=\textwidth]{figures/AlignmentViewer.png}
+\centering
+\includeimage[width=\textwidth]{figures/AlignmentViewer}
 
 \caption{Part of the alignment for primates.\label{fig:primateAlignment}}
 \label{fig:BEAUti_ImportNexus}
@@ -187,7 +193,7 @@ This file contains an alignment of sequences of 12 species of primates.
 
 %\begin{figure}
 %
-%\includegraphics[width=\textwidth]{figures/ImportNexus}
+%\includeimage[width=\textwidth]{figures/ImportNexus}
 %
 %\caption{A screenshot of the import nexus file menu option in BEAUti. \TODO{Need to have the correct menu shortcuts for OS X!}}
 %\label{fig:BEAUti_ImportNexus}
@@ -198,7 +204,7 @@ Otherwise, select \texttt{Add Alignment} and click \textbf{OK} to continue.
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.5\textwidth]{figures/AddPartition.png}
+\includeimage[width=0.5\textwidth]{figures/AddPartition}
 \caption{Add Partition window (Only appear if related packages are installed).}
 \label{fig:addPartition}
 \end{figure}
@@ -207,7 +213,7 @@ If there is any coding overlaps in the partitions, the warning message window (F
 
 \begin{figure}	
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/warning.png}
+\includeimage[width=0.9\textwidth]{figures/warning}
 \caption{Warning message window (Only appear if there is any coding overlaps in the partitions).}
 \label{fig:warning}
 \end{figure}
@@ -218,7 +224,7 @@ You can view the alignment by double clicking the partition.
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/BEAUti_DataPartitions}
+\includeimage[width=0.9\textwidth]{figures/BEAUti_DataPartitions}
 \caption{A screenshot of the data tab in BEAUti. This and all following screenshots
 were taken on an Apple computer running Mac OS X and will look slightly different on other operating systems.}
 \label{fig:BEAUTI_DataPartitions}
@@ -226,7 +232,7 @@ were taken on an Apple computer running Mac OS X and will look slightly differen
 
 %\begin{figure}[h]
 %
-%\includegraphics[width=\textwidth]{figures/AlignmentViewer}
+%\includeimage[width=\textwidth]{figures/AlignmentViewer}
 %
 %\caption{A screenshot of the alignment viewer in BEAUti.}
 %\label{fig:BEAUTI_AlignmentViewer}
@@ -236,7 +242,7 @@ were taken on an Apple computer running Mac OS X and will look slightly differen
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/BEAUti_DataPartitions_final}
+\includeimage[width=0.9\textwidth]{figures/BEAUti_DataPartitions_final}
 \caption{A screenshot of the Partitions tab in BEAUti after linking and renaming the clock model and tree.}
 \label{fig:BEAUti_DataPartitions_final}
 \end{figure}
@@ -261,7 +267,7 @@ samples). This will reveal the evolutionary model settings for BEAST. The option
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/BEAUti_Model}
+\includeimage[width=0.9\textwidth]{figures/BEAUti_Model}
 \caption{A screenshot of the site model tab in BEAUti.}
 \label{fig:BEAUti_Model}
 \end{figure}
@@ -275,7 +281,7 @@ Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu. Ideally,
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/cloneFrom}
+\includeimage[width=0.9\textwidth]{figures/cloneFrom}
 \caption{clone configuration from one site model to others.}
 \label{fig:cloneFrom}
 \end{figure}
@@ -301,7 +307,7 @@ which explicitly considers whether each branch in the tree needs its own branch
 rate.
 
 %\begin{figure}
-%\includegraphics[width=\textwidth]{figures/BEAUti_Clock}
+%\includeimage[width=\textwidth]{figures/BEAUti_Clock}
 %\caption{A screenshot of the clock model tab in BEAUti.}
 %\label{fig:BEAUti_Clock}
 %\end{figure}
@@ -313,7 +319,8 @@ model. The model selections made in the site model and clock model tabs, result 
 in the model, and these are shown in the priors tab (see Figure \ref{fig:BEAUti_Prior1}).
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/BEAUti_Prior1}
+\centering
+\includeimage[width=\textwidth]{figures/BEAUti_Prior1}
 \caption{A screenshot of the Priors tab in BEAUti. }
 \label{fig:BEAUti_Prior1}
 \end{figure}
@@ -325,7 +332,7 @@ different species. %(see Section \ref{section:YuleBirthDeathModels} for details)
 Select this from the {\bf Tree prior} dropdown menu.
 
 %\begin{figure}
-%\includegraphics[width=\textwidth]{figures/BEAUti_Tree}
+%\includeimage[width=\textwidth]{figures/BEAUti_Tree}
 %\caption{A screenshot of the tree prior drop down menu in BEAUti.}
 %\label{fig:BEAUti_Tree}
 %\end{figure}
@@ -345,7 +352,7 @@ As this is a calibrated node to be used in conjunction with the Calibrated Yule 
 
 \begin{figure}
 \centering
-\includegraphics[width=9cm]{figures/BEAUti_TaxonSets}
+\includeimage[width=9cm]{figures/BEAUti_TaxonSets}
 \caption{Taxon set editor in BEAUti.}
 \label{fig:BEAUti_TaxonSets}
 \end{figure}
@@ -365,7 +372,7 @@ estimate of the date of the most recent common ancestor of humans and chimpanzee
 
 \begin{figure}
 \centering	
-\includegraphics[width=\textwidth]{figures/BEAUti_Prior2}
+\includeimage[width=\textwidth]{figures/BEAUti_Prior2}
 \caption{A screenshot of the calibration prior options in the Priors panel in BEAUti.}
 \label{fig:BEAUti_Prior2}
 \end{figure}
@@ -384,7 +391,8 @@ bias. These default priors are kept since they are suitable for this particular
 analysis.
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/GammaPrior}
+\centering
+\includeimage[width=\textwidth]{figures/GammaPrior}
 \caption{Gamma prior.}
 \label{fig:GammaPrior}
 \end{figure}
@@ -394,7 +402,7 @@ analysis.
 %The priors table should now look like Figure \ref{fig:BEAUti_Prior2}.
 
 %\begin{figure}
-%\includegraphics[width=\textwidth]{figures/BEAUti_Prior2}
+%\includeimage[width=\textwidth]{figures/BEAUti_Prior2}
 %\caption{A screenshot of the newly added calibration prior in the Priors panel in BEAUti. \TODO{This figure needs to be changed to remove the HomiCerco.prior.}}
 %\label{fig:BEAUti_Prior2}
 %\end{figure}
@@ -417,7 +425,7 @@ length} to \underline{\chainLength{}} as this will run reasonably quickly on mos
 computers (a few minutes).
 
 %\begin{figure}
-%\includegraphics[width=\textwidth]{figures/BEAUti_MCMC}
+%\includeimage[width=\textwidth]{figures/BEAUti_MCMC}
 %\caption{A screenshot of the MCMC panel in BEAUti.}
 %\label{fig:BEAUti_MCMC}
 %\end{figure}
@@ -468,7 +476,7 @@ We are now ready to run the file through BEAST.
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.7\textwidth]{figures/BEAST}
+\includeimage[width=0.7\textwidth]{figures/BEAST}
 \caption{A screenshot of BEAST.}
 \label{fig:BEAST}
 \end{figure}
@@ -606,7 +614,7 @@ always rejected.
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/Tracer1}
+\includeimage[width=0.9\textwidth]{figures/Tracer1}
 \caption{A screenshot of Tracer v{\TracerVersion}.}
 \label{fig:Tracer1}
 \end{figure}
@@ -633,7 +641,7 @@ Select the \texttt{TreeHeight} parameter and then Ctrl-click \texttt{mrcatime(hu
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/Tracer_divergences}
+\includeimage[width=0.9\textwidth]{figures/Tracer_divergences}
 \caption{A screenshot of the 95\% HPD intervals of the root height and the user-specified (human-chimp) MRCA in Tracer.}
 \label{fig:Tracer_divergences}
 \end{figure}
@@ -659,7 +667,7 @@ both the coding and noncoding regions of the alignment.
 
 \begin{figure}
 \centering	
-\includegraphics[width=\textwidth]{figures/Tracer_marginalDensity}
+\includeimage[width=\textwidth]{figures/Tracer_marginalDensity}
 \caption{A screenshot of the marginal posterior densities of the relative substitution rates of the four partitions (relative to the site-weighted mean rate).}
 \label{fig:Tracer_marginalDensity}
 \end{figure}
@@ -686,23 +694,23 @@ both the coding and noncoding regions of the alignment.
 
 \textit{What is the estimated rate of molecular evolution for this gene tree (include the 95\% HPD interval)?}
 
-\vspace{5 mm}
-\framebox(420,30){}
-\vspace{5 mm}
+%\vspace{5 mm}
+%\framebox(420,30){}
+%\vspace{5 mm}
 
 \textit{What sources of error does this estimate include?}
 
-\vspace{5 mm}
-\framebox(420,30){}
-\vspace{5 mm}
+%\vspace{5 mm}
+%\framebox(420,30){}
+%\vspace{5 mm}
 
 %\item Does the rate of evolution differ substantially amongst different lineages in the tree?
 
 \textit{How old is the root of the tree (give the mean and the 95\% HPD range)?}
 
-\vspace{5 mm}
-\framebox(420,30){}
-\vspace{5 mm}
+%\vspace{5 mm}
+%\framebox(420,30){}
+%\vspace{5 mm}
   
 %The \texttt{coefficientOfVariation} statistic gives a summary of how much the rate of evolution varies from lineage to lineage (expressed as a proportion of the mean rate).
 %   
@@ -729,7 +737,7 @@ node. Run the TreeAnnotator program and set it up as depicted in Figure \ref{fig
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/TreeAnnotator1}
+\includeimage[width=0.9\textwidth]{figures/TreeAnnotator1}
 \caption{A screenshot of TreeAnnotator.}
 \label{fig:TreeAnnotator1}
 \end{figure}
@@ -772,8 +780,8 @@ You should end up with something similar to Figure \ref{fig:FigTree}.
 
 \begin{figure}
 \centering	
-\includegraphics[width=0.9\textwidth]{figures/FigTree}
-\includegraphics[width=0.9\textwidth]{figures/DensiTree}
+\includeimage[width=0.9\textwidth]{figures/FigTree}
+\includeimage[width=0.9\textwidth]{figures/DensiTree}
 \caption{A screenshot of FigTree and DensiTree.}
 \label{fig:FigTree}
 \end{figure}
@@ -786,7 +794,7 @@ we conclude that this analysis results in a very high consensus on topology (Fig
 
 %\begin{figure}
 %\begin{center}
-%\includegraphics[width=0.7\textwidth]{figures/DensiTree}
+%\includeimage[width=0.7\textwidth]{figures/DensiTree}
 %\end{center}
 %\caption{A screenshot of DensiTree.}
 %\label{fig:DensiTree}
@@ -794,38 +802,42 @@ we conclude that this analysis results in a very high consensus on topology (Fig
 
 \newpage
 \subsection*{Questions}
-\vspace{5 mm}
+%\vspace{5 mm}
 
-\textit{Does the rate of evolution differ substantially amongst different lineages in the tree?}
+\begin{enumerate}
+\item \textit{Does the rate of evolution differ substantially amongst different lineages in the tree?}
 
-\vspace{5 mm}
-\framebox(420,60){}
-\vspace{5 mm}
+%\vspace{5 mm}
+%\framebox(420,60){}
+%\vspace{5 mm}
 
-DensiTree has a clade bar (Menu Window/View clade toolbar) to show information on clades.
+\item DensiTree has a clade bar (Menu Window/View clade toolbar) to show information on clades.
 
 \textit{What is the support for the clade [Homo\_sapiens, Pan, Gorilla, Hylobates]?}
 
-\vspace{5 mm}
-\framebox(420,30){}
-\vspace{5 mm}
+%\vspace{5 mm}
+%\framebox(420,30){}
+%\vspace{5 mm}
 
-You can browse through the topologies in DensiTree using the Browse menu.
+\item You can browse through the topologies in DensiTree using the Browse menu.
 The most popular topology has a support of over 99\%.
 
 \textit{What is the support for the second most popular topology?}
 
-\vspace{5 mm}
-\framebox(420,30){}
-\vspace{5 mm}
+%\vspace{5 mm}
+%\framebox(420,30){}
+%\vspace{5 mm}
 
-Under the help menu, DensiTree shows some information.
+\item Under the help menu, DensiTree shows some information.
 
 \textit{How many topologies are in the tree set?}
 
-\vspace{5 mm}
-\framebox(420,30){}
-\vspace{5 mm}
+%\vspace{5 mm}
+%\framebox(420,30){}
+%\vspace{5 mm}
+
+\end{enumerate}
+
 \newpage
 
 \section{Comparing your results to the prior}

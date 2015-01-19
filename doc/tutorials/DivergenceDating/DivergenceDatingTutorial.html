@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="generator" content="hevea 2.01">
+<style type="text/css">
+.li-itemize{margin:1ex 0ex;}
+.li-enumerate{margin:1ex 0ex;}
+.dd-description{margin:0ex 0ex 1ex 4ex;}
+.dt-description{margin:0ex;}
+.toc{list-style:none;}
+.footnotetext{margin:0ex; padding:0ex;}
+div.footnotetext P{margin:0px; text-indent:1em;}
+.thefootnotes{text-align:left;margin:0ex;}
+.dt-thefootnotes{margin:0em;}
+.dd-thefootnotes{margin:0em 0em 0em 2em;}
+.footnoterule{margin:1em auto 1em 0px;width:50%;}
+.caption{padding-left:2ex; padding-right:2ex; margin-left:auto; margin-right:auto}
+.title{margin:2ex auto;text-align:center}
+.titlemain{margin:1ex 2ex 2ex 1ex;}
+.titlerest{margin:0ex 2ex;}
+.center{text-align:center;margin-left:auto;margin-right:auto;}
+.flushleft{text-align:left;margin-left:0ex;margin-right:auto;}
+.flushright{text-align:right;margin-left:auto;margin-right:0ex;}
+div table{margin-left:inherit;margin-right:inherit;margin-bottom:2px;margin-top:2px}
+td table{margin:auto;}
+table{border-collapse:collapse;}
+td{padding:0;}
+.cellpadding0 tr td{padding:0;}
+.cellpadding1 tr td{padding:1px;}
+pre{text-align:left;margin-left:0ex;margin-right:auto;}
+blockquote{margin-left:4ex;margin-right:4ex;text-align:left;}
+td p{margin:0px;}
+.boxed{border:1px solid black}
+.textboxed{border:1px solid black}
+.vbar{border:none;width:2px;background-color:black;}
+.hbar{border:none;height:2px;width:100%;background-color:black;}
+.hfill{border:none;height:1px;width:200%;background-color:black;}
+.vdisplay{border-collapse:separate;border-spacing:2px;width:auto; empty-cells:show; border:2px solid red;}
+.vdcell{white-space:nowrap;padding:0px; border:2px solid green;}
+.display{border-collapse:separate;border-spacing:2px;width:auto; border:none;}
+.dcell{white-space:nowrap;padding:0px; border:none;}
+.dcenter{margin:0ex auto;}
+.vdcenter{border:solid #FF8000 2px; margin:0ex auto;}
+.minipage{text-align:left; margin-left:0em; margin-right:auto;}
+.marginpar{border:solid thin black; width:20%; text-align:left;}
+.marginparleft{float:left; margin-left:0ex; margin-right:1ex;}
+.marginparright{float:right; margin-left:1ex; margin-right:0ex;}
+.theorem{text-align:left;margin:1ex auto 1ex 0ex;}
+.part{margin:2ex auto;text-align:center}
+.lstlisting{font-family:monospace;white-space:pre;margin-right:auto;margin-left:0pt;text-align:left}
+</style>
+<title>Divergence Dating Tutorial with BEAST 2.2.x
+</title>
+</head>
+<body >
+<!--HEVEA command line is: hevea DivergenceDatingTutorial.tex -->
+<!--CUT STYLE article--><!--CUT DEF section 1 --><table class="title"><tr><td style="padding:1ex"><h1 class="titlemain">Divergence Dating Tutorial with BEAST 2.2.x</h1><h3 class="titlerest">Alexei Drummond, Andrew Rambaut, Remco Bouckaert, and Walter Xie</h3></td></tr>
+</table>
+<!--TOC section id=sec1 Introduction-->
+<h2 id="sec1" class="section">1&#XA0;&#XA0;Introduction</h2><!--SEC END --><p>This tutorial introduces the BEAST software for Bayesian evolutionary analysis through a simple tutorial. The tutorial involves co-estimation of a gene phylogeny and associated divergence times in the presence of calibration information from fossil evidence. </p><p>You will need the following software at your disposal:</p><ul class="itemize"><li class="li-itemize"><span style="font-weight:bold">BEAST</span> - this package contains the BEAST program, BEAUti, TreeAnnotator and other utility programs. This tutorial is written for BEAST v2.2.x, which has support for multiple partitions. It is available for download from <span style="font-family:monospace">http://www.beast2.org/</span>.
+</li><li class="li-itemize"><span style="font-weight:bold">Tracer</span> - this program is used to explore the output of BEAST (and other Bayesian MCMC programs). It graphically and
+quantitively summarizes the distributions of continuous parameters and provides diagnostic information. At the time of
+writing, the current version is v1.6. It is available for download from<br>
+<span style="font-family:monospace">http://tree.bio.ed.ac.uk/software/</span>.
+</li><li class="li-itemize"><span style="font-weight:bold">FigTree</span> - this is an application for displaying and printing molecular phylogenies, in particular those obtained using
+BEAST. At the time of writing, the current version is v1.4.2. It is available for download from <span style="font-family:monospace">http://tree.bio.ed.ac.uk/software/</span>.
+</li></ul><p>This tutorial will guide you through the analysis of an alignment of sequences sampled from twelve primate species (see Figure <a href="#fig%3AprimateAlignment">??</a>). The goal is to estimate the phylogeny, the rate of evolution on each lineage and the ages of the uncalibrated
+ancestral divergences. </p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>	
+<img src="figures/AlignmentViewer.hevea.png"><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 1: Part of the alignment for primates.<a id="fig:primateAlignment"></a></td></tr>
+</table></div><p>
+<a id="fig:BEAUti_ImportNexus"></a>
+</p><div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>The first step will be to convert a NEXUS file with a DATA or CHARACTERS block into a BEAST XML input file. This is done using the program BEAUti (which stands for Bayesian Evolutionary Analysis Utility). 
+This is a user-friendly program for setting the evolutionary model and options for the MCMC analysis. 
+The second step is to actually run BEAST using the input file generated by BEAUTi, which
+contains the data, model and analysis settings. 
+The final step is to explore the output of BEAST in order to diagnose problems and to summarize the results.</p>
+<!--TOC section id=sec2 BEAUti-->
+<h2 id="sec2" class="section">2&#XA0;&#XA0;BEAUti</h2><!--SEC END --><p>The program BEAUti is a user-friendly program for setting the
+model parameters for BEAST. Run BEAUti by double clicking on its icon. Once running, <span style="font-family:monospace">BEAUti</span> will look similar irrespective
+of which computer system it is running on. For this tutorial, the Mac OS X version is used in the figures but
+the Linux and Windows versions will have the same layout and functionality.</p>
+<!--TOC subsection id=sec3 Loading the NEXUS file -->
+<h3 id="sec3" class="subsection">2.1&#XA0;&#XA0;Loading the NEXUS file </h3><!--SEC END --><p>To load a NEXUS format alignment, simply select the <span style="font-family:monospace">Import Alignment...</span> option from the <span style="font-family:monospace">File</span> menu, or drag the file into the middle of <span style="font-weight:bold">Partitions</span> panel. </p><p>The example file called <span style="font-family:monospace">primates-mtDNA.nex</span> is available from the <span style="font-family:monospace">examples/nexus/</span> directory for Mac and Linux and <span style="font-family:monospace">examples/nexus/</span>for Windows inside the directory where BEAST was installed.
+This file contains an alignment of sequences of 12 species of primates. </p><p>An <span style="font-family:monospace">Add Partition</span> window (Figure <a href="#fig%3AaddPartition">??</a>) would pop up if the related package is installed. If you are using ``pure'' BEAST 2, you can go to the next paragraph. 
+Otherwise, select <span style="font-family:monospace">Add Alignment</span> and click <span style="font-weight:bold">OK</span> to continue.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/AddPartition.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 2: Add Partition window (Only appear if related packages are installed).</td></tr>
+</table></div>
+<a id="fig:addPartition"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>If there is any coding overlaps in the partitions, the warning message window (Figure <a href="#fig%3Awarning">??</a>) will appear. Read and click <span style="font-weight:bold">OK</span> to continue.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>	
+	
+<img src="figures/warning.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 3: Warning message window (Only appear if there is any coding overlaps in the partitions).</td></tr>
+</table></div>
+<a id="fig:warning"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Once loaded, five character partitions are displayed in the main panel (Figure <a href="#fig%3ABEAUTI_DataPartitions">??</a>). The alignment is divided into a protein coding part and a non-coding part,and the coding part is divided in codon positions 1, 2 and 3. 
+<span style="font-weight:bold">You must remove the `coding' partition before continuing to the next step as it refers to the same nucleotides as partitions `1stpos', `2ndpos' and `3rdpos'.</span> To remove the `coding' partition select the row and click the `-' button at the bottom of the table. 
+You can view the alignment by double clicking the partition.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/BEAUti_DataPartitions.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 4: A screenshot of the data tab in BEAUti. This and all following screenshots
+were taken on an Apple computer running Mac OS X and will look slightly different on other operating systems.</td></tr>
+</table></div>
+<a id="fig:BEAUTI_DataPartitions"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><!--TOC subsection id=sec4 Link/Unlink partition models-->
+<h3 id="sec4" class="subsection">Link/Unlink partition models</h3><!--SEC END --><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/BEAUti_DataPartitions_final.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 5: A screenshot of the Partitions tab in BEAUti after linking and renaming the clock model and tree.</td></tr>
+</table></div>
+
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Since the sequences are linked (i.e. they are all from the mitochondrial genome
+which is not believed to undergo recombination in birds and mammals) they
+share the same ancestry, so the partitions should share the same time-tree in
+the model. For the sake of simplicity, we will also assume the partitions share
+the same evolutionary rate for each branch, and hence the same ``clock model''.
+We will restrict our modelling of rate heterogeneity to among-site heterogeneity
+within each partition, and also allow the partitions to have different mean rates of evolution. </p><p>So, at this point we will need to link the clock model and tree. In the <span style="font-weight:bold">Partitions</span> panel, select all four partitions in the table (or none, by default all partitions are affected) and click the <span style="font-family:monospace">Link Tree Models</span> button and then the <span style="font-family:monospace">Link Clock Models</span> button (see Figure <a href="#fig%3ABEAUti_DataPartitions_final">??</a>). Then click on the first drop-down menu in the Clock Model column and rename the shared clock model to `clock'. Likewise rename the shared tree to `tree'. This will make following options and generated log files more easy to read.</p>
+<!--TOC subsection id=sec5 Setting the substitution model-->
+<h3 id="sec5" class="subsection">2.2&#XA0;&#XA0;Setting the substitution model</h3><!--SEC END --><p>The next step is to set up the substitution model. 
+Then, select the <span style="font-weight:bold">Site Models</span> tab at the top of the main window (we skip the <span style="font-weight:bold">Tip Dates</span> tab since all taxa are from contemporary
+samples). This will reveal the evolutionary model settings for BEAST. The options available depend on whether the data are nucleotides, or amino acids, binary data, or general data. The settings that will appear after loading the primate nucleotide alignment will be the default values for nucleotide data so we need to make some changes. </p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/BEAUti_Model.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 6: A screenshot of the site model tab in BEAUti.</td></tr>
+</table></div>
+<a id="fig:BEAUti_Model"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Most of the models should be familiar to you. First, set the <span style="font-weight:bold">Gamma Category Count</span> to 4 and then tick the `estimate' box for the <span style="font-weight:bold">Shape</span> parameter. This will allow rate variation 
+between sites in each partition to be modelled. Note that 4 to 6 categories works sufficiently well for most data
+sets, while having more categories takes more time to compute for little added benefit. We leave the Proportion Invariant entry set to zero.</p><p>Then select <span style="font-weight:bold">HKY</span> from the <span style="font-weight:bold">Subst Model</span> drop-down menu. Ideally, a substitution model should be selected that fit the data best for each partition, but here for the sake of simplicity we use HKY for all partitions. Further, select <span style="font-weight:bold">Empirical</span> from the <span style="font-weight:bold">Frequencies</span> drop-down menu. This will fix the frequencies to the proportions observed in the data (for each partition individually, once we unlink the site models). This approach means that we can get a good fit to the data without explicitly estimating these parameters. We do it here simply to make the log files a bit shorter and more readable in later parts of the exercise. </p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/cloneFrom.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 7: clone configuration from one site model to others.</td></tr>
+</table></div>
+<a id="fig:cloneFrom"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Finally check the `estimate' box for the <span style="font-weight:bold">Substitution rate</span> parameter and select the <span style="font-weight:bold">Fix mean mutation rate</span> check box. This will allow the individual partitions to have their relative rates estimated for unlinked the site models (Figure <a href="#fig%3ABEAUti_Model">??</a>).</p><p>At last, hold `shift' key to select all site models on the left side, and click <span style="font-weight:bold">OK</span> to clone the setting from <span style="font-weight:bold">noncoding</span> into <span style="font-weight:bold">1stpos</span>, <span style="font-weight:bold">2ndpos</span> and <span style="font-weight:bold">3rdpos</span> (Figure <a href="#fig%3AcloneFrom">??</a>). Go through each site model, as you can see, their configurations are same now. </p>
+<!--TOC subsection id=sec6 Setting the clock model-->
+<h3 id="sec6" class="subsection">2.3&#XA0;&#XA0;Setting the clock model</h3><!--SEC END --><p>The next step is to select the <span style="font-weight:bold">Clock Models</span> tab at the top of the
+main window. This is where we select the molecular clock model. For this exercise we are going to leave the selection at the <span style="font-style:italic">default</span> value of a <span style="font-weight:bold">strict molecular clock</span>, because this data is very clock-like, and does not need rate variation among branches to be included in the model.</p><p>To test for clock-likeness, you can (i) run the analysis with
+a relaxed clock model and check how much variation among rates are implied
+by the data (see coefficient of variation for more on this), or
+(ii) perform a model comparison between a strict and relaxed clock using path
+sampling, or (iii) use a random local clock model [<a href="#drummond2010bayesian"></a>]
+which explicitly considers whether each branch in the tree needs its own branch
+rate.</p>
+<!--TOC subsection id=sec7 Priors -->
+<h3 id="sec7" class="subsection">2.4&#XA0;&#XA0;Priors </h3><!--SEC END --><p>The <span style="font-weight:bold">Priors</span> tab allows priors to be specified for each parameter in the
+model. The model selections made in the site model and clock model tabs, result in the inclusion of various parameters
+in the model, and these are shown in the priors tab (see Figure <a href="#fig%3ABEAUti_Prior1">??</a>).</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+<img src="figures/BEAUti_Prior1.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 8: A screenshot of the Priors tab in BEAUti. </td></tr>
+</table></div>
+<a id="fig:BEAUti_Prior1"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Here we also specify that we wish to use the Calibrated Yule model [<a href="#Heled%3A2012fk"></a>]
+as the tree prior. The Yule model is a simple model of
+speciation that is generally more appropriate when considering sequences from
+different species. Select this from the <span style="font-weight:bold">Tree prior</span> dropdown menu.</p>
+<!--TOC subsubsection id=sec8 Defining the calibration node-->
+<h4 id="sec8" class="subsubsection">2.4.1&#XA0;&#XA0;Defining the calibration node</h4><!--SEC END --><p>We now need to specify a prior distribution on the calibrated node, based on our
+fossil knowledge. This is known as calibrating our tree. To define an extra prior, press the small <span style="font-weight:bold">+</span> button below list of priors. You will see a
+dialog that allows you to define a subset of the taxa in the phylogenetic tree. Once you have created a taxa set you will be able to add calibration information for its most recent common
+ancestor (MRCA) later on. </p><p>Name the taxa set by filling in the taxon set label entry. 
+Call it <span style="font-family:monospace">human-chimp</span>, since it will contain the taxa for <span style="font-style:italic">Homo sapiens</span> and <span style="font-style:italic">Pan</span>. 
+In the list below you will see the available taxa. Select each of the two taxa in turn and press the $&gt; &gt;$ arrow button. (Figure <a href="#fig%3ABEAUti_TaxonSets">??</a>).
+Click OK and the newly defined taxa set will be added in to the prior list.
+As this is a calibrated node to be used in conjunction with the Calibrated Yule prior, monophyly must be enforced, so select the checkbox marked <span style="font-family:monospace">Monophyletic</span>. This will constrain the tree topology so that the human-chimp grouping is kept monophyletic during the course of the MCMC analysis.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+<img src="figures/BEAUti_TaxonSets.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 9: Taxon set editor in BEAUti.</td></tr>
+</table></div>
+<a id="fig:BEAUti_TaxonSets"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>To encode the calibration information we need to specify a distribution for the MRCA of human-chimp.
+Select the <span style="font-weight:bold">Log-normal</span> distribution from the drop down menu to the right of the newly added <span style="font-family:monospace">human-chimp.prior</span>. 
+Click on the black triangle and a graph of the probability density function will appear, along with parameters for the log normal distribution.
+We are going to set $M=1.78$ and $S=0.085$ which will specify a distribution centred at about 6 million
+years with a standard deviation of about 0.5 million years. This will give
+a central 95% probability range covering 5-7 Mya. This roughly corresponds to the current consensus
+estimate of the date of the most recent common ancestor of humans and chimpanzees (Figure <a href="#fig%3ABEAUti_Prior2">??</a>).</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/BEAUti_Prior2.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 10: A screenshot of the calibration prior options in the Priors panel in BEAUti.</td></tr>
+</table></div>
+<a id="fig:BEAUti_Prior2"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>We should convince ourselves that the priors shown in the priors panel really reflect the prior information we have about the parameters of the model. Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (<span style="font-family:monospace">clockRate</span>) and the speciation rate (<span style="font-family:monospace">birthRateY</span>) of the Yule tree prior. For each of them, select <span style="font-weight:bold">Gamma</span> from the drop-down menu
+and using the arrow button, expand the view to reveal the parameters of the
+Gamma prior. For both the clock rate and the Yule birth rate set the Alpha
+(shape) parameter to 0.001 and the Beta (scale) parameter to 1000 (Figure <a href="#fig%3AGammaPrior">??</a>).</p><p>By default each of the gamma shape parameters has an exponential prior
+distribution with a mean of 1. This implies (see Figure 3.7) we expect some
+rate variation. By default the kappa parameters for the HKY model have a log
+normal(1,1.25) prior distribution, which broadly agrees with empirical evidence
+[<a href="#rosenberg2003patterns"></a>] on the range of realistic values for transition/transversion
+bias. These default priors are kept since they are suitable for this particular
+analysis.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+<img src="figures/GammaPrior.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 11: Gamma prior.</td></tr>
+</table></div>
+<a id="fig:GammaPrior"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote>
+<!--TOC subsection id=sec9 Setting the MCMC options-->
+<h3 id="sec9" class="subsection">2.5&#XA0;&#XA0;Setting the MCMC options</h3><!--SEC END --><p>The next tab, <span style="font-weight:bold">MCMC</span>, provides more general
+settings to control the length of the MCMC run and the file names. </p><p>Firstly we have the <span style="font-weight:bold">Chain Length</span>. This is the number of
+steps the MCMC will make in the chain before finishing. How long this
+should be depends on the size of the data set, the complexity of the
+model and the quality of answer required. The default value of 10,000,000
+is entirely arbitrary and should be adjusted according to the size
+of your data set. For this data set let's set the <span style="font-family:monospace">chain
+length</span> to <U>6,000,000</U> as this will run reasonably quickly on most modern
+computers (a few minutes).</p><p>The <span style="font-weight:bold">Store Every</span> field determines how often the state is stored to file. Storing
+the state periodically is useful for situations where the computing environment
+is not very reliable and a BEAST run can be interrupted. Having a stored copy
+of the recent state allows you to resume the chain instead of restarting from the
+beginning, so you do not need to get through burn-in again.
+The <span style="font-weight:bold">Pre Burnin</span> field specifies the number of samples that are not logged at the very beginning of
+the analysis. We leave the <span style="font-weight:bold">Store Every</span> and <span style="font-weight:bold">Pre Burnin</span> fields set to their default
+values. Below these are the details of the log files. Each one can be expanded by
+clicking the black triangle.</p><p>The next options specify how often the parameter values in the Markov
+chain should be displayed on the screen and recorded in the log file.
+The screen output is simply for monitoring the programs progress so
+can be set to any value (although if set too small, the sheer quantity
+of information being displayed on the screen will actually slow the
+program down). For the log file, the value should be set relative
+to the total length of the chain. Sampling too often will result in
+very large files with little extra benefit in terms of the accuracy
+of the analysis. Sample too infrequently and the log file will not
+record sufficient information about the distributions of the parameters. 
+You probably want to aim to store no more than 10,000 samples so this should be
+set to no less than chain length / 10,000.</p><p>For this exercise we will set the <span style="font-family:monospace">screen log</span> to <U>10,000</U> and the <span style="font-family:monospace">trace log</span> to <U>1,000</U>. The final two
+options give the file names of the log files for the sampled parameters and
+the trees. These will be set to a default based on the name of the
+imported NEXUS file. We use <span style="font-family:monospace">Primates.log</span> and <span style="font-family:monospace">Primates.trees</span> here.</p><ul class="itemize"><li class="li-itemize">
+If you are using the Windows operating system then we suggest you add the suffix <span style="font-family:monospace">.txt</span> to both of these (so,
+<span style="font-family:monospace">Primates.log.txt</span> and <span style="font-family:monospace">Primates.trees.txt</span>) so that Windows recognizes
+these as text files. 
+</li></ul>
+<!--TOC subsection id=sec10 Generating the BEAST XML file -->
+<h3 id="sec10" class="subsection">2.6&#XA0;&#XA0;Generating the BEAST XML file </h3><!--SEC END --><p>We are now ready to create the BEAST XML file. To do this,
+select the <span style="font-weight:bold">Save</span> option from the <span style="font-weight:bold">File</span> menu. 
+Check the default priors, and save the file with an appropriate name
+(we usually end the filename with <span style="font-family:monospace">.xml</span>, i.e., <span style="font-family:monospace">Primates.xml</span>).
+We are now ready to run the file through BEAST. </p>
+<!--TOC section id=sec11 Running BEAST -->
+<h2 id="sec11" class="section">3&#XA0;&#XA0;Running BEAST </h2><!--SEC END --><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/BEAST.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 12: A screenshot of BEAST.</td></tr>
+</table></div>
+<a id="fig:BEAST"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Now run BEAST and when it asks for an input file, provide your newly
+created XML file as input. BEAST will then run until it has finished
+reporting information to the screen. The actual results files are
+save to the disk in the same location as your input file. The output to the screen will
+look something like this: </p><pre class="verbatim"><span style="font-size:xx-small">
+             BEAST v2.2.0, 2002-2014
+       Bayesian Evolutionary Analysis Sampling Trees
+                 Designed and developed by
+Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard
+                              
+               Department of Computer Science
+                   University of Auckland
+                  remco@cs.auckland.ac.nz
+                  alexei@cs.auckland.ac.nz
+                              
+             Institute of Evolutionary Biology
+                  University of Edinburgh
+                     a.rambaut@ed.ac.uk
+                              
+              David Geffen School of Medicine
+           University of California, Los Angeles
+                     msuchard@ucla.edu
+                              
+                Downloads, Help &amp; Resources:
+                     http://beast2.org/
+                              
+Source code distributed under the GNU Lesser General Public License:
+              http://github.com/CompEvol/beast2
+                              
+                     BEAST developers:
+ Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, 
+ Sebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, 
+ Gerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, 
+           Oliver Pybus, Chieh-Hsi Wu, Walter Xie
+                              
+                         Thanks to:
+     Roald Forsberg, Beth Shapiro and Korbinian Strimmer
+
+
+Random number seed: 777
+
+12 taxa
+898 sites
+413 patterns
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+TreeLikelihood uses beast.evolution.likelihood.BeerLikelihoodCore4
+===============================================================================
+Citations for this model:
+
+Bouckaert RR, Heled J, Kuehnert D, Vaughan TG, Wu C-H, Xie D, Suchard MA,
+  Rambaut A, Drummond AJ (2014) BEAST 2: A software platform for Bayesian
+  evolutionary analysis. PLoS Computational Biology 10(4): e1003537
+
+Heled J, Drummond AJ (2012) Calibrated Tree Priors for Relaxed Phylogenetics
+  and Divergence Time Estimation. Systematic Biology 61(1):138-149.
+
+Hasegawa M, Kishino H, Yano T (1985) Dating the human-ape splitting by a
+  molecular clock of mitochondrial DNA. Journal of Molecular Evolution
+  22:160-174.
+
+===============================================================================
+Writing file /Primates.log
+Writing file /Primates.trees
+         Sample      posterior ESS(posterior)     likelihood          prior
+              0     -7924.3599              N     -7688.4922      -235.8676 --
+          10000     -5529.0700         2.0        -5459.1993       -69.8706 --
+          20000     -5516.8159         3.0        -5442.3372       -74.4786 --
+          30000     -5516.4959         4.0        -5439.0839       -77.4119 --
+          40000     -5521.1160         5.0        -5445.6047       -75.5113 --
+          50000     -5520.7350         6.0        -5444.6198       -76.1151 --
+          60000     -5512.9427         7.0        -5439.2561       -73.6866 2m39s/Msamples
+          70000     -5513.8357         8.0        -5437.9432       -75.8924 2m39s/Msamples
+          ...
+        5990000     -5516.6832       474.6        -5442.5945       -74.0886 2m40s/Msamples
+        6000000     -5512.3802       472.2        -5440.8928       -71.4874 2m40s/Msamples
+
+Operator                                                     Tuning   #accept   #reject     total  prob.acc
+ScaleOperator(treeScaler.t:tree)                              0.703     39935    174155    214090     0.187 
+ScaleOperator(treeRootScaler.t:tree)                          0.644     37329    177166    214495     0.174 
+Uniform(UniformOperator.t:tree)                                        479419   1668915   2148334     0.223 
+SubtreeSlide(SubtreeSlide.t:tree)                             9.922    272787    801404   1074191     0.254 
+Exchange(narrow.t:tree)                                                   744   1074261   1075005     0.001 
+Exchange(wide.t:tree)                                                       9    214594    214603     0.000 
+WilsonBalding(WilsonBalding.t:tree)                                         4    214548    214552     0.000 
+ScaleOperator(KappaScaler.s:noncoding)                        0.352      1739      5375      7114     0.244 
+DeltaExchangeOperator(FixMeanMutationRatesOperator)           0.425     17277    126203    143480     0.120 
+ScaleOperator(gammaShapeScaler.s:noncoding)                   0.375      1729      5428      7157     0.242 
+ScaleOperator(CalibratedYuleBirthRateScaler.t:tree)           0.245     58005    156128    214133     0.271 
+ScaleOperator(StrictClockRateScaler.c:clock)                  0.706     50080    164952    215032     0.233 
+UpDownOperator(strictClockUpDownOperator.c:clock)             0.589     50809    163882    214691     0.237 
+ScaleOperator(KappaScaler.s:1stpos)                            0.44      1816      5388      7204     0.252 
+ScaleOperator(gammaShapeScaler.s:1stpos)                       0.42      1927      5129      7056     0.273 
+ScaleOperator(KappaScaler.s:2ndpos)                           0.332      1964      5301      7265     0.270 
+ScaleOperator(gammaShapeScaler.s:2ndpos)                      0.303      2033      5177      7210     0.282 
+ScaleOperator(KappaScaler.s:3rdpos)                           0.505      1424      5860      7284     0.195 
+ScaleOperator(gammaShapeScaler.s:3rdpos)                      0.267      1569      5536      7105     0.221 
+
+Total calculation time: 964.067 seconds
+</span></pre><p>Note that there is some useful information at the start concerning the alignments and which tree likelihoods are used. Also, all citations relevant for the analysis are mentioned at the start of the run, which can easily be copied to
+manuscripts reporting about the analysis. Then follows reporting of the chain,
+which gives some real time feedback on progress of the chain.</p><p>At the end, an operator analysis is printed, which lists all operators used in the
+analysis together with how often the operator was tried, accepted, and rejected
+(see columns #total, #accept and #reject respectively). The acceptance rate is
+the proportion of times an operator is accepted when it is selected for doing a
+proposal. In general, an acceptance rate that is high, say over 0.5 indicates the
+proposals are conservative and do not explore the parameter space efficiently. On
+the other hand a low acceptance rate indicates that proposals are too aggressive
+and almost always result in a state that is rejected because of its low posterior.
+Both too high and too low acceptance rates result in low ESS values. 
+An acceptance rate of 0.234 is the target (based on very limited evidence provided by [<a href="#gelman1996efficient"></a>]) for many (but not all) operators implemented in BEAST.</p><p>Some operators have a tuning parameter, for example the scale factor of a
+scale parameter. If the final acceptance rate is not near the target, BEAST will
+suggest a new value for the tuning parameter, which is printed in the operator analysis. In this case, all acceptance rates are good for the operators that have tuning parameters. Operators without tuning parameters include the wide
+exchange and Wilson-Balding operators for this analysis. Both these operators
+attempt to change the topology of the tree with large steps, but since the data
+supports a single topology overwhelmingly, these radical proposals are almost
+always rejected.</p>
+<!--TOC section id=sec12 Analyzing the results-->
+<h2 id="sec12" class="section">4&#XA0;&#XA0;Analyzing the results</h2><!--SEC END --><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/Tracer1.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 13: A screenshot of Tracer v1.6.</td></tr>
+</table></div>
+<a id="fig:Tracer1"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Run the program called <span style="font-weight:bold">Tracer</span> to analyze the output of BEAST. When the main
+window has opened, choose <span style="font-weight:bold">Import Trace File...</span> from the <span style="font-weight:bold">File</span> menu and select the file that
+BEAST has created called <span style="font-family:monospace">Primates.log</span> (Figure <a href="#fig%3ATracer1">??</a>).</p><p>Remember that MCMC is a stochastic algorithm so the actual numbers will not be exactly the same as those depicted in the figure.</p><p>On the left hand side is a list of the different quantities that BEAST has logged to file. 
+There are traces for the posterior (this
+is the natural logarithm of the product of the tree likelihood and the prior density), and the continuous parameters. Selecting a trace
+on the left brings up analyses for this trace on the right hand side depending on tab that is selected. When first opened, the
+`posterior' trace is selected and various statistics of this trace are shown under the Estimates tab.
+In the top right of the window is a table of calculated statistics for the selected trace. </p><p>Select the <span style="font-family:monospace">clockRate</span> parameter in the lefthand list to look at
+the average rate of evolution (averaged over the whole tree and all sites). Tracer will plot a (marginal posterior) histogram for the selected statistic and also give you
+summary statistics such as the mean and median. The 95% HPD stands for <span style="font-style:italic">highest posterior density interval</span> and represents the most compact interval on the selected parameter that contains 95% of the posterior probability. It can be loosely thought of as a Bayesian analog to a confidence interval. The <span style="font-family:monospace">TreeHeight</span> parameter gives the marginal posterior distribution of the age of the root of the entire tree.</p><p>Select the <span style="font-family:monospace">TreeHeight</span> parameter and then Ctrl-click <span style="font-family:monospace">mrcatime(human-chimp)</span> (Command-click on Mac OS X). This will show a display of the age of the root and the calibration MRCA we specified earlier in BEAUti. You can verify that the divergence that we used to calibrate the tree
+(<span style="font-family:monospace">mrcatime(human-chimp)</span>) has a posterior distribution that matches the prior distribution we specified (Figure <a href="#fig%3ATracer_divergences">??</a>).</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/Tracer_divergences.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 14: A screenshot of the 95% HPD intervals of the root height and the user-specified (human-chimp) MRCA in Tracer.</td></tr>
+</table></div>
+<a id="fig:Tracer_divergences"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote>
+<!--TOC section id=sec13 Marginal posterior estimates-->
+<h2 id="sec13" class="section">5&#XA0;&#XA0;Marginal posterior estimates</h2><!--SEC END --><p>To show the relative rates for the four partitions, select the mutationRate parameter for each of the four partitions, and select the marginal density tab in Tracer.
+Figure <a href="#fig%3ATracer_marginalDensity">??</a> shows the marginal densities for the relative substitution rates. The
+plot shows that codon positions 1 and 2 have substantially different rates (0.456
+versus 0.183) and both are far slower than codon position 3 with a relative rate of
+2.941. The noncoding partition has a rate intermediate between codon positions
+1 and 2 (0.346). Taken together this result suggests strong purifying selection in
+both the coding and noncoding regions of the alignment.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/Tracer_marginalDensity.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 15: A screenshot of the marginal posterior densities of the relative substitution rates of the four partitions (relative to the site-weighted mean rate).</td></tr>
+</table></div>
+<a id="fig:Tracer_marginalDensity"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>0
+</p><blockquote class="figure"><div class="center"><hr style="width:80%;height:2"></div><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 16: The marginal prior and posterior densities for the shape ($&#X3B1;$) parameters. The prior is in gray. The posterior density estimate for each partition is also shown: noncoding (orange) and first (red), second (green) and third (blue) codon positions.</td></tr>
+</table></div><p>
+<a id="fig:primatePriorPosteriorShape"></a>
+</p><div class="center"><hr style="width:80%;height:2"></div></blockquote><blockquote class="figure"><div class="center"><hr style="width:80%;height:2"></div>
+
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 17: The marginal prior and posterior densities for the transition/tranversion bias ($&#X3BA;$) parameters. The prior is in gray. The posterior density estimate for each partition is also shown: noncoding (orange) and first (red), second (green) and third (blue) codon positions.</td></tr>
+</table></div>
+<a id="fig:primatePriorPosteriorKappa"></a>
+<div class="center"><hr style="width:80%;height:2"></div></blockquote><!--TOC subsection id=sec14 Questions-->
+<h3 id="sec14" class="subsection">Questions</h3><!--SEC END --><p>
+<br>
+</p><p><span style="font-style:italic">What is the estimated rate of molecular evolution for this gene tree (include the 95% HPD interval)?</span></p><p><span style="font-style:italic">What sources of error does this estimate include?</span></p><p><span style="font-style:italic">How old is the root of the tree (give the mean and the 95% HPD range)?</span></p>
+<!--TOC section id=sec15 Obtaining an estimate of the phylogenetic tree-->
+<h2 id="sec15" class="section">6&#XA0;&#XA0;Obtaining an estimate of the phylogenetic tree</h2><!--SEC END --><p>BEAST also produces a posterior sample of phylogenetic time-trees along with its sample of parameter estimates. 
+These need to be summarized using the program <span style="font-weight:bold">TreeAnnotator</span>. This will take the set of trees and find the best
+supported one. It will then annotate this representative summary tree with the mean ages of all the
+nodes and the corresponding 95% HPD ranges. It will also calculate the posterior clade probability for each
+node. Run the TreeAnnotator program and set it up as depicted in Figure <a href="#fig%3ATreeAnnotator1">??</a>.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/TreeAnnotator1.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 18: A screenshot of TreeAnnotator.</td></tr>
+</table></div>
+<a id="fig:TreeAnnotator1"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>The burnin is the number of trees to remove from the start of the sample. Unlike <span style="font-weight:bold">Tracer</span> which specifies the number of
+steps as a burnin, in <span style="font-weight:bold">TreeAnnotator</span> you need to specify the actual number of trees. For this run, you specified a chain
+length of 6,000,000 steps sampling every 1,000 steps. Thus the trees file will contain 6,000 trees and so to specify a 10% burnin
+in the top text field.</p><p>The <span style="font-weight:bold">Posterior probability limit</span> option specifies a limit such that if a node is found at less than this frequency in the sample
+of trees (i.e., has a posterior probability less than this limit), it will not be annotated. The default of 0.5 means that only nodes
+seen in the majority of trees will be annotated. Set this to zero to annotate all nodes.</p><p>The <span style="font-weight:bold">Target tree type</span> specifies the tree topology that will be annotated. You can either choose a specific tree from a file or ask TreeAnnotator to find a tree in your sample.
+The default option, <span style="font-weight:bold">Maximum clade credibility tree</span>, finds the tree with the highest product of the posterior probability of
+all its nodes.</p><p>For node heights, the default is Common Ancestor Heights, which calculates
+the height of a node as the mean of the MRCA time of all pairs of nodes in
+the clade. For trees with large uncertainty in the topology and thus many clades
+with low support, some other methods can result in trees with negative branch
+lengths. In this analysis, the support for all clades in the summary tree is very
+high, so this is no issue here.
+Choose <span style="font-weight:bold">Mean heights</span> for node heights. This sets the heights (ages) of each node in the tree to the mean height across the
+entire sample of trees for that clade.</p><p>For the input file, select the trees file that BEAST created and select a file for the
+output (here we called it <span style="font-family:monospace">Primates.MCC.tree</span>). Now press Run and wait for the program to finish.</p>
+<!--TOC section id=sec16 Visualizing the tree estimate-->
+<h2 id="sec16" class="section">7&#XA0;&#XA0;Visualizing the tree estimate</h2><!--SEC END --><p>Finally, we can visualize the tree in another program called <span style="font-weight:bold">FigTree</span>. Run this program, and open
+the <span style="font-family:monospace">Primates.MCC.tree</span> file by using the Open command in the File menu. The tree should appear.
+You can now try selecting some of the options in the control panel on the left. 
+First of all, expend <span style="font-weight:bold">Trees</span> option in the panel, and check <span style="font-weight:bold">Order nodes</span> and choose <span style="font-style:italic">Ordering</span> by <span style="font-style:italic">decreasing</span>. 
+Try selecting <span style="font-weight:bold">Node Bars</span> to get node age error bars. Also turn on <span style="font-weight:bold">Branch Labels</span> and select <span style="font-weight:bold">posterior</span> to get
+it to display the posterior probability for each node. 
+If you use a non strict clock model then under <span style="font-weight:bold">Appearance</span> you can also tell FigTree to colour the branches by the rate.
+You should end up with something similar to Figure <a href="#fig%3AFigTree">??</a>.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
+	
+<img src="figures/FigTree.hevea.png">
+<img src="figures/DensiTree.hevea.png">
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 19: A screenshot of FigTree and DensiTree.</td></tr>
+</table></div>
+<a id="fig:FigTree"></a>
+<div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>An alternative view of the tree can be made with DensiTree, which is part of Beast 2. The advantage
+of DensiTree is that it is able to visualize both uncertainty in node heights and uncertainty in topology.
+For this particular dataset, the dominant topology is present in more than 99% of the samples. So, 
+we conclude that this analysis results in a very high consensus on topology (Figure <a href="#fig%3AFigTree">??</a>).</p><!--TOC subsection id=sec17 Questions-->
+<h3 id="sec17" class="subsection">Questions</h3><!--SEC END --><ol class="enumerate" type=1><li class="li-enumerate">
+<span style="font-style:italic">Does the rate of evolution differ substantially amongst different lineages in the tree?</span></li><li class="li-enumerate">DensiTree has a clade bar (Menu Window/View clade toolbar) to show information on clades.<p><span style="font-style:italic">What is the support for the clade [Homo_sapiens, Pan, Gorilla, Hylobates]?</span></p></li><li class="li-enumerate">You can browse through the topologies in DensiTree using the Browse menu.
+The most popular topology has a support of over 99%.<p><span style="font-style:italic">What is the support for the second most popular topology?</span></p></li><li class="li-enumerate">Under the help menu, DensiTree shows some information.<p><span style="font-style:italic">How many topologies are in the tree set?</span></p></li></ol>
+<!--TOC section id=sec18 Comparing your results to the prior-->
+<h2 id="sec18" class="section">8&#XA0;&#XA0;Comparing your results to the prior</h2><!--SEC END --><p>It is a good idea to rerun the analysis while sampling from the prior to make sure
+that interactions between priors are not affecting your prior information. The
+interaction between priors can be problematic especially when using calibrations
+since it means putting multiple priors on the tree.</p><p>Using BEAUti, set up the same analysis but under the MCMC options, select the <span style="font-weight:bold">Sample from prior only</span> option. This will allow you to visualize the full prior distribution in the absence of your sequence data. Summarize the trees from the full prior
+distribution and compare the summary to the posterior summary tree.</p><p>Divergence time estimation using ``node dating" of the type described in this
+chapter has been applied to answer a variety of different questions in ecology
+and evolution. For example, node dating with fossils was used in determining
+the species diversity of cycads [<a href="#nagalingum2011recent"></a>], analysing the rate of
+evolution in flowering plants [<a href="#smith2008rates"></a>], and investigating the
+origins of hot and cold desert cyanobacteria [<a href="#bahl2011ancient"></a>].</p><!--TOC section id=sec19 References-->
+<h2 id="sec19" class="section">References</h2><!--SEC END --><dl class="thebibliography"><dt class="dt-thebibliography">
+<a id="bahl2011ancient">[bahl2011ancient]</a></dt><dd class="dd-thebibliography">
+Justin Bahl, Maggie&#XA0;CY Lau, Gavin&#XA0;JD Smith, Dhanasekaran Vijaykrishna, S&#XA0;Craig
+Cary, Donnabella&#XA0;C Lacap, Charles&#XA0;K Lee, R&#XA0;Thane Papke, Kimberley&#XA0;A
+Warren-Rhodes, Fiona&#XA0;KY Wong, et&#XA0;al., <em>Ancient origins determine global
+biogeography of hot and cold desert cyanobacteria</em>, Nature communications
+<span style="font-weight:bold">2</span> (2011), 163.</dd><dt class="dt-thebibliography"><a id="drummond2010bayesian">[drummond2010bayesian]</a></dt><dd class="dd-thebibliography">
+Alexei&#XA0;J Drummond and Marc&#XA0;A Suchard, <em>Bayesian random local clocks, or
+one rate to rule them all</em>, BMC biology <span style="font-weight:bold">8</span> (2010), no.&#XA0;1, 114.</dd><dt class="dt-thebibliography"><a id="gelman1996efficient">[gelman1996efficient]</a></dt><dd class="dd-thebibliography">
+A&#XA0;Gelman, G&#XA0;Roberts, and W&#XA0;Gilks, <em>Efficient metropolis jumping hules</em>,
+Bayesian statistics <span style="font-weight:bold">5</span> (1996), 599--608.</dd><dt class="dt-thebibliography"><a id="Heled:2012fk">[Heled:2012fk]</a></dt><dd class="dd-thebibliography">
+Joseph Heled and Alexei&#XA0;J Drummond, <em>Calibrated tree priors for relaxed
+phylogenetics and divergence time estimation</em>, Syst Biol <span style="font-weight:bold">61</span> (2012),
+no.&#XA0;1, 138--49.</dd><dt class="dt-thebibliography"><a id="nagalingum2011recent">[nagalingum2011recent]</a></dt><dd class="dd-thebibliography">
+NS&#XA0;Nagalingum, CR&#XA0;Marshall, TB&#XA0;Quental, HS&#XA0;Rai, DP&#XA0;Little, and S&#XA0;Mathews,
+<em>Recent synchronous radiation of a living fossil</em>, Science <span style="font-weight:bold">334</span>
+(2011), no.&#XA0;6057, 796--799.</dd><dt class="dt-thebibliography"><a id="rosenberg2003patterns">[rosenberg2003patterns]</a></dt><dd class="dd-thebibliography">
+Michael&#XA0;S Rosenberg, Sankar Subramanian, and Sudhir Kumar, <em>Patterns of
+transitional mutation biases within and among mammalian genomes</em>, Molecular
+biology and evolution <span style="font-weight:bold">20</span> (2003), no.&#XA0;6, 988--993.</dd><dt class="dt-thebibliography"><a id="smith2008rates">[smith2008rates]</a></dt><dd class="dd-thebibliography">
+Stephen&#XA0;A Smith and Michael&#XA0;J Donoghue, <em>Rates of molecular evolution are
+linked to life history in flowering plants</em>, science <span style="font-weight:bold">322</span> (2008),
+no.&#XA0;5898, 86--89.</dd></dl><!--CUT END -->
+<!--HTMLFOOT-->
+<!--ENDHTML-->
+<!--FOOTER-->
+<hr style="height:2"><blockquote class="quote"><em>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
+</em><a href="http://hevea.inria.fr/index.html"><em>H</em><em><span style="font-size:small"><sup>E</sup></span></em><em>V</em><em><span style="font-size:small"><sup>E</sup></span></em><em>A</em></a><em>.</em></blockquote></body>
+</html>
