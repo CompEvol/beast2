@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="../../beast2.css">
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <meta name="generator" content="hevea 2.01">
 <style type="text/css">
@@ -53,7 +54,7 @@ td p{margin:0px;}
 </head>
 <body >
 <!--HEVEA command line is: hevea StarBEAST_tutorial.tex -->
-<!--CUT STYLE article--><!--CUT DEF section 1 --><table class="title"><tr><td style="padding:1ex"><h1 class="titlemain">*BEAST in BEAST 2.0<br>
+<!--CUT STYLE article--><!--CUT DEF section 1 --><table class="title"><tr><td style="padding:1ex"><h1 class="titlemain">*BEAST in BEAST 2.2.x<br>
 Estimating Species Trees from Multilocus Data</h1><h3 class="titlerest">Joseph Heled, Remco Bouckaert, Alexei J Drummond and Walter Xie</h3></td></tr>
 </table>
 <!--TOC section id=sec1 Introduction-->
@@ -69,7 +70,7 @@ BEAST. At the time of writing, the current version is v1.4.2. It is available fo
 <h2 id="sec2" class="section">2&#XA0;&#XA0;*BEAST</h2><!--SEC END --><p>This tutorial will guide you through the analysis of three loci sampled from 26 individuals representing nine species of pocket gophers. This is a subset of previous published data [<a href="#belfiore2008multilocus">1</a>]. The objective of this tutorial is to estimate the species tree that is most probable given the multi-individual multi-locus sequence data. The species tree has nine taxa, whereas each gene tree has 26 taxa. *BEAST 2 will co-estimate three gene trees embedded in a shared species tree [<a href="#Heled%3A2010fk">2</a>, for details].</p><p>The first step will be to convert a NEXUS file with a DATA or CHARACTERS block into a BEAST XML input file. This is done using the program BEAUti (Bayesian Evolutionary Analysis Utility). This is a user-friendly program for setting the evolutionary model and options for the MCMC analysis. The second step is to actually run BEAST using the input file that contains the data, model and settings. The final step is to explore the output of BEAST in order to diagnose problems and to summarize the results.</p><!--TOC subsection id=sec3 BEAUti-->
 <h3 id="sec3" class="subsection">BEAUti</h3><!--SEC END --><p>Run BEAUti by double clicking on its icon. </p><!--TOC subsubsection id=sec4 Set up BEAUti for *BEAST-->
 <h4 id="sec4" class="subsubsection">Set up BEAUti for *BEAST</h4><!--SEC END --><p>*BEAST uses a different template from the standard. This means that to use BEAUti for *BEAST, the first thing to do is change the template. Choose the File/Templates/StarBeast item. When changing a template, BEAUti deletes all previously imported data and start with a new empty template. So, if you already loaded some data, a warning message pops up indicating that this data will be lost if you switch templates.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/BEAUti_selectTemplate.png.hevea.png"><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 1:  Select a new template in BEAUti.</td></tr>
+<img src="figures/BEAUti_selectTemplate.hevea.png"><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 1:  Select a new template in BEAUti.</td></tr>
 </table></div><div class="center"><hr style="width:80%;height:2"></div></div></blockquote><!--TOC subsubsection id=sec5 Loading the NEXUS file -->
 <h4 id="sec5" class="subsubsection">Loading the NEXUS file </h4><!--SEC END --><p>*BEAST is a multi-individual, multi-locus method method. The data for each
 locus is stored as one alignment in its own NEXUS file. Taxa names in each
@@ -128,7 +129,7 @@ and <span style="font-weight:bold">Empirical</span> for the <span style="font-we
 <h4 id="sec8" class="subsubsection">Setting the clock model</h4><!--SEC END --><p>Second, click on the <span style="font-weight:bold">Clock Models</span> tab at the top of the
 main window. In this analysis, we use the <span style="font-weight:bold">Strict Clock</span> molecular clock model as default.
 Your model options should now look like this: </p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/BEAUti_ClockModel1.png.hevea.png"><p><img src="figures/BEAUti_ClockModel2.png.hevea.png"></p><p><img src="figures/BEAUti_ClockModel3.png.hevea.png"></p><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 5:  Setting up clock models for the gopher alignments.</td></tr>
+<img src="figures/BEAUti_ClockModel1.hevea.png"><p><img src="figures/BEAUti_ClockModel2.hevea.png"></p><p><img src="figures/BEAUti_ClockModel3.hevea.png"></p><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 5:  Setting up clock models for the gopher alignments.</td></tr>
 </table></div><div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>The <span style="font-weight:bold">Estimate</span> check box is unchecked for the first clock model and checked for the rest clock models, because we wish to estimate the substitution rate of each subsequent locus relative to the first locus whose rate is fixed to 1.0. </p><!--TOC subsubsection id=sec9 Multi Species Coalescent-->
 <h4 id="sec9" class="subsubsection">Multi Species Coalescent</h4><!--SEC END --><p>The <span style="font-weight:bold">Multi Species Coalescent</span> panel allows settings to the multi species coalescent model to be specified for each tree. *BEAST has a different tree prior panel where users can only configure the species tree prior not gene tree priors (which are automatically specified by the multispecies coalescent). Currently, we have two species tree priors: <span style="font-weight:bold">Yule Process</span> and <span style="font-weight:bold">Birth-Death Process</span>; and three population size models: <span style="font-weight:bold">Piecewise linear and constant root</span>, <span style="font-weight:bold">Piecewise linear</span>, and <span style="font-weight:bold">Piecewise constant</span>. 
 In this analysis, we use piecewise linear and constant root.</p><p>The <span style="font-weight:bold">Ploidy</span> item determines the type of sequence (mitochondrial, nuclear, X, Y). This matters since different modes of inheritance gives rise to different effective population sizes. In this analysis, we simply use a random starting tree. </p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
@@ -286,7 +287,7 @@ You can now try selecting some of the options in the control panel on the left. 
 it to display the posterior probability for each node. Under <span style="font-weight:bold">Appearance</span> you can also tell FigTree
 to colour the branches by the rate.
 You should end up with something like Figure <a href="#fig.figtree">12</a>.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/figtree.pdf.hevea.png"><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 12:  Figtree representation of the species tree.</td></tr>
+<img src="figures/figtree.hevea.png"><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 12:  Figtree representation of the species tree.</td></tr>
 </table></div><div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Alternatively, you can load the species tree set into DensiTree and set it up as follows.</p><ul class="itemize"><li class="li-itemize">
 Set burn-in to 500. The tree should not be collapsed any more.
 </li><li class="li-itemize">Show a root-canal tree to guide the eye. Perhaps, the intensity of the trees is not large enough, so you might want to increase the intensity by clicking the icon in the button bar.
@@ -294,7 +295,7 @@ Set burn-in to 500. The tree should not be collapsed any more.
 but there is some support (over 16%) that it is not.
 </li><li class="li-itemize">Drag the clade monticola and idahoensis up so that the 95% HPD bar does not overlap with the one for mazama, monticola, idahoensis and talpoidis. Increase font size of the label for better readability.
 </li></ul><p>The image should look something like Figure <a href="#fig.DensiTree">13</a></p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/DensiTree.png.hevea.png">
+<img src="figures/DensiTree.hevea.png">
 <div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 13:  DensiTree representation of the species tree.</td></tr>
 </table></div>
 <div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Exercise: There is about 75% support for heterodus to be an outgroup, and about 17% for heterodus to be in a clade with bottea, umbinus and townsendii. Can you explain where the other 8% went?</p><p>DensiTree can be used to show the branch widths of summary 
@@ -305,19 +306,19 @@ Left, the bottom represents dmv1, the top dmv2 in the summary tree, which do not
 in areas with little posterior support for the clades (see Figure <a href="#fig.DensiTree">13</a> to
 see which clades have little support).</p><p>Right, the top is matched up with the bottom of the branch above, using the &#X2018;Make fit to bottom&#X2019;
 option for the top. This looks a bit prettier, but may not be quite accurate.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/species_population1.pdf.hevea.png">
+<img src="figures/species_population1.hevea.png">
 <div class="center"><hr style="width:80%;height:2"></div></div></blockquote><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/species_population2.pdf.hevea.png">
+<img src="figures/species_population2.hevea.png">
 <div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Alternatively, a consensus tree can be generated by biopy (<span style="font-family:monospace">http://code.google.com/p/biopy/</span>)
 with using 1-norm left, and 2-norm right.</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/species_population4.pdf.hevea.png">
+<img src="figures/species_population4.hevea.png">
 <div class="center"><hr style="width:80%;height:2"></div></div></blockquote><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/species_population5.pdf.hevea.png">
+<img src="figures/species_population5.hevea.png">
 <div class="center"><hr style="width:80%;height:2"></div></div></blockquote><p>Showing all consensus trees with population widths
 (use By Metadata Pattern, for top and bottom and use </p><pre class="verbatim"> .*dmv=.([^,]*).*</pre><p> 
 for the bottom pattern and </p><pre class="verbatim"> .*dmv=.[^,]*,([^\}]*).*</pre><p> for the top pattern.
 This gives us this visualisation:</p><blockquote class="figure"><div class="center"><div class="center"><hr style="width:80%;height:2"></div>
-<img src="figures/species_population3.pdf.hevea.png">
+<img src="figures/species_population3.hevea.png">
 <div class="center"><hr style="width:80%;height:2"></div></div></blockquote><!--TOC subsection id=sec17 Comparing your results to the prior-->
 <h3 id="sec17" class="subsection">Comparing your results to the prior</h3><!--SEC END --><p>Using BEAUti, set up the same analysis but under the MCMC options, select the <span style="font-weight:bold">Sample from prior only</span> option. This will allow you to visualize the full prior distribution in the absence of your sequence data. Summarize the trees from the full prior
 distribution and compare the summary to the posterior summary tree.</p><!--TOC section id=sec18 References-->
