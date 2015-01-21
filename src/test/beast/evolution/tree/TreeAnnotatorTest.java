@@ -19,7 +19,8 @@ public class TreeAnnotatorTest {
     protected Tree[] trees;
     protected CladeSystem cladeSystem;
 
-    protected String[] clades = new String[]{"{0, 1}", "{1, 2}", "{0, 1, 2}", "{0, 1, 2, 3}", "{2, 3}"};
+    //protected String[] clades = new String[]{"{0, 1}", "{1, 2}", "{0, 1, 2}", "{0, 1, 2, 3}", "{2, 3}"};
+    protected String[] clades = new String[]{"{1, 2}", "{2, 3}", "{1, 2, 3}", "{1, 2, 3, 4}", "{3, 4}"};
     protected int[] cladesCount = new int[]{2, 1, 2, 3, 1};
     @Before
     public void setUp() throws Exception {
@@ -47,8 +48,17 @@ public class TreeAnnotatorTest {
         int i=0;
         for (Map.Entry<BitSet, CladeSystem.Clade> entry : cladeSystem.getCladeMap().entrySet()) {
 //            System.out.println(entry.getKey() + " = " + entry.getValue().getCount());
-            Assert.assertEquals(clades[i], entry.getKey().toString());
-            Assert.assertEquals(cladesCount[i], entry.getValue().getCount());
+            int index = -1;
+            //find the clade in the clades array
+            for (int j=0; j<clades.length; j++) {
+                if (clades[j].equals(entry.getKey().toString())) {
+                    index = j;
+                    break;
+                }
+            }
+            //if the clade is not found then index = -1
+            Assert.assertNotEquals(index, -1);
+            Assert.assertEquals(cladesCount[index], entry.getValue().getCount());
             i++;
         }
 
