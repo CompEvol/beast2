@@ -1,10 +1,22 @@
 \documentclass{article}
-\usepackage{url,graphicx}
+\usepackage{url}
+\usepackage{graphicx}
 
+\newcommand{\includeimage}[2][]{%
+%HEVEA\imgsrc{#2.hevea.png}%
+%BEGIN LATEX
+\includegraphics[#1]{#2}
+%END LATEX
+}
 
-\newcommand{\BEASTVersion}{2.0}
-\newcommand{\TracerVersion}{1.5}
-\newcommand{\FigTreeVersion}{1.3.1}
+% BEAST book specific commands
+\newcommand{\BEASTVersion}{2.2.x}
+\newcommand{\TracerVersion}{1.6}
+\newcommand{\FigTreeVersion}{1.4.2}
+
+\newcommand{\chainLength}{{5,000,000}}
+\newcommand{\logEvery}{{5,000}}
+\newcommand{\screenEvery}{{10,000}}
 
 
 \begin{document}
@@ -46,11 +58,9 @@ Run BEAUti by double clicking on its icon.
 *BEAST uses a different template from the standard. This means that to use BEAUti for *BEAST, the first thing to do is change the template. Choose the File/Templates/StarBeast item. When changing a template, BEAUti deletes all previously imported data and start with a new empty template. So, if you already loaded some data, a warning message pops up indicating that this data will be lost if you switch templates.
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.5,clip=true,trim=0 300 200 0]{figures/BEAUti_selectTemplate.png}
 
-\includegraphics[scale=0.5,clip=true,trim=0 300 200 0]{figures/BEAUti_selectTemplate.png}
-
-\end{center}
 \caption{\label{fig.template} Select a new template in BEAUti.}
 \end{figure}
 
@@ -97,11 +107,9 @@ Once loaded, the three partitions are displayed in the main panel.
 You can double click any alignment (partition) to show its detail.
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4,clip=true,trim=0 300 0 0]{figures/BEAUti_DataPartitions}
 
-\includegraphics[scale=0.4,clip=true,trim=0 300 0 0]{figures/BEAUti_DataPartitions}
-
-\end{center}
 \caption{\label{fig.datapartition} Data partition panel after loading alignments.}
 \end{figure}
 
@@ -122,11 +130,9 @@ easy to extract; place it either at the beginning or the end, separated by a
 We need to tell BEAUti somehow which lineages in the alignments go with taxa in the species tree. Select the Taxon Set panel, and a list of taxa from the alignments is shown together with a default guess by BEAUti. In this case, the guess is not very good, so we want to change this. You can manually change each of the entries in the table, or press the guess button and a dialog is shown where you can choose from several ways to try to detect the taxon from the name of the lineages, or have a mapping stored in a file. In this case, splitting the name on the underscore character ('\_') and selecting the second group will give us the mapping that we need.
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4]{figures/BEAUti_Guess_Taxonsets}
 
-\includegraphics[scale=0.4]{figures/BEAUti_Guess_Taxonsets}
-
-\end{center}
 \caption{\label{fig.taxonset} Selecting taxon sets in BEAUti using the guess dialog from the taxon set panel.}
 \end{figure}
 
@@ -158,11 +164,9 @@ will select each substitution model listed on the
 left side in turn to make the following change: select HKY for substitution model
 and \textbf{Empirical} for the \textbf{Frequencies}. 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4]{figures/BEAUti_Site_Model}
 
-\includegraphics[scale=0.4]{figures/BEAUti_Site_Model}
-
-\end{center}
 \caption{\label{fig.sitemodel} Setting up substitution and site models for the gopher alignments.}
 \end{figure}
 
@@ -174,15 +178,15 @@ main window. In this analysis, we use the \textbf{Strict Clock} molecular clock 
 Your model options should now look like this: 
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4,clip=true,trim=0 450 0 0]{figures/BEAUti_ClockModel1.png}
 
-\includegraphics[scale=0.4,clip=true,trim=0 450 0 0]{figures/BEAUti_ClockModel1.png}
+\centering
+\includeimage[scale=0.4,clip=true,trim=0 450 0 0]{figures/BEAUti_ClockModel2.png}
 
-\includegraphics[scale=0.4,clip=true,trim=0 450 0 0]{figures/BEAUti_ClockModel2.png}
+\centering
+\includeimage[scale=0.4,clip=true,trim=0 450 0 0]{figures/BEAUti_ClockModel3.png}
 
-\includegraphics[scale=0.4,clip=true,trim=0 450 0 0]{figures/BEAUti_ClockModel3.png}
-
-\end{center}
 \caption{\label{fig.clockmodel} Setting up clock models for the gopher alignments.}
 \end{figure}
 
@@ -197,11 +201,9 @@ In this analysis, we use {piecewise linear and constant root}.
 The \textbf{Ploidy} item determines the type of sequence (mitochondrial, nuclear, X, Y). This matters since different modes of inheritance gives rise to different effective population sizes. In this analysis, we simply use a random starting tree. 
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4,clip=true,trim=0 150 0 0]{figures/BEAUti_MSP}
 
-\includegraphics[scale=0.4,clip=true,trim=0 150 0 0]{figures/BEAUti_MSP}
-
-\end{center}
 \caption{\label{fig.MSP} Setting up multi species coalescent parameters.}
 \end{figure}
 
@@ -221,9 +223,9 @@ Firstly we have the \textbf{Length of chain}. This is the number of
 steps the MCMC will make in the chain before finishing. The appropriate length of the chain depends on the size of the data set, the complexity of the
 model and the accuracy of the answer required. The default value of 10,000,000
 is entirely arbitrary and should be adjusted according to the size
-of your data set. For this data set let's keep the chain
-length at 10,000,000 as this will run reasonably quickly on most modern
-computers (less than 20 minutes).
+of your data set. For this data set let's set the \texttt{chain
+length} to \underline{\chainLength{}} as this will run reasonably quickly on most modern
+computers (a few minutes).
 
 The next options specify how often the parameter values in the Markov
 chain should be displayed on the screen and recorded in the log file.
@@ -238,7 +240,7 @@ contain much information about the distributions of the parameters.
 You probably want to aim to store no more than 10,000 samples so this should be
 set to no less than chain length / 10,000.
 
-For this exercise we will set the screen log to 10000 and the trace log to 1000. The final two
+For this exercise we will set the \texttt{screen log} to \underline{\screenEvery{}} and the \texttt{trace log} to \underline{\logEvery{}}. The final two
 options give the file names of the log files for the sampled parameters and
 the trees. These will be set to a default based on the name of the
 imported NEXUS file. 
@@ -246,11 +248,9 @@ imported NEXUS file.
 %If you would like to save the operator analysis into a file, you need to check  \textbf{Create operator analysis file} which will generate a file with the suffix \texttt{.ops}. 
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4]{figures/BEAUti_MCMC}
 
-\includegraphics[scale=0.4]{figures/BEAUti_MCMC}
-
-\end{center}
 \caption{\label{fig.MCMC} Setting up the MCMC paremeters.}
 \end{figure}
 
@@ -269,11 +269,9 @@ Now run BEAST and when it asks for an input file, provide your newly
 created XML file as input by click \textbf{Choose File ...}, and then click \textbf{Run}. 
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.5]{figures/BEAST}
 
-\includegraphics[scale=0.5]{figures/BEAST}
-
-\end{center}
 \caption{\label{fig.BEAST} Launching BEAST.}
 \end{figure}
 
@@ -283,85 +281,96 @@ reporting information to the screen. The actual results files are
 saved to the disk in the same location as your input file. The output to the screen will
 look something like this: 
 
-{\scriptsize   
+{\tiny   
 \begin{verbatim}
-          BEAST v2.0.e Prerelease r794, 2002-2011
-       Bayesian Evolutionary Analysis Sampling Trees
-                 Designed and developed by
-Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard
-                              
-               Department of Computer Science
-                   University of Auckland
-                  remco@cs.auckland.ac.nz
-                  alexei@cs.auckland.ac.nz
-                              
-             Institute of Evolutionary Biology
-                  University of Edinburgh
-                     a.rambaut@ed.ac.uk
-                              
-              David Geffen School of Medicine
-           University of California, Los Angeles
-                     msuchard@ucla.edu
-                              
-                Downloads, Help & Resources:
-              	http://beast2.cs.auckland.ac.nz
-                              
-Source code distributed under the GNU Lesser General Public License:
-              	http://code.google.com/p/beast2
-                              
-                     BEAST developers:
-	Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, 
-	Sebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, 
-	Gerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, 
-          	Oliver Pybus, Chieh-Hsi Wu, Walter Xie
-                              
-                         Thanks to:
-    	Roald Forsberg, Beth Shapiro and Korbinian Strimmer
+                        BEAST v2.2.0, 2002-2014
+             Bayesian Evolutionary Analysis Sampling Trees
+                       Designed and developed by
+ Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut & Marc A. Suchard
+                                    
+                     Department of Computer Science
+                         University of Auckland
+                        remco@cs.auckland.ac.nz
+                        alexei@cs.auckland.ac.nz
+                                    
+                   Institute of Evolutionary Biology
+                        University of Edinburgh
+                           a.rambaut@ed.ac.uk
+                                    
+                    David Geffen School of Medicine
+                 University of California, Los Angeles
+                           msuchard@ucla.edu
+                                    
+                      Downloads, Help & Resources:
+                           http://beast2.org/
+                                    
+  Source code distributed under the GNU Lesser General Public License:
+                   http://github.com/CompEvol/beast2
+                                    
+                           BEAST developers:
+   Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, 
+ Sebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, 
+Gerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, 
+                 Oliver Pybus, Chieh-Hsi Wu, Walter Xie
+                                    
+                               Thanks to:
+          Roald Forsberg\includeimage, Beth Shapiro and Korbinian Strimmer
+
 
 ... ...
 
 
-        4990000     -3820.9967        91.3        -4288.0542        19.8887 57s/Msamples
-        5000000     -3810.3221        91.6        -4299.7884        23.2278 57s/Msamples
-Operator                                                              Tuning	#accept	#reject	#total	acceptance rate
-beast.evolution.operators.NodeReheight_Reheight                             	377607	911781	1289388	0.293 
-beast.evolution.operators.ScaleOperator_popSizeScaler                 0.182 	18180	50730	68910	0.264 
-beast.evolution.operators.UpDownOperator_updown.all                   0.486 	67603	207017	274620	0.246 
-beast.evolution.operators.ScaleOperator_YuleBirthRateScaler.Species   0.228 	12288	29165	41453	0.296 
-beast.evolution.operators.ScaleOperator_popMeanScale                  0.491 	11242	30098	41340	0.272 
-beast.evolution.operators.ScaleOperator_treeScaler.t:26               0.777 	7496	33737	41233	0.182 
-beast.evolution.operators.ScaleOperator_treeRootScaler.t:26           0.423 	8592	32825	41417	0.207 
-beast.evolution.operators.Uniform_UniformOperator.t:26                      	231886	180217	412103	0.563 
-beast.evolution.operators.SubtreeSlide_SubtreeSlide.t:26              0.481 	391	205278	205669	0.002 Try decreasing size to about 0.241
-beast.evolution.operators.Exchange_narrow.t:26                              	93812	112277	206089	0.455 
-beast.evolution.operators.Exchange_wide.t:26                                	1006	40176	41182	0.024 
-beast.evolution.operators.WilsonBalding_WilsonBalding.t:26                  	1443	39692	41135	0.035 
-beast.evolution.operators.ScaleOperator_StrictClockRateScaler.c:29    0.481 	10889	30421	41310	0.264 
-beast.evolution.operators.ScaleOperator_treeScaler.t:29               0.764 	6915	34490	41405	0.167 
-beast.evolution.operators.ScaleOperator_treeRootScaler.t:29           0.418 	10155	30810	40965	0.248 
-beast.evolution.operators.Uniform_UniformOperator.t:29                      	237464	173721	411185	0.578 
-beast.evolution.operators.SubtreeSlide_SubtreeSlide.t:29              0.346 	448	205862	206310	0.002 Try decreasing size to about 0.173
-beast.evolution.operators.Exchange_narrow.t:29                              	95926	109390	205316	0.467 
-beast.evolution.operators.Exchange_wide.t:29                                	1772	39232	41004	0.043 
-beast.evolution.operators.WilsonBalding_WilsonBalding.t:29                  	2025	39408	41433	0.049 
-beast.evolution.operators.UpDownOperator_updown.29                    0.803 	9954	31223	41177	0.242 
-beast.evolution.operators.UpDownOperator_strictClockUpDownOperator.c:290.788 	8922	32105	41027	0.217 
-beast.evolution.operators.ScaleOperator_StrictClockRateScaler.c:47    0.556 	11000	30234	41234	0.267 
-beast.evolution.operators.ScaleOperator_treeScaler.t:47               0.746 	7268	33584	40852	0.178 
-beast.evolution.operators.ScaleOperator_treeRootScaler.t:47           0.515 	7435	33814	41249	0.18 
-beast.evolution.operators.Uniform_UniformOperator.t:47                      	223624	188613	412237	0.542 
-beast.evolution.operators.SubtreeSlide_SubtreeSlide.t:47              0.506 	228	205368	205596	0.001 Try decreasing size to about 0.253
-beast.evolution.operators.Exchange_narrow.t:47                              	74248	131396	205644	0.361 
-beast.evolution.operators.Exchange_wide.t:47                                	582	40815	41397	0.014 
-beast.evolution.operators.WilsonBalding_WilsonBalding.t:47                  	754	40484	41238	0.018 
-beast.evolution.operators.UpDownOperator_updown.47                    0.774 	10815	30475	41290	0.262 
-beast.evolution.operators.UpDownOperator_strictClockUpDownOperator.c:470.788 	11351	29559	40910	0.277 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:26              0.339 	407	999	1406	0.289 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:29              0.277 	330	1091	1421	0.232 
-beast.evolution.operators.ScaleOperator_KappaScaler.s:47              0.329 	333	1005	1338	0.249 
-beast.evolution.operators.ScaleOperator_popSizeTopScaler              0.166 	18005	50513	68518	0.263 
-Total calculation time: 291.267 seconds
-End likelihood: -3810.322148438054
+        4980000     -3827.2093       279.2        -4293.2486        22.1146 24s/Msamples
+        4990000     -3842.9689       276.3        -4295.6213        17.6877 24s/Msamples
+        5000000     -3798.1962       278.2        -4280.7865        22.0904 24s/Msamples
+
+Operator                                           Tuning    #accept    #reject      Pr(m)  Pr(acc|m)
+NodeReheight(Reheight.t:Species)                        -     205317     486572     0.1386     0.2967 
+ScaleOperator(popSizeBottomScaler.t:Species)       0.1902      10224      26338     0.0074     0.2796 
+ScaleOperator(popMeanScale.t:Species)              0.4890       5795      16242     0.0044     0.2630 
+UpDownOperator(updown.all.Species)                 0.5029      38885     108717     0.0295     0.2634 
+ScaleOperator(YuleBirthRateScaler.t:Species)       0.2416       7155      15125     0.0044     0.3211 
+ScaleOperator(treeScaler.t:26)                     0.7580       8510      42962     0.0102     0.1653 
+ScaleOperator(treeRootScaler.t:26)                 0.4424      11487      39392     0.0102     0.2258 
+Uniform(UniformOperator.t:26)                           -     287517     225590     0.1024     0.5603 
+SubtreeSlide(SubtreeSlide.t:26)                    0.5560        418     256419     0.0512     0.0016 Try decreasing size to about 0.278
+Exchange(narrow.t:26)                                   -     115438     140923     0.0512     0.4503 
+Exchange(wide.t:26)                                     -       1363      49988     0.0102     0.0265 
+WilsonBalding(WilsonBalding.t:26)                       -       1882      49890     0.0102     0.0364 
+ScaleOperator(StrictClockRateScaler.c:29)          0.4744      13355      37595     0.0102     0.2621 
+ScaleOperator(treeScaler.t:29)                     0.7567       8137      42785     0.0102     0.1598 
+ScaleOperator(treeRootScaler.t:29)                 0.4101      12191      38887     0.0102     0.2387 
+Uniform(UniformOperator.t:29)                           -     296262     216280     0.1024     0.5780 
+SubtreeSlide(SubtreeSlide.t:29)                    0.5724        339     255443     0.0512     0.0013 Try decreasing size to about 0.286
+Exchange(narrow.t:29)                                   -     117912     138109     0.0512     0.4606 
+Exchange(wide.t:29)                                     -       2229      49303     0.0102     0.0433 
+WilsonBalding(WilsonBalding.t:29)                       -       2459      49001     0.0102     0.0478 
+UpDownOperator(updown.29)                          0.7793      10314      40694     0.0102     0.2022 
+ScaleOperator(StrictClockRateScaler.c:47)          0.5490      12974      38097     0.0102     0.2540 
+ScaleOperator(treeScaler.t:47)                     0.7363       8746      42523     0.0102     0.1706 
+ScaleOperator(treeRootScaler.t:47)                 0.4742       7774      43670     0.0102     0.1511 
+Uniform(UniformOperator.t:47)                           -     276942     234361     0.1024     0.5416 
+SubtreeSlide(SubtreeSlide.t:47)                    0.5044        307     255119     0.0512     0.0012 Try decreasing size to about 0.252
+Exchange(narrow.t:47)                                   -      91846     164747     0.0512     0.3579 
+Exchange(wide.t:47)                                     -        731      50281     0.0102     0.0143 
+WilsonBalding(WilsonBalding.t:47)                       -        937      50377     0.0102     0.0183 
+UpDownOperator(updown.47)                          0.7397      10853      40537     0.0102     0.2112 
+UpDownOperator(strictClockUpDownOperator.c:47)     0.7278       9987      41373     0.0102     0.1945 
+UpDownOperator(strictClockUpDownOperator.c:29)     0.7761      10040      40724     0.0102     0.1978 
+ScaleOperator(KappaScaler.s:26)                    0.3401        469       1197     0.0003     0.2815 
+ScaleOperator(KappaScaler.s:29)                    0.2955        436       1231     0.0003     0.2615 
+ScaleOperator(KappaScaler.s:47)                    0.3199        379       1298     0.0003     0.2260 
+ScaleOperator(popSizeTopScaler.t:Species)          0.1910      23665      54936     0.0157     0.3011 
+
+     Tuning: The value of the operator's tuning parameter, or '-' if the operator can't be optimized.
+    #accept: The total number of times a proposal by this operator has been accepted.
+    #reject: The total number of times a proposal by this operator has been rejected.
+      Pr(m): The probability this operator is chosen in a step of the MCMC (i.e. the normalized weight).
+  Pr(acc|m): The acceptance probability (#accept as a fraction of the total proposals for this operator).
+
+
+Total calculation time: 135.584 seconds
+End likelihood: -3798.196207797654
 \end{verbatim}}
 
 \subsection*{Analyzing the results}
@@ -372,11 +381,9 @@ BEAST has created called \texttt{gopher.log}.
 You should now see a window like in Figure \ref{fig.tracer1}.
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4]{figures/Tracer1}
 
-\frame{\includegraphics[scale=0.4]{figures/Tracer1}}
-
-\end{center}
 \caption{\label{fig.tracer1} Tracer with the gopher data.}
 \end{figure}
 
@@ -396,11 +403,9 @@ age of the root and the three gene trees. If you switch the tab at the top of th
 as shown in Figure \ref{fig.tracer2}.
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4]{figures/Tracer2}
 
-\frame{\includegraphics[scale=0.4]{figures/Tracer2}}
-
-\end{center}
 \caption{\label{fig.tracer2} Tracer showing the root heights of the lineage trees.}
 \end{figure}
 
@@ -413,11 +418,9 @@ nodes as well as the 95\% HPD interval of divergence times for each clade in the
 node. Run the {\bf TreeAnnotator} program and set it up to look like in Figure \ref{fig.TreeAnnotator}.
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4]{figures/TreeAnnotator}
 
-\frame{\includegraphics[scale=0.4]{figures/TreeAnnotator}}
-
-\end{center}
 \caption{\label{fig.TreeAnnotator} Using TreeAnnotator to summarise the tree set.}
 \end{figure}
 
@@ -445,11 +448,9 @@ to colour the branches by the rate.
 You should end up with something like Figure \ref{fig.figtree}.
 
 \begin{figure}
-\begin{center}
+\centering
+\includeimage[scale=0.4]{figures/figtree.pdf}
 
-\frame{\includegraphics[scale=0.4]{figures/figtree.pdf}}
-
-\end{center}
 \caption{\label{fig.figtree} Figtree representation of the species tree.}
 \end{figure}
 
@@ -467,13 +468,9 @@ but there is some support (over 16\%) that it is not.
 The image should look something like Figure \ref{fig.DensiTree}
 
 \begin{figure}
-\begin{center}
-
-\frame{\includegraphics[scale=0.4]{figures/DensiTree.png}}
-\end{center}
-
-\caption{\label{fig.DensiTree} DensiTree representation of the species tree.
-}
+\centering
+\includeimage[scale=0.4]{figures/DensiTree.png}
+\caption{\label{fig.DensiTree} DensiTree representation of the species tree.}
 \end{figure}
 
 Exercise: There is about 75\% support for heterodus to be an outgroup, and about 17\% for heterodus to be in a clade with bottea, umbinus and townsendii. Can you explain where the other 8\% went?
@@ -492,25 +489,36 @@ see which clades have little support).
 Right, the top is matched up with the bottom of the branch above, using the `Make fit to bottom'
 option for the top. This looks a bit prettier, but may not be quite accurate.
 
-\frame{\includegraphics[scale=0.18]{figures/species_population1.pdf}}
-\frame{\includegraphics[scale=0.18]{figures/species_population2.pdf}}
+\begin{figure}
+\centering
+\includeimage[scale=0.18]{figures/species_population1.pdf}
+\end{figure}
+\begin{figure}
+\centering
+\includeimage[scale=0.18]{figures/species_population2.pdf}
+\end{figure}
 
 Alternatively, a consensus tree can be generated by biopy (\url{http://code.google.com/p/biopy/})
 with using 1-norm left, and 2-norm right.
 
-\frame{\includegraphics[scale=0.18]{figures/species_population4.pdf}}
-\frame{\includegraphics[scale=0.18]{figures/species_population5.pdf}}
+\begin{figure}
+\centering
+\includeimage[scale=0.18]{figures/species_population4.pdf}
+\end{figure}
+\begin{figure}
+\centering
+\includeimage[scale=0.18]{figures/species_population5.pdf}
+\end{figure}
 
 Showing all consensus trees with population widths
 (use By Metadata Pattern, for top and bottom and use {\begin{verbatim} .*dmv=.([^,]*).*\end{verbatim}} 
 for the bottom pattern and {\begin{verbatim} .*dmv=.[^,]*,([^\}]*).*\end{verbatim}} for the top pattern.
 This gives us this visualisation:
 
-\begin{center}
-\frame{\includegraphics[scale=0.25]{figures/species_population3.pdf}}
-\end{center}
-
-
+\begin{figure}
+\centering
+\includeimage[scale=0.25]{figures/species_population3.pdf}
+\end{figure}
 
 
 \subsection*{Comparing your results to the prior}
