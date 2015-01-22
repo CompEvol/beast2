@@ -12,7 +12,7 @@ import beast.core.BEASTInterface;
 import beast.util.AddOnManager;
 
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -77,21 +77,18 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                 }
                 m_editPluginButton.setToolTipText("Edit " + m_inputLabel.getText());
 
-                m_editPluginButton.addActionListener(new ActionListener() {
-                    // implements ActionListener
-                    public void actionPerformed(ActionEvent e) {
-                        BEASTObjectDialog dlg = new BEASTObjectDialog((BEASTInterface) m_input.get(), m_input.getType(), doc);
-                        if (dlg.showDialog()) {
-                            try {
-                                dlg.accept((BEASTInterface) m_input.get(), doc);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
+                m_editPluginButton.addActionListener(e -> {
+                    BEASTObjectDialog dlg = new BEASTObjectDialog((BEASTInterface) m_input.get(), m_input.getType(), doc);
+                    if (dlg.showDialog()) {
+                        try {
+                            dlg.accept((BEASTInterface) m_input.get(), doc);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                        refresh();
-                        validateInput();
-                        refreshPanel();
                     }
+                    refresh();
+                    validateInput();
+                    refreshPanel();
                 });
                 add(m_editPluginButton);
             }

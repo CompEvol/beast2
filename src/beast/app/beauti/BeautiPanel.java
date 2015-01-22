@@ -254,7 +254,10 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             centralComponent = new JLabel("No input editors.");
         }
         if (splitPane != null) {
-            splitPane.add(centralComponent, JSplitPane.RIGHT);
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+            panel.add(centralComponent, BorderLayout.NORTH);
+            splitPane.add(panel, JSplitPane.RIGHT);
         } else {
             add(centralComponent);
         }
