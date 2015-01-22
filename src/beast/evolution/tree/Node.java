@@ -781,7 +781,20 @@ public class Node extends BEASTObject {
         return ((this.getLeft()).isDirectAncestor() || (this.getRight() != null && (this.getRight()).isDirectAncestor()));
     }
 
+    public Node getDirectAncestorChild() {
+        if (!this.isFake()) {
+            return null;
+        }
+        if (this.getLeft().isDirectAncestor()) {
+            return this.getLeft();
+        }
+        return this.getRight();
+    }
+
     public Node getNonDirectAncestorChild(){
+        if (!this.isFake()) {
+            return null;
+        }
         if ((this.getLeft()).isDirectAncestor()){
             return getRight();
         }
