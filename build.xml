@@ -505,9 +505,10 @@
             <librarypath file="${dist}/beast.jar"/>
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
-            <option value="-Xdock:name=&quot;BEAUti 2&quot;"/>
+            <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <argument value="-capture"/>
         </bundleapp>
 
         <exec executable="codesign">

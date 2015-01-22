@@ -541,6 +541,8 @@ public class AddOnManager {
                 path = path.replaceAll("\\\\","/");
                 if (path.indexOf("/") >= 0) {
                     path = path.substring(0, path.lastIndexOf("/"));
+                    // deal with the way Mac's appbundler sets up paths
+                  	path = path.replaceAll("/[^\\/]*/Contents/Java", "");
                     // exclude Intellij build path out/production
                     if (!sDirs.contains(path) && !path.contains("production")) {
                         sDirs.add(path);
