@@ -407,7 +407,7 @@ public class TreeAnnotator {
         if (node.isLeaf()) {
 
             int index = cladeSystem.getTaxonIndex(node);
-            bits2.set(index);
+            bits2.set(index+1);
 
             annotateNode(cladeSystem, node, bits2, true, heightsOption);
         } else {
@@ -417,6 +417,12 @@ public class TreeAnnotator {
                 Node node1 = node.getChild(i);
 
                 annotateTree(cladeSystem, node1, bits2, heightsOption);
+            }
+
+            if (node.isFake()) {
+                bits2.set(0);
+            } else {
+                bits2.set(0, false);
             }
 
             annotateNode(cladeSystem, node, bits2, false, heightsOption);
@@ -527,9 +533,21 @@ public class TreeAnnotator {
                     if (isHeight) {
                         if (heightsOption == HeightsSummary.MEAN_HEIGHTS) {
                             final double mean = DiscreteStatistics.mean(values);
+                            if (node.isDirectAncestor()) {
+                                node.getParent().setHeight(mean);
+                            }
+                            if (node.isFake()) {
+                                node.getDirectAncestorChild().setHeight(mean);
+                            }
                             node.setHeight(mean);
                         } else if (heightsOption == HeightsSummary.MEDIAN_HEIGHTS) {
                             final double median = DiscreteStatistics.median(values);
+                            if (node.isDirectAncestor()) {
+                                node.getParent().setHeight(median);
+                            }
+                            if (node.isFake()) {
+                                node.getDirectAncestorChild().setHeight(median);
+                            }
                             node.setHeight(median);
                         } else {
                             // keep the existing height

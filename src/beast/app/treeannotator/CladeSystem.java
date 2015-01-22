@@ -56,7 +56,8 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index);
+            bits.set(index+1);
+            //bits.set(index);
 
             if (includeTips) {
                 addClade(bits);
@@ -69,6 +70,12 @@ public class CladeSystem {
                 Node node1 = node.getChild(i);
 
                 bits.or(addClades(node1, includeTips));
+            }
+
+            if (node.isFake()) {
+                bits.set(0);
+            } else {
+                bits.set(0, false);
             }
 
             addClade(bits);
@@ -100,7 +107,8 @@ public class CladeSystem {
             if (index < 0) {
                 throw new IllegalArgumentException("Taxon, " + node.getID() + ", not found in target tree");
             }
-            bits.set(index);
+            bits.set(index+1);
+            //bits.set(index);
 
         } else {
 
@@ -109,6 +117,12 @@ public class CladeSystem {
                 Node node1 = node.getChild(i);
 
                 bits.or(collectAttributes(node1, attributeNames));
+            }
+
+            if (node.isFake()) {
+                bits.set(0);
+            } else {
+                bits.set(0, false);
             }
         }
 
@@ -200,7 +214,8 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index);
+            bits.set(index+1);
+            //bits.set(index);
         } else {
 
             BitSet bits2 = new BitSet();
@@ -228,7 +243,8 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index);
+            bits.set(index+1);
+            //bits.set(index);
         } else {
 
             BitSet bits2 = new BitSet();
@@ -237,6 +253,12 @@ public class CladeSystem {
                 Node node1 = node.getChild(i);
 
                 logCladeCredibility += getLogCladeCredibility(node1, bits2);
+            }
+
+            if (node.isFake()) {
+                bits2.set(0);
+            }  else {
+                bits2.set(0,false);
             }
 
             logCladeCredibility += Math.log(getCladeCredibility(bits2));
@@ -264,7 +286,7 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index);
+            bits.set(index +1);
 
             if (includeTips) {
                 removeClade(bits);
@@ -277,6 +299,12 @@ public class CladeSystem {
                 Node node1 = node.getChild(i);
 
                 bits.or(removeClades(node1, includeTips));
+            }
+
+            if (node.isFake()) {
+                bits.set(0);
+            } else {
+                bits.set(0, false);
             }
 
             removeClade(bits);
