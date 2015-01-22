@@ -70,7 +70,7 @@ public class TreeAnnotatorTest {
                 }
             }
             //if the clade is not found then index = -1
-            Assert.assertNotEquals(index, -1);
+            Assert.assertFalse(index ==  -1);
             Assert.assertEquals(cladesCount[index], entry.getValue().getCount());
             i++;
         }
