@@ -65,9 +65,15 @@ BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is 
 \end{itemize}
 
 \subsection*{The NEXUS alignment}
-The data is in a file called \texttt{RSV2.nex} and you can find it in the {\tt examples/nexus} directory in the directory where BEAST was installed. This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu. This signifies that the first full codon starts at the third nucleotide in the alignment. This will create three rows in the partitions panel. You will have to re-link the tree and clock models across the three partitions (and name them ``tree'' and ``clock'' respectively) before continuing to the next step.
+The data is in a file called \texttt{RSV2.nex} and you can find it in the {\tt examples/nexus} directory in the directory where BEAST was installed. This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu. 
 
-The partition panel should now look something like this:
+\begin{figure}
+\centering	
+\includeimage[width=\textwidth]{figures/BEAUti_split}
+\label{fig:BEAUti_split}
+\end{figure}
+
+This signifies that the first full codon starts at the third nucleotide in the alignment. This will create three rows in the partitions panel. You will have to re-link the tree and clock models across the three partitions (and name them ``tree'' and ``clock'' respectively) before continuing to the next step. The partition panel should now look something like this:
 
 \begin{figure}
 \centering	
