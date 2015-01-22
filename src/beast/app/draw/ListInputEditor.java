@@ -47,6 +47,9 @@ public class ListInputEditor extends InputEditor.Base {
     protected Box m_listBox;
     protected ExpandOption m_bExpandOption;
 
+    // the box containing any buttons
+    protected Box buttonBox;
+
     static protected Set<String> g_collapsedIDs = new HashSet<String>();
     static Set<String> g_initiallyCollapsedIDs = new HashSet<String>();
 
@@ -122,15 +125,17 @@ public class ListInputEditor extends InputEditor.Base {
                 addSingleItem(plugin2);
             }
         }
-        
-        add(m_listBox);
-        Box box = Box.createHorizontalBox();
+
+        setLayout(new BorderLayout());
+        add(m_listBox, BorderLayout.NORTH);
+
+        buttonBox = Box.createHorizontalBox();
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
             addButton = new SmallButton("+", true);
             addButton.setName("+");
             addButton.setToolTipText("Add item to the list");
             addButton.addActionListener(e -> addItem());
-            box.add(addButton);
+            buttonBox.add(addButton);
             if (!doc.isExpertMode()) {
                 // if nothing can be added, make add button invisible
                 List<String> sTabuList = new ArrayList<String>();
@@ -147,20 +152,20 @@ public class ListInputEditor extends InputEditor.Base {
         // add validation label at the end of a list
         m_validateLabel = new SmallLabel("x", new Color(200, 0, 0));
         if (m_bAddButtons) {
-            box.add(m_validateLabel);
+            buttonBox.add(m_validateLabel);
             m_validateLabel.setVisible(true);
             validateInput();
         }
-        box.add(Box.createHorizontalGlue());
-        m_listBox.add(box);
+        buttonBox.add(Box.createHorizontalGlue());
+        m_listBox.add(buttonBox);
 
         updateState();
         
-        // RRB: is there a better way to ensure lists are not spaced out across all available space?
-    	JFrame frame = doc.getFrame();
-    	if (frame != null) {
-    		m_listBox.add(Box.createVerticalStrut(frame.getHeight() - 150));
-    	}
+//        // RRB: is there a better way to ensure lists are not spaced out across all available space?
+//    	JFrame frame = doc.getFrame();
+//    	if (frame != null) {
+//    		m_listBox.add(Box.createVerticalStrut(frame.getHeight() - 150));
+//    	}
 
     } // init
 
@@ -256,7 +261,6 @@ public class ListInputEditor extends InputEditor.Base {
                 editButton.setVisible(false);
             }
         }
-
 
         if (m_validateLabel == null) {
             m_listBox.add(itemBox);
