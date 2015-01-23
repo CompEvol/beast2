@@ -65,22 +65,25 @@ BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is 
 \end{itemize}
 
 \subsection*{The NEXUS alignment}
-The data is in a file called \texttt{RSV2.nex} and you can find it in the {\tt examples/nexus} directory in the directory where BEAST was installed. This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu. 
+The data is in a file called \texttt{RSV2.nex} and you can find it in the {\tt examples/nexus} directory in the directory where BEAST was installed. This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu (Figure \ref{fig:BEAUti_split}). 
 
 \begin{figure}
 \centering	
-\includeimage[width=\textwidth]{figures/BEAUti_split}
+\includeimage[width=0.6\textwidth]{figures/BEAUti_split}
 \label{fig:BEAUti_split}
+\caption{Split the alignment}
 \end{figure}
 
 This signifies that the first full codon starts at the third nucleotide in the alignment. This will create three rows in the partitions panel. You will have to re-link the tree and clock models across the three partitions (and name them ``tree'' and ``clock'' respectively) before continuing to the next step. The partition panel should now look something like this:
 
 \begin{figure}
 \centering	
-\includeimage[scale=0.4,clip=true,trim=0 0 0 0]{figures/BEAUti_partition}
+\includeimage[width=0.8\textwidth]{figures/BEAUti_partition}
 \label{fig:BEAUti_partition}
+\caption{A screenshot of the Partitions tab in BEAUti}
 \end{figure}
 
+\subsection*{Tip dates}
 By default all the taxa are assumed to have a date of zero (i.e. the sequences are assumed to be sampled at the same time).
 In this case, the RSVA sequences have been sampled at various dates going back to the 1950s. The actual year of sampling
 is given in the name of each taxon and we could simply edit the value in the Date column of the table to reflect these.
@@ -91,6 +94,7 @@ in BEAUti is to click the checkbox {\bf Use tip dates} and then use the {\bf Gue
 \centering	
 \includeimage[width=0.6\textwidth]{figures/BEAUti_GuessDates}
 \label{fig:BEAUti_GuessDates}
+\caption{Guess dates dialog}
 \end{figure}
 
 
@@ -101,8 +105,9 @@ The dates panel should now look something like this:
 
 \begin{figure}
 \centering	
-\includeimage[scale=0.4,clip=true,trim=0 0 0 0]{figures/BEAUti_dates}
+\includeimage[width=0.8\textwidth]{figures/BEAUti_dates}
 \label{fig:BEAUti_dates}
+\caption{Dates panel}
 \end{figure}
 
 
@@ -111,16 +116,17 @@ We will use the HKY model with empirical base frequencies for all three partitio
 
 \begin{figure}
 \centering	
-\includeimage[width=\textwidth]{figures/BEAUti_Site_Model}
+\includeimage[width=0.8\textwidth]{figures/BEAUti_Site_Model}
 \label{fig:BEAUti_Site_Model}
+\caption{Site model}
 \end{figure}
 
 Then, hold `shift' key to select all site models on the left side, and click \textbf{OK} to clone the setting from defined site model (Figure \ref{fig:cloneFrom}). Go through each site model, as you can see, their configurations are same now. 
 
 \begin{figure}
 \centering	
-\includeimage[width=0.9\textwidth]{figures/cloneFrom}
-\caption{clone configuration from one site model to others.}
+\includeimage[width=0.8\textwidth]{figures/cloneFrom}
+\caption{Clone configuration from one site model to others.}
 \label{fig:cloneFrom}
 \end{figure}
 
@@ -134,6 +140,7 @@ Choose ``Coalescent Constant Population'' for the tree prior. Set the prior on t
 \centering	
 \includeimage[width=0.8\textwidth]{figures/BEAUti_priors}
 \label{fig:BEAUti_priors}
+\caption{Priors}
 \end{figure}
 
 
@@ -147,6 +154,7 @@ to \underline{\screenEvery{}}, the trace log file to \underline{\logEvery{}} and
 \centering	
 \includeimage[width=0.8\textwidth]{figures/BEAUti_mcmc}
 \label{fig:BEAUti_mcmc}
+\caption{MCMC options}
 \end{figure}
 
 
@@ -247,8 +255,9 @@ If we select the tab on the right-hand-side labelled `Trace' we can view the raw
 
 \begin{figure}
 \centering	
-\includeimage[width=\textwidth]{figures/Tracer1}
+\includeimage[width=0.8\textwidth]{figures/Tracer1}
 \label{fig:Tracer1}
+\caption{A screenshot of Tracer.}
 \end{figure}
 
 Here you can see how the samples are correlated. There are 5000 samples in the trace (we ran the MCMC for \underline{\chainLength{}}
@@ -264,7 +273,7 @@ Click on the Trace tab and look at the raw trace plot.
 
 \begin{figure}
 \centering	
-\includeimage[width=\textwidth]{figures/Tracer2}
+\includeimage[width=0.8\textwidth]{figures/Tracer2}
 \label{fig:Tracer2}
 \end{figure}
 
@@ -280,7 +289,7 @@ density of this parameter. You should see a plot similar to this:
 
 \begin{figure}
 \centering	
-\includeimage[width=\textwidth]{figures/Tracer_density}
+\includeimage[width=0.8\textwidth]{figures/Tracer_density}
 \label{fig:Tracer_density}
 \end{figure}
 
@@ -292,8 +301,9 @@ substitution rate at all three codon positions overlaid:
 
 \begin{figure}
 \centering	
-\includeimage[width=\textwidth]{figures/Tracer_relativeRates}
+\includeimage[width=0.8\textwidth]{figures/Tracer_relativeRates}
 \label{fig:Tracer_relativeRates}
+\caption{The posterior probability densities for the relative substitution rates}
 \end{figure}
 
 \subsection*{Summarizing the trees}
@@ -335,8 +345,9 @@ which is a prior that ensures dependence between population sizes.
 
 \begin{figure}
 \centering	
-\includeimage[scale=0.5,clip=true,trim=0 0 0 0]{figures/BEAUti_priors2}
+\includeimage[width=0.8\textwidth]{figures/BEAUti_priors2}
 \label{fig:BEAUti_priors2}
+\caption{Priors}
 \end{figure}
 
 By default the number of groups used in the skyline analysis is set to 5, To change this,
@@ -350,8 +361,9 @@ tree prior.
 
 \begin{figure}
 \centering	
-\includeimage[scale=0.5,clip=true,trim=0 0 0 0]{figures/BEAUti_init}
+\includeimage[width=0.8\textwidth]{figures/BEAUti_init}
 \label{fig:BEAUti_init}
+\caption{Initialization panel}
 \end{figure}
 
 
@@ -365,8 +377,9 @@ Analysis/Bayesian Skyline Reconstruction.
 
 \begin{figure}
 \centering	
-\includeimage[scale=0.5,clip=true,trim=0 300 0 0]{figures/tracerBSP1}
+\includeimage[scale=0.3,clip=true,trim=0 300 0 0]{figures/tracerBSP1}
 \label{fig:tracerBSP1}
+\caption{Bayesian Skyline Reconstruction}
 \end{figure}
 
 A dialog is shown where you can specify the tree file associated with the log file.
@@ -375,7 +388,7 @@ tip to 2002.
 
 \begin{figure}
 \centering	
-\includeimage[width=0.6\textwidth]{figures/tracerBSP2}
+\includeimage[width=0.5\textwidth]{figures/tracerBSP2}
 \label{fig:tracerBSP2}
 \end{figure}
 
@@ -383,9 +396,9 @@ After some calculation, a graph appears showing population history where the med
 and 95\% HPD intervals are plotted. After selecting the `solid interval' checkbox, the
 graph should look something like this.
 
-\begin{figure}
+\begin{figure}[h]
 \centering	
-\includeimage[width=0.7\textwidth]{figures/tracerBSP3}
+\includeimage[width=0.5\textwidth]{figures/tracerBSP3}
 \label{fig:tracerBSP3}
 \end{figure}
 
