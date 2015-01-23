@@ -424,6 +424,9 @@
     <!-- Define the appbundler task -->
     <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/bundler/appbundler-1.0.jar"/>
 
+    <!--property name="AppleSigner" value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)" /-->
+    <property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />    
+    
     <!-- Create the app bundle -->
     <target name="mac">
         <delete dir="${Mac_package_dir}" />
@@ -487,7 +490,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${BEAST_name}.app"/>
         </exec>
@@ -514,7 +517,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${BEAUti_name}.app"/>
         </exec>
@@ -539,7 +542,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${LogCombiner_name}.app"/>
         </exec>
@@ -564,7 +567,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${TreeAnnotator_name}.app"/>
         </exec>
@@ -587,7 +590,7 @@
 
         <exec executable="codesign">
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/DensiTree.app"/>
         </exec>
@@ -612,7 +615,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${AppStore_name}.app"/>
         </exec>
@@ -626,7 +629,7 @@
 
         <exec executable="codesign">
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_dir}/${BEAST_name} v${version}.dmg"/>
         </exec>
