@@ -56,7 +56,7 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index+1);
+            bits.set(2*index);
             //bits.set(index);
 
             if (includeTips) {
@@ -72,12 +72,13 @@ public class CladeSystem {
                 bits.or(addClades(node1, includeTips));
             }
 
-            if (node.isFake()) {
-                bits.set(0);
-            } else {
-                bits.set(0, false);
+            for (int i=1; i<bits.length(); i=i+2) {
+                bits.set(i, false);
             }
-
+            if (node.isFake()) {
+                int index = getTaxonIndex(node.getDirectAncestorChild());
+                bits.set(2 * index + 1);
+            }
             addClade(bits);
         }
 
@@ -107,7 +108,7 @@ public class CladeSystem {
             if (index < 0) {
                 throw new IllegalArgumentException("Taxon, " + node.getID() + ", not found in target tree");
             }
-            bits.set(index+1);
+            bits.set(2*index);
             //bits.set(index);
 
         } else {
@@ -119,10 +120,12 @@ public class CladeSystem {
                 bits.or(collectAttributes(node1, attributeNames));
             }
 
+            for (int i=1; i<bits.length(); i=i+2) {
+                bits.set(i, false);
+            }
             if (node.isFake()) {
-                bits.set(0);
-            } else {
-                bits.set(0, false);
+                int index = getTaxonIndex(node.getDirectAncestorChild());
+                bits.set(2 * index + 1);
             }
         }
 
@@ -214,7 +217,7 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index+1);
+            bits.set(2*index);
             //bits.set(index);
         } else {
 
@@ -243,7 +246,7 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index+1);
+            bits.set(2*index);
             //bits.set(index);
         } else {
 
@@ -255,10 +258,13 @@ public class CladeSystem {
                 logCladeCredibility += getLogCladeCredibility(node1, bits2);
             }
 
+            for (int i=1; i<bits2.length(); i=i+2) {
+                bits2.set(i, false);
+            }
+
             if (node.isFake()) {
-                bits2.set(0);
-            }  else {
-                bits2.set(0,false);
+                int index = getTaxonIndex(node.getDirectAncestorChild());
+                bits2.set(2 * index + 1);
             }
 
             logCladeCredibility += Math.log(getCladeCredibility(bits2));
@@ -286,7 +292,7 @@ public class CladeSystem {
         if (node.isLeaf()) {
 
             int index = getTaxonIndex(node);
-            bits.set(index +1);
+            bits.set(2*index);
 
             if (includeTips) {
                 removeClade(bits);
@@ -301,10 +307,12 @@ public class CladeSystem {
                 bits.or(removeClades(node1, includeTips));
             }
 
+            for (int i=1; i<bits.length(); i=i+2) {
+                bits.set(i, false);
+            }
             if (node.isFake()) {
-                bits.set(0);
-            } else {
-                bits.set(0, false);
+                int index = getTaxonIndex(node.getDirectAncestorChild());
+                bits.set(2 * index + 1);
             }
 
             removeClade(bits);

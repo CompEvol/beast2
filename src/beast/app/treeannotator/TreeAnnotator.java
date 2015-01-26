@@ -407,7 +407,7 @@ public class TreeAnnotator {
         if (node.isLeaf()) {
 
             int index = cladeSystem.getTaxonIndex(node);
-            bits2.set(index+1);
+            bits2.set(2*index);
 
             annotateNode(cladeSystem, node, bits2, true, heightsOption);
         } else {
@@ -419,10 +419,12 @@ public class TreeAnnotator {
                 annotateTree(cladeSystem, node1, bits2, heightsOption);
             }
 
+            for (int i=1; i<bits2.length(); i=i+2) {
+                bits2.set(i, false);
+            }
             if (node.isFake()) {
-                bits2.set(0);
-            } else {
-                bits2.set(0, false);
+                int index = cladeSystem.getTaxonIndex(node.getDirectAncestorChild());
+                bits2.set(2 * index + 1);
             }
 
             annotateNode(cladeSystem, node, bits2, false, heightsOption);
