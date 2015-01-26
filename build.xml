@@ -212,7 +212,7 @@
     <property name="version" value="2.2.0" />
     <property name="version_number" value="2.2.0" />
     <property name="release_dir" value="release" />
-    <property name="copyright" value="Beast 2 development team 2011-2014" />
+    <property name="copyright" value="Beast 2 development team 2011-2015" />
 
     <property name="BEAST_name" value="BEAST" />
     <property name="BEAUti_name" value="BEAUti" />
@@ -320,7 +320,7 @@
 
 
         <launch4j configFile="${Windows_dir}/TreeAnnotator_launch4j.xml"
-                  jar="${tools_dir}/treeannotator.jar"
+                  jar="${dist}/beast.jar"
                   outfile="${Windows_package_dir}/TreeAnnotator.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
