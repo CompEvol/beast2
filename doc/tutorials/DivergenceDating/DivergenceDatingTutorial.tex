@@ -1,14 +1,14 @@
-\NeedsTeXFormat{LaTeX2e}[1996/06/01]
+%\NeedsTeXFormat{LaTeX2e}[1996/06/01]
 
-\documentclass[11pt]{article}
-\usepackage[rightcaption,raggedright]{sidecap}% for side captions
-\usepackage{framed}         % for floatingboxes
-\usepackage{soul}           % for letterspacing in theorem-style headings
+\documentclass[12pt]{article}
+%\usepackage[rightcaption,raggedright]{sidecap}% for side captions
+%\usepackage{framed}         % for floatingboxes
+%\usepackage{soul}           % for letterspacing in theorem-style headings
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special packages used AJD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{amsmath}
+%\usepackage{amsmath}
 
 % for the Harvard author-date referencing system
 %\usepackage[agsm]{harvard}
@@ -17,13 +17,13 @@
 % square braces in the reference list, uncomment the line below
 % \removesquarebraces
 
-\usepackage{rotating}
-\usepackage{floatpag}
-\rotfloatpagestyle{empty}
+%\usepackage{rotating}
+%\usepackage{floatpag}
+%\rotfloatpagestyle{empty}
 
 % \usepackage{amsmath}% if you are using this package,
                       % it must be loaded before amsthm.sty
-\usepackage{amsthm}
+%\usepackage{amsthm}
 % \usepackage{txfonts}% times font (used to produce EngCguide.pdf)
                       % this package must be loaded after amsthm.sty
 \usepackage{graphicx}
@@ -31,22 +31,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special packages used AJD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{listings}
+%\usepackage{listings}
 
-\lstset{
-stringstyle=\ttfamily, % typewriter type for strings
-showstringspaces=false % no special string spaces
-}
-\lstset{numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=10pt, frame=trbl}
-\lstset{escapeinside={(*@}{@*)}}
+%\lstset{
+%stringstyle=\ttfamily, % typewriter type for strings
+%showstringspaces=false % no special string spaces
+%}
+%\lstset{numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=10pt, frame=trbl}
+%\lstset{escapeinside={(*@}{@*)}}
 
-\usepackage{tikz,pgf}
+%\usepackage{tikz,pgf}
   
-\usetikzlibrary{positioning}
+%\usetikzlibrary{positioning}
 
 
-\def\sindex{}
-\def\aindex{}
+%\def\sindex{}
+%\def\aindex{}
 
   
 % BEAST book specific commands
@@ -54,35 +54,35 @@ showstringspaces=false % no special string spaces
 \newcommand{\TracerVersion}{1.6}
 \newcommand{\FigTreeVersion}{1.4.2}
 %\newcommand{\TODO}[1]{{\color{red} #1}}
-\newcommand{\TODO}[1]{}
-\newcommand{\chapter}[1]{}
+%\newcommand{\TODO}[1]{}
+%\newcommand{\chapter}[1]{}
 
 
 % see chapter 3 for details
-\theoremstyle{plain}% default
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem*{corollary}{Corollary}
+%\theoremstyle{plain}% default
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem*{corollary}{Corollary}
 
-\theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{condition}[theorem]{Condition}
+%\theoremstyle{definition}
+%\newtheorem{definition}[theorem]{Definition}
+%\newtheorem{condition}[theorem]{Condition}
 
-\theoremstyle{remark}
-\newtheorem{remark}{Remark}
-\newtheorem{notation}[remark]{Notation}
-\newtheorem*{case}{Case}
+%\theoremstyle{remark}
+%\newtheorem{remark}{Remark}
+%\newtheorem{notation}[remark]{Notation}
+%\newtheorem*{case}{Case}
 
-\hyphenation{line-break line-breaks docu-ment triangle cambridge amsthdoc
-cambridgemods baseline-skip author authors cambridgestyle en-vir-on-ment polar}
+%\hyphenation{line-break line-breaks docu-ment triangle cambridge amsthdoc
+%cambridgemods baseline-skip author authors cambridgestyle en-vir-on-ment polar}
 
-\setcounter{tocdepth}{2}% the toc normally lists sections;
+%\setcounter{tocdepth}{2}% the toc normally lists sections;
 % for the purposes of this document, this has been extended to subsections
 
 %hyperref should come after index to make pagerefs work in index
-\usepackage{hyperref}
+%\usepackage{hyperref}
 
-\usepackage[all]{xy}
+%\usepackage[all]{xy}
 
 \newcommand{\includeimage}[2][]{%
 %HEVEA\imgsrc{#2.hevea.png}%
@@ -132,8 +132,8 @@ ancestral divergences.
 \begin{figure}	
 \centering
 \includeimage[width=\textwidth]{figures/AlignmentViewer}
-\label{fig:primateAlignment}
 \caption{Part of the alignment for primates.}
+\label{fig:primateAlignment}
 \end{figure}
 
 The first step will be to convert a NEXUS file with a DATA or CHARACTERS block into a BEAST XML input file. This is done using the program BEAUti (which stands for Bayesian Evolutionary Analysis Utility). 
@@ -149,13 +149,13 @@ model parameters for BEAST. Run BEAUti by double clicking on its icon. Once runn
 of which computer system it is running on. For this tutorial, the Mac OS X version is used in the figures but
 the Linux and Windows versions will have the same layout and functionality.
 
-\TODO{Provide instructions for executing BEAUti  in a Linux environment.}
+%\TODO{Provide instructions for executing BEAUti  in a Linux environment.}
 
 \subsection{Loading the NEXUS file }
 
 To load a NEXUS format alignment, simply select the \texttt{Import Alignment...} option from the \texttt{File} menu, or drag the file into the middle of {\bf Partitions} panel. 
 
-The example file called \texttt{primates-mtDNA.nex} is available from the {\tt examples/nexus/} directory for Mac and Linux and  {\tt examples/nexus/}for Windows inside the directory where BEAST was installed.
+The example file called \texttt{primate-mtDNA.nex} is available from the {\tt examples/nexus/} directory for Mac and Linux and  {\tt examples/nexus/}for Windows inside the directory where BEAST was installed.
 This file contains an alignment of sequences of 12 species of primates. 
 
 %It looks like this (the lines have been truncated):
@@ -203,8 +203,8 @@ Otherwise, select \texttt{Add Alignment} and click \textbf{OK} to continue.
 \begin{figure}
 \centering	
 \includeimage[width=0.5\textwidth]{figures/AddPartition}
-\label{fig:addPartition}
 \caption{Add Partition window (Only appear if related packages are installed).}
+\label{fig:addPartition}
 \end{figure}
 
 If there is any coding overlaps in the partitions, the warning message window (Figure \ref{fig:warning}) will appear. Read and click \textbf{OK} to continue.
@@ -212,8 +212,8 @@ If there is any coding overlaps in the partitions, the warning message window (F
 \begin{figure}	
 \centering	
 \includeimage[width=0.9\textwidth]{figures/warning}
-\label{fig:warning}
 \caption{Warning message window (Only appear if there is any coding overlaps in the partitions).}
+\label{fig:warning}
 \end{figure}
 
 Once loaded, five character partitions are displayed in the main panel (Figure \ref{fig:BEAUTI_DataPartitions}). The alignment is divided into a protein coding part and a non-coding part,and the coding part is divided in codon positions 1, 2 and 3. 
@@ -223,9 +223,9 @@ You can view the alignment by double clicking the partition.
 \begin{figure}
 \centering	
 \includeimage[width=0.9\textwidth]{figures/BEAUti_DataPartitions}
-\label{fig:BEAUTI_DataPartitions}
 \caption{A screenshot of the data tab in BEAUti. This and all following screenshots
 were taken on an Apple computer running Mac OS X and will look slightly different on other operating systems.}
+\label{fig:BEAUTI_DataPartitions}
 \end{figure}
 
 %\begin{figure}[h]
@@ -241,8 +241,8 @@ were taken on an Apple computer running Mac OS X and will look slightly differen
 \begin{figure}
 \centering	
 \includeimage[width=0.9\textwidth]{figures/BEAUti_DataPartitions_final}
-\label{fig:BEAUti_DataPartitions_final}
 \caption{A screenshot of the Partitions tab in BEAUti after linking and renaming the clock model and tree.}
+\label{fig:BEAUti_DataPartitions_final}
 \end{figure}
 
 Since the sequences are linked (i.e. they are all from the mitochondrial genome
@@ -253,7 +253,7 @@ the same evolutionary rate for each branch, and hence the same ``clock model''.
 We will restrict our modelling of rate heterogeneity to among-site heterogeneity
 within each partition, and also allow the partitions to have different mean rates of evolution. 
 
-So, at this point we will need to link the clock model and tree. In the {\bf Partitions} panel, select all four partitions in the table (or none, by default all partitions are affected) and click the \texttt{Link Tree Models} button and then the \texttt{Link Clock Models} button (see Figure \ref{fig:BEAUti_DataPartitions_final}). Then click on the first drop-down menu in the Clock Model column and rename the shared clock model to `clock'. Likewise rename the shared tree to `tree'. This will make following options and generated log files more easy to read.
+So, at this point we will need to link the clock model and tree. In the {\bf Partitions} panel, select all four partitions in the table (or none, by default all partitions are affected) and click the \texttt{Link Trees} button and then the \texttt{Link Clock Models} button (see Figure \ref{fig:BEAUti_DataPartitions_final}). Then click on the first drop-down menu in the Clock Model column and rename the shared clock model to `clock'. Likewise rename the shared tree to `tree'. This will make following options and generated log files more easy to read.
 
 
 \subsection{Setting the substitution model}
@@ -266,8 +266,8 @@ samples). This will reveal the evolutionary model settings for BEAST. The option
 \begin{figure}
 \centering	
 \includeimage[width=0.9\textwidth]{figures/BEAUti_Model}
-\label{fig:BEAUti_Model}
 \caption{A screenshot of the site model tab in BEAUti.}
+\label{fig:BEAUti_Model}
 \end{figure}
 
 Most of the models should be familiar to you. %(see Chapter {\ref{chapter:SubstitutionModels} for details}). 
@@ -280,8 +280,8 @@ Then select  \textbf{HKY} from the \textbf{Subst Model} drop-down menu. Ideally,
 \begin{figure}
 \centering	
 \includeimage[width=0.9\textwidth]{figures/cloneFrom}
-\label{fig:cloneFrom}
 \caption{clone configuration from one site model to others.}
+\label{fig:cloneFrom}
 \end{figure}
 
 Finally check the `estimate' box for the \textbf{Substitution rate} parameter and select the \textbf{Fix mean mutation rate} check box. This will allow the individual partitions to have their relative rates estimated for unlinked the site models (Figure \ref{fig:BEAUti_Model}).
@@ -319,15 +319,15 @@ in the model, and these are shown in the priors tab (see Figure \ref{fig:BEAUti_
 \begin{figure}
 \centering
 \includeimage[width=\textwidth]{figures/BEAUti_Prior1}
-\label{fig:BEAUti_Prior1}
 \caption{A screenshot of the Priors tab in BEAUti. }
+\label{fig:BEAUti_Prior1}
 \end{figure}
 
 Here we also specify that we wish to use the Calibrated Yule model \cite{Heled:2012fk}
 as the tree prior. The Yule model is a simple model of
 speciation that is generally more appropriate when considering sequences from
 different species. %(see Section \ref{section:YuleBirthDeathModels} for details).
-Select this from the {\bf Tree prior} dropdown menu.
+Select the \texttt{Calibrated Yule Model} from the {\bf Tree prior} dropdown menu.
 
 %\begin{figure}
 %\includeimage[width=\textwidth]{figures/BEAUti_Tree}
@@ -338,8 +338,8 @@ Select this from the {\bf Tree prior} dropdown menu.
 \subsubsection{Defining the calibration node}
 
 We now need to specify a prior distribution on the calibrated node, based on our
-fossil knowledge. This is known as calibrating our tree. To define an extra prior, press the small {\bf +} button below list of priors. You will see a
-dialog that allows you to define a subset of the taxa in the phylogenetic tree. Once you have created a taxa set you will be able to add calibration information for its most recent common
+fossil knowledge. This is known as calibrating our tree. To define an extra prior, press the small {\bf +} button below list of priors. If it is not visible in your view, please scroll down the panel to the bottom to find {\bf +} button. 
+You will see a dialog that allows you to define a subset of the taxa in the phylogenetic tree. Once you have created a taxa set you will be able to add calibration information for its most recent common
 ancestor (MRCA) later on. 
 
 Name the taxa set by filling in the taxon set label entry. 
@@ -351,8 +351,8 @@ As this is a calibrated node to be used in conjunction with the Calibrated Yule 
 \begin{figure}
 \centering
 \includeimage[width=9cm]{figures/BEAUti_TaxonSets}
-\label{fig:BEAUti_TaxonSets}
 \caption{Taxon set editor in BEAUti.}
+\label{fig:BEAUti_TaxonSets}
 \end{figure}
 
 To encode the calibration information we need to specify a distribution for the MRCA of human-chimp.
@@ -371,8 +371,8 @@ estimate of the date of the most recent common ancestor of humans and chimpanzee
 \begin{figure}
 \centering	
 \includeimage[width=\textwidth]{figures/BEAUti_Prior2}
-\label{fig:BEAUti_Prior2}
 \caption{A screenshot of the calibration prior options in the Priors panel in BEAUti.}
+\label{fig:BEAUti_Prior2}
 \end{figure}
 
 We should convince ourselves that the priors shown in the priors panel really reflect the prior information we have about the parameters of the model. Finally we will also specify some diffuse ``uninformative'' but proper priors on the overall molecular clock rate (\texttt{clockRate}) and the speciation rate (\texttt{birthRateY}) of the Yule tree prior. For each of them, select \textbf{Gamma} from the drop-down menu
@@ -391,8 +391,8 @@ analysis.
 \begin{figure}
 \centering
 \includeimage[width=\textwidth]{figures/GammaPrior}
-\label{fig:GammaPrior}
 \caption{Gamma prior.}
+\label{fig:GammaPrior}
 \end{figure}
 
 %Finally, put a log-normal distribution on the kappa parameters. \TODO{with what M and S parameters?}
@@ -475,8 +475,8 @@ We are now ready to run the file through BEAST.
 \begin{figure}
 \centering	
 \includeimage[width=0.7\textwidth]{figures/BEAST}
-\label{fig:BEAST}
 \caption{A screenshot of BEAST.}
+\label{fig:BEAST}
 \end{figure}
 
 Now run BEAST and when it asks for an input file, provide your newly
@@ -613,8 +613,8 @@ always rejected.
 \begin{figure}
 \centering	
 \includeimage[width=0.9\textwidth]{figures/Tracer1}
-\label{fig:Tracer1}
 \caption{A screenshot of Tracer v{\TracerVersion}.}
+\label{fig:Tracer1}
 \end{figure}
 
 Run the program called {\bf Tracer} to analyze the output of BEAST. When the main
@@ -640,8 +640,8 @@ Select the \texttt{TreeHeight} parameter and then Ctrl-click \texttt{mrcatime(hu
 \begin{figure}
 \centering	
 \includeimage[width=0.9\textwidth]{figures/Tracer_divergences}
-\label{fig:Tracer_divergences}
 \caption{A screenshot of the 95\% HPD intervals of the root height and the user-specified (human-chimp) MRCA in Tracer.}
+\label{fig:Tracer_divergences}
 \end{figure}
 
 \section{Marginal posterior estimates}
@@ -666,8 +666,8 @@ both the coding and noncoding regions of the alignment.
 \begin{figure}
 \centering	
 \includeimage[width=\textwidth]{figures/Tracer_marginalDensity}
-\label{fig:Tracer_marginalDensity}
 \caption{A screenshot of the marginal posterior densities of the relative substitution rates of the four partitions (relative to the site-weighted mean rate).}
+\label{fig:Tracer_marginalDensity}
 \end{figure}
 
 
@@ -677,8 +677,8 @@ both the coding and noncoding regions of the alignment.
 \includeimage[width=\textwidth]{figures/primatePriorPosteriorKappa}
 
 %\include{primatePriorPosteriorShape}
-\label{fig:primatePriorPosteriorShape}
 \caption{The marginal prior and posterior densities for the shape ($\alpha$) parameters. The prior is in gray. The posterior density estimate for each partition is also shown: noncoding (orange) and first (red), second (green) and third (blue) codon positions.}
+\label{fig:primatePriorPosteriorShape}
 %\end{figure}
 
 %\begin{figure}
@@ -686,8 +686,8 @@ both the coding and noncoding regions of the alignment.
 \includeimage[width=\textwidth]{figures/primatePriorPosteriorShape}
 
 %\input{primatePriorPosteriorKappa}
-\label{fig:primatePriorPosteriorKappa}
 \caption{The marginal prior and posterior densities for the transition/tranversion bias ($\kappa$) parameters. The prior is in gray. The posterior density estimate for each partition is also shown: noncoding (orange) and first (red), second (green) and third (blue) codon positions.}
+\label{fig:primatePriorPosteriorKappa}
 \end{figure}
 %\fi
 
@@ -741,8 +741,8 @@ node. Run the TreeAnnotator program and set it up as depicted in Figure \ref{fig
 \begin{figure}
 \centering	
 \includeimage[width=0.9\textwidth]{figures/TreeAnnotator1}
-\label{fig:TreeAnnotator1}
 \caption{A screenshot of TreeAnnotator.}
+\label{fig:TreeAnnotator1}
 \end{figure}
 
 The burnin is the number of trees to remove from the start of the sample. Unlike {\bf Tracer} which specifies the number of
@@ -785,8 +785,8 @@ You should end up with something similar to Figure \ref{fig:FigTree}.
 \centering	
 \includeimage[width=0.9\textwidth]{figures/FigTree}
 \includeimage[width=0.9\textwidth]{figures/DensiTree}
-\label{fig:FigTree}
 \caption{A screenshot of FigTree and DensiTree.}
+\label{fig:FigTree}
 \end{figure}
 
 An alternative view of the tree can be made with DensiTree, which is part of Beast 2. The advantage
@@ -799,8 +799,8 @@ we conclude that this analysis results in a very high consensus on topology (Fig
 %\begin{center}
 %\includeimage[width=0.7\textwidth]{figures/DensiTree}
 %\end{center}
-%\label{fig:DensiTree}
 %\caption{A screenshot of DensiTree.}
+%\label{fig:DensiTree}
 %\end{figure}
 
 \newpage
