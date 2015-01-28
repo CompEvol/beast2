@@ -451,10 +451,12 @@ record sufficient information about the distributions of the parameters.
 You probably want to aim to store no more than 10,000 samples so this should be
 set to no less than chain length / 10,000.
 
-For this exercise we will set the \texttt{screen log} to \underline{\screenEvery{}} and the \texttt{trace log} to \underline{\logEvery{}}. The final two
-options give the file names of the log files for the sampled parameters and
-the trees. These will be set to a default based on the name of the
-imported NEXUS file. We use \texttt{Primates.log} and \texttt{Primates.trees} here.
+For this exercise we will set the \texttt{trace log} and the \texttt{tree log} frequency to \underline{\logEvery{}}
+and the \texttt{screen log} to \underline{\screenEvery{}}.
+Also specify \texttt{Primates.log} as the file name of the trace log file
+and \texttt{Primates.trees} as the file name of the tree log file.
+Make sure that the file name filed of the screen log is left empty,
+or the screen log will not be written to the screen.
 
 \begin{itemize}
 \item If you are using the Windows operating system then we suggest you add the suffix \texttt{.txt} to both of these (so,
