@@ -195,8 +195,8 @@ The \textbf{Estimate} check box is unchecked for the first clock model and check
 
 \subsubsection*{Multi Species Coalescent}
 
-The {\bf Multi Species Coalescent} panel allows settings to the multi species coalescent model to be specified for each tree. *BEAST has a different tree prior panel where users can only configure the species tree prior not gene tree priors (which are automatically specified by the multispecies coalescent). Currently, we have two species tree priors: \textbf{Yule Process} and \textbf{Birth-Death Process}; and three population size models: \textbf{Piecewise linear and constant root}, \textbf{Piecewise linear}, and \textbf{Piecewise constant}. 
-In this analysis, we use {piecewise linear and constant root}.
+The {\bf Multi Species Coalescent} panel allows settings to the multi species coalescent model to be specified for each tree. *BEAST has a different tree prior panel where users can only configure the species tree prior not gene tree priors (which are automatically specified by the multispecies coalescent). 
+Currently, three population size models are available: \textbf{Piecewise linear and constant root}, \textbf{Piecewise linear}, and \textbf{Piecewise constant}. In this analysis, we use \textbf{piecewise linear and constant root}.
 
 The \textbf{Ploidy} item determines the type of sequence (mitochondrial, nuclear, X, Y). This matters since different modes of inheritance gives rise to different effective population sizes. In this analysis, we simply use a random starting tree. 
 
@@ -211,8 +211,7 @@ The \textbf{Ploidy} item determines the type of sequence (mitochondrial, nuclear
 \subsubsection*{Priors and Operators}
 
 The {\bf Priors} panel allows priors to be specified for each parameter in the model. 
-The {\bf Operators} panel (hidden) is used to configure technical settings that affect the efficiency of the MCMC program. 
-We leave these two panels unchanged in this analysis.
+Several models are available as tree priors, however, only the Yule or the Birth-Death Model are suitable for *BEAST analyses. Leave the tree prior setting at the default \textbf{Yule model}. The {\bf Operators} panel (hidden) is used to configure technical settings that affect the efficiency of the MCMC program. We leave these two panels unchanged in this analysis.
 
 \subsubsection*{Setting the MCMC options }
 
@@ -240,10 +239,8 @@ contain much information about the distributions of the parameters.
 You probably want to aim to store no more than 10,000 samples so this should be
 set to no less than chain length / 10,000.
 
-For this exercise we will set the \texttt{screen log} to \underline{\screenEvery{}} and the \texttt{trace log} to \underline{\logEvery{}}. The final two
-options give the file names of the log files for the sampled parameters and
-the trees. These will be set to a default based on the name of the
-imported NEXUS file. 
+For this exercise we will set the \texttt{screen log} to \underline{\screenEvery{}} and the \texttt{trace log} to \underline{\logEvery{}}. 
+Set the file name of the trace log to \texttt{gopher.log} and that of the speciesTreeLogger to \texttt{gopher.species.trees}.
 
 %If you would like to save the operator analysis into a file, you need to check  \textbf{Create operator analysis file} which will generate a file with the suffix \texttt{.ops}. 
 
@@ -256,7 +253,7 @@ imported NEXUS file.
 
 
 If you are using windows then we suggest you add the suffix \texttt{.txt} to both of these (so,
-\texttt{gopher.log.txt} and \texttt{gopher.trees.txt}) so that Windows recognizes
+\texttt{gopher.log.txt} and \texttt{gopher.species.trees.txt}) so that Windows recognizes
 these as text files. 
 
 \subsubsection*{Generating the BEAST XML file }
