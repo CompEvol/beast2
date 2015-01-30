@@ -132,7 +132,8 @@ public class PriorListInputEditor extends ListInputEditor {
 	                addItem();
 	            }
 	        });
-	        add(addButton);
+	        buttonBox.add(addButton);
+            buttonBox.add(Box.createHorizontalGlue());
         }
     }
 

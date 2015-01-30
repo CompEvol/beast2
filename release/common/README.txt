@@ -1,11 +1,11 @@
-                    BEAST v2.1.2 2014
-                 Beast 2 development team 2011-2014
+                    BEAST v2.2.0 2015
+                 Beast 2 development team 2011-2015
 
-Last updated: 1st April 2014
+Last updated: January 2015
 
 Contents:
 1) INTRODUCTION
-2) UNINSTALLING OLDER BEAST 2.0.x VERSIONS
+2) UNINSTALLING OLDER BEAST 2.x.x VERSIONS
 3) INSTALLING BEAST
 4) CONVERTING SEQUENCES
 5) RUNNING BEAST
@@ -41,22 +41,16 @@ to check that it has performed correctly and usually will need tweaking,
 adjustment and a number of runs to get a valid answer. Sorry.
 
 ___________________________________________________________________________
-2) UNINSTALLING OLDER BEAST 2.0.x VERSIONS
+2) UNINSTALLING OLDER BEAST 2.x.x VERSIONS
 
-If you installed BEAST version 2.0.x, you must remove the packages (add-ons)
+If you installed BEAST version 2.x.x, you must can remove the packages (add-ons)
 installed with that version of BEAST. The easiest way to do this is in BEAUti
-version 2.0.x, using the add-on manager under the menu File/Mangage add-ons.
+version 2.x.x, using the add-on manager under the menu File/Mangage add-ons.
 
 Alternatively, delete the package directory:
 C:\Users\<yourusername>\BEAST                            on Windows
 /Users/<yourusername>/Library/Application Support/BEAST  on Mac
 /home/<yourusername>/.beast                              on Linux
-
-
-
-IF PACKEGES FOR v2.0.x ARE STILL AROUND, BEAST v2.1.0 MIGHT NOT START
-
-
 
 ___________________________________________________________________________
 3) INSTALLING BEAST
@@ -186,7 +180,8 @@ bugs. Please email us to discuss any problems:
 <a.rambaut@ed.ac.uk>
 <msuchard@ucla.edu>
 
-The BEAST users' mailing-list is coming soon.
+The BEAST users' mailing-list 
+<https://groups.google.com/forum/#!forum/beast-users>
 
 The website for beast is here:
 
@@ -194,7 +189,7 @@ The website for beast is here:
 
 Source code distributed under the GNU Lesser General Public License:
 
-<http://code.google.com/p/beast2/>
+<https://github.com/CompEvol/beast2>
 
 ___________________________________________________________________________
 9) ACKNOWLEDGMENTS

@@ -212,7 +212,7 @@
     <property name="version" value="2.2.0" />
     <property name="version_number" value="2.2.0" />
     <property name="release_dir" value="release" />
-    <property name="copyright" value="Beast 2 development team 2011-2014" />
+    <property name="copyright" value="Beast 2 development team 2011-2015" />
 
     <property name="BEAST_name" value="BEAST" />
     <property name="BEAUti_name" value="BEAUti" />
@@ -320,7 +320,7 @@
 
 
         <launch4j configFile="${Windows_dir}/TreeAnnotator_launch4j.xml"
-                  jar="${tools_dir}/treeannotator.jar"
+                  jar="${dist}/beast.jar"
                   outfile="${Windows_package_dir}/TreeAnnotator.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
@@ -424,6 +424,9 @@
     <!-- Define the appbundler task -->
     <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/bundler/appbundler-1.0.jar"/>
 
+    <!--property name="AppleSigner" value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)" /-->
+    <property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />    
+    
     <!-- Create the app bundle -->
     <target name="mac">
         <delete dir="${Mac_package_dir}" />
@@ -487,7 +490,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${BEAST_name}.app"/>
         </exec>
@@ -505,15 +508,16 @@
             <librarypath file="${dist}/beast.jar"/>
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
-            <option value="-Xdock:name=&quot;BEAUti 2&quot;"/>
+            <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <argument value="-capture"/>
         </bundleapp>
 
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${BEAUti_name}.app"/>
         </exec>
@@ -538,7 +542,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${LogCombiner_name}.app"/>
         </exec>
@@ -563,7 +567,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${TreeAnnotator_name}.app"/>
         </exec>
@@ -586,7 +590,7 @@
 
         <exec executable="codesign">
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/DensiTree.app"/>
         </exec>
@@ -611,7 +615,7 @@
         <exec executable="codesign">
             <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_package_dir}/${AppStore_name}.app"/>
         </exec>
@@ -625,7 +629,7 @@
 
         <exec executable="codesign">
             <arg value="-s"/>
-            <arg value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)"/>
+            <arg value="${AppleSigner}"/>
             <arg value="-v"/>
             <arg value="${Mac_dir}/${BEAST_name} v${version}.dmg"/>
         </exec>

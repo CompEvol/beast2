@@ -60,7 +60,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
     	fixMeanRatesCheckBox.setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
-    	
+
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
     	fixMeanRatesCheckBox.addActionListener(new ActionListener() {			
 			@Override
