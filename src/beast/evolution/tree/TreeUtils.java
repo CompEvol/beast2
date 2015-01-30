@@ -194,7 +194,7 @@ public class TreeUtils {
      */
     public static double getInternalLength(Tree tree) {
         double length = 0.0;
-        for (Node node : tree.getExternalNodes()) {
+        for (Node node : tree.getInternalNodes()) {
             length += node.getLength();
         }
         return length;
