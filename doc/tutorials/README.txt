@@ -29,6 +29,7 @@ and style file if there is any to generate html, such as doc/tutorials/Divergenc
 
 5) run script tex2html given the latex file name without extensions, 
 such as ../tex2html StarBEAST_tutorial;
+Note: if hevea is installed but not appear, run "eval `opam config env`" in command line.
 
 6) copy html to SVN compevol/website/beast2org/tutorials/DivergenceDating, and check what it looks;
 
