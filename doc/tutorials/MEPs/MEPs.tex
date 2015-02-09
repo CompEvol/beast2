@@ -1,6 +1,13 @@
 \documentclass[12pt]{article}
 \usepackage{graphicx}
 \usepackage[left=3cm,top=3cm,right=3cm,bottom=3cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
 
 \newcommand{\includeimage}[2][]{%
 %HEVEA\imgsrc{#2.hevea.png}%
@@ -65,7 +72,9 @@ BEAST. At the time of writing, the current version is v{\FigTreeVersion}. It is 
 \end{itemize}
 
 \subsection*{The NEXUS alignment}
-The data is in a file called \texttt{RSV2.nex} and you can find it in the {\tt examples/nexus} directory in the directory where BEAST was installed. This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu (Figure \ref{fig:BEAUti_split}). 
+The data is in a file called \href{https://github.com/CompEvol/beast2/blob/master/examples/nexus/RSV2.nex?raw=true}{RSV2.nex}. You can find it in the {\tt examples/nexus} directory in the directory where BEAST was installed. Or click the link to download the data. After the data is opened in your web browser, right click mouse and save it as \texttt{RSV2.nex}.
+
+This file contains an alignment of 129 sequences from the G gene of RSVA virus, 629 nucleotides in length. Import this alignment into BEAUti. Because this is a protein-coding gene we are going to split the alignment into three partitions representing each of the three codon positions. To do this we will click the {\bf Split} button at the bottom of the {\bf Partitions} panel and then select the ``1 + 2 + 3 frame 3'' from the drop-down menu (Figure \ref{fig:BEAUti_split}). 
 
 \begin{figure}
 \centering	

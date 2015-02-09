@@ -1,5 +1,12 @@
 \documentclass{article}
 \usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
 \usepackage{graphicx}
 
 \newcommand{\includeimage}[2][]{%
@@ -78,8 +85,10 @@ alignment have to be unique, but duplicates across alignments are fine.
 To load a NEXUS format alignment, simply select the \texttt{Import
 Alignment} option from the File menu: 
 
-Select three files called \texttt{26.nex, 29.nex, 47.nex} by holding \texttt{shift} key. 
+Select three files called \href{https://github.com/CompEvol/beast2/blob/master/examples/nexus/26.nex?raw=true}{26.nex}, \href{https://github.com/CompEvol/beast2/blob/master/examples/nexus/29.nex?raw=true}{29.nex}, \href{https://github.com/CompEvol/beast2/blob/master/examples/nexus/47.nex?raw=true}{47.nex} by holding \texttt{shift} key. 
 You can find the files in the {\tt examples/nexus} directory in the directory where BEAST was installed. 
+Or click the links to download the data. After the data is opened in your web browser each time, right click mouse and separately save them as \texttt{26.nex, 29.nex, 47.nex}.
+
 Each file contains an alignment of sequences of from an independent locus. The \texttt{26.nex} looks like this (content has been truncated):
 
 \begin{verbatim}

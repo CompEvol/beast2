@@ -80,7 +80,13 @@
 % for the purposes of this document, this has been extended to subsections
 
 %hyperref should come after index to make pagerefs work in index
-%\usepackage{hyperref}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
 
 %\usepackage[all]{xy}
 
@@ -155,7 +161,7 @@ the Linux and Windows versions will have the same layout and functionality.
 
 To load a NEXUS format alignment, simply select the \texttt{Import Alignment...} option from the \texttt{File} menu, or drag the file into the middle of {\bf Partitions} panel. 
 
-The example file called \texttt{primate-mtDNA.nex} is available from the {\tt examples/nexus/} directory for Mac and Linux and  {\tt examples/nexus/}for Windows inside the directory where BEAST was installed.
+The example file called \href{https://github.com/CompEvol/beast2/blob/master/examples/nexus/primate-mtDNA.nex?raw=true}{primate-mtDNA.nex} is available from the {\tt examples/nexus/} directory for Mac and Linux and  {\tt examples/nexus/}for Windows inside the directory where BEAST was installed. Or click the link to download the data. After the data is opened in your web browser, right click mouse and save it as \texttt{primate-mtDNA.nex}.
 This file contains an alignment of sequences of 12 species of primates. 
 
 %It looks like this (the lines have been truncated):
