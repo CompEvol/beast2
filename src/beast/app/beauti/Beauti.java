@@ -454,6 +454,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         public ActionQuit() {
             super("Exit", "Exit Program", "exit", KeyEvent.VK_F4);
+            putValue(Action.MNEMONIC_KEY, new Integer('x'));
         } // c'tor
 
         public void actionPerformed(ActionEvent ae) {
