@@ -3,11 +3,12 @@ package beast.evolution.substitutionmodel;
 import beast.core.Description;
 import beast.evolution.datatype.Aminoacid;
 import beast.evolution.datatype.DataType;
+import beast.math.statistic.DiscreteStatistics;
 
 @Description("WAG model of amino acid evolution by " +
         "S. Whelan and N. Goldman. 2000. Bioinformatics ?.")
-public class WAG extends EmpiricalSubstitutionModel {
 
+public class WAG extends EmpiricalSubstitutionModel {
 
     @Override
     double[][] getEmpiricalRates() {
@@ -654,4 +655,73 @@ public class WAG extends EmpiricalSubstitutionModel {
     public boolean canHandleDataType(DataType dataType) {
         return dataType instanceof Aminoacid;
     }
+
+    public static void main(String[] args) {
+
+        WAG wag = new WAG();
+
+        String aminoAcids = "ARNDCQEGHILKMFPSTWYV";
+        boolean[] class1 = {false,true,false,false,true,true,true,false,false,true,true,
+                false,true,false,false,false,false,true,true,true};
+
+        int within1 = 0;
+        int within2 = 0;
+        int between = 0;
+        double[] w1 = new double[45];
+        double[] w2 = new double[45];
+        double[] b = new double[100];
+
+        double[][] rates = wag.getEmpiricalRates();
+
+        for (int i = 0; i < 20; i++) {
+            for (int j = i+1; j < 20; j++) {
+                if (class1[i]) {
+                    if (class1[j]) {
+                        w1[within1] = rates[i][j];
+                        within1 += 1;
+                    } else {
+                        b[between] = rates[i][j];
+                        between += 1;
+                    }
+                } else {
+                    if (!class1[j]) {
+                        w2[within2] = rates[i][j];
+                        within2 += 1;
+                    } else {
+                        b[between] = rates[i][j];
+                        between += 1;
+                    }
+                }
+            }
+        }
+
+        System.out.println("Within 1 mean rate = " + DiscreteStatistics.mean(w1));
+        System.out.println("Within 2 mean rate = " + DiscreteStatistics.mean(w2));
+        System.out.println("Between mean rate = " + DiscreteStatistics.mean(b));
+
+        System.out.println("Within 1 rate stdev = " + DiscreteStatistics.stdev(w1));
+        System.out.println("Within 2 rate stdev = " + DiscreteStatistics.stdev(w2));
+        System.out.println("Between rate stdev = " + DiscreteStatistics.stdev(b));
+
+        System.out.println("Within 1 rate stderr = " + DiscreteStatistics.stdev(w1)/Math.sqrt(within1));
+        System.out.println("Within 2 rate stderr = " + DiscreteStatistics.stdev(w2)/Math.sqrt(within2));
+        System.out.println("Between rate stderr = " + DiscreteStatistics.stdev(b)/Math.sqrt(between));
+
+        double sse = 0;
+        double meanb = DiscreteStatistics.mean(b);
+        for (int i = 0; i < b.length; i++) {
+            sse += (meanb - b[i]) * (meanb - b[i]);
+        }
+        sse /= b.length;
+        sse = Math.sqrt(sse);
+
+        System.out.println("Between rate sse = " + sse);
+
+        System.out.println("Within 1 count = " + within1);
+        System.out.println("Within 2 count = " + within2);
+        System.out.println("Between count = " +  between);
+    }
+
+
+
 } // class WAG

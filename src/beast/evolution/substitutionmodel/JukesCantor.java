@@ -34,6 +34,11 @@ public class JukesCantor extends SubstitutionModel.Base {
         double[] ivec = new double[]{0.25, 0.25, 0.25, 0.25, 0.125, -0.125, 0.125, -0.125, 0.0, 1.0, 0.0, -1.0, 1.0, 0.0, -1.0, 0.0};
 
         eigenDecomposition = new EigenDecomposition(evec, ivec, eval);
+
+        if (frequenciesInput.get() != null) {
+            throw new RuntimeException("Frequencies must not be specified in Jukes-Cantor model. They are assumed equal.");
+        }
+
         frequencies = new double[]{0.25, 0.25, 0.25, 0.25};
     }
 
