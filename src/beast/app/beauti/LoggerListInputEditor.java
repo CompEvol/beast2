@@ -51,7 +51,7 @@ public class LoggerListInputEditor extends ListInputEditor {
 
         // ensure file name entry has larger size than the standard size
         JTextField fileNameEntry = fileNameEditor.getEntry();
-        Dimension size = new Dimension(400, 25);
+        Dimension size = new Dimension(400, fileNameEntry.getPreferredSize().height);
         fileNameEntry.setMinimumSize(size);
         fileNameEntry.setPreferredSize(size);
         return fileNameEditor;
