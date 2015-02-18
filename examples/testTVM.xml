@@ -3,7 +3,6 @@
        namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood"
        version="2.0">
 
-
     <data id="primate-mtDNA">
         <sequence id="seq_Lemur_catta" taxon="Lemur_catta" totalcount="4"
                   value="AAGCTTCATAGGAGCAACCATTCTAATAATCGCACATGGCCTTACATCATCCATATTATTCTGTCTAGCCAACTCTAACTACGAACGAATCCATAGCCGTACAATACTACTAGCACGAGGGATCCAAACCATTCTCCCTCTTATAGCCACCTGATGACTACTCGCCAGCCTAACTAACCTAGCCCTACCCACCTCTATCAATTTAATTGGCGAACTATTCGTCACTATAGCATCCTTCTCATGATCAAACATTACAATTATCTTAATAGGCTTAAATATGCTCATCACCGCTCTCTATTCCCTCTATATATTAACTACTACACAACGAGGAAAACTCACATATCATTCGCACAACCTAAACCCATCCTTTACACGAGAAAACACCCTTATATCCATACACATACTCCCCCTTCTCCTATTTACCTTAAACCCCAAAATTATTCTAGGACCCACGTACTGTAAATATAGTTTAAA-AAAACACTAGATTGTGAATCCAGAAATAGAAGCTCAAAC-CTTCTTATTTACCGAGAAAGTAATGTATGAACTGCTAACTCTGCACTCCGTATATAAAAATACGGCTATCTCAACTTTTAAAGGATAGAAGTAATCCATTGGCCTTAGGAGCCAAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATCTATTATCCTCTTTCACCCTTGTCACACTGATTATCCTAACTTTACCTATCATTATAAACGTTACAAACATATACAAAAACTACCCCTATGCACCATACGTAAAATCTTCTATTGCATGTGCCTTCATCACTAGCCTCATCCCAACTATATTATTTATCTCCTCAGGACAAGAAACAATCATTTCCAACTGACATTGAATAACAATCCAAACCCTAAAACTATCTATTAGCTT"/>
@@ -44,7 +43,7 @@
     <map name="Normal">beast.math.distributions.Normal</map>
 
 
-    <run chainLength="50000000" id="mcmc" spec="MCMC">
+    <run chainLength="5000000" id="mcmc" spec="MCMC">
         <state id="state" storeEvery="5000">
             <tree id="Tree.t:primate" name="stateNode">
                 <taxonset id="TaxonSet.coding" spec="TaxonSet">
@@ -54,7 +53,7 @@
                 </taxonset>
             </tree>
             <parameter id="birthRate.t:primate" name="stateNode" value="1.0"/>
-            <parameter id="rateAC.s:primate" lower="0.0" name="stateNode" value="1.0"/>
+            <parameter id="rateGT.s:primate" lower="0.0" name="stateNode" value="1.0"/>
             <parameter id="rateTransitions.s:primate" lower="0.0" name="stateNode" value="1.0"/>
             <parameter id="rateAT.s:primate" lower="0.0" name="stateNode" value="1.0"/>
             <parameter id="rateCG.s:primate" lower="0.0" name="stateNode" value="1.0"/>
@@ -76,7 +75,7 @@
                 <prior id="YuleBirthRatePrior.t:primate" name="distribution" x="@birthRate.t:primate">
                     <Uniform id="Uniform.0" name="distr" upper="Infinity"/>
                 </prior>
-                <prior id="RateACPrior.s:primate" name="distribution" x="@rateAC.s:primate">
+                <prior id="RateGTPrior.s:primate" name="distribution" x="@rateGT.s:primate">
                     <LogNormal id="LogNormalDistributionModel.0" name="distr">
                         <parameter estimate="false" id="RealParameter.0" name="M" value="0"/>
                         <parameter estimate="false" id="RealParameter.01" lower="0.0" name="S" upper="5.0"
@@ -113,9 +112,9 @@
                         <parameter estimate="false" id="gammaShape.s:primate" name="shape" value="1.0"/>
                         <parameter estimate="false" id="proportionInvariant.s:primate" lower="0.0"
                                    name="proportionInvariant" upper="1.0" value="0.0"/>
-                        <substModel id="tvm.s:primate" rateAC="@rateAC.s:primate" rateTransitions="@rateTransitions.s:primate"
+                        <substModel id="tvm.s:primate" rateGT="@rateGT.s:primate" rateTransitions="@rateTransitions.s:primate"
                                     rateAT="@rateAT.s:primate" rateCG="@rateCG.s:primate" spec="TVM">
-                            <parameter estimate="false" id="rateGT.s:primate" lower="0.0" name="rateGT" value="1.0"/>
+                            <parameter estimate="false" id="rateAC.s:primate" lower="0.0" name="rateAC" value="1.0"/>
                             <frequencies frequencies="@freqParameter.s:primate" id="estimatedFreqs.s:primate"
                                          spec="Frequencies"/>
                         </substModel>
@@ -149,7 +148,7 @@
 
         <operator id="WilsonBalding.t:primate" spec="WilsonBalding" tree="@Tree.t:primate" weight="3.0"/>
 
-        <operator id="RateACScaler.s:primate" parameter="@rateAC.s:primate" scaleFactor="0.5" spec="ScaleOperator"
+        <operator id="RateGTScaler.s:primate" parameter="@rateGT.s:primate" scaleFactor="0.5" spec="ScaleOperator"
                   weight="0.1"/>
 
         <operator id="RateATScaler.s:primate" parameter="@rateAT.s:primate" scaleFactor="0.5" spec="ScaleOperator"
@@ -175,7 +174,7 @@
             <log id="TreeHeight.t:primate" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:primate"/>
             <log idref="YuleModel.t:primate"/>
             <parameter idref="birthRate.t:primate" name="log"/>
-            <parameter idref="rateAC.s:primate" name="log"/>
+            <parameter idref="rateGT.s:primate" name="log"/>
             <parameter idref="rateTransitions.s:primate" name="log"/>
             <parameter idref="rateAT.s:primate" name="log"/>
             <parameter idref="rateCG.s:primate" name="log"/>
@@ -195,5 +194,4 @@
         </logger>
 
     </run>
-
 </beast>
