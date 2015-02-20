@@ -42,10 +42,20 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	
 	public Input<BeautiSubTemplate> template = new Input<BeautiSubTemplate>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
 
-    private JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
+    private JFileChooser fileChooser;
 	
 	@Override
-	public void initAndValidate() throws Exception {}
+	public void initAndValidate() throws Exception {
+        fileChooser = new JFileChooser(Beauti.g_sDir);
+
+  		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
+		String[] extsf = { ".fas", ".fst", ".fasta", ".fna", ".ffn", ".faa", ".frn" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
+		String[] exts = { ".nex", ".nxs", ".nexus" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
+
+		fileChooser.setDialogTitle("Load Alignment");
+		fileChooser.setMultiSelectionEnabled(true);  }
 	
 	/** 
 	 * return amount to which the provided matches an alignment 
@@ -59,16 +69,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	 * return new alignment, return null if not successfull 
 	 * **/
 	List<BEASTInterface> getAlignments(BeautiDoc doc) {
-        //JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
 
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-		String[] extsf = { ".fas", ".fst", ".fasta", ".fna", ".ffn", ".faa", ".frn" };
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
-		String[] exts = { ".nex", ".nxs", ".nexus" };
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
-
-		fileChooser.setDialogTitle("Load Alignment");
-		fileChooser.setMultiSelectionEnabled(true);
 		int rval = fileChooser.showOpenDialog(null);
 
 		if (rval == JFileChooser.APPROVE_OPTION) {
