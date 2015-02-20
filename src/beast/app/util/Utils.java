@@ -1,5 +1,6 @@
 package beast.app.util;
 
+import beast.app.beauti.BeautiFileSelector;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -246,6 +247,31 @@ public class Utils {
     }
 
     public static File[] getFile(String message, boolean bLoadNotSave, File defaultFileOrDir, boolean bAllowMultipleSelection, String description, final String... extensions) {
+
+        BeautiFileSelector bfs = new BeautiFileSelector();
+        bfs.setLocationRelativeTo(null);
+
+        bfs.setTitle(message);
+
+        if (bLoadNotSave)
+            bfs.setType(JFileChooser.OPEN_DIALOG);
+        else
+            bfs.setType(JFileChooser.SAVE_DIALOG);
+
+        bfs.setMultiSelectionEnabled(bAllowMultipleSelection);
+        bfs.setSelectedFile(defaultFileOrDir);
+
+        if (description != null) {
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
+            bfs.setFilter(filter);
+        }
+
+        if (bfs.showFileSelector() == JFileChooser.APPROVE_OPTION)
+            return bfs.getSelectedFiles();
+        else
+            return null;
+        
+        /*
         if (isMac()) {
             java.awt.Frame frame = new java.awt.Frame();
             java.awt.FileDialog chooser = new java.awt.FileDialog(frame, message,
@@ -318,7 +344,7 @@ public class Utils {
                 }
             }
         }
-        return null;
+        */
     }
 
     public static String toString(InputStream in) throws IOException {

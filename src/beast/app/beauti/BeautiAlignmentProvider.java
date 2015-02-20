@@ -34,6 +34,8 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
+import com.sun.glass.ui.Window;
+import javax.swing.JWindow;
 
 
 
@@ -42,10 +44,25 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	
 	public Input<BeautiSubTemplate> template = new Input<BeautiSubTemplate>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
 
-    private JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
+    //private JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
+    private BeautiFileSelector fileChooser;
 	
 	@Override
-	public void initAndValidate() throws Exception {}
+	public void initAndValidate() throws Exception {
+
+        fileChooser = new BeautiFileSelector();
+        fileChooser.setSelectedFile(new File(Beauti.g_sDir));
+
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
+		String[] extsf = { ".fas", ".fst", ".fasta", ".fna", ".ffn", ".faa", ".frn" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
+		String[] exts = { ".nex", ".nxs", ".nexus" };
+		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
+
+		fileChooser.setTitle("Load Alignment");
+		fileChooser.setMultiSelectionEnabled(true);
+    
+    }
 	
 	/** 
 	 * return amount to which the provided matches an alignment 
@@ -56,20 +73,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	}
 	
 	/** 
-	 * return new alignment, return null if not successfull 
+	 * return new alignment, return null if not successful 
 	 * **/
 	List<BEASTInterface> getAlignments(BeautiDoc doc) {
-        //JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
+        fileChooser.setLocationRelativeTo(null);
 
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-		String[] extsf = { ".fas", ".fst", ".fasta", ".fna", ".ffn", ".faa", ".frn" };
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
-		String[] exts = { ".nex", ".nxs", ".nexus" };
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
-
-		fileChooser.setDialogTitle("Load Alignment");
-		fileChooser.setMultiSelectionEnabled(true);
-		int rval = fileChooser.showOpenDialog(null);
+		int rval = fileChooser.showFileSelector();
 
 		if (rval == JFileChooser.APPROVE_OPTION) {
 			File[] files = fileChooser.getSelectedFiles();
