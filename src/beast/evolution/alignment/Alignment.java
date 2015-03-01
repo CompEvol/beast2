@@ -257,7 +257,10 @@ public class Alignment extends Map<String> {
 
         calcPatterns();
         Log.info.println(toString(false));
+        setupAscertainment();
+    }
 
+    void setupAscertainment() {
         isAscertained = isAscertainedInput.get();
 
         if (isAscertained) {

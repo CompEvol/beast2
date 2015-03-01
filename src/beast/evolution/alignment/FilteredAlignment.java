@@ -83,6 +83,7 @@ public class FilteredAlignment extends Alignment {
         }
 
         calcPatterns();
+        setupAscertainment();
     }
 
     private void parseFilterSpec() throws Exception {
