@@ -137,6 +137,9 @@ public class XMLParser {
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
     final static String RUNNABLE_CLASS = Runnable.class.getName();
+    
+    // default class used to construct input
+    final static String DEFAULT_CLASS = String.class.getName();
 
 
     /* This is the set of keywords in XML.
@@ -798,7 +801,7 @@ public class XMLParser {
                         element.setAttribute("idref", sIDRef);
                         // add child in case things go belly up, and an XMLParserException is thrown
                         node.appendChild(element);
-                        final BEASTInterface plugin = createObject(element, PLUGIN_CLASS, parent);
+                        final BEASTInterface plugin = createObject(element, DEFAULT_CLASS, parent);
                         // it is save to remove the elment now
                         node.removeChild(element);
                         setInput(node, parent, sName, plugin);
@@ -822,7 +825,7 @@ public class XMLParser {
                     sName = sElement;
                 }
                 // resolve base class
-                String sClass = PLUGIN_CLASS;
+                String sClass = DEFAULT_CLASS;
                 if (element2ClassMap.containsKey(sElement)) {
                     sClass = element2ClassMap.get(sElement);
                 }
