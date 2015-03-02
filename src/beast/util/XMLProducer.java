@@ -45,8 +45,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser

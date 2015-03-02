@@ -137,9 +137,6 @@ public class XMLParser {
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
     final static String RUNNABLE_CLASS = Runnable.class.getName();
-    
-    // default class used to construct input
-    final static String DEFAULT_CLASS = String.class.getName();
 
 
     /* This is the set of keywords in XML.
@@ -651,7 +648,8 @@ public class XMLParser {
                     }
                 } catch (InstantiationException e) {
                     // we only get here when the class exists, but cannot be created
-                    // for instance because it is abstract
+                    // for instance because it is abstract or an interface
+
                     throw new Exception("Cannot instantiate class (" + sSpecClass + "). Please check the spec attribute.");
                 } catch (ClassNotFoundException e) {
                     // TODO: handle exception
@@ -801,7 +799,7 @@ public class XMLParser {
                         element.setAttribute("idref", sIDRef);
                         // add child in case things go belly up, and an XMLParserException is thrown
                         node.appendChild(element);
-                        final BEASTInterface plugin = createObject(element, DEFAULT_CLASS, parent);
+                        final BEASTInterface plugin = createObject(element, PLUGIN_CLASS, parent);
                         // it is save to remove the elment now
                         node.removeChild(element);
                         setInput(node, parent, sName, plugin);
@@ -825,7 +823,7 @@ public class XMLParser {
                     sName = sElement;
                 }
                 // resolve base class
-                String sClass = DEFAULT_CLASS;
+                String sClass = PLUGIN_CLASS;
                 if (element2ClassMap.containsKey(sElement)) {
                     sClass = element2ClassMap.get(sElement);
                 }
