@@ -85,6 +85,12 @@ public class AddOnManager {
 
     public static final String INSTALLED = "installed";
     public static final String NOT_INSTALLED = "un-installed";
+    
+    public static final String NO_CONNECTION_MESSAGE = "Could not get an internet connection. "
+    		+ "The BEAST Pacakage Manager needs internet access in order to list available packages and download them for installation. "
+    		+ "Possibly, some software (like security software, or a firewall) blocks the BEAST Pacakage Manager.  "
+    		+ "If so, you need to reconfigure such software to allow access.";
+    		
 
     /**
      * flag indicating add ons have been loaded at least once *
@@ -1112,7 +1118,14 @@ public class AddOnManager {
                 Log.debug.println("Access URL : " + sURL);
             }
             Log.debug.print("Getting list of packages ...");
-            List<Package> packages = AddOnManager.getPackages();
+            List<Package> packages = null;
+            try {
+            	packages = AddOnManager.getPackages();
+            } catch (IOException e) {
+            	Log.warning.println(e.getMessage());
+            	Log.warning.println(NO_CONNECTION_MESSAGE);
+            	return;
+            }
             Log.debug.println("Done!\n");
 
             if (arguments.hasOption("list")) {
