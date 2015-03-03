@@ -11,6 +11,7 @@ import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.util.Randomizer;
 
 
@@ -92,6 +93,19 @@ public class DeltaExchangeOperator extends Operator {
         if (isIntegerOperator && delta != Math.round(delta)) {
             throw new IllegalArgumentException("Can't be an integer operator if delta is not integer");
         }
+
+        // dimension sanity check
+        int dim = -1;
+        if (compoundParameter == null) { // one parameter case
+        	dim = (parameterInput.get().get(0) != null ? parameterInput.get().get(0).getDimension() : intparameterInput.get().get(0).getDimension());
+        } else {
+            dim = compoundParameter.getDimension();
+        }
+    	if (dim <= 1) {
+    		Log.warning.println("WARNING: the dimension of the parameter is " + dim + " at the start of the run.\n"
+    				+ "         The operator " + getID() + " has no effect (if this does not change).");
+    	}
+
     }
 
     @Override
@@ -110,6 +124,10 @@ public class DeltaExchangeOperator extends Operator {
             }
 
             final int dim = (realparameter != null ? realparameter.getDimension() : intparameter.getDimension());
+            if (dim <= 1) {
+            	// it is impossible to select two distinct entries in this case, so there is nothing to propose 
+            	return 0.0;
+            }
 
             final int dim1 = Randomizer.nextInt(dim);
             int dim2 = dim1;
@@ -174,6 +192,10 @@ public class DeltaExchangeOperator extends Operator {
 
             // get two dimensions
             final int dim = compoundParameter.getDimension();
+            if (dim <= 1) {
+            	// it is impossible to select two distinct entries in this case, so there is nothing to propose 
+            	return 0.0;
+            }
 
             final int dim1 = Randomizer.nextInt(dim);
             int dim2 = dim1;
