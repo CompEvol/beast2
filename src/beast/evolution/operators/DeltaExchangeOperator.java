@@ -97,7 +97,7 @@ public class DeltaExchangeOperator extends Operator {
         // dimension sanity check
         int dim = -1;
         if (compoundParameter == null) { // one parameter case
-        	dim = (parameterInput.get().get(0) != null ? parameterInput.get().get(0).getDimension() : intparameterInput.get().get(0).getDimension());
+        	dim = (!parameterInput.get().isEmpty() ? parameterInput.get().get(0).getDimension() : intparameterInput.get().get(0).getDimension());
         } else {
             dim = compoundParameter.getDimension();
         }
