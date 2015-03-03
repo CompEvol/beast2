@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 
+import com.sun.java.swing.SwingUtilities3;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -120,8 +122,17 @@ public class JPackageDialog extends JPanel {
         try {
             packages = getPackages();
         } catch (IOException e) {
-        	String msg = "<html>" + e.getMessage() + "<br>" + NO_CONNECTION_MESSAGE + "</html>";
-        	JOptionPane.showInputDialog(null, msg);
+        	final String msg = "<html>" + NO_CONNECTION_MESSAGE.replaceAll("\\.", ".<br>") + "</html>";
+        	try {
+        	SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+		        	JOptionPane.showMessageDialog(null, msg);
+				}
+			});
+        	} catch (Exception e0) {
+        		e0.printStackTrace();
+        	}
         } catch (Exception e) {
             e.printStackTrace();
         }
