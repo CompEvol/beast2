@@ -213,7 +213,9 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     @Override
     public void store() {
         storedUpdateMatrix = updateMatrix;
-        storedEigenDecomposition = eigenDecomposition.copy();
+        if( eigenDecomposition != null ) {
+            storedEigenDecomposition = eigenDecomposition.copy();
+        }
 //        System.arraycopy(relativeRates, 0, storedRelativeRates, 0, relativeRates.length);
 
         super.store();
@@ -231,10 +233,11 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 //        double[] tmp1 = storedRelativeRates;
 //        storedRelativeRates = relativeRates;
 //        relativeRates = tmp1;
-
-        EigenDecomposition tmp = storedEigenDecomposition;
-        storedEigenDecomposition = eigenDecomposition;
-        eigenDecomposition = tmp;
+        if( storedEigenDecomposition != null ) {
+            EigenDecomposition tmp = storedEigenDecomposition;
+            storedEigenDecomposition = eigenDecomposition;
+            eigenDecomposition = tmp;
+        }
         super.restore();
 
     }
