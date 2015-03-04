@@ -76,6 +76,9 @@ public interface Parameter<T> extends Function {
             m_fUpper = getMax();
             m_fLower = getMin();
             m_bIsDirty = new boolean[values.length];
+            for (T value : values) {
+            	valuesInput.get().add(value);
+            }
         }
 
         @Override

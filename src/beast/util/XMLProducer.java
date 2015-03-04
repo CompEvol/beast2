@@ -45,8 +45,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -267,8 +265,11 @@ public class XMLProducer extends XMLParser {
                 			value2.append(c);
                 		}
                         StringBuilder tag3 = new StringBuilder();
-                        c = sXML.charAt(++i);
+                    	c = sXML.charAt(++i);
                         if (c != '>') {
+                            if (c == '/') {
+                        		tag3.append(c);
+                            }
                         	while (((c = sXML.charAt(++i)) != '=') && (c != '/') && (c != '>')) {
                         		tag3.append(c);
                         	}
@@ -292,6 +293,7 @@ public class XMLProducer extends XMLParser {
                 			sb.append("=\"");
                 			sb.append(value2);                			
                 			sb.append('"');
+                			sb.append(' ');
                 			sb.append(tag3);
                 			sb.append(c);
                 		}

@@ -7,12 +7,16 @@ import beast.util.Package;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+
+import com.sun.java.swing.SwingUtilities3;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,6 +121,18 @@ public class JPackageDialog extends JPanel {
         packages.clear();
         try {
             packages = getPackages();
+        } catch (IOException e) {
+        	final String msg = "<html>" + NO_CONNECTION_MESSAGE.replaceAll("\\.", ".<br>") + "</html>";
+        	try {
+        	SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+		        	JOptionPane.showMessageDialog(null, msg);
+				}
+			});
+        	} catch (Exception e0) {
+        		e0.printStackTrace();
+        	}
         } catch (Exception e) {
             e.printStackTrace();
         }
