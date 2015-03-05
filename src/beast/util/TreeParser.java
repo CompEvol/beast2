@@ -594,6 +594,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                         break;
                     case SEMI_COLON:
                         //System.err.println(stack.lastElement().toString());
+                        if (stack.size() > 1) {
+                            throw new Exception("The newick string is not correct. Probably there are extra brackets.");
+                        }
                         final Node tree = stack.lastElement();
                         tree.sort();
                         // at this stage, all heights are actually lengths
@@ -612,6 +615,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     default:
                         throw new Exception("parseNewick: unknown token");
                 }
+            }
+            if (stack.size() > 1) {
+                throw new Exception("The newick string is not correct. Probably there are extra brackets.");
             }
             final Node tree = stack.lastElement();
             tree.sort();
