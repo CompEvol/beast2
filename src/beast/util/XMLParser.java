@@ -648,7 +648,8 @@ public class XMLParser {
                     }
                 } catch (InstantiationException e) {
                     // we only get here when the class exists, but cannot be created
-                    // for instance because it is abstract
+                    // for instance because it is abstract or an interface
+
                     throw new Exception("Cannot instantiate class (" + sSpecClass + "). Please check the spec attribute.");
                 } catch (ClassNotFoundException e) {
                     // TODO: handle exception

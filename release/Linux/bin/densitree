@@ -23,5 +23,11 @@ if [ -z "$BEAST" ]; then
 fi
 
 BEAST_LIB="$BEAST/lib"
-java -Xms256m -Xmx3g -Djava.library.path="$BEAST_LIB" -cp "$BEAST_LIB/DensiTree.jar" viz.DensiTree $*
+
+if [ -z "$JAVA_HOME" ]; then
+  JAVA=java
+else
+  JAVA=$JAVA_HOME/bin/java
+fi
+$JAVA -Xms256m -Xmx3g -Djava.library.path="$BEAST_LIB" -cp "$BEAST_LIB/DensiTree.jar" viz.DensiTree $*
 

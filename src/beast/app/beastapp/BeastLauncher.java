@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
  * Loads beast.jar and launches BEAST through the BEASTMain class
  * 
  * This class should be compiled against 1.6 and packaged by itself. The
- * remained of BEAST can be compiled against Java 1.7
+ * remained of BEAST can be compiled against Java 1.8
  * **/
 public class BeastLauncher {
 
@@ -100,7 +100,7 @@ public class BeastLauncher {
 		return System.getProperty("os.name").toLowerCase().startsWith("linux");
 	}
 
-	/** make sure we run Java version 7 or better **/
+	/** make sure we run Java version 8 or better **/
 	static protected boolean javaVersionCheck(String app) {
 		String javaVersion = System.getProperty("java.version");
 		// javaVersion should be something like "1.7.0_25"
@@ -108,8 +108,8 @@ public class BeastLauncher {
 		if (version.length > 2) {
 			try {
 				int majorVersion = Integer.parseInt(version[1]);
-				if (majorVersion <= 6) {
-					String JAVA_VERSION_MSG = "<html>" + app + " requires Java version 7,<br>" + "but the current version is " + majorVersion
+				if (majorVersion <= 7) {
+					String JAVA_VERSION_MSG = "<html>" + app + " requires Java version 8,<br>" + "but the current version is " + majorVersion
 							+ ".<br><br>" + "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "
 							+ "Continuing, but expect the unexpected.</html>";
 					if (!java.awt.GraphicsEnvironment.isHeadless()) {
