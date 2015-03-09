@@ -52,11 +52,31 @@ public class DeltaExchangeOperator extends Operator {
         isIntegerOperator = sIntegerOperatorInput.get();
 
         if (parameterInput.get().isEmpty()) {
-            if (intparameterInput.get().size() > 1)
+            if (intparameterInput.get().size() > 1) {
+            	// sanity check
+            	for (int i = 0; i < intparameterInput.get().size(); i++) {
+            		for (int j = i + 1; j < intparameterInput.get().size(); j++) {
+            			if (intparameterInput.get().get(i) == intparameterInput.get().get(j)) {
+            				throw new RuntimeException("Dublicate intparameter (" + intparameterInput.get().get(j).getID() + ") found in operator " + getID());
+            			}
+            		}
+            	}
+            	// create single parameter from the list of int-parameters
                 compoundParameter = new CompoundParameterHelper((intparameterInput.get()));
+            }
         } else {
-            if (parameterInput.get().size() > 1)
+            if (parameterInput.get().size() > 1) {
+            	// sanity check
+            	for (int i = 0; i < parameterInput.get().size(); i++) {
+            		for (int j = i + 1; j < parameterInput.get().size(); j++) {
+            			if (parameterInput.get().get(i) == parameterInput.get().get(j)) {
+            				throw new RuntimeException("Dublicate intparameter (" + parameterInput.get().get(j).getID() + ") found in operator " + getID());
+            			}
+            		}
+            	}
+            	// create single parameter from the list of parameters
                 compoundParameter = new CompoundParameterHelper(parameterInput.get());
+            }
         }
 
         if (compoundParameter == null) { // one parameter case
