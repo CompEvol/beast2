@@ -71,7 +71,7 @@ public class LogAnalyser {
      */
     public LogAnalyser(String[] args, int nBurnInPercentage) throws Exception {
         sFile = args[args.length - 1];
-        readLogFile(nBurnInPercentage);
+        readLogFile(sFile, nBurnInPercentage);
         calcStats();
     }
 
@@ -81,7 +81,7 @@ public class LogAnalyser {
 
     public LogAnalyser(String sFile, int nBurnInPercentage) throws Exception {
         this.sFile = sFile;
-        readLogFile(nBurnInPercentage);
+        readLogFile(sFile, nBurnInPercentage);
         calcStats();
     }
 
@@ -89,7 +89,7 @@ public class LogAnalyser {
         this(sFile, BURN_IN_PERCENTAGE);
     }
 
-    protected void readLogFile(int nBurnInPercentage) throws Exception {
+    protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
         log("\nLoading " + sFile);
         BufferedReader fin = new BufferedReader(new FileReader(sFile));
         String sStr = null;

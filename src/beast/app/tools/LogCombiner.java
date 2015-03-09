@@ -124,7 +124,7 @@ public class LogCombiner extends LogAnalyser {
                 m_bIsTreeLog = true;
                 readTreeLogFile(sFile, nBurbIns[k]);
             } else {
-                readLogFile(nBurbIns[k]);
+                readLogFile(sFile, nBurbIns[k]);
             }
 
             if (m_fCombinedTraces == null) {
