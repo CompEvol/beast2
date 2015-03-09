@@ -23,16 +23,17 @@ public class TreeAnnotatorTest {
     protected CladeSystem cladeSystemSA;
 
     //protected String[] clades = new String[]{"{0, 1}", "{1, 2}", "{0, 1, 2}", "{0, 1, 2, 3}", "{2, 3}"};
-    protected String[] clades = new String[]{"{1, 2}", "{2, 3}", "{1, 2, 3}", "{1, 2, 3, 4}", "{3, 4}"};
-    protected String[] cladesSA = new String[]{"{1, 2}", "{1, 2, 3}", "{0, 1, 2, 3, 4}", "{1, 2, 3, 4, 5}", "{1, 3}", "{4, 5}"};
+    protected String[] clades = new String[]{"{0, 2}", "{2, 4}", "{0, 2, 4}", "{0, 2, 4, 6}", "{4, 6}"};
+    protected String[] cladesSA = new String[]{"{0, 2}", "{0, 2, 4}", "{0, 2, 4, 6, 7}", "{0, 2, 4, 6, 8}", "{0, 4}", "{6, 8}", "{0, 2, 4, 8}", "{0, 2, 4, 6, 7, 8}"};
     protected int[] cladesCount = new int[]{2, 1, 2, 3, 1};
-    protected int[] cladesCountSA = new int[]{1, 3, 2, 3, 2, 1};
+    protected int[] cladesCountSA = new int[]{1, 4, 2, 3, 3, 1, 1, 1};
+    protected double[] logTreeScoresSA = new double[] {-2.367124, -1.268511, -1.961659, -3.060271}; //scores calculated in R
     @Before
     public void setUp() throws Exception {
         final String[] treesString = new String[]{"((A:1,B:1):1,(C:1,D:1):1);",
                 "(((A:1,B:1):1,C:2):2,D:3);", "((A:2,(B:1,C:1):1):2,D:3);"};
         final String[] treesSAString = new String[]{"((((0:0.5,1:1.0):1.0,2:2.0):1.0,3:0.0):2.0,4:4.0);",
-                "((((0:1.0,2:1.5):1.0,1:2.5):0.5,3:0.0):2.0,4:4.0);", "(((0:0.5,2:1.0):1.0,1:2.0):3.0,(3:0.2,4:2.2):1.8);"};
+                "((((0:1.0,2:1.5):1.0,1:2.5):0.5,3:0.0):2.0,4:4.0);", "(((0:0.5,2:1.0):1.0,1:2.0):3.0,(3:0.2,4:2.2):1.8);", "((((0:1.0,2:1.5):1.0,1:2.5):0.2,4:1.7):0.3,3:0.0):0.0;"};
 
         treeAnnotator = new TreeAnnotator();
         treeAnnotatorSA = new TreeAnnotator();
@@ -40,8 +41,8 @@ public class TreeAnnotatorTest {
         for (int i = 0; i < trees.length; i++) {
             trees[i] = new TreeParser(treesString[i], false, false, true, 1);
         }
-        treesSA = new Tree[treesString.length];
-        for (int i = 0; i < trees.length; i++) {
+        treesSA = new Tree[treesSAString.length];
+        for (int i = 0; i < treesSA.length; i++) {
             treesSA[i] = new TreeParser(treesSAString[i], false, false, false, 0);
         }
 
@@ -134,6 +135,8 @@ public class TreeAnnotatorTest {
         for (Tree tree : treesSA) {
             double score = treeAnnotatorSA.scoreTree(tree, cladeSystemSA, true);
             double scoreLog = treeAnnotatorSA.scoreTree(tree, cladeSystemSA, false);
+
+            Assert.assertEquals(logTreeScoresSA[i], scoreLog, 1e-6);
 
 //            System.out.println(i + " => " + score + ", log " + scoreLog);
             if (maxScore < score) {

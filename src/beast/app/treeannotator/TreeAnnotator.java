@@ -65,7 +65,10 @@ public class TreeAnnotator {
 
     private static boolean forceIntegerToDiscrete = false;
 
+    private boolean SAmode = false;
+
 	Tree [] trees;
+
 
     enum Target {
         MAX_CLADE_CREDIBILITY("Maximum clade credibility tree"),
@@ -157,14 +160,25 @@ public class TreeAnnotator {
         if (targetOption != Target.USER_TARGET_TREE) {
             try {
 	            for (Tree tree : trees) {
+                    tree.getLeafNodeCount();
+                    if (tree.getDirectAncestorNodeCount() > 0 && !SAmode) {
+                        SAmode = true;
+                        System.err.println("A tree with a sampled ancestor is found. Turning on\n the sampled ancestor " +
+                                "summary analysis.");
+                        if (heightsOption == HeightsSummary.CA_HEIGHTS) {
+                            throw new RuntimeException("The common ancestor height is not \n available for trees with sampled " +
+                                    "ancestors. Please choose \n another height summary option");
+                        }
+                    }
 	            	cladeSystem.add(tree, false);
 	                totalTreesUsed++;
 	            }
 	            totalTrees = totalTreesUsed * 100 / (100-Math.max(burninPercentage, 0));
             } catch (Exception e) {
-                System.err.println("Error Processing Input Tree: " + e.getMessage());
+                System.err.println(e.getMessage());
                 return;
             }
+
             progressStream.println();
             progressStream.println();
 
@@ -407,7 +421,7 @@ public class TreeAnnotator {
         if (node.isLeaf()) {
 
             int index = cladeSystem.getTaxonIndex(node);
-            bits2.set(index+1);
+            bits2.set(2*index);
 
             annotateNode(cladeSystem, node, bits2, true, heightsOption);
         } else {
@@ -419,10 +433,12 @@ public class TreeAnnotator {
                 annotateTree(cladeSystem, node1, bits2, heightsOption);
             }
 
+            for (int i=1; i<bits2.length(); i=i+2) {
+                bits2.set(i, false);
+            }
             if (node.isFake()) {
-                bits2.set(0);
-            } else {
-                bits2.set(0, false);
+                int index = cladeSystem.getTaxonIndex(node.getDirectAncestorChild());
+                bits2.set(2 * index + 1);
             }
 
             annotateNode(cladeSystem, node, bits2, false, heightsOption);
