@@ -29,7 +29,7 @@ public class CladeSystem {
     /**
      * adds all the clades in the tree
      */
-    public void add(Tree tree, boolean includeTips) throws Exception {
+    public void add(Tree tree, boolean includeTips) {// throws Exception {
 //            if (taxonList == null) {
 //            	List<Taxon> taxa = new ArrayList<Taxon>();
 //
@@ -227,6 +227,15 @@ public class CladeSystem {
                 Node node1 = node.getChild(i);
 
                 sum += getSumCladeCredibility(node1, bits2);
+            }
+
+            for (int i=1; i<bits2.length(); i=i+2) {
+                bits2.set(i, false);
+            }
+
+            if (node.isFake()) {
+                int index = getTaxonIndex(node.getDirectAncestorChild());
+                bits2.set(2 * index + 1);
             }
 
             sum += getCladeCredibility(bits2);
