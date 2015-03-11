@@ -211,7 +211,7 @@
 
             <prior id='YuleBirthRatePrior.t:$(n)' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
             <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" mean='1'/></prior>
-            <prior id='PropInvariantPrior.t:$(n)' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
+            <prior id='PropInvariantPrior.s:$(n)' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
   		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
