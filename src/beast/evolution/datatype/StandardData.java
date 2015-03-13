@@ -12,7 +12,7 @@ import java.util.List;
 @Description("Integer data type to describe discrete morphological characters with polymorphisms")
 public class StandardData extends DataType.Base {
 
-    public Input<Integer> maxNrOrStatesInput = new Input<Integer>("nrOfStates", "specifies the maximum number of " +
+    public Input<Integer> maxNrOfStatesInput = new Input<Integer>("nrOfStates", "specifies the maximum number of " +
             "character states in data matrix or in the filtered alignment");
     public Input<String> listOfAmbiguitiesInput = new Input<String>("ambiguities", "all possible ambiguities presented " +
             "as space separated sets of ordered elements. Elements are digits 0..9.");
@@ -28,8 +28,8 @@ public class StandardData extends DataType.Base {
 
 	@Override
 	public void initAndValidate() throws Exception {
-        if (maxNrOrStatesInput.get() != null) {
-            stateCount = maxNrOrStatesInput.get();
+        if (maxNrOfStatesInput.get() != null && maxNrOfStatesInput.get() != 0) {
+            stateCount = maxNrOfStatesInput.get();
         } else {
             stateCount = -1;
         }
@@ -74,9 +74,6 @@ public class StandardData extends DataType.Base {
         // GAP_CHAR
         mapCodeToStateSet[mapCodeToStateSet.length - 2] = stateSet;
         // MISSING_CHAR
-        mapCodeToStateSet[mapCodeToStateSet.length - 1] = stateSet;
-
-    	mapCodeToStateSet[mapCodeToStateSet.length - 2] = stateSet;
         mapCodeToStateSet[mapCodeToStateSet.length - 1] = stateSet;
     }
     
@@ -137,11 +134,6 @@ public class StandardData extends DataType.Base {
     @Override
     public String getTypeDescription() {
         return "standard";
-    }
-
-    @Override
-    public boolean isAmbiguousState(int state) {
-        return state < 0;
     }
 
     @Override

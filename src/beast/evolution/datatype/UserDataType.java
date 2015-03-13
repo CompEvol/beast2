@@ -26,23 +26,29 @@ public class UserDataType extends Base {
 
     public UserDataType() {} // default c'tor
     public UserDataType(String newCharName, ArrayList<String> newStateNames) {
-    	characterNameInput.setValue(newCharName, this);
-    	StringBuilder buf = new StringBuilder();
-    	for (int i = 0; i < newStateNames.size(); i++) {
-    		buf.append(i + "=" + i +", ");
-    	}
-    	buf.append("? =");
-    	for (int i = 0; i < newStateNames.size(); i++) {
-    		buf.append(i +" ");
-    	}
-    	codeMapInput.setValue(buf.toString(), this);
-    	buf = new StringBuilder();
-    	for (int i = 0; i < newStateNames.size(); i++) {
-    		buf.append(newStateNames.get(i) +", ");
-    	}
-    	buf.delete(buf.length()-2, buf.length());
-    	stateNamesInput.setValue(buf.toString(), this);
-    	stateCountInput.setValue(newStateNames.size(), this);
+        characterNameInput.setValue(newCharName, this);
+        if (newStateNames.size() > 0) {
+            StringBuilder buf = new StringBuilder();
+            for (int i = 0; i < newStateNames.size(); i++) {
+                buf.append(i + "=" + i +", ");
+            }
+            buf.append("? =");
+            for (int i = 0; i < newStateNames.size(); i++) {
+                buf.append(i +" ");
+            }
+            codeMapInput.setValue(buf.toString(), this);
+            buf = new StringBuilder();
+            for (int i = 0; i < newStateNames.size(); i++) {
+                buf.append(newStateNames.get(i) +", ");
+            }
+            buf.delete(buf.length()-2, buf.length());
+            stateNamesInput.setValue(buf.toString(), this);
+            stateCountInput.setValue(newStateNames.size(), this);
+        } else {
+            codeMapInput.setValue("", this);
+            stateNamesInput.setValue("", this);
+            stateCountInput.setValue(-1, this);
+        }
     }
     
     @Override
@@ -51,41 +57,43 @@ public class UserDataType extends Base {
         codeLength = codeLengthInput.get();
 
         String sCodeMap = codeMapInput.get();
-        String[] sStrs = sCodeMap.split(",");
-        codeMap = "";
-        mapCodeToStateSet = new int[sStrs.length][];
-        int k = 0;
-        for (String sStr : sStrs) {
-            String[] sStrs2 = sStr.split("=");
-            // parse the code
-            String sCode = sStrs2[0].replaceAll("\\s", "");
+        if (!codeMapInput.get().equals("")) {
+            String[] sStrs = sCodeMap.split(",");
+            codeMap = "";
+            mapCodeToStateSet = new int[sStrs.length][];
+            int k = 0;
+            for (String sStr : sStrs) {
+                String[] sStrs2 = sStr.split("=");
+                // parse the code
+                String sCode = sStrs2[0].replaceAll("\\s", "");
 
-            codeMap += sCode;
-            if (codeLength > 0) {
-                if (sCode.length() != codeLength) {
-                    throw new Exception("Invalide code '" + sCode + "'. Expected code of length " + codeLength);
-                }
-            } else {
-                codeMap += ",";
-            }
-            // parse the state set
-            List<Integer> stateSet = new ArrayList<Integer>();
-            sStrs2 = sStrs2[1].split("\\s+");
-            for (String sStr2 : sStrs2) {
-                if (sStr2.length() > 0) {
-                    int i = Integer.parseInt(sStr2);
-                    if (i < 0 || i >= stateCount) {
-                        throw new Exception("state index should be from 0 to statecount, not " + i);
+                codeMap += sCode;
+                if (codeLength > 0) {
+                    if (sCode.length() != codeLength) {
+                        throw new Exception("Invalide code '" + sCode + "'. Expected code of length " + codeLength);
                     }
-                    stateSet.add(i);
+                } else {
+                    codeMap += ",";
                 }
-            }
+                // parse the state set
+                List<Integer> stateSet = new ArrayList<Integer>();
+                sStrs2 = sStrs2[1].split("\\s+");
+                for (String sStr2 : sStrs2) {
+                    if (sStr2.length() > 0) {
+                        int i = Integer.parseInt(sStr2);
+                        if (i < 0 || (stateCount > 0 && i >= stateCount)) {
+                            throw new Exception("state index should be from 0 to statecount, not " + i);
+                        }
+                        stateSet.add(i);
+                    }
+                }
 
-            int[] stateSet2 = new int[stateSet.size()];
-            for (int i = 0; i < stateSet.size(); i++) {
-                stateSet2[i] = stateSet.get(i);
+                int[] stateSet2 = new int[stateSet.size()];
+                for (int i = 0; i < stateSet.size(); i++) {
+                    stateSet2[i] = stateSet.get(i);
+                }
+                mapCodeToStateSet[k++] = stateSet2;
             }
-            mapCodeToStateSet[k++] = stateSet2;
         }
     }
 

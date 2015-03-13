@@ -353,7 +353,12 @@ public class NexusParser {
 
                 //format datatype=dna interleave=no gap=-;
                 final String sDataType = getAttValue("datatype", sStr);
-                final String sSymbols = getAttValue("symbols", sStr);
+                final String sSymbols;
+                if (getAttValue("symbols", sStr) == null) {
+                    sSymbols = getAttValue("symbols", sStr);
+                } else {
+                    sSymbols = getAttValue("symbols", sStr).replaceAll("\\s", "");
+                }
                 if (sDataType == null) {
                     System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
                     alignment.dataTypeInput.setValue("integer", alignment);
@@ -367,13 +372,18 @@ public class NexusParser {
                     alignment.dataTypeInput.setValue("aminoacid", alignment);
                     nTotalCount = 20;
                 } else if (sDataType.toLowerCase().equals("standard")) {
-                    if (sSymbols == null || sSymbols.equals("01")) {
-                        alignment.dataTypeInput.setValue("binary", alignment);
-                        nTotalCount = 2;
-                    }  else {
-                        alignment.dataTypeInput.setValue("standard", alignment);
-                        nTotalCount = sSymbols.length();
-                    }
+                    alignment.dataTypeInput.setValue("standard", alignment);
+                    nTotalCount = sSymbols.length();
+//                    if (sSymbols == null || sSymbols.equals("01")) {
+//                        alignment.dataTypeInput.setValue("binary", alignment);
+//                        nTotalCount = 2;
+//                    }  else {
+//                        alignment.dataTypeInput.setValue("standard", alignment);
+//                        nTotalCount = sSymbols.length();
+//                    }
+                } else if (sDataType.toLowerCase().equals("binary")) {
+                    alignment.dataTypeInput.setValue("binary", alignment);
+                    nTotalCount = 2;
                 } else {
                     alignment.dataTypeInput.setValue("integer", alignment);
                     if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
@@ -394,83 +404,99 @@ public class NexusParser {
 
         if (alignment.dataTypeInput.get().equals("standard")) {
         	StandardData type = new StandardData();
+            type.setInputValue("nrOfStates", nTotalCount);
         	type.initAndValidate();
             alignment.setInputValue("userDataType", type);
         }
 
-        //reading CHATSTATELABELS block
+        //reading CHARSTATELABELS block
         if (sStr.toLowerCase().contains("charstatelabels")) {
             if (!alignment.dataTypeInput.get().equals("standard")) {
                 new Exception("If CHATSTATELABELS block is specified then DATATYPE has to be Standard");
             }
             StandardData standardDataType = (StandardData)alignment.userDataTypeInput.get();
-            ArrayList<UserDataType> charDescriptions = new ArrayList<>();
-            int maxNumberOfStates =0;
-            while (true) {
-                sStr = nextLine(fin);
-                if (sStr.contains(";")) {
-                    break;
-                }
-                String[] sStrSplit = sStr.split("/");
-                ArrayList<String> states = new ArrayList<>();
+            int[] maxNumberOfStates = new int[] {0};
+            ArrayList<String> tokens = readInCharstatelablesTokens(fin);
+            ArrayList<UserDataType> charDescriptions = processCharstatelabelsTokens(tokens, maxNumberOfStates);
 
-                if (sStrSplit.length < 2) {
-                    charDescriptions.add(new UserDataType(sStrSplit[0], states));
-                    continue;
-                }
-
-                String stateStr = sStrSplit[1];
-
-                final int WAITING=0, WORD=1, PHRASE_IN_QUOTES=2;
-                int mode =WAITING; //0 waiting for non-space letter, 1 reading a word; 2 reading a phrase in quotes
-                int begin =0, end;
-
-                for (int i=0; i< stateStr.length(); i++) {
-                    switch (mode) {
-                        case WAITING:
-                            while (stateStr.charAt(i) == ' ') {
-                                i++;
-                            }
-                            mode = stateStr.charAt(i) == '\'' ? PHRASE_IN_QUOTES : WORD;
-                            begin = i;
-                            break;
-                        case WORD:
-                            end = stateStr.indexOf(" ", begin) != -1 ? stateStr.indexOf(" ", begin) : stateStr.indexOf(",", begin);
-                            states.add(stateStr.substring(begin, end));
-                            i=end;
-                            mode = WAITING;
-                            break;
-                        case PHRASE_IN_QUOTES:
-                            end = begin;
-                            do {
-                                end = stateStr.indexOf("'", end+2);
-                            } while (stateStr.charAt(end+1) == '\'' || end == -1);
-                            if (end == -1) {
-                                System.out.println("Incorrect description in charstatelabels. Single quote found in line ");
-                            }
-                            end++;
-                            states.add(stateStr.substring(begin, end));
-                            i=end;
-                            mode=WAITING;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                //TODO make sStrSplit[0] look nicer (remove whitespaces and may be numbers at the beginning)
-                charDescriptions.add(new UserDataType(sStrSplit[0], states));
-                maxNumberOfStates = Math.max(maxNumberOfStates, states.size());
-            }
+//            while (true) {
+//                sStr = nextLine(fin);
+//                if (sStr.contains(";")) {
+//                    break;
+//                }
+//                String[] sStrSplit = sStr.split("/");
+//                ArrayList<String> states = new ArrayList<>();
+//
+//                if (sStrSplit.length < 2) {
+//                    charDescriptions.add(new UserDataType(sStrSplit[0], states));
+//                    continue;
+//                }
+//
+//                String stateStr = sStrSplit[1];
+//
+//                //add a comma at the end of the string if the last non-whitespace character is not a comma or all the
+//                // characters are whitespaces in the string. Also remove whitespaces at the end of the string.
+//                for (int i=stateStr.length()-1; i>=0; i--) {
+//                    if (!Character.isWhitespace(stateStr.charAt(i))) {
+//                        if (stateStr.charAt(i-1) != ',') {
+//                            stateStr = stateStr.substring(0, i)+",";
+//                            break;
+//                        }
+//                    }
+//                    if (i==0) {
+//                        stateStr = stateStr.substring(0, i)+",";
+//                    }
+//                }
+//                if (stateStr.isEmpty()) {
+//                    stateStr = stateStr+",";
+//                }
+//
+//                final int WAITING=0, WORD=1, PHRASE_IN_QUOTES=2;
+//                int mode =WAITING; //0 waiting for non-space letter, 1 reading a word; 2 reading a phrase in quotes
+//                int begin =0, end;
+//
+//                for (int i=0; i< stateStr.length(); i++) {
+//                    switch (mode) {
+//                        case WAITING:
+//                            while (stateStr.charAt(i) == ' ') {
+//                                i++;
+//                            }
+//                            mode = stateStr.charAt(i) == '\'' ? PHRASE_IN_QUOTES : WORD;
+//                            begin = i;
+//                            break;
+//                        case WORD:
+//                            end = stateStr.indexOf(" ", begin) != -1 ? stateStr.indexOf(" ", begin) : stateStr.indexOf(",", begin);
+//                            states.add(stateStr.substring(begin, end));
+//                            i=end;
+//                            mode = WAITING;
+//                            break;
+//                        case PHRASE_IN_QUOTES:
+//                            end = begin;
+//                            do {
+//                                end = stateStr.indexOf("'", end+2);
+//                            } while (stateStr.charAt(end+1) == '\'' || end == -1);
+//                            if (end == -1) {
+//                                System.out.println("Incorrect description in charstatelabels. Single quote found in line ");
+//                            }
+//                            end++;
+//                            states.add(stateStr.substring(begin, end));
+//                            i=end;
+//                            mode=WAITING;
+//                            break;
+//                        default:
+//                            break;
+//                    }
+//                }
+//                // oldTODO make sStrSplit[0] look nicer (remove whitespaces and may be numbers at the beginning)
+//                charDescriptions.add(new UserDataType(sStrSplit[0], states));
+//                maxNumberOfStates = Math.max(maxNumberOfStates, states.size());
+//            }
             standardDataType.setInputValue("charstatelabels", charDescriptions);
-            standardDataType.setInputValue("nrOfStates", maxNumberOfStates);
+            standardDataType.setInputValue("nrOfStates", Math.max(maxNumberOfStates[0], nTotalCount));
             standardDataType.initAndValidate();
             for (UserDataType dataType : standardDataType.charStateLabelsInput.get()) {
             	dataType.initAndValidate();
             }
-            //TODO figure out what should be the maxNrOfStates:
-            // It coulb be the largest number occurred in the sequences
-            // or the largest number of states in the charstatelabels.
-            //The former can be less than the latter if some taxa were removed.
         }
 
         //skipping before MATRIX block
@@ -804,6 +830,159 @@ public class NexusParser {
             sAtt = sStr.substring(iStart + 1, sStr.indexOf('"', iStart + 1));
         }
         return sAtt;
+    }
+
+    private ArrayList<String> readInCharstatelablesTokens(final BufferedReader fin) throws Exception {
+
+        ArrayList<String> tokens = new ArrayList<>();
+        String token="";
+        final int READING=0, OPENQUOTE=1, WAITING=2;
+        int mode = WAITING;
+        int numberOfQuotes=0;
+        boolean endOfBlock=false;
+        String sStr;
+
+        while (!endOfBlock) {
+            sStr = nextLine(fin);
+            Character nextChar;
+            for (int i=0; i< sStr.length(); i++) {
+                nextChar=sStr.charAt(i);
+                switch (mode) {
+                    case WAITING:
+                        if (!Character.isWhitespace(nextChar)) {
+                            if (nextChar == '\'') {
+                                mode=OPENQUOTE;
+                            } else if (nextChar == '/' || nextChar == ',') {
+                                tokens.add(nextChar.toString());
+                                token="";
+                            } else if (nextChar == ';') {
+                                endOfBlock = true;
+                            } else {
+                                token=token+nextChar;
+                                mode=READING;
+                            }
+                        }
+                        break;
+                    case READING:
+                        if (nextChar == '\'') {
+                            tokens.add(token);
+                            token="";
+                            mode=OPENQUOTE;
+                        } else if (nextChar == '/' || nextChar == ',') {
+                            tokens.add(token);
+                            tokens.add(nextChar.toString());
+                            token="";
+                            mode=WAITING;
+                        } else if (nextChar == ';') {
+                            tokens.add(token);
+                            endOfBlock = true;
+                        } else if (Character.isWhitespace(nextChar)) {
+                            tokens.add(token);
+                            token="";
+                            mode=WAITING;
+                        } else {
+                            token=token+nextChar;
+                        }
+                        break;
+                    case OPENQUOTE:
+                        if (nextChar == '\'') {
+                            numberOfQuotes++;
+                        } else {
+                            if (numberOfQuotes % 2 == 0) {
+                                for (int ind=0; ind< numberOfQuotes/2; ind++) {
+                                    token=token+"'";
+                                }
+                                token=token+nextChar;
+                            } else {
+                                for (int ind=0; ind< numberOfQuotes/2; ind++) {
+                                    token=token+"'";
+                                }
+                                tokens.add(token);
+                                token="";
+                                if (nextChar == '/' || nextChar == ',') {
+                                    tokens.add(nextChar.toString());
+                                    mode=WAITING;
+                                } else if (nextChar == ';') {
+                                    endOfBlock = true;
+                                } else if (Character.isWhitespace(nextChar)) {
+                                    mode=WAITING;
+                                } else {
+                                    token=token+nextChar;
+                                    mode=READING;
+                                }
+                            }
+                            numberOfQuotes=0;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        if (!tokens.get(tokens.size()-1).equals(",")) {
+            tokens.add(",");
+        }
+
+        return tokens;
+    }
+
+    private ArrayList<UserDataType> processCharstatelabelsTokens(ArrayList<String> tokens, int[] maxNumberOfStates) throws Exception {
+
+        ArrayList<UserDataType> charDescriptions = new ArrayList<>();
+
+        final int CHAR_NR=0, CHAR_NAME=1, STATES=2;
+        int mode = CHAR_NR;
+        int charNumber = -1;
+        String charName = "";
+        ArrayList<String> states = new ArrayList<>();
+
+        for (String token:tokens) {
+            switch (mode) {
+                case CHAR_NR:
+                    charNumber = Integer.parseInt(token);
+                    mode = CHAR_NAME;
+                    break;
+                case CHAR_NAME:
+                    if (token.equals("/")) {
+                        mode = STATES;
+                    } else if (token.equals(",")) {
+                        if (charNumber > charDescriptions.size()+1) {
+                            throw new Exception("Character descriptions should go in the ascending order and there " +
+                                    "should not be any description missing.");
+                        }
+                        charDescriptions.add(new UserDataType(charName, states));
+                        maxNumberOfStates[0] = Math.max(maxNumberOfStates[0], states.size());
+                        charNumber = -1;
+                        charName = "";
+                        states = new ArrayList<>();
+                        mode = CHAR_NR;
+                    } else {
+                        charName = token;
+                    }
+                    break;
+                case STATES:
+                    if (token.equals(",")) {
+                        if (charNumber > charDescriptions.size()+1) {
+                            throw new Exception("Character descriptions should go in the ascending order and there " +
+                                    "should not be any description missing.");
+                        }
+                        charDescriptions.add(new UserDataType(charName, states));
+                        maxNumberOfStates[0] = Math.max(maxNumberOfStates[0], states.size());
+                        charNumber = -1;
+                        charName = "";
+                        states = new ArrayList<>();
+                        mode = CHAR_NR;
+                    } else {
+                        states.add(token);
+                    }
+                default:
+                    break;
+            }
+        }
+
+        return charDescriptions;
+
     }
 
     public static void main(final String[] args) {
