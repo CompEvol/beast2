@@ -142,8 +142,12 @@ public class Tree extends StateNode implements TreeInterface {
      */
     protected void processTraits(List<TraitSet> traitList) {
         for (TraitSet traitSet : traitList) {
-            for (Node node : getExternalNodes())
-                node.setMetaData(traitSet.getTraitName(), traitSet.getValue(node.getID()));
+            for (Node node : getExternalNodes()) {
+            	String id = node.getID();
+            	if (id != null) {
+                    node.setMetaData(traitSet.getTraitName(), traitSet.getValue(id));
+            	}
+            }
             if (traitSet.isDateTrait())
                 timeTraitSet = traitSet;
         }

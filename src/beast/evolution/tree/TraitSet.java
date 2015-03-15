@@ -55,7 +55,7 @@ public class TraitSet extends BEASTObject {
     double minValue;
     double maxValue;
 
-    Map<String, Double> map;
+    Map<String, Integer> map;
     
     /**
      * Whether or not values are ALL numeric.
@@ -71,7 +71,7 @@ public class TraitSet extends BEASTObject {
         // first, determine taxon numbers associated with traits
         // The Taxon number is the index in the alignment, and
         // used as node number in a tree.
-        map = new HashMap<String, Double>();
+        map = new HashMap<String, Integer>();
         List<String> labels = taxaInput.get().asStringList();
         String[] traits = traitsInput.get().split(",");
         taxonValues = new String[labels.size()];
@@ -89,7 +89,7 @@ public class TraitSet extends BEASTObject {
             }
             taxonValues[taxonNr] = normalize(sStrs[1]);
             values[taxonNr] = parseDouble(taxonValues[taxonNr]);
-            map.put(taxonID,  values[taxonNr]);
+            map.put(taxonID,  taxonNr);
             
             if (Double.isNaN(values[taxonNr]))
                 numeric = false;
@@ -147,11 +147,11 @@ public class TraitSet extends BEASTObject {
     }
 
     public double getValue(String taxonName) {
-        if (values == null) {
+        if (values == null || map == null) {
             return 0;
         }
-        Log.trace.println("Trait " + taxonName + " => " + map.get(taxonName));
-        return map.get(taxonName);
+        Log.trace.println("Trait " + taxonName + " => " + values[map.get(taxonName)]);
+        return values[map.get(taxonName)];
     }
 
     /**
