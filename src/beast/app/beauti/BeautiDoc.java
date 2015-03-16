@@ -1744,6 +1744,13 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 taboo.add(node);
             }
         }
+        // add MRCAPriors
+		for (String id : doc.pluginmap.keySet()) {
+			BEASTInterface o = doc.pluginmap.get(id);
+			if (o instanceof MRCAPrior) {
+				taboo.add(o);
+			}
+		}
         if (tabooList != null) {
             taboo.addAll(tabooList);
         }
