@@ -105,8 +105,9 @@ public class Tree extends StateNode implements TreeInterface {
         
         // ensure all nodes have their taxon names set up
         String [] taxa = getTaxaNames();
-        for (int i = 0; i < getLeafNodeCount() && i < taxa.length; i++) {
-       		m_nodes[i].setID(taxa[i]);
+        for (int i = 0; i < getNodeCount() && i < taxa.length; i++) {
+        	if (taxa[i] != null)
+        		m_nodes[i].setID(taxa[i]);
         }
     }
 
@@ -312,13 +313,13 @@ public class Tree extends StateNode implements TreeInterface {
 
     @Deprecated
     public String[] getTaxaNames() {
-        if (m_sTaxaNames == null) {
+        if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null)) {
             final TaxonSet taxonSet = m_taxonset.get();
             if (taxonSet != null) {
                 final List<String> txs = taxonSet.asStringList();
                 m_sTaxaNames = txs.toArray(new String[txs.size()]);
             } else {
-                m_sTaxaNames = new String[getLeafNodeCount()];
+                m_sTaxaNames = new String[getNodeCount()];
                 collectTaxaNames(getRoot());
             }
         }
@@ -333,8 +334,9 @@ public class Tree extends StateNode implements TreeInterface {
         if (node.isLeaf()) {
             m_sTaxaNames[node.getNr()] = node.getID();
         } else {
-            collectTaxaNames(node.getLeft());
-            collectTaxaNames(node.getRight());
+        	for (Node child : node.getChildren()) {
+        		collectTaxaNames(child);
+        	}
         }
     }
 
