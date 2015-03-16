@@ -216,8 +216,18 @@ public class Alignment extends Map<String> {
         taxaNames.clear();
         stateCounts.clear();
         counts.clear();
-        if (sequenceInput.get().size() > 0) {
-	        for (Sequence seq : sequenceInput.get()) {
+        
+    	if (sequenceInput.get().size() > 0) {
+            // sort sequences by taxon names
+            List<Sequence> sortedSeqs = new ArrayList<>();
+      		sortedSeqs.addAll(sequenceInput.get());
+        	Collections.sort(sortedSeqs, new Comparator<Sequence>() {
+    			@Override
+    			public int compare(Sequence o1, Sequence o2) {
+    				return o1.taxonInput.get().compareTo(o2.taxonInput.get());
+    			}
+    		});
+        	for (Sequence seq : sortedSeqs) {
 	            //m_counts.add(seq.getSequence(getMap()));
 	            counts.add(seq.getSequence(m_dataType));
 	            if (taxaNames.indexOf(seq.taxonInput.get()) >= 0) {
@@ -231,7 +241,10 @@ public class Alignment extends Map<String> {
 	            throw new Exception("Sequence data expected, but none found");
 	        }
         } else {
-        	for (String key : map.keySet()) {
+        	List<String> sortedTaxa = new ArrayList<>();
+        	sortedTaxa.addAll(map.keySet());
+        	Collections.sort(sortedTaxa);
+        	for (String key : sortedTaxa) {
         		String sequence = map.get(key);
         		List<Integer> list = m_dataType.string2state(sequence);
         		counts.add(list);
