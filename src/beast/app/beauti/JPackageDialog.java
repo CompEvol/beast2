@@ -101,6 +101,22 @@ public class JPackageDialog extends JPanel {
     private void createTable() {
         DataTableModel dataTableModel = new DataTableModel();
         dataTable = new JTable(dataTableModel);
+        
+        double [] widths = new double[dataTable.getColumnCount()];
+        double total = 0;
+        for (int i = 0; i < dataTable.getColumnCount(); i++) {
+        	widths[i] = dataTable.getColumnModel().getColumn(i).getWidth();
+        	total += widths[i]; 
+        }
+        widths[2] /= 4.0;
+        dataTable.getColumnModel().getColumn(2).setPreferredWidth((int) widths[2]);
+        dataTable.getColumnModel().getColumn(2).setMinWidth((int) widths[2]);
+        widths[3] /= 2.0; 
+        dataTable.getColumnModel().getColumn(3).setPreferredWidth((int) widths[3]);
+        widths[4] *= 2.0; 
+        dataTable.getColumnModel().getColumn(4).setPreferredWidth((int) widths[4]);
+        
+        
         // TODO:
         // The following would work ...
         //dataTable.setAutoCreateRowSorter(true);
