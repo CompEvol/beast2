@@ -102,6 +102,12 @@ public class Tree extends StateNode implements TreeInterface {
         // Ensure tree is compatible with time trait.
         if (timeTraitSet != null)
             adjustTreeNodeHeights(root);
+        
+        // ensure all nodes have their taxon names set up
+        String [] taxa = getTaxaNames();
+        for (int i = 0; i < getLeafNodeCount() && i < taxa.length; i++) {
+       		m_nodes[i].setID(taxa[i]);
+        }
     }
 
     public void makeCaterpillar(final double minInternalHeight, final double step, final boolean finalize) {
@@ -317,7 +323,7 @@ public class Tree extends StateNode implements TreeInterface {
             }
         }
         // sanity check
-        if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null && Boolean.valueOf(System.getProperty("yabby.resume"))) {
+        if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) {
             System.err.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
         }
         return m_sTaxaNames;

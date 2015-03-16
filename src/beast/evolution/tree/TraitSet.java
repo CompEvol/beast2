@@ -150,7 +150,7 @@ public class TraitSet extends BEASTObject {
         if (values == null || map == null) {
             return 0;
         }
-        Log.trace.println("Trait " + taxonName + " => " + values[map.get(taxonName)]);
+        //Log.trace.println("Trait " + taxonName + " => " + values[map.get(taxonName)]);
         return values[map.get(taxonName)];
     }
 
