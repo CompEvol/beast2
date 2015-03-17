@@ -504,8 +504,8 @@ System.err.println("needsRePartition = " + needsRePartition);
 							if (input.get() == oldTree) {
 								if (input.getRule() != Input.Validate.REQUIRED) {
 									input.setValue(null, (BEASTInterface) plugin);
-								} else {
-									input.setValue(tree, (BEASTInterface) plugin);
+								//} else {
+								//	input.setValue(tree, (BEASTInterface) plugin);
 								}
 							} else if (input.get() instanceof List) {
 								List<?> list = (List<?>) input.get();
