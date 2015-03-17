@@ -501,8 +501,12 @@ System.err.println("needsRePartition = " + needsRePartition);
 					for (Object plugin : BEASTInterface.getOutputs(oldTree).toArray()) { //.toArray(new BEASTInterface[0])) {
 						for (Input<?> input : ((BEASTInterface)plugin).listInputs()) {
 							try {
-							if (input.get() == oldTree && input.getRule() != Input.Validate.REQUIRED) {
-								input.setValue(null, (BEASTInterface) plugin);
+							if (input.get() == oldTree) {
+								if (input.getRule() != Input.Validate.REQUIRED) {
+									input.setValue(null, (BEASTInterface) plugin);
+								} else {
+									input.setValue(tree, (BEASTInterface) plugin);
+								}
 							} else if (input.get() instanceof List) {
 								List<?> list = (List<?>) input.get();
 								if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
