@@ -1,7 +1,7 @@
-                    BEAST v2.2.0 2015
+                    BEAST v2.2.1 2015
                  Beast 2 development team 2011-2015
 
-Last updated: January 2015
+Last updated: March 2015
 
 Contents:
 1) INTRODUCTION
