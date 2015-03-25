@@ -179,21 +179,16 @@ public class Utils {
 
             if (!lafLoaded) {
                 if (isMac()) {
-                    UIManager.setLookAndFeel("javax.swing.plaf.metal");
-                } else {
+                    UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+                } else if (isWindows()) {
+                    UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                } else { // If Linux
                     try {
-                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                            if ("Nimbus".equals(info.getName())) {
-                                UIManager.setLookAndFeel(info.getClassName());
-                                break;
-                            }
-                        }
+                        UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
                     } catch (Exception e) {
-                        // If Nimbus is not available, you can set the GUI to another look and feel.
-                        UIManager.setLookAndFeel("javax.swing.plaf.metal");
+                        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
                     }
                 }
-                //UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
         }
