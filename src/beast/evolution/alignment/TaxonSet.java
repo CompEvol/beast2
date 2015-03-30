@@ -7,6 +7,7 @@ import beast.core.Input;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -46,6 +47,7 @@ public class TaxonSet extends Taxon {
             	taxaNames.add(taxon.getID());
             }
         }
+        Collections.sort(taxaNames);
     }
 
     public List<String> asStringList() {
