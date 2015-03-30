@@ -111,9 +111,9 @@ public class NexusParserTest extends TestCase {
                 "\n" +
                 "Begin trees;\n" +
                 "\tTranslate\n" +
-                "\t\t1 2,\n" +
-                "\t\t2 0,\n" +
-                "\t\t3 1\n" +
+                "\t\t1 C,\n" +
+                "\t\t2 B,\n" +
+                "\t\t3 A\n" +
                 "\t\t;\n" +
                 "tree TREE1  = [&R] (1:10,(3:30,2:20):10);\n" +
                 "End;\n";
@@ -135,7 +135,7 @@ public class NexusParserTest extends TestCase {
             
             String t = parser.trees.get(0).getRoot().toNewick();
             System.out.println(t);
-            assertEquals(t, "(0:10.0,(0:20.0,2:30.0):10.0):0.0");
+            assertEquals("(C:10.0,(B:20.0,A:30.0):10.0):0.0", t);
             
 
 

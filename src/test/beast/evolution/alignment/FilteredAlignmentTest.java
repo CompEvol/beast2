@@ -14,8 +14,8 @@ import beast.evolution.alignment.Sequence;
 public class FilteredAlignmentTest extends TestCase {
 
     static public Alignment getAlignment() throws Exception {
-        Sequence human = new Sequence("human", "AAAACCCCGGGGTTTT");
-        Sequence chimp = new Sequence("chimp", "ACGTACGTACGTACGT");
+        Sequence human = new Sequence("0human", "AAAACCCCGGGGTTTT");
+        Sequence chimp = new Sequence("1chimp", "ACGTACGTACGTACGT");
 
         Alignment data = new Alignment();
         data.initByName("sequence", human, "sequence", chimp,
@@ -26,8 +26,8 @@ public class FilteredAlignmentTest extends TestCase {
 
     static public Alignment getAlignment2() throws Exception {
     	// reordered from getAlignment()
-        Sequence human = new Sequence("human", "AAAACCCCTTTTGGGG");
-        Sequence chimp = new Sequence("chimp", "ACTGACGTACGTACGT");
+        Sequence human = new Sequence("0human", "AAAACCCCTTTTGGGG");
+        Sequence chimp = new Sequence("1chimp", "ACTGACGTACGTACGT");
 
         Alignment data = new Alignment();
         data.initByName("sequence", human, "sequence", chimp,
@@ -38,8 +38,8 @@ public class FilteredAlignmentTest extends TestCase {
     
     static public Alignment getAlignment3() throws Exception {
     	// reordered from getAlignment() & with duplicates
-        Sequence human = new Sequence("human", "GGGAAA");
-        Sequence chimp = new Sequence("chimp", "AGGACA");
+        Sequence human = new Sequence("0human", "GGGAAA");
+        Sequence chimp = new Sequence("1chimp", "AGGACA");
 
         Alignment data = new Alignment();
         data.initByName("sequence", human, "sequence", chimp,
@@ -80,10 +80,20 @@ public class FilteredAlignmentTest extends TestCase {
     	data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
     	data.initAndValidate();
         String weights = Arrays.toString(data.getWeights());
-        System.err.println(weights + "\n" + alignmentToString(data, 0) + "\n" + alignmentToString(data, 1));
+        System.err.println(weights + "\n" + alignmentToString(data, data.getTaxonIndex("0human")) + "\n" + alignmentToString(data, data.getTaxonIndex("1chimp")));
         assertEquals("[11232, 2, 3, 4, 1123, 2, 3, 4, 112, 2, 3, 4, 11, 2, 3, 4]", weights);
         
+        // rename taxa -> gives a different order
+        data = getAlignment();
+        data.sequenceInput.get().get(0).taxonInput.setValue("human", null);
+        data.sequenceInput.get().get(1).taxonInput.setValue("chimp", null);
+    	data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
+    	data.initAndValidate();
+        weights = Arrays.toString(data.getWeights());
+        System.err.println(weights + "\n" + alignmentToString(data, data.getTaxonIndex("human")) + "\n" + alignmentToString(data, data.getTaxonIndex("chimp")));
+        assertEquals("[11232, 1123, 112, 11, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]", weights);
 
+        
         data = getAlignment2();
     	data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
     	data.initAndValidate();

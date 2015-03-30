@@ -36,6 +36,8 @@ import beast.evolution.tree.TreeUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -91,11 +93,16 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      */
     @Override
     public void initAndValidate() throws Exception {
-
+    	boolean sortNodesAlphabetically = false;
+    	
         if (dataInput.get() != null) {
             labels = dataInput.get().getTaxaNames();
         } else if (m_taxonset.get() != null) {
-            labels = m_taxonset.get().asStringList();
+        	if (labels == null) {
+        		labels = m_taxonset.get().asStringList();
+        	} else { // else labels were set by TreeParser c'tor
+        		sortNodesAlphabetically = true;
+        	}
         } else {
             if (isLabelledNewickInput.get()) {
                 if (m_initial.get() != null) {
@@ -129,6 +136,29 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
 
         super.initAndValidate();
+        
+        if (sortNodesAlphabetically) {
+	        // correct for node ordering: ensure order is alphabetical
+	        for (int i = 0; i < getNodeCount() && i < labels.size(); i++) {
+	       		m_nodes[i].setID(labels.get(i));
+	        }
+	        Node [] nodes = new Node[labels.size()];
+	        for (int i = 0; i < labels.size(); i++) {
+	        	nodes[i] = m_nodes[i];
+	        }
+	        Arrays.sort(nodes, new Comparator<Node>() {
+				@Override
+				public int compare(Node o1, Node o2) {
+					return o1.getID().compareTo(o2.getID());
+				}
+			});
+	        for (int i = 0; i < labels.size(); i++) {
+	        	m_nodes[i] = nodes[i];
+	        	nodes[i].setNr(i);
+	        }
+        }
+        
+        
         if (m_initial.get() != null)
             processTraits(m_initial.get().m_traitList.get());
         else
@@ -219,6 +249,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         newickInput.setValue(newick, this);
         offsetInput.setValue(offset, this);
         adjustTipHeightsInput.setValue(adjustTipHeightsWhenMissingDateTraits, this);
+        labels = taxaNames;
         initAndValidate();
     }
 

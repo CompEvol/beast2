@@ -93,6 +93,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         } else {
             sTaxa = m_taxonset.get().asStringList();
         }
+        Collections.sort(sTaxa);
         nrOfTaxa = sTaxa.size();
 
         initStateNodes();
