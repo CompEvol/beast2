@@ -1,0 +1,134 @@
+<beast version='2.0'
+       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+
+
+    <mergewith point='parametricDistributions'>
+        <!-- Parametric distributions, all without hyperpriors -->
+
+        <!-- Uniform -->
+        <subtemplate id='Uniform' class='beast.math.distributions.Uniform' mainid='[top]'>
+            <![CDATA[
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/>
+]]>
+        </subtemplate>
+
+        <!-- Normal -->
+        <subtemplate id='Normal' class='beast.math.distributions.Normal' mainid='[top]' suppressInputs='beast.math.distributions.Normal.tau'>
+            <![CDATA[
+    <distr offset="0.0" spec="beast.math.distributions.Normal">
+        <parameter name='mean' value='0' estimate='false'/>
+        <parameter name='sigma' value='1' estimate='false'/>
+    </distr>
+]]>
+        </subtemplate>
+
+        <!-- OneOnX -->
+        <subtemplate id='1/X' class='beast.math.distributions.OneOnX' mainid='[top]'>
+            <![CDATA[
+        <distr spec="beast.math.distributions.OneOnX"/>
+]]>
+        </subtemplate>
+
+        <!-- lognormal -->
+        <subtemplate id='LogNormal' class='beast.math.distributions.LogNormalDistributionModel' mainid='[top]'>
+            <![CDATA[
+        <distr name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
+            <parameter name='M' value="1" estimate='false'/>
+            <parameter name='S' value="1.25" lower="0" upper="5" estimate='false'/>
+        </distr>
+]]>
+        </subtemplate>
+
+        <!-- Exponential -->
+        <subtemplate id='Exponential' class='beast.math.distributions.Exponential' mainid='[top]'>
+            <![CDATA[
+        <distr offset="0.0" spec="beast.math.distributions.Exponential">
+            <parameter name='mean' value="1" estimate='false'/>
+        </distr>
+]]>
+        </subtemplate>
+
+        <!-- Gamma -->
+        <subtemplate id='Gamma' class='beast.math.distributions.Gamma' mainid='[top]'>
+            <![CDATA[
+        <distr offset="0.0" spec="beast.math.distributions.Gamma">
+            <parameter name='alpha' value="2" estimate='false'/>
+            <parameter name='beta' value="2" estimate='false'/>
+        </distr>
+]]>
+        </subtemplate>
+
+        <!-- Beta -->
+        <subtemplate id='Beta' class='beast.math.distributions.Beta' mainid='[top]'>
+            <![CDATA[
+        <distr offset="0.0" spec="beast.math.distributions.Beta">
+            <parameter name='alpha' value="2" estimate='false'/>
+            <parameter name='beta' value="2" estimate='false'/>
+        </distr>
+]]>
+        </subtemplate>
+
+        <!-- Laplace -->
+        <subtemplate id='LaplaceDistribution' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
+            <![CDATA[
+        <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
+            <parameter name='mu' value="0" estimate='false'/>
+            <parameter name='scale' value="1" estimate='false'/>
+        </distr>
+]]>
+        </subtemplate>
+
+        <!-- InverseGamma -->
+        <subtemplate id='InverseGamma' class='beast.math.distributions.InverseGamma' mainid='[top]'>
+            <![CDATA[
+        <distr offset="0.0" spec="beast.math.distributions.InverseGamma">
+            <parameter name='alpha' value="2" estimate='false'/>
+            <parameter name='beta' value="2" estimate='false'/>
+        </distr>
+]]>
+        </subtemplate>
+
+        <!-- Poisson -->
+        <subtemplate id='Poisson' class='beast.math.distributions.Poisson' mainid='[top]'>
+            <![CDATA[
+		<distr spec='beast.math.distributions.Poisson' offset="0.0">
+			<parameter name="lambda" value="0.693"/>
+		</distr>
+]]>
+        </subtemplate>
+
+
+    </mergewith>
+
+
+    <!-- Tree initialisation -->
+    <!-- Random tree -->
+
+    <subtemplate id='RandomTree' class='beast.evolution.tree.RandomTree' mainid='RandomTree.t:$(n)'>
+        <![CDATA[
+            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)'>
+                <taxa spec='Alignment' idref='$(n)'/>
+                <populationModel id='ConstantPopulation.t:$(n)' spec='ConstantPopulation'>
+            		<popSize id='popSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
+	            </populationModel>
+            </tree>
+]]>
+    </subtemplate>
+
+    <!-- Cluster tree (for UPGMA) -->
+
+    <subtemplate id='UPGMATree' class='beast.util.ClusterTree' mainid='UPGMATree.t:$(n)'>
+        <![CDATA[
+        <tree spec='beast.util.ClusterTree' id='UPGMATree.t:$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
+]]>
+    </subtemplate>
+
+    <!-- Newick tree -->
+    <subtemplate id='NewickTree' class='beast.util.ClusterTree' mainid='NewickTree.t:$(n)'>
+        <![CDATA[
+        <tree spec='beast.util.TreeParser' id='NewickTree.t:$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
+]]>
+    </subtemplate>
+
+
+</beast>
