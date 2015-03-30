@@ -3,6 +3,8 @@ package beast.evolution.alignment;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import beast.core.Description;
@@ -43,6 +45,12 @@ public class Taxon extends BEASTObject {
         for (final String taxaName : taxaNames) {
             taxa.add(new Taxon(taxaName));
         }
+        Collections.sort(taxa, new Comparator<Taxon>() {
+			@Override // assumes IDs are not null
+			public int compare(Taxon o1, Taxon o2) {
+				return o1.getID().compareTo(o2.getID());
+			}
+		});
         return taxa;
     }
 }
