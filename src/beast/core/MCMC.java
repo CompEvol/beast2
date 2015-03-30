@@ -345,7 +345,7 @@ public class MCMC extends Runnable {
         	if (l.isLoggingToStdout()) {
         		hasStdOutLogger = true;
         	}
-        	if (l.getID().equals("screenlog")) {
+        	if (l.getID() != null && l.getID().equals("screenlog")) {
         		hasScreenLog = true;
         	}
         }
