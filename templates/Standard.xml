@@ -310,6 +310,9 @@
     </beauticonfig>
 
 
+	<mergepoint id='misc'/>
+
+    
 <!--
 <operator spec='DeltaExchangeOperator' id='FixMeanRatesOperator' weight='2' delta='0.75'/>
 -->

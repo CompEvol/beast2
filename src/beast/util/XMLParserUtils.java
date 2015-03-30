@@ -2,8 +2,20 @@ package beast.util;
 
 import org.w3c.dom.*;
 
+import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
+
+import beast.core.util.Log;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  *
@@ -25,10 +37,22 @@ public class XMLParserUtils {
         // then check recursively for new plates that could have been
         // created when they are nested
         if (nodes.getLength() > 0) {
-            final Node node = nodes.item(0);
+            Node node = nodes.item(0);
             final String sVar = node.getAttributes().getNamedItem("var").getNodeValue();
             final String sRange = node.getAttributes().getNamedItem("range").getNodeValue();
-
+            
+            if (node.getAttributes().getNamedItem("fragment") != null) {
+            	final String fragmentID = node.getAttributes().getNamedItem("fragment").getNodeValue();
+            	Node fragment = getElementById(doc, fragmentID);
+            	if (fragment == null) {
+            		throw new RuntimeException("plate refers to fragment with id='" + fragmentID + "' that cannot be found");
+            	}
+            	fragment = fragment.cloneNode(true);
+            	node.getParentNode().appendChild(fragment);
+                node.getParentNode().removeChild(node);
+            	node = fragment;
+           }
+	
             final String[] sValues = sRange.split(",");
 
             // interpret values in the range of form x:y as all numbers between x and y inclusive
@@ -60,7 +84,39 @@ public class XMLParserUtils {
             processPlates(doc,plateElementName);
         }
     } // processPlates
+    
+    static  Node getElementById(Document doc, String id) {
+    	if (doc.getElementById(id) == null) {
+    		registerIDs(doc, doc.getDocumentElement());
+    	}
+    	return doc.getElementById(id);
+    }
 
+    static void registerIDs(Document doc, Node node) {
+    	if (node.getNodeType() == Node.ELEMENT_NODE) {
+            if (node.getAttributes().getNamedItem("id") != null) {
+            	final String id = node.getAttributes().getNamedItem("id").getNodeValue();
+            	((CoreDocumentImpl) doc).putIdentifier(id, (Element) node);
+            }
+    	}
+    	NodeList children = node.getChildNodes();
+    	for (int i = 0; i < children.getLength(); i++) {
+    		registerIDs(doc, children.item(i));
+    	}
+    }
+
+    public static void saveDocAsXML(Document doc) {
+    	try {
+	    	Transformer transformer = TransformerFactory.newInstance().newTransformer();
+	    	Result output = new StreamResult(new File("/tmp/beast2.xml"));
+	    	Source input = new DOMSource(doc);
+	
+	    	transformer.transform(input, output);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    }
     /**
      * @param node the node to do variable replacement in
      * @param sVar the variable name to replace
