@@ -6,6 +6,7 @@ import beast.util.TreeParser;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -323,6 +324,7 @@ public class Tree extends StateNode implements TreeInterface {
                 collectTaxaNames(getRoot());
             }
         }
+        Arrays.sort(m_sTaxaNames);
         // sanity check
         if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) {
             System.err.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");

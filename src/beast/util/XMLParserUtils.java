@@ -48,8 +48,7 @@ public class XMLParserUtils {
             		throw new RuntimeException("plate refers to fragment with id='" + fragmentID + "' that cannot be found");
             	}
             	fragment = fragment.cloneNode(true);
-            	node.getParentNode().appendChild(fragment);
-                node.getParentNode().removeChild(node);
+                node.getParentNode().replaceChild(fragment, node);
             	node = fragment;
            }
 	
@@ -105,35 +104,45 @@ public class XMLParserUtils {
     	}
     }
 
-    public static void saveDocAsXML(Document doc) {
+    /** export DOM document to a file -- handy for debugging **/
+    public static void saveDocAsXML(Document doc, String filename) {
     	try {
 	    	Transformer transformer = TransformerFactory.newInstance().newTransformer();
-	    	Result output = new StreamResult(new File("/tmp/beast2.xml"));
+	    	Result output = new StreamResult(new File(filename));
 	    	Source input = new DOMSource(doc);
 	
 	    	transformer.transform(input, output);
     	} catch (Exception e) {
     		e.printStackTrace();
-    	}
-    	
+    	}    	
     }
+    
     /**
      * @param node the node to do variable replacement in
      * @param sVar the variable name to replace
      * @param sValue the value to replace the variable name with
      */
     public static void replaceVariable(final Node node, final String sVar, final String sValue) {
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            final Element element = (Element) node;
-            final NamedNodeMap atts = element.getAttributes();
-            for (int i = 0; i < atts.getLength(); i++) {
-                final Attr attr = (Attr) atts.item(i);
-                if (attr.getValue().contains("$(" + sVar + ")")) {
-                    String sAtt = attr.getValue();
-                    sAtt = sAtt.replaceAll("\\$\\(" + sVar + "\\)", sValue);
-                    attr.setNodeValue(sAtt);
-                }
-            }
+        switch (node.getNodeType()) {
+	        case Node.ELEMENT_NODE:  {
+	            final Element element = (Element) node;
+	            final NamedNodeMap atts = element.getAttributes();
+	            for (int i = 0; i < atts.getLength(); i++) {
+	                final Attr attr = (Attr) atts.item(i);
+	                if (attr.getValue().contains("$(" + sVar + ")")) {
+	                    String sAtt = attr.getValue();
+	                    sAtt = sAtt.replaceAll("\\$\\(" + sVar + "\\)", sValue);
+	                    attr.setNodeValue(sAtt);
+	                }
+	            }
+	        }
+	        case Node.CDATA_SECTION_NODE: {
+	        	String content = node.getTextContent();
+	        	if (content.contains("$(" + sVar + ")")) {
+	        		content = content.replaceAll("\\$\\(" + sVar + "\\)", sValue);
+	        		node.setNodeValue(content);
+	        	}
+	        }
         }
 
         // process children

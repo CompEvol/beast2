@@ -3,7 +3,7 @@
 
        
     <mergewith point='misc'>
-        <fragment id='TreeOperators'>
+        <fragment id='TreeOperators' spec="beast.app.beauti.Fragment">
             <![CDATA[
             <operator id='$(m)TreeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)"/>
             <operator id='$(m)TreeRootScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
@@ -13,14 +13,14 @@
             <operator id='$(m)Wide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
             <operator id='$(m)WilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
             ]]>
-            <connect srcID='$(m)TreeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
-            <connect srcID='$(m)TreeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>
-            <connect srcID='$(m)UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Draws new internal node heights uniformally for tree t:$(n)</connect>
-            <connect srcID='$(m)SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs subtree slide rearrangement of tree t:$(n)</connect>
-            <connect srcID='$(m)Narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
-            <connect srcID='$(m)Wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
-            <connect srcID='$(m)WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
-            <connect srcID='$(m)StrictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>Scale up substitution rate c:$(n) and scale down tree t:($n) </connect>
+            <connect srcID='$(m)TreeScaler.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+            <connect srcID='$(m)TreeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>
+            <connect srcID='$(m)UniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Draws new internal node heights uniformally for tree t:$(n)</connect>
+            <connect srcID='$(m)SubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Performs subtree slide rearrangement of tree t:$(n)</connect>
+            <connect srcID='$(m)Narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
+            <connect srcID='$(m)Wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
+            <connect srcID='$(m)WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
+            <connect srcID='$(m)StrictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood($(m).t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>Scale up substitution rate c:$(n) and scale down tree t:($n) </connect>
         </fragment>
     </mergewith>
        
@@ -37,7 +37,7 @@
 
   		    <scale id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 ]]>
-			<plate fragment="TreeOperators" var="m" range="Yule"/>
+			<plate fragment="TreeOperators" var="m" range="YuleModel"/>
 
             <connect srcID='YuleModel.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>Yule
@@ -76,7 +76,7 @@
 
   		    <scale id='CalibratedYuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRateY.t:$(n)"/>
 ]]>
-			<plate fragment="TreeOperators" var="m" range="CalYule"/>
+			<plate fragment="TreeOperators" var="m" range="CalibratedYuleModel"/>
 
             <connect srcID='CalibratedYuleModel.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CalibratedYuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>
@@ -118,7 +118,7 @@
   		    <scale id='BirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.t:$(n)"/>
   		    <scale id='DeathRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.t:$(n)"/>
 ]]>
-			<plate fragment="TreeOperators" var="m" range="BD"/>
+			<plate fragment="TreeOperators" var="m" range="BirthDeath"/>
 
             <connect srcID='BirthDeath.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(BirthDeath.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>
@@ -172,7 +172,7 @@
   		    <operator id='PopSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@popSize.t:$(n)"/>
 	        <prior id='PopSizePrior.t:$(n)' x='@popSize.t:$(n)'><distr spec="OneOnX"/></prior>
 ]]>
-			<plate fragment="TreeOperators" var="m" range="CoalConst"/>
+			<plate fragment="TreeOperators" var="m" range="CoalescentConstant"/>
 
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with
@@ -217,7 +217,7 @@
 	        <prior id='GrowthRatePrior.t:$(n)' x='@growthRate.t:$(n)'><distr spec="LaplaceDistribution"><parameter name="mu" value='0.001' estimate="false"/><parameter name="scale" value='30.701135' estimate="false"/></distr></prior>
 
 ]]>
-			<plate fragment="TreeOperators" var="m" range="CoalExp"/>
+			<plate fragment="TreeOperators" var="m" range="CoalescentExponential"/>
 
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalesenct prior with
@@ -275,7 +275,7 @@
 		              intparameter="@bGroupSizes.t:$(n)"/>
 
 ]]>
-			<plate fragment="TreeOperators" var="m" range="BDSKY"/>
+			<plate fragment="TreeOperators" var="m" range="BayesianSkyline"/>
 
             <connect srcID='BayesianSkyline.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(BayesianSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent with Bayesian
@@ -351,7 +351,7 @@
 				<up idref="populationMean.alltrees"/>
 			</operator>
 ]]>
-			<plate fragment="TreeOperators" var="m" range="EBSP"/>
+			<plate fragment="TreeOperators" var="m" range="ExtendedBayesianSkyline"/>
 
             <connect srcID='ExtendedBayesianSkyline.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(ExtendedBayesianSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent with
