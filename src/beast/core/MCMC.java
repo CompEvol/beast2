@@ -338,6 +338,25 @@ public class MCMC extends Runnable {
                 return o2.isLoggingToStdout() ? -1 : 0;
             }
         });
+        // warn if none of the loggers is to stdout, so no feedback is given on screen
+        boolean hasStdOutLogger = false;
+        boolean hasScreenLog = false;
+        for (Logger l : loggers) {
+        	if (l.isLoggingToStdout()) {
+        		hasStdOutLogger = true;
+        	}
+        	if (l.getID().equals("screenlog")) {
+        		hasScreenLog = true;
+        	}
+        }
+        if (!hasStdOutLogger) {
+        	Log.warning.println("WARNING: If nothing seems to be happening on screen this is because none of the loggers give feedback to screen.");
+        	if (hasScreenLog) {
+        		Log.warning.println("WARNING: This happens when a filename  is specified for the 'screenlog' logger.");
+        		Log.warning.println("WARNING: To get feedback to screen, leave the filename for screenlog blank.");
+        		Log.warning.println("WARNING: Otherwise, the screenlog is saved into the specified file.");
+        	}
+        }
 
         // initialises log so that log file headers are written, etc.
         for (final Logger log : loggers) {
