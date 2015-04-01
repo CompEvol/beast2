@@ -267,7 +267,7 @@ public class XMLParser {
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
         
-        XMLParserUtils.saveDocAsXML(doc, "/tmp/beast2.xml");
+        //XMLParserUtils.saveDocAsXML(doc, "/tmp/beast2.xml");
 
         IDMap = sIDMap;//new HashMap<String, Plugin>();
         likelihoodMap = new HashMap<String, Integer[]>();
