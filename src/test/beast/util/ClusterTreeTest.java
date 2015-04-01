@@ -1,6 +1,8 @@
 package test.beast.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import beast.evolution.alignment.Alignment;
@@ -38,20 +40,31 @@ public class ClusterTreeTest extends TestCase {
         newseqs.clear();
         newseqs.add(seqs.get(0));
         newseqs.add(seqs.get(1));
-        newseqs.add(seqs.get(2));
+        newseqs.add(seqs.get(3));
         alignment.initAndValidate();
         tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
         treeTrueNewick = "((bonobo:0.008560512208575313,chimp:0.008560512208575313):0.010470344817177218,human:0.01903085702575253):0.0";
-        assertEquals(tree.getRoot().toNewick(), treeTrueNewick);
+        
+        System.err.println("Seqs:");
+        for (Sequence s : seqs) {
+        	System.err.println(s.taxonInput.get());
+        }
+        System.err.println("Newseqs:");
+        for (Sequence s : newseqs) {
+        	System.err.println(s.taxonInput.get());
+        }
+        
+        String newick = tree.getRoot().toNewick();
+        assertEquals(newick, treeTrueNewick);
         
         
         
         // same sequences in different order
         newseqs.clear();
-        newseqs.add(seqs.get(2));
+        newseqs.add(seqs.get(3));
         newseqs.add(seqs.get(1));
         newseqs.add(seqs.get(0));
         alignment.initAndValidate();
