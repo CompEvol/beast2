@@ -153,7 +153,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         taxonsets.add(allTaxa);
         List<String> taxonSetIDs = new ArrayList<String>();
         taxonSetIDs.add(ALL_TAXA);
-        for (Taxon taxon : doc.taxaset) {
+        for (Taxon taxon : doc.taxaset.values()) {
             if (taxon instanceof TaxonSet) {
                 taxonsets.add(taxon);
                 taxonSetIDs.add(taxon.getID());

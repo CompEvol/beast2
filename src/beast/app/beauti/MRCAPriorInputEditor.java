@@ -138,18 +138,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
     Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
         Set<Taxon> candidates = new HashSet<Taxon>();
         for (String sTaxon : prior.treeInput.get().getTaxaNames()) {
-            Taxon taxon = null;
-            for (Taxon taxon2 : doc.taxaset) {
-                if (taxon2.getID().equals(sTaxon)) {
-                    taxon = taxon2;
-                    break;
-                }
-            }
-            if (taxon == null) {
-                taxon = new Taxon();
-                taxon.setID(sTaxon);
-                doc.taxaset.add(taxon);
-            }
+            Taxon taxon = doc.getTaxon(sTaxon);
             candidates.add(taxon);
         }
         return candidates;

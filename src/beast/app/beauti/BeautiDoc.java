@@ -13,6 +13,7 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
@@ -111,7 +112,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     /**
      * set of all taxa in the model *
      */
-    public Set<Taxon> taxaset = null;
+    public Map<String,Taxon> taxaset = null;
 
     private boolean isExpertMode = false;
 
@@ -290,7 +291,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         tipTextMap = new HashMap<String, String>();
 
         pluginmap = new HashMap<String, BEASTInterface>();
-        taxaset = new HashSet<Taxon>();
+        taxaset = new HashMap<String, Taxon>();
         fileName = "";
         linked = new HashSet<Input<?>>();
     }
@@ -301,7 +302,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
         pluginmap.put(plugin.getID(), plugin);
         if (plugin instanceof Taxon) {
-            taxaset.add((Taxon) plugin);
+        	Taxon taxon = (Taxon) plugin;
+            taxaset.put(taxon.getID(), taxon);
         }
     }
 
@@ -316,7 +318,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         if (oldID != null) {
             pluginmap.remove(oldID);
         }
-        taxaset.remove(plugin);
+        taxaset.remove(plugin.getID());
     }
 
     /**
@@ -2298,5 +2300,44 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     @Override
     public void initAndValidate() throws Exception {
     }
+
+    /** create taxonset, one taxon for each sequence in the alignment
+     * and assign taxonset to the alignment 
+     * **/
+    static void createTaxonSet(Alignment o, BeautiDoc doc) {
+		Alignment a = (Alignment) o;
+		List<String> taxaNames = a.getTaxaNames();
+		TaxonSet taxonset = new TaxonSet();
+        for (final String taxaName : taxaNames) {
+        	taxonset.taxonsetInput.get().add(doc.getTaxon(taxaName));
+        }
+        taxonset.setID("TaxonSet0." + a.getID());
+        try {
+			taxonset.initAndValidate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        a.taxonsetInput.setValue(taxonset, a);
+		doc.registerPlugin(taxonset);
+	}
+
+    /** create Taxon with given name, reuse if a taxon 
+     *  with this name already exists
+     **/
+	public Taxon getTaxon(String taxaName) {
+    	if (taxaset.keySet().contains(taxaName)) {
+    		return taxaset.get(taxaName);
+    	} else {
+    		try {
+    			Taxon taxon = new Taxon(taxaName);
+    			registerPlugin(taxon);
+    			return taxon;
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+		return null;
+	}
+
 
 } // class BeautiDoc

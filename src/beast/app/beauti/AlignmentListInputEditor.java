@@ -212,13 +212,26 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
         plugins = selectedProvider.getAlignments(doc, fileArray);
 
+        // create taxon sets, if any
+        for (BEASTInterface o : plugins) {
+        	if (o instanceof Alignment) {
+        		try {
+					BeautiDoc.createTaxonSet((Alignment) o, doc);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+        	}
+        }
+
         // Component c = this;
         if (plugins != null) {
             refreshPanel();
         }
     }
 
-    /**
+
+
+	/**
      * This method just adds the two buttons (with add()) and does not add any glue or struts before or after.
      * @param box
      * @param sLabel

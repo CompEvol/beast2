@@ -48,7 +48,6 @@ public class BEASTObjectPanel extends JPanel {
 //    static public Set<StateNode> g_stateNodes = null;
 //    static public Set<Loggable> g_loggers = null;
 //    static public Set<Distribution> g_distributions = null;
-    static public Set<Taxon> g_taxa = null;
 
     public static Point m_position;
 
@@ -83,7 +82,6 @@ public class BEASTObjectPanel extends JPanel {
 //        g_stateNodes = new HashSet<StateNode>();
 //        g_loggers = new HashSet<Loggable>();
 //        g_distributions = new HashSet<Distribution>();
-        g_taxa = new HashSet<Taxon>();
     }
 
 
@@ -122,9 +120,6 @@ public class BEASTObjectPanel extends JPanel {
 //    	if (plugin instanceof Distribution) {
 //    		g_distributions.add((Distribution)plugin);
 //    	}
-        if (plugin instanceof Taxon) {
-            g_taxa.add((Taxon) plugin);
-        }
         if (g_plugins.containsKey(sID) && g_plugins.get(sID) == plugin) {
             return true;
         }
@@ -141,7 +136,6 @@ public class BEASTObjectPanel extends JPanel {
 //		g_stateNodes.remove(sOldID);
 //		g_loggers.remove(sOldID);
 //		g_distributions.remove(sOldID);
-        g_taxa.remove(sOldID);
         registerPlugin(sID, plugin, doc);
     }
 

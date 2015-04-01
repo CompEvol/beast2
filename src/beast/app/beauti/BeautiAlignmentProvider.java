@@ -2,6 +2,7 @@ package beast.app.beauti;
 
 
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +26,6 @@ import beast.app.draw.ExtensionFileFilter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
@@ -129,6 +129,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
                         }
                         /** add alignments **/
                         for (Alignment data : parser.filteredAlignments) {
+                        	Alignment.sortByTaxonName(data.sequenceInput.get());
                             selectedPlugins.add(data);
                         }
                     } else {
@@ -149,7 +150,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
             		file.getName().toLowerCase().endsWith(".fna") || file.getName().toLowerCase().endsWith(".ffn") || 
             		file.getName().toLowerCase().endsWith(".faa") || file.getName().toLowerCase().endsWith(".frn") 
             		) {
-                BEASTInterface alignment = getFASTAData(file);
+            	Alignment alignment = getFASTAData(file);
+            	Alignment.sortByTaxonName(alignment.sequenceInput.get());
                 selectedPlugins.add(alignment);
             }
         }
@@ -162,6 +164,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
         		id = plugin.getID() + k;
         	}
         	plugin.setID(id);
+        	Alignment.sortByTaxonName(((Alignment) plugin).sequenceInput.get());
             doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
         }
         return selectedPlugins;
@@ -224,7 +227,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		}
 	}
 	
-    private BEASTInterface getFASTAData(File file) {
+    private Alignment getFASTAData(File file) {
     	try {
     		// grab alignment data
         	Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();

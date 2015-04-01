@@ -82,6 +82,7 @@ public class Alignment extends Map<String> {
     }
 
 
+    public Input<TaxonSet> taxonsetInput = new Input<TaxonSet>("taxonset", "set of taxa, one for each sequence in the alignment");
     public Input<List<Sequence>> sequenceInput =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.OPTIONAL);
     public Input<Integer> stateCountInput = new Input<Integer>("statecount", "maximum number of states in all sequences");
@@ -103,6 +104,7 @@ public class Alignment extends Map<String> {
     /**
      * list of taxa names defined through the sequences in the alignment *
      */
+    protected TaxonSet taxonset;
     protected List<String> taxaNames = new ArrayList<String>();
 
     /**
@@ -183,6 +185,9 @@ public class Alignment extends Map<String> {
     	if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
     		throw new Exception("Either a sequence input must be specified, or a map of strings must be specified");
     	}
+    	
+    	sortByTaxonName(sequenceInput.get());
+    	taxonset = taxonsetInput.get();
     	
     	if (siteWeightsInput.get() != null) {
     		String sStr = siteWeightsInput.get().trim();
@@ -297,6 +302,9 @@ public class Alignment extends Map<String> {
      * assorted getters and setters *
      */
     public List<String> getTaxaNames() {
+    	if (taxonsetInput.get() != null) {
+    		return taxonsetInput.get().asStringList();
+    	}
         if (taxaNames.size() == 0) {
         	try {
         		initAndValidate();
@@ -333,6 +341,9 @@ public class Alignment extends Map<String> {
      * @return number of taxa in Alignment.
      */
     public int getTaxonCount() {
+    	if (taxonsetInput.get() != null) {
+    		return taxonsetInput.get().getTaxonCount();
+    	}
        return taxaNames.size();
     }
     
@@ -608,4 +619,13 @@ public class Alignment extends Map<String> {
         return Math.log(returnProb);
     } // getAscertainmentCorrection
 
+
+    static public void sortByTaxonName(List<Sequence> seqs) {
+		Collections.sort(seqs, new Comparator<Sequence>() {
+			@Override
+			public int compare(Sequence o1, Sequence o2) {
+				return o1.taxonInput.get().compareTo(o2.taxonInput.get());
+			}
+		});
+	}
 } // class Data

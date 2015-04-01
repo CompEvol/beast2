@@ -184,21 +184,8 @@ public class PriorListInputEditor extends ListInputEditor {
         	taxa = prior.treeInput.get().getTaxaNames();
         }
         
-        
         for (String sTaxon : taxa) {
-            Taxon taxon = null;
-            for (Taxon taxon2 : doc.taxaset) {
-                if (taxon2.getID().equals(sTaxon)) {
-                    taxon = taxon2;
-                    break;
-                }
-            }
-            if (taxon == null) {
-                taxon = new Taxon();
-                taxon.setID(sTaxon);
-                doc.taxaset.add(taxon);
-            }
-            candidates.add(taxon);
+            candidates.add(doc.getTaxon(sTaxon));
         }
         return candidates;
     }

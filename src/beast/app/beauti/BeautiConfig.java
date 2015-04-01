@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
+import beast.evolution.alignment.Alignment;
 import beast.util.XMLParser;
 
 import javax.swing.*;
@@ -179,9 +181,20 @@ public class BeautiConfig extends BEASTObject {
                 return null;
             }
         }
-        return selectedProvider.getAlignments(doc);
+        List<BEASTInterface> plugins = selectedProvider.getAlignments(doc);
+        // create taxon sets, if any
+        for (BEASTInterface o : plugins) {
+        	if (o instanceof Alignment) {
+        		try {
+        			BeautiDoc.createTaxonSet((Alignment) o, doc);
+        		} catch(Exception e) {
+        			e.printStackTrace();
+        		}
+        	}
+        }
+        return plugins;
     } // selectAlignments
-
+    
     public List<BeautiSubTemplate> getInputCandidates(BEASTInterface plugin, Input<?> input, Class<?> type) {
         List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
         for (BeautiSubTemplate template : subTemplates) {
