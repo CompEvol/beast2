@@ -5,10 +5,10 @@ import junit.framework.TestCase;
 import java.io.File;
 import java.util.List;
 
+import beagle.BeagleFlag;
 import beast.core.Logger;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
-
 import test.beast.beast2vs1.trace.Expectation;
 import test.beast.beast2vs1.trace.LogAnalyser;
 
@@ -42,6 +42,10 @@ public abstract class TestFramework extends TestCase {
 //            if (giveExpectations(i).size() > 0) {
         Randomizer.setSeed(SEED);
         Logger.FILE_MODE = Logger.LogFileMode.overwrite;
+        
+        long beagleFlags = BeagleFlag.PROCESSOR_CPU.getMask() | BeagleFlag.VECTOR_SSE.getMask();
+        System.setProperty("beagle.preferred.flags", Long.toString(beagleFlags));
+
 
         String sFileName = sDir + xmls[index_XML];
 
