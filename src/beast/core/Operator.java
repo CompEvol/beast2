@@ -258,6 +258,12 @@ public abstract class Operator extends BEASTObject {
         double p = getCoercableParameterValue();
         if (Double.isNaN(p)) {
             json.key("p").value("NaN");
+        } else if (Double.isInfinite(p)) {
+        	if (p > 0) {
+        		json.key("p").value("Infinity");
+        	} else {
+        		json.key("p").value("-Infinity");
+        	}
         } else {
             json.key("p").value(p);
         }
