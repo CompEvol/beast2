@@ -183,14 +183,16 @@ public class BeautiConfig extends BEASTObject {
         }
         List<BEASTInterface> plugins = selectedProvider.getAlignments(doc);
         // create taxon sets, if any
-        for (BEASTInterface o : plugins) {
-        	if (o instanceof Alignment) {
-        		try {
-        			BeautiDoc.createTaxonSet((Alignment) o, doc);
-        		} catch(Exception e) {
-        			e.printStackTrace();
-        		}
-        	}
+        if (plugins != null) {
+	        for (BEASTInterface o : plugins) {
+	        	if (o instanceof Alignment) {
+	        		try {
+	        			BeautiDoc.createTaxonSet((Alignment) o, doc);
+	        		} catch(Exception e) {
+	        			e.printStackTrace();
+	        		}
+	        	}
+	        }
         }
         return plugins;
     } // selectAlignments

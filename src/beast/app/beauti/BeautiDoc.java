@@ -2317,7 +2317,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        a.taxonsetInput.setValue(taxonset, a);
+        //a.taxonsetInput.setValue(taxonset, a);
 		doc.registerPlugin(taxonset);
 	}
 

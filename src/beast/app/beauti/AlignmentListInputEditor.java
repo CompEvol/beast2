@@ -213,14 +213,16 @@ public class AlignmentListInputEditor extends ListInputEditor {
         plugins = selectedProvider.getAlignments(doc, fileArray);
 
         // create taxon sets, if any
-        for (BEASTInterface o : plugins) {
-        	if (o instanceof Alignment) {
-        		try {
-					BeautiDoc.createTaxonSet((Alignment) o, doc);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
+        if (plugins != null) {
+	        for (BEASTInterface o : plugins) {
+	        	if (o instanceof Alignment) {
+	        		try {
+						BeautiDoc.createTaxonSet((Alignment) o, doc);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+	        	}
+	        }
         }
 
         // Component c = this;

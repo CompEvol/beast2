@@ -20,7 +20,7 @@ public class Prior extends Distribution {
     /**
      * shadows m_distInput *
      */
-    ParametricDistribution dist;
+    protected ParametricDistribution dist;
 
     @Override
     public void initAndValidate() throws Exception {

@@ -82,7 +82,7 @@ public class Alignment extends Map<String> {
     }
 
 
-    public Input<TaxonSet> taxonsetInput = new Input<TaxonSet>("taxonset", "set of taxa, one for each sequence in the alignment");
+    //public Input<TaxonSet> taxonsetInput = new Input<TaxonSet>("taxonset", "set of taxa, one for each sequence in the alignment");
     public Input<List<Sequence>> sequenceInput =
             new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.OPTIONAL);
     public Input<Integer> stateCountInput = new Input<Integer>("statecount", "maximum number of states in all sequences");
@@ -104,7 +104,7 @@ public class Alignment extends Map<String> {
     /**
      * list of taxa names defined through the sequences in the alignment *
      */
-    protected TaxonSet taxonset;
+    //protected TaxonSet taxonset;
     protected List<String> taxaNames = new ArrayList<String>();
 
     /**
@@ -187,7 +187,7 @@ public class Alignment extends Map<String> {
     	}
     	
     	sortByTaxonName(sequenceInput.get());
-    	taxonset = taxonsetInput.get();
+    	//taxonset = taxonsetInput.get();
     	
     	if (siteWeightsInput.get() != null) {
     		String sStr = siteWeightsInput.get().trim();
@@ -302,9 +302,9 @@ public class Alignment extends Map<String> {
      * assorted getters and setters *
      */
     public List<String> getTaxaNames() {
-    	if (taxonsetInput.get() != null) {
-    		return taxonsetInput.get().asStringList();
-    	}
+    	//if (taxonsetInput.get() != null) {
+    	//	return taxonsetInput.get().asStringList();
+    	//}
         if (taxaNames.size() == 0) {
         	try {
         		initAndValidate();
@@ -341,9 +341,9 @@ public class Alignment extends Map<String> {
      * @return number of taxa in Alignment.
      */
     public int getTaxonCount() {
-    	if (taxonsetInput.get() != null) {
-    		return taxonsetInput.get().getTaxonCount();
-    	}
+    	//if (taxonsetInput.get() != null) {
+    	//	return taxonsetInput.get().getTaxonCount();
+    	//}
        return taxaNames.size();
     }
     
