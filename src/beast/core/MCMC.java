@@ -509,7 +509,9 @@ public class MCMC extends Runnable {
                     }
                 }
             } else {
-                operator.optimize(logAlpha);
+                if (sampleNr >= 0) {
+                	operator.optimize(logAlpha);
+                }
             }
             callUserFunction(sampleNr);
 
