@@ -89,7 +89,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 			);
 		printBeautiState(f);
 		assertStateEquals("Tree.t:RSV2_2", "clockRate.c:RSV2_2", "birthRate.t:RSV2_2", "Tree.t:RSV2_3", "clockRate.c:RSV2_3", "birthRate.t:RSV2_3", "Tree.t:RSV2_1", "birthRate.t:RSV2_1");
-		assertOperatorsEqual("StrictClockRateScaler.c:RSV2_2", "YuleBirthRateScaler.t:RSV2_2", "treeScaler.t:RSV2_2", "treeRootScaler.t:RSV2_2", "UniformOperator.t:RSV2_2", "SubtreeSlide.t:RSV2_2", "narrow.t:RSV2_2", "wide.t:RSV2_2", "WilsonBalding.t:RSV2_2", "strictClockUpDownOperator.c:RSV2_2", "StrictClockRateScaler.c:RSV2_3", "YuleBirthRateScaler.t:RSV2_3", "treeScaler.t:RSV2_3", "treeRootScaler.t:RSV2_3", "UniformOperator.t:RSV2_3", "SubtreeSlide.t:RSV2_3", "narrow.t:RSV2_3", "wide.t:RSV2_3", "WilsonBalding.t:RSV2_3", "strictClockUpDownOperator.c:RSV2_3", "YuleBirthRateScaler.t:RSV2_1", "treeScaler.t:RSV2_1", "treeRootScaler.t:RSV2_1", "UniformOperator.t:RSV2_1", "SubtreeSlide.t:RSV2_1", "narrow.t:RSV2_1", "wide.t:RSV2_1", "WilsonBalding.t:RSV2_1");
+		assertOperatorsEqual("StrictClockRateScaler.c:RSV2_2", "YuleBirthRateScaler.t:RSV2_2", "YuleModelTreeScaler.t:RSV2_2", "YuleModelTreeRootScaler.t:RSV2_2", "YuleModelUniformOperator.t:RSV2_2", "YuleModelSubtreeSlide.t:RSV2_2", "YuleModelNarrow.t:RSV2_2", "YuleModelWide.t:RSV2_2", "YuleModelWilsonBalding.t:RSV2_2", "strictClockUpDownOperator.c:RSV2_2", "StrictClockRateScaler.c:RSV2_3", "YuleBirthRateScaler.t:RSV2_3", "YuleModelTreeScaler.t:RSV2_3", "YuleModelTreeRootScaler.t:RSV2_3", "YuleModelUniformOperator.t:RSV2_3", "YuleModelSubtreeSlide.t:RSV2_3", "YuleModelNarrow.t:RSV2_3", "YuleModelWide.t:RSV2_3", "YuleModelWilsonBalding.t:RSV2_3", "strictClockUpDownOperator.c:RSV2_3", "YuleBirthRateScaler.t:RSV2_1", "YuleModelTreeScaler.t:RSV2_1", "YuleModelTreeRootScaler.t:RSV2_1", "YuleModelUniformOperator.t:RSV2_1", "YuleModelSubtreeSlide.t:RSV2_1", "YuleModelNarrow.t:RSV2_1", "YuleModelWide.t:RSV2_1", "YuleModelWilsonBalding.t:RSV2_1");
 		assertPriorsEqual("YuleModel.t:RSV2_1", "YuleModel.t:RSV2_2", "YuleModel.t:RSV2_3", "ClockPrior.c:RSV2_2", "YuleBirthRatePrior.t:RSV2_2", "ClockPrior.c:RSV2_3", "YuleBirthRatePrior.t:RSV2_3", "YuleBirthRatePrior.t:RSV2_1");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "TreeHeight.t:RSV2_2", "clockRate.c:RSV2_2", "YuleModel.t:RSV2_2", "birthRate.t:RSV2_2", "treeLikelihood.RSV2_3", "TreeHeight.t:RSV2_3", "clockRate.c:RSV2_3", "YuleModel.t:RSV2_3", "birthRate.t:RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:RSV2_1", "YuleModel.t:RSV2_1", "birthRate.t:RSV2_1");
 	
@@ -114,7 +114,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		cell.stopEditing();
 		printBeautiState(f);
 		assertStateEquals("clockRate.c:RSV2_2", "clockRate.c:RSV2_3", "Tree.t:tree", "birthRate.t:tree");
-		assertOperatorsEqual("StrictClockRateScaler.c:RSV2_2", "StrictClockRateScaler.c:RSV2_3", "YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "strictClockUpDownOperator.c:RSV2_3", "strictClockUpDownOperator.c:RSV2_2");
+		assertOperatorsEqual("StrictClockRateScaler.c:RSV2_2", "StrictClockRateScaler.c:RSV2_3", "YuleBirthRateScaler.t:tree", "YuleModelTreeScaler.t:tree", "YuleModelTreeRootScaler.t:tree", "YuleModelUniformOperator.t:tree", "YuleModelSubtreeSlide.t:tree", "YuleModelNarrow.t:tree", "YuleModelWide.t:tree", "YuleModelWilsonBalding.t:tree", "strictClockUpDownOperator.c:RSV2_3", "strictClockUpDownOperator.c:RSV2_2");
 		assertPriorsEqual("YuleModel.t:tree", "ClockPrior.c:RSV2_2", "ClockPrior.c:RSV2_3", "YuleBirthRatePrior.t:tree");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "clockRate.c:RSV2_2", "treeLikelihood.RSV2_3", "clockRate.c:RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree");
 
@@ -138,7 +138,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		cell.stopEditing();
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree");
-		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree");
+		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "YuleModelTreeScaler.t:tree", "YuleModelTreeRootScaler.t:tree", "YuleModelUniformOperator.t:tree", "YuleModelSubtreeSlide.t:tree", "YuleModelNarrow.t:tree", "YuleModelWide.t:tree", "YuleModelWilsonBalding.t:tree");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "treeLikelihood.RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree");
 
@@ -172,7 +172,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		unlinkSiteModelsButton.click();
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3");
-		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator");
+		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "YuleModelTreeScaler.t:tree", "YuleModelTreeRootScaler.t:tree", "YuleModelUniformOperator.t:tree", "YuleModelSubtreeSlide.t:tree", "YuleModelNarrow.t:tree", "YuleModelWide.t:tree", "YuleModelWilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "KappaPrior.s:RSV2_1", "KappaPrior.s:RSV2_2", "KappaPrior.s:RSV2_3");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "treeLikelihood.RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3");
 		
@@ -191,7 +191,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "dates.png");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock");
-		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock");
+		assertOperatorsEqual("YuleBirthRateScaler.t:tree", "YuleModelTreeScaler.t:tree", "YuleModelTreeRootScaler.t:tree", "YuleModelUniformOperator.t:tree", "YuleModelSubtreeSlide.t:tree", "YuleModelNarrow.t:tree", "YuleModelWide.t:tree", "YuleModelWilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock");
 		assertPriorsEqual("YuleModel.t:tree", "YuleBirthRatePrior.t:tree", "KappaPrior.s:RSV2_1", "KappaPrior.s:RSV2_2", "KappaPrior.s:RSV2_3", "ClockPrior.c:clock");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "treeLikelihood.RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:tree", "YuleModel.t:tree", "birthRate.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock");
 		
@@ -208,7 +208,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "priors.png");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock", "popSize.t:tree");
-		assertOperatorsEqual("treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock", "PopSizeScaler.t:tree");
+		assertOperatorsEqual("CoalescentConstantTreeScaler.t:tree", "CoalescentConstantTreeRootScaler.t:tree", "CoalescentConstantUniformOperator.t:tree", "CoalescentConstantSubtreeSlide.t:tree", "CoalescentConstantNarrow.t:tree", "CoalescentConstantWide.t:tree", "CoalescentConstantWilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock", "PopSizeScaler.t:tree");
 		assertPriorsEqual("CoalescentConstant.t:tree", "ClockPrior.c:clock", "KappaPrior.s:RSV2_1", "KappaPrior.s:RSV2_2", "KappaPrior.s:RSV2_3", "PopSizePrior.t:tree");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "treeLikelihood.RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock", "popSize.t:tree", "CoalescentConstant.t:tree");
 
@@ -228,7 +228,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		beautiFrame.button("treelog.t:tree.editButton").click();
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock", "popSize.t:tree");
-		assertOperatorsEqual("treeScaler.t:tree", "treeRootScaler.t:tree", "UniformOperator.t:tree", "SubtreeSlide.t:tree", "narrow.t:tree", "wide.t:tree", "WilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock", "PopSizeScaler.t:tree");
+		assertOperatorsEqual("CoalescentConstantTreeScaler.t:tree", "CoalescentConstantTreeRootScaler.t:tree", "CoalescentConstantUniformOperator.t:tree", "CoalescentConstantSubtreeSlide.t:tree", "CoalescentConstantNarrow.t:tree", "CoalescentConstantWide.t:tree", "CoalescentConstantWilsonBalding.t:tree", "KappaScaler.s:RSV2_1", "KappaScaler.s:RSV2_2", "KappaScaler.s:RSV2_3", "FixMeanMutationRatesOperator", "StrictClockRateScaler.c:clock", "strictClockUpDownOperator.c:clock", "PopSizeScaler.t:tree");
 		assertPriorsEqual("CoalescentConstant.t:tree", "ClockPrior.c:clock", "KappaPrior.s:RSV2_1", "KappaPrior.s:RSV2_2", "KappaPrior.s:RSV2_3", "PopSizePrior.t:tree");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.RSV2_2", "treeLikelihood.RSV2_3", "treeLikelihood.RSV2_1", "TreeHeight.t:tree", "kappa.s:RSV2_1", "mutationRate.s:RSV2_1", "kappa.s:RSV2_2", "mutationRate.s:RSV2_2", "kappa.s:RSV2_3", "mutationRate.s:RSV2_3", "clockRate.c:clock", "popSize.t:tree", "CoalescentConstant.t:tree");
 		

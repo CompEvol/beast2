@@ -24,6 +24,7 @@
 */
 package beast.util;
 
+
 import beast.app.beauti.PartitionContext;
 import beast.core.*;
 import beast.core.Input.Validate;
@@ -34,10 +35,12 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
+
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -263,6 +266,8 @@ public class XMLParser {
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
+        
+        //XMLParserUtils.saveDocAsXML(doc, "/tmp/beast2.xml");
 
         IDMap = sIDMap;//new HashMap<String, Plugin>();
         likelihoodMap = new HashMap<String, Integer[]>();
