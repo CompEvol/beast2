@@ -363,6 +363,9 @@ public class LogCombiner extends LogAnalyser {
                 "-b <burnin>      specify the number PERCANTAGE of lines in the log file considered to be burnin (default 10)\n" +
                 "-dir <directory> specify particle directory -- used for particle filtering in BEASTii only -- if defined only one log must be specified and the -n option specified\n" +
                 "-n <int>         specify the number of particles, ignored if -dir is not defined\n" +
+                "-resample <int>  specify number of states to resample\n" +
+                "-decimal         flag to indicate numbers should converted from scientific into decimal format\n" +
+                "-renumber        flag to indicate ouput states should be renumbered\n" +
                 "-help            print this message\n";
     }
 
