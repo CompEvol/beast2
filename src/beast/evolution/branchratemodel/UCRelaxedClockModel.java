@@ -124,14 +124,20 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             return 1;
         }
 
-        if (recompute) {
-            prepare();
-            recompute = false;
-        }
+   		if (recompute) {
+   	        // this must be synchronized to avoid being called simultaneously by
+   	        // two different likelihood threads
+   	    	synchronized (this) {
+    			prepare();
+    			recompute = false;
+    		}
+    	}
 
         if (renormalize) {
             if (normalize) {
-                computeFactor();
+            	synchronized (this) {
+            		computeFactor();
+            	}
             }
             renormalize = false;
         }
