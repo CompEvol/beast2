@@ -320,7 +320,7 @@ public class Tree extends StateNode implements TreeInterface {
                 final List<String> txs = taxonSet.asStringList();
                 m_sTaxaNames = txs.toArray(new String[txs.size()]);
             } else {
-                m_sTaxaNames = new String[getNodeCount()];
+                m_sTaxaNames = new String[getLeafNodeCount()];
                 collectTaxaNames(getRoot());
             }
         }
