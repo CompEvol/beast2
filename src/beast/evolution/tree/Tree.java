@@ -314,7 +314,7 @@ public class Tree extends StateNode implements TreeInterface {
 
     @Deprecated
     public String[] getTaxaNames() {
-         if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null)) {
+         if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) || m_sTaxaNames.length == 0) {
             final TaxonSet taxonSet = m_taxonset.get();
             if (taxonSet != null) {
                 final List<String> txs = taxonSet.asStringList();
