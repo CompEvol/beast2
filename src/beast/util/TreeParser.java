@@ -110,6 +110,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 } else {
                     labels = new ArrayList<String>();
                     createUnrecognizedTaxa = true;
+            		sortNodesAlphabetically = true;
                 }
             } else {
                 if (m_initial.get() != null) {

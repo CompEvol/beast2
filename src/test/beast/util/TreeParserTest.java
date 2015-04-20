@@ -52,6 +52,21 @@ public class TreeParserTest extends TestCase {
     }
 
     @Test
+    public void testOnlyLeafLabels2() throws Exception {
+
+        String newick = "((D:5.0,C:4.0):6.0,(A:1.0,B:2.0):3.0):0.0;";
+
+        TreeParser treeParser = new TreeParser();
+        treeParser.initByName("IsLabelledNewick", true, 
+        		"newick", newick,
+        		"adjustTipHeights", false);
+        
+        String newick2 = treeParser.getRoot().toNewick();
+        
+        assertEquals(newick.replaceAll(";", ""), newick2);
+    }
+
+    @Test
     public void testSomeInternalNodesLabelled() {
 
         String newick = "((A:1.0,B:1.0)E:1.0,(C:1.0,D:1.0):1.0):0.0;";
