@@ -1,8 +1,7 @@
 package test.beast.util;
 
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import beast.evolution.alignment.Alignment;
@@ -30,8 +29,9 @@ public class ClusterTreeTest extends TestCase {
                 "clusterType", "upgma",
                 "taxa", alignment);
         
-        String treeTrueNewick = "((((0:0.01903085702575253,(1:0.008560512208575313,2:0.008560512208575313)6:0.010470344817177218)7:0.007962255880644985,3:0.026993112906397516)8:0.019197419394211015,4:0.04619053230060853)9:0.007214240662738673,5:0.053404772963347204)10:0.0";
-//        assertEquals(tree.toString(), treeTrueNewick);
+        String expectedNewick = "(((((bonobo:0.008560512208575313,chimp:0.008560512208575313):0.010470344817177218,human:0.01903085702575253):0.007962255880644985,gorilla:0.026993112906397516):0.019197419394211015,orangutan:0.04619053230060853):0.007214240662738673,siamang:0.053404772963347204):0.0";
+        String actualNewick = tree.getRoot().toNewick();
+        assertEquals(expectedNewick, actualNewick);
         
         // select 3 sequences
         List<Sequence> seqs = new ArrayList<Sequence>();
@@ -46,7 +46,7 @@ public class ClusterTreeTest extends TestCase {
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
-        treeTrueNewick = "((bonobo:0.008560512208575313,chimp:0.008560512208575313):0.010470344817177218,human:0.01903085702575253):0.0";
+        expectedNewick = "((bonobo:0.008560512208575313,chimp:0.008560512208575313):0.010470344817177218,human:0.01903085702575253):0.0";
         
         System.err.println("Seqs:");
         for (Sequence s : seqs) {
@@ -57,8 +57,8 @@ public class ClusterTreeTest extends TestCase {
         	System.err.println(s.taxonInput.get());
         }
         
-        String newick = tree.getRoot().toNewick();
-        assertEquals(newick, treeTrueNewick);
+        actualNewick = tree.getRoot().toNewick();
+        assertEquals(expectedNewick, actualNewick);
         
         
         
@@ -72,7 +72,7 @@ public class ClusterTreeTest extends TestCase {
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
-        assertEquals(tree.getRoot().toNewick(), treeTrueNewick);
+        assertEquals(expectedNewick, tree.getRoot().toNewick());
         
     }
 
