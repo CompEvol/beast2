@@ -217,11 +217,10 @@ public class TreeAnnotator {
                     	parser2.parseFile(new File(targetTreeFileName));
                     	targetTree = parser2.trees.get(0);
                     } else {
-	                    TreeParser parser2 = new TreeParser();
-	                    parser2.initByName("IsLabelledNewick", true);
 	                    try {
-	                    	Node root = parser2.parseNewick(sTree);
-	                    	targetTree = new Tree(root);
+		                    TreeParser parser2 = new TreeParser();
+		                    parser2.initByName("IsLabelledNewick", true, "newick", sTree);
+		                    targetTree = parser2;
 	                    } catch (Exception e) {
 	                        System.err.println("Error Parsing Target Tree: " + e.getMessage());
 	                        return;

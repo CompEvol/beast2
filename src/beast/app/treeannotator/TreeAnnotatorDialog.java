@@ -130,7 +130,7 @@ public class TreeAnnotatorDialog {
 
         summaryTreeCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                boolean selected = summaryTreeCombo.getSelectedItem().equals("User target tree");
+                boolean selected = summaryTreeCombo.getSelectedItem().toString().equals("User target tree");
                 label1.setEnabled(selected);
                 targetFileNameText.setEnabled(selected);
                 targetFileButton.setEnabled(selected);
