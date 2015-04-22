@@ -1,15 +1,11 @@
 package beast.evolution.tree;
 
-//import java.text.SimpleDateFormat;
-//import java.util.Date;
-
-
-
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Map;
 
 import beast.core.Description;
 import beast.core.Input;
@@ -39,6 +35,8 @@ public class TraitSet extends BEASTObject {
     public Input<String> traitsInput = new Input<String>("value", "traits encoded as taxon=value pairs separated by commas", Validate.REQUIRED);
     public Input<TaxonSet> taxaInput = new Input<TaxonSet>("taxa", "contains list of taxa to map traits to", Validate.REQUIRED);
 
+    public Input<String> dateTimeFormatInput = new Input<String>("format", "the date/time format to be parsed, (e.g., 'dd/M/yyyy')");
+
     final public static String DATE_TRAIT = "date";
     final public static String DATE_FORWARD_TRAIT = "date-forward";
     final public static String DATE_BACKWARD_TRAIT = "date-backward";
@@ -55,8 +53,6 @@ public class TraitSet extends BEASTObject {
     double minValue;
     double maxValue;
 
-    Map<String, Integer> map;
-    
     /**
      * Whether or not values are ALL numeric.
      */
@@ -71,7 +67,6 @@ public class TraitSet extends BEASTObject {
         // first, determine taxon numbers associated with traits
         // The Taxon number is the index in the alignment, and
         // used as node number in a tree.
-        map = new HashMap<String, Integer>();
         List<String> labels = taxaInput.get().asStringList();
         String[] traits = traitsInput.get().split(",");
         taxonValues = new String[labels.size()];
@@ -89,7 +84,6 @@ public class TraitSet extends BEASTObject {
             }
             taxonValues[taxonNr] = normalize(sStrs[1]);
             values[taxonNr] = parseDouble(taxonValues[taxonNr]);
-            map.put(taxonID,  taxonNr);
             
             if (Double.isNaN(values[taxonNr]))
                 numeric = false;
@@ -138,20 +132,11 @@ public class TraitSet extends BEASTObject {
         return taxonValues[iTaxonNr];
     }
 
-    @Deprecated // use getValue by name instead 
     public double getValue(int iTaxonNr) {
         if (values == null) {
             return 0;
         }
         return values[iTaxonNr];
-    }
-
-    public double getValue(String taxonName) {
-        if (values == null || map == null) {
-            return 0;
-        }
-        //Log.trace.println("Trait " + taxonName + " => " + values[map.get(taxonName)]);
-        return values[map.get(taxonName)];
     }
 
     /**
@@ -163,25 +148,45 @@ public class TraitSet extends BEASTObject {
             return Double.parseDouble(sStr);
         } catch (NumberFormatException e) {
             // does not look like a number
-            if (traitNameInput.get().equals(DATE_TRAIT) || 
-            	traitNameInput.get().equals(DATE_FORWARD_TRAIT) ||
-            	traitNameInput.get().equals(DATE_BACKWARD_TRAIT))	{
-            	try {
-            		if (sStr.matches(".*[a-zA-Z].*")) {
-            			sStr = sStr.replace('/', '-');
-            		}
-            		long date = Date.parse(sStr);
-            		double year = 1970.0 + date / (60.0*60*24*365*1000);
-            		switch (unitsInput.get()) {
-            		case month : return year * 12.0;
-            		case day: return year * 365;
-            		default :
-            			return year;
-            		}
-            	} catch (Exception e2) {
-            		// does not look like a date, give up
-    			}
-            }
+                if (traitNameInput.get().equals(DATE_TRAIT) ||
+                        traitNameInput.get().equals(DATE_FORWARD_TRAIT) ||
+                        traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
+
+                    if (dateTimeFormatInput.get() == null) {
+                        try {
+                            if (sStr.matches(".*[a-zA-Z].*")) {
+                                sStr = sStr.replace('/', '-');
+                            }
+                            long date = Date.parse(sStr);
+                            double year = 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
+                            System.err.println("No date/time format provided, using default parsing: '" + sStr + "' parsed as '" + year + "'");
+                            switch (unitsInput.get()) {
+                                case month:
+                                    return year * 12.0;
+                                case day:
+                                    return year * 365;
+                                default:
+                                    return year;
+                            }
+                        } catch (Exception e2) {
+                            // does not look like a date, give up
+                        }
+                    } else {
+                        try {
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatInput.get());
+                            LocalDate date = LocalDate.parse(sStr, formatter);
+
+                            System.err.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + sStr +
+                                    "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
+
+                            return date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0);
+
+                        } catch (DateTimeParseException e2) {
+                            System.err.println("Failed to parse date '" + sStr + "' using format '" + dateTimeFormatInput.get() + "'");
+                            System.exit(1);
+                        }
+                    }
+                }
         }
         //return 0;
         return Double.NaN;
