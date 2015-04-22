@@ -66,6 +66,9 @@ public class LogCombiner extends LogAnalyser {
                     } else if (args[i].equals("-log")) {
                         m_sLogFileName.add(args[i + 1]);
                         i += 2;
+                        while (i < args.length && !args[i].startsWith("-")) {
+                            m_sLogFileName.add(args[i++]);
+                        }
                     } else if (args[i].equals("-dir")) {
                         m_sParticleDir = args[i + 1];
                         i += 2;
