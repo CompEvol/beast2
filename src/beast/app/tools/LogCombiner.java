@@ -204,17 +204,8 @@ public class LogCombiner extends LogAnalyser {
                         }
 
                     }
-                    int i = 0;
-                    while (sStr.charAt(i) != '=') {
-                        i++;
-                        if (sStr.charAt(i) == '[') {
-                            i++;
-                            while (sStr.charAt(i) != ']') {
-                                i++;
-                            }
-                        }
-                    }
-                    m_sTrees.add(sStr.substring(i + 1));
+                    sStr = sStr.replaceAll("^tree STATE_[^\\s=]*", "");
+                    m_sTrees.add(sStr);
                 }
             }
             if (nData % nLines == 0) {
@@ -246,7 +237,7 @@ public class LogCombiner extends LogAnalyser {
                 if ((m_nSampleInterval * i) % m_nResample == 0) {
                     String sTree = m_sTrees.get(i);
                     sTree = format(sTree);
-                    m_out.println("tree STATE_" + (m_nSampleInterval * i) + " = " + sTree);
+                    m_out.println("tree STATE_" + (m_nSampleInterval * i) + (Character.isSpaceChar(sTree.charAt(0)) ? "" : " ") + sTree);
                     nLines++;
                 }
                 if (i % (nData / 80) == 0) {
