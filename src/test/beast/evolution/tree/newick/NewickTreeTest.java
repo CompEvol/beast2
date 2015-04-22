@@ -12,8 +12,8 @@ public class NewickTreeTest extends TestCase {
             "((1:1.0,2:1.0):1.0,3:2.0);"
     }; //more trees ?
     String[] trees2 = new String[]{
-            "((A:1.5,B:0.5):1.1,C:3.0);",
-            "((2:1.5,1:0.5):1.1,3:3.0);"
+            "((A:1.5,B:0.5):1.1,C:3.0):0.0;",
+            "((2:1.5,1:0.5):1.1,3:3.0):0.0;"
     }; //more trees ?
 
 
@@ -30,12 +30,9 @@ public class NewickTreeTest extends TestCase {
         }
 
         for (String tree : trees2) {
-
             TreeParser newickTree = new TreeParser(tree, false, false, true, 1);
-
-//            System.out.println(tree);
-//            System.out.println(newickTree);
-            assertEquals("((0:1.5,1:0.5)3:1.1,2:3.0)4:0.0", newickTree.toString());
+            String newick = newickTree.getRoot().toNewick();
+            assertEquals(tree, newick+";");
         }
 
     }
