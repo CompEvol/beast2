@@ -116,6 +116,10 @@ public class JPackageDialog extends JPanel {
         widths[4] *= 2.0; 
         dataTable.getColumnModel().getColumn(4).setPreferredWidth((int) widths[4]);
         
+        FontMetrics dataMetrics = dataTable.getFontMetrics(dataTable.getFont());
+        int textHeight = dataMetrics.getHeight();
+        int defaultRowHeight = (int) Math.round(((double) textHeight) * 1.1);
+        dataTable.setRowHeight(defaultRowHeight);
         
         // TODO:
         // The following would work ...
