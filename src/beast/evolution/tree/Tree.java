@@ -314,7 +314,7 @@ public class Tree extends StateNode implements TreeInterface {
 
     @Deprecated
     public String[] getTaxaNames() {
-        if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null)) {
+         if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) || m_sTaxaNames.length == 0) {
             final TaxonSet taxonSet = m_taxonset.get();
             if (taxonSet != null) {
                 final List<String> txs = taxonSet.asStringList();
@@ -322,6 +322,14 @@ public class Tree extends StateNode implements TreeInterface {
             } else {
                 m_sTaxaNames = new String[getNodeCount()];
                 collectTaxaNames(getRoot());
+                List<String> taxaNames = new ArrayList<>();
+                for (String name : m_sTaxaNames) {
+                	if (name != null) {
+                		taxaNames.add(name);
+                	}
+                }
+                m_sTaxaNames = taxaNames.toArray(new String[]{});
+                
             }
         }
         Arrays.sort(m_sTaxaNames);
@@ -333,8 +341,13 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     void collectTaxaNames(final Node node) {
-        if (node.isLeaf()) {
+        if (node.getID() != null) {
             m_sTaxaNames[node.getNr()] = node.getID();
+        }
+        if (node.isLeaf()) {
+            if (node.getID() == null) {
+            	node.setID("node" + node.getNr());
+            }
         } else {
         	for (Node child : node.getChildren()) {
         		collectTaxaNames(child);

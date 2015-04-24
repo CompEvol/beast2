@@ -319,6 +319,7 @@
 
     </beauticonfig>
 
+	<mergepoint id='misc'/>
 
 	<taxonset spec='beast.evolution.alignment.TaxonSet' id='taxonsuperset'>
 		<!-- 

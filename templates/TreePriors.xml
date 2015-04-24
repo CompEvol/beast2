@@ -20,7 +20,6 @@
             <connect srcID='$(m)Narrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
             <connect srcID='$(m)Wide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
             <connect srcID='$(m)WilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior($(m).t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
-            <connect srcID='$(m)StrictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator' if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood($(m).t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>Scale up substitution rate c:$(n) and scale down tree t:($n) </connect>
         </fragment>
     </mergewith>
        

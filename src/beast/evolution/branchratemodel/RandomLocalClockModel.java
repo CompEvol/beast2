@@ -126,9 +126,13 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     @Override
     public double getRateForBranch(Node node) {
-        if (recompute) {
-            recalculateScaleFactor();
-            recompute = false;
+        // this must be synchronized to avoid being called simultaneously by
+        // two different likelihood threads
+    	synchronized (this) {
+    		if (recompute) {
+                recalculateScaleFactor();
+                recompute = false;
+			}
         }
 
         return unscaledBranchRates[getNr(node)] * scaleFactor;
