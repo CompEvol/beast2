@@ -86,12 +86,12 @@ public interface DataType {
         /**
          * size of the state space *
          */
-        int stateCount;
+        protected int stateCount;
 
         /**
          * maps string encoding to state codes *
          */
-        String codeMap;
+        protected String codeMap;
 
         public String getCodeMap() {
             return codeMap;
@@ -100,12 +100,12 @@ public interface DataType {
         /**
          * length of the encoding, e.g. 1 for nucleotide, 3 for codons *
          */
-        int codeLength;
+        protected int codeLength;
 
         /**
          * mapping codes to sets of states *
          */
-        int[][] mapCodeToStateSet;
+        protected int[][] mapCodeToStateSet;
 
         @Override
         public void initAndValidate() throws Exception {
