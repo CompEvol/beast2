@@ -11,10 +11,10 @@ import beast.core.Input;
 import beast.core.BEASTInterface;
 import beast.util.AddOnManager;
 
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.List;
 
 public class BEASTObjectInputEditor extends InputEditor.Base {
@@ -267,7 +267,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                                     m_expansionBox.remove(i);
                                 }
                             } else { // not expanded
-                                if (m_bAddButtons) {
+                                if (m_bAddButtons && m_editPluginButton != null) {
                                     m_editPluginButton.setEnabled(false);
                                 }
                             }
@@ -310,7 +310,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                             }
                         } else {
                             // it is not expanded, enable the edit button
-                            if (m_bAddButtons) {
+                            if (m_bAddButtons && m_editPluginButton != null) {
                                 m_editPluginButton.setEnabled(true);
                             }
                             validateInput();
@@ -320,10 +320,10 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                     } catch (Exception ex) {
                         sID = ((BEASTInterface) m_input.get()).getID();
                         m_selectPluginBox.setSelectedItem(sID);
-                        //ex.printStackTrace();
+                        ex.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Could not change plugin: " +
                                 ex.getClass().getName() + " " +
-                                ex.getMessage()
+                                ex.getMessage() 
                         );
                     }
                 }
