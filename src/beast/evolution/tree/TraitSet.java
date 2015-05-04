@@ -153,12 +153,11 @@ public class TraitSet extends BEASTObject {
                         traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
 
                         try {
-                            if (sStr.matches(".*[a-zA-Z].*")) {
-                                sStr = sStr.replace('/', '-');
-                            }
-
                             double year;
                             if (dateTimeFormatInput.get() == null) {
+                                if (sStr.matches(".*[a-zA-Z].*")) {
+                                        sStr = sStr.replace('/', '-');
+                                }
                                 long date = Date.parse(sStr);
                                 year = 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
                                 System.err.println("No date/time format provided, using default parsing: '" + sStr + "' parsed as '" + year + "'");
