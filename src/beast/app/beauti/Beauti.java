@@ -961,7 +961,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
         	
             AddOnManager.loadExternalJars();
-          	Utils.loadUIManager();
+            if (!Utils.isMac()) {
+            	Utils.loadUIManager();
+            }
             BEASTObjectPanel.init();
 
             BeautiDoc doc = new BeautiDoc();
