@@ -306,6 +306,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 			        protected void executeInEDT() {
 			        	try {
 			        		beauti.doc.importNexus(_file);
+			    			beauti.refreshPanel();
 			        	} catch (Exception e) {
 							e.printStackTrace();
 						}

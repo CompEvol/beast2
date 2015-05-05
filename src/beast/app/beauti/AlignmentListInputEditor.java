@@ -549,11 +549,17 @@ System.err.println("needsRePartition = " + needsRePartition);
 		}
 		tableData[iRow][nColumn] = sPartition;
 		if (needsRePartition) {
-			doc.setUpActivePlugins();
 			List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
 			templates.add(doc.beautiConfig.partitionTemplate.get());
 			templates.addAll(doc.beautiConfig.subTemplates);
-			doc.applyBeautiRules(templates, false, oldContext);
+			// keep applying rules till model does not change
+			doc.setUpActivePlugins();
+			int n;
+			do {
+				n = doc.posteriorPredecessors.size();
+				doc.applyBeautiRules(templates, false, oldContext);
+				doc.setUpActivePlugins();
+			} while (n != doc.posteriorPredecessors.size());
 			doc.determinePartitions();
 		}
 		if (treeLikelihood == null) {

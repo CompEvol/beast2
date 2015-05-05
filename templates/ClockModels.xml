@@ -95,6 +95,7 @@
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
                 Up/down scaler for mean rate and tree of partition c:$(n)
             </connect>
+            <connect srcID='Tree.t:$(n)' targetID='ExponentialRelaxedClock.c:$(n)' inputName='tree' if='inlikelihood(ExponentialRelaxedClock.c:$(n))'/>
 
             <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
@@ -174,6 +175,7 @@
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
                 Up/down scaler for mean rate and tree of partition c:$(n)
             </connect>
+            <connect srcID='Tree.t:$(n)' targetID='RelaxedClock.c:$(n)' inputName='tree' if='inlikelihood(RelaxedClock.c:$(n))'/>
 
             <connect srcID='ucldMean.c:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
@@ -238,6 +240,7 @@
             <connect srcID='ClockRateScaler.c:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(clockrates.c:$(n))'>Scale random clock rates of partition c:$(n)
             </connect>
+            <connect srcID='Tree.t:$(n)' targetID='RandomLocalClock.c:$(n)' inputName='tree' if='inlikelihood(RandomLocalClock.c:$(n))'/>
 
             <connect srcID='Indicators.c:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(Indicators.c:$(n))'/>
