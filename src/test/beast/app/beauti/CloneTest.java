@@ -10,6 +10,7 @@ import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
 import org.fest.swing.fixture.JListFixture;
+import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.junit.Test;
@@ -23,11 +24,15 @@ public class CloneTest extends BeautiBase {
         importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+        JOptionPaneFixture op = beautiFrame.optionPane();
+        if (op.target.isVisible()) {
+        	op.okButton().click();
+        }
 
         //1. Set the site model to HKY+G4 (estimated)
         warning("1. Set the site model of first partition to HKY+G4 (estimated)");
         f.selectTab("Site Model");
-        JComboBoxFixture substModel = beautiFrame.comboBox();
+        JComboBoxFixture substModel = beautiFrame.comboBox("substModel");
         substModel.selectItem("HKY");
 
         JTextComponentFixture categoryCount = beautiFrame.textBox("gammaCategoryCount");
@@ -97,6 +102,10 @@ public class CloneTest extends BeautiBase {
         importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+        JOptionPaneFixture op = beautiFrame.optionPane();
+	    if (op.target.isVisible()) {
+	    	op.okButton().click();
+	    }
 
         //1. Set the clock model of second partition to UCLD exponential
         warning("1. Set the clock model of second partition to UCLD exponential");

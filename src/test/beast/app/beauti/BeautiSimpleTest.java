@@ -73,7 +73,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		
 		// Set the site model to HKY (estimated)
 		f.selectTab("Site Model");
-		JComboBoxFixture substModel = beautiFrame.comboBox();
+		JComboBoxFixture substModel = beautiFrame.comboBox("substModel");
 		substModel.selectItem("HKY");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:anolis", "birthRate.t:anolis", "kappa.s:anolis", "freqParameter.s:anolis");

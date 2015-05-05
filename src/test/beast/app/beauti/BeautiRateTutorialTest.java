@@ -154,7 +154,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		//3b. Set the site model to HKY (empirical)
 		warning("3b. Set the site model to HKY (empirical)");
 		f.selectTab("Site Model");
-		beautiFrame.comboBox().selectItem("HKY");
+		beautiFrame.comboBox("substModel").selectItem("HKY");
 		JComboBoxFixture freqs = beautiFrame.comboBox("frequencies");
 		freqs.selectItem("Empirical");
 		beautiFrame.checkBox("mutationRate.isEstimated").check();

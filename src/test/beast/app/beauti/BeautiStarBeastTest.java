@@ -73,7 +73,7 @@ public class BeautiStarBeastTest extends BeautiBase {
 		f.selectTab("Site Model");
 		for (int i = 0; i < 3; i++) {
 			beautiFrame.list().selectItem(i);
-			beautiFrame.comboBox().selectItem("HKY");
+			beautiFrame.comboBox("substModel").selectItem("HKY");
 			JComboBoxFixture freqs = beautiFrame.comboBox("frequencies");
 			freqs.selectItem("Empirical");
 			//beautiFrame.checkBox("mutationRate.isEstimated").check();
