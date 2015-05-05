@@ -1,6 +1,8 @@
 package beast.evolution.speciation;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import beast.core.Description;
 import beast.core.Function;
@@ -9,6 +11,7 @@ import beast.core.Loggable;
 import beast.core.StateNode;
 import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.parameter.Parameter;
 import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -22,6 +25,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
     public Input<Function> parameterTopInput = new Input<Function>("popSizeTop", "population size parameter associated with top of tree branches, only used for non-constant *beast analysis");
     public Input<SpeciesTreePrior> speciesTreePriorInput = new Input<SpeciesTreePrior>("speciesTreePrior", "species tree prior, used to find which Population Size Function is used. If not specified, assumes 'constant'");
     public Input<TreeTopFinder> treeTopFinderInput = new Input<TreeTopFinder>("treetop", "calculates height of species tree", Validate.REQUIRED);
+    public Input<List<Function>> metadataInput = new Input<List<Function>>("metadata", "meta data to be logged with the tree nodes",new ArrayList<>());
 
     TreePopSizeFunction popSizeFunction;
     String metaDataLabel;
@@ -57,24 +61,31 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
             metadataTop = ((StateNode) metadataTop).getCurrent();
         }
 
+        List<Function> metadataList = metadataInput.get();
+        for (int i = 0; i < metadataList.size(); i++) {
+        	if (metadataList.get(i) instanceof StateNode) {
+        		metadataList.set(i, ((StateNode) metadataList.get(i)).getCurrent());
+        	}
+        }
+
         // write out the log tree with meta data
         out.print("tree STATE_" + nSample + " = ");
         tree.getRoot().sort();
-        out.print(toNewick(tree.getRoot(), metadata, metadataTop));
+        out.print(toNewick(tree.getRoot(), metadata, metadataTop, metadataList));
         //out.print(tree.getRoot().toShortNewick(false));
         out.print(";");
     }
 
 
-    String toNewick(final Node node, final Function metadata, final Function metadataTop) {
+    String toNewick(final Node node, final Function metadata, final Function metadataTop, List<Function> metadataList) {
         final StringBuilder buf = new StringBuilder();
 
         if (node.getLeft() != null) {
             buf.append("(");
-            buf.append(toNewick(node.getLeft(), metadata, metadataTop));
+            buf.append(toNewick(node.getLeft(), metadata, metadataTop, metadataList));
             if (node.getRight() != null) {
                 buf.append(',');
-                buf.append(toNewick(node.getRight(), metadata, metadataTop));
+                buf.append(toNewick(node.getRight(), metadata, metadataTop, metadataList));
             }
             buf.append(")");
         } else {
@@ -115,6 +126,33 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
                 }
                 buf.append(",").append(popEnd).append("}");
                 break;
+        }
+        if (metadataList.size() > 0) {
+        	for (Function metadata2 : metadataList) {
+	            if (metadataList.indexOf(metadata2) > 0 || buf.length() > 1) {
+	            	buf.append(",");
+	            }
+	            buf.append(((BEASTObject)metadata2).getID());
+	            buf.append('=');
+	            if (metadata2 instanceof Parameter<?>) {
+	            	Parameter p = (Parameter) metadata2;
+	            	int dim = p.getMinorDimension1();
+	            	if (dim > 1) {
+		            	buf.append('{');
+		            	for (int i = 0; i < dim; i++) {
+			            	buf.append(p.getMatrixValue(node.getNr(), i));
+			            	if (i < dim - 1) {
+				            	buf.append(',');
+			            	}
+		            	}
+		            	buf.append('}');
+	            	} else {
+		            	buf.append(metadata2.getArrayValue(node.getNr()));
+	            	}
+	            } else {
+	            	buf.append(metadata2.getArrayValue(node.getNr()));
+	            }
+        	}
         }
         buf.append(']');
         if (!node.isRoot()) {
