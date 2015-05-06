@@ -2,10 +2,12 @@ package beast.evolution.tree;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 
 import beast.core.Description;
 import beast.core.Input;
@@ -52,6 +54,8 @@ public class TraitSet extends BEASTObject {
     double[] values;
     double minValue;
     double maxValue;
+    
+    Map<String, Integer> map;
 
     /**
      * Whether or not values are ALL numeric.
@@ -67,6 +71,7 @@ public class TraitSet extends BEASTObject {
         // first, determine taxon numbers associated with traits
         // The Taxon number is the index in the alignment, and
         // used as node number in a tree.
+        map = new HashMap<String, Integer>();
         List<String> labels = taxaInput.get().asStringList();
         String[] traits = traitsInput.get().split(",");
         taxonValues = new String[labels.size()];
@@ -132,11 +137,20 @@ public class TraitSet extends BEASTObject {
         return taxonValues[iTaxonNr];
     }
 
+    @Deprecated // use getValue by name instead
     public double getValue(int iTaxonNr) {
         if (values == null) {
             return 0;
         }
         return values[iTaxonNr];
+    }
+    
+    public double getValue(String taxonName) {
+        if (values == null || map == null) {
+                return 0;
+        }
+        //Log.trace.println("Trait " + taxonName + " => " + values[map.get(taxonName)]);
+        return values[map.get(taxonName)];
     }
 
     /**
