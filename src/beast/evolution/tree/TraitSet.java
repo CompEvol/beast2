@@ -89,6 +89,7 @@ public class TraitSet extends BEASTObject {
             }
             taxonValues[taxonNr] = normalize(sStrs[1]);
             values[taxonNr] = parseDouble(taxonValues[taxonNr]);
+            map.put(taxonID, taxonNr);
             
             if (Double.isNaN(values[taxonNr]))
                 numeric = false;
@@ -146,7 +147,7 @@ public class TraitSet extends BEASTObject {
     }
     
     public double getValue(String taxonName) {
-        if (values == null || map == null) {
+        if (values == null || map == null || map.get(taxonName) == null) {
                 return 0;
         }
         //Log.trace.println("Trait " + taxonName + " => " + values[map.get(taxonName)]);
