@@ -52,7 +52,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     /**
      * a square m_nStates x m_nStates matrix containing current rates  *
      */
-    double[][] rateMatrix;
+    protected double[][] rateMatrix;
 
 
     @Override

@@ -101,12 +101,12 @@ public interface SubstitutionModel {
         /**
          * shadows frequencies, or can be set by subst model *
          */
-        Frequencies frequencies;
+        protected Frequencies frequencies;
 
         /**
          * number of states *
          */
-        int nrOfStates;
+        protected int nrOfStates;
 
         @Override
         public void initAndValidate() throws Exception {
