@@ -12,6 +12,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import beast.app.draw.InputEditor;
+import beast.app.draw.SmallButton;
 import beast.core.Input;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Taxon;
@@ -52,7 +53,6 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         taxonButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JButton taxonButton = (JButton) e.getSource();
                 List<?> list = (List<?>) m_input.get();
                 MRCAPrior prior = (MRCAPrior) list.get(itemNr);
                 try {
@@ -130,7 +130,23 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         isMonophyleticdBox.setToolTipText(prior.isMonophyleticInput.getHTMLTipText());
         isMonophyleticdBox.addActionListener(new MRCAPriorActionListener(prior));
         itemBox.add(isMonophyleticdBox);
+
+        JButton deleteButton = new SmallButton("-", true);
+        deleteButton.setToolTipText("Delete this calibration");
+        deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.err.println("Trying to delete a calibration");
+				List<?> list = (List<?>) m_input.get();
+				MRCAPrior prior = (MRCAPrior) list.get(itemNr);
+				doc.disconnect(prior, "prior", "distribution");
+				doc.disconnect(prior, "tracelog", "log");
+				doc.unregisterPlugin(prior);
+				refreshPanel();
+			}        	
+        });
         itemBox.add(Box.createGlue());
+        itemBox.add(deleteButton);
 
         add(itemBox);
 	}
