@@ -5,11 +5,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 
 import javax.swing.JOptionPane;
+
+import beast.core.util.Log;
 
 
 /**
@@ -52,40 +55,52 @@ public class BeastLauncher {
 		boolean foundOne = false;
 		while ((!foundOne) && (jarDir0 != null)) { // && jarDir0.exists() &&
 											// jarDir0.isDirectory()) {
-			File jarDir = (isWindows() ? new File(jarDir0.getAbsolutePath() + "\\lib") : new File(jarDir0.getAbsolutePath() + "/lib"));
-			System.err.println("Checking out " + jarDir.getAbsolutePath());
-			if (jarDir.exists()) {
-//				for (String sFile : jarDir.list()) {
-//					if (sFile.endsWith(".jar")) {
-						URL url = new URL("file://" + jarDir.getAbsolutePath() + "/beast.jar");
-						URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
-						Class<?> sysclass = URLClassLoader.class;
-						try {
-							// Parameters
-							Class<?>[] parameters = new Class[] { URL.class };
-							Method method = sysclass.getDeclaredMethod("addURL", parameters);
-							method.setAccessible(true);
-							method.invoke(sysLoader, new Object[] { url });
-							System.err.println("Loaded URL " + url);
-							foundOne = true;
-						} catch (Throwable t) {
-							t.printStackTrace();
-							throw new IOException("Error, could not add URL to system classloader");
-						}
-				        String classpath = System.getProperty("java.class.path");
-				        String sJar = url + "";
-				        classpath += System.getProperty("path.separator") + sJar.substring(5);
-				        System.setProperty("java.class.path", classpath);
-					}
-//				}
-//			}
+			foundOne = checkForBEAST(jarDir0, clu);
+			foundOne = foundOne ||
+			    checkForBEAST((isWindows() ? new File(jarDir0.getAbsolutePath() + "\\lib") : new File(jarDir0.getAbsolutePath() + "/lib")), clu);
+			
 			jarDir0 = jarDir0.getParentFile();
+		}
+		
+		if (!foundOne) {
+			Log.warning.println("WARNING: could not find beast.jar");
+			// if beast.jar or its classes are not already in the class path (as is when launched e.g. as developer)
+			// the next line will fail
 		}
 		
 		// initialise beast.jar
         Method method = Class.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
         method.invoke(null);
 
+	}
+
+	private static boolean checkForBEAST(File jarDir, Object clu) throws IOException {
+		System.err.println("Checking out " + jarDir.getAbsolutePath());
+		boolean foundOne = false;
+		if (jarDir.exists()) {
+			URL url = new URL("file://" + jarDir.getAbsolutePath() + "/beast.jar");
+			if (new File(jarDir.getAbsoluteFile()+File.separator+"beast.jar").exists()) {
+				URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
+				Class<?> sysclass = URLClassLoader.class;
+				try {
+					// Parameters
+					Class<?>[] parameters = new Class[] { URL.class };
+					Method method = sysclass.getDeclaredMethod("addURL", parameters);
+					method.setAccessible(true);
+					method.invoke(sysLoader, new Object[] { url });
+					System.err.println("Loaded URL " + url);
+					foundOne = true;
+				} catch (Throwable t) {
+					t.printStackTrace();
+					throw new IOException("Error, could not add URL to system classloader");
+				}
+		        String classpath = System.getProperty("java.class.path");
+		        String sJar = url + "";
+		        classpath += System.getProperty("path.separator") + sJar.substring(5);
+		        System.setProperty("java.class.path", classpath);
+			}
+		}
+		return foundOne;
 	}
 
 	static boolean isMac() {

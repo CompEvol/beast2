@@ -87,6 +87,7 @@
         <delete file="${build}/beast/app/tools/AppStoreLauncher.class" />
         <delete file="${build}/beast/app/tools/LogCombinerLauncher.class" />
         <delete file="${build}/beast/app/treeannotator/TreeAnnotatorLauncher.class" />
+        <delete file="${build}/beast/app/util/Utils6.class" />
         <javac source="1.6"
                target="1.6"
                bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
@@ -98,6 +99,7 @@
                memorymaximumsize="1024m"
                includeAntRuntime='false'>
             <include name="beast/**/*Launcher.java" />
+            <include name="beast/**/Utils6.java" />
         </javac>
         <copy todir="${build}">
             <fileset dir="${src}" includes="**/*.properties" />
@@ -132,6 +134,8 @@
         <jar jarfile="${dist}/launcher.jar">
             <fileset dir="${build}">
                 <include name="beast/**/*Launcher.class" />
+                <include name="beast/**/Utils6*.class" />
+                <include name="beast/app/draw/icons/beauti.png"/>
             </fileset>
         </jar>
         <jar jarfile="${dist}/beast.src.jar">
@@ -477,7 +481,7 @@
                    shortversion="${version}"
                    copyright="${BEAST_name}, ${copyright}"
                    mainclassname="beast.app.beastapp.BeastLauncher">
-            <librarypath file="${dist}/beast.jar"/>
+            <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
@@ -505,7 +509,7 @@
                    shortversion="${version}"
                    copyright="${BEAUti_name}, ${copyright}"
                    mainclassname="beast.app.beauti.BeautiLauncher">
-            <librarypath file="${dist}/beast.jar"/>
+            <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Xdock:name=&quot;BEAUti&quot;"/>
@@ -532,7 +536,7 @@
                    shortversion="${version}"
                    copyright="${LogCombiner_name}, ${copyright}"
                    mainclassname="beast.app.tools.LogCombinerLauncher">
-            <librarypath file="${dist}/beast.jar"/>
+            <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
@@ -557,7 +561,7 @@
                    shortversion="${version}"
                    copyright="${TreeAnnotator_name}, ${copyright}"
                    mainclassname="beast.app.treeannotator.TreeAnnotatorLauncher">
-            <librarypath file="${dist}/beast.jar"/>
+            <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
@@ -605,7 +609,7 @@
                    shortversion="${version}"
                    copyright="${AppStore_name}, ${copyright}"
                    mainclassname="beast.app.tools.AppStoreLauncher">
-            <librarypath file="${dist}/beast.jar"/>
+            <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
