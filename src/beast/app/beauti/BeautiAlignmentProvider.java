@@ -3,6 +3,7 @@ package beast.app.beauti;
 
 
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -22,7 +22,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import beast.app.draw.ExtensionFileFilter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.BEASTObject;
@@ -42,20 +41,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	
 	public Input<BeautiSubTemplate> template = new Input<BeautiSubTemplate>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
 
-    private JFileChooser fileChooser;
 	
 	@Override
 	public void initAndValidate() throws Exception {
-        fileChooser = new JFileChooser(Beauti.g_sDir);
-
-  		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(".xml", "Beast xml file (*.xml)"));
-		String[] extsf = { ".fas", ".fst", ".fasta", ".fna", ".ffn", ".faa", ".frn" };
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(extsf, "Fasta file (*.fas)"));
-		String[] exts = { ".nex", ".nxs", ".nexus" };
-		fileChooser.addChoosableFileFilter(new ExtensionFileFilter(exts, "Nexus file (*.nex)"));
-
-		fileChooser.setDialogTitle("Load Alignment");
-		fileChooser.setMultiSelectionEnabled(true);  }
+	}
 	
 	/** 
 	 * return amount to which the provided matches an alignment 
@@ -66,16 +55,16 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	}
 	
 	/** 
-	 * return new alignment, return null if not successfull 
+	 * return new alignment, return null if not successful 
 	 * **/
 	List<BEASTInterface> getAlignments(BeautiDoc doc) {
-
-		int rval = fileChooser.showOpenDialog(null);
-
-		if (rval == JFileChooser.APPROVE_OPTION) {
-			File[] files = fileChooser.getSelectedFiles();
+        File [] files = beast.app.util.Utils.getLoadFiles("Load Alignment File",
+                new File(Beauti.g_sDir), "Alignment files", "xml", 
+                "fas","fst","fasta","fna","ffn","faa","frn",
+                "nex","nxs","nexus");
+        if (files != null && files.length > 0) {
             return getAlignments(doc, files);
-		}
+        }
 		return null;
 	}
 

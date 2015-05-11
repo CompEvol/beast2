@@ -208,8 +208,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     "There is no data to save to file");
             return false;
         }
+        String fileSep = System.getProperty("file.separator");
+        if (fileSep.equals("\\")) {
+            fileSep = "\\\\";
+        }
+        String defaultFile = g_sDir + (doc.getFileName().equals("") ? "" : fileSep + new File(doc.getFileName()).getName());
         File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(
-                doc.getFileName()), null, FILE_EXT, FILE_EXT2);
+                defaultFile), null, FILE_EXT, FILE_EXT2);
         if (file != null) {
             if (file.exists() && !Utils.isMac()) {
                 if (JOptionPane.showConfirmDialog(null,
@@ -222,10 +227,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // System.out.println("Saving to file \""+
             // f.getAbsoluteFile().toString()+"\"");
             doc.setFileName(file.getAbsolutePath());// fc.getSelectedFile().toString();
-            String fileSep = System.getProperty("file.separator");
-            if (fileSep.equals("\\")) {
-                fileSep = "\\\\";
-            }
             if (doc.getFileName().lastIndexOf(fileSep) > 0) {
                 g_sDir = doc.getFileName().substring(0,
                         doc.getFileName().lastIndexOf(fileSep));

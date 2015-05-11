@@ -249,7 +249,8 @@ public class Utils {
                 if (defaultFileOrDir.isDirectory()) {
                     chooser.setDirectory(defaultFileOrDir.getAbsolutePath());
                 } else {
-                    chooser.setFile(defaultFileOrDir.getAbsolutePath());
+                    chooser.setDirectory(defaultFileOrDir.getParentFile().getAbsolutePath());
+                    chooser.setFile(defaultFileOrDir.getName());
                 }
             }
             if (description != null) {
