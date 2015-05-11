@@ -9,7 +9,9 @@ import beast.app.draw.HelpBrowser;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.util.Utils;
+import beast.core.BEASTInterface;
 import beast.core.util.Log;
+import beast.evolution.alignment.Alignment;
 import beast.util.AddOnManager;
 import jam.framework.DocumentFrame;
 
@@ -135,7 +137,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
     Action a_addOn = new ActionAddOn();
-    public Action a_import = new ActionImport();
+//    public Action a_import = new ActionImport();
     public Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
     Action a_close = new ActionClose();
@@ -377,50 +379,50 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // actionPerformed
     }
 
-    class ActionImport extends MyAction {
-        private static final long serialVersionUID = 1;
-
-        public ActionImport() {
-            super("Import Alignment", "Import Alignment File", "import",
-                    KeyEvent.VK_I);
-        }
-
-        public ActionImport(String sName, String sToolTipText, String sIcon,
-                            int acceleratorKey) {
-            super(sName, sToolTipText, sIcon, acceleratorKey);
-        }
-
-        public void actionPerformed(ActionEvent ae) {
-
-            try {
-                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
-                // get user-specified alignments
-                doc.beautiConfig.selectAlignments(doc,Beauti.this);
-
-                doc.connectModel();
-                doc.fireDocHasChanged();
-                a_save.setEnabled(true);
-                a_saveas.setEnabled(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                String text = "Something went wrong importing the alignment:\n";
-                JTextArea textArea = new JTextArea(text);
-                textArea.setColumns(30);
-                textArea.setLineWrap(true);
-                textArea.setWrapStyleWord(true);
-                textArea.append(e.getMessage());
-                textArea.setSize(textArea.getPreferredSize().width, 1);
-                textArea.setOpaque(false);
-                JOptionPane.showMessageDialog(null, textArea,
-                        "Error importing alignment",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            // }
-        } // actionPerformed
-    }
+//    class ActionImport extends MyAction {
+//        private static final long serialVersionUID = 1;
+//
+//        public ActionImport() {
+//            super("Import Alignment", "Import Alignment File", "import",
+//                    KeyEvent.VK_I);
+//        }
+//
+//        public ActionImport(String sName, String sToolTipText, String sIcon,
+//                            int acceleratorKey) {
+//            super(sName, sToolTipText, sIcon, acceleratorKey);
+//        }
+//
+//        public void actionPerformed(ActionEvent ae) {
+//
+//            try {
+//                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+//
+//                // get user-specified alignments
+//                doc.beautiConfig.selectAlignments(doc,Beauti.this);
+//
+//                doc.connectModel();
+//                doc.fireDocHasChanged();
+//                a_save.setEnabled(true);
+//                a_saveas.setEnabled(true);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//
+//                String text = "Something went wrong importing the alignment:\n";
+//                JTextArea textArea = new JTextArea(text);
+//                textArea.setColumns(30);
+//                textArea.setLineWrap(true);
+//                textArea.setWrapStyleWord(true);
+//                textArea.append(e.getMessage());
+//                textArea.setSize(textArea.getPreferredSize().width, 1);
+//                textArea.setOpaque(false);
+//                JOptionPane.showMessageDialog(null, textArea,
+//                        "Error importing alignment",
+//                        JOptionPane.WARNING_MESSAGE);
+//            }
+//            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//            // }
+//        } // actionPerformed
+//    }
 
     class ActionClose extends ActionSave {
         /**
@@ -664,7 +666,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         menuBar.add(fileMenu);
         fileMenu.add(a_new);
         fileMenu.add(a_load);
-        fileMenu.add(a_import);
+        fileMenu.addSeparator();
+        addAlignmentProviderMenus(fileMenu);
         fileMenu.addSeparator();
         templateMenu = new JMenu("Template");
         fileMenu.add(templateMenu);
@@ -766,7 +769,62 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         return menuBar;
     } // makeMenuBar
 
-    void setUpViewMenu() {
+    private void addAlignmentProviderMenus(JMenu fileMenu) {
+        List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
+        for (BeautiAlignmentProvider provider : providers) {
+        	AbstractAction action = new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+		            try {
+		                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
+		                // get user-specified alignments
+				        List<BEASTInterface> plugins = provider.getAlignments(doc);
+				        if (plugins != null) {
+					        for (BEASTInterface o : plugins) {
+					        	if (o instanceof Alignment) {
+					        		try {
+					        			BeautiDoc.createTaxonSet((Alignment) o, doc);
+					        		} catch(Exception ex) {
+					        			ex.printStackTrace();
+					        		}
+					        	}
+					        }
+				        }
+
+		                doc.connectModel();
+		                doc.fireDocHasChanged();
+		                a_save.setEnabled(true);
+		                a_saveas.setEnabled(true);
+		            } catch (Exception exx) {
+		                exx.printStackTrace();
+
+		                String text = "Something went wrong importing the alignment:\n";
+		                JTextArea textArea = new JTextArea(text);
+		                textArea.setColumns(30);
+		                textArea.setLineWrap(true);
+		                textArea.setWrapStyleWord(true);
+		                textArea.append(exx.getMessage());
+		                textArea.setSize(textArea.getPreferredSize().width, 1);
+		                textArea.setOpaque(false);
+		                JOptionPane.showMessageDialog(null, textArea,
+		                        "Error importing alignment",
+		                        JOptionPane.WARNING_MESSAGE);
+		            }
+		            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+			};
+            String providerInfo = "<html>" + provider.toString() + "</html>";
+            action.putValue(Action.SHORT_DESCRIPTION, providerInfo);
+            action.putValue(Action.LONG_DESCRIPTION, providerInfo);
+            action.putValue(Action.NAME, provider.toString());
+        	fileMenu.add(action);
+        }
+	}
+
+	void setUpViewMenu() {
         m_viewPanelCheckBoxMenuItems = null;
         viewMenu.removeAll();
         for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
