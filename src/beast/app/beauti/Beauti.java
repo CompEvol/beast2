@@ -12,6 +12,7 @@ import beast.app.util.Utils;
 import beast.core.util.Log;
 import beast.util.AddOnManager;
 import jam.framework.DocumentFrame;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -19,6 +20,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -669,6 +671,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         for (AbstractAction a : templateActions) {
             templateMenu.add(a);
         }
+        JMenu workDirMenu = new JMenu("Set working dir");
+        fileMenu.add(workDirMenu);
+        List<AbstractAction> workDirMenuActions = getWorkDirActions();
+        for (AbstractAction a : workDirMenuActions) {
+        	workDirMenu.add(a);
+        }
         templateMenu.addSeparator();
         templateMenu.add(a_template);
         fileMenu.add(a_addOn);
@@ -870,6 +878,36 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 }
             }
         }
+    }
+
+    private List<AbstractAction> getWorkDirActions() {
+        List<AbstractAction> actions = new ArrayList<AbstractAction>();
+        List<String> beastDirectories = AddOnManager.getBeastDirectories();
+        for (String dir : beastDirectories) {
+        	String exampledir = dir + File.separator+ "examples";
+        	if (new File(exampledir).exists()) {
+	        	AbstractAction action = new AbstractAction() {
+					private static final long serialVersionUID = 1L;
+	
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						g_sDir = dir;
+						System.err.println("working dir is not " + g_sDir);
+					}
+	            	
+	            };
+	            String workDirInfo = "<html>" + dir + "</html>";
+	            String name = dir;
+	            if (name.indexOf(File.separator) >= 0) {
+	            	name = dir.substring(dir.lastIndexOf(File.separator) + 1);
+	            }
+	            action.putValue(Action.SHORT_DESCRIPTION, workDirInfo);
+	            action.putValue(Action.LONG_DESCRIPTION, workDirInfo);
+	            action.putValue(Action.NAME, name);
+	            actions.add(action);
+        	}
+        }
+        return actions;
     }
 
     void setMenuVisibiliy(String sParentName, Component c) {
