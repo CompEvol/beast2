@@ -816,7 +816,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 			};
-            String providerInfo = "<html>" + provider.toString() + "</html>";
+            String providerInfo = provider.toString().replaceAll("Add ", "Add partition for ");
             action.putValue(Action.SHORT_DESCRIPTION, providerInfo);
             action.putValue(Action.LONG_DESCRIPTION, providerInfo);
             action.putValue(Action.NAME, provider.toString());
@@ -869,7 +869,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 if (templateInfo == null || templateInfo.length() == 0) {
                     templateInfo = "switch to " + sName + " template";
                 }
-                templateInfo = "<html>" + templateInfo + "</html>";
+                //templateInfo = "<html>" + templateInfo + "</html>";
                 putValue(Action.SHORT_DESCRIPTION, templateInfo);
                 putValue(Action.LONG_DESCRIPTION, templateInfo);
             } catch (Exception e) {
@@ -951,11 +951,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						g_sDir = dir;
-						System.err.println("working dir is not " + g_sDir);
 					}
 	            	
 	            };
-	            String workDirInfo = "<html>" + dir + "</html>";
+	            String workDirInfo = "Set working directory to " + dir;
 	            String name = dir;
 	            if (name.indexOf(File.separator) >= 0) {
 	            	name = dir.substring(dir.lastIndexOf(File.separator) + 1);
