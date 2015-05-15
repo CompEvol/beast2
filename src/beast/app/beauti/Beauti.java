@@ -72,6 +72,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public BeautiPanel[] panels;
 
     /**
+     * menu for file handling, importing partitions, etc.
+     */
+	JMenu fileMenu;
+    /**
      * menu for switching templates *
      */
     JMenu templateMenu;
@@ -352,6 +356,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                                     + e.getMessage());
                 }
             }
+            createFileMenu();
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         } // actionPerformed
     } // ActionTemplate
@@ -661,28 +666,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     public JMenuBar makeMenuBar() {
         JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
+        fileMenu = new JMenu("File");
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
-        fileMenu.add(a_new);
-        fileMenu.add(a_load);
-        fileMenu.addSeparator();
-        addAlignmentProviderMenus(fileMenu);
-        fileMenu.addSeparator();
-        templateMenu = new JMenu("Template");
-        fileMenu.add(templateMenu);
-        List<AbstractAction> templateActions = getTemplateActions();
-        for (AbstractAction a : templateActions) {
-            templateMenu.add(a);
-        }
-        JMenu workDirMenu = new JMenu("Set working dir");
-        fileMenu.add(workDirMenu);
-        List<AbstractAction> workDirMenuActions = getWorkDirActions();
-        for (AbstractAction a : workDirMenuActions) {
-        	workDirMenu.add(a);
-        }
-        templateMenu.addSeparator();
-        templateMenu.add(a_template);
+        createFileMenu();
+        
         fileMenu.add(a_addOn);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
@@ -769,7 +757,32 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         return menuBar;
     } // makeMenuBar
 
-    private void addAlignmentProviderMenus(JMenu fileMenu) {
+    private void createFileMenu() {
+    	// first clear menu
+   		fileMenu.removeAll();
+
+        fileMenu.add(a_new);
+        fileMenu.add(a_load);
+        fileMenu.addSeparator();
+        addAlignmentProviderMenus(fileMenu);
+        fileMenu.addSeparator();
+        templateMenu = new JMenu("Template");
+        fileMenu.add(templateMenu);
+        List<AbstractAction> templateActions = getTemplateActions();
+        for (AbstractAction a : templateActions) {
+            templateMenu.add(a);
+        }
+        JMenu workDirMenu = new JMenu("Set working dir");
+        fileMenu.add(workDirMenu);
+        List<AbstractAction> workDirMenuActions = getWorkDirActions();
+        for (AbstractAction a : workDirMenuActions) {
+        	workDirMenu.add(a);
+        }
+        templateMenu.addSeparator();
+        templateMenu.add(a_template);
+	}
+
+	private void addAlignmentProviderMenus(JMenu fileMenu) {
         List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
         for (BeautiAlignmentProvider provider : providers) {
         	AbstractAction action = new AbstractAction() {
@@ -888,6 +901,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                         "Are you sure?", JOptionPane.YES_NO_CANCEL_OPTION) == JOptionPane.YES_OPTION) {
                     doc.loadNewTemplate(m_sFileName);
                 }
+                createFileMenu();
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(
@@ -896,9 +910,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                                 + ex.getMessage());
             }
         }
+
     }
 
-    private List<AbstractAction> getTemplateActions() {
+	private List<AbstractAction> getTemplateActions() {
         List<AbstractAction> actions = new ArrayList<AbstractAction>();
         List<String> sBeastDirectories = AddOnManager.getBeastDirectories();
         for (String sDir : sBeastDirectories) {
