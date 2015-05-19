@@ -415,7 +415,7 @@ public class DefaultEigenSystem implements EigenSystem {
                             }
                         }
                     }
-                } else if (q > 0.0) {
+                } else if (q < 0.0) {
                     m = na;
                     if (Math.abs(h[en - 1][na - 1]) > Math.abs(h[na - 1][en - 1])) {
                         h[na - 1][na - 1] = q / h[en - 1][na - 1];
