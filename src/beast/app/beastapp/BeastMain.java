@@ -544,6 +544,12 @@ public class BeastMain {
                 case "info":
                     Log.setLevel(Log.Level.info);
                     break;
+	            case "debug":
+	                Log.setLevel(Log.Level.debug);
+	                break;
+	            case "trace":
+	                Log.setLevel(Log.Level.trace);
+	                break;
             }
         }
 

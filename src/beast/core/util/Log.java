@@ -33,23 +33,36 @@ public class Log {
 		}
     	return values;
     }
+	
+	static public PrintStream err;
+	static public PrintStream warning;
+	static public PrintStream info;
+	static public PrintStream debug;
+	static public PrintStream trace;
+
+	static private PrintStream errIfOpen;
+	static private PrintStream warningIfOpen;
+	static private PrintStream infoIfOpen;
+	static private PrintStream debugIfOpen;
+	static private PrintStream traceIfOpen;
 
 	static {
+		// Initialise streams here instead of when declaring the variables.
+		// This is a static method and these are static members. 
+		//  These can suffer from different orders of initialisation, depending on JVM
+		err= System.err;
+		warning= System.err;
+		info = System.out;
+		debug = System.out;
+		trace = System.out;
+
+		errIfOpen = System.err;
+		warningIfOpen = System.err;
+		infoIfOpen = System.out;
+		debugIfOpen = System.out;
+		traceIfOpen = System.out;
 		setLevel(level);
 	}
-	
-	static public PrintStream err= System.err;
-	static public PrintStream warning= System.err;
-	static public PrintStream info = System.out;
-	static public PrintStream debug = System.out;
-	static public PrintStream trace = System.out;
-
-	static private PrintStream errIfOpen = System.err;
-	static private PrintStream warningIfOpen = System.err;
-	static private PrintStream infoIfOpen = System.out;
-	static private PrintStream debugIfOpen = System.out;
-	static private PrintStream traceIfOpen = System.out;
-
 	
 	final static public int ERROR = 0;
 	final static public int WARNING = 1;

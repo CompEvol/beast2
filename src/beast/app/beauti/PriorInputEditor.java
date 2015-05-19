@@ -105,7 +105,7 @@ public class PriorInputEditor extends InputEditor.Base {
         comboBox.setMaximumSize(new Dimension(1024, 24));
 
         String sTipText = getDoc().tipTextMap.get(plugin.getID());
-        System.out.println(plugin.getID());
+        //System.out.println(plugin.getID());
         if (sTipText != null) {
             JLabel tipTextLabel = new JLabel(" " + sTipText);
             itemBox.add(tipTextLabel);
