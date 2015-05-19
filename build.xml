@@ -213,8 +213,8 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.2.1" />
-    <property name="version_number" value="2.2.1" />
+    <property name="version" value="2.3.0" />
+    <property name="version_number" value="2.3.0" />
     <property name="release_dir" value="release" />
     <property name="copyright" value="Beast 2 development team 2011-2015" />
 
@@ -281,7 +281,7 @@
 
         <!-- BEAUTi v?.?.?.exe -->
         <launch4j configFile="${Windows_dir}/BEAUti_launch4j.xml"
-                  jar="${dist}/beast.jar"
+                  jar="${dist}/launcher.jar"
                   outfile="${Windows_package_dir}/${BEAUti_name}.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
@@ -290,7 +290,7 @@
 
         <!-- BEAST v?.?.?.exe -->
         <launch4j configFile="${Windows_dir}/BEAST_launch4j.xml"
-                  jar="${dist}/beast.jar"
+                  jar="${dist}/launcher.jar"
                   outfile="${Windows_package_dir}/${BEAST_name}.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
@@ -315,7 +315,7 @@
                               txtProductVersion="${version}"/>      -->
 
         <launch4j configFile="${Windows_dir}/LogCombiner_launch4j.xml"
-                  jar="${dist}/beast.jar"
+                  jar="${dist}/launcher.jar"
                   outfile="${Windows_package_dir}/${LogCombiner_name}.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
@@ -324,7 +324,7 @@
 
 
         <launch4j configFile="${Windows_dir}/TreeAnnotator_launch4j.xml"
-                  jar="${dist}/beast.jar"
+                  jar="${dist}/launcher.jar"
                   outfile="${Windows_package_dir}/TreeAnnotator.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
@@ -340,7 +340,7 @@
                   txtProductVersion="2.0.0.0" />
 
         <launch4j configFile="${Windows_dir}/AppStore_launch4j.xml"
-                  jar="${dist}/beast.jar"
+                  jar="${dist}/launcher.jar"
                   outfile="${Windows_package_dir}/AppStore.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
