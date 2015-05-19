@@ -602,6 +602,18 @@ public class AddOnManager {
         List<String> sDirs = getBeastDirectories();
         checkDependencies(sDirs);
         for (String sJarDir : sDirs) {
+            File versionFile = new File(sJarDir + "/version.xml");
+            if (versionFile.exists()) {
+                try {
+                    // print name and version of package
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    Document doc = factory.newDocumentBuilder().parse(versionFile);
+                    Element addon = doc.getDocumentElement();
+                    Log.info.println("Loading package " + addon.getAttribute("name") + " v" + addon.getAttribute("version"));
+                } catch (Exception e) {
+                	// too bad, won't print out any info
+                }
+            }
             File jarDir = new File(sJarDir + "/lib");
             if (!jarDir.exists()) {
                 jarDir = new File(sJarDir + "\\lib");
@@ -739,8 +751,8 @@ public class AddOnManager {
      * @param string warning to display
      */
     private static void warning(String string) {
-        System.out.println(string);
-        System.out.println("Unexpected behavior may follow!");
+        Log.warning.println(string);
+        Log.warning.println("Unexpected behavior may follow!");
         if (!java.awt.GraphicsEnvironment.isHeadless() && System.getProperty("no.beast.popup") == null) {
             JOptionPane.showMessageDialog(null, string +
                     "\nUnexpected behavior may follow!");
@@ -754,7 +766,7 @@ public class AddOnManager {
      * @param string message to display
      */
     private static void message(String string) {
-        System.out.println(string);
+    	Log.info.println(string);
         if (!java.awt.GraphicsEnvironment.isHeadless()) {
             JOptionPane.showMessageDialog(null, string);
         }
@@ -1073,11 +1085,11 @@ public class AddOnManager {
 
     private static void printUsageAndExit(Arguments arguments) {
         arguments.printUsage("addonmanager", "");
-        System.out.println("\nExamples:");
-        System.out.println("addonmanager -list");
-        System.out.println("addonmanager -add SNAPP");
-        System.out.println("addonmanager -useAppDir -add SNAPP");
-        System.out.println("addonmanager -del SNAPP");
+        Log.info.println("\nExamples:");
+        Log.info.println("addonmanager -list");
+        Log.info.println("addonmanager -add SNAPP");
+        Log.info.println("addonmanager -useAppDir -add SNAPP");
+        Log.info.println("addonmanager -del SNAPP");
         System.exit(0);
     }
 
@@ -1095,9 +1107,9 @@ public class AddOnManager {
             try {
                 arguments.parseArguments(args);
             } catch (Arguments.ArgumentException ae) {
-                System.out.println();
-                System.out.println(ae.getMessage());
-                System.out.println();
+                Log.info.println();
+                Log.info.println(ae.getMessage());
+                Log.info.println();
                 printUsageAndExit(arguments);
             }
 
@@ -1129,9 +1141,9 @@ public class AddOnManager {
             Log.debug.println("Done!\n");
 
             if (arguments.hasOption("list")) {
-                System.out.println("Name : status : Description ");
+                Log.info.println("Name : status : Description ");
                 for (Package aPackage : packages) {
-                    System.out.println(formatPackageInfo(aPackage));
+                    Log.info.println(formatPackageInfo(aPackage));
                 }
             }
 
@@ -1144,15 +1156,15 @@ public class AddOnManager {
                         if (!aPackage.isInstalled()) {
                             Log.debug.println("Start installation");
                             String dir = installPackage(aPackage, useAppDir, customDir, null);
-                            System.out.println("Package " + name + " is installed in " + dir + ".");
+                            Log.info.println("Package " + name + " is installed in " + dir + ".");
                         } else {
-                            System.out.println("Installation aborted: " + name + " is already installed.");
+                            Log.info.println("Installation aborted: " + name + " is already installed.");
                             System.exit(0);
                         }
                     }
                 }
                 if (!processed) {
-                    System.out.println("Could not find package '" + name + "' (typo perhaps?)");
+                    Log.info.println("Could not find package '" + name + "' (typo perhaps?)");
                 }
             }
 
@@ -1165,15 +1177,15 @@ public class AddOnManager {
                         if (aPackage.isInstalled()) {
                             Log.debug.println("Start un-installation");
                             String dir = uninstallPackage(aPackage, useAppDir, customDir, null, false);
-                            System.out.println("Package " + name + " is uninstalled from " + dir + ".");
+                            Log.info.println("Package " + name + " is uninstalled from " + dir + ".");
                         } else {
-                            System.out.println("Un-installation aborted: " + name + " is not installed yet.");
+                            Log.info.println("Un-installation aborted: " + name + " is not installed yet.");
                             System.exit(0);
                         }
                     }
                 }
                 if (!processed) {
-                    System.out.println("Could not find package '" + name + "' (typo perhaps?)");
+                    Log.info.println("Could not find package '" + name + "' (typo perhaps?)");
                 }
             }
         } catch (Exception e) {
