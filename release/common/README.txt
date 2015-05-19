@@ -1,16 +1,16 @@
-                    BEAST v2.2.1 2015
+                    BEAST v2.3.0 2015
                  Beast 2 development team 2011-2015
 
-Last updated: March 2015
+Last updated: May 2015
 
 Contents:
 1) INTRODUCTION
-2) UNINSTALLING OLDER BEAST 2.x.x VERSIONS
-3) INSTALLING BEAST
-4) CONVERTING SEQUENCES
-5) RUNNING BEAST
-6) ANALYZING RESULTS
-7) NATIVE LIBRARIES
+2) INSTALLING BEAST
+3) CONVERTING SEQUENCES
+4) RUNNING BEAST
+5) ANALYZING RESULTS
+6) NATIVE LIBRARIES
+7) UNINSTALLING OLDER BEAST 2.x.x VERSIONS
 8) SUPPORT & LINKS
 9) ACKNOWLEDGMENTS 
 
@@ -39,21 +39,8 @@ BEAST is not a black-box into which you can put your data and expect an
 easily interpretable answer. It requires careful inspection of the output
 to check that it has performed correctly and usually will need tweaking,
 adjustment and a number of runs to get a valid answer. Sorry.
-
 ___________________________________________________________________________
-2) UNINSTALLING OLDER BEAST 2.x.x VERSIONS
-
-If you installed BEAST version 2.x.x, you must can remove the packages (add-ons)
-installed with that version of BEAST. The easiest way to do this is in BEAUti
-version 2.x.x, using the add-on manager under the menu File/Mangage add-ons.
-
-Alternatively, delete the package directory:
-C:\Users\<yourusername>\BEAST                            on Windows
-/Users/<yourusername>/Library/Application Support/BEAST  on Mac
-/home/<yourusername>/.beast                              on Linux
-
-___________________________________________________________________________
-3) INSTALLING BEAST
+2) INSTALLING BEAST
 
 BEAST requires a Java Virtual Machine to run. Many systems will already
 have this installed. It requires at least version 1.8 of Java to run. The
@@ -75,7 +62,7 @@ bin/            Scripts of the corresponding OS
 templates/      Templates to initiate BEAUti
 
 ___________________________________________________________________________
-4) CONVERTING SEQUENCES
+3) CONVERTING SEQUENCES
 
 A program called "BEAUti" will import data in NEXUS format, allow you to
 select various models and options and generate an XML file ready for use in
@@ -88,7 +75,7 @@ Try opening an MS-DOS window and typing:
 	java -cp lib/beast.jar beast.app.beauti.Beauti
 
 __________________________________________________________________________
-5) RUNNING BEAST
+4) RUNNING BEAST
 
 To run BEAST simply double-click the "BEAST.exe" file in the BEAST
 folder. You will be asked to select a BEAST XML input file.
@@ -122,6 +109,7 @@ BEAST arguments:
     -threads The number of computational threads to use (default auto)
     -java Use Java only, no native implementations
     -noerr Suppress all output to standard error
+    -loglevel error,warning,info,debug,trace
     -beagle Use beagle library if available
     -beagle_info BEAGLE: show information on available resources
     -beagle_order BEAGLE: set order of resource use
@@ -139,7 +127,7 @@ For example:
      java -jar lib/beast.jar -seed 123456 -overwrite input.xml
 
 ___________________________________________________________________________
-6) ANALYZING RESULTS
+5) ANALYZING RESULTS
 
 We have produced a powerful graphical program for analysing MCMC log files
 (it can also analyse output from MrBayes and other MCMCs). This is called
@@ -160,7 +148,7 @@ viewed in a new program called 'FigTree' which is available from:
 or 'DensiTree' available from BEAST package.
 
 ___________________________________________________________________________
-7) NATIVE LIBRARIES
+6) NATIVE LIBRARIES
 
 We recommend that you install the BEAGLE library. BEAST attempts to use 
 BEAGLE by default and this can speed up running BEAST considerably. The 
@@ -168,6 +156,20 @@ BEAGLE library needs to be installed separately from BEAST, and can be
 obtained from:
 
 http://code.google.com/p/beagle-lib/
+
+
+___________________________________________________________________________
+7) UNINSTALLING OLDER BEAST 2.x.x VERSIONS
+
+If you installed BEAST version 2.x.x, you do no longer need to remove the 
+packages (add-ons) installed with that version of BEAST. But if you want to
+uninstall these packages, the easiest way to do this is in BEAUti
+version 2.x.x, using the add-on manager under the menu File/Mangage add-ons.
+
+Alternatively, delete the package directory:
+C:\Users\<yourusername>\BEAST                            on Windows
+/Users/<yourusername>/Library/Application Support/BEAST  on Mac
+/home/<yourusername>/.beast                              on Linux
 
 ___________________________________________________________________________
 8) SUPPORT & LINKS
