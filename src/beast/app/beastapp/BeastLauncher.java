@@ -78,7 +78,7 @@ public class BeastLauncher {
 		System.err.println("Checking out " + jarDir.getAbsolutePath());
 		boolean foundOne = false;
 		if (jarDir.exists()) {
-			URL url = new URL("file://" + jarDir.getAbsolutePath() + "/beast.jar");
+			URL url = new URL("file://" + (isWindows() ? "/" : "") + jarDir.getAbsolutePath() + "/beast.jar");
 			if (new File(jarDir.getAbsoluteFile()+File.separator+"beast.jar").exists()) {
 				URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
 				Class<?> sysclass = URLClassLoader.class;
