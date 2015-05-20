@@ -520,13 +520,22 @@ public class Input<T> {
                         } else {
                             // it is not a list (or if it is, this will fail)
                             try {
-                                theClass = (Class<?>) genericTypes[0];
+                            	Object o = genericTypes[0];
+                            	if (o instanceof ParameterizedType) {
+                                    Type rawType = ((ParameterizedType) genericTypes[0]).getRawType();
+                                    System.err.println(rawType.getTypeName());
+                            		if (rawType.getTypeName().equals("java.util.List")) {
+                            			// if we got here, value==null
+                            			throw new Exception("Programming error: Input<List> not initialised");
+                            		}
+                            	}
+                                theClass = (Class<?>) o;
                             } catch (Exception e) {
                                 // resolve ID
                                 String id = "";
                                 Method method = plugin.getClass().getMethod("getID");
                                 if (method != null) {
-                                    id = method.invoke(plugin).toString();
+                                    id = (String) method.invoke(plugin);
                                 }
                                 // assemble error message
                                 System.err.println(plugin.getClass().getName() + " " + id + " failed. " +
