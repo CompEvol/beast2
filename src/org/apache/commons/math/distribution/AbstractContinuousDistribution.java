@@ -136,10 +136,22 @@ public abstract class AbstractContinuousDistribution
         }
 
         // find root
-        double root = UnivariateRealSolverUtils.solve(rootFindingFunction,
-                // override getSolverAbsoluteAccuracy() to use a Brent solver with
-                // absolute accuracy different from BrentSolver default
-                bracket[0], bracket[1], getSolverAbsoluteAccuracy());
+        double eps = 10.0 * getSolverAbsoluteAccuracy();
+        double root = 0;
+        while (Math.abs(root) < 1000*eps && eps > 1e-320) {
+        	eps /= 10.0;
+            root = UnivariateRealSolverUtils.solve(rootFindingFunction,
+                    // override getSolverAbsoluteAccuracy() to use a Brent solver with
+                    // absolute accuracy different from BrentSolver default
+                    bracket[0], bracket[1], eps);
+        }
+        if (Math.abs(root) < eps) {
+        	root = 0;
+        }
+//        double root = UnivariateRealSolverUtils.solve(rootFindingFunction,
+//                // override getSolverAbsoluteAccuracy() to use a Brent solver with
+//                // absolute accuracy different from BrentSolver default
+//        		bracket[0], bracket[1], getSolverAbsoluteAccuracy());
         return root;
     }
 

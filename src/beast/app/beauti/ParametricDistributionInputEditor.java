@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.BEASTInterface;
 import beast.core.Input;
@@ -15,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+
 import org.apache.commons.math.MathException;
 
 public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
@@ -25,6 +27,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
 	private static final long serialVersionUID = 1L;
     boolean useDefaultBehavior;
+	boolean mayBeUnstable;
 
     @Override
     public Class<?> type() {
@@ -243,6 +246,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 FontMetrics fontMetrics = g.getFontMetrics();
                 String[] sStrs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
                 Double[] fQuantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
+            	mayBeUnstable = false;
                 for (k = 0; k < 5; k++) {
 
                     int y = TOP_MARGIN + nGraphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * 10;
@@ -254,6 +258,12 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                     }
                     g.drawString(sStrs[k], nGraphWidth / 2 - fontMetrics.stringWidth(sStrs[k]) + leftMargin - 10, y);
                 }
+                if (mayBeUnstable) {
+                	int x = nGraphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + nGraphHeight + bottomMargin + 10;
+                    g.drawString("* numbers", x, y + 20); 
+                    g.drawString("may not be", x, y + 30);                	
+                    g.drawString("accurate", x, y + 40);                	
+                }
             } catch (Exception e) {
                 // probably something wrong with the parameters of the parametric distribution
                 g.drawString("Improper parameters", leftMargin, TOP_MARGIN + nGraphHeight + bottomMargin + g.getFontMetrics().getMaxAscent());
@@ -264,6 +274,10 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             StringWriter writer = new StringWriter();
             PrintWriter pw = new PrintWriter(writer);
             pw.printf("%.3g", value);
+            if (value != 0.0 && Math.abs(value) / 1000 < 1e-320) { // 2e-6 = 2 * AbstractContinuousDistribution.solverAbsoluteAccuracy
+            	mayBeUnstable = true;
+            	pw.printf("*");
+            }
             pw.flush();
             return writer.toString();
         }
