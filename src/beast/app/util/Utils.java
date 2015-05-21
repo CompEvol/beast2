@@ -117,15 +117,15 @@ public class Utils {
         try {
 
             if (!lafLoaded) {
-                if (isMac()) {
-                    UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-                } else if (isWindows()) {
-                    UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-                } else { // If Linux
+            	if (System.getProperty("beast.laf") != null && !System.getProperty("beast.laf").equals("")) {
+                    UIManager.setLookAndFeel(System.getProperty("beast.laf"));
+            	} else if (isMac()) {
+                   	UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+                } else { // If Windows or Linux 
                     try {
-                        UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-                    } catch (Exception e) {
                         UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                    } catch (Exception e) {
+                        UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
                     }
                 }
             }
