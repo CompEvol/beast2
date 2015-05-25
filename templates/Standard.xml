@@ -146,7 +146,7 @@
         />
 		<mergepoint id='aux-panels'/>
 
-		<alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@StandardPartitionTemplate'/>
+		<alignmentProvider id="Import Alignment" spec='BeautiAlignmentProvider' template='@StandardPartitionTemplate'/>
 
 
         <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
