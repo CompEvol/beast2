@@ -2,15 +2,23 @@ package beast.app.beauti;
 
 
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import beast.app.draw.BEASTObjectPanel;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Logger;
@@ -61,7 +69,9 @@ public class BeautiSubTemplate extends BEASTObject {
         sMainID = sMainInput.get();
         // sanity check: make sure the XML is parseable
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast>" + sXML + "</beast>")));
+        Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast xmlns:beauti='http://beast2.org'>" + sXML + "</beast>")));
+        sXML = processDoc(doc);
+        
         // make sure there are no comments in the XML: this screws up any XML when saved to file
         if (sXML.contains("<!--")) {
             while (sXML.contains("<!--")) {
@@ -89,6 +99,137 @@ public class BeautiSubTemplate extends BEASTObject {
 ////			conditions[i] = connector.connectCondition.get(); 
 //		}
     }
+
+    /* go through DOM document
+     * pick up items that should be translated to BeautiConnectors
+     * Remove any connector related code from DOM and return resulting XML as String
+     */
+    private String processDoc(Document doc) throws Exception {
+        // find top level beast element
+        final NodeList nodes = doc.getElementsByTagName("*");
+        if (nodes == null || nodes.getLength() == 0) {
+            throw new Exception("Expected top level beast element in XML");
+        }
+        final Node topNode = nodes.item(0);
+        // process top level elements
+        NodeList toplevels = topNode.getChildNodes();
+        for (int i = 0; i < toplevels.getLength(); i++) {
+        	Node node = toplevels.item(i);
+        	// find elements with an idref attribute
+        	if (node.getNodeType() == Node.ELEMENT_NODE) {
+        		if (node.getAttributes().getNamedItem("idref") != null) {
+        			String targetID = XMLParser.getAttribute(node, "idref");
+        			topNode.removeChild(node);
+        			i--;
+
+        			// top-level elements with idref either have an if element containing a condition, like so:
+        			// <logger idref="tracelog">
+					//     <if cond="inposterior(HKY) and kappa/estimate=true">
+					//        <log idref="kappa"/>
+					//        <log idref="alpha"/>
+					//     </if>
+					// </logger>
+        			//
+        			// or contain elements, each with their own conditions, like so
+        			//
+					// <logger idref="tracelog">
+					//    <log idref="kappa" beauti:if="inposterior(HKY) and kappa/estimate=true"/>
+					//    <log idref="alpha" beauti:if="inposterior(HKY) and alpha/estimate=true"/>
+					// </logger>
+        			//
+        			// tedious DOM parsing distinguishing these cases follows...
+        			
+        			NodeList children = node.getChildNodes();
+        			for (int j = 0; j < children.getLength(); j++) {
+        				Node child = children.item(j);
+        				if (child.getNodeType() == Node.ELEMENT_NODE) {
+        					// determine target input name
+        					String inputName = child.getNodeName();
+        					String name = XMLParser.getAttribute(child, "name");
+        					if (name != null) {
+        						inputName = name;
+        					}
+        					if (inputName.equals("if")) {
+        						// process if-element e.g.
+        						String condition = XMLParser.getAttribute(child, "cond");
+        						NodeList childrenOfIf = child.getChildNodes();
+        						for (int k = 0; k < childrenOfIf.getLength(); k++) {
+        							Node child2 = childrenOfIf.item(k);
+        							if (child2.getNodeType() == Node.ELEMENT_NODE) {
+        	        					// determine source ID
+        	        					boolean hasIDRef = true;
+        	        					String sourceID = XMLParser.getAttribute(child2, "idref");
+        	        					if (sourceID == null) {
+        	        						sourceID = XMLParser.getAttribute(child2, "id");
+        	        						hasIDRef = false;
+        	        					}
+        	        					if (sourceID == null) {
+        	        						throw new Exception("idref and id not specified on element with name '" + name +"'");
+        	        					}
+        	        					inputName = child2.getNodeName();
+        	        					String name2 = XMLParser.getAttribute(child2, "name");
+        	        					if (name2 != null) {
+        	        						inputName = name2;
+        	        					}
+        	        					BeautiConnector connector = new BeautiConnector(sourceID, targetID, inputName, condition);
+        	        					connectorsInput.get().add(connector);
+
+        	        					if (!hasIDRef) {
+        	            					topNode.appendChild(child2);
+        	            					k--;
+        	        					}
+        								
+        							} else {
+    	            					topNode.appendChild(child2);
+    	            					k--;
+        							}
+        							
+        						}
+        					} else {
+	        					// determine source ID
+	        					boolean hasIDRef = true;
+	        					String sourceID = XMLParser.getAttribute(child, "idref");
+	        					if (sourceID == null) {
+	        						sourceID = XMLParser.getAttribute(child, "id");
+	        						hasIDRef = false;
+	        					}
+	        					if (sourceID == null) {
+	        						throw new Exception("idref and id not specified on element with name '" + name +"'");
+	        					}
+	        					String condition = XMLParser.getAttribute(child, "beauti:if");
+	        					if (condition != null) {
+	        						Node ifNode = child.getAttributes().removeNamedItem("beauti:if");
+	        					}
+	
+	        					BeautiConnector connector = new BeautiConnector(sourceID, targetID, inputName, condition);
+	        					connectorsInput.get().add(connector);
+	        					if (!hasIDRef) {
+	            					topNode.appendChild(child);
+	            					j--;
+	        					}
+        					}
+        				} else {
+        					topNode.appendChild(children.item(j));
+        					j--;
+        				}
+        			}
+        		}
+        	}
+        }
+        
+    	// translate DOM back to String
+        // TODO: move to XMLParserUtils
+	    DOMSource domSource = new DOMSource(doc);
+	    StringWriter writer = new StringWriter();
+	    StreamResult result = new StreamResult(writer);
+	    TransformerFactory tf = TransformerFactory.newInstance();
+	    Transformer transformer = tf.newTransformer();
+	    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	    transformer.transform(domSource, result);
+	    String sXML = writer.toString();
+	    sXML = sXML.substring(sXML.indexOf("<beast xmlns:beauti=\"http://beast2.org\">") + 40, sXML.lastIndexOf("</beast>"));
+	    return sXML;
+	}
 
     public void setDoc(BeautiDoc doc) {
         this.doc = doc;
