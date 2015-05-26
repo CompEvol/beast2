@@ -10,7 +10,7 @@ public class SimpleClockModelTest extends BeautiBase {
 
 	/** check the standard clock models are there and result in correct behaviour **/
 	@Test
-	public void simpleTreePriorTest() throws Exception {
+	public void simpleClockModelTest() throws Exception {
 		warning("Load anolis.nex");
 		importAlignment("examples/nexus", new File("anolis.nex"));
 
@@ -55,7 +55,7 @@ public class SimpleClockModelTest extends BeautiBase {
 	/** switch to coalescent tree prior, then 
 	 * check the standard clock models are there and result in correct behaviour **/
 	@Test
-	public void simpleTreePriorTest2() throws Exception {
+	public void simpleClockModelTest2() throws Exception {
 		warning("Load anolis.nex");
 		importAlignment("examples/nexus", new File("anolis.nex"));
 
@@ -67,7 +67,7 @@ public class SimpleClockModelTest extends BeautiBase {
 		beautiFrame.comboBox("TreeDistribution").selectItem("Coalescent Constant Population");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:anolis", "popSize.t:anolis");
-		assertOperatorsEqual("YuleModelTreeScaler.t:anolis", "YuleModelTreeRootScaler.t:anolis", "YuleModelUniformOperator.t:anolis", "YuleModelSubtreeSlide.t:anolis", "YuleModelNarrow.t:anolis", "YuleModelWide.t:anolis", "YuleModelWilsonBalding.t:anolis", "PopSizeScaler.t:anolis");
+		assertOperatorsEqual("CoalescentConstantTreeScaler.t:anolis", "CoalescentConstantTreeRootScaler.t:anolis", "CoalescentConstantUniformOperator.t:anolis", "CoalescentConstantSubtreeSlide.t:anolis", "CoalescentConstantNarrow.t:anolis", "CoalescentConstantWide.t:anolis", "CoalescentConstantWilsonBalding.t:anolis", "PopSizeScaler.t:anolis");
 		assertPriorsEqual("CoalescentConstant.t:anolis", "PopSizePrior.t:anolis");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "popSize.t:anolis", "CoalescentConstant.t:anolis");
 		
@@ -77,7 +77,7 @@ public class SimpleClockModelTest extends BeautiBase {
 		beautiFrame.comboBox().selectItem("Relaxed Clock Exponential");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:anolis", "popSize.t:anolis", "expRateCategories.c:anolis");
-		assertOperatorsEqual("YuleModelTreeScaler.t:anolis", "YuleModelTreeRootScaler.t:anolis", "YuleModelUniformOperator.t:anolis", "YuleModelSubtreeSlide.t:anolis", "YuleModelNarrow.t:anolis", "YuleModelWide.t:anolis", "YuleModelWilsonBalding.t:anolis", "PopSizeScaler.t:anolis", "ExpCategoriesRandomWalk.c:anolis", "ExpCategoriesSwapOperator.c:anolis", "ExpCategoriesUniform.c:anolis");
+		assertOperatorsEqual("CoalescentConstantTreeScaler.t:anolis", "CoalescentConstantTreeRootScaler.t:anolis", "CoalescentConstantUniformOperator.t:anolis", "CoalescentConstantSubtreeSlide.t:anolis", "CoalescentConstantNarrow.t:anolis", "CoalescentConstantWide.t:anolis", "CoalescentConstantWilsonBalding.t:anolis", "PopSizeScaler.t:anolis", "ExpCategoriesRandomWalk.c:anolis", "ExpCategoriesSwapOperator.c:anolis", "ExpCategoriesUniform.c:anolis");
 		assertPriorsEqual("CoalescentConstant.t:anolis", "PopSizePrior.t:anolis");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "popSize.t:anolis", "CoalescentConstant.t:anolis", "rateStat.c:anolis");
 		
@@ -85,7 +85,7 @@ public class SimpleClockModelTest extends BeautiBase {
 		beautiFrame.comboBox().selectItem("Relaxed Clock Log Normal");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:anolis", "popSize.t:anolis", "ucldStdev.c:anolis", "rateCategories.c:anolis");
-		assertOperatorsEqual("YuleModelTreeScaler.t:anolis", "YuleModelTreeRootScaler.t:anolis", "YuleModelUniformOperator.t:anolis", "YuleModelSubtreeSlide.t:anolis", "YuleModelNarrow.t:anolis", "YuleModelWide.t:anolis", "YuleModelWilsonBalding.t:anolis", "PopSizeScaler.t:anolis", "ucldStdevScaler.c:anolis", "CategoriesRandomWalk.c:anolis", "CategoriesSwapOperator.c:anolis", "CategoriesUniform.c:anolis");
+		assertOperatorsEqual("CoalescentConstantTreeScaler.t:anolis", "CoalescentConstantTreeRootScaler.t:anolis", "CoalescentConstantUniformOperator.t:anolis", "CoalescentConstantSubtreeSlide.t:anolis", "CoalescentConstantNarrow.t:anolis", "CoalescentConstantWide.t:anolis", "CoalescentConstantWilsonBalding.t:anolis", "PopSizeScaler.t:anolis", "ucldStdevScaler.c:anolis", "CategoriesRandomWalk.c:anolis", "CategoriesSwapOperator.c:anolis", "CategoriesUniform.c:anolis");
 		assertPriorsEqual("CoalescentConstant.t:anolis", "PopSizePrior.t:anolis", "ucldStdevPrior.c:anolis");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "popSize.t:anolis", "CoalescentConstant.t:anolis", "ucldStdev.c:anolis", "rate.c:anolis");
 
@@ -93,7 +93,7 @@ public class SimpleClockModelTest extends BeautiBase {
 		beautiFrame.comboBox().selectItem("Random Local Clock");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:anolis", "popSize.t:anolis", "Indicators.c:anolis", "clockrates.c:anolis");
-		assertOperatorsEqual("YuleModelTreeScaler.t:anolis", "YuleModelTreeRootScaler.t:anolis", "YuleModelUniformOperator.t:anolis", "YuleModelSubtreeSlide.t:anolis", "YuleModelNarrow.t:anolis", "YuleModelWide.t:anolis", "YuleModelWilsonBalding.t:anolis", "PopSizeScaler.t:anolis", "IndicatorsBitFlip.c:anolis", "ClockRateScaler.c:anolis");
+		assertOperatorsEqual("CoalescentConstantTreeScaler.t:anolis", "CoalescentConstantTreeRootScaler.t:anolis", "CoalescentConstantUniformOperator.t:anolis", "CoalescentConstantSubtreeSlide.t:anolis", "CoalescentConstantNarrow.t:anolis", "CoalescentConstantWide.t:anolis", "CoalescentConstantWilsonBalding.t:anolis", "PopSizeScaler.t:anolis", "IndicatorsBitFlip.c:anolis", "ClockRateScaler.c:anolis");
 		assertPriorsEqual("CoalescentConstant.t:anolis", "PopSizePrior.t:anolis");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "popSize.t:anolis", "CoalescentConstant.t:anolis", "Indicators.c:anolis", "clockrates.c:anolis");
 
@@ -101,7 +101,7 @@ public class SimpleClockModelTest extends BeautiBase {
 		beautiFrame.comboBox().selectItem("Strict Clock");
 		printBeautiState(f);
 		assertStateEquals("Tree.t:anolis", "popSize.t:anolis");
-		assertOperatorsEqual("YuleModelTreeScaler.t:anolis", "YuleModelTreeRootScaler.t:anolis", "YuleModelUniformOperator.t:anolis", "YuleModelSubtreeSlide.t:anolis", "YuleModelNarrow.t:anolis", "YuleModelWide.t:anolis", "YuleModelWilsonBalding.t:anolis", "PopSizeScaler.t:anolis");
+		assertOperatorsEqual("CoalescentConstantTreeScaler.t:anolis", "CoalescentConstantTreeRootScaler.t:anolis", "CoalescentConstantUniformOperator.t:anolis", "CoalescentConstantSubtreeSlide.t:anolis", "CoalescentConstantNarrow.t:anolis", "CoalescentConstantWide.t:anolis", "CoalescentConstantWilsonBalding.t:anolis", "PopSizeScaler.t:anolis");
 		assertPriorsEqual("CoalescentConstant.t:anolis", "PopSizePrior.t:anolis");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "popSize.t:anolis", "CoalescentConstant.t:anolis");
 
