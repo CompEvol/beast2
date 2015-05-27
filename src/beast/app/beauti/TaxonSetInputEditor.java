@@ -65,12 +65,12 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         }
         List<Taxon> taxonsets = new ArrayList<Taxon>();
 
-        List<Taxon> taxa = taxonset.taxonsetInput.get();
+        Set<Taxon> taxa = taxonset.taxonsetInput.get();
         for (Taxon taxon : taxa) {
             taxonsets.add((TaxonSet) taxon);
         }
         add(getContent(taxonsets));
-        if (taxa.size() == 1 && taxa.get(0).getID().equals("Beauti2DummyTaxonSet") || taxa.size() == 0) {
+        if (taxa.size() == 1 && taxa.iterator().next().getID().equals("Beauti2DummyTaxonSet") || taxa.size() == 0) {
             taxa.clear();
             try {
                 // species is first character of taxon

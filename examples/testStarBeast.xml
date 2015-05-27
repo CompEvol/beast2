@@ -92,9 +92,6 @@
     </taxonset>   
     
 	<taxonset spec='TaxonSet' id='taxonsuperset'>
-                <taxon spec='TaxonSet' id='Orthogeomys_heterodus_species'>
-                    <taxon spec='Taxon' id='Orthogeomys_heterodus'/>
-                </taxon>
                 <taxon spec='TaxonSet' id='Thomomys_bottae'>
                     <taxon spec='Taxon' id='Thomomys_bottae_awahnee_a'/>
                     <taxon spec='Taxon' id='Thomomys_bottae_awahnee_b'/>
@@ -117,22 +114,25 @@
                     <taxon spec='Taxon' id='Thomomys_mazama_mazama'/>
                     <taxon spec='Taxon' id='Thomomys_mazama_nasicus'/>
                 </taxon>
-                <taxon spec='TaxonSet' id='Thomomys_monticola'>
-                    <taxon spec='Taxon' id='Thomomys_monticola_a'/>
-                    <taxon spec='Taxon' id='Thomomys_monticola_b'/>
+                <taxon spec='TaxonSet' id='Thomomys_umbrinus'>
+                    <taxon spec='Taxon' id='Thomomys_umbrinus_chihuahuae'/>
+                    <taxon spec='Taxon' id='Thomomys_umbrinus_atroavarius'/>
+                </taxon>
+                <taxon spec='TaxonSet' id='Thomomys_townsendii'>
+                    <taxon spec='Taxon' id='Thomomys_townsendii_townsendii'/>
+                    <taxon spec='Taxon' id='Thomomys_townsendii_relictus'/>
                 </taxon>
                 <taxon spec='TaxonSet' id='Thomomys_talpoides'>
                     <taxon spec='Taxon' id='Thomomys_talpoides_yakimensis'/>
                     <taxon spec='Taxon' id='Thomomys_talpoides_bridgeri'/>
                     <taxon spec='Taxon' id='Thomomys_talpoides_ocius'/>
                 </taxon>
-                <taxon spec='TaxonSet' id='Thomomys_townsendii'>
-                    <taxon spec='Taxon' id='Thomomys_townsendii_townsendii'/>
-                    <taxon spec='Taxon' id='Thomomys_townsendii_relictus'/>
+                <taxon spec='TaxonSet' id='Thomomys_monticola'>
+                    <taxon spec='Taxon' id='Thomomys_monticola_a'/>
+                    <taxon spec='Taxon' id='Thomomys_monticola_b'/>
                 </taxon>
-                <taxon spec='TaxonSet' id='Thomomys_umbrinus'>
-                    <taxon spec='Taxon' id='Thomomys_umbrinus_chihuahuae'/>
-                    <taxon spec='Taxon' id='Thomomys_umbrinus_atroavarius'/>
+                <taxon spec='TaxonSet' id='Orthogeomys_heterodus_species'>
+                    <taxon spec='Taxon' id='Orthogeomys_heterodus'/>
                 </taxon>
 	</taxonset>
 

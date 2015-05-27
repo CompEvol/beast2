@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.Set;
 
 import beast.core.Description;
 import beast.core.Input;
@@ -139,9 +140,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      */
     String getSetID(final String sLineageID) {
         final TaxonSet taxonSuperset = speciesTreePriorInput.get().taxonSetInput.get();
-        final List<Taxon> taxonSets = taxonSuperset.taxonsetInput.get();
+        final Set<Taxon> taxonSets = taxonSuperset.taxonsetInput.get();
         for (final Taxon taxonSet : taxonSets) {
-            final List<Taxon> taxa = ((TaxonSet) taxonSet).taxonsetInput.get();
+            final Set<Taxon> taxa = ((TaxonSet) taxonSet).taxonsetInput.get();
             for (final Taxon aTaxa : taxa) {
                 if (aTaxa.getID().equals(sLineageID)) {
                     return taxonSet.getID();

@@ -31,7 +31,9 @@ import beast.core.util.Log;
 import java.io.File;
 import java.lang.reflect.*;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -409,10 +411,11 @@ public class Input<T> {
             	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
                 throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
             }
-        } else if (this.value != null && this.value instanceof List<?>) {
+        } else if (this.value != null && (this.value instanceof List<?> ||
+        		this.value instanceof Set<?>)) {
             if (theClass.isAssignableFrom(value.getClass())) {
                 @SuppressWarnings("rawtypes") final
-                List vector = (List) this.value;
+                Collection vector = (Collection) this.value;
 //              // don't insert duplicates
                 // RRB: DO insert duplicates: this way CompoundValuable can be set up to 
                 // contain rate matrices with dependent variables/parameters.
@@ -429,8 +432,8 @@ public class Input<T> {
             } else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>) value).get(0).getClass())) {
                 // add all elements in given list to input list.
                 @SuppressWarnings("rawtypes")
-                final List<Object> vector = (List) this.value;
-                for (Object v : ((List<?>) value)) {
+                final Collection<Object> vector = (Collection) this.value;
+                for (Object v : ((Collection<?>) value)) {
                     vector.add(v);
                     if (v instanceof BEASTInterface) {
                         ((BEASTInterface) v).getOutputs().add(plugin);
@@ -440,7 +443,6 @@ public class Input<T> {
                 throw new RuntimeException("Input 101: type mismatch for input " + getName() +
                         ". " + theClass.getName() + ".isAssignableFrom(" + value.getClass() + ")=false");
             }
-
         } else {
             if (theClass.isAssignableFrom(value.getClass())) {
                 if (value instanceof BEASTInterface) {
@@ -517,6 +519,9 @@ public class Input<T> {
                             //} else if (value != null && value instanceof Map<?,?>) {
                             //    Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
                             //    theClass = (Class<?>) genericTypes2[0];
+                        } else if (value != null && value instanceof Set<?>) {
+                            Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
+                            theClass = (Class<?>) genericTypes2[0];
                         } else {
                             // it is not a list (or if it is, this will fail)
                             try {

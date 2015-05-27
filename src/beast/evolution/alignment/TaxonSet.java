@@ -8,15 +8,18 @@ import beast.core.Input;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Description("Set of taxa, useful for instance for multi-gene analysis")
 public class TaxonSet extends Taxon {
-    public Input<List<Taxon>> taxonsetInput = new Input<List<Taxon>>("taxon", "list of taxa making up the set", new ArrayList<Taxon>());
+    public Input<Set<Taxon>> taxonsetInput = new Input<Set<Taxon>>("taxon", "list of taxa making up the set", new HashSet<Taxon>());
     public Input<Alignment> alignmentInput = new Input<Alignment>("alignment", "alignment where each sequence represents a taxon");
 
     List<String> taxaNames;
+    List<Taxon> taxonList;
 
     public TaxonSet() {
     }
@@ -48,12 +51,24 @@ public class TaxonSet extends Taxon {
             }
         }
         Collections.sort(taxaNames);
+        
+        taxonList = new ArrayList();
+        taxonList.addAll(taxonsetInput.get());
+        Collections.sort(taxonList, (Taxon o1, Taxon o2) ->  o1.getID().compareTo(o2.getID()));
+        
     }
 
     public List<String> asStringList() {
         return taxaNames;
     }
 
+    public List<Taxon> asTaxonList() {
+        return taxonList;
+    }
+    
+    public Taxon getTaxon(int taxonIndex) {
+        return taxonList.get(taxonIndex);
+    }
     /**
      * @return the ID of the ith taxon.
      */
@@ -142,5 +157,10 @@ public class TaxonSet extends Taxon {
 			buf.append(taxon.toString(indent));
 		}
 		return buf.toString();
+	}
+    
+    public static void main(String[] args) throws Exception {
+		TaxonSet taxonSet = new TaxonSet();
+		taxonSet.taxonsetInput.setValue(new Taxon("x"), taxonSet);
 	}
 }

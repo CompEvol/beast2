@@ -67,16 +67,11 @@ public class TaxonSetDialog extends JDialog {
         //box.add(createCancelOKButtons());
 
         // initialise lists
-        List<Taxon> taxonset = taxonSet.taxonsetInput.get();
-        Comparator<Taxon> comparator = new Comparator<Taxon>() {
-            public int compare(Taxon o1, Taxon o2) {
-                return o1.getID().compareTo(o2.getID());
-            }
-        };
-        Collections.sort(taxonset, comparator);
+        List<Taxon> taxonset = taxonSet.asTaxonList();
+        Collections.sort(taxonset, (Taxon o1, Taxon o2) -> o1.getID().compareTo(o2.getID()));
         _candidates = new ArrayList<Taxon>();
         _candidates.addAll(candidates);
-        Collections.sort(_candidates, comparator);
+        Collections.sort(_candidates, (Taxon o1, Taxon o2) -> o1.getID().compareTo(o2.getID()));
 
         for (Taxon taxon : taxonset) {
             listModel2.addElement(taxon);
@@ -116,7 +111,7 @@ public class TaxonSetDialog extends JDialog {
         isOK =  (result != JOptionPane.CANCEL_OPTION);
         if (isOK) {
             taxonSet.setID(sID);
-            List<Taxon> taxa = taxonSet.taxonsetInput.get();
+            Set<Taxon> taxa = taxonSet.taxonsetInput.get();
             while (taxa.size() > 0) {
                 taxa.remove(0);
             }
@@ -283,7 +278,7 @@ public class TaxonSetDialog extends JDialog {
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 taxonSet.setID(sID);
-                List<Taxon> taxa = taxonSet.taxonsetInput.get();
+                Set<Taxon> taxa = taxonSet.taxonsetInput.get();
                 while (taxa.size() > 0) {
                     taxa.remove(0);
                 }

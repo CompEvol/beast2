@@ -164,11 +164,11 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             maxNsites = max(maxNsites, alignment.getSiteCount());
         }
         final Map<String, Integer> geneTips2Species = new HashMap<String, Integer>();
-        final List<Taxon> taxonSets = species.taxonsetInput.get();
+        final List<Taxon> taxonSets = species.asTaxonList();
 
         for(int k = 0; k < speciesNames.size(); ++k) {
             final Taxon nx = taxonSets.get(k);
-            final List<Taxon> taxa = ((TaxonSet) nx).taxonsetInput.get();
+            final List<Taxon> taxa = ((TaxonSet) nx).asTaxonList();//taxonsetInput.get();
             for( final Taxon n : taxa ) {
               geneTips2Species.put(n.getID(), k);
             }
