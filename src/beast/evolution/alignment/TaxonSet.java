@@ -5,18 +5,18 @@ package beast.evolution.alignment;
 import beast.core.Description;
 import beast.core.Input;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
-@Description("Set of taxa, useful for instance for multi-gene analysis")
+@Description("A TaxonSet is an ordered set of taxa. The order on the taxa is provided at the time of construction" +
+        " either from a list of taxon objects or an alignment.")
 public class TaxonSet extends Taxon {
-    public Input<List<Taxon>> taxonsetInput = new Input<List<Taxon>>("taxon", "list of taxa making up the set", new ArrayList<Taxon>());
+
+    public Input<List<Taxon>> taxonsetInput = new Input<>("taxon", "list of taxa making up the set", new ArrayList<>());
+
     public Input<Alignment> alignmentInput = new Input<Alignment>("alignment", "alignment where each sequence represents a taxon");
 
-    List<String> taxaNames;
+    protected List<String> taxaNames;
 
     public TaxonSet() {
     }
@@ -40,22 +40,31 @@ public class TaxonSet extends Taxon {
             taxaNames = alignmentInput.get().taxaNames;
         } else {
             if (taxonsetInput.get().size() == 0) {
-                throw new Exception("One of taxon and alignment should be specified, (but not both).");
+                throw new Exception("Only one of taxon and alignment should be specified, not both.");
             }
-            taxaNames = new ArrayList<String>();
+            taxaNames = new ArrayList<>();
             for (final Taxon taxon : taxonsetInput.get()) {
             	taxaNames.add(taxon.getID());
             }
         }
-        Collections.sort(taxaNames);
-    }
-
-    public List<String> asStringList() {
-        return taxaNames;
     }
 
     /**
-     * @return the ID of the ith taxon.
+     * @return an unmodifiable list of taxa names as strings.
+     */
+    public List<String> asStringList() {
+        return Collections.unmodifiableList(taxaNames);
+    }
+
+    /**
+     * @return the taxa names as a set of strings.
+     */
+    public Set<String> getTaxaNames() {
+        return new TreeSet<>(taxaNames);
+    }
+
+    /**
+     * @return the ID of the i'th taxon.
      */
     public String getTaxonId(int taxonIndex) {
         return taxaNames.get(taxonIndex);
@@ -115,7 +124,7 @@ public class TaxonSet extends Taxon {
      * @return number of taxa in this taxon set
      */
     public int getTaxonCount() {
-        return asStringList().size();
+        return taxaNames.size();
     }
     
     /**
