@@ -58,7 +58,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	/** 
 	 * return new alignment, return null if not successful 
 	 * **/
-	List<BEASTInterface> getAlignments(BeautiDoc doc) {
+	protected List<BEASTInterface> getAlignments(BeautiDoc doc) {
         File [] files = beast.app.util.Utils.getLoadFiles("Load Alignment File",
                 new File(Beauti.g_sDir), "Alignment files", "xml", 
                 "fa","fas","fst","fasta","fna","ffn","faa","frn",
