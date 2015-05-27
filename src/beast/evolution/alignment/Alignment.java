@@ -139,9 +139,15 @@ public class Alignment extends Map<String> {
     protected int [] siteWeights = null;
     
     /**
+     * Probabilities associated with each tip of the tree, for use when the
+     * characters are uncertain.
+     */
+    public List<double[][]> tipProbabilities = new ArrayList<double[][]>(); // #taxa x #sites x #states
+    
+    /**
      * pattern state encodings *
      */
-    protected int [][] sitePatterns; // #patters x #taxa
+    protected int [][] sitePatterns; // #patterns x #taxa
 
     /**
      * maps site nr to pattern nr *
@@ -223,8 +229,11 @@ public class Alignment extends Map<String> {
         counts.clear();
         
     	if (sequenceInput.get().size() > 0) {
+    		
+    		// JL Herman: I think this is redundant here, because earlier on in this function we have
+    		//     	sortByTaxonName(sequenceInput.get());
+/*            List<Sequence> sortedSeqs = new ArrayList<>();
             // sort sequences by taxon names
-            List<Sequence> sortedSeqs = new ArrayList<>();
       		sortedSeqs.addAll(sequenceInput.get());
         	Collections.sort(sortedSeqs, new Comparator<Sequence>() {
     			@Override
@@ -233,13 +242,18 @@ public class Alignment extends Map<String> {
     			}
     		});
         	for (Sequence seq : sortedSeqs) {
+*/
+        	for (Sequence seq : sequenceInput.get()) {
 	            //m_counts.add(seq.getSequence(getMap()));
 	            counts.add(seq.getSequence(m_dataType));
 	            if (taxaNames.indexOf(seq.taxonInput.get()) >= 0) {
 	                throw new Exception("Duplicate taxon found in alignment: " + seq.taxonInput.get());
 	            }
 	            taxaNames.add(seq.taxonInput.get());
-	            stateCounts.add(seq.totalCountInput.get());
+	            stateCounts.add(seq.totalCountInput.get());	            
+	            tipProbabilities.add(seq.getProbabilities()); 
+	            // if seq.isUncertain() == false then the above line adds 'null'
+	            // to the list, indicating that this particular sequence has no probability information
 	        }
 	        if (counts.size() == 0) {
 	            // no sequence data
@@ -463,7 +477,9 @@ public class Alignment extends Map<String> {
         int[] weights = new int[nSites];
         weights[0] = 1;
         for (int i = 1; i < nSites; i++) {
-            if (comparator.compare(nData[i - 1], nData[i]) != 0) {
+            if (tipProbabilities != null || comparator.compare(nData[i - 1], nData[i]) != 0) {
+            	// In the case where we're using tip probabilities, we need to treat each 
+            	// site as a unique pattern, because it could have a unique probability vector.
                 nPatterns++;
                 nData[nPatterns - 1] = nData[i];
             }
@@ -576,6 +592,10 @@ public class Alignment extends Map<String> {
         return builder.toString();
     }
 
+    public double[] getTipProbabilities(int iTaxon, int iPattern) {
+    	if (tipProbabilities.get(iTaxon) == null) return null; 
+    	else return tipProbabilities.get(iTaxon)[iPattern];
+    }
     /**
      * returns an array containing the non-ambiguous states that this state represents.
      */

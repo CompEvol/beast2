@@ -25,6 +25,7 @@
 package beast.evolution.alignment;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import beast.core.Description;
@@ -37,10 +38,17 @@ import beast.evolution.datatype.DataType;
 public class Sequence extends BEASTObject {
     public Input<Integer> totalCountInput = new Input<Integer>("totalcount", "number of states or the number of lineages for this species in SNAPP analysis");
     public Input<String> taxonInput = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
+    public Input<Boolean> uncertainInput = new Input<Boolean>("uncertain", "if true, sequence is provided as comma separated probabilities for each character, with sites separated by a semi-colons");
     public Input<String> dataInput = new Input<String>("value",
-            "sequence data, either encoded as a string or as comma separated list of integers." +
+            "sequence data, either encoded as a string or as comma separated list of integers, or comma separated probabilities for each site if uncertain=true." +
                     "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
-
+  
+    protected boolean uncertain = false;
+    protected double[][] probabilities = null;    
+    public double[][] getProbabilities() {
+    	return probabilities;
+    }
+    
     public Sequence() {
     }
 
@@ -57,16 +65,62 @@ public class Sequence extends BEASTObject {
         initAndValidate();
     }
 
-
     @Override
     public void initAndValidate() throws Exception {
+    	if (uncertainInput.get() != null && uncertainInput.get())  {
+    		uncertain = true;
+    		initProbabilities();    		
+    	}
     } // initAndValidate
-
-    public List<Integer> getSequence(DataType dataType) throws Exception {
-        String data = dataInput.get();
+    
+    public void initProbabilities() throws Exception {
+    	
+    	//TODO Test that the input format is correct while parsing
+    	
+    	String data = dataInput.get();
         // remove spaces
         data = data.replaceAll("\\s", "");
-        List<Integer> sequence = dataType.string2state(data);
+        
+        String sStr = data.trim();		
+		String[] strs = sStr.split(";");		
+		for (int i=0; i<strs.length; i++) {
+			String[] pr = strs[i].split(",");
+	    	// TODO Handle gap characters here
+			double total = 0;
+    		for (int j=0; j<pr.length; j++) {    			
+    			if (probabilities == null) probabilities = new double[strs.length][pr.length];
+    			probabilities[i][j] = Double.parseDouble(pr[j].trim());
+    			total += probabilities[i][j]; 
+    		}
+    		if (Math.abs(total - 1) > 1e-2) {
+    			throw new Exception("Probabilities for '" + taxonInput.get() + "' do not sum to unity at site "+i+".");
+    		}
+		}
+    }
+
+    public List<Integer> getSequence(DataType dataType) throws Exception {
+        
+    	List<Integer> sequence;
+    	if (uncertain) {
+            sequence = new ArrayList<Integer>();
+            for (int i=0; i<probabilities.length; i++) {
+            	double m = probabilities[i][0];
+            	int index = 0;
+            	for (int j=0; j<probabilities[i].length; j++) {
+            		if (probabilities[i][j] > m ) {
+            			m = probabilities[i][j];
+            			index = j;
+            		}        		
+            	}
+            	sequence.add(index);
+            }
+    	}
+    	else {
+	    	String data = dataInput.get();
+	        // remove spaces
+	        data = data.replaceAll("\\s", "");
+	        sequence = dataType.string2state(data);
+    	}
 
         if (totalCountInput.get() == null) {
             // derive default from char-map
