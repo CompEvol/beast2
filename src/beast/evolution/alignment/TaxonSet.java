@@ -13,9 +13,17 @@ import java.util.List;
 import java.util.Set;
 
 
+/** TaxonSets are sets of taxa, that do not impose any order on the taxa.
+ * However, in case an ordering is needed, an alphabetical ordering of taxa
+ * is assumed. These can be obtained through asStringList and asTaxonList.
+ * */
 @Description("Set of taxa, useful for instance for multi-gene analysis")
 public class TaxonSet extends Taxon {
+	/** do not access this input, unless you are absolutely sure what you are doing,
+	 * but use asStringList or asTaxonList instead to get all taxa, 
+	 * or use getTaxonID(i) or getTaxon(i) to get individual taxon information **/
     public Input<Set<Taxon>> taxonsetInput = new Input<Set<Taxon>>("taxon", "list of taxa making up the set", new HashSet<Taxon>());
+    
     public Input<Alignment> alignmentInput = new Input<Alignment>("alignment", "alignment where each sequence represents a taxon");
 
     List<String> taxaNames;
