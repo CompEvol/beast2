@@ -71,7 +71,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private static final int RESCALE_FREQUENCY = 10000;
     private static final int RESCALE_TIMES = 1;
 
-    boolean m_bUseAmbiguities;
+    boolean m_bUseAmbiguities, m_bUseProbabilities;
     int m_nStateCount;
     int m_nNodeCount;
 
@@ -87,6 +87,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private boolean initialize() throws Exception {
         m_nNodeCount = treeInput.get().getNodeCount();
         m_bUseAmbiguities = m_useAmbiguities.get();
+        m_bUseProbabilities = m_useProbabilities.get();
         if (!(siteModelInput.get() instanceof SiteModel.Base)) {
         	throw new Exception ("siteModel input should be of type SiteModel.Base");
         }
@@ -270,13 +271,14 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             return false;
         }
         System.err.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
+        System.err.println("  " + (m_bUseProbabilities ? "Using" : "Ignoring") + " character uncertainty in tree likelihood.");
         System.err.println("  With " + patternCount + " unique site patterns.");
 
         
         Node [] nodes = treeInput.get().getNodesAsArray();
         for (int i = 0; i < tipCount; i++) {
         	int taxon = dataInput.get().getTaxonIndex(nodes[i].getID()); 
-            if (m_bUseAmbiguities) {
+            if (m_bUseAmbiguities || m_bUseProbabilities) {
                 setPartials(beagle, i, taxon);
             } else {
                 setStates(beagle, i, taxon);
@@ -382,21 +384,21 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         double[] partials = new double[patternCount * m_nStateCount * categoryCount];
 
-        boolean[] stateSet;
-
         int v = 0;
         for (int i = 0; i < patternCount; i++) {
 
-            int state = data.getPattern(taxon, i);
-            stateSet = data.getStateSet(state);
-
-            for (int j = 0; j < m_nStateCount; j++) {
-                if (stateSet[j]) {
-                    partials[v] = 1.0;
-                } else {
-                    partials[v] = 0.0;
+        	double[] tipProbabilities = data.getTipProbabilities(taxon,i);
+            if (tipProbabilities != null) {
+            	for (int iState = 0; iState < m_nStateCount; iState++) {
+            		partials[v++] = tipProbabilities[iState];
+            	}
+            }
+            else {
+            	int nState = data.getPattern(taxon, i);
+                boolean[] stateSet = data.getStateSet(nState);
+                for (int iState = 0; iState < m_nStateCount; iState++) {
+                	 partials[v++] = (stateSet[iState] ? 1.0 : 0.0);                
                 }
-                v++;
             }
         }
 
