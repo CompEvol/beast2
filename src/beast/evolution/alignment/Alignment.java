@@ -24,9 +24,6 @@
 */
 package beast.evolution.alignment;
 
-
-
-
 import java.util.*;
 
 import beast.core.Description;
@@ -38,11 +35,10 @@ import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
 import beast.util.AddOnManager;
 
-
-
 @Description("Class representing alignment data")
 public class Alignment extends Map<String> {
-	protected Class<?> mapType() {return String.class;}
+
+    protected Class<?> mapType() {return String.class;}
 
 	/**
      * default data type *
@@ -81,12 +77,9 @@ public class Alignment extends Map<String> {
         }
     }
 
-
-    //public Input<TaxonSet> taxonsetInput = new Input<TaxonSet>("taxonset", "set of taxa, one for each sequence in the alignment");
     public Input<List<Sequence>> sequenceInput =
-            new Input<List<Sequence>>("sequence", "sequence and meta data for particular taxon", new ArrayList<Sequence>(), Validate.OPTIONAL);
+            new Input<>("sequence", "sequence and meta data for particular taxon", new ArrayList<>(), Validate.OPTIONAL);
     public Input<Integer> stateCountInput = new Input<Integer>("statecount", "maximum number of states in all sequences");
-    //public Input<String> m_sDataType = new Input<String>("dataType", "data type, one of " + Arrays.toString(TYPES), NUCLEOTIDE, TYPES);
     public Input<String> dataTypeInput = new Input<String>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
     public Input<DataType.Base> userDataTypeInput= new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
     public Input<Boolean> stripInvariantSitesInput = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
@@ -104,7 +97,6 @@ public class Alignment extends Map<String> {
     /**
      * list of taxa names defined through the sequences in the alignment *
      */
-    //protected TaxonSet taxonset;
     protected List<String> taxaNames = new ArrayList<String>();
 
     /**
@@ -165,30 +157,24 @@ public class Alignment extends Map<String> {
      * Constructor for testing purposes.
      *
      * @param sequences
-     * @param stateCount
      * @param dataType
      * @throws Exception when validation fails
      */
-    public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) throws Exception {
+    public Alignment(List<Sequence> sequences, String dataType) throws Exception {
 
         for (Sequence sequence : sequences) {
             sequenceInput.setValue(sequence, this);
         }
-        //m_nStateCount.setValue(stateCount, this);
         dataTypeInput.setValue(dataType, this);
         initAndValidate();
     }
-
 
     @Override
     public void initAndValidate() throws Exception {
     	if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
     		throw new Exception("Either a sequence input must be specified, or a map of strings must be specified");
     	}
-    	
-    	sortByTaxonName(sequenceInput.get());
-    	//taxonset = taxonsetInput.get();
-    	
+
     	if (siteWeightsInput.get() != null) {
     		String sStr = siteWeightsInput.get().trim();
     		String [] strs = sStr.split(",");
@@ -296,7 +282,6 @@ public class Alignment extends Map<String> {
         }
 
     } // initAndValidate
-
 
     /*
      * assorted getters and setters *
