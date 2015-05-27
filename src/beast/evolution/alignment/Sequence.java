@@ -38,7 +38,7 @@ import beast.evolution.datatype.DataType;
 public class Sequence extends BEASTObject {
     public Input<Integer> totalCountInput = new Input<Integer>("totalcount", "number of states or the number of lineages for this species in SNAPP analysis");
     public Input<String> taxonInput = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
-    public Input<Boolean> uncertainInput = new Input<Boolean>("uncertain", "if true, sequence is provided as comma separated probabilities for each character, with sites separated by a semi-colons");
+    public Input<Boolean> uncertainInput = new Input<Boolean>("uncertain", "if true, sequence is provided as comma separated probabilities for each character, with sites separated by a semi-colons. In this formulation, gaps are coded as 1/K,...,1/K, where K is the number of states in the model.");
     public Input<String> dataInput = new Input<String>("value",
             "sequence data, either encoded as a string or as comma separated list of integers, or comma separated probabilities for each site if uncertain=true." +
                     "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
@@ -74,9 +74,7 @@ public class Sequence extends BEASTObject {
     } // initAndValidate
     
     public void initProbabilities() throws Exception {
-    	
-    	//TODO Test that the input format is correct while parsing
-    	
+    	   	
     	String data = dataInput.get();
         // remove spaces
         data = data.replaceAll("\\s", "");
@@ -85,7 +83,6 @@ public class Sequence extends BEASTObject {
 		String[] strs = sStr.split(";");		
 		for (int i=0; i<strs.length; i++) {
 			String[] pr = strs[i].split(",");
-	    	// TODO Handle gap characters here
 			double total = 0;
     		for (int j=0; j<pr.length; j++) {    			
     			if (probabilities == null) probabilities = new double[strs.length][pr.length];
