@@ -171,7 +171,7 @@ public class LinkUnlinkTest extends BeautiBase {
 		f.selectTab("Partitions");
 		beautiFrame.button("Link Trees").click();
 		printBeautiState(f);
-		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26");
+		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "ClockPrior.c:47");
 
 		warning("Delete first partition");
 		f.selectTab("Partitions");

@@ -32,6 +32,8 @@ import beast.evolution.tree.Tree;
 import beast.util.XMLProducer;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -400,7 +402,9 @@ public class Logger extends BEASTObject {
 
                             // back up file in case something goes wrong (e.g. an out of memory error occurs)
                             final File treeFileBackup = new File(fileName);
-                            final boolean ok = treeFileBackup.renameTo(new File(fileName + ".bu"));    assert ok;
+                            
+                            //final boolean ok = treeFileBackup.renameTo(new File(fileName + ".bu"));    assert ok;
+                            Files.move(treeFileBackup.toPath(), new File(fileName+".bu").toPath(), StandardCopyOption.ATOMIC_MOVE);
                             // open the file and write back all but the last line
                             final FileOutputStream out2 = new FileOutputStream(fileName);
                             m_out = new PrintStream(out2);
@@ -432,7 +436,8 @@ public class Logger extends BEASTObject {
                             final String sStr = sStrLast.split("\\s+")[1];
                             final int nSampleOffset = Integer.parseInt(sStr.substring(6));
                             if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
-                                final boolean ok1 = treeFileBackup.renameTo(new File(fileName));        assert ok1;
+                                //final boolean ok1 = treeFileBackup.renameTo(new File(fileName));        assert ok1;
+                                Files.move(treeFileBackup.toPath(), new File(fileName).toPath(), StandardCopyOption.ATOMIC_MOVE);
                                 throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
                             }
                             sampleOffset = nSampleOffset;

@@ -9,8 +9,11 @@ Version 2.3.0 May 2015
 	BEAUti fixes
 		cloning, linking, unlinking bugs fixed
         more robust templates
+        calibrations can be deleted now
 		improved access to package folders
         improved import menu
+
+	LogCombiner improved command line interface
 
 	Fix synchronisation issues affecting ThreadedTreeLikelihood
     
@@ -19,8 +22,6 @@ Version 2.3.0 May 2015
 	Bug fix in EigenDecomposition affecting asymmetric rate matrices
 
 	Reduced dependency on taxon order making multiple partition handling more robust
-	
-	LogCombiner improved command line interface
 
     Can keep running v2.2 and its packages alongside v2.3
 

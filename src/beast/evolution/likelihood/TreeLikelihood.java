@@ -99,11 +99,11 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     /**
      * memory allocation for likelihoods for each of the patterns *
      */
-    double[] patternLogLikelihoods;
+    protected double[] patternLogLikelihoods;
     /**
      * memory allocation for the root partials *
      */
-    double[] m_fRootPartials;
+    protected double[] m_fRootPartials;
     /**
      * memory allocation for probability tables obtained from the SiteModel *
      */

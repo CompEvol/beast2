@@ -670,16 +670,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
         createFileMenu();
-        
-        fileMenu.add(a_addOn);
-        fileMenu.addSeparator();
-        fileMenu.add(a_save);
-        fileMenu.add(a_saveas);
-        if (!Utils.isMac()) {
-            fileMenu.addSeparator();
-            fileMenu.add(a_close);
-            fileMenu.add(a_quit);
-        }
 
         JMenu modeMenu = new JMenu("Mode");
         menuBar.add(modeMenu);
@@ -780,6 +770,15 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
         templateMenu.addSeparator();
         templateMenu.add(a_template);
+        fileMenu.add(a_addOn);
+        fileMenu.addSeparator();
+        fileMenu.add(a_save);
+        fileMenu.add(a_saveas);
+        if (!Utils.isMac()) {
+            fileMenu.addSeparator();
+            fileMenu.add(a_close);
+            fileMenu.add(a_quit);
+        }
 	}
 
 	private void addAlignmentProviderMenus(JMenu fileMenu) {

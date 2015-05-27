@@ -56,7 +56,15 @@ public class BeautiConnector extends BEASTObject {
     
     Method method = null;
 
-    @Override
+    public BeautiConnector() {}
+
+    public BeautiConnector(String sourceID, String targetID, String inputName, String condition) throws Exception {
+		initByName("srcID", sourceID, "targetID", targetID, "inputName", inputName, 
+				"if", condition);
+    }
+
+
+	@Override
     public void initAndValidate() throws Exception {
         sSourceID = sSourceIDInput.get();
         sTargetID = sTargetIDInput.get();
