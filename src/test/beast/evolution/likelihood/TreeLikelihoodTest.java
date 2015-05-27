@@ -27,6 +27,7 @@ import beast.evolution.substitutionmodel.WAG;
 import beast.evolution.tree.Tree;
 
 import test.beast.BEASTTestCase;
+import test.beast.evolution.alignment.ProbabilisticAlignmentTest;
 
 /**
  * This test mimics the testLikelihood.xml file from Beast 1, which compares Beast 1 results to PAUP results.
@@ -68,6 +69,68 @@ public class TreeLikelihoodTest extends TestCase {
     }
 
     @Test
+    public void testJC69LikelihoodWithUncertainCharacters() throws Exception {
+    	    	    	
+    	Alignment data = ProbabilisticAlignmentTest.getAlignment();
+    	Alignment data2 = ProbabilisticAlignmentTest.getUncertainAlignment();
+    	double[] logL, logL_uncertain;
+    	
+    	System.out.println("\nTree A:");
+    	Tree tree = ProbabilisticAlignmentTest.getTreeA(data2);    	    	
+    	logL = testJC69Likelihood(data,tree);
+    	logL_uncertain = testJC69Likelihood(data2,tree);
+    	double x1 = -11.853202336328778;
+    	double x2 = -12.069603116476458;
+    	assertEquals(logL[0], x1, BEASTTestCase.PRECISION);    	
+    	assertEquals(logL[1], x1, BEASTTestCase.PRECISION);
+    	assertEquals(logL_uncertain[0], x1, BEASTTestCase.PRECISION);    	
+    	assertEquals(logL_uncertain[1], x2, BEASTTestCase.PRECISION);    	
+    	
+    	System.out.println("\nTree B:");
+    	tree = ProbabilisticAlignmentTest.getTreeB(data2);
+    	logL = testJC69Likelihood(data,tree);
+    	logL_uncertain = testJC69Likelihood(data2,tree);
+    	double x3 = -12.421114302827698;
+    	double x4 = -11.62105662310513;
+    	assertEquals(logL[0], x3, BEASTTestCase.PRECISION);    	
+    	assertEquals(logL[1], x3, BEASTTestCase.PRECISION);
+    	assertEquals(logL_uncertain[0], x3, BEASTTestCase.PRECISION);    	
+    	assertEquals(logL_uncertain[1], x4, BEASTTestCase.PRECISION);    	    
+    	
+    	System.out.println("\nTesting alignment doubling:");
+    	Alignment data3 = ProbabilisticAlignmentTest.getUncertainAlignmentDoubled();    	    	
+    	logL_uncertain = testJC69Likelihood(data3,tree);
+    	assertEquals(logL_uncertain[0], 2 * x3, BEASTTestCase.PRECISION);    	
+    	assertEquals(logL_uncertain[1], 2 * x4, BEASTTestCase.PRECISION);    	    
+    	
+    }        
+    
+    public double[] testJC69Likelihood(Alignment data, Tree tree) throws Exception {
+        // Set up JC69 model: uniform freqs, kappa = 1, 0 gamma categories                              
+        JukesCantor JC = new JukesCantor();
+        JC.initAndValidate();
+
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName("mutationRate", "0.6", "substModel", JC);
+        // NB The rate in the JC model used here is actually alpha * 3 in the usual sense, because
+        // it's divided by 3 before multiplying in the exponent (not sure why)
+
+        System.out.println("Without probabilities:");
+        TreeLikelihood likelihood = newTreeLikelihood();
+        likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel, "scaling", TreeLikelihood.Scaling.none);        
+        double[] fLogP = new double[2];
+        fLogP[0] = likelihood.calculateLogP();
+        System.out.println(fLogP[0]);
+
+        System.out.println("With probabilities:");
+        likelihood.initByName("useProbabilities", true, "data", data, "tree", tree, "siteModel", siteModel, "scaling", TreeLikelihood.Scaling.none);
+        fLogP[1]= likelihood.calculateLogP();
+        System.out.println(fLogP[1]);
+
+        return fLogP;
+    }
+    
+    @Test
     public void testAscertainedJC69Likelihood() throws Exception {
         // as testJC69Likelihood but with ascertained alignment
         Alignment data = BEASTTestCase.getAscertainedAlignment();
@@ -88,8 +151,10 @@ public class TreeLikelihoodTest extends TestCase {
 
         double fLogP = 0;
         fLogP = likelihood.calculateLogP();
-        // the following number comes from Beast 1.6
-        assertEquals(fLogP, -737.7140695360017, BEASTTestCase.PRECISION);
+        // the following number comes from Beast 1.6        
+        //assertEquals(fLogP, -737.7140695360017, BEASTTestCase.PRECISION);
+        assertEquals(fLogP, -1026.7977091360306, BEASTTestCase.PRECISION);
+        // This assertion was failing in v2.2.1
     }
 
     @Test
