@@ -935,10 +935,10 @@ public class XMLProducer extends XMLParser {
 	                        	}
                             }
                         	return;
-                        } else if (input.get() instanceof List) {
+                        } else if (input.get() instanceof List || input.get() instanceof Set) {
                             if (!isShort) {
                             	int k = 0;
-                            	List list = (List) input.get();
+                            	Collection list = (Collection) input.get();
                                 for (Object o2 : list) {
                                 	if (o2 instanceof BEASTInterface) {
                                 		pluginToXML((BEASTInterface) o2, buf, sInput, false);
