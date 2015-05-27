@@ -10,7 +10,6 @@ import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreeInterface;
 import beast.util.ClusterTree;
 
 import java.util.*;
@@ -287,7 +286,10 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                 for(int i = 2; i < nSpecies+1; ++i) {
                     l += 1./i;
                 }
-                lambda.setValue((1 / rh) * l);
+                double newLambda = (1/rh*l);
+                newLambda = Math.max(newLambda, lambda.getLower());
+                newLambda = Math.min(newLambda, lambda.getUpper());
+                lambda.setValue(newLambda);
             }
 
             double totBranches = 0;
@@ -300,6 +302,8 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             totBranches /= 2* (streeNodeas.length - 1);
             final RealParameter popm = popMean.get();
             if( popm != null ) {
+            	totBranches = Math.max(totBranches, popm.getLower());
+            	totBranches = Math.min(totBranches, popm.getUpper());
                 popm.setValue(totBranches);
             }
             final SpeciesTreePrior speciesTreePrior = speciesTreePriorInput.get();
