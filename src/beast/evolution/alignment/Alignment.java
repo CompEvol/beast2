@@ -156,6 +156,22 @@ public class Alignment extends Map<String> {
     /**
      * Constructor for testing purposes.
      *
+     * @deprecated This is the deprecated legacy form and will be removed
+     * at some point. Use {@link #Alignment(List, String)} instead.
+     *
+     * @param sequences
+     * @param stateCount
+     * @param dataType
+     * @throws Exception when validation fails
+     */
+    @Deprecated
+    public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) throws Exception {
+        this(sequences, dataType);
+    }
+
+    /**
+     * Constructor for testing purposes.
+     *
      * @param sequences
      * @param dataType
      * @throws Exception when validation fails
