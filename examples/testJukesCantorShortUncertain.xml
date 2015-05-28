@@ -10,7 +10,7 @@ G -> 0.0,0.0,1.0,0.0 (100% G)
 T -> 0.0,0.0,1.0,1.0 (100% T)
 - -> 0.25,0.25,0.25,0.25 (i.e. gap = missing data)
     -->
-    <!-- ntax=6 nchar=768                                                        -->
+    <!-- ntax=6 nchar=415                                                        -->
     <!--                                                            -->
         <data id="alignment" dataType="nucleotide">
         <sequence taxon="human" uncertain="true">
