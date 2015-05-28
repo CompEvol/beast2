@@ -38,9 +38,9 @@ public class ClusterTreeTest extends TestCase {
         seqs.addAll(alignment.sequenceInput.get());
         List<Sequence> newseqs = alignment.sequenceInput.get();
         newseqs.clear();
-        newseqs.add(seqs.get(0));
-        newseqs.add(seqs.get(1));
-        newseqs.add(seqs.get(3));
+        newseqs.add(Sequence.getSequenceByTaxon("bonobo", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("chimp", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("human", seqs));
         alignment.initAndValidate();
         tree = new ClusterTree();
         tree.initByName(
@@ -59,21 +59,17 @@ public class ClusterTreeTest extends TestCase {
         
         actualNewick = tree.getRoot().toNewick();
         assertEquals(expectedNewick, actualNewick);
-        
-        
-        
+
         // same sequences in different order
         newseqs.clear();
-        newseqs.add(seqs.get(3));
-        newseqs.add(seqs.get(1));
-        newseqs.add(seqs.get(0));
+        newseqs.add(Sequence.getSequenceByTaxon("human", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("chimp", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("bonobo", seqs));
         alignment.initAndValidate();
         tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
         assertEquals(expectedNewick, tree.getRoot().toNewick());
-        
     }
-
 }
