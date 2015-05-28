@@ -68,13 +68,9 @@ public class TaxonSetDialog extends JDialog {
 
         // initialise lists
         List<Taxon> taxonset = taxonSet.taxonsetInput.get();
-        Comparator<Taxon> comparator = new Comparator<Taxon>() {
-            public int compare(Taxon o1, Taxon o2) {
-                return o1.getID().compareTo(o2.getID());
-            }
-        };
+        Comparator<Taxon> comparator = (o1, o2) -> o1.getID().compareTo(o2.getID());
         Collections.sort(taxonset, comparator);
-        _candidates = new ArrayList<Taxon>();
+        _candidates = new ArrayList<>();
         _candidates.addAll(candidates);
         Collections.sort(_candidates, comparator);
 

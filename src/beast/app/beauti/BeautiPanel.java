@@ -8,6 +8,7 @@ import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.util.CompoundDistribution;
+import beast.evolution.alignment.Taxon;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
@@ -20,6 +21,7 @@ import javax.swing.event.ListSelectionListener;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * panel making up each of the tabs in Beauti *
@@ -378,23 +380,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 					return;
 			}
 			// sanity check: make sure taxon sets are compatible
-			List<String> taxa = tree.getTaxonset().asStringList();
-			List<String> taxa2 = likelihood.dataInput.get().getTaxaNames();
-			if (taxa.size() != taxa2.size()) {
-				throw new RuntimeException("Cannot link trees: incompatible taxon sets");
-			}
-			for (String taxon : taxa) {
-				boolean found = false;
-				for (String taxon2 : taxa2) {
-					if (taxon.equals(taxon2)) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					throw new RuntimeException("Cannot link trees: taxon" + taxon + "is not in alignment");
-				}
-			}
+            Taxon.assertSameTaxa(tree.getID(), tree.getTaxonset().getTaxaNames(),
+                    likelihood.dataInput.get().getID(), likelihood.dataInput.get().getTaxaNames());
 
 			likelihood.treeInput.setValue(tree, likelihood);
 			return;

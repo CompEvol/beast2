@@ -2304,8 +2304,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     /** create taxonset, one taxon for each sequence in the alignment
      * and assign taxonset to the alignment 
      * **/
-    static void createTaxonSet(Alignment o, BeautiDoc doc) {
-		Alignment a = (Alignment) o;
+    static void createTaxonSet(Alignment a, BeautiDoc doc) {
 		List<String> taxaNames = a.getTaxaNames();
 		TaxonSet taxonset = new TaxonSet();
         for (final String taxaName : taxaNames) {
@@ -2317,7 +2316,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        //a.taxonsetInput.setValue(taxonset, a);
 		doc.registerPlugin(taxonset);
 	}
 

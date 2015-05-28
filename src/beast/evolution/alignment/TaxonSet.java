@@ -53,6 +53,7 @@ public class TaxonSet extends Taxon {
      * @return an unmodifiable list of taxa names as strings.
      */
     public List<String> asStringList() {
+        if (taxaNames == null) return null;
         return Collections.unmodifiableList(taxaNames);
     }
 
