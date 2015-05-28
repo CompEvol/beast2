@@ -215,11 +215,8 @@ public class Alignment extends Map<String> {
         counts.clear();
         
     	if (sequenceInput.get().size() > 0) {
-    		
-    		// JL Herman: I think this is redundant here, because earlier on in this function we have
-    		//     	sortByTaxonName(sequenceInput.get());
-/*            List<Sequence> sortedSeqs = new ArrayList<>();
             // sort sequences by taxon names
+            List<Sequence> sortedSeqs = new ArrayList<>();
       		sortedSeqs.addAll(sequenceInput.get());
         	Collections.sort(sortedSeqs, new Comparator<Sequence>() {
     			@Override
@@ -228,8 +225,6 @@ public class Alignment extends Map<String> {
     			}
     		});
         	for (Sequence seq : sortedSeqs) {
-*/
-        	for (Sequence seq : sequenceInput.get()) {
 	            //m_counts.add(seq.getSequence(getMap()));
 	            counts.add(seq.getSequence(m_dataType));
 	            if (taxaNames.indexOf(seq.taxonInput.get()) >= 0) {
