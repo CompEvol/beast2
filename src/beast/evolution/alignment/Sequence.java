@@ -24,15 +24,14 @@
 */
 package beast.evolution.alignment;
 
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.evolution.datatype.DataType;
-
 
 @Description("Single sequence in an alignment.")
 public class Sequence extends BEASTObject {
@@ -126,6 +125,13 @@ public class Sequence extends BEASTObject {
         return sequence;
     }
 
+    /**
+     * @return the taxon of this sequence as a string.
+     */
+    public final String getTaxon() {
+        return taxonInput.get();
+    }
+
     int mapCharToData(String dataMap, char c) {
         int i = dataMap.indexOf(c);
         if (i >= 0) {
@@ -133,5 +139,17 @@ public class Sequence extends BEASTObject {
         }
         return dataMap.length();
     } // mapCharToData
+
+    /**
+     * @param id of target sequence
+     * @param sequences a collection of sequences
+     * @return the sequence in the collection with the given ID, or null if its not in the collection.
+     */
+    public static Sequence getSequenceByTaxon(String id, Collection<Sequence> sequences) {
+        for (Sequence seq : sequences) {
+            if (seq.getTaxon().equals(id)) return seq;
+        }
+        return null;
+    }
 
 } // class Sequence
