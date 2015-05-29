@@ -2,7 +2,7 @@
        namespace='beast.evolution.alignment:beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood'>
 
 
-    <!-- A shortened version of the sequence alignment in testJukesCantor.xml, leading to higher uncertainty regarding the splits in the tree.  -->
+    <!-- A shortened version of the mitochondrial DNA alignment in testJukesCantor.xml, leading to higher uncertainty regarding the splits in the tree.  -->
     <!-- ntax=6 nchar=415                                                        -->
     <data id="alignment" dataType="nucleotide">
         <sequence taxon="human">
