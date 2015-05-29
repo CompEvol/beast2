@@ -1,20 +1,30 @@
 package test.beast.evolution.alignment;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import beast.evolution.alignment.*;
 import junit.framework.TestCase;
 import org.junit.Test;
-
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.FilteredAlignment;
-import beast.evolution.alignment.Sequence;
 
 /** test FilteredAlignment as well as some aspects of Alignment **/
 public class FilteredAlignmentTest extends TestCase {
 
     static public Alignment getAlignment() throws Exception {
         Sequence human = new Sequence("0human", "AAAACCCCGGGGTTTT");
+        Sequence chimp = new Sequence("1chimp", "ACGTACGTACGTACGT");
+
+        Alignment data = new Alignment();
+        data.initByName("sequence", human, "sequence", chimp,
+                "dataType", "nucleotide"
+        );
+        return data;
+    }
+
+    static public Alignment getAlignmentNoTInHuman() throws Exception {
+        Sequence human = new Sequence("0human", "AAAACCCCGGGGAAAA");
         Sequence chimp = new Sequence("1chimp", "ACGTACGTACGTACGT");
 
         Alignment data = new Alignment();
@@ -74,28 +84,18 @@ public class FilteredAlignmentTest extends TestCase {
         } catch (RuntimeException e) {
         	System.err.println(e.getMessage());
         }
-        
+
         // set up weighted alignment
         data = getAlignment();
-    	data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
-    	data.initAndValidate();
+        data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
+        data.initAndValidate();
         String weights = Arrays.toString(data.getWeights());
-        System.err.println(weights + "\n" + alignmentToString(data, data.getTaxonIndex("0human")) + "\n" + alignmentToString(data, data.getTaxonIndex("1chimp")));
+        System.err.println(weights + "\n0human\t" + alignmentToString(data, data.getTaxonIndex("0human")) + "\n1chimp\t"
+                + alignmentToString(data, data.getTaxonIndex("1chimp")));
         assertEquals("[11232, 2, 3, 4, 1123, 2, 3, 4, 112, 2, 3, 4, 11, 2, 3, 4]", weights);
-        
-        // rename taxa -> gives a different order
-        data = getAlignment();
-        data.sequenceInput.get().get(0).taxonInput.setValue("human", null);
-        data.sequenceInput.get().get(1).taxonInput.setValue("chimp", null);
-    	data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
-    	data.initAndValidate();
-        weights = Arrays.toString(data.getWeights());
-        System.err.println(weights + "\n" + alignmentToString(data, data.getTaxonIndex("human")) + "\n" + alignmentToString(data, data.getTaxonIndex("chimp")));
-        assertEquals("[11232, 1123, 112, 11, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]", weights);
 
-        
         data = getAlignment2();
-    	data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
+        data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
     	data.initAndValidate();
         weights = Arrays.toString(data.getWeights());
         System.err.println(weights + "\n" + alignmentToString(data, 0) + "\n" + alignmentToString(data, 1));
@@ -130,9 +130,31 @@ public class FilteredAlignmentTest extends TestCase {
 //        weights = Arrays.toString(data2.getWeights());
 //        System.err.println(weights);
 //        assertEquals("[4, 1123, 2, 3, 4, 112]", weights);
-    }    
+    }
 
-    
+    public void testWeightedSitesReordered() throws Exception {
+
+        // reorder taxa
+        Alignment data = getAlignmentNoTInHuman();
+        data.setID("data");
+
+        List<Taxon> taxa = new ArrayList<>();
+        taxa.add(new Taxon("1chimp"));
+        taxa.add(new Taxon("0human"));
+        TaxonSet set = new TaxonSet(taxa);
+
+        data.taxonSetInput.setValue(set, data);
+        data.siteWeightsInput.setValue("11232, 2, 3, 4 ,1123,2,3,4,112,2,3,4,11,2,3,	4 ", data);
+        data.initAndValidate();
+
+        String weights = Arrays.toString(data.getWeights());
+
+        System.out.println(weights + "\n0human\t" + alignmentToString(data, data.getTaxonIndex("0human")) + "\n1chimp\t"
+                + alignmentToString(data, data.getTaxonIndex("1chimp")));
+        assertEquals("[11243, 1123, 112, 4, 2, 2, 6, 3, 3, 8, 4, 4]", weights);
+
+    }
+
     @Test
     public void testConstantSites() throws Exception {
         Alignment data = getAlignment();

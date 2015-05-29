@@ -125,6 +125,7 @@ public class TaxonSet extends Taxon {
      * @return number of taxa in this taxon set
      */
     public int getTaxonCount() {
+        if (taxaNames == null) return 0;
         return taxaNames.size();
     }
     

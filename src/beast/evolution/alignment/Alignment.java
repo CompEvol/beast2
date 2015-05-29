@@ -38,9 +38,11 @@ import beast.util.AddOnManager;
 @Description("Class representing alignment data")
 public class Alignment extends Map<String> {
 
-    protected Class<?> mapType() {return String.class;}
+    protected Class<?> mapType() {
+        return String.class;
+    }
 
-	/**
+    /**
      * default data type *
      */
     final static String NUCLEOTIDE = "nucleotide";
@@ -56,9 +58,9 @@ public class Alignment extends Map<String> {
     static List<String> types = new ArrayList<String>();
 
     static {
-    	findDataTypes();
+        findDataTypes();
     }
-    
+
     static public void findDataTypes() {
         // build up list of data types
         List<String> m_sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
@@ -68,7 +70,7 @@ public class Alignment extends Map<String> {
                 if (dataType.isStandard()) {
                     String sDescription = dataType.getTypeDescription();
                     if (!types.contains(sDescription)) {
-                    	types.add(sDescription);
+                        types.add(sDescription);
                     }
                 }
             } catch (Exception e) {
@@ -79,31 +81,40 @@ public class Alignment extends Map<String> {
 
     public Input<List<Sequence>> sequenceInput =
             new Input<>("sequence", "sequence and meta data for particular taxon", new ArrayList<>(), Validate.OPTIONAL);
-    public Input<Integer> stateCountInput = new Input<Integer>("statecount", "maximum number of states in all sequences");
-    public Input<String> dataTypeInput = new Input<String>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
-    public Input<DataType.Base> userDataTypeInput= new Input<DataType.Base>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
-    public Input<Boolean> stripInvariantSitesInput = new Input<Boolean>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
-    public Input<String> siteWeightsInput = new Input<String>("weights","comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
+
+    public Input<TaxonSet> taxonSetInput =
+            new Input<>("taxa", "An optional taxon-set used only to sort the sequences into the same order as they appear in the taxon-set.", new TaxonSet(), Validate.OPTIONAL);
+
+    public Input<Integer> stateCountInput = new Input<>("statecount", "maximum number of states in all sequences");
+    public Input<String> dataTypeInput = new Input<>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
+    public Input<DataType.Base> userDataTypeInput = new Input<>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
+    public Input<Boolean> stripInvariantSitesInput = new Input<>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
+    public Input<String> siteWeightsInput = new Input<>("weights", "comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
 
     public Input<Boolean> isAscertainedInput = new Input<>("ascertained", "is true if the alignment allows ascertainment correction, i.e., conditioning the " +
             "Felsenstein likelihood on excluding constant sites from the alignment", false);
     /**
      * Inputs from AscertainedAlignment
-      */
-    public Input<Integer> excludefromInput = new Input<Integer>("excludefrom", "first site to condition on, default 0", 0);
-    public Input<Integer> excludetoInput = new Input<Integer>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
-    public Input<Integer> excludeeveryInput = new Input<Integer>("excludeevery", "interval between sites to condition on (default 1)", 1);
+     */
+    public Input<Integer> excludefromInput = new Input<>("excludefrom", "first site to condition on, default 0", 0);
+    public Input<Integer> excludetoInput = new Input<>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
+    public Input<Integer> excludeeveryInput = new Input<>("excludeevery", "interval between sites to condition on (default 1)", 1);
+
+    /**
+     * list of sequences in the alignment *
+     */
+    protected List<Sequence> sequences = new ArrayList<>();
 
     /**
      * list of taxa names defined through the sequences in the alignment *
      */
-    protected List<String> taxaNames = new ArrayList<String>();
+    protected List<String> taxaNames = new ArrayList<>();
 
     /**
      * list of state counts for each of the sequences, typically these are
      * constant throughout the whole alignment.
      */
-    protected List<Integer> stateCounts = new ArrayList<Integer>();
+    protected List<Integer> stateCounts = new ArrayList<>();
 
     /**
      * maximum of m_nStateCounts *
@@ -113,7 +124,7 @@ public class Alignment extends Map<String> {
     /**
      * state codes for the sequences *
      */
-    protected List<List<Integer>> counts = new ArrayList<List<Integer>>();
+    protected List<List<Integer>> counts = new ArrayList<>();
 
     /**
      * data type, useful for converting String sequence to Code sequence, and back *
@@ -123,22 +134,22 @@ public class Alignment extends Map<String> {
     /**
      * weight over the columns of a matrix *
      */
-    protected int [] patternWeight;
+    protected int[] patternWeight;
 
     /**
      * weights of sites -- assumed 1 for each site if not specified
      */
-    protected int [] siteWeights = null;
-    
+    protected int[] siteWeights = null;
+
     /**
      * pattern state encodings *
      */
-    protected int [][] sitePatterns; // #patters x #taxa
+    protected int[][] sitePatterns; // #patters x #taxa
 
     /**
      * maps site nr to pattern nr *
      */
-    protected int [] patternIndex;
+    protected int[] patternIndex;
 
     /**
      * From AscertainedAlignment
@@ -156,13 +167,12 @@ public class Alignment extends Map<String> {
     /**
      * Constructor for testing purposes.
      *
-     * @deprecated This is the deprecated legacy form and will be removed
-     * at some point. Use {@link #Alignment(List, String)} instead.
-     *
      * @param sequences
      * @param stateCount
      * @param dataType
      * @throws Exception when validation fails
+     * @deprecated This is the deprecated legacy form and will be removed
+     * at some point. Use {@link #Alignment(List, String)} instead.
      */
     @Deprecated
     public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) throws Exception {
@@ -187,19 +197,20 @@ public class Alignment extends Map<String> {
 
     @Override
     public void initAndValidate() throws Exception {
-    	if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
-    		throw new Exception("Either a sequence input must be specified, or a map of strings must be specified");
-    	}
 
-    	if (siteWeightsInput.get() != null) {
-    		String sStr = siteWeightsInput.get().trim();
-    		String [] strs = sStr.split(",");
-    		siteWeights = new int[strs.length];
-    		for (int i = 0; i< strs.length; i++) {
-    			siteWeights[i] = Integer.parseInt(strs[i].trim());
-    		}    		
-    	}
-    	
+        if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
+            throw new Exception("Either a sequence input must be specified, or a map of strings must be specified");
+        }
+
+        if (siteWeightsInput.get() != null) {
+            String sStr = siteWeightsInput.get().trim();
+            String[] strs = sStr.split(",");
+            siteWeights = new int[strs.length];
+            for (int i = 0; i < strs.length; i++) {
+                siteWeights[i] = Integer.parseInt(strs[i].trim());
+            }
+        }
+
         // determine data type, either user defined or one of the standard ones
         if (userDataTypeInput.get() != null) {
             m_dataType = userDataTypeInput.get();
@@ -218,66 +229,107 @@ public class Alignment extends Map<String> {
                 }
             }
         }
-        
-        // grab data from child sequences
+
+        // initialize the sequence list
+        if (sequenceInput.get().size() > 0) {
+            sequences = sequenceInput.get();
+        } else {
+            // alignment defined by a map of id -> sequence
+            List<String> taxa = new ArrayList<>();
+            taxa.addAll(map.keySet());
+            sequences.clear();
+            for (String key : taxa) {
+                String sequence = map.get(key);
+                sequences.add(new Sequence(key, sequence));
+            }
+        }
+
+        // initialize the alignment from the given list of sequences
+        initializeWithSequenceList(sequences, true);
+
+        if (taxonSetInput.get() != null && taxonSetInput.get().getTaxonCount() > 0) {
+            sortByTaxonSet(taxonSetInput.get());
+        }
+        Log.info.println(toString(false));
+    }
+
+    /**
+     * Initializes the alignment given the provided list of sequences and no other information.
+     * It site weights and/or data type have been previously set up with initAndValidate then they
+     * remain in place. This method is used mainly to re-order the sequences to a new taxon order
+     * when an analysis of multiple alignments on the same taxa are undertaken.
+     *
+     * @param sequences
+     */
+    private void initializeWithSequenceList(List<Sequence> sequences, boolean log) {
+        this.sequences = sequences;
         taxaNames.clear();
         stateCounts.clear();
         counts.clear();
-        
-    	if (sequenceInput.get().size() > 0) {
-            // sort sequences by taxon names
-            List<Sequence> sortedSeqs = new ArrayList<>();
-      		sortedSeqs.addAll(sequenceInput.get());
-        	Collections.sort(sortedSeqs, new Comparator<Sequence>() {
-    			@Override
-    			public int compare(Sequence o1, Sequence o2) {
-    				return o1.taxonInput.get().compareTo(o2.taxonInput.get());
-    			}
-    		});
-        	for (Sequence seq : sortedSeqs) {
-	            //m_counts.add(seq.getSequence(getMap()));
-	            counts.add(seq.getSequence(m_dataType));
-	            if (taxaNames.indexOf(seq.taxonInput.get()) >= 0) {
-	                throw new Exception("Duplicate taxon found in alignment: " + seq.taxonInput.get());
-	            }
-	            taxaNames.add(seq.taxonInput.get());
-	            stateCounts.add(seq.totalCountInput.get());
-	        }
-	        if (counts.size() == 0) {
-	            // no sequence data
-	            throw new Exception("Sequence data expected, but none found");
-	        }
-        } else {
-        	List<String> sortedTaxa = new ArrayList<>();
-        	sortedTaxa.addAll(map.keySet());
-        	Collections.sort(sortedTaxa);
-        	for (String key : sortedTaxa) {
-        		String sequence = map.get(key);
-        		List<Integer> list = m_dataType.string2state(sequence);
-        		counts.add(list);
-	            if (taxaNames.indexOf(key) >= 0) {
-	                throw new Exception("Duplicate taxon found in alignment: " + key);
-	            }
-	            taxaNames.add(key);
-	            stateCounts.add(m_dataType.getStateCount());
-        	}
+
+        try {
+            for (Sequence seq : sequences) {
+
+                counts.add(seq.getSequence(m_dataType));
+                if (taxaNames.contains(seq.getTaxon())) {
+                    throw new RuntimeException("Duplicate taxon found in alignment: " + seq.getTaxon());
+                }
+                taxaNames.add(seq.getTaxon());
+                if (seq.totalCountInput.get() != null) {
+                    stateCounts.add(seq.totalCountInput.get());
+                } else {
+                    stateCounts.add(m_dataType.getStateCount());
+                }
+            }
+            if (counts.size() == 0) {
+                // no sequence data
+                throw new RuntimeException("Sequence data expected, but none found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
         }
+        sanityCheckCalcPatternsSetUpAscertainment(log);
+    }
+
+    /**
+     * Checks that sequences are all the same length, calculates patterns and sets up ascertainment.
+     */
+    private void sanityCheckCalcPatternsSetUpAscertainment(boolean log) {
         // Sanity check: make sure sequences are of same length
         int nLength = counts.get(0).size();
         if (!(m_dataType instanceof StandardData)) {
-	        for (List<Integer> seq : counts) {
-	            if (seq.size() != nLength) {
-	                throw new Exception("Two sequences with different length found: " + nLength + " != " + seq.size());
-	            }
-	        }
+            for (List<Integer> seq : counts) {
+                if (seq.size() != nLength) {
+                    throw new RuntimeException("Two sequences with different length found: " + nLength + " != " + seq.size());
+                }
+            }
         }
         if (siteWeights != null && siteWeights.length != nLength) {
-        	throw new RuntimeException("Number of weights (" + siteWeights.length + ") does not match sequence length (" + nLength +")");
+            throw new RuntimeException("Number of weights (" + siteWeights.length + ") does not match sequence length (" + nLength + ")");
         }
 
-        calcPatterns();
-        Log.info.println(toString(false));
+        calcPatterns(log);
         setupAscertainment();
+    }
+
+    /**
+     * Sorts an alignment by a provided TaxonSet, so that the sequence/taxon pairs in the alignment match the order
+     * that the taxa appear in the TaxonSet (i.e. not necessarily alphabetically).
+     *
+     * @param toSortBy the taxon set that species the order on the taxa.
+     */
+    public void sortByTaxonSet(TaxonSet toSortBy) {
+
+        List<Sequence> sortedSeqs = new ArrayList<>();
+        sortedSeqs.addAll(sequences);
+        Collections.sort(sortedSeqs, new Comparator<Sequence>() {
+            @Override
+            public int compare(Sequence o1, Sequence o2) {
+                return Integer.compare(toSortBy.getTaxonIndex(o1.getTaxon()), toSortBy.getTaxonIndex(o2.getTaxon()));
+            }
+        });
+        initializeWithSequenceList(sortedSeqs, false);
     }
 
     void setupAscertainment() {
@@ -299,20 +351,34 @@ public class Alignment extends Map<String> {
 
     } // initAndValidate
 
+    static String getSequence(Alignment data, int iTaxon) {
+
+        int[] nStates = new int[data.getPatternCount()];
+        for (int i = 0; i < data.getPatternCount(); i++) {
+            int[] sitePattern = data.getPattern(i);
+            nStates[i] = sitePattern[iTaxon];
+        }
+        try {
+            return data.getDataType().state2string(nStates);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+        return null;
+    }
+
+
     /*
      * assorted getters and setters *
      */
     public List<String> getTaxaNames() {
-    	//if (taxonsetInput.get() != null) {
-    	//	return taxonsetInput.get().asStringList();
-    	//}
         if (taxaNames.size() == 0) {
-        	try {
-        		initAndValidate();
-        	} catch (Exception e) {
-        		e.printStackTrace();
-        		throw new RuntimeException(e);
-        	}
+            try {
+                initAndValidate();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         }
         return taxaNames;
     }
@@ -327,7 +393,7 @@ public class Alignment extends Map<String> {
      * the position of the Integer List in the outer List, which corresponds
      * to the nodeNr of the corresponding leaf node and the position of the
      * taxon name in the taxaNames list.
-     * 
+     *
      * @return integer representation of sequence alignment
      */
     public List<List<Integer>> getCounts() {
@@ -342,12 +408,12 @@ public class Alignment extends Map<String> {
      * @return number of taxa in Alignment.
      */
     public int getTaxonCount() {
-    	//if (taxonsetInput.get() != null) {
-    	//	return taxonsetInput.get().getTaxonCount();
-    	//}
-       return taxaNames.size();
+        //if (taxonsetInput.get() != null) {
+        //	return taxonsetInput.get().getTaxonCount();
+        //}
+        return taxaNames.size();
     }
-    
+
     /**
      * @return number of taxa in Alignment.
      * @deprecated Use getTaxonCount() instead.
@@ -379,7 +445,7 @@ public class Alignment extends Map<String> {
     /**
      * Retrieve the "weight" of a particular pattern: the number of sites
      * having that pattern.
-     * 
+     *
      * @param iPattern Index into pattern array.
      * @return pattern weight
      */
@@ -393,7 +459,7 @@ public class Alignment extends Map<String> {
 
     /**
      * Retrieve index of pattern corresponding to a particular site.
-     * 
+     *
      * @param iSite Index of site.
      * @return Index of pattern.
      */
@@ -411,7 +477,7 @@ public class Alignment extends Map<String> {
     /**
      * Retrieve an array containing the number of times each character pattern
      * occurs in the alignment.
-     * 
+     *
      * @return Pattern weight array.
      */
     public int[] getWeights() {
@@ -437,11 +503,16 @@ public class Alignment extends Map<String> {
         }
     } // class SiteComparator
 
-    /**
-     * calculate patterns from sequence data
-     * *
-     */
+
     protected void calcPatterns() {
+        calcPatterns(true);
+    }
+
+        /**
+         * calculate patterns from sequence data
+         * *
+         */
+    private void calcPatterns(boolean log) {
         int nTaxa = counts.size();
         int nSites = counts.get(0).size();
 
@@ -488,12 +559,12 @@ public class Alignment extends Map<String> {
             }
             patternIndex[i] = Arrays.binarySearch(sitePatterns, sites, comparator);
         }
-        
+
         if (siteWeights != null) {
-        	Arrays.fill(patternWeight, 0);
+            Arrays.fill(patternWeight, 0);
             for (int i = 0; i < nSites; i++) {
-            	patternWeight[patternIndex[i]] += siteWeights[i];
-            }        	
+                patternWeight[patternIndex[i]] += siteWeights[i];
+            }
         }
 
         // determine maximum state count
@@ -504,7 +575,7 @@ public class Alignment extends Map<String> {
             maxStateCount = Math.max(maxStateCount, m_nStateCount1);
         }
         // report some statistics
-        if( taxaNames.size() < 30 ) {
+        if (log && taxaNames.size() < 30) {
             for (int i = 0; i < taxaNames.size(); i++) {
                 Log.info.println(taxaNames.get(i) + ": " + counts.get(i).size() + " " + stateCounts.get(i));
             }
@@ -512,7 +583,7 @@ public class Alignment extends Map<String> {
 
         if (stripInvariantSitesInput.get()) {
             // don't add patterns that are invariant, e.g. all gaps
-            Log.info.println("Stripping invariant sites");
+            if (log) Log.info.println("Stripping invariant sites");
 
             int removedSites = 0;
             for (int i = 0; i < nPatterns; i++) {
@@ -526,13 +597,13 @@ public class Alignment extends Map<String> {
                     }
                 }
                 if (bIsInvariant) {
-                	removedSites += patternWeight[i]; 
+                    removedSites += patternWeight[i];
                     patternWeight[i] = 0;
 
-                    Log.info.print(" <" + iValue + "> ");
+                    if (log) Log.info.print(" <" + iValue + "> ");
                 }
             }
-            Log.info.println(" removed " + removedSites + " sites ");
+            if (log) Log.info.println(" removed " + removedSites + " sites ");
         }
     } // calcPatterns
 
@@ -549,13 +620,14 @@ public class Alignment extends Map<String> {
 
     /**
      * Pretty printing of vital statistics of an alignment including id, #taxa, #sites, #patterns and totalweight
+     *
      * @param singleLine true if the string should fit on one line
      * @return string representing this alignment
      */
     public String toString(boolean singleLine) {
         long totalWeight = getTotalWeight();
         StringBuilder builder = new StringBuilder();
-        builder.append(getClass().getSimpleName()+ "(" + getID() + ")");
+        builder.append(getClass().getSimpleName() + "(" + getID() + ")");
 
         if (singleLine) {
             builder.append(": [taxa, patterns, sites] = [" + getTaxonCount() + ", " + getPatternCount());
@@ -567,7 +639,7 @@ public class Alignment extends Map<String> {
             builder.append('\n');
             builder.append("  " + getTaxonCount() + " taxa");
             builder.append('\n');
-            builder.append("  " + siteCount + (siteCount == 1 ? " site": " sites") + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight + ""));
+            builder.append("  " + siteCount + (siteCount == 1 ? " site" : " sites") + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight + ""));
             builder.append('\n');
             if (siteCount > 1) {
                 builder.append("  " + getPatternCount() + " patterns");
@@ -622,11 +694,11 @@ public class Alignment extends Map<String> {
 
 
     static public void sortByTaxonName(List<Sequence> seqs) {
-		Collections.sort(seqs, new Comparator<Sequence>() {
-			@Override
-			public int compare(Sequence o1, Sequence o2) {
-				return o1.taxonInput.get().compareTo(o2.taxonInput.get());
-			}
-		});
-	}
+        Collections.sort(seqs, new Comparator<Sequence>() {
+            @Override
+            public int compare(Sequence o1, Sequence o2) {
+                return o1.taxonInput.get().compareTo(o2.taxonInput.get());
+            }
+        });
+    }
 } // class Data
