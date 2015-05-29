@@ -129,6 +129,14 @@ public class Sequence extends BEASTObject {
         return taxonInput.get();
     }
 
+    /**
+     * @return the data of this sequence as a string.
+     */
+    public final String getData() {
+        return dataInput.get();
+    }
+
+
     int mapCharToData(String dataMap, char c) {
         int i = dataMap.indexOf(c);
         if (i >= 0) {
@@ -148,5 +156,10 @@ public class Sequence extends BEASTObject {
         }
         return null;
     }
+
+    public String toString() {
+        return getTaxon() + ":" + getData();
+    }
+
 
 } // class Sequence
