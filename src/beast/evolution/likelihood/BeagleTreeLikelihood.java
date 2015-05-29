@@ -71,7 +71,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private static final int RESCALE_FREQUENCY = 10000;
     private static final int RESCALE_TIMES = 1;
 
-    boolean m_bUseAmbiguities, m_bUseProbabilities;
+    boolean m_bUseAmbiguities, m_bUseTipLikelihoods;
     int m_nStateCount;
     int m_nNodeCount;
 
@@ -87,7 +87,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private boolean initialize() throws Exception {
         m_nNodeCount = treeInput.get().getNodeCount();
         m_bUseAmbiguities = m_useAmbiguities.get();
-        m_bUseProbabilities = m_useProbabilities.get();
+        m_bUseTipLikelihoods = m_useTipLikelihoods.get();
         if (!(siteModelInput.get() instanceof SiteModel.Base)) {
         	throw new Exception ("siteModel input should be of type SiteModel.Base");
         }
@@ -271,14 +271,14 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             return false;
         }
         System.err.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
-        System.err.println("  " + (m_bUseProbabilities ? "Using" : "Ignoring") + " character uncertainty in tree likelihood.");
+        System.err.println("  " + (m_bUseTipLikelihoods ? "Using" : "Ignoring") + " character uncertainty in tree likelihood.");
         System.err.println("  With " + patternCount + " unique site patterns.");
 
         
         Node [] nodes = treeInput.get().getNodesAsArray();
         for (int i = 0; i < tipCount; i++) {
         	int taxon = dataInput.get().getTaxonIndex(nodes[i].getID()); 
-            if (m_bUseAmbiguities || m_bUseProbabilities) {
+            if (m_bUseAmbiguities || m_bUseTipLikelihoods) {
                 setPartials(beagle, i, taxon);
             } else {
                 setStates(beagle, i, taxon);
@@ -387,7 +387,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         int v = 0;
         for (int i = 0; i < patternCount; i++) {
 
-        	double[] tipProbabilities = data.getTipProbabilities(taxon,i);
+        	double[] tipProbabilities = data.getTipLikelihoods(taxon,i);
             if (tipProbabilities != null) {
             	for (int iState = 0; iState < m_nStateCount; iState++) {
             		partials[v++] = tipProbabilities[iState];

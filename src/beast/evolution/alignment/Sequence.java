@@ -43,9 +43,9 @@ public class Sequence extends BEASTObject {
                     "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
   
     protected boolean uncertain = false;
-    protected double[][] probabilities = null;    
-    public double[][] getProbabilities() {
-    	return probabilities;
+    protected double[][] likelihoods = null;    
+    public double[][] getLikelihoods() {
+    	return likelihoods;
     }
     
     public Sequence() {
@@ -84,13 +84,10 @@ public class Sequence extends BEASTObject {
 			String[] pr = strs[i].split(",");
 			double total = 0;
     		for (int j=0; j<pr.length; j++) {    			
-    			if (probabilities == null) probabilities = new double[strs.length][pr.length];
-    			probabilities[i][j] = Double.parseDouble(pr[j].trim());
-    			total += probabilities[i][j]; 
-    		}
-    		if (Math.abs(total - 1) > 1e-2) {
-    			throw new Exception("Probabilities for '" + taxonInput.get() + "' do not sum to unity at site "+i+".");
-    		}
+    			if (likelihoods == null) likelihoods = new double[strs.length][pr.length];
+    			likelihoods[i][j] = Double.parseDouble(pr[j].trim());
+    			total += likelihoods[i][j]; 
+    		}    		
 		}
     }
 
@@ -99,12 +96,12 @@ public class Sequence extends BEASTObject {
     	List<Integer> sequence;
     	if (uncertain) {
             sequence = new ArrayList<Integer>();
-            for (int i=0; i<probabilities.length; i++) {
-            	double m = probabilities[i][0];
+            for (int i=0; i<likelihoods.length; i++) {
+            	double m = likelihoods[i][0];
             	int index = 0;
-            	for (int j=0; j<probabilities[i].length; j++) {
-            		if (probabilities[i][j] > m ) {
-            			m = probabilities[i][j];
+            	for (int j=0; j<likelihoods[i].length; j++) {
+            		if (likelihoods[i][j] > m ) {
+            			m = likelihoods[i][j];
             			index = j;
             		}        		
             	}

@@ -27,7 +27,7 @@ import beast.evolution.substitutionmodel.WAG;
 import beast.evolution.tree.Tree;
 
 import test.beast.BEASTTestCase;
-import test.beast.evolution.alignment.ProbabilisticAlignmentTest;
+import test.beast.evolution.alignment.UncertainAlignmentTest;
 
 /**
  * This test mimics the testLikelihood.xml file from Beast 1, which compares Beast 1 results to PAUP results.
@@ -71,12 +71,12 @@ public class TreeLikelihoodTest extends TestCase {
     @Test
     public void testJC69LikelihoodWithUncertainCharacters() throws Exception {
     	    	    	
-    	Alignment data = ProbabilisticAlignmentTest.getAlignment();
-    	Alignment data2 = ProbabilisticAlignmentTest.getUncertainAlignment();
+    	Alignment data = UncertainAlignmentTest.getAlignment();
+    	Alignment data2 = UncertainAlignmentTest.getUncertainAlignment();
     	double[] logL, logL_uncertain;
     	
     	System.out.println("\nTree A:");
-    	Tree tree = ProbabilisticAlignmentTest.getTreeA(data2);    	    	
+    	Tree tree = UncertainAlignmentTest.getTreeA(data2);    	    	
     	logL = testJC69Likelihood(data,tree);
     	logL_uncertain = testJC69Likelihood(data2,tree);
     	double x1 = -11.853202336328778;
@@ -87,7 +87,7 @@ public class TreeLikelihoodTest extends TestCase {
     	assertEquals(logL_uncertain[1], x2, BEASTTestCase.PRECISION);    	
     	
     	System.out.println("\nTree B:");
-    	tree = ProbabilisticAlignmentTest.getTreeB(data2);
+    	tree = UncertainAlignmentTest.getTreeB(data2);
     	logL = testJC69Likelihood(data,tree);
     	logL_uncertain = testJC69Likelihood(data2,tree);
     	double x3 = -12.421114302827698;
@@ -98,7 +98,7 @@ public class TreeLikelihoodTest extends TestCase {
     	assertEquals(logL_uncertain[1], x4, BEASTTestCase.PRECISION);    	    
     	
     	System.out.println("\nTesting alignment doubling:");
-    	Alignment data3 = ProbabilisticAlignmentTest.getUncertainAlignmentDoubled();    	    	
+    	Alignment data3 = UncertainAlignmentTest.getUncertainAlignmentDoubled();    	    	
     	logL_uncertain = testJC69Likelihood(data3,tree);
     	assertEquals(logL_uncertain[0], 2 * x3, BEASTTestCase.PRECISION);    	
     	assertEquals(logL_uncertain[1], 2 * x4, BEASTTestCase.PRECISION);    	    
@@ -115,15 +115,15 @@ public class TreeLikelihoodTest extends TestCase {
         // NB The rate in the JC model used here is actually alpha * 3 in the usual sense, because
         // it's divided by 3 before multiplying in the exponent (not sure why)
 
-        System.out.println("Without probabilities:");
+        System.out.println("Without tip likelihoods:");
         TreeLikelihood likelihood = newTreeLikelihood();
         likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel, "scaling", TreeLikelihood.Scaling.none);        
         double[] fLogP = new double[2];
         fLogP[0] = likelihood.calculateLogP();
         System.out.println(fLogP[0]);
 
-        System.out.println("With probabilities:");
-        likelihood.initByName("useProbabilities", true, "data", data, "tree", tree, "siteModel", siteModel, "scaling", TreeLikelihood.Scaling.none);
+        System.out.println("With tip likelihoods:");
+        likelihood.initByName("useTipLikelihoods", true, "data", data, "tree", tree, "siteModel", siteModel, "scaling", TreeLikelihood.Scaling.none);
         fLogP[1]= likelihood.calculateLogP();
         System.out.println(fLogP[1]);
 

@@ -134,7 +134,7 @@ public class Alignment extends Map<String> {
      * Probabilities associated with each tip of the tree, for use when the
      * characters are uncertain.
      */
-    public List<double[][]> tipProbabilities = new ArrayList<double[][]>(); // #taxa x #sites x #states
+    public List<double[][]> tipLikelihoods = new ArrayList<double[][]>(); // #taxa x #sites x #states
     
     /**
      * pattern state encodings *
@@ -232,7 +232,7 @@ public class Alignment extends Map<String> {
 	            }
 	            taxaNames.add(seq.taxonInput.get());
 	            stateCounts.add(seq.totalCountInput.get());	            
-	            tipProbabilities.add(seq.getProbabilities()); 
+	            tipLikelihoods.add(seq.getLikelihoods()); 
 	            // if seq.isUncertain() == false then the above line adds 'null'
 	            // to the list, indicating that this particular sequence has no probability information
 	        }
@@ -457,7 +457,7 @@ public class Alignment extends Map<String> {
         int[] weights = new int[nSites];
         weights[0] = 1;
         for (int i = 1; i < nSites; i++) {
-            if (tipProbabilities != null || comparator.compare(nData[i - 1], nData[i]) != 0) {
+            if (tipLikelihoods != null || comparator.compare(nData[i - 1], nData[i]) != 0) {
             	// In the case where we're using tip probabilities, we need to treat each 
             	// site as a unique pattern, because it could have a unique probability vector.
                 nPatterns++;
@@ -572,9 +572,9 @@ public class Alignment extends Map<String> {
         return builder.toString();
     }
 
-    public double[] getTipProbabilities(int iTaxon, int iPattern) {
-    	if (tipProbabilities.get(iTaxon) == null) return null; 
-    	else return tipProbabilities.get(iTaxon)[iPattern];
+    public double[] getTipLikelihoods(int iTaxon, int iPattern) {
+    	if (tipLikelihoods.get(iTaxon) == null) return null; 
+    	else return tipLikelihoods.get(iTaxon)[iPattern];
     }
     /**
      * returns an array containing the non-ambiguous states that this state represents.

@@ -14,7 +14,7 @@ import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 
-public class ProbabilisticAlignmentTest extends TestCase {
+public class UncertainAlignmentTest extends TestCase {
 
 	static public Tree getTreeB(Alignment data) throws Exception {
         TreeParser tree = new TreeParser();
@@ -92,11 +92,11 @@ public class ProbabilisticAlignmentTest extends TestCase {
     	
     	DataType dataType = data.getDataType();
     	
-       	System.out.println("Probabilities for each nucleotide:");
+       	System.out.println("Tip likelihoods:");
     	int nSites = data.getCounts().get(0).size();
     	for (int taxon=0; taxon<data.getTaxonCount(); taxon++) {
     		for (int i=0; i<nSites; i++) {
-	    		double[] probs = data.getTipProbabilities(taxon,i);
+	    		double[] probs = data.getTipLikelihoods(taxon,i);
 	    		for (int j=0; j<probs.length; j++) {
 	        		System.out.print(probs[j]+" ");
 	        	}
@@ -105,7 +105,7 @@ public class ProbabilisticAlignmentTest extends TestCase {
     		System.out.println();
     	}
     	
-    	System.out.println("Most probable sequences:");
+    	System.out.println("Most likely sequences:");
     	for (List<Integer> seq : data.getCounts()) {
     		System.out.println(dataType.state2string(seq));    		
     	}
@@ -114,18 +114,6 @@ public class ProbabilisticAlignmentTest extends TestCase {
     	
     	for (int taxon=0; taxon<data.getTaxonCount(); taxon++) {
     		assertEquals(data.getCounts().get(taxon),data2.getCounts().get(taxon));
-    	}    	    
-    	    	
-    	String invalidProbs = new String("0.1,0.2,0.4,0.3; 0.1,0.0,0.6,0.0; 0.2,0.2,0.4,0.2;");  	    		    	
-    	try {
-    		Sequence testSeq = new Sequence();
-    		testSeq.initByName("taxon","testSeq","value",invalidProbs,"uncertain",true);
-    		// TODO Ideally this try {} block would be able to completely capture the initByName error, 
-    		// but the latter currently prints a stack trace to stderr.
-    	}
-    	catch (Exception e) {
-    		assert(e.getMessage().contains("do not sum to unity"));
-    	}
-            	    
+    	}    	        	    	            	    
     }  
 }
