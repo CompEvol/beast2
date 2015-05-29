@@ -45,7 +45,7 @@ public class Alignment extends Map<String> {
     /**
      * default data type *
      */
-    final static String NUCLEOTIDE = "nucleotide";
+    protected final static String NUCLEOTIDE = "nucleotide";
 
     /**
      * directory to pick up data types from *

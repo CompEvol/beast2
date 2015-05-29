@@ -4,6 +4,7 @@ package beast.evolution.operators;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import beast.core.Description;
@@ -41,9 +42,47 @@ public class DeltaExchangeOperator extends Operator {
     private boolean autoOptimize;
     private double delta;
     private boolean isIntegerOperator;
-    private int[] parameterWeights;
     private CompoundParameterHelper compoundParameter = null;
     // because CompoundParameter cannot derive from parameter due to framework, the code complexity is doubled
+
+	private int[] weights() {
+		int[] weights;
+		if (compoundParameter == null) { // one parameter case
+			if (parameterInput.get().isEmpty()) {
+				if (intparameterInput.get().size() > 0) {
+					weights = new int[intparameterInput.get().get(0)
+							.getDimension()];
+				} else {
+					// happens when BEAUti is setting things up
+					weights = new int[0];
+				}
+			} else {
+				weights = new int[parameterInput.get().get(0).getDimension()];
+			}
+		} else {
+			if (compoundParameter.getDimension() < 1)
+				throw new IllegalArgumentException(
+						"Compound parameter is not created properly, dimension = "
+								+ compoundParameter.getDimension());
+
+			weights = new int[compoundParameter.getDimension()];
+		}
+
+		if (parameterWeightsInput.get() != null) {
+			if (weights.length != parameterWeightsInput.get().getDimension())
+				throw new IllegalArgumentException(
+						"Weights vector should have the same length as parameter dimension");
+
+			for (int i = 0; i < weights.length; i++) {
+				weights[i] = parameterWeightsInput.get().getValue(i);
+			}
+		} else {
+			for (int i = 0; i < weights.length; i++) {
+				weights[i] = 1;
+			}
+		}
+		return weights;
+	}
 
     public void initAndValidate() {
 
@@ -79,37 +118,6 @@ public class DeltaExchangeOperator extends Operator {
             }
         }
 
-        if (compoundParameter == null) { // one parameter case
-            if (parameterInput.get().isEmpty()) {
-            	if (intparameterInput.get().size() > 0) {
-            		parameterWeights = new int[intparameterInput.get().get(0).getDimension()];
-            	} else {
-            		// happens when BEAUti is setting things up
-            		parameterWeights = new int[0];
-            	}
-            } else {
-                parameterWeights = new int[parameterInput.get().get(0).getDimension()];
-            }
-        } else {
-            if (compoundParameter.getDimension() < 1)
-                throw new IllegalArgumentException("Compound parameter is not created properly, dimension = " + compoundParameter.getDimension());
-
-            parameterWeights = new int[compoundParameter.getDimension()];
-        }
-
-        if (parameterWeightsInput.get() != null) {
-            if (parameterWeights.length != parameterWeightsInput.get().getDimension())
-                throw new IllegalArgumentException("Weights vector should have the same length as parameter dimension");
-
-            for (int i = 0; i < parameterWeights.length; i++) {
-                parameterWeights[i] = parameterWeightsInput.get().getValue(i);
-            }
-        } else {
-            for (int i = 0; i < parameterWeights.length; i++) {
-                parameterWeights[i] = 1;
-            }
-        }
-
         if (isIntegerOperator && delta != Math.round(delta)) {
             throw new IllegalArgumentException("Can't be an integer operator if delta is not integer");
         }
@@ -130,6 +138,7 @@ public class DeltaExchangeOperator extends Operator {
 
     @Override
     public final double proposal() {
+    	int[] parameterWeights = weights();
         double logq = 0.0;
 
         if (compoundParameter == null) { // one parameter case
