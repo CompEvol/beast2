@@ -36,14 +36,10 @@ public class NodeReheight extends TreeOperator {
     public void initAndValidate() throws Exception {
         /** maps gene taxa names to species number **/
         final Map<String, Integer> taxonMap = new HashMap<String, Integer>();
-        final List<Taxon> list = taxonSetInput.get().taxonsetInput.get();
+        final List<String> list = taxonSetInput.get().asStringList();
         for (int i = 0; i < list.size(); i++) {
-            final Taxon taxa = list.get(i);
-            // cast should be ok if taxon-set is the set for the species tree
-            final TaxonSet set = (TaxonSet) taxa;
-            for (final Taxon taxon : set.taxonsetInput.get()) {
-                taxonMap.put(taxon.getID(), i);
-            }
+            final String taxon = list.get(i);
+            taxonMap.put(taxon, i);
         }
 
         /** build the taxon map for each gene tree **/
