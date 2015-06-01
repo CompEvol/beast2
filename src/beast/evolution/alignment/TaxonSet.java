@@ -3,10 +3,7 @@ package beast.evolution.alignment;
 import beast.core.Description;
 import beast.core.Input;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Description("Set of taxa, useful for instance for multi-gene analysis")
 public class TaxonSet extends Taxon {
@@ -73,8 +70,7 @@ public class TaxonSet extends Taxon {
 	 */
 	public int getTaxonIndex(String id) {
 		for (int i = 0; i < taxaNames.size(); i++) {
-			if (getTaxonId(i).contentEquals(id))
-				return i;
+			if (getTaxonId(i).contentEquals(id)) return i;
 		}
 		return -1;
 	}
@@ -83,7 +79,7 @@ public class TaxonSet extends Taxon {
 
 	public boolean containsAny(final Collection<String> taxa) {
 		final List<String> me = asStringList();
-		for (final String taxon : taxa) {
+		for (final String taxon : taxa ) {
 			if (me.contains(taxon)) {
 				return true;
 			}
@@ -93,7 +89,7 @@ public class TaxonSet extends Taxon {
 
 	public boolean containsAll(final Collection<String> taxa) {
 		final List<String> me = asStringList();
-		for (final String taxon : taxa) {
+		for (final String taxon : taxa ) {
 			if (!me.contains(taxon)) {
 				return false;
 			}

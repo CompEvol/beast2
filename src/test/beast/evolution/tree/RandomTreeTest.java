@@ -87,7 +87,7 @@ public class RandomTreeTest {
              traitSB.append(taxonID).append("=").append(i);
          }
 
-         Alignment alignment = new Alignment(seqList, 4, "nucleotide");
+         Alignment alignment = new Alignment(seqList, "nucleotide");
          TaxonSet taxonSet = new TaxonSet(alignment);
          TraitSet timeTrait = new TraitSet();
 

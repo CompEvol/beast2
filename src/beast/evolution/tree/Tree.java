@@ -313,6 +313,9 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Deprecated
+    /**
+     * @returns an array of taxon names in order of their node numbers.
+     */
     public String[] getTaxaNames() {
          if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) || m_sTaxaNames.length == 0) {
             final TaxonSet taxonSet = m_taxonset.get();
@@ -332,7 +335,7 @@ public class Tree extends StateNode implements TreeInterface {
                 
             }
         }
-        Arrays.sort(m_sTaxaNames);
+
         // sanity check
         if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) {
             System.err.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
