@@ -482,7 +482,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				}
 			}
 			// sanity check: make sure taxon sets are compatible
-			Taxon.assertSameTaxa(tree.getID(), tree.getTaxonset().getTaxaNames(),
+			Taxon.assertSameTaxa(tree.getID(), tree.getTaxonset().asStringList(),
 					likelihoods[iRow].dataInput.get().getID(), likelihoods[iRow].dataInput.get().getTaxaNames());
 
 			needsRePartition = (this.likelihoods[iRow].treeInput.get() != tree);

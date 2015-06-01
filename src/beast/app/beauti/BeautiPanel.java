@@ -380,7 +380,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 					return;
 			}
 			// sanity check: make sure taxon sets are compatible
-            Taxon.assertSameTaxa(tree.getID(), tree.getTaxonset().getTaxaNames(),
+            Taxon.assertSameTaxa(tree.getID(), tree.getTaxonset().asStringList(),
                     likelihood.dataInput.get().getID(), likelihood.dataInput.get().getTaxaNames());
 
 			likelihood.treeInput.setValue(tree, likelihood);
