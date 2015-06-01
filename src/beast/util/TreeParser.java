@@ -93,7 +93,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      */
     @Override
     public void initAndValidate() throws Exception {
-    	boolean sortNodesAlphabetically = false;
+    	boolean sortNodesAlphabetically = true;
     	
         if (dataInput.get() != null) {
             labels = dataInput.get().getTaxaNames();
