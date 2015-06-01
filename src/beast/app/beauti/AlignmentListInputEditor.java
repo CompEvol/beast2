@@ -31,6 +31,7 @@ import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
+import beast.evolution.alignment.Taxon;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
@@ -481,23 +482,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				}
 			}
 			// sanity check: make sure taxon sets are compatible
-			List<String> taxa = tree.getTaxonset().asStringList();
-			List<String> taxa2 = this.likelihoods[iRow].dataInput.get().getTaxaNames();
-			if (taxa.size() != taxa2.size()) {
-				throw new Exception("Cannot link trees: incompatible taxon sets");
-			}
-			for (String taxon : taxa) {
-				boolean found = false;
-				for (String taxon2 : taxa2) {
-					if (taxon.equals(taxon2)) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					throw new Exception("Cannot link trees: taxon" + taxon + "is not in alignment");
-				}
-			}
+			Taxon.assertSameTaxa(tree.getID(), tree.getTaxonset().getTaxaNames(),
+					likelihoods[iRow].dataInput.get().getID(), likelihoods[iRow].dataInput.get().getTaxaNames());
 
 			needsRePartition = (this.likelihoods[iRow].treeInput.get() != tree);
 System.err.println("needsRePartition = " + needsRePartition);			
