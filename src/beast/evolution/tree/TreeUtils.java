@@ -3,7 +3,7 @@ package beast.evolution.tree;
 import java.util.*;
 
 /**
- * @author Alexei Drummond
+ * @author Alexei Drummond and Alexandra Gavryushkina
  */
 public class TreeUtils {
 
@@ -184,6 +184,13 @@ public class TreeUtils {
         double length = 0.0;
         for (Node node : tree.getExternalNodes()) {
             length += node.getLength();
+            while (true) {
+                if (!node.isDirectAncestor() && node.getParent() != null && node.getParent().isFake()) {
+                    node = node.getParent();
+                    length += node.getLength();
+                } else break;
+
+            }
         }
         return length;
     }
@@ -196,8 +203,45 @@ public class TreeUtils {
         double length = 0.0;
         for (Node node : tree.getInternalNodes()) {
             length += node.getLength();
+            if (node.isFake() && node.getNonDirectAncestorChild().isLeaf()) {
+                while (true) {
+                    length -= node.getLength();
+                    if (node.getParent() != null && node.getParent().isFake()) {
+                        node = node.getParent();
+                    } else break;
+
+                }
+            }
+
         }
         return length;
+    }
+
+    /**
+     * @param tree
+     * @param node
+     * @return the sum of the branch lengths on the subtree relating all
+     * contemporaneous descendants of the node
+     */
+    public static double getTrunkLength(Tree tree, Node node) {
+
+        int childCount = node.getChildCount();
+        if (childCount == 0) {
+            if (node.getHeight() == 0.0) {
+                return node.getLength();
+            } else {
+                return 0.0;
+            }
+        }
+
+        double length = 0;
+        for (Node child : node.getChildren()) {
+            length += getTrunkLength(tree, child);
+        }
+        if (node != tree.getRoot() && length > 0.0)
+            length += node.getLength();
+        return length;
+
     }
 
     /**
@@ -347,9 +391,10 @@ public class TreeUtils {
             idx += 1;
             postOrderList[idx] = child.getNr();
             if( ! child.isLeaf() ) {
-              idx = preOrderTraversalList(tree, idx, postOrderList);
+                idx = preOrderTraversalList(tree, idx, postOrderList);
             }
         }
         return idx;
     }
 }
+
