@@ -6,28 +6,12 @@ import java.util.List;
 
 import test.beast.beast2vs1.trace.Expectation;
 
-/**
- * @author Walter Xie
- */
 public class TaxonOrderTest extends TestFramework {
 
-    private final String[] XML_FILES = new String[]{"testStrictClock.xml", "testStrictClock2.xml",
-            "testRandomLocalClock.xml", "testUCRelaxedClockLogNormal.xml"};
+    private final String[] XML_FILES = new String[]{"testStarBeast2.xml"};
 
-    public void testStrictClock() throws Exception {
+    public void testStarBeast() throws Exception {
         analyse(0);
-    }
-
-    public void testStrictClock2() throws Exception {
-        analyse(1);
-    }
-
-    public void testRandomLocalClock() throws Exception {
-        analyse(2);
-    }
-
-    public void testUCRelaxedClockLogNormal() throws Exception {
-        analyse(3);
     }
 
     @Override
@@ -38,66 +22,39 @@ public class TaxonOrderTest extends TestFramework {
     protected List<Expectation> giveExpectations(int index_XML) throws Exception {
         List<Expectation> expList = new ArrayList<Expectation>();
 
-        // all values below are from BEAST 1.7
+        // all values below are from BEAST2/examples/testStarBeast.xml
         switch (index_XML) {
-            case 0: // testStrictClock.xml
-//        BEAST 1 testStrictClockNoDate.xml
-                addExpIntoList(expList, "posterior", -1812.939, 0.0581);
-                addExpIntoList(expList, "prior", 3.752, 0.0205);
-                addExpIntoList(expList, "tree.height", 6.32E-02, 6.76E-05);
-                addExpIntoList(expList, "popSize", 9.67E-02, 5.99E-04);
-                addExpIntoList(expList, "hky.kappa", 25.807, 0.1812);
-                addExpIntoList(expList, "hky.frequencies1", 0.327, 6.15E-04);
-                addExpIntoList(expList, "hky.frequencies2", 0.258, 6.09E-04);
-                addExpIntoList(expList, "hky.frequencies3", 0.155, 3.88E-04);
-                addExpIntoList(expList, "hky.frequencies4", 0.261, 5.17E-04);
-                addExpIntoList(expList, "clockRate", 1.0, 0.0);
-                addExpIntoList(expList, "treeLikelihood", -1816.691, 0.0522);
-                addExpIntoList(expList, "coalescent", 7.24, 9.58E-03);
-                break;
-
-            case 1: // testStrictClock2.xml
-//        BEAST 1 testStrictClockNoDate2.xml
-                addExpIntoList(expList, "posterior", -1811.898, 2.89E-02);
-                addExpIntoList(expList, "prior", 3.721, 2.34E-02);
-                addExpIntoList(expList, "tree.height", 6.29E-02, 6.43E-05);
-                addExpIntoList(expList, "popSize", 9.76E-02, 6.68E-04);
-                addExpIntoList(expList, "hky.kappa", 26.491, 0.2089);
-                addExpIntoList(expList, "clockRate", 1.0, 0.0);
-                addExpIntoList(expList, "treeLikelihood", -1815.619, 2.20E-02);
-                addExpIntoList(expList, "coalescent", 7.276, 9.55E-03);
-                break;
-
-            case 2: // testRandomLocalClock.xml
-                addExpIntoList(expList, "posterior", -1821.0538, 0.1647);
-                addExpIntoList(expList, "prior", -4.4935, 0.1553);
-                addExpIntoList(expList, "tree.height", 6.4088E-2, 1.4663E-4);
-                addExpIntoList(expList, "popSize", 9.6541E-2, 6.6609E-4);
-                addExpIntoList(expList, "hky.kappa", 26.544, 0.2648);
-                addExpIntoList(expList, "hky.frequencies1", 0.3253, 7.3002E-4);
-                addExpIntoList(expList, "hky.frequencies2", 0.258, 5.5405E-4);
-                addExpIntoList(expList, "hky.frequencies3", 0.1546, 4.6881E-4);
-                addExpIntoList(expList, "hky.frequencies4", 0.262, 6.1501E-4);
-                addExpIntoList(expList, "treeLikelihood", -1816.5603, 5.5936E-2);
-                addExpIntoList(expList, "coalescent", 7.2815, 1.3472E-2);
-                break;
-
-            case 3: // testUCRelaxedClockLogNormal.xml
-                addExpIntoList(expList, "posterior", -1812.117, 0.1369);
-                addExpIntoList(expList, "prior", 4.3666, 5.2353E-2);
-                addExpIntoList(expList, "treeLikelihood", -1816.4836, 9.4437E-2);
-                addExpIntoList(expList, "tree.height", 6.4535E-2, 4.3471E-4);
-                addExpIntoList(expList, "popSize", 9.4535E-2, 1.7803E-3);
-                addExpIntoList(expList, "hky.kappa", 26.0574, 0.2775);
-                addExpIntoList(expList, "hky.frequencies1", 0.3262, 9.4363E-4);
-                addExpIntoList(expList, "hky.frequencies2", 0.2575, 7.5592E-4);
-                addExpIntoList(expList, "hky.frequencies3", 0.1545, 5.1935E-4);
-                addExpIntoList(expList, "hky.frequencies4", 0.2618, 5.9827E-4);
-                addExpIntoList(expList, "S", 0.1786, 4.9947E-3);
-                addExpIntoList(expList, "coalescent", 7.3012, 3.0267E-2);
-                addExpIntoList(expList, "rate.mean", 0.9962, 3.1704E-3);
-                addExpIntoList(expList, "rate.coefficientOfVariation", 0.1565, 4.3557E-3);
-//                rate.variance   3.526E-2                
+            case 0: // testStarBeast2.xml
+                addExpIntoList(expList, "posterior",-2200.5722,0.6459);
+                addExpIntoList(expList, "prior",312.7396,0.6466);
+                addExpIntoList(expList, "speciesCoalescent",287.4159,0.7055);
+                addExpIntoList(expList, "SpeciesTreePopSizePrior",70.6397,0.5031);
+                addExpIntoList(expList, "tree.prior.26",106.1954,0.2071);
+                addExpIntoList(expList, "tree.prior.29",110.5808,0.2108);
+                addExpIntoList(expList, "SpeciesTreeDivergenceTimesPrior",29.5124,0.1372);
+                addExpIntoList(expList, "likelihood",-2513.3118,0.1979);
+                addExpIntoList(expList, "popMean",0.0019843,0.00007611);
+                addExpIntoList(expList, "birthRate",213.1348,4.9152);
+                addExpIntoList(expList, "hky.kappa26",4.4936,0.0744);
+                addExpIntoList(expList, "hky.kappa29",4.0749,0.0588);
+                addExpIntoList(expList, "popSize1",0.0040487,0.00027109);
+                addExpIntoList(expList, "popSize2",0.0062535,0.00026144);
+                addExpIntoList(expList, "popSize3",0.0023299,0.00015953);
+                addExpIntoList(expList, "popSize4",0.0029275,0.00023455);
+                addExpIntoList(expList, "popSize5",0.0021888,0.00022018);
+                addExpIntoList(expList, "popSize6",0.0042746,0.00018535);
+                addExpIntoList(expList, "popSize7",0.004097,0.00035926);
+                addExpIntoList(expList, "popSize8",0.0041803,0.00022475);
+                addExpIntoList(expList, "popSize9",0.0036424,0.00016521);
+                addExpIntoList(expList, "popSize10",0.0037575,0.00032465);
+                addExpIntoList(expList, "popSize11",0.0035904,0.00017545);
+                addExpIntoList(expList, "popSize12",0.0036104,0.00020949);
+                addExpIntoList(expList, "popSize13",0.0040485,0.00019889);
+                addExpIntoList(expList, "popSize14",0.0035229,0.00017978);
+                addExpIntoList(expList, "popSize15",0.005072,0.00017682);
+                addExpIntoList(expList, "TreeHeightSP",0.0118,0.00025562);
+                addExpIntoList(expList, "TreeHeight26",0.0266,0.00010397);
+                addExpIntoList(expList, "TreeHeight29",0.0224,0.000077373);                
                 break;
 
             default:
@@ -108,4 +65,4 @@ public class TaxonOrderTest extends TestFramework {
     }
 
 
-} // class ResumeTest
+} // class TaxonOrderTest

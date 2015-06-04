@@ -226,7 +226,7 @@ initial='@tree29' taxonset='@lineagetaxa' threshold='1e-12' />
 	</populationModel>
     </tree>
 
-<run chainLength="10000000" id="mcmc" preBurnin="0" spec="MCMC">
+<run chainLength="2000000" id="mcmc" preBurnin="0" spec="MCMC">
     <!--init idref='randomSpeciesTree'/-->
     <init idref='newickSpeciesTree'/>
     <!--init idref='newickGeneTree1'/>
