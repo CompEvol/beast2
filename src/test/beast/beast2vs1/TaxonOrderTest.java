@@ -16,6 +16,7 @@ public class TaxonOrderTest extends TestFramework {
 
     @Override
     protected void setUp() throws Exception {
+    	checkESS = false;
         super.setUp(XML_FILES);
     }
 
@@ -37,6 +38,7 @@ public class TaxonOrderTest extends TestFramework {
                 addExpIntoList(expList, "birthRate",213.1348,4.9152);
                 addExpIntoList(expList, "hky.kappa26",4.4936,0.0744);
                 addExpIntoList(expList, "hky.kappa29",4.0749,0.0588);
+                /*
                 addExpIntoList(expList, "popSize1",0.0040487,0.00027109);
                 addExpIntoList(expList, "popSize2",0.0062535,0.00026144);
                 addExpIntoList(expList, "popSize3",0.0023299,0.00015953);
@@ -52,6 +54,7 @@ public class TaxonOrderTest extends TestFramework {
                 addExpIntoList(expList, "popSize13",0.0040485,0.00019889);
                 addExpIntoList(expList, "popSize14",0.0035229,0.00017978);
                 addExpIntoList(expList, "popSize15",0.005072,0.00017682);
+                */
                 addExpIntoList(expList, "TreeHeightSP",0.0118,0.00025562);
                 addExpIntoList(expList, "TreeHeight26",0.0266,0.00010397);
                 addExpIntoList(expList, "TreeHeight29",0.0224,0.000077373);                

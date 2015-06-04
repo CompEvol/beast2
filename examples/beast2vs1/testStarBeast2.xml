@@ -113,8 +113,8 @@ same as testStarBeast.xml, but with different orderings for alignments and taxon
                 <taxon spec='TaxonSet' id='Orthogeomys_heterodus_species'>
                     <taxon spec='Taxon' id='Orthogeomys_heterodus'/>
                 </taxon>
-                    <taxon spec='Taxon' id='Thomomys_monticola_a'/>
                 <taxon spec='TaxonSet' id='Thomomys_monticola'>
+                    <taxon spec='Taxon' id='Thomomys_monticola_a'/>
                     <taxon spec='Taxon' id='Thomomys_monticola_b'/>
                 </taxon>
                 <taxon spec='TaxonSet' id='Thomomys_bottae'>
@@ -304,7 +304,7 @@ initial='@tree29' taxonset='@lineagetaxa' threshold='1e-12' />
         <genetree idref='tree29'/>
     </operator>
 
-    <logger fileName="starBeast.log" id="Logger0" logEvery="1000" mode="autodetect" model="@posterior">
+    <logger fileName="test.$(seed).log" id="Logger0" logEvery="1000" mode="autodetect" model="@posterior">
         <log idref="posterior"/>
         <log idref="prior"/>
         <log idref="speciesCoalescent"/>
