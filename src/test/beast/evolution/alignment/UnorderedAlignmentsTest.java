@@ -14,7 +14,6 @@ import beast.evolution.tree.RandomTree;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.util.Randomizer;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -67,7 +66,6 @@ public class UnorderedAlignmentsTest extends TestCase {
     }
 
     static public Alignment getAlignment(TaxonSet taxa, Tree tree, SiteModel siteModel) throws Exception {
-        Collections.shuffle(taxa.taxonsetInput.get());
         Alignment dummy = new Alignment();
         String[] args = new String[2 * taxa.getTaxonCount() + 2];
         args[args.length - 2] = "dataType";
@@ -84,18 +82,26 @@ public class UnorderedAlignmentsTest extends TestCase {
 
     @Test
     public void testUnorderedAlignment() throws Exception {
-        Randomizer.setSeed(666);
         TaxonSet taxa = getTaxa();
         Tree tree = getTree(taxa);
         SiteModel siteModel = getSiteModel();
         double logP = 0.0;
+        double shuffledLogP = 0.0;
         for (int i = 0; i < 3; ++i) {
             Alignment data = getAlignment(taxa, tree, siteModel);
+
+            // First calculate in order
             TreeLikelihood likelihood = new TreeLikelihood();
             likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
             logP += likelihood.calculateLogP();
+
+            // Now calculate again, with shuffled taxon order
+            Collections.shuffle(data.sequenceInput.get());
+            likelihood = new TreeLikelihood();
+            likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
+            shuffledLogP += likelihood.calculateLogP();
         }
-        assertEquals(-8401.407479179557, logP, 1E-9);
+        assertEquals(logP, shuffledLogP, 1E-9);
     }
 
 }
