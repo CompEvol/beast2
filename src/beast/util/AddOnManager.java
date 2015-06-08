@@ -655,7 +655,7 @@ public class AddOnManager {
                         if (loadedClass == null) {
                             addURL(url);
                         } else {
-                            Log.debug.println("Skip loading " + url + ": contains classs " + loadedClass + " that is already loaded");
+                            Log.debug.println("Skip loading " + url + ": contains class " + loadedClass + " that is already loaded");
                         }
                     }
                 }
