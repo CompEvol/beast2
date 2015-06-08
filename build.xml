@@ -247,7 +247,7 @@
         <!-- Create the release directory -->
         <mkdir dir="${Windows_package_dir}" />
 
-        <property name="launch4j.dir" location="../../launch4j" />
+        <property name="launch4j.dir" location="../launch4j" />
         <taskdef name="launch4j"
                  classname="net.sf.launch4j.ant.Launch4jTask"
                  classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
@@ -354,7 +354,7 @@
                 <copy file="${beast1_dir}/LogCombiner.exe" todir="${Windows_package_dir}" />
                 <copy file="${beast1_dir}/TreeAnnotator.exe" todir="${Windows_package_dir}" />
         -->
-        <zip destfile="${Windows_dir}/${BEAST_name} v${version}.zip">
+        <zip destfile="${Windows_dir}/${BEAST_name}.v${version}.zip">
             <zipfileset dir="${Windows_package_dir}" prefix="${BEAST_name}" />
         </zip>
 
