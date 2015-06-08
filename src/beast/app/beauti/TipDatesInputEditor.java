@@ -2,11 +2,8 @@ package beast.app.beauti;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventObject;
@@ -18,7 +15,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.CellEditorListener;
@@ -27,7 +23,6 @@ import javax.swing.table.TableCellRenderer;
 
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -421,13 +416,13 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 //throw new Exception("could not parse trait: " + sTrait);
             }
             String sTaxonID = normalize(sStrs[0]);
-            int iTaxon = sTaxa.indexOf(sTaxonID);
+            int taxonIndex = sTaxa.indexOf(sTaxonID);
 //            if (iTaxon < 0) {
 //                throw new Exception("Trait (" + sTaxonID + ") is not a known taxon. Spelling error perhaps?");
 //            }
-            if (iTaxon >= 0) {
-                tableData[iTaxon][1] = normalize(sStrs[1]);
-                tableData[iTaxon][0] = sTaxonID;
+            if (taxonIndex >= 0) {
+                tableData[taxonIndex][1] = normalize(sStrs[1]);
+                tableData[taxonIndex][0] = sTaxonID;
             } else {
                 System.err.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
             }

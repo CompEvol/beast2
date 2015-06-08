@@ -264,9 +264,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             Alignment data = dataInput.get();
             int i;
             int[] states = new int[patternCount];
-            int iTaxon = getTaxonNr(node, data);
+            int taxonIndex = getTaxonIndex(node.getID(), data);
             for (i = 0; i < patternCount; i++) {
-                int code = data.getPattern(iTaxon, i);
+                int code = data.getPattern(taxonIndex, i);
                 int[] statesForCode = data.getDataType().getStatesForCode(code);
                 if (statesForCode.length==1)
                     states[i] = statesForCode[0];
@@ -281,17 +281,24 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
     }
 
-    private int getTaxonNr(Node node, Alignment data) {
-        int iTaxon = data.getTaxonIndex(node.getID());
-        if (iTaxon == -1) {
-        	if (node.getID().startsWith("'") || node.getID().startsWith("\"")) {
-        		iTaxon = data.getTaxonIndex(node.getID().substring(1,node.getID().length()-1));
-        	}
-            if (iTaxon == -1) {
-            	throw new RuntimeException("Could not find sequence " + node.getID() + " in the alignment");
+    /**
+     *
+     * @param taxon the taxon name as a string
+     * @param data the alignment
+     * @return the taxon index of the given taxon name for accessing its sequence data in the given alignment,
+     *         or -1 if the taxon is not in the alignment.
+     */
+    private int getTaxonIndex(String taxon, Alignment data) {
+        int taxonIndex = data.getTaxonIndex(taxon);
+        if (taxonIndex == -1) {
+        	if (taxon.startsWith("'") || taxon.startsWith("\"")) {
+                taxonIndex = data.getTaxonIndex(taxon.substring(1, taxon.length() - 1));
+            }
+            if (taxonIndex == -1) {
+            	throw new RuntimeException("Could not find sequence " + taxon + " in the alignment");
             }
         }
-        return iTaxon;
+        return taxonIndex;
 	}
 
 	/**
@@ -304,9 +311,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             double[] partials = new double[patternCount * nStates];
 
             int k = 0;
-            int iTaxon = getTaxonNr(node, data);
+            int taxonIndex = getTaxonIndex(node.getID(), data);
             for (int iPattern = 0; iPattern < patternCount; iPattern++) {
-                int nState = data.getPattern(iTaxon, iPattern);
+                int nState = data.getPattern(taxonIndex, iPattern);
                 boolean[] stateSet = data.getStateSet(nState);
                 for (int iState = 0; iState < nStates; iState++) {
                     partials[k++] = (stateSet[iState] ? 1.0 : 0.0);
