@@ -3,6 +3,7 @@ package beast.app.beauti;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -211,10 +212,11 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 
  	       	List<RealParameter> parameters = operator.parameterInput.get();
  	    	parameters.clear();
- 	    	double commonClockRate = -1;
-		   	String weights = "";
+		   	//String weights = "";
 		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
 		    boolean hasOneEstimatedRate = false;
+		    List<String> rateIDs = new ArrayList<>();
+		    List<Integer> weights = new ArrayList<>();
 			for (Distribution d : likelihood.pDistributions.get()) {
 				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
 	    		Alignment data = treelikelihood.dataInput.get(); 
@@ -225,25 +227,28 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
 		    		if (mutationRate.isEstimatedInput.get()) {
 		    			hasOneEstimatedRate = true;
-
-		    		    if (commonClockRate < 0) {
-		    				commonClockRate = mutationRate.valuesInput.get().get(0);
+		    			if (rateIDs.indexOf(mutationRate.getID()) == -1) {
+			    			parameters.add(mutationRate);
+			    			weights.add(weight);
+			    			rateIDs.add(mutationRate.getID());
 		    			} else {
-		    				if (Math.abs(commonClockRate - mutationRate.valuesInput.get().get(0)) > 1e-10) {
-//		    					bAllClocksAreEqual = false;
-		    				}
+		    				int k = rateIDs.indexOf(mutationRate.getID());
+			    			weights.set(k,  weights.get(k) + weight);
 		    			}
-	    				weights += weight + " ";
-		    			parameters.add(mutationRate);
 		    		}
 	    		}
 	    	}
 			
+			
 		    IntegerParameter weightParameter;
-			if (weights.equals("")) {
+			if (weights.size() == 0) {
 		    	weightParameter = new IntegerParameter();
 			} else {
-		    	weightParameter = new IntegerParameter(weights);
+				String weightString = "";
+				for (int k : weights) {
+					weightString += k + " ";
+				}
+		    	weightParameter = new IntegerParameter(weightString);
 				weightParameter.setID("weightparameter");
 				
 			}
