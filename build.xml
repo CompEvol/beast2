@@ -485,7 +485,7 @@
                    mainclassname="beast.app.beastapp.BeastLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx1024M"/>
+            <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <argument value="-window"/>
@@ -513,7 +513,7 @@
                    mainclassname="beast.app.beauti.BeautiLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx1024M"/>
+            <option value="-Xmx4g"/>
             <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
@@ -540,7 +540,7 @@
                    mainclassname="beast.app.tools.LogCombinerLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx1024M"/>
+            <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
@@ -565,7 +565,7 @@
                    mainclassname="beast.app.treeannotator.TreeAnnotatorLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx1024M"/>
+            <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
@@ -589,7 +589,7 @@
                    copyright="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
                    mainclassname="viz.DensiTree">
             <classpath file="${tools_dir}/DensiTree.jar"/>
-            <option value="-Xmx1024M"/>
+            <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         </bundleapp>
