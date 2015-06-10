@@ -220,6 +220,7 @@
     <property name="copyright" value="Beast 2 development team 2011-2015" />
 
     <property name="BEAST_name" value="BEAST" />
+    <property name="beast_name" value="beast" />
     <property name="BEAUti_name" value="BEAUti" />
     <property name="TreeAnnotator_name" value="TreeAnnotator" />
     <property name="LogCombiner_name" value="LogCombiner" />
@@ -235,7 +236,7 @@
 
     <property name="Mac_package_dir" value="${Mac_dir}/${BEAST_name}" />
     <property name="Mac_bundle_dir" value="${Mac_package_dir}/${BEAST_name}" />
-    <property name="Linux_package_dir" value="${Linux_dir}/${BEAST_name}" />
+    <property name="Linux_package_dir" value="${Linux_dir}/${beast_name}" />
     <property name="Windows_package_dir" value="${Windows_dir}/${BEAST_name}" />
 
     <!-- Need to either install Launch4j under {BEAST workspace}/${release}
