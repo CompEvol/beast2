@@ -255,7 +255,7 @@ public class BeastMain {
                         new Arguments.IntegerOption("threads", "The number of computational threads to use (default auto)"),
                         new Arguments.Option("java", "Use Java only, no native implementations"),
                         new Arguments.Option("noerr", "Suppress all output to standard error"),
-                        new Arguments.StringOption("loglevel", "LEVEL", "error,warning,info"),
+                        new Arguments.StringOption("loglevel", "LEVEL", "error,warning,info,debug,trace"),
                         new Arguments.Option("beagle", "Use beagle library if available"),
                         new Arguments.Option("beagle_info", "BEAGLE: show information on available resources"),
                         new Arguments.StringOption("beagle_order", "order", "BEAGLE: set order of resource use"),

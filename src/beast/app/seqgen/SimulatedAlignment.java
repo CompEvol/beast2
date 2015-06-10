@@ -121,8 +121,7 @@ public class SimulatedAlignment extends Alignment {
 //    		}
 //			sSeq.append(seq[m_sequenceLength-1] + "");
 //    	}
-        List<Sequence> taxa = m_data.get().sequenceInput.get();
-        String sTaxon = taxa.get(node.getNr()).taxonInput.get();
+        String sTaxon = m_data.get().getTaxaNames().get(node.getNr());
         return new Sequence(sTaxon, sSeq.toString());
     } // intArray2Sequence
 

@@ -44,7 +44,7 @@ public class BrentSolver extends UnivariateRealSolverImpl {
      *
      * @since 2.1
      */
-    public static final int DEFAULT_MAXIMUM_ITERATIONS = 100;
+    public static final int DEFAULT_MAXIMUM_ITERATIONS = 5000;
 
     /**
      * Error message for non-bracketing interval.

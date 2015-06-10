@@ -2,9 +2,7 @@ package beast.math.distributions;
 
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import beast.core.Description;
 import beast.core.Distribution;
@@ -41,7 +39,8 @@ public class MRCAPrior extends Distribution {
     // number of taxa in taxon set
     int nrOfTaxa = -1;
     // array of flags to indicate which taxa are in the set
-    boolean[] isInTaxaSet;
+    Set<String> isInTaxaSet = new LinkedHashSet<>();
+
     // array of indices of taxa
     int[] taxonIndex;
     // stores time to be calculated
@@ -56,7 +55,7 @@ public class MRCAPrior extends Distribution {
     public void initAndValidate() throws Exception {
         dist = distInput.get();
         tree = treeInput.get();
-        final List<String> sTaxaNames = new ArrayList<String>();
+        final List<String> sTaxaNames = new ArrayList<>();
         for (final String sTaxon : tree.getTaxaNames()) {
             sTaxaNames.add(sTaxon);
         }
@@ -88,17 +87,17 @@ public class MRCAPrior extends Distribution {
         // determine which taxa are in the set
         taxonIndex = new int[nrOfTaxa];
         if ( set != null )  {  // m_taxonset.get() != null) {
-            isInTaxaSet = new boolean[sTaxaNames.size()];
+            isInTaxaSet.clear();
             int k = 0;
             for (final String sTaxon : set) {
                 final int iTaxon = sTaxaNames.indexOf(sTaxon);
                 if (iTaxon < 0) {
                     throw new Exception("Cannot find taxon " + sTaxon + " in data");
                 }
-                if (isInTaxaSet[iTaxon]) {
+                if (isInTaxaSet.contains(sTaxon)) {
                     throw new Exception("Taxon " + sTaxon + " is defined multiple times, while they should be unique");
                 }
-                isInTaxaSet[iTaxon] = true;
+                isInTaxaSet.add(sTaxon);
                 taxonIndex[k++] = iTaxon;
             }
         } else {
@@ -153,24 +152,24 @@ public class MRCAPrior extends Distribution {
     int calcMRCAtime(final Node node, final int[] nTaxonCount) {
         if (node.isLeaf()) {
             nTaxonCount[0]++;
-            if (isInTaxaSet[node.getNr()]) {
+            if (isInTaxaSet.contains(node.getID())) {
                 return 1;
             } else {
                 return 0;
             }
         } else {
-            int iTaxons = calcMRCAtime(node.getLeft(), nTaxonCount);
+            int taxonCount = calcMRCAtime(node.getLeft(), nTaxonCount);
             final int nLeftTaxa = nTaxonCount[0];
             nTaxonCount[0] = 0;
             if (node.getRight() != null) {
-                iTaxons += calcMRCAtime(node.getRight(), nTaxonCount);
+                taxonCount += calcMRCAtime(node.getRight(), nTaxonCount);
                 final int nRightTaxa = nTaxonCount[0];
                 nTaxonCount[0] = nLeftTaxa + nRightTaxa;
-                if (iTaxons == nrOfTaxa) {
+                if (taxonCount == nrOfTaxa) {
                 	if (nrOfTaxa == 1 && useOriginate) {
             			MRCATime = node.getDate();
                         isMonophyletic = true;
-                        return iTaxons + 1;
+                        return taxonCount + 1;
                 	}
                     // we are at the MRCA, so record the height
                 	if (useOriginate) {
@@ -184,10 +183,10 @@ public class MRCAPrior extends Distribution {
                 		MRCATime = node.getDate();
                 	}
                     isMonophyletic = (nTaxonCount[0] == nrOfTaxa);
-                    return iTaxons + 1;
+                    return taxonCount + 1;
                 }
             }
-            return iTaxons;
+            return taxonCount;
         }
     }
 

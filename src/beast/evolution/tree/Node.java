@@ -235,10 +235,8 @@ public class Node extends BEASTObject {
     // recursive
     public void getAllChildNodes(final List<Node> childNodes) {
         childNodes.add(this);
-        if (!this.isLeaf()) {
-            getRight().getAllChildNodes(childNodes);
-            getLeft().getAllChildNodes(childNodes);
-        }
+        for (Node child : children)
+            child.getAllChildNodes(childNodes);
     }
 
     /**
@@ -256,10 +254,10 @@ public class Node extends BEASTObject {
     public void getAllLeafNodes(final List<Node> leafNodes) {
         if (this.isLeaf()) {
             leafNodes.add(this);
-        } else {
-            getRight().getAllLeafNodes(leafNodes);
-            getLeft().getAllLeafNodes(leafNodes);
         }
+
+        for (Node child : children)
+            child.getAllLeafNodes(leafNodes);
     }
 
     /**

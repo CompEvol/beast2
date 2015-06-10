@@ -29,7 +29,7 @@ public class ClusterTreeTest extends TestCase {
                 "clusterType", "upgma",
                 "taxa", alignment);
         
-        String expectedNewick = "(((((bonobo:0.008560512208575313,chimp:0.008560512208575313):0.010470344817177218,human:0.01903085702575253):0.007962255880644985,gorilla:0.026993112906397516):0.019197419394211015,orangutan:0.04619053230060853):0.007214240662738673,siamang:0.053404772963347204):0.0";
+        String expectedNewick = "((((human:0.01903085702575253,(chimp:0.008560512208575313,bonobo:0.008560512208575313):0.010470344817177218):0.007962255880644985,gorilla:0.026993112906397516):0.019197419394211015,orangutan:0.04619053230060853):0.007214240662738673,siamang:0.053404772963347204):0.0";
         String actualNewick = tree.getRoot().toNewick();
         assertEquals(expectedNewick, actualNewick);
         
@@ -38,9 +38,9 @@ public class ClusterTreeTest extends TestCase {
         seqs.addAll(alignment.sequenceInput.get());
         List<Sequence> newseqs = alignment.sequenceInput.get();
         newseqs.clear();
-        newseqs.add(seqs.get(0));
-        newseqs.add(seqs.get(1));
-        newseqs.add(seqs.get(3));
+        newseqs.add(Sequence.getSequenceByTaxon("bonobo", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("chimp", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("human", seqs));
         alignment.initAndValidate();
         tree = new ClusterTree();
         tree.initByName(
@@ -59,21 +59,19 @@ public class ClusterTreeTest extends TestCase {
         
         actualNewick = tree.getRoot().toNewick();
         assertEquals(expectedNewick, actualNewick);
-        
-        
-        
+
         // same sequences in different order
         newseqs.clear();
-        newseqs.add(seqs.get(3));
-        newseqs.add(seqs.get(1));
-        newseqs.add(seqs.get(0));
+        newseqs.add(Sequence.getSequenceByTaxon("human", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("chimp", seqs));
+        newseqs.add(Sequence.getSequenceByTaxon("bonobo", seqs));
         alignment.initAndValidate();
         tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
-        assertEquals(expectedNewick, tree.getRoot().toNewick());
-        
+        actualNewick = tree.getRoot().toNewick();
+        expectedNewick = "(human:0.01903085702575253,(chimp:0.008560512208575313,bonobo:0.008560512208575313):0.010470344817177218):0.0";
+        assertEquals(expectedNewick, actualNewick);
     }
-
 }

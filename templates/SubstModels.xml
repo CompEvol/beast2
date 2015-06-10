@@ -7,7 +7,7 @@
     <mergewith point='substModelTemplates'>
     
         <!-- gamma site model -->
-        <subtemplate id='Gamma Site Modelx' class='beast.evolution.sitemodel.SiteModel' mainid='SiteModel.s:$(n)'>
+        <subtemplate id='Gamma Site Model' class='beast.evolution.sitemodel.SiteModel' mainid='SiteModel.s:$(n)'>
             <![CDATA[
             <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
                 <!--substModel will be automatically detected /-->

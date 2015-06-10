@@ -1,10 +1,32 @@
-                    BEAST v2.2.1 2015
+                    BEAST v2.3.0 2015
                  Beast 2 development team 2011-2015
 Version History
-Last updated: March 2015
+Last updated: May 2015
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.3.0 May 2015
+	BEAUti fixes
+		cloning, linking, unlinking bugs fixed
+        more robust templates
+        calibrations can be deleted now
+		improved access to package folders
+        improved import menu
+
+	LogCombiner improved command line interface
+
+	Fix synchronisation issues affecting ThreadedTreeLikelihood
+    
+	Auto load beast.jar, giving footprint for Mac
+
+	Bug fix in EigenDecomposition affecting asymmetric rate matrices
+
+	Reduced dependency on taxon order making multiple partition handling more robust
+
+    Can keep running v2.2 and its packages alongside v2.3
+
+	DensiTree updated to v2.2.2
+
 Version 2.2.1 March 2015
 	Support for multi-gamma-site-model package 
 

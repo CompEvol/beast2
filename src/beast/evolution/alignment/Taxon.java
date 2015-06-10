@@ -2,10 +2,7 @@ package beast.evolution.alignment;
 
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import beast.core.Description;
 import beast.core.BEASTObject;
@@ -41,16 +38,52 @@ public class Taxon extends BEASTObject {
      * @return a list of Taxon objects with corresponding names
      */
     public static List<Taxon> createTaxonList(final List<String> taxaNames) throws Exception {
-        final List<Taxon> taxa = new ArrayList<Taxon>();
+        final List<Taxon> taxa = new ArrayList<>();
         for (final String taxaName : taxaNames) {
             taxa.add(new Taxon(taxaName));
         }
-        Collections.sort(taxa, new Comparator<Taxon>() {
-			@Override // assumes IDs are not null
-			public int compare(Taxon o1, Taxon o2) {
-				return o1.getID().compareTo(o2.getID());
-			}
-		});
         return taxa;
     }
+
+//    /**
+//     * Convenience method to produce a list of taxon objects sorted alphabetically
+//     * @param taxaNames a list of taxa names
+//     * @return a list of Taxon objects with corresponding names
+//     */
+//    @Deprecated
+//    public static List<Taxon> createSortedTaxonList(final List<String> taxaNames) throws Exception {
+//        final List<Taxon> taxa = new ArrayList<>();
+//        for (final String taxaName : taxaNames) {
+//            taxa.add(new Taxon(taxaName));
+//        }
+//        Collections.sort(taxa, new Comparator<Taxon>() {
+//            @Override // assumes IDs are not null
+//            public int compare(Taxon o1, Taxon o2) {
+//                return o1.getID().compareTo(o2.getID());
+//            }
+//        });
+//        return taxa;
+//    }
+
+    /**
+     * @param taxa1 a collection of taxa name strings
+     * @param taxa2 a second collection of taxa name strings
+     * Throws a runtime exception if the two collections do not have the same taxa.
+     */
+    public static void assertSameTaxa(String id1, Collection<String> taxa1, String id2, Collection<String> taxa2) {
+        if (taxa1.size() != taxa2.size()) {
+            throw new RuntimeException("Incompatible taxon sets in " + id1 + " and " + id2);
+        }
+        for (String taxon : taxa1) {
+            boolean found = false;
+            for (String taxon2 : taxa2) {
+                if (taxon.equals(taxon2)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new RuntimeException("Taxon" + taxon + "is not in " + id2);
+            }
+        }    }
 }
