@@ -38,12 +38,10 @@ import beast.util.treeparser.NewickLexer;
 import beast.util.treeparser.NewickParser;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
@@ -319,7 +317,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * @return root node of tree
      * @throws Exception if anything goes wrong during the parse.
      */
-    public Node parseNewick(String newick) throws Exception {
+    public Node parseNewick(String newick) {
         ANTLRInputStream input = new ANTLRInputStream(newick);
 
         // Custom parse/lexer error listener
@@ -354,11 +352,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
         NewickASTVisitor visitor = new NewickASTVisitor();
         Node root = visitor.visit(parseTree);
-
-        // Re-throw first exception raised during traversal:
-        if (visitor.getRaisedExceptions().size()>0) {
-            throw visitor.getRaisedExceptions().get(0);
-        }
 
         return root;
     }
@@ -402,7 +395,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     /**
      * Try to map sStr into an index.
      */
-    private int getLabelIndex(final String sStr) throws Exception {
+    private int getLabelIndex(final String sStr) {
 
         // look it up in list of taxa
         for (int nIndex = 0; nIndex < labels.size(); nIndex++) {
@@ -418,7 +411,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             return labels.size() - 1;
         }
 
-        throw new Exception("Label '" + sStr + "' in Newick beast.tree could " +
+        throw new ParseCancellationException("Label '" + sStr + "' in Newick beast.tree could " +
                 "not be identified. Perhaps taxa or taxonset is not specified?");
     }
 
@@ -456,13 +449,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
         private List<Exception> raisedExceptions = new ArrayList<>();
 
-        /**
-         * @return any exception raised during the AST traverse.
-         */
-        public List<Exception> getRaisedExceptions() {
-            return raisedExceptions;
-        }
-
         @Override
         public Node visitTree(@NotNull NewickParser.TreeContext ctx) {
             Node root = visit(ctx.node());
@@ -475,6 +461,15 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
             // Make sure internal nodes are numbered correctly
             root.labelInternalNodes(root.getLeafNodeCount());
+
+            // Check for duplicate taxa
+            BitSet nodeNrSeen = new BitSet();
+            for (Node leaf : root.getAllLeafNodes()) {
+                if (nodeNrSeen.get(leaf.getNr()) == true)
+                    throw new ParseCancellationException("Duplicate taxon found: " + labels.get(leaf.getNr()));
+                else
+                    nodeNrSeen.set(leaf.getNr());
+            }
 
             return root;
         }
@@ -541,17 +536,13 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     node.setNr(Integer.parseInt(postCtx.label().getText()) - offsetInput.get());
                 } else {
                     if (node.isLeaf()) {
-                        try {
-                            node.setNr(getLabelIndex(postCtx.label().getText()));
-                        } catch (Exception e) {
-                            raisedExceptions.add(e);
-                        }
+                        node.setNr(getLabelIndex(postCtx.label().getText()));
                     }
                 }
             }
 
             if (node.getChildCount()==1 && !allowSingleChildInput.get())
-                raisedExceptions.add(new Exception("Node with single child found."));
+                throw new ParseCancellationException("Node with single child found.");
 
             return node;
         }
