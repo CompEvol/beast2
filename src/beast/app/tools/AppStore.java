@@ -329,8 +329,13 @@ public class AppStore extends JDialog {
     public static void runAppFromCMD(PackageApp packageApp) {
         try {
             List<String> cmd = new ArrayList<String>();
-            cmd.add("java");
+            if (System.getenv("JAVA_HOME") != null) {
+                cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
+                        + "bin" + File.separatorChar + "java");
+            } else
+                cmd.add("java");
             // TODO: deal with java directives like -Xmx -Xms here
+
             if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
             }
