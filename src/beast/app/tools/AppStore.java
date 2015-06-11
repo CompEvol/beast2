@@ -366,7 +366,7 @@ public class AppStore {
             if (exitStatus != 0) {
                 System.err.println(Utils.toString(process.getErrorStream()));
             } else {
-                System.out.println(Utils.toString(process.getInputStream()));
+//                System.out.println(Utils.toString(process.getInputStream()));
             }
 
         } catch (Exception e) {

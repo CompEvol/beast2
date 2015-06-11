@@ -273,11 +273,18 @@ public class Utils {
 	    }
 	    return Utils.getIcon(sIconLocation);
 	}
+
+    /**
+     * Retrieve icon.
+     *
+     * @param sIconLocation location of icon
+     * @return icon or null if no icon found
+     */
 	public static ImageIcon getIcon(String sIconLocation) {
 	    try {
 	        URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
 	        if (url == null) {
-	            System.err.println("Cannot find icon " + sIconLocation);
+//	            System.err.println("Cannot find icon " + sIconLocation);
 	            return null;
 	        }
 	        ImageIcon icon = new ImageIcon(url);
