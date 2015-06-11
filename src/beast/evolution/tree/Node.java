@@ -212,13 +212,10 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @return a copy of a list of immediate child nodes of this node.
-     *         Note that changing the list does not affect the topology of the tree.
+     * @return unmodifiable list of children of this node
      */
     public List<Node> getChildren() {
-        final List<Node> copyOfChildren = new ArrayList<Node>();
-        copyOfChildren.addAll(children);
-        return copyOfChildren;
+        return Collections.unmodifiableList(children);
     }
 
     /**
@@ -513,7 +510,7 @@ public class Node extends BEASTObject {
         final int[] indices = new int[childCount];
 
         // relies on this being a copy of children list
-        final List<Node> children = getChildren();
+        final List<Node> children = new ArrayList<>(getChildren());
 
         for (final Node child : children) {
             lowest.add(child.sort());
