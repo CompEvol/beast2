@@ -48,14 +48,14 @@ public class Node extends BEASTObject {
     /**
      * Arbitrarily labeled metadata on this node. Not currently implemented as part of state!
      */
-    protected Map<String, Object> metaData = new TreeMap<String, Object>();
+    protected Map<String, Object> metaData = new TreeMap<>();
 
     /**
      * list of children of this node *
      * Don't use m_left and m_right directly
      * Use getChildCount() and getChild(x) or getChildren() instead
      */
-    List<Node> children = new ArrayList<Node>();
+    List<Node> children = new ArrayList<>();
 
 //    @Deprecated
 //	private Node m_left;
@@ -212,13 +212,11 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @return a copy of a list of immediate child nodes of this node.
+     * @return an unmodifiable list of immediate child nodes of this node.
      *         Note that changing the list does not affect the topology of the tree.
      */
     public List<Node> getChildren() {
-        final List<Node> copyOfChildren = new ArrayList<Node>();
-        copyOfChildren.addAll(children);
-        return copyOfChildren;
+        return Collections.unmodifiableList(children);
     }
 
     /**
@@ -227,7 +225,7 @@ public class Node extends BEASTObject {
      * @return
      */
     public List<Node> getAllChildNodes() {
-        final List<Node> childNodes = new ArrayList<Node>();
+        final List<Node> childNodes = new ArrayList<>();
         if (!this.isLeaf()) getAllChildNodes(childNodes);
         return childNodes;
     }
@@ -245,7 +243,7 @@ public class Node extends BEASTObject {
      * @return
      */
     public List<Node> getAllLeafNodes() {
-        final List<Node> leafNodes = new ArrayList<Node>();
+        final List<Node> leafNodes = new ArrayList<>();
         if (!this.isLeaf()) getAllLeafNodes(leafNodes);
         return leafNodes;
     }
@@ -509,7 +507,7 @@ public class Node extends BEASTObject {
 
         if (childCount == 1) return getChild(0).sort();
 
-        final List<Integer> lowest = new ArrayList<Integer>();
+        final List<Integer> lowest = new ArrayList<>();
         final int[] indices = new int[childCount];
 
         // relies on this being a copy of children list
@@ -554,7 +552,7 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
-        node.metaData = new TreeMap<String, Object>(metaData);
+        node.metaData = new TreeMap<>(metaData);
         node.parent = null;
         node.setID(getID());
 
@@ -572,7 +570,7 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
-        node.metaData = new TreeMap<String, Object>(metaData);
+        node.metaData = new TreeMap<>(metaData);
         node.parent = null;
         node.setID(getID());
         if (getLeft() != null) {
@@ -594,7 +592,7 @@ public class Node extends BEASTObject {
         height = node.height;
         labelNr = node.labelNr;
         metaDataString = node.metaDataString;
-        metaData = new TreeMap<String, Object>(node.metaData);
+        metaData = new TreeMap<>(node.metaData);
         parent = null;
         setID(node.getID());
         if (node.getLeft() != null) {
