@@ -19,11 +19,10 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 
 /**
@@ -33,27 +32,33 @@ import java.util.TreeSet;
  * @author  Remco Bouckaert
  * @author  Walter Xie
  */
-public class AppStore extends JDialog {
+public class AppStore {
     private static final long serialVersionUID = 1L;
     public static final String DEFAULT_ICON = "beast/app/tools/images/utility.png";
 
     private final String ALL = "-all-";
-    JComboBox packageComboBox;
-    DefaultListModel model = new DefaultListModel();
-    JList listApps;
+    JComboBox<String> packageComboBox;
+    DefaultListModel<PackageApp> model = new DefaultListModel<>();
+    JList<PackageApp> listApps;
     JButton launchButton = new JButton("Launch");
+    JDialog mainDialog;
 
     public AppStore() {
+    }
+
+    public JDialog launchGUI() {
         try {
             AddOnManager.loadExternalJars();
         } catch (Exception e) {
             // ignore
         }
-        setTitle("BEAST 2 Package Application Launcher");
+
+        mainDialog = new JDialog();
+        mainDialog.setTitle("BEAST 2 Package Application Launcher");
 
         Box top = Box.createHorizontalBox();
         JLabel label = new JLabel("Filter: ");
-        packageComboBox = new JComboBox(new String[]{ALL});
+        packageComboBox = new JComboBox<>(new String[]{ALL});
         packageComboBox.setToolTipText("Show application of the installed package(s)");
         packageComboBox.addActionListener(new ActionListener() {
             @Override
@@ -67,25 +72,28 @@ public class AppStore extends JDialog {
         label.setLabelFor(packageComboBox);
         top.add(label);
         top.add(packageComboBox);
-        getContentPane().add(BorderLayout.NORTH, top);
+        mainDialog.getContentPane().add(BorderLayout.NORTH, top);
 
         Component pluginListBox = createList();
-        getContentPane().add(BorderLayout.CENTER, pluginListBox);
+        mainDialog.getContentPane().add(BorderLayout.CENTER, pluginListBox);
 
         Box buttonBox = createButtonBox();
-        getContentPane().add(buttonBox, BorderLayout.SOUTH);
+        mainDialog.getContentPane().add(buttonBox, BorderLayout.SOUTH);
 
 //      Dimension dim = panel.getPreferredSize();
 //      Dimension dim2 = buttonBox.getPreferredSize();
 //		setSize(dim.width + 10, dim.height + dim2.height + 30);
-        setSize(new Dimension(660, 400));
+        mainDialog.setSize(new Dimension(660, 400));
+        mainDialog.setLocationRelativeTo(null);
+
+        return mainDialog;
     }
 
     private Component createList() {
         Box box = Box.createVerticalBox();
         box.add(Box.createGlue());
 
-        listApps = new JList(model) {
+        listApps = new JList<PackageApp>(model) {
             //Subclass JList to workaround bug 4832765, which can cause the
             //scroll pane to not let the user easily scroll up to the beginning
             //of the list.  An alternative would be to set the unitIncrement
@@ -145,7 +153,7 @@ public class AppStore extends JDialog {
 
         JScrollPane listScroller = new JScrollPane(listApps);
         listScroller.setPreferredSize(new Dimension(660, 400));
-        listScroller.setAlignmentX(LEFT_ALIGNMENT);
+        listScroller.setAlignmentX(JDialog.LEFT_ALIGNMENT);
 
         JLabel label = new JLabel("List of available package applications");
         label.setLabelFor(listApps);
@@ -157,7 +165,7 @@ public class AppStore extends JDialog {
     }
 
     private void resetAppList() {
-        Set<String> packages = new TreeSet<String>();
+        Set<String> packages = new TreeSet<>();
         model.clear();
         try {
             List<PackageApp> packageApps = getPackageApps();
@@ -200,7 +208,7 @@ public class AppStore extends JDialog {
         launchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PackageApp packageApp = (PackageApp) listApps.getSelectedValue();
+                PackageApp packageApp = listApps.getSelectedValue();
                 if (packageApp != null) {
                     try {
                         new PackageAppThread(packageApp).start();
@@ -218,7 +226,7 @@ public class AppStore extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
 //				setVisible(false);
-                dispose();
+                mainDialog.dispose();
             }
         });
         box.add(Box.createGlue());
@@ -228,7 +236,7 @@ public class AppStore extends JDialog {
     }
 
     List<PackageApp> getPackageApps() {
-        List<PackageApp> packageApps = new ArrayList<PackageApp>();
+        List<PackageApp> packageApps = new ArrayList<>();
         List<String> dirs = AddOnManager.getBeastDirectories();
         for (String sJarDir : dirs) {
             File versionFile = new File(sJarDir + "/version.xml");
@@ -306,29 +314,13 @@ public class AppStore extends JDialog {
         public void run() {
             // invoke package application
 //            AppStore.runAppFromJar(packageApp.className, packageApp.getArgs());
-            AppStore.runAppFromCMD(packageApp);
+            runAppFromCMD(packageApp, null);
         }
     }
 
-    public static void runAppFromJar(String className, String[] args) {
+    public void runAppFromCMD(PackageApp packageApp, String[] additionalArgs) {
         try {
-            AddOnManager.loadExternalJars();
-
-            // call main method through reflection
-            // with default arguments
-            Class<?> c = Class.forName(className);
-            Class<?>[] argTypes = new Class[] { String[].class };
-            Method main = c.getDeclaredMethod("main", argTypes);
-            main.invoke(null, (Object) args);
-
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    public static void runAppFromCMD(PackageApp packageApp) {
-        try {
-            List<String> cmd = new ArrayList<String>();
+            List<String> cmd = new ArrayList<>();
             if (System.getenv("JAVA_HOME") != null) {
                 cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
                         + "bin" + File.separatorChar + "java");
@@ -347,6 +339,12 @@ public class AppStore extends JDialog {
             for (String arg : packageApp.getArgs()) {
                 cmd.add(arg);
             }
+
+            if (additionalArgs != null) {
+                for (String arg : additionalArgs)
+                    cmd.add(arg);
+            }
+
 
             final ProcessBuilder pb = new ProcessBuilder(cmd);
 
@@ -377,7 +375,7 @@ public class AppStore extends JDialog {
 
     }
     
-	private static String sanitise(String property) {
+	private String sanitise(String property) {
 		// sanitise for windows
 		if (beast.app.util.Utils.isWindows()) {
 			String cwd = System.getProperty("user.dir");
@@ -388,18 +386,91 @@ public class AppStore extends JDialog {
 		return property;
 	}
 
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            AppStore dlg = new AppStore();
-            dlg.setVisible(true);
-        } else {
-            String className = args[0];
-            String[] args2 = new String[args.length-1];
-            for (int i = 1; i < args.length; i++) {
-                args2[i-1] = args[i];
-            }
+    private void printUsage(PrintStream ps) {
+        ps.println("\nAppStore: Run installed BEAST 2 package apps.\n" +
+                        "\n" +
+                        "Usage:\n" +
+                        "\tappstore\n" +
+                        "\tappstore -help\n" +
+                        "\tappstore -list [package_name]\n" +
+                        "\tappstore <app_class_name|app_description>");
+    }
 
-            AppStore.runAppFromJar(className, args2);
+    private void printAppList(List<PackageApp> appList, PrintStream ps) {
+        ps.println("Package         | Class Name      | Description");
+        ps.println("----------------|-----------------|-----------------");
+        for (PackageApp app : appList) {
+            String[] fullClassName = app.className.split("\\.");
+            String className = fullClassName[fullClassName.length-1];
+            ps.format("%-15.15s | %-15.15s | %s\n",
+                    app.packageName, className, app.description);
+        }
+    }
+
+    public static void main(String[] args) {
+        AppStore appStore = new AppStore();
+
+        if (args.length == 0) {
+            SwingUtilities.invokeLater(() -> appStore.launchGUI().setVisible(true));
+        } else {
+
+            if (args[0].startsWith("-")) {
+                switch(args[0]) {
+                    case "-help":
+                        appStore.printUsage(System.out);
+                        System.exit(0);
+
+                    case "-list":
+                        System.out.println("\nAvailable package apps:\n");
+                        if (args.length>1) {
+                            String packageNameFilter = args[1].toLowerCase();
+
+                            List<PackageApp> filteredAppList = new ArrayList<>();
+                            for (PackageApp app : appStore.getPackageApps()) {
+                                if (!app.packageName.toLowerCase().contains(packageNameFilter))
+                                    filteredAppList.add(app);
+                            }
+                            appStore.printAppList(filteredAppList, System.out);
+                        } else {
+                            appStore.printAppList(appStore.getPackageApps(), System.out);
+                        }
+                        System.exit(0);
+
+                    default:
+                        System.err.print("Unsupported option.");
+                        appStore.printUsage(System.err);
+                        System.exit(1);
+                }
+            } else {
+
+                // Find apps with class name or description that matches
+                // command line.
+                List<PackageApp> partialMatchingApps = new ArrayList<>();
+                PackageApp exactMatchApp = null;
+                for (PackageApp app : appStore.getPackageApps()) {
+                    if (app.className.equals(args[0]) || app.description.equals(args[0]))
+                        exactMatchApp = app;
+                    else {
+                        if (app.className.toLowerCase().contains(args[0].toLowerCase())
+                                || app.description.toLowerCase().contains(args[0].toLowerCase()))
+                            partialMatchingApps.add(app);
+                    }
+                }
+
+                String[] packageArgs = Arrays.copyOfRange(args, 1, args.length);
+
+                if (exactMatchApp != null)
+                    appStore.runAppFromCMD(exactMatchApp, packageArgs);
+                else {
+                    if (partialMatchingApps.size()==1) {
+                        appStore.runAppFromCMD(partialMatchingApps.get(0), packageArgs);
+                    } else {
+                        System.err.println("Multiple apps match:\n");
+                        appStore.printAppList(partialMatchingApps, System.err);
+                        System.exit(1);
+                    }
+                }
+            }
         }
     }
 }
