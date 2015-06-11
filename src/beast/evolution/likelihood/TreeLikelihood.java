@@ -349,9 +349,13 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
         final TreeInterface tree = treeInput.get();
 
-        if (traverse(tree.getRoot()) != Tree.IS_CLEAN)
-            calcLogP();
-
+        try {
+        	if (traverse(tree.getRoot()) != Tree.IS_CLEAN)
+        		calcLogP();
+        }
+        catch (ArithmeticException e) {
+        	return Double.NEGATIVE_INFINITY;
+        }
         m_nScale++;
         if (logP > 0 || (likelihoodCore.getUseScaling() && m_nScale > X)) {
 //            System.err.println("Switch off scaling");
