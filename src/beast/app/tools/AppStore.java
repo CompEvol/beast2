@@ -437,7 +437,7 @@ public class AppStore {
                         System.exit(0);
 
                     default:
-                        System.err.print("Unsupported option.");
+                        System.err.print("\nUnsupported option.");
                         appStore.printUsage(System.err);
                         System.exit(1);
                 }
@@ -465,8 +465,14 @@ public class AppStore {
                     if (partialMatchingApps.size()==1) {
                         appStore.runAppFromCMD(partialMatchingApps.get(0), packageArgs);
                     } else {
-                        System.err.println("Multiple apps match:\n");
-                        appStore.printAppList(partialMatchingApps, System.err);
+                        if (partialMatchingApps.isEmpty()) {
+                            System.err.println("\nNo apps match.");
+                            appStore.printUsage(System.err);
+                            System.exit(1);
+                        } else {
+                            System.err.println("\nMultiple apps match:\n");
+                            appStore.printAppList(partialMatchingApps, System.err);
+                        }
                         System.exit(1);
                     }
                 }
