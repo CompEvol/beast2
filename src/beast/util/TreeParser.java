@@ -357,64 +357,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     }
 
 
-    void convertLengthToHeight(final Node node) {
-        final double fTotalHeight = convertLengthToHeight(node, 0);
-        offset(node, -fTotalHeight);
-    }
-
-    double convertLengthToHeight(final Node node, final double fHeight) {
-        final double fLength = node.getHeight();
-        node.setHeight((fHeight - fLength) * scaleInput.get());
-        if (node.isLeaf()) {
-            return node.getHeight();
-        } else {
-            final double fLeft = convertLengthToHeight(node.getLeft(), fHeight - fLength);
-            if (node.getRight() == null) {
-                return fLeft;
-            }
-            final double fRight = convertLengthToHeight(node.getRight(), fHeight - fLength);
-            return Math.min(fLeft, fRight);
-        }
-    }
-
-    void offset(final Node node, final double fDelta) {
-        node.setHeight(node.getHeight() + fDelta);
-        if (node.isLeaf()) {
-            if (node.getHeight() < thresholdInput.get()) {
-                node.setHeight(0);
-            }
-        }
-        if (!node.isLeaf()) {
-            offset(node.getLeft(), fDelta);
-            if (node.getRight() != null) {
-                offset(node.getRight(), fDelta);
-            }
-        }
-    }
-
-    /**
-     * Try to map sStr into an index.
-     */
-    private int getLabelIndex(final String sStr) {
-
-        // look it up in list of taxa
-        for (int nIndex = 0; nIndex < labels.size(); nIndex++) {
-            if (sStr.equals(labels.get(nIndex))) {
-                return nIndex;
-            }
-        }
-
-        // if createUnrecognizedTaxon==true, then do it now, otherwise labels will not be populated and
-        // out of bounds error will occur in m_sLabels later.
-        if (createUnrecognizedTaxa) {
-            labels.add(sStr);
-            return labels.size() - 1;
-        }
-
-        throw new ParseCancellationException("Label '" + sStr + "' in Newick beast.tree could " +
-                "not be identified. Perhaps taxa or taxonset is not specified?");
-    }
-
     /**
      * Given a map of name translations (string to string),
      * rewrites all leaf ids that match a key in the map
@@ -449,6 +391,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
         private List<Exception> raisedExceptions = new ArrayList<>();
 
+        private int numberedNodeCount = 0;
+
         @Override
         public Node visitTree(@NotNull NewickParser.TreeContext ctx) {
             Node root = visit(ctx.node());
@@ -460,7 +404,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             convertLengthToHeight(root);
 
             // Make sure internal nodes are numbered correctly
-            root.labelInternalNodes(root.getLeafNodeCount());
+            numberUnnumberedNodes(root);
 
             // Check for duplicate taxa
             BitSet nodeNrSeen = new BitSet();
@@ -529,14 +473,18 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                         || postCtx.label().number().INT() == null)
                     integerLeafLabels = false;
 
+                String postText = postCtx.getText();
+
                 // Treat labels as node numbers in certain situations
                 if (!isLabelledNewickInput.get()
                         && postCtx.label().number() != null
                         && postCtx.label().number().INT() != null) {
                     node.setNr(Integer.parseInt(postCtx.label().getText()) - offsetInput.get());
+                    numberedNodeCount += 1;
                 } else {
                     if (node.isLeaf()) {
                         node.setNr(getLabelIndex(postCtx.label().getText()));
+                        numberedNodeCount += 1;
                     }
                 }
             }
@@ -546,10 +494,112 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
             return node;
         }
+
+        /**
+         * Try to map sStr into an index.
+         */
+        private int getLabelIndex(final String sStr) {
+
+            // look it up in list of taxa
+            for (int nIndex = 0; nIndex < labels.size(); nIndex++) {
+                if (sStr.equals(labels.get(nIndex))) {
+                    return nIndex;
+                }
+            }
+
+            // if createUnrecognizedTaxon==true, then do it now, otherwise labels will not be populated and
+            // out of bounds error will occur in m_sLabels later.
+            if (createUnrecognizedTaxa) {
+                labels.add(sStr);
+                return labels.size() - 1;
+            }
+
+            throw new ParseCancellationException("Label '" + sStr + "' in Newick beast.tree could " +
+                    "not be identified. Perhaps taxa or taxonset is not specified?");
+        }
+
+        /**
+         * The node height field is initially populated with the length of the edge above due
+         * to the way the tree is stored in Newick format.  This method converts these lengths
+         * to actual ages before the most recent sample.
+         *
+         * @param root root of tree
+         */
+        private void convertLengthToHeight(final Node root) {
+            final double fTotalHeight = convertLengthToHeight(root, 0);
+            offset(root, -fTotalHeight);
+        }
+
+        /**
+         * Recursive method used to convert lengths to heights.  Applied to the root,
+         * results in heights from 0 to -total_height_of_tree.
+         *
+         * @param node node of a clade to convert
+         * @param fHeight Parent height.
+         * @return total height of clade
+         */
+        private double convertLengthToHeight(final Node node, final double fHeight) {
+            final double fLength = node.getHeight();
+            node.setHeight((fHeight - fLength) * scaleInput.get());
+            if (node.isLeaf()) {
+                return node.getHeight();
+            } else {
+                final double fLeft = convertLengthToHeight(node.getLeft(), fHeight - fLength);
+                if (node.getRight() == null) {
+                    return fLeft;
+                }
+                final double fRight = convertLengthToHeight(node.getRight(), fHeight - fLength);
+                return Math.min(fLeft, fRight);
+            }
+        }
+
+        /**
+         * Method used by convertLengthToHeight(node) to remove negative offset from
+         * node heights that is produced by convertLengthToHeight(node, height).
+         *
+         * @param node node of clade to offset
+         * @param fDelta offset
+         */
+        private void offset(final Node node, final double fDelta) {
+            node.setHeight(node.getHeight() + fDelta);
+            if (node.isLeaf()) {
+                if (node.getHeight() < thresholdInput.get()) {
+                    node.setHeight(0);
+                }
+            }
+            if (!node.isLeaf()) {
+                offset(node.getLeft(), fDelta);
+                if (node.getRight() != null) {
+                    offset(node.getRight(), fDelta);
+                }
+            }
+        }
+
+        /**
+         * Number any nodes in a clade which were not explicitly numbered by
+         * the parsed string.
+         *
+         * @param node clade parent
+         */
+        private void numberUnnumberedNodes(Node node) {
+            if (node.isLeaf())
+                return;
+
+            for (Node child : node.getChildren()) {
+                numberUnnumberedNodes(child);
+            }
+
+            if (node.getNr()<0)
+                node.setNr(numberedNodeCount);
+
+            numberedNodeCount += 1;
+        }
     }
 
 
-    // StateNodeInitializer implementation
+    /*
+     *StateNodeInitializer implementation
+     */
 
     @Override
     public void initStateNodes() {
