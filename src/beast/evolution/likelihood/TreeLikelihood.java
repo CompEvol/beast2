@@ -54,10 +54,11 @@ import beast.evolution.tree.TreeInterface;
         "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
 public class TreeLikelihood extends GenericTreeLikelihood {
 
-    public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
+    public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate that sites containing ambiguous states should be handled instead of ignored (the default)", false);
+    public Input<Boolean> m_useTipLikelihoods = new Input<Boolean>("useTipLikelihoods", "flag to indicate that partial likelihoods are provided at the tips", false);
     
     
-    enum Scaling {none, always, _default};
+    public static enum Scaling {none, always, _default};
     public Input<Scaling> scaling = new Input<TreeLikelihood.Scaling>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
     
 
@@ -132,8 +133,8 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         try {
 	        beagle.initByName(
                     "data", dataInput.get(), "tree", treeInput.get(), "siteModel", siteModelInput.get(),
-                    "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(),
-                    "scaling", scaling.get().toString());
+                    "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(), 
+                    "useTipLikelihoods", m_useTipLikelihoods.get(),"scaling", scaling.get().toString());
 	        if (beagle.beagle != null) {
 	            //a Beagle instance was found, so we use it
 	            return;
@@ -238,7 +239,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         final int extNodeCount = nodeCount / 2 + 1;
         final int intNodeCount = nodeCount / 2;
 
-        if (m_useAmbiguities.get()) {
+        if (m_useAmbiguities.get() || m_useTipLikelihoods.get()) {
             setPartials(treeInput.get().getRoot(), dataInput.get().getPatternCount());
         } else {
             setStates(treeInput.get().getRoot(), dataInput.get().getPatternCount());
@@ -309,14 +310,21 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             Alignment data = dataInput.get();
             int nStates = data.getDataType().getStateCount();
             double[] partials = new double[patternCount * nStates];
-
             int k = 0;
-            int taxonIndex = getTaxonIndex(node.getID(), data);
-            for (int iPattern = 0; iPattern < patternCount; iPattern++) {
-                int nState = data.getPattern(taxonIndex, iPattern);
-                boolean[] stateSet = data.getStateSet(nState);
-                for (int iState = 0; iState < nStates; iState++) {
-                    partials[k++] = (stateSet[iState] ? 1.0 : 0.0);
+            int iTaxon = getTaxonIndex(node.getID(), data);
+            for (int iPattern = 0; iPattern < patternCount; iPattern++) {                
+                double[] tipLikelihoods = data.getTipLikelihoods(iTaxon,iPattern);
+                if (tipLikelihoods != null) {
+                	for (int iState = 0; iState < nStates; iState++) {
+                		partials[k++] = tipLikelihoods[iState];
+                	}
+                }
+                else {
+                	int nState = data.getPattern(iTaxon, iPattern);
+	                boolean[] stateSet = data.getStateSet(nState);
+	                for (int iState = 0; iState < nStates; iState++) {
+	                	 partials[k++] = (stateSet[iState] ? 1.0 : 0.0);                
+	                }
                 }
             }
             likelihoodCore.setNodePartials(node.getNr(), partials);

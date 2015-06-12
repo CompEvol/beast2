@@ -142,9 +142,16 @@ public class Alignment extends Map<String> {
     protected int[] siteWeights = null;
 
     /**
+     * Probabilities associated with each tip of the tree, for use when the
+     * characters are uncertain.
+     */
+    public List<double[][]> tipLikelihoods = new ArrayList<double[][]>(); // #taxa x #sites x #states
+    private boolean usingTipLikelihoods = false;
+    
+    /**
      * pattern state encodings *
      */
-    protected int[][] sitePatterns; // #patters x #taxa
+    protected int [][] sitePatterns; // #patterns x #taxa
 
     /**
      * maps site nr to pattern nr *
@@ -266,7 +273,6 @@ public class Alignment extends Map<String> {
         taxaNames.clear();
         stateCounts.clear();
         counts.clear();
-
         try {
             for (Sequence seq : sequences) {
 
@@ -275,6 +281,11 @@ public class Alignment extends Map<String> {
                     throw new RuntimeException("Duplicate taxon found in alignment: " + seq.getTaxon());
                 }
                 taxaNames.add(seq.getTaxon());
+                tipLikelihoods.add(seq.getLikelihoods());
+                // if seq.isUncertain() == false then the above line adds 'null'
+	            // to the list, indicating that this particular sequence has no tip likelihood information
+                usingTipLikelihoods |= (seq.getLikelihoods() != null);	            
+
                 if (seq.totalCountInput.get() != null) {
                     stateCounts.add(seq.totalCountInput.get());
                 } else {
@@ -535,7 +546,9 @@ public class Alignment extends Map<String> {
         int[] weights = new int[nSites];
         weights[0] = 1;
         for (int i = 1; i < nSites; i++) {
-            if (comparator.compare(nData[i - 1], nData[i]) != 0) {
+            if (usingTipLikelihoods || comparator.compare(nData[i - 1], nData[i]) != 0) {
+            	// In the case where we're using tip probabilities, we need to treat each 
+            	// site as a unique pattern, because it could have a unique probability vector.
                 nPatterns++;
                 nData[nPatterns - 1] = nData[i];
             }
@@ -649,6 +662,10 @@ public class Alignment extends Map<String> {
         return builder.toString();
     }
 
+    public double[] getTipLikelihoods(int iTaxon, int iPattern) {
+    	if (tipLikelihoods.get(iTaxon) == null) return null; 
+    	else return tipLikelihoods.get(iTaxon)[iPattern];
+    }
     /**
      * returns an array containing the non-ambiguous states that this state represents.
      */
