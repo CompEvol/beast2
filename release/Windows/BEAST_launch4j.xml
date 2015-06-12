@@ -9,7 +9,7 @@
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>
-    <maxHeapSize>1024</maxHeapSize>
+    <maxHeapSize>4048</maxHeapSize>
   </jre>    
   <versionInfo>
     <fileDescription>BEAST2</fileDescription>    

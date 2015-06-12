@@ -212,13 +212,10 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @return a copy of a list of immediate child nodes of this node.
-     *         Note that changing the list does not affect the topology of the tree.
+     * @return unmodifiable list of children of this node
      */
     public List<Node> getChildren() {
-        final List<Node> copyOfChildren = new ArrayList<Node>();
-        copyOfChildren.addAll(children);
-        return copyOfChildren;
+        return Collections.unmodifiableList(children);
     }
 
     /**
@@ -235,10 +232,8 @@ public class Node extends BEASTObject {
     // recursive
     public void getAllChildNodes(final List<Node> childNodes) {
         childNodes.add(this);
-        if (!this.isLeaf()) {
-            getRight().getAllChildNodes(childNodes);
-            getLeft().getAllChildNodes(childNodes);
-        }
+        for (Node child : children)
+            child.getAllChildNodes(childNodes);
     }
 
     /**
@@ -256,10 +251,10 @@ public class Node extends BEASTObject {
     public void getAllLeafNodes(final List<Node> leafNodes) {
         if (this.isLeaf()) {
             leafNodes.add(this);
-        } else {
-            getRight().getAllLeafNodes(leafNodes);
-            getLeft().getAllLeafNodes(leafNodes);
         }
+
+        for (Node child : children)
+            child.getAllLeafNodes(leafNodes);
     }
 
     /**
@@ -515,7 +510,7 @@ public class Node extends BEASTObject {
         final int[] indices = new int[childCount];
 
         // relies on this being a copy of children list
-        final List<Node> children = getChildren();
+        final List<Node> children = new ArrayList<>(getChildren());
 
         for (final Node child : children) {
             lowest.add(child.sort());

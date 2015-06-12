@@ -29,4 +29,4 @@ if [ -z "$JAVA_HOME" ]; then
 else
   JAVA=$JAVA_HOME/bin/java
 fi
-$JAVA -Xms64m -Xmx2048m -Djava.library.path="$BEAST_LIB:/usr/local/lib" -cp "$BEAST_LIB/launcher.jar" beast.app.beastapp.BeastLauncher $*
+$JAVA -Xms64m -Xmx4g -Djava.library.path="$BEAST_LIB:/usr/local/lib" -cp "$BEAST_LIB/launcher.jar" beast.app.beastapp.BeastLauncher $*

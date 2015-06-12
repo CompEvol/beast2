@@ -1,6 +1,7 @@
 package beast.evolution.substitutionmodel;
 
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
@@ -10,19 +11,19 @@ import beast.evolution.datatype.Nucleotide;
 @Description("General Time Reversible model of nucleotide evolution. " +
         "Rates that are not specified are assumed to be 1. ")
 public class GTR extends GeneralSubstitutionModel {
-    public Input<RealParameter> rateACInput = new Input<RealParameter>("rateAC", "substitution rate for A to C (default 1)");
-    public Input<RealParameter> rateAGInput = new Input<RealParameter>("rateAG", "substitution rate for A to G (default 1)");
-    public Input<RealParameter> rateATInput = new Input<RealParameter>("rateAT", "substitution rate for A to T (default 1)");
-    public Input<RealParameter> rateCGInput = new Input<RealParameter>("rateCG", "substitution rate for C to G (default 1)");
-    public Input<RealParameter> rateCTInput = new Input<RealParameter>("rateCT", "substitution rate for C to T (default 1)");
-    public Input<RealParameter> rateGTInput = new Input<RealParameter>("rateGT", "substitution rate for G to T (default 1)");
+    public Input<Function> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
+    public Input<Function> rateAGInput = new Input<>("rateAG", "substitution rate for A to G (default 1)");
+    public Input<Function> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
+    public Input<Function> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
+    public Input<Function> rateCTInput = new Input<>("rateCT", "substitution rate for C to T (default 1)");
+    public Input<Function> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
 
-    RealParameter rateAC;
-    RealParameter rateAG;
-    RealParameter rateAT;
-    RealParameter rateCG;
-    RealParameter rateCT;
-    RealParameter rateGT;
+    Function rateAC;
+    Function rateAG;
+    Function rateAT;
+    Function rateCG;
+    Function rateCT;
+    Function rateGT;
 
     public GTR() {
         ratesInput.setRule(Validate.OPTIONAL);
@@ -60,7 +61,7 @@ public class GTR extends GeneralSubstitutionModel {
         rateGT = getParameter(rateGTInput);
     }
 
-    private RealParameter getParameter(Input<RealParameter> parameterInput) throws Exception {
+    private Function getParameter(Input<Function> parameterInput) throws Exception {
         if (parameterInput.get() != null) {
             return parameterInput.get();
         }
@@ -69,21 +70,21 @@ public class GTR extends GeneralSubstitutionModel {
 
     @Override
     protected void setupRelativeRates() {
-        relativeRates[0] = rateAC.getValue(); // A->C
-        relativeRates[1] = rateAG.getValue(); // A->G
-        relativeRates[2] = rateAT.getValue(); // A->T
+        relativeRates[0] = rateAC.getArrayValue(); // A->C
+        relativeRates[1] = rateAG.getArrayValue(); // A->G
+        relativeRates[2] = rateAT.getArrayValue(); // A->T
 
-        relativeRates[3] = rateAC.getValue(); // C->A
-        relativeRates[4] = rateCG.getValue(); // C->G
-        relativeRates[5] = rateCT.getValue(); // C->T
+        relativeRates[3] = rateAC.getArrayValue(); // C->A
+        relativeRates[4] = rateCG.getArrayValue(); // C->G
+        relativeRates[5] = rateCT.getArrayValue(); // C->T
 
-        relativeRates[6] = rateAG.getValue(); // G->A
-        relativeRates[7] = rateCG.getValue(); // G->C
-        relativeRates[8] = rateGT.getValue(); // G->T
+        relativeRates[6] = rateAG.getArrayValue(); // G->A
+        relativeRates[7] = rateCG.getArrayValue(); // G->C
+        relativeRates[8] = rateGT.getArrayValue(); // G->T
 
-        relativeRates[9] = rateAT.getValue(); // T->A
-        relativeRates[10] = rateCT.getValue(); //T->C
-        relativeRates[11] = rateGT.getValue(); //T->G
+        relativeRates[9] = rateAT.getArrayValue(); // T->A
+        relativeRates[10] = rateCT.getArrayValue(); //T->C
+        relativeRates[11] = rateGT.getArrayValue(); //T->G
     }
 
     @Override

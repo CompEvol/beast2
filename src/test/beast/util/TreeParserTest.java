@@ -2,6 +2,7 @@ package test.beast.util;
 
 import beast.util.TreeParser;
 import junit.framework.TestCase;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.junit.Test;
 
 
@@ -85,6 +86,25 @@ public class TreeParserTest extends TestCase {
         }
 
 
+    }
+
+
+    @Test
+    public void testDuplicates() throws Exception {
+
+        String newick = "((A:1.0,B:1.0):1.0,(C:1.0,A:1.0):1.0):0.0;";
+
+        boolean exceptionRaised = false;
+
+        try {
+            boolean isLabeled = true;
+            TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
+        } catch (ParseCancellationException e) {
+            e.printStackTrace();
+            exceptionRaised = true;
+        }
+
+        assertTrue(exceptionRaised);
     }
 
 

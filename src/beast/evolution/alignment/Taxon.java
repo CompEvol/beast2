@@ -45,24 +45,25 @@ public class Taxon extends BEASTObject {
         return taxa;
     }
 
-    /**
-     * Convenience method to produce a list of taxon objects sorted alphabetically
-     * @param taxaNames a list of taxa names
-     * @return a list of Taxon objects with corresponding names
-     */
-    public static List<Taxon> createSortedTaxonList(final List<String> taxaNames) throws Exception {
-        final List<Taxon> taxa = new ArrayList<>();
-        for (final String taxaName : taxaNames) {
-            taxa.add(new Taxon(taxaName));
-        }
-        Collections.sort(taxa, new Comparator<Taxon>() {
-            @Override // assumes IDs are not null
-            public int compare(Taxon o1, Taxon o2) {
-                return o1.getID().compareTo(o2.getID());
-            }
-        });
-        return taxa;
-    }
+//    /**
+//     * Convenience method to produce a list of taxon objects sorted alphabetically
+//     * @param taxaNames a list of taxa names
+//     * @return a list of Taxon objects with corresponding names
+//     */
+//    @Deprecated
+//    public static List<Taxon> createSortedTaxonList(final List<String> taxaNames) throws Exception {
+//        final List<Taxon> taxa = new ArrayList<>();
+//        for (final String taxaName : taxaNames) {
+//            taxa.add(new Taxon(taxaName));
+//        }
+//        Collections.sort(taxa, new Comparator<Taxon>() {
+//            @Override // assumes IDs are not null
+//            public int compare(Taxon o1, Taxon o2) {
+//                return o1.getID().compareTo(o2.getID());
+//            }
+//        });
+//        return taxa;
+//    }
 
     /**
      * @param taxa1 a collection of taxa name strings

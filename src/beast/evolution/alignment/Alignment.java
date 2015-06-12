@@ -45,7 +45,7 @@ public class Alignment extends Map<String> {
     /**
      * default data type *
      */
-    final static String NUCLEOTIDE = "nucleotide";
+    protected final static String NUCLEOTIDE = "nucleotide";
 
     /**
      * directory to pick up data types from *
@@ -360,12 +360,12 @@ public class Alignment extends Map<String> {
 
     } // initAndValidate
 
-    static String getSequence(Alignment data, int iTaxon) {
+    static String getSequence(Alignment data, int taxonIndex) {
 
         int[] nStates = new int[data.getPatternCount()];
         for (int i = 0; i < data.getPatternCount(); i++) {
             int[] sitePattern = data.getPattern(i);
-            nStates[i] = sitePattern[iTaxon];
+            nStates[i] = sitePattern[taxonIndex];
         }
         try {
             return data.getDataType().state2string(nStates);
@@ -447,8 +447,8 @@ public class Alignment extends Map<String> {
         return sitePatterns[iPattern];
     }
 
-    public int getPattern(int iTaxon, int iPattern) {
-        return sitePatterns[iPattern][iTaxon];
+    public int getPattern(int taxonIndex, int iPattern) {
+        return sitePatterns[iPattern][taxonIndex];
     }
 
     /**
@@ -707,7 +707,10 @@ public class Alignment extends Map<String> {
         return Math.log(returnProb);
     } // getAscertainmentCorrection
 
-
+    /**
+     * Should not be used. No special order of taxa are assumed. Taxa order should be left to user input.
+     */
+    @Deprecated
     static public void sortByTaxonName(List<Sequence> seqs) {
         Collections.sort(seqs, new Comparator<Sequence>() {
             @Override

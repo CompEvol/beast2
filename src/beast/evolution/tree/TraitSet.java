@@ -134,6 +134,7 @@ public class TraitSet extends BEASTObject {
         return traitNameInput.get();
     }
 
+    @Deprecated // use getStringValue by name instead
     public String getStringValue(int iTaxonNr) {
         return taxonValues[iTaxonNr];
     }
@@ -145,7 +146,15 @@ public class TraitSet extends BEASTObject {
         }
         return values[iTaxonNr];
     }
-    
+
+    public String getStringValue(String taxonName) {
+        if (taxonValues == null || map == null || map.get(taxonName) == null) {
+            return null;
+        }
+        return taxonValues[map.get(taxonName)];
+
+    }
+
     public double getValue(String taxonName) {
         if (values == null || map == null || map.get(taxonName) == null) {
                 return 0;
