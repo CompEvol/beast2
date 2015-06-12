@@ -152,9 +152,7 @@ public class TreeLikelihoodTest extends TestCase {
         double fLogP = 0;
         fLogP = likelihood.calculateLogP();
         // the following number comes from Beast 1.6        
-        //assertEquals(fLogP, -737.7140695360017, BEASTTestCase.PRECISION);
-        assertEquals(fLogP, -1026.7977091360306, BEASTTestCase.PRECISION);
-        // This assertion was failing in v2.2.1
+        assertEquals(fLogP, -737.7140695360017, BEASTTestCase.PRECISION);
     }
 
     @Test

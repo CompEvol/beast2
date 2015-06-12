@@ -146,6 +146,7 @@ public class Alignment extends Map<String> {
      * characters are uncertain.
      */
     public List<double[][]> tipLikelihoods = new ArrayList<double[][]>(); // #taxa x #sites x #states
+    private boolean usingTipLikelihoods = false;
     
     /**
      * pattern state encodings *
@@ -280,9 +281,10 @@ public class Alignment extends Map<String> {
                     throw new RuntimeException("Duplicate taxon found in alignment: " + seq.getTaxon());
                 }
                 taxaNames.add(seq.getTaxon());
-                tipLikelihoods.add(seq.getLikelihoods()); 
-	            // if seq.isUncertain() == false then the above line adds 'null'
+                tipLikelihoods.add(seq.getLikelihoods());
+                // if seq.isUncertain() == false then the above line adds 'null'
 	            // to the list, indicating that this particular sequence has no tip likelihood information
+                usingTipLikelihoods |= (seq.getLikelihoods() != null);	            
 
                 if (seq.totalCountInput.get() != null) {
                     stateCounts.add(seq.totalCountInput.get());
@@ -544,7 +546,7 @@ public class Alignment extends Map<String> {
         int[] weights = new int[nSites];
         weights[0] = 1;
         for (int i = 1; i < nSites; i++) {
-            if (tipLikelihoods != null || comparator.compare(nData[i - 1], nData[i]) != 0) {
+            if (usingTipLikelihoods || comparator.compare(nData[i - 1], nData[i]) != 0) {
             	// In the case where we're using tip probabilities, we need to treat each 
             	// site as a unique pattern, because it could have a unique probability vector.
                 nPatterns++;

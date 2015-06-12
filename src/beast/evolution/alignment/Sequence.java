@@ -37,11 +37,11 @@ import beast.evolution.datatype.DataType;
 public class Sequence extends BEASTObject {
     public Input<Integer> totalCountInput = new Input<Integer>("totalcount", "number of states or the number of lineages for this species in SNAPP analysis");
     public Input<String> taxonInput = new Input<String>("taxon", "name of this species", Input.Validate.REQUIRED);
-    public Input<Boolean> uncertainInput = new Input<Boolean>("uncertain", "if true, sequence is provided as comma separated probabilities for each character, with sites separated by a semi-colons. In this formulation, gaps are coded as 1/K,...,1/K, where K is the number of states in the model.");
     public Input<String> dataInput = new Input<String>("value",
-            "sequence data, either encoded as a string or as comma separated list of integers, or comma separated probabilities for each site if uncertain=true." +
+            "sequence data, either encoded as a string or as comma separated list of integers, or comma separated likelihoods/probabilities for each site if uncertain=true." +
                     "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
-  
+    public Input<Boolean> uncertainInput = new Input<Boolean>("uncertain", "if true, sequence is provided as comma separated probabilities for each character, with sites separated by a semi-colons. In this formulation, gaps are coded as 1/K,...,1/K, where K is the number of states in the model.");
+
     protected boolean uncertain = false;
     protected double[][] likelihoods = null;    
     public double[][] getLikelihoods() {
@@ -66,9 +66,9 @@ public class Sequence extends BEASTObject {
 
     @Override
     public void initAndValidate() throws Exception {
-    	if (uncertainInput.get() != null && uncertainInput.get())  {
-    		uncertain = true;
-    		initProbabilities();    		
+    	if (uncertainInput.get() != null)  {
+    		uncertain = uncertainInput.get();    		
+    		if (uncertain) initProbabilities();    		
     	}
     } // initAndValidate
     
@@ -82,11 +82,11 @@ public class Sequence extends BEASTObject {
 		String[] strs = sStr.split(";");		
 		for (int i=0; i<strs.length; i++) {
 			String[] pr = strs[i].split(",");
-			double total = 0;
+			//double total = 0;
     		for (int j=0; j<pr.length; j++) {    			
     			if (likelihoods == null) likelihoods = new double[strs.length][pr.length];
     			likelihoods[i][j] = Double.parseDouble(pr[j].trim());
-    			total += likelihoods[i][j]; 
+    			//total += likelihoods[i][j]; 
     		}    		
 		}
     }
