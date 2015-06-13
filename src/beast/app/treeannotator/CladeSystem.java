@@ -351,6 +351,10 @@ public class CladeSystem {
             this.credibility = credibility;
         }
 
+        public List<Object[]> getAttributeValues() {
+            return attributeValues;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
