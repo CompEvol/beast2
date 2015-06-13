@@ -355,10 +355,10 @@ public class AppStore {
             
             // Start the process and wait for it to finish.
             final Process process = pb.start();
-            String line;
+            int c;
             BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            while ((line = input.readLine()) != null) {
-                System.out.println(line);
+            while ((c = input.read()) != -1) {
+                System.out.print((char)c);
             }
             input.close();
             final int exitStatus = process.waitFor();
