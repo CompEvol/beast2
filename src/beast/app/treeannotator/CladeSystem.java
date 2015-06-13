@@ -10,44 +10,24 @@ import java.util.*;
  */
 //TODO merge with CladeSet?
 public class CladeSystem {
-    //
-    // Public stuff
-    //
 
-    /**
-     */
-    public CladeSystem() {
-    }
+    protected Map<BitSet, Clade> cladeMap = new HashMap<>();
 
-    /**
-     */
-    public CladeSystem(Tree targetTree) throws Exception {
-        //this.targetTree = targetTree;
+    public CladeSystem() { }
+
+    public CladeSystem(Tree targetTree) {
         add(targetTree, true);
     }
 
     /**
      * adds all the clades in the tree
      */
-    public void add(Tree tree, boolean includeTips) {// throws Exception {
-//            if (taxonList == null) {
-//            	List<Taxon> taxa = new ArrayList<Taxon>();
-//
-//                for (String taxonName : tree.getTaxaNames()) {
-//                	taxa.add(new Taxon(taxonName));
-//                }
-//                taxonList = new TaxonSet(taxa);
-//            }
-
+    public void add(Tree tree, boolean includeTips) {
         // Recurse over the tree and add all the clades (or increment their
         // frequency if already present). The root clade is added too (for
         // annotation purposes).
         addClades(tree.getRoot(), includeTips);
     }
-//
-//        public Clade getClade(Node node) {
-//            return null;
-//        }
 
     private BitSet addClades(Node node, boolean includeTips) {
 
@@ -57,7 +37,6 @@ public class CladeSystem {
 
             int index = getTaxonIndex(node);
             bits.set(2*index);
-            //bits.set(index);
 
             if (includeTips) {
                 addClade(bits);
@@ -109,7 +88,6 @@ public class CladeSystem {
                 throw new IllegalArgumentException("Taxon, " + node.getID() + ", not found in target tree");
             }
             bits.set(2*index);
-            //bits.set(index);
 
         } else {
 
@@ -139,49 +117,35 @@ public class CladeSystem {
         if (clade != null) {
 
             if (clade.attributeValues == null) {
-                clade.attributeValues = new ArrayList<Object[]>();
+                clade.attributeValues = new ArrayList<>();
             }
 
             int i = 0;
             Object[] values = new Object[attributeNames.size()];
             for (String attributeName : attributeNames) {
-                boolean processed = false;
 
-                if (!processed) {
-                    Object value;
-                    if (attributeName.equals("height")) {
+                Object value;
+                switch (attributeName) {
+                    case "height":
                         value = node.getHeight();
-                    } else if (attributeName.equals("length")) {
+                        break;
+                    case "length":
                         value = getBranchLength(node);
-// AR - we deal with this once everything
-//                        } else if (attributeName.equals(location1Attribute)) {
-//                            // If this is one of the two specified bivariate location names then
-//                            // merge this and the other one into a single array.
-//                            Object value1 = tree.getNodeAttribute(node, attributeName);
-//                            Object value2 = tree.getNodeAttribute(node, location2Attribute);
-//
-//                            value = new Object[]{value1, value2};
-//                        } else if (attributeName.equals(location2Attribute)) {
-//                            // do nothing - already dealt with this...
-//                            value = null;
-                    } else {
+                        break;
+                    default:
                         value = node.getMetaData(attributeName);
                         if (value instanceof String && ((String) value).startsWith("\"")) {
                             value = ((String) value).replaceAll("\"", "");
                         }
-                    }
-
-                    //if (value == null) {
-                    //    progressStream.println("attribute " + attributeNames[i] + " is null.");
-                    //}
-
-                    values[i] = value;
+                        break;
                 }
+
+                values[i] = value;
+
                 i++;
             }
             clade.attributeValues.add(values);
 
-            //progressStream.println(clade + " " + clade.getValuesSize());
             clade.setCount(clade.getCount() + 1);
         }
     }
@@ -218,7 +182,6 @@ public class CladeSystem {
 
             int index = getTaxonIndex(node);
             bits.set(2*index);
-            //bits.set(index);
         } else {
 
             BitSet bits2 = new BitSet();
@@ -256,7 +219,6 @@ public class CladeSystem {
 
             int index = getTaxonIndex(node);
             bits.set(2*index);
-            //bits.set(index);
         } else {
 
             BitSet bits2 = new BitSet();
@@ -364,8 +326,6 @@ public class CladeSystem {
 
     public int getTaxonIndex(Node node) {
         return node.getNr();
-//        	String ID = node.getID();
-//			return taxonList.asStringList().indexOf(ID);
     }
 
     public class Clade {
@@ -391,6 +351,7 @@ public class CladeSystem {
             this.credibility = credibility;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
@@ -401,10 +362,12 @@ public class CladeSystem {
 
         }
 
+        @Override
         public int hashCode() {
             return (bits != null ? bits.hashCode() : 0);
         }
 
+        @Override
         public String toString() {
             return "clade " + bits.toString();
         }
@@ -415,11 +378,5 @@ public class CladeSystem {
         List<Object[]> attributeValues = null;
     }
 
-    //
-    // Private stuff
-    //
-    //TaxonSet taxonList = null;
-    protected Map<BitSet, Clade> cladeMap = new HashMap<BitSet, Clade>();
 
-    //Tree targetTree;
 }
