@@ -202,7 +202,7 @@
             <![CDATA[
         <input spec='RandomLocalClockModel' id="RandomLocalClock.c:$(n)" ratesAreMultipliers="false" tree='@Tree.t:$(n)'>
             <clock.rate id='meanClockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
-            <parameter spec='parameter.BooleanParameter' name='indicators' id='Indicators.c:$(n)' value="1"/>
+            <parameter spec='parameter.BooleanParameter' name='indicators' id='Indicators.c:$(n)' value="0"/>
             <parameter name='rates' id='clockrates.c:$(n)' value="1"/>
         </input>
 
@@ -215,6 +215,32 @@
 			<up idref="meanClockRate.c:$(n)"/>
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
+
+		<distribution idref="prior">
+			<if cond='inlikelihood(RandomLocalClock.c:$(n))'>
+				<!-- prior on rates -->
+			    <prior id='RRatesPrior.c:s$(n)' name="distribution" x='@clockrates.c:$(n)'>
+			        <Gamma id="Gamma.0" name="distr">
+			            <parameter estimate="false" name="alpha">0.5</parameter>
+			            <parameter estimate="false" name="beta">2.0</parameter>
+			        </Gamma>
+				</prior>
+
+				<!-- prior on number of changes -->
+				<prior id="RRateChangesPrior.c:$(n)" name="distribution">
+					<x id="RRateChanges.c:$(n)" spec="beast.core.util.Sum" arg="@Indicators.c:$(n)"/>
+                    <distr spec='beast.math.distributions.Poisson'>
+                          <lambda spec='parameter.RealParameter' estimate='false' value='0.6931471805599453'/>
+                    </distr>
+				</prior>
+			</if>
+		</distribution>
+
+		<logger idref="tracelog">
+			<if cond='inlikelihood(RandomLocalClock.c:$(n))'>
+				<log idref="RRateChanges.c:$(n)"/>
+			</if>
+		</logger>
 
         <prior id='MeanRRatePrior.c:s$(n)' x='@meanClockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
 ]]>
