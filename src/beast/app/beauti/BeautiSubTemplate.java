@@ -320,6 +320,7 @@ public class BeautiSubTemplate extends BEASTObject {
 
         // resolve alignment references
         _sXML = _sXML.replaceAll("idref=[\"']data['\"]", "idref='" + context.partition + "'");
+        _sXML = _sXML.replaceAll("[\"']@data['\"]", "'@" + context.partition + "'");
         // ensure uniqueness of IDs
         _sXML = BeautiDoc.translatePartitionNames(_sXML, context);//_sXML.replaceAll("\\$\\(n\\)", sPartition);
 
