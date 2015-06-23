@@ -19,7 +19,8 @@
     <beauticonfig spec='BeautiConfig'
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers,
-			beast.evolution.sitemodel.SiteModel.mutationRate =Substitution Rate'
+			beast.evolution.sitemodel.SiteModel.mutationRate =Substitution Rate,
+			beast.evolution.speciation.SpeciesTreePrior.gammaParameter=Population Mean'
         inlinePlugins ='beast.core.MCMC.distribution,
             beast.evolution.sitemodel.SiteModel.substModel,
             beast.evolution.tree.coalescent.ExponentialGrowth,
