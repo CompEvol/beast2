@@ -15,6 +15,7 @@ import beast.evolution.alignment.Alignment;
 import beast.util.AddOnManager;
 import jam.framework.DocumentFrame;
 
+import org.fest.util.Files;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -31,6 +32,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -1058,7 +1060,39 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {
             	if (arg.equals("-capture")) {
-                	baos = new ByteArrayOutputStream();
+            		final PrintStream beautiLog = System.err;
+                	baos = new ByteArrayOutputStream() {
+                		@Override
+                		public synchronized void write(byte[] b, int off, int len) {
+                			super.write(b, off, len);
+                			beautiLog.write(b, off, len);
+                		};
+
+                		@Override
+                		public synchronized void write(int b) {
+                			super.write(b);
+                			beautiLog.write(b);
+                		};
+                		
+                		@Override
+                		public void write(byte[] b) throws java.io.IOException {
+                			super.write(b);
+                			beautiLog.write(b);
+                		};
+                		
+                		@Override
+                		public void flush() throws java.io.IOException {
+                			super.flush();
+                			beautiLog.flush();
+                		};
+                		
+                		@Override
+                		public void close() throws IOException {
+                			super.close();
+                			beautiLog.close();
+                		}
+                	};
+                	
                 	PrintStream p = new PrintStream(baos);
                 	System.setOut(p);
                 	System.setErr(p);
